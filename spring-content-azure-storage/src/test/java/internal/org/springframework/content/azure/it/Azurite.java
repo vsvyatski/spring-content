@@ -9,7 +9,7 @@ import com.azure.storage.blob.BlobServiceClientBuilder;
 /**
  * This class provides a TestContainers implementation of Azure storage via
  * an Azurite docker container.
- *
+ * <p>
  * Please refer to the following for details:-
  * <a href="https://www.testcontainers.org">http://www.testcontainers.org</a>
  * <a href="http://github.com/testcontainers/testcontainers-java">http://github.com/testcontainers/testcontainers-java</a>
@@ -39,7 +39,7 @@ public class Azurite extends GenericContainer<Azurite> implements Serializable {
     }
 
     public static BlobServiceClientBuilder getBlobServiceClientBuilder() {
-        final String host = Singleton.INSTANCE.getContainerIpAddress();
+        final String host = Singleton.INSTANCE.getHost();
         final Integer mappedPort = Singleton.INSTANCE.getMappedPort(BLOB_SERVICE_PORT);
         final String endpoint = String.format(ENDPOINT, host, mappedPort, DEV_ACC_NAME);
 
