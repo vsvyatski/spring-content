@@ -1,18 +1,10 @@
 package org.springframework.content.elasticsearch;
 
-import java.io.IOException;
-
-import internal.org.springframework.content.elasticsearch.DeprecatedElasticsearchIndexer;
-import internal.org.springframework.content.elasticsearch.ElasticsearchIndexServiceImpl;
 import internal.org.springframework.content.elasticsearch.ElasticsearchIndexer;
-import internal.org.springframework.content.elasticsearch.IndexManager;
 import org.elasticsearch.client.RestHighLevelClient;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.content.commons.renditions.RenditionService;
 import org.springframework.content.commons.search.IndexService;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
@@ -25,12 +17,7 @@ public class ElasticsearchFulltextIndexingConfig {
 	private IndexService elasticFulltextIndexService;
 
 	@Bean
-	public ElasticsearchIndexer elasticFulltextIndexerEventListener() throws IOException {
-		return new ElasticsearchIndexer(client, elasticFulltextIndexService);
-	}
-
-	@Bean
-	public DeprecatedElasticsearchIndexer deprecatedElasticFulltextIndexerEventListener() throws IOException {
-		return new DeprecatedElasticsearchIndexer(client, elasticFulltextIndexService);
+	public ElasticsearchIndexer elasticFulltextIndexerEventListener() {
+		return new ElasticsearchIndexer(elasticFulltextIndexService);
 	}
 }

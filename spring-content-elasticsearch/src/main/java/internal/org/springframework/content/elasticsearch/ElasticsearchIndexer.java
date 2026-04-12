@@ -1,10 +1,7 @@
 package internal.org.springframework.content.elasticsearch;
 
-import java.io.IOException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.elasticsearch.client.RestHighLevelClient;
 
 import org.springframework.content.commons.annotations.StoreEventHandler;
 import org.springframework.content.commons.store.ContentStore;
@@ -20,11 +17,9 @@ public class ElasticsearchIndexer extends AbstractStoreEventListener<Object> {
 
 	private static final Log LOGGER = LogFactory.getLog(ElasticsearchIndexer.class);
 
-	private final RestHighLevelClient client;
 	private final IndexService indexService;
 
-	public ElasticsearchIndexer(RestHighLevelClient client, IndexService indexService) throws IOException {
-		this.client = client;
+	public ElasticsearchIndexer(IndexService indexService) {
 		this.indexService = indexService;
 	}
 

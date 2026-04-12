@@ -1,7 +1,7 @@
 package internal.org.springframework.content.elasticsearch;
 
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.elasticsearch.client.RestHighLevelClient;
@@ -21,19 +21,17 @@ public class ElasticsearchConfig {
     @Autowired
     private RestHighLevelClient client;
 
-    @Autowired(required=false)
+    @Autowired(required = false)
     private RenditionService renditionService;
 
     @Autowired(required = false)
     private AttributeProvider attributeProvider;
 
-    private List<RenditionProvider> providers = new ArrayList<>();
+    private final List<RenditionProvider> providers = new ArrayList<>();
 
-    @Autowired(required=false)
+    @Autowired(required = false)
     public void setRenditionProviders(RenditionProvider... providers) {
-        for (RenditionProvider provider : providers) {
-            this.providers.add(provider);
-        }
+        Collections.addAll(this.providers, providers);
     }
 
     public RenditionService getRenditionService() {
@@ -44,7 +42,7 @@ public class ElasticsearchConfig {
     }
 
     @Bean
-    public IndexService elasticFulltextIndexService() throws IOException {
+    public IndexService elasticFulltextIndexService() {
         return new ElasticsearchIndexServiceImpl(client, this.getRenditionService(), indexManager(), attributeProvider);
     }
 
