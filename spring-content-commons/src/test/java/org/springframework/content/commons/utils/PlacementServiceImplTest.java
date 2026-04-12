@@ -13,18 +13,16 @@ import static org.hamcrest.CoreMatchers.is;
 @RunWith(Ginkgo4jRunner.class)
 public class PlacementServiceImplTest {
 
-	private PlacementServiceImpl placer = null;
+    private PlacementServiceImpl placer = null;
 
-	{
-		Describe("PlacementServiceImpl", () -> {
-			BeforeEach(() -> {
-				placer = new PlacementServiceImpl();
-			});
-			Context("given a placement service", () -> {
-				It("should have removed the FallbackObjectToStringConverter", () -> {
-					assertThat(placer.canConvert(Object.class, String.class), is(false));
-				});
-			});
-		});
-	}
+    {
+        Describe("PlacementServiceImpl", () -> {
+            BeforeEach(() -> placer = new PlacementServiceImpl());
+            Context("given a placement service", () ->
+                    It("should have removed the FallbackObjectToStringConverter", () -> assertThat(
+                            placer.canConvert(Object.class, String.class), is(false)
+                    ))
+            );
+        });
+    }
 }

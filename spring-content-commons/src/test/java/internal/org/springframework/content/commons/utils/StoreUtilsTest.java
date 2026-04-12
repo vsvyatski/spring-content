@@ -40,7 +40,6 @@ public class StoreUtilsTest {
         Describe("#getStoreCandidates", () -> {
 
             BeforeEach(() -> {
-
                 env = mock(Environment.class);
                 loader = new FileSystemResourceLoader();
                 ((FileSystemResourceLoader)loader).setClassLoader(this.getClass().getClassLoader());
@@ -51,30 +50,26 @@ public class StoreUtilsTest {
             Context("when multiple storage beans are found", () -> {
 
                 BeforeEach(() -> {
-
                     def1 = new GenericBeanDefinition();
                     def1.setBeanClassName(StoreBean1.class.getName());
                     def2 = new GenericBeanDefinition();
                     def2.setBeanClassName(StoreBean2.class.getName());
 
-                    Set<BeanDefinition> defs = new HashSet();
-                    defs.add(def1);
-                    defs.add(def2);
+                    Set<BeanDefinition> definitions = new HashSet<>();
+                    definitions.add(def1);
+                    definitions.add(def2);
 
                     scanner = mock(StoreCandidateComponentProvider.class);
-                    when(scanner.findCandidateComponents(org.mockito.ArgumentMatchers.any())).thenReturn(defs);
+                    when(scanner.findCandidateComponents(org.mockito.ArgumentMatchers.any())).thenReturn(definitions);
 
                     identifyingTypes = new Class<?>[] {StoreUtilsTest.StoreType1.class };
                 });
 
                 Context("when multiple storage modules are found on the classpath", () -> {
 
-                    BeforeEach(() -> {
-                        multiStoreMode = true;
-                    });
+                    BeforeEach(() -> multiStoreMode = true);
 
                     It("should return the store matching the identifying type", () -> {
-
                         Set<GenericBeanDefinition> beans = StoreUtils.getStoreCandidates(scanner, env, loader, basePackages, multiStoreMode, identifyingTypes, registrarId);
                         assertThat(beans, hasItem(def1));
                         assertThat(beans, not(hasItem(def2)));
@@ -91,7 +86,6 @@ public class StoreUtilsTest {
                         });
 
                         It("should return all stores", () -> {
-
                             Set<GenericBeanDefinition> beans = StoreUtils.getStoreCandidates(scanner, env, loader, basePackages, multiStoreMode, identifyingTypes, registrarId);
                             assertThat(beans, hasItem(def1));
                             assertThat(beans, hasItem(def2));
@@ -120,10 +114,7 @@ public class StoreUtilsTest {
 
                 Context("when multi-mode is false", () -> {
 
-                    BeforeEach(() -> {
-
-                        multiStoreMode = false;
-                    });
+                    BeforeEach(() -> multiStoreMode = false);
 
                     It("should return all stores", () -> {
 

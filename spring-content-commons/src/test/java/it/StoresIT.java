@@ -8,13 +8,12 @@ import static org.hamcrest.Matchers.isA;
 import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.runner.RunWith;
-import org.springframework.content.commons.repository.Store;
+import org.springframework.content.commons.store.Store;
 import internal.org.springframework.content.commons.store.factory.StoreFactory;
 import org.springframework.content.commons.repository.factory.testsupport.TestContentStore;
 import org.springframework.content.commons.repository.factory.testsupport.TestStoreFactoryBean;
@@ -23,7 +22,6 @@ import org.springframework.content.commons.store.StoreAccessException;
 import org.springframework.content.commons.store.StoreExceptionTranslator;
 import org.springframework.content.commons.storeservice.StoreFilter;
 import org.springframework.content.commons.storeservice.StoreInfo;
-import org.springframework.content.commons.storeservice.StoreResolver;
 import org.springframework.context.support.GenericApplicationContext;
 
 import com.github.paulcwarren.ginkgo4j.Ginkgo4jRunner;
@@ -36,8 +34,7 @@ public class StoresIT {
     private StoresImpl stores;
 
     private GenericApplicationContext context;
-    private List<StoreFactory> factories = new ArrayList<>();
-    private StoreResolver resolver;
+    private final List<StoreFactory> factories = new ArrayList<>();
 
     {
         Describe("#getStore", () -> {
@@ -54,8 +51,8 @@ public class StoresIT {
                     factories.add(factory2);
 
                     context = new GenericApplicationContext();
-                    context.registerBean("factory1", StoreFactory.class, () -> {return factory1;});
-                    context.registerBean("factory2", StoreFactory.class, () -> {return factory2;});
+                    context.registerBean("factory1", StoreFactory.class, () -> factory1);
+                    context.registerBean("factory2", StoreFactory.class, () -> factory2);
                 });
 
                 JustBeforeEach(() -> {
@@ -97,8 +94,8 @@ public class StoresIT {
                     factories.add(factory2);
 
                     context = new GenericApplicationContext();
-                    context.registerBean("factory1", StoreFactory.class, () -> {return factory1;});
-                    context.registerBean("factory2", StoreFactory.class, () -> {return factory2;});
+                    context.registerBean("factory1", StoreFactory.class, () -> factory1);
+                    context.registerBean("factory2", StoreFactory.class, () -> factory2);
                 });
 
                 JustBeforeEach(() -> {
@@ -106,16 +103,13 @@ public class StoresIT {
                     stores = new StoresImpl(context);
                     stores.afterPropertiesSet();
 
-                    stores.addStoreResolver("test", new StoreResolver() {
-                        @Override
-                        public StoreInfo resolve(StoreInfo... stores) {
-                            for (StoreInfo info : stores) {
-                                if (info.getInterface().equals(RightStore.class)) {
-                                    return info;
-                                }
+                    stores.addStoreResolver("test", stores -> {
+                        for (StoreInfo info : stores) {
+                            if (info.getInterface().equals(RightStore.class)) {
+                                return info;
                             }
-                            return null;
                         }
+                        return null;
                     });
                 });
 
@@ -125,6 +119,7 @@ public class StoresIT {
                         public String name() {
                             return "test";
                         }
+
                         @Override
                         public boolean matches(StoreInfo info) {
                             return true;
@@ -136,7 +131,7 @@ public class StoresIT {
             });
         });
 
-        Describe("StoreExceptionTranslatorInterceptor", ( )-> {
+        Describe("StoreExceptionTranslatorInterceptor", () -> {
             BeforeEach(() -> {
                 // All TestContentStore methods throw an UnsupportedOperationException, this test relies on this
                 TestStoreFactoryBean factory = new TestStoreFactoryBean(RuntimeExceptionThrowingStore.class);
@@ -144,44 +139,11 @@ public class StoresIT {
                 factories.add(factory);
 
                 context = new GenericApplicationContext();
-                context.registerBean("factory", StoreFactory.class, () -> {return factory;});
+                context.registerBean("factory", StoreFactory.class, () -> factory);
             });
 
             Context("given there is no store exception translator registered", () -> {
                 JustBeforeEach(() -> {
-                    context.refresh();
-                    stores = new StoresImpl(context);
-                    stores.afterPropertiesSet();
-                });
-                It("should re-throw RuntimeException as StoreAccessException", () -> {
-                    StoreInfo storeInfo = stores.getStore(Store.class, new StoreFilter() {
-                            @Override
-                            public String name() {
-                                return "test";
-                            }
-
-                            @Override
-                            public boolean matches(StoreInfo info) {
-                                return true;
-                            }
-                    });
-                    ContentStore store = storeInfo.getImplementation(ContentStore.class);
-                    try {
-                        store.setContent(new Object(), new ByteArrayInputStream("".getBytes()));
-                    } catch (Exception e) {
-                        assertThat(e, isA(UnsupportedOperationException.class));
-                    }
-                });
-            });
-
-            Context("given there is a store exception translator registered", () -> {
-                JustBeforeEach(() -> {
-                    context.registerBean("translator", StoreExceptionTranslator.class, () -> {return new StoreExceptionTranslator() {
-                        @Override
-                        public StoreAccessException translate(RuntimeException re) {
-                            return new StoreAccessException(re.getMessage(), re);
-                        }
-                    };});
                     context.refresh();
                     stores = new StoresImpl(context);
                     stores.afterPropertiesSet();
@@ -198,7 +160,37 @@ public class StoresIT {
                             return true;
                         }
                     });
-                    ContentStore store = storeInfo.getImplementation(ContentStore.class);
+                    var store = storeInfo.getImplementation(ContentStore.class);
+                    try {
+                        store.setContent(new Object(), new ByteArrayInputStream("".getBytes()));
+                    } catch (Exception e) {
+                        assertThat(e, isA(UnsupportedOperationException.class));
+                    }
+                });
+            });
+
+            Context("given there is a store exception translator registered", () -> {
+                JustBeforeEach(() -> {
+                    context.registerBean("translator", StoreExceptionTranslator.class, () ->
+                            re -> new StoreAccessException(re.getMessage(), re)
+                    );
+                    context.refresh();
+                    stores = new StoresImpl(context);
+                    stores.afterPropertiesSet();
+                });
+                It("should re-throw RuntimeException as StoreAccessException", () -> {
+                    StoreInfo storeInfo = stores.getStore(Store.class, new StoreFilter() {
+                        @Override
+                        public String name() {
+                            return "test";
+                        }
+
+                        @Override
+                        public boolean matches(StoreInfo info) {
+                            return true;
+                        }
+                    });
+                    var store = storeInfo.getImplementation(ContentStore.class);
                     try {
                         store.setContent(new Object(), new ByteArrayInputStream("".getBytes()));
                     } catch (Exception e) {
@@ -209,7 +201,12 @@ public class StoresIT {
         });
     }
 
-    public interface RightStore extends TestContentStore<Object, Serializable>{};
-    public interface WrongStore extends TestContentStore<Object, Serializable>{};
-    public interface RuntimeExceptionThrowingStore extends TestContentStore<Object, Serializable>{};
+    public interface RightStore extends TestContentStore<Object, Serializable> {
+    }
+
+    public interface WrongStore extends TestContentStore<Object, Serializable> {
+    }
+
+    public interface RuntimeExceptionThrowingStore extends TestContentStore<Object, Serializable> {
+    }
 }

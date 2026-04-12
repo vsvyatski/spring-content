@@ -17,19 +17,13 @@ public class FileRemoverTest {
     private FileRemover observer;
 
     {
-        Describe("FileRemover", () -> {
-            Context("when a file input stream observer's closed is called", () -> {
-                BeforeEach(() -> {
-                    file = mock(File.class);
-                    observer = new FileRemover(file);
-                });
-                JustBeforeEach(() -> {
-                    observer.closed();
-                });
-                It("should delete the underlying file", () -> {
-                    verify(file).delete();
-                });
+        Describe("FileRemover", () -> Context("when a file input stream observer's closed is called", () -> {
+            BeforeEach(() -> {
+                file = mock(File.class);
+                observer = new FileRemover(file);
             });
-        });
+            JustBeforeEach(() -> observer.closed());
+            It("should delete the underlying file", () -> verify(file).delete());
+        }));
     }
 }

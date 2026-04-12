@@ -2,7 +2,7 @@ package internal.org.springframework.content.commons.store.factory;
 
 import com.github.paulcwarren.ginkgo4j.Ginkgo4jRunner;
 import org.junit.runner.RunWith;
-import org.springframework.content.commons.repository.ContentStore;
+import org.springframework.content.commons.store.ContentStore;
 import org.springframework.context.ApplicationEventPublisher;
 
 import java.io.ByteArrayInputStream;

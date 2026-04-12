@@ -2,7 +2,6 @@ package org.springframework.content.commons.io;
 
 import com.github.paulcwarren.ginkgo4j.Ginkgo4jRunner;
 import org.junit.runner.RunWith;
-import org.mockito.InOrder;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -26,7 +25,6 @@ public class ObservableOutputStreamTest {
 
     private Exception exception;
 
-
     {
         Describe("ObservableOutputStream", () -> {
             BeforeEach(() -> {
@@ -39,34 +37,22 @@ public class ObservableOutputStreamTest {
                 observable.addObservers(observer1);
                 observable.addObservers(observer2);
             });
-            Context("when the output stream has listeners", () -> {
-                It("should return them", () -> {
-                    assertThat(observable.getObservers(), hasItem(observer1));
-                });
-            });
+            Context("when the output stream has listeners", () -> It("should return them",
+                    () -> assertThat(observable.getObservers(), hasItem(observer1))));
             Context("when the output stream is written to", () -> {
-                JustBeforeEach(() -> {
-                    observable.write(32);
-                });
-                It("should delegate to the underlying input stream", () -> {
-                    verify(os).write(32);
-                });
+                JustBeforeEach(() -> observable.write(32));
+                It("should delegate to the underlying input stream", () -> verify(os).write(32));
             });
             Context("when the output stream is closed", () -> {
-                JustBeforeEach(() -> {
-                    observable.close();
-                });
+                JustBeforeEach(() -> observable.close());
                 It("should call listeners on closed event handler (in order)", () -> {
-                    InOrder inOrder = inOrder(observer1, observer2);
                     verify(observer1).closed();
                     verify(observer2).closed();
                     verifyNoMoreInteractions(observer1, observer2);
                 });
             });
             Context("when the output stream is closed and throws an exception", () -> {
-                BeforeEach(() -> {
-                    doThrow(new IOException("badness")).when(os).close();
-                });
+                BeforeEach(() -> doThrow(new IOException("badness")).when(os).close());
                 JustBeforeEach(() -> {
                     try {
                         observable.close();

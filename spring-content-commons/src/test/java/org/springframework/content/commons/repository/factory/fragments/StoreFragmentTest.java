@@ -10,7 +10,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.content.commons.repository.ContentStore;
+import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.commons.repository.factory.testsupport.EnableTestStores;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -30,60 +30,56 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @ContextConfiguration(classes = StoreFragmentTest.StoreTestConfiguration.class)
 public class StoreFragmentTest {
 
-	@Autowired
-	private ApplicationContext context;
+    @Autowired
+    private ApplicationContext context;
 
-	{
-		Describe("given a store definition", () -> {
+    {
+        Describe("given a store definition", () -> Context("given the application context", () ->
+                It("should support the extension", () -> {
 
-			Context("given the application context", () -> {
+                    assertThat(context.getBean(TestContentStore.class), is(not(nullValue())));
+                    assertThat(context.getBean(CustomizationImpl.class).getBean(), is("Spring Content"));
+                    assertThat(context.getBean(CustomizationImpl.class).getDomainClass(), is(Object.class));
+                    assertThat(context.getBean(CustomizationImpl.class).getIdClass(), is(Serializable.class));
+                    assertThat(context.getBean(TestContentStore.class).greet("World"), is("Hello Spring Content World"));
+                })
+        ));
+    }
 
-				It("should support the extension", () -> {
+    @Configuration
+    @EnableTestStores
+    public static class StoreTestConfiguration {
 
-					assertThat(context.getBean(TestContentStore.class), is(not(nullValue())));
-					assertThat(context.getBean(CustomizationImpl.class).getBean(), is("Spring Content"));
-					assertThat(context.getBean(CustomizationImpl.class).getDomainClass(), is(Object.class));
-					assertThat(context.getBean(CustomizationImpl.class).getIdClass(), is(Serializable.class));
-					assertThat(context.getBean(TestContentStore.class).greet("World"), is("Hello Spring Content World"));
-				});
-			});
-		});
-	}
+        @Bean
+        public String bean() {
+            return "Spring Content";
+        }
+    }
 
-	@Configuration
-	@EnableTestStores
-	public static class StoreTestConfiguration {
+    public interface TestContentStore extends ContentStore<Object, Serializable>, Customization {
+    }
 
-		@Bean
-		public String bean() {
-			return "Spring Content";
-		}
-	}
+    public interface Customization {
+        String greet(String name);
+    }
 
-	public interface TestContentStore extends ContentStore<Object, Serializable>, Customization {
-	}
+    @Getter
+    @Setter
+    public static class CustomizationImpl implements Customization {
 
-	public interface Customization {
-		String greet(String name);
-	}
+        @Autowired
+        private String bean;
 
-	@Getter
-	@Setter
-	public static class CustomizationImpl implements Customization {
+        private Class<?> domainClass;
+        private Class<?> idClass;
 
-		@Autowired
-		private String bean;
+        @Override
+        public String greet(String name) {
+            return "Hello " + bean + " " + name;
+        }
+    }
 
-		private Class<?> domainClass;
-		private Class<?> idClass;
-
-		@Override
-		public String greet(String name) {
-			return "Hello " + bean + " " + name;
-		}
-	}
-
-	@Test
-	public void noop() {
-	}
+    @Test
+    public void noop() {
+    }
 }

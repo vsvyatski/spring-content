@@ -9,16 +9,15 @@ import lombok.Getter;
 import lombok.Setter;
 import org.aopalliance.intercept.MethodInvocation;
 import org.apache.commons.io.IOUtils;
+import org.jspecify.annotations.NonNull;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.springframework.content.commons.annotations.MimeType;
-import org.springframework.content.commons.repository.AfterStoreEvent;
-import org.springframework.content.commons.repository.ContentStore;
-import org.springframework.content.commons.repository.StoreEvent;
-import org.springframework.content.commons.repository.events.*;
+import org.springframework.content.commons.store.ContentStore;
+import org.springframework.content.commons.store.events.*;
 import org.springframework.content.commons.store.AssociativeStore;
 import org.springframework.content.commons.store.Store;
 import org.springframework.context.ApplicationEventPublisher;
@@ -163,7 +162,7 @@ public class StoreMethodInterceptorTest {
 
                     inOrder.verify(store).setContent(any(), setContentArgCaptor.capture());
                     try (InputStream setContentInputStream = setContentArgCaptor.getValue()) {
-                        assertThat(IOUtils.toString(setContentInputStream), is("test"));
+                        assertThat(IOUtils.toString(setContentInputStream, Charset.defaultCharset()), is("test"));
                     }
 
                     inOrder.verify(publisher, times(1)).publishEvent(afterArgCaptor.capture());
@@ -316,7 +315,7 @@ public class StoreMethodInterceptorTest {
 
                     inOrder.verify(store).setContent(any(), setContentArgCaptor.capture());
                     try (InputStream setContentInputStream = setContentArgCaptor.getValue().getInputStream()) {
-                        assertThat(IOUtils.toString(setContentInputStream), is("test"));
+                        assertThat(IOUtils.toString(setContentInputStream, Charset.defaultCharset()), is("test"));
                     }
 
                     inOrder.verify(publisher, times(1)).publishEvent(afterArgCaptor.capture());
@@ -524,8 +523,11 @@ public class StoreMethodInterceptorTest {
         }
 
         @Override
-        public Object proceed() {
-            return ReflectionUtils.invokeMethod(getMethod(), getThis(), getArguments());
+        public @NonNull Object proceed() {
+            Object result = ReflectionUtils.invokeMethod(getMethod(), getThis(), getArguments());
+            if (result == null)
+                throw new IllegalStateException("Null is not expected.");
+            return result;
         }
     }
 
