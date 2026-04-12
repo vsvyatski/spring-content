@@ -15,11 +15,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.data.jpa.autoconfigure.DataJpaRepositoriesAutoConfiguration;
 import org.springframework.boot.data.rest.autoconfigure.DataRestAutoConfiguration;
-import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
 import org.springframework.boot.hibernate.autoconfigure.HibernateJpaAutoConfiguration;
+import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
 import org.springframework.boot.web.context.servlet.AnnotationConfigServletWebApplicationContext;
 import org.springframework.content.commons.annotations.ContentId;
-import org.springframework.content.commons.repository.ContentStore;
+import org.springframework.content.commons.store.ContentStore;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -39,19 +39,17 @@ public class ContentRestAutoConfigurationTest {
 
 	{
 		Describe("ContentRestAutoConfiguration", () -> {
-			Context("given a default configuration", () -> {
-				It("should load the context", () -> {
-					AnnotationConfigServletWebApplicationContext context = new AnnotationConfigServletWebApplicationContext();
-					context.setServletContext(new MockServletContext());
-					context.register(TestConfig.class, HypermediaConfig.class);
-					context.refresh();
+			Context("given a default configuration", () -> It("should load the context", () -> {
+                AnnotationConfigServletWebApplicationContext context = new AnnotationConfigServletWebApplicationContext();
+                context.setServletContext(new MockServletContext());
+                context.register(TestConfig.class, HypermediaConfig.class);
+                context.refresh();
 
-					assertThat(context.getBean("contentHandlerMapping"), is(not(nullValue())));
-					assertThat(context.getBean("contentLinksProcessor"), is(not(nullValue())));
+                assertThat(context.getBean("contentHandlerMapping"), is(not(nullValue())));
+                assertThat(context.getBean("contentLinksProcessor"), is(not(nullValue())));
 
-					context.close();
-				});
-			});
+                context.close();
+            }));
 
 			Context("given an environment specifying rest properties", () -> {
 				BeforeEach(() -> {
@@ -103,7 +101,7 @@ public class ContentRestAutoConfigurationTest {
 
 	@Ignore("This is not a test")
 	@Document
-	public class TestEntity {
+	public static class TestEntity {
 		@Id
 		private String id;
 		@ContentId

@@ -19,9 +19,6 @@ import org.springframework.content.solr.DeprecatedSolrIndexerStoreEventHandler;
 import org.springframework.content.solr.SolrIndexerStoreEventHandler;
 import org.springframework.content.solr.SolrProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.core.convert.ConversionService;
 
 import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.*;
 
@@ -32,17 +29,15 @@ public class SolrAutoConfigurationTest {
     private ApplicationContextRunner contextRunner;
 
     {
-        Describe("solr", () -> {
-            Context("given an application context with a SolrClient bean and SolrAutoConfiguration", () -> {
-                BeforeEach(() -> contextRunner = new ApplicationContextRunner()
-                        .withConfiguration(AutoConfigurations.of(SolrAutoConfiguration.class)));
-                It("should include the autoconfigured annotated event handler bean", () ->
-                        contextRunner.withUserConfiguration(TestConfig.class)
-                                .run((context) ->
-                                        Assertions.assertThat(context).getBean("solrFulltextEventListener")
-                                                .isNotNull()));
-            });
-        });
+        Describe("solr", () ->
+                Context("given an application context with a SolrClient bean and SolrAutoConfiguration", () -> {
+                    BeforeEach(() -> contextRunner = new ApplicationContextRunner()
+                            .withConfiguration(AutoConfigurations.of(SolrAutoConfiguration.class)));
+                    It("should include the autoconfigured annotated event handler bean", () ->
+                            contextRunner.withUserConfiguration(TestConfig.class).run((context) ->
+                                    Assertions.assertThat(context).getBean("solrFulltextEventListener")
+                                            .isNotNull()));
+                }));
     }
 
     @Test

@@ -27,46 +27,37 @@ import static org.mockito.Mockito.mock;
 @Ginkgo4jConfiguration(threads = 1)
 public class ContentS3AutoConfigurationTest {
 
-	private static final S3Client client;
+    private static final S3Client client;
 
-	static {
-		client = mock(S3Client.class);
-	}
+    static {
+        client = mock(S3Client.class);
+    }
 
-	private ApplicationContextRunner contextRunner;
+    private ApplicationContextRunner contextRunner;
 
-	{
-		Describe("S3ContentAutoConfiguration", () -> {
-			BeforeEach(() -> {
-				contextRunner = new ApplicationContextRunner()
-						.withConfiguration(AutoConfigurations.of(S3ContentAutoConfiguration.class));
-			});
-			Context("given a configuration with beans", () -> {
-				It("should load the context", () -> {
-					contextRunner.withUserConfiguration(TestConfig.class).run((context) -> {
-						Assertions.assertThat(context).hasSingleBean(TestEntityContentRepository.class);
-						Assertions.assertThat(context).hasSingleBean(S3Client.class);
-					});
-				});
-			});
+    {
+        Describe("S3ContentAutoConfiguration", () -> {
+            BeforeEach(() -> contextRunner = new ApplicationContextRunner()
+                    .withConfiguration(AutoConfigurations.of(S3ContentAutoConfiguration.class)));
+            Context("given a configuration with beans", () ->
+                    It("should load the context", () -> contextRunner.withUserConfiguration(TestConfig.class)
+                            .run((context) -> {
+                                Assertions.assertThat(context).hasSingleBean(TestEntityContentRepository.class);
+                                Assertions.assertThat(context).hasSingleBean(S3Client.class);
+                            })));
 
-			Context("given a configuration without any beans", () -> {
-				It("should load the context", () -> {
-					contextRunner.withUserConfiguration(TestConfigWithoutBeans.class).run((context) -> {
-						Assertions.assertThat(context).hasSingleBean(TestEntityContentRepository.class);
-						Assertions.assertThat(context).hasSingleBean(S3Client.class);
-					});
-				});
-			});
+            Context("given a configuration without any beans", () ->
+                    It("should load the context", () -> contextRunner.withUserConfiguration(TestConfigWithoutBeans.class).run((context) -> {
+                        Assertions.assertThat(context).hasSingleBean(TestEntityContentRepository.class);
+                        Assertions.assertThat(context).hasSingleBean(S3Client.class);
+                    })));
 
-			Context("given a configuration with an explicit @EnableS3Stores annotation", () -> {
-				It("should load the context", () -> {
-					contextRunner.withUserConfiguration(TestConfigWithExplicitEnableS3Stores.class).run((context) -> {
-						Assertions.assertThat(context).hasSingleBean(TestEntityContentRepository.class);
-						Assertions.assertThat(context).hasSingleBean(S3Client.class);
-					});
-				});
-			});
+            Context("given a configuration with an explicit @EnableS3Stores annotation", () ->
+                    It("should load the context", () ->
+                            contextRunner.withUserConfiguration(TestConfigWithExplicitEnableS3Stores.class).run((context) -> {
+                                Assertions.assertThat(context).hasSingleBean(TestEntityContentRepository.class);
+                                Assertions.assertThat(context).hasSingleBean(S3Client.class);
+                            })));
 
             Context("given an environment specifying s3 properties", () -> {
                 BeforeEach(() -> {
@@ -81,47 +72,46 @@ public class ContentS3AutoConfigurationTest {
                     System.clearProperty("spring.content.s3.secretKey");
                     System.clearProperty("spring.content.s3.pathStyleAccess");
                 });
-                It("should have a filesystem properties bean with the correct root set", () -> {
-					contextRunner.withUserConfiguration(TestConfigWithProperties.class).run((context) -> {
-						Assertions.assertThat(context).hasSingleBean(S3Client.class);
-					});
-				});
+                It("should have a filesystem properties bean with the correct root set", () ->
+                        contextRunner.withUserConfiguration(TestConfigWithProperties.class).run((context) ->
+                                Assertions.assertThat(context).hasSingleBean(S3Client.class)
+                        ));
             });
-		});
-	}
+        });
+    }
 
-	@Ignore("This is not a test")
-	@SpringBootApplication(exclude={FileSystemContentAutoConfiguration.class, MongoContentAutoConfiguration.class, SolrAutoConfiguration.class, SolrExtensionAutoConfiguration.class})
-	public static class TestConfig {
+    @Ignore("This is not a test")
+    @SpringBootApplication(exclude = {FileSystemContentAutoConfiguration.class, MongoContentAutoConfiguration.class, SolrAutoConfiguration.class, SolrExtensionAutoConfiguration.class})
+    public static class TestConfig {
 
-		@Bean
-		public S3Client s3Client() {
-			return client;
-		}
-	}
+        @Bean
+        public S3Client s3Client() {
+            return client;
+        }
+    }
 
-	@Ignore("This is not a test")
-	@SpringBootApplication
-	public static class TestConfigWithoutBeans {
-		// will be supplied by autoconfiguration
-	}
+    @Ignore("This is not a test")
+    @SpringBootApplication
+    public static class TestConfigWithoutBeans {
+        // will be supplied by autoconfiguration
+    }
 
-	@Ignore("This is not a test")
-	@SpringBootApplication
-	@EnableS3Stores
-	public static class TestConfigWithExplicitEnableS3Stores {
-		// will be supplied by autoconfiguration
-	}
+    @Ignore("This is not a test")
+    @SpringBootApplication
+    @EnableS3Stores
+    public static class TestConfigWithExplicitEnableS3Stores {
+        // will be supplied by autoconfiguration
+    }
 
-	@Ignore("This is not a test")
-	@SpringBootApplication
+    @Ignore("This is not a test")
+    @SpringBootApplication
     public static class TestConfigWithProperties {
         // will be supplied by autoconfiguration
     }
 
-	public interface TestEntityRepository extends JpaRepository<TestEntity, Long> {
-	}
+    public interface TestEntityRepository extends JpaRepository<TestEntity, Long> {
+    }
 
-	public interface TestEntityContentRepository extends S3ContentStore<TestEntity, String> {
-	}
+    public interface TestEntityContentRepository extends S3ContentStore<TestEntity, String> {
+    }
 }

@@ -12,7 +12,7 @@ import org.junit.runner.RunWith;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.content.commons.repository.ContentStore;
+import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.fs.io.FileSystemResourceLoader;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.support.TestEntity;

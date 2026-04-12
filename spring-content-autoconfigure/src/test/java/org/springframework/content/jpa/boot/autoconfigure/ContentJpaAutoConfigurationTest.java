@@ -13,8 +13,6 @@ import org.assertj.core.api.Assertions;
 import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.content.jpa.config.EnableJpaStores;
@@ -39,117 +37,111 @@ import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.*;
 import static org.mockito.Mockito.mock;
 
 @RunWith(Ginkgo4jRunner.class)
-@Ginkgo4jConfiguration(threads=1)
+@Ginkgo4jConfiguration(threads = 1)
 public class ContentJpaAutoConfigurationTest {
 
-	// mocks
-	private static ContentJpaDatabaseInitializer initializer;
+    // mocks
+    private static ContentJpaDatabaseInitializer initializer;
 
-	private ApplicationContextRunner contextRunner;
+    private ApplicationContextRunner contextRunner;
 
-	{
-		initializer = mock(ContentJpaDatabaseInitializer.class);
+    {
+        initializer = mock(ContentJpaDatabaseInitializer.class);
 
-		Describe("ContentJpaAutoConfiguration", () -> {
-			BeforeEach(() -> {
-				contextRunner = new ApplicationContextRunner()
-						.withConfiguration(AutoConfigurations.of(JpaContentAutoConfiguration.class));
-			});
-			It("should have a content repository", () -> {
-				contextRunner.withUserConfiguration(TestConfig.class).run((context) -> {
-					Assertions.assertThat(context).hasSingleBean(TestEntityContentRepository.class);
-					Assertions.assertThat(context).hasSingleBean(ContentJpaDatabaseInitializer.class);
-					Assertions.assertThat(context).hasBean("copyBufferSize");
-				});
-			});
-			Context("when a custom bean configuration is used", () -> {
-				It("should use the supplied custom bean", () -> {
-					contextRunner.withUserConfiguration(CustomBeanConfig.class).run((context) -> {
-						Assertions.assertThat(context).getBean(ContentJpaDatabaseInitializer.class).isEqualTo(initializer);
-						Assertions.assertThat(context).getBean("copyBufferSize").isEqualTo(16192);
-					});
-				});
-			});
-			Context("when an explicit @EnableFileSystemStores is used", () -> {
-				It("should load the context", () -> {
-					contextRunner.withUserConfiguration(ConfigWithExplicitEnableJpaStores.class).run((context) -> {
-						Assertions.assertThat(context).hasSingleBean(TestEntityContentRepository.class);
-						Assertions.assertThat(context).hasSingleBean(ContentJpaProperties.class);
-						Assertions.assertThat(context).hasSingleBean(ContentJpaDatabaseInitializer.class);
-						Assertions.assertThat(context).hasBean("copyBufferSize");
-					});
-				});
-			});
-		});
-	}
+        Describe("ContentJpaAutoConfiguration", () -> {
+            BeforeEach(() -> contextRunner = new ApplicationContextRunner()
+                    .withConfiguration(AutoConfigurations.of(JpaContentAutoConfiguration.class)));
+            It("should have a content repository", () -> contextRunner.withUserConfiguration(TestConfig.class)
+                    .run((context) -> {
+                        Assertions.assertThat(context).hasSingleBean(TestEntityContentRepository.class);
+                        Assertions.assertThat(context).hasSingleBean(ContentJpaDatabaseInitializer.class);
+                        Assertions.assertThat(context).hasBean("copyBufferSize");
+                    }));
+            Context("when a custom bean configuration is used", () ->
+                    It("should use the supplied custom bean", () -> contextRunner.withUserConfiguration(CustomBeanConfig.class).run((context) -> {
+                        Assertions.assertThat(context).getBean(ContentJpaDatabaseInitializer.class).isEqualTo(initializer);
+                        Assertions.assertThat(context).getBean("copyBufferSize").isEqualTo(16192);
+                    })));
+            Context("when an explicit @EnableFileSystemStores is used", () ->
+                    It("should load the context", () -> contextRunner.withUserConfiguration(ConfigWithExplicitEnableJpaStores.class).run((context) -> {
+                        Assertions.assertThat(context).hasSingleBean(TestEntityContentRepository.class);
+                        Assertions.assertThat(context).hasSingleBean(ContentJpaProperties.class);
+                        Assertions.assertThat(context).hasSingleBean(ContentJpaDatabaseInitializer.class);
+                        Assertions.assertThat(context).hasBean("copyBufferSize");
+                    })));
+        });
+    }
 
-	@Ignore("This is not a test")
-	@Configuration
-	public static class JpaTestConfig {
-		@Bean
-		public DataSource dataSource() {
-			EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
-			return builder.setType(EmbeddedDatabaseType.HSQL).build();
-		}
+    @Ignore("This is not a test")
+    @Configuration
+    public static class JpaTestConfig {
+        @Bean
+        public DataSource dataSource() {
+            EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
+            return builder.setType(EmbeddedDatabaseType.HSQL).build();
+        }
 
-		@Bean
-		public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-			HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-			vendorAdapter.setDatabase(Database.HSQL);
-			vendorAdapter.setGenerateDdl(true);
+        @Bean
+        public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+            HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+            vendorAdapter.setDatabase(Database.HSQL);
+            vendorAdapter.setGenerateDdl(true);
 
-			LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
-			factory.setJpaVendorAdapter(vendorAdapter);
-			factory.setPackagesToScan(getClass().getPackage().getName());
-			factory.setDataSource(dataSource());
+            LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
+            factory.setJpaVendorAdapter(vendorAdapter);
+            factory.setPackagesToScan(getClass().getPackage().getName());
+            factory.setDataSource(dataSource());
 
-			return factory;
-		}
+            return factory;
+        }
 
-		@Bean
-		public PlatformTransactionManager transactionManager() {
-			JpaTransactionManager txManager = new JpaTransactionManager();
-			txManager.setEntityManagerFactory(entityManagerFactory().getObject());
-			return txManager;
-		}
-	}
+        @Bean
+        public PlatformTransactionManager transactionManager() {
+            JpaTransactionManager txManager = new JpaTransactionManager();
+            txManager.setEntityManagerFactory(entityManagerFactory().getObject());
+            return txManager;
+        }
+    }
 
-	@Ignore("This is not a test")
-	@SpringBootApplication(exclude={JpaVersionsAutoConfiguration.class,SolrAutoConfiguration.class, SolrExtensionAutoConfiguration.class, S3ContentAutoConfiguration.class})
-	@Import(JpaTestConfig.class)
-	@PropertySource("classpath:/default.properties")
-	public static class TestConfig {
-	}
+    @Ignore("This is not a test")
+    @SpringBootApplication(exclude = {JpaVersionsAutoConfiguration.class, SolrAutoConfiguration.class, SolrExtensionAutoConfiguration.class, S3ContentAutoConfiguration.class})
+    @Import(JpaTestConfig.class)
+    @PropertySource("classpath:/default.properties")
+    public static class TestConfig {
+    }
 
-	@Ignore("This is not a test")
-	@SpringBootApplication(exclude={JpaVersionsAutoConfiguration.class,SolrAutoConfiguration.class, SolrExtensionAutoConfiguration.class, S3ContentAutoConfiguration.class})
-	@Import(JpaTestConfig.class)
-	public static class CustomBeanConfig extends TestConfig {
-		@Bean
-		public ContentJpaDatabaseInitializer initializer() {
-			return initializer;
-		}
+    @Ignore("This is not a test")
+    @SpringBootApplication(exclude = {JpaVersionsAutoConfiguration.class, SolrAutoConfiguration.class, SolrExtensionAutoConfiguration.class, S3ContentAutoConfiguration.class})
+    @Import(JpaTestConfig.class)
+    public static class CustomBeanConfig extends TestConfig {
+        @Bean
+        public ContentJpaDatabaseInitializer initializer() {
+            return initializer;
+        }
 
-		@Bean
-		public Integer copyBufferSize() {
-			return 16192;
-		}
-	}
+        @Bean
+        public Integer copyBufferSize() {
+            return 16192;
+        }
+    }
 
-	@Ignore("This is not a test")
-	@SpringBootApplication(exclude={JpaVersionsAutoConfiguration.class,SolrAutoConfiguration.class, SolrExtensionAutoConfiguration.class, S3ContentAutoConfiguration.class})
-	@Import(JpaTestConfig.class)
-	@EnableJpaStores
-	public static class ConfigWithExplicitEnableJpaStores {}
+    @Ignore("This is not a test")
+    @SpringBootApplication(exclude = {JpaVersionsAutoConfiguration.class, SolrAutoConfiguration.class, SolrExtensionAutoConfiguration.class, S3ContentAutoConfiguration.class})
+    @Import(JpaTestConfig.class)
+    @EnableJpaStores
+    public static class ConfigWithExplicitEnableJpaStores {
+    }
 
-	@Ignore("This is not a test")
-	@SpringBootApplication(exclude={JpaVersionsAutoConfiguration.class,SolrAutoConfiguration.class, SolrExtensionAutoConfiguration.class, S3ContentAutoConfiguration.class})
-	@Import(JpaTestConfig.class)
-	@PropertySource("classpath:/custom-jpa.properties")
-	public static class CustomPropertiesConfig {
-	}
+    @Ignore("This is not a test")
+    @SpringBootApplication(exclude = {JpaVersionsAutoConfiguration.class, SolrAutoConfiguration.class, SolrExtensionAutoConfiguration.class, S3ContentAutoConfiguration.class})
+    @Import(JpaTestConfig.class)
+    @PropertySource("classpath:/custom-jpa.properties")
+    public static class CustomPropertiesConfig {
+    }
 
-	public interface TestEntityRepository extends JpaRepository<TestEntity, Long> {}
+    public interface TestEntityRepository extends JpaRepository<TestEntity, Long> {
+    }
 
-	public interface TestEntityContentRepository extends JpaContentStore<TestEntity, String> {}
+    public interface TestEntityContentRepository extends JpaContentStore<TestEntity, String> {
+    }
 }
