@@ -9,6 +9,7 @@ import org.springframework.content.commons.store.*;
 import org.springframework.content.commons.store.events.*;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.io.Resource;
+import org.springframework.util.function.ThrowingSupplier;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -288,7 +289,7 @@ public class StoreImpl implements org.springframework.content.commons.repository
     }
 
     @Override
-    public InputStream getContent(Object entity) {
+    public InputStream getContent(Object entity) throws IOException {
         return this.internalGetContent(entity, null, () -> {
             if (delegate instanceof ContentStore) {
                 return ((ContentStore) delegate).getContent(entity);
@@ -299,7 +300,7 @@ public class StoreImpl implements org.springframework.content.commons.repository
     }
 
     @Override
-    public InputStream getContent(Object entity, PropertyPath propertyPath) {
+    public InputStream getContent(Object entity, PropertyPath propertyPath) throws IOException {
         return this.internalGetContent(entity, propertyPath, () -> {
             if (delegate instanceof ContentStore) {
                 return ((ContentStore) delegate).getContent(entity, propertyPath);
@@ -310,7 +311,13 @@ public class StoreImpl implements org.springframework.content.commons.repository
         });
     }
 
-    public InputStream internalGetContent(Object entity, PropertyPath propertyPath, Supplier<InputStream> invocation) {
+//    @FunctionalInterface
+//    private interface StreamInvocation {
+//        InputStream get() throws IOException;
+//    }
+
+    public InputStream internalGetContent(Object entity, PropertyPath propertyPath, ThrowingSupplier<InputStream> invocation)
+            throws IOException {
 
         if (org.springframework.content.commons.repository.ContentStore.class.isAssignableFrom(storeInterface)) {
             org.springframework.content.commons.repository.events.BeforeGetContentEvent oldBefore = new org.springframework.content.commons.repository.events.BeforeGetContentEvent(entity, propertyPath, delegate);
@@ -322,7 +329,14 @@ public class StoreImpl implements org.springframework.content.commons.repository
             publisher.publishEvent(before);
         }
 
-        InputStream result = invocation.get();
+        InputStream result;
+        try {
+            result = invocation.getWithException();
+        } catch (IOException ioException) {
+            throw ioException;
+        } catch (Exception anyOther) {
+            throw new IOException("Error reading content.", anyOther);
+        }
 
         if (org.springframework.content.commons.repository.ContentStore.class.isAssignableFrom(storeInterface)) {
             org.springframework.content.commons.repository.events.AfterGetContentEvent oldAfter = new org.springframework.content.commons.repository.events.AfterGetContentEvent(entity, propertyPath, delegate);

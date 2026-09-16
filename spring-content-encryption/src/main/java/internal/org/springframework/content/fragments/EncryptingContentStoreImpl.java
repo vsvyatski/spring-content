@@ -8,7 +8,7 @@ import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import lombok.SneakyThrows;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.content.commons.fragments.ContentStoreAware;
 import org.springframework.content.commons.mappingcontext.ContentProperty;
@@ -140,9 +140,8 @@ public class EncryptingContentStoreImpl<S, SID extends Serializable> implements
         throw new UnsupportedOperationException();
     }
 
-    @SneakyThrows(IOException.class)
     @Override
-    public InputStream getContent(S entity, PropertyPath propertyPath) {
+    public InputStream getContent(S entity, PropertyPath propertyPath) throws IOException {
         Assert.notNull(entity, "entity not set");
         Assert.notNull(propertyPath, "propertyPath not set");
         Assert.notNull(storeDelegate, "store not set");
@@ -169,7 +168,7 @@ public class EncryptingContentStoreImpl<S, SID extends Serializable> implements
 
     @Override
     public Resource getResource(S entity, PropertyPath propertyPath,
-            org.springframework.content.commons.repository.GetResourceParams params) {
+                                org.springframework.content.commons.repository.GetResourceParams params) {
         return getResource(entity, propertyPath, convertParams(params));
     }
 
@@ -240,7 +239,7 @@ public class EncryptingContentStoreImpl<S, SID extends Serializable> implements
             if (interfaces.isEmpty())
                 continue;
 
-            Type[] genericArguments = ((ParameterizedType)interfaces.get()).getActualTypeArguments();
+            Type[] genericArguments = ((ParameterizedType) interfaces.get()).getActualTypeArguments();
             if (genericArguments.length < 1)
                 continue;
 

@@ -26,18 +26,18 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
+import org.springframework.util.function.ThrowingSupplier;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.function.Supplier;
 
 import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.*;
 import static internal.org.springframework.content.jpa.StoreIT.getContextName;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.Mockito.mock;
 
 @RunWith(Ginkgo4jRunner.class)
@@ -309,11 +309,11 @@ public class ContentStoreIT {
         });
     }
 
-    public static <T> T doInTransaction(PlatformTransactionManager ptm, Supplier<T> block) {
+    public static <T> T doInTransaction(PlatformTransactionManager ptm, ThrowingSupplier<T> block) {
         TransactionStatus status = ptm.getTransaction(new DefaultTransactionDefinition());
 
         try {
-            T result = block.get();
+            T result = block.getWithException();
             ptm.commit(status);
             return result;
         } catch (Exception e) {

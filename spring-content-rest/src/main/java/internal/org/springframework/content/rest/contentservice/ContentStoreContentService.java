@@ -72,7 +72,7 @@ public class ContentStoreContentService implements ContentService {
     public void getContent(HttpServletRequest request, HttpServletResponse response, HttpHeaders headers, Resource resource, MediaType resourceType)
             throws ResponseStatusException, MethodNotAllowedException {
 
-        AssociatedStoreResource storeResource = (AssociatedStoreResource)resource;
+        AssociatedStoreResource storeResource = (AssociatedStoreResource) resource;
         ContentProperty property = storeResource.getContentProperty();
 
         Method[] methodsToUse = getExportedMethodsFor(storeResource.getStoreInfo().getInterface(), storeResource.getPropertyPath(), exportContext).getContentMethods();
@@ -100,9 +100,9 @@ public class ContentStoreContentService implements ContentService {
                         break;
                     } else if ((storedRenditionResource = findStoredRendition(storeResource, acceptedMimeType)) != null) {
 
-                         resource = storedRenditionResource;
-                         producedResourceType = acceptedMimeType;
-                         break;
+                        resource = storedRenditionResource;
+                        producedResourceType = acceptedMimeType;
+                        break;
                     } else if (((StoreResource) resource).isRenderableAs(acceptedMimeType)) {
 
                         resource = new RenderedResource(((StoreResource) resource).renderAs(acceptedMimeType), resource);
@@ -118,7 +118,7 @@ public class ContentStoreContentService implements ContentService {
             }
 
             if (resource instanceof RangeableResource) {
-                this.configureResourceForByteRangeRequest((RangeableResource)resource, headers);
+                this.configureResourceForByteRangeRequest((RangeableResource) resource, headers);
             }
 
             request.setAttribute("SPRING_CONTENT_RESOURCE", resource);
@@ -132,8 +132,7 @@ public class ContentStoreContentService implements ContentService {
 
         try {
             byteRangeRestRequestHandler.handleRequest(request, response);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             if (isClientAbortException(e)) {
                 // suppress
             } else {
@@ -151,7 +150,7 @@ public class ContentStoreContentService implements ContentService {
             throw new BadRequestException("Missing Content-Type header");
         }
 
-        AssociatedStoreResource storeResource = (AssociatedStoreResource)target;
+        AssociatedStoreResource storeResource = (AssociatedStoreResource) target;
         ContentProperty property = storeResource.getContentProperty();
 
         // Update mimeType and originalFilename before setContent-method invocation,
@@ -232,7 +231,7 @@ public class ContentStoreContentService implements ContentService {
     @Override
     public void unsetContent(Resource resource) throws MethodNotAllowedException {
 
-        AssociatedStoreResource storeResource = (AssociatedStoreResource)resource;
+        AssociatedStoreResource storeResource = (AssociatedStoreResource) resource;
         ContentProperty property = storeResource.getContentProperty();
 
         Method[] methodsToUse = getExportedMethodsFor(storeResource.getStoreInfo().getInterface(), storeResource.getPropertyPath(), exportContext).unsetContentMethods();
@@ -284,7 +283,7 @@ public class ContentStoreContentService implements ContentService {
         }
 
         if (FileSystemResource.class.isAssignableFrom(contentArg.getClass())) {
-            ((FileSystemResource)contentArg).getFile().delete();
+            ((FileSystemResource) contentArg).getFile().delete();
         }
     }
 
@@ -339,7 +338,7 @@ public class ContentStoreContentService implements ContentService {
     }
 
     private int indexOfContentArg(Class<?>[] paramTypes) {
-        for (int i=0; i < paramTypes.length; i++) {
+        for (int i = 0; i < paramTypes.length; i++) {
             if (InputStream.class.equals(paramTypes[i]) || Resource.class.equals(paramTypes[i])) {
                 return i;
             }
@@ -348,7 +347,8 @@ public class ContentStoreContentService implements ContentService {
         return 0;
     }
 
-    private Resource findStoredRendition(AssociatedStoreResource storeResource, MediaType acceptedMimeType) {
+    private Resource findStoredRendition(AssociatedStoreResource storeResource, MediaType acceptedMimeType)
+            throws IOException {
 
         Resource storedRenditionResource = null;
 
@@ -365,7 +365,8 @@ public class ContentStoreContentService implements ContentService {
                         storedRenditionResource = new RenderedResource(store.getContent(entity, PropertyPath.from(contentProperty.getContentPropertyPath())), storeResource);
                         break;
                     }
-                } catch (InvalidMediaTypeException imte) {}
+                } catch (InvalidMediaTypeException imte) {
+                }
             }
         }
 
@@ -374,10 +375,10 @@ public class ContentStoreContentService implements ContentService {
 
     public static StoreExportedMethodsMap getExportedMethodsFor(Class<? extends Store> storeInterfaceClass, PropertyPath path, ContentPropertyToExportedContext exportContext) {
 
-        StoreExportedMethodsMap exportMap = storeExportedMethods.get(storeInterfaceClass.getCanonicalName()+"#"+path.toString());
+        StoreExportedMethodsMap exportMap = storeExportedMethods.get(storeInterfaceClass.getCanonicalName() + "#" + path.toString());
         if (exportMap == null) {
-            storeExportedMethods.put(storeInterfaceClass.getCanonicalName()+"#"+path.toString(), new StoreExportedMethodsMap(storeInterfaceClass, path, exportContext));
-            exportMap = storeExportedMethods.get(storeInterfaceClass.getCanonicalName()+"#"+path.toString());
+            storeExportedMethods.put(storeInterfaceClass.getCanonicalName() + "#" + path.toString(), new StoreExportedMethodsMap(storeInterfaceClass, path, exportContext));
+            exportMap = storeExportedMethods.get(storeInterfaceClass.getCanonicalName() + "#" + path.toString());
         }
 
         return exportMap;
@@ -392,26 +393,26 @@ public class ContentStoreContentService implements ContentService {
         private static Method[] GETCONTENT_METHODS = null;
 
         static {
-            SETCONTENT_METHODS_3x = new Method[] {
-                ReflectionUtils.findMethod(org.springframework.content.commons.store.ContentStore.class, "setContent", Object.class, PropertyPath.class, InputStream.class, org.springframework.content.commons.store.SetContentParams.class),
-                ReflectionUtils.findMethod(org.springframework.content.commons.store.ContentStore.class, "setContent", Object.class, PropertyPath.class, Resource.class),
+            SETCONTENT_METHODS_3x = new Method[]{
+                    ReflectionUtils.findMethod(org.springframework.content.commons.store.ContentStore.class, "setContent", Object.class, PropertyPath.class, InputStream.class, org.springframework.content.commons.store.SetContentParams.class),
+                    ReflectionUtils.findMethod(org.springframework.content.commons.store.ContentStore.class, "setContent", Object.class, PropertyPath.class, Resource.class),
             };
 
-            SETCONTENT_METHODS_2x = new Method[] {
+            SETCONTENT_METHODS_2x = new Method[]{
                     ReflectionUtils.findMethod(ContentStore.class, "setContent", Object.class, PropertyPath.class, InputStream.class, SetContentParams.class),
                     ReflectionUtils.findMethod(ContentStore.class, "setContent", Object.class, PropertyPath.class, Resource.class),
             };
 
-            UNSETCONTENT_METHODS_3x = new Method[] {
+            UNSETCONTENT_METHODS_3x = new Method[]{
                     ReflectionUtils.findMethod(org.springframework.content.commons.store.ContentStore.class, "unsetContent", Object.class, PropertyPath.class, org.springframework.content.commons.store.UnsetContentParams.class),
             };
 
-            UNSETCONTENT_METHODS_2x = new Method[] {
-                ReflectionUtils.findMethod(ContentStore.class, "unsetContent", Object.class, PropertyPath.class, UnsetContentParams.class),
+            UNSETCONTENT_METHODS_2x = new Method[]{
+                    ReflectionUtils.findMethod(ContentStore.class, "unsetContent", Object.class, PropertyPath.class, UnsetContentParams.class),
             };
 
-            GETCONTENT_METHODS = new Method[] {
-                ReflectionUtils.findMethod(ContentStore.class, "getContent", Object.class, PropertyPath.class),
+            GETCONTENT_METHODS = new Method[]{
+                    ReflectionUtils.findMethod(ContentStore.class, "getContent", Object.class, PropertyPath.class),
             };
         }
 
@@ -494,7 +495,7 @@ public class ContentStoreContentService implements ContentService {
                 return false;
             }
 
-            for (int i=0; i < m.getParameterTypes().length; i++) {
+            for (int i = 0; i < m.getParameterTypes().length; i++) {
 
                 if (!m.getParameterTypes()[i].isAssignableFrom(dm.getParameterTypes()[i])) {
 
@@ -510,7 +511,7 @@ public class ContentStoreContentService implements ContentService {
         // prior to Spring Boot 3.2.4
         if (e.getClass().getSimpleName().equals("ClientAbortException")) {
             return true;
-        // Spring Boot >= 3.2.4
+            // Spring Boot >= 3.2.4
         } else if (e instanceof org.springframework.web.context.request.async.AsyncRequestNotUsableException) {
             if (e.getCause().getClass().getSimpleName().equals("ClientAbortException")) {
                 return true;

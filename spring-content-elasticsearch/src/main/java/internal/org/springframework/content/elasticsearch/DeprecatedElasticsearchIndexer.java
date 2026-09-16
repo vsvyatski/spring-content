@@ -6,6 +6,7 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.content.commons.annotations.StoreEventHandler;
 import org.springframework.content.commons.search.IndexService;
 import org.springframework.content.commons.repository.ContentStore;
+import org.springframework.content.commons.repository.StoreAccessException;
 import org.springframework.content.commons.repository.events.AbstractStoreEventListener;
 import org.springframework.content.commons.repository.events.AfterSetContentEvent;
 import org.springframework.content.commons.repository.events.BeforeUnsetContentEvent;
@@ -30,7 +31,11 @@ public class DeprecatedElasticsearchIndexer extends AbstractStoreEventListener<O
 	@Override
 	protected void onAfterSetContent(AfterSetContentEvent event) {
 		if (event.getStore() instanceof ContentStore) {
-			this.indexService.index(event.getSource(), ((ContentStore)event.getStore()).getContent(event.getSource()));
+			try {
+				this.indexService.index(event.getSource(), ((ContentStore)event.getStore()).getContent(event.getSource()));
+			} catch (IOException e) {
+				throw new StoreAccessException("error reading content for indexing", e);
+			}
 		}
 	}
 

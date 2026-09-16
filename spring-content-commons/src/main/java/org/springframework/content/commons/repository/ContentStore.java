@@ -1,5 +1,6 @@
 package org.springframework.content.commons.repository;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 
@@ -41,7 +42,7 @@ public interface ContentStore<S, SID extends Serializable> extends AssociativeSt
     @LockParticipant
     S unsetContent(S entity, PropertyPath propertyPath, UnsetContentParams params);
 
-    InputStream getContent(S entity);
+    InputStream getContent(S entity) throws IOException;
 
-    InputStream getContent(S entity, PropertyPath propertyPath);
+    InputStream getContent(S entity, PropertyPath propertyPath) throws IOException;
 }
