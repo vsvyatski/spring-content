@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "hooks": {
+    "subagentStart": [
+      {
+        "command": "node .cursor/hooks/allow-subagent.js",
+        "matcher": "generalPurpose"
+      }
+    ]
+  }
+}

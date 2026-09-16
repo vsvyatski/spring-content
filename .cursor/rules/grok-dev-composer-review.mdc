@@ -1,0 +1,29 @@
+---
+description: Grok implements; Composer reviews. Always on for this repo.
+alwaysApply: true
+---
+
+# Grok implements, Composer reviews
+
+Pick **Grok** in the chat model picker for implementation. Cursor cannot switch the parent model from a rule.
+
+## Implement (parent chat, Grok)
+
+Do the work here. Do not spawn a Grok subagent to write the same change.
+
+## Review (Composer subagent)
+
+After you finish a task that changed code (not Q&A, not docs-only unless asked), launch **one** `Task`:
+
+- `description`: `Composer review`
+- `subagent_type`: `generalPurpose`
+- `model`: `composer-2.5-fast`
+- `run_in_background`: `false`
+
+Prompt the reviewer with: repo root, what changed, `git diff` / branch vs `main`, and `AGENTS.md`. Ask for findings only (bugs, regressions, API breaks, test gaps, over-build). No extra files, no drive-by refactors.
+
+Then summarize findings to the user. Fix only what they ask, or clear correctness bugs.
+
+Skip the subagent if: user said skip review; change is trivial (typo/comment); this chat is already Composer (review in place).
+
+User can say `review with Composer` anytime — then launch the same Task even without a prior edit.
