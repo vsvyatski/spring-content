@@ -7,10 +7,11 @@ import com.azure.storage.blob.models.BlobItem;
 import com.github.paulcwarren.ginkgo4j.Ginkgo4jConfiguration;
 import com.github.paulcwarren.ginkgo4j.Ginkgo4jRunner;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import net.bytebuddy.utility.RandomString;
 import org.apache.commons.io.IOUtils;
-import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,7 +54,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 
 @RunWith(Ginkgo4jRunner.class)
-@Ginkgo4jConfiguration(threads=1)
+@Ginkgo4jConfiguration(threads = 1)
 public class AzureStorageIT {
 
     private static final BlobServiceClientBuilder builder = Azurite.getBlobServiceClientBuilder();
@@ -96,7 +97,7 @@ public class AzureStorageIT {
                 embeddedRepo = context.getBean(EmbeddedRepository.class);
                 embeddedStore = context.getBean(EmbeddedStore.class);
 
-                RandomString random  = new RandomString(5);
+                RandomString random = new RandomString(5);
                 resourceLocation = random.nextString();
             });
 
@@ -114,11 +115,11 @@ public class AzureStorageIT {
 
                     AfterEach(() -> {
                         if (genericResource != null) {
-                            ((DeletableResource)genericResource).delete();
+                            ((DeletableResource) genericResource).delete();
                         }
 
                         PagedIterable<BlobItem> blobs = client.listBlobs();
-                        for(BlobItem blob : blobs) {
+                        for (BlobItem blob : blobs) {
                             client.getBlobClient(blob.getName()).delete();
                         }
                     });
@@ -135,7 +136,7 @@ public class AzureStorageIT {
 
                         BeforeEach(() -> {
                             try (InputStream is = new ByteArrayInputStream("Hello Spring Content World!".getBytes())) {
-                                try (OutputStream os = ((WritableResource)genericResource).getOutputStream()) {
+                                try (OutputStream os = ((WritableResource) genericResource).getOutputStream()) {
                                     IOUtils.copy(is, os);
                                 }
                             }
@@ -157,7 +158,7 @@ public class AzureStorageIT {
 
                             BeforeEach(() -> {
                                 try (InputStream is = new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes())) {
-                                    try (OutputStream os = ((WritableResource)genericResource).getOutputStream()) {
+                                    try (OutputStream os = ((WritableResource) genericResource).getOutputStream()) {
                                         IOUtils.copy(is, os);
                                     }
                                 }
@@ -227,13 +228,13 @@ public class AzureStorageIT {
 
                             Context("when the resource has content", () -> {
                                 BeforeEach(() -> {
-                                    try (OutputStream os = ((WritableResource)genericResource).getOutputStream()) {
+                                    try (OutputStream os = ((WritableResource) genericResource).getOutputStream()) {
                                         os.write("Hello Client-side World!".getBytes());
                                     }
                                 });
 
                                 It("should not honor byte ranges", () -> {
-                                   // relies on REST-layer to serve byte range
+                                    // relies on REST-layer to serve byte range
                                     Resource r = store.getResource(entity, PropertyPath.from("content"), new GetResourceParams("5-10"));
                                     try (InputStream is = r.getInputStream()) {
                                         assertThat(IOUtils.toString(is), is("Hello Client-side World!"));
@@ -305,28 +306,30 @@ public class AzureStorageIT {
                     // content
                     try (InputStream content = store.getContent(entity)) {
                         assertThat(IOUtils.contentEquals(new ByteArrayInputStream("Hello Spring Content World!".getBytes()), content), is(true));
-                    } catch (IOException ioe) {}
+                    } catch (IOException ignored) {
+                    }
 
                     //rendition
                     try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
                         assertThat(IOUtils.contentEquals(new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()), content), is(true));
-                    } catch (IOException ioe) {}
+                    } catch (IOException ignored) {
+                    }
                 });
 
                 It("should have content metadata", () -> {
                     // content
                     assertThat(entity.getContentId(), is(notNullValue()));
                     assertThat(entity.getContentId().trim().length(), greaterThan(0));
-                    Assert.assertEquals(entity.getContentLen(), Long.valueOf(27L));
+                    Assert.assertEquals(27L, (long) entity.getContentLen());
 
                     //rendition
                     assertThat(entity.getRenditionId(), is(notNullValue()));
                     assertThat(entity.getRenditionId().trim().length(), greaterThan(0));
-                    Assert.assertEquals(entity.getRenditionLen(), 40L);
+                    Assert.assertEquals(40L, entity.getRenditionLen());
                 });
 
                 Context("when content is updated", () -> {
-                    BeforeEach(() ->{
+                    BeforeEach(() -> {
                         store.setContent(entity, new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()));
                         store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Updated Spring Content World!</html>".getBytes()));
                         entity = repo.save(entity);
@@ -531,8 +534,7 @@ public class AzureStorageIT {
 
                         It("should return null when content is unset", () -> {
                             EntityWithEmbeddedContent entity = embeddedRepo.save(new EntityWithEmbeddedContent());
-                            EntityWithEmbeddedContent expected = new EntityWithEmbeddedContent(entity.getId(), entity.getContent());
-                            assertThat(embeddedStore.unsetContent(entity, PropertyPath.from("content")), is(expected));
+                            assertThat(embeddedStore.unsetContent(entity, PropertyPath.from("content")), is(sameInstance(entity)));
                             int i = 0;
                         });
                     });
@@ -547,8 +549,8 @@ public class AzureStorageIT {
     }
 
     @Configuration
-    @EnableJpaRepositories(basePackages="internal.org.springframework.content.azure.it", considerNestedRepositories = true)
-    @EnableAzureStorage(basePackages="internal.org.springframework.content.azure.it")
+    @EnableJpaRepositories(basePackages = "internal.org.springframework.content.azure.it", considerNestedRepositories = true)
+    @EnableAzureStorage(basePackages = "internal.org.springframework.content.azure.it")
     @Import(InfrastructureConfig.class)
     public static class TestConfig {
         @Bean
@@ -597,7 +599,7 @@ public class AzureStorageIT {
     public static class TestEntity {
 
         @Id
-        @GeneratedValue(strategy=GenerationType.AUTO)
+        @GeneratedValue(strategy = GenerationType.AUTO)
         private Long id;
 
         @ContentId
@@ -617,8 +619,11 @@ public class AzureStorageIT {
         }
     }
 
-    public interface TestEntityRepository extends JpaRepository<TestEntity, Long> {}
-    public interface TestEntityStore extends ContentStore<TestEntity, String> {}
+    public interface TestEntityRepository extends JpaRepository<TestEntity, Long> {
+    }
+
+    public interface TestEntityStore extends ContentStore<TestEntity, String> {
+    }
 
     @Entity
     @Setter
@@ -634,8 +639,11 @@ public class AzureStorageIT {
         private long contentLen;
     }
 
-    public interface SharedIdRepository extends JpaRepository<SharedIdContentIdEntity, String> {}
-    public interface SharedIdStore extends ContentStore<SharedIdContentIdEntity, String> {}
+    public interface SharedIdRepository extends JpaRepository<SharedIdContentIdEntity, String> {
+    }
+
+    public interface SharedIdStore extends ContentStore<SharedIdContentIdEntity, String> {
+    }
 
 //    @Entity
 //    @Setter
@@ -654,11 +662,8 @@ public class AzureStorageIT {
 //    public interface SharedSpringIdRepository extends JpaRepository<SharedSpringIdContentIdEntity, String> {}
 //    public interface SharedSpringIdStore extends ContentStore<SharedSpringIdContentIdEntity, String> {}
 
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
     @Entity
-    @Table(name="entity_with_embedded")
+    @Table(name = "entity_with_embedded")
     public static class EntityWithEmbeddedContent {
 
         @Id
@@ -666,11 +671,25 @@ public class AzureStorageIT {
 
         @Embedded
         private EmbeddedContent content;
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
+        }
+
+        public EmbeddedContent getContent() {
+            return content;
+        }
+
+        public void setContent(EmbeddedContent content) {
+            this.content = content;
+        }
     }
 
     @Embeddable
-    @NoArgsConstructor
-    @Data
     public static class EmbeddedContent {
 
         @ContentId
@@ -678,8 +697,27 @@ public class AzureStorageIT {
 
         @ContentLength
         private Long contentLen;
+
+        public String getContentId() {
+            return contentId;
+        }
+
+        public void setContentId(String contentId) {
+            this.contentId = contentId;
+        }
+
+        public Long getContentLen() {
+            return contentLen;
+        }
+
+        public void setContentLen(Long contentLen) {
+            this.contentLen = contentLen;
+        }
     }
 
-    public interface EmbeddedRepository extends JpaRepository<EntityWithEmbeddedContent, String> {}
-    public interface EmbeddedStore extends ContentStore<EntityWithEmbeddedContent, String> {}
+    public interface EmbeddedRepository extends JpaRepository<EntityWithEmbeddedContent, String> {
+    }
+
+    public interface EmbeddedStore extends ContentStore<EntityWithEmbeddedContent, String> {
+    }
 }

@@ -4,9 +4,6 @@ import com.github.f4b6a3.uuid.UuidCreator;
 import com.github.paulcwarren.ginkgo4j.Ginkgo4jConfiguration;
 import com.github.paulcwarren.ginkgo4j.Ginkgo4jRunner;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import net.bytebuddy.utility.RandomString;
 import org.apache.commons.io.IOUtils;
 import org.hamcrest.Matchers;
@@ -473,8 +470,7 @@ public class FileSystemStoreIT {
 
                             It("should return null when content is unset", () -> {
                                 EntityWithEmbeddedContent entity = embeddedRepo.save(new EntityWithEmbeddedContent());
-                                EntityWithEmbeddedContent expected = new EntityWithEmbeddedContent(entity.getId(), entity.getContent());
-                                assertThat(embeddedStore.unsetContent(entity, PropertyPath.from("content")), is(expected));
+                                assertThat(embeddedStore.unsetContent(entity, PropertyPath.from("content")), is(sameInstance(entity)));
                                 int i = 0;
                             });
                         }));
@@ -669,9 +665,6 @@ public class FileSystemStoreIT {
     }
 
     @Ignore("It's not a test and must not be considered as one.")
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
     @Entity
     @Table(name = "entity_with_embedded")
     public static class EntityWithEmbeddedContent {
@@ -681,12 +674,26 @@ public class FileSystemStoreIT {
 
         @Embedded
         private EmbeddedContent content;
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
+        }
+
+        public EmbeddedContent getContent() {
+            return content;
+        }
+
+        public void setContent(EmbeddedContent content) {
+            this.content = content;
+        }
     }
 
     @Ignore("It's not a test and must not be considered as one.")
     @Embeddable
-    @NoArgsConstructor
-    @Data
     public static class EmbeddedContent {
 
         @ContentId
@@ -694,5 +701,21 @@ public class FileSystemStoreIT {
 
         @ContentLength
         private Long contentLen;
+
+        public String getContentId() {
+            return contentId;
+        }
+
+        public void setContentId(String contentId) {
+            this.contentId = contentId;
+        }
+
+        public Long getContentLen() {
+            return contentLen;
+        }
+
+        public void setContentLen(Long contentLen) {
+            this.contentLen = contentLen;
+        }
     }
 }

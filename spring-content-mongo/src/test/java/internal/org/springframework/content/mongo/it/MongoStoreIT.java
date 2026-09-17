@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import lombok.Data;
 import org.apache.commons.io.IOUtils;
 import org.bson.types.ObjectId;
 import org.hamcrest.Matchers;
@@ -571,7 +570,6 @@ public class MongoStoreIT {
 	public interface TestEntityRepository extends MongoRepository<TestEntity, String> {}
 	public interface TestEntityStore extends ContentStore<TestEntity, String> {}
 
-	@Data
 	public static class SharedIdContentIdEntity implements ContentProperty {
 
 		@jakarta.persistence.Id
@@ -584,12 +582,31 @@ public class MongoStoreIT {
 		public SharedIdContentIdEntity() {
 			this.contentId = null;
 		}
+
+		@Override
+		public String getContentId() {
+			return contentId;
+		}
+
+		@Override
+		public void setContentId(String contentId) {
+			this.contentId = contentId;
+		}
+
+		@Override
+		public Long getContentLen() {
+			return contentLen;
+		}
+
+		@Override
+		public void setContentLen(Long contentLen) {
+			this.contentLen = contentLen;
+		}
 	}
 
 	public interface SharedIdRepository extends MongoRepository<SharedIdContentIdEntity, String> {}
 	public interface SharedIdStore extends ContentStore<SharedIdContentIdEntity, String> {}
 
-	@Data
 	public static class SharedSpringIdContentIdEntity implements ContentProperty {
 
 		@org.springframework.data.annotation.Id
@@ -601,6 +618,26 @@ public class MongoStoreIT {
 
 		public SharedSpringIdContentIdEntity() {
 			this.contentId = null;
+		}
+
+		@Override
+		public String getContentId() {
+			return contentId;
+		}
+
+		@Override
+		public void setContentId(String contentId) {
+			this.contentId = contentId;
+		}
+
+		@Override
+		public Long getContentLen() {
+			return contentLen;
+		}
+
+		@Override
+		public void setContentLen(Long contentLen) {
+			this.contentLen = contentLen;
 		}
 	}
 

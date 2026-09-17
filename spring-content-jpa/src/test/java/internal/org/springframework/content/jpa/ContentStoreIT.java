@@ -9,9 +9,6 @@ import internal.org.springframework.content.jpa.testsupport.models.ClaimForm;
 import internal.org.springframework.content.jpa.testsupport.repositories.ClaimRepository;
 import internal.org.springframework.content.jpa.testsupport.stores.ClaimStore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.runner.RunWith;
@@ -36,6 +33,7 @@ import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.*;
 import static internal.org.springframework.content.jpa.StoreIT.getContextName;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.Mockito.mock;
@@ -299,8 +297,7 @@ public class ContentStoreIT {
 
                             It("should return null when content is unset", () -> {
                                 EntityWithEmbeddedContent entity = embeddedRepo.save(new EntityWithEmbeddedContent());
-                                EntityWithEmbeddedContent expected = new EntityWithEmbeddedContent(entity.getId(), entity.getContent());
-                                assertThat(embeddedStore.unsetContent(entity, PropertyPath.from("content")), is(expected));
+                                assertThat(embeddedStore.unsetContent(entity, PropertyPath.from("content")), is(sameInstance(entity)));
                             });
                         }));
                     });
@@ -370,9 +367,6 @@ public class ContentStoreIT {
         }
     }
 
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
     @Entity
     @Table(name = "entity_with_embedded")
     public static class EntityWithEmbeddedContent {
@@ -382,11 +376,25 @@ public class ContentStoreIT {
 
         @Embedded
         private EmbeddedContent content;
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
+        }
+
+        public EmbeddedContent getContent() {
+            return content;
+        }
+
+        public void setContent(EmbeddedContent content) {
+            this.content = content;
+        }
     }
 
     @Embeddable
-    @NoArgsConstructor
-    @Data
     public static class EmbeddedContent {
 
         @ContentId
@@ -394,6 +402,22 @@ public class ContentStoreIT {
 
         @ContentLength
         private Long contentLen;
+
+        public String getContentId() {
+            return contentId;
+        }
+
+        public void setContentId(String contentId) {
+            this.contentId = contentId;
+        }
+
+        public Long getContentLen() {
+            return contentLen;
+        }
+
+        public void setContentLen(Long contentLen) {
+            this.contentLen = contentLen;
+        }
     }
 
     public interface EmbeddedRepository extends JpaRepository<EntityWithEmbeddedContent, String> {

@@ -567,8 +567,7 @@ public class S3StoreIT {
 
                         It("should return null when content is unset", () -> {
                             EntityWithEmbeddedContent entity = embeddedRepo.save(new EntityWithEmbeddedContent());
-                            EntityWithEmbeddedContent expected = new EntityWithEmbeddedContent(entity.getId(), entity.getContent());
-                            assertThat(embeddedStore.unsetContent(entity, PropertyPath.from("content")), is(expected));
+                            assertThat(embeddedStore.unsetContent(entity, PropertyPath.from("content")), is(sameInstance(entity)));
                         });
                     });
                 });
@@ -650,9 +649,6 @@ public class S3StoreIT {
     public interface SharedIdRepository extends JpaRepository<SharedIdContentIdEntity, String> {}
     public interface SharedIdStore extends ContentStore<SharedIdContentIdEntity, String> {}
 
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
     @Entity
     @Table(name="entity_with_embedded")
     public static class EntityWithEmbeddedContent {
@@ -662,11 +658,25 @@ public class S3StoreIT {
 
         @Embedded
         private EmbeddedContent content;
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
+        }
+
+        public EmbeddedContent getContent() {
+            return content;
+        }
+
+        public void setContent(EmbeddedContent content) {
+            this.content = content;
+        }
     }
 
     @Embeddable
-    @NoArgsConstructor
-    @Data
     public static class EmbeddedContent {
 
         @ContentId
@@ -674,6 +684,22 @@ public class S3StoreIT {
 
         @ContentLength
         private Long contentLen;
+
+        public String getContentId() {
+            return contentId;
+        }
+
+        public void setContentId(String contentId) {
+            this.contentId = contentId;
+        }
+
+        public Long getContentLen() {
+            return contentLen;
+        }
+
+        public void setContentLen(Long contentLen) {
+            this.contentLen = contentLen;
+        }
     }
 
     public interface EmbeddedRepository extends JpaRepository<EntityWithEmbeddedContent, String> {}

@@ -55,8 +55,6 @@ import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.contrib.nio.testing.LocalStorageHelper;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -81,12 +79,28 @@ public class GCPStorageWithEntityConverterIT {
         };
     }
 
-    @Data
-    @AllArgsConstructor
     private static class TestData {
         private String name;
         private Class[] config;
         private String bucket;
+
+        public TestData(String name, Class[] config, String bucket) {
+            this.name = name;
+            this.config = config;
+            this.bucket = bucket;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public Class[] getConfig() {
+            return config;
+        }
+
+        public String getBucket() {
+            return bucket;
+        }
     }
 
     private TestEntity entity;

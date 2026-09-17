@@ -54,8 +54,6 @@ import com.azure.storage.blob.BlobServiceClientBuilder;
 import com.github.paulcwarren.ginkgo4j.Ginkgo4jConfiguration;
 import com.github.paulcwarren.ginkgo4j.Ginkgo4jRunner;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -87,12 +85,28 @@ public class AzureStorageWithEntityConverterIT {
         };
     }
 
-    @Data
-    @AllArgsConstructor
     private static class TestData {
         private String name;
         private Class[] config;
         private String bucket;
+
+        public TestData(String name, Class[] config, String bucket) {
+            this.name = name;
+            this.config = config;
+            this.bucket = bucket;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public Class[] getConfig() {
+            return config;
+        }
+
+        public String getBucket() {
+            return bucket;
+        }
     }
 
     private TestEntity entity;

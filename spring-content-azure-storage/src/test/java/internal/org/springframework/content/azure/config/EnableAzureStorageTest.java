@@ -34,7 +34,6 @@ import com.azure.storage.blob.BlobServiceClientBuilder;
 import com.github.paulcwarren.ginkgo4j.Ginkgo4jRunner;
 
 import internal.org.springframework.content.azure.it.Azurite;
-import lombok.Data;
 
 @RunWith(Ginkgo4jRunner.class)
 public class EnableAzureStorageTest {
@@ -175,10 +174,17 @@ public class EnableAzureStorageTest {
 	    }
 	}
 
-	@Data
 	public class TestEntity {
 		@ContentId
 		private String contentId;
+
+		public String getContentId() {
+			return contentId;
+		}
+
+		public void setContentId(String contentId) {
+			this.contentId = contentId;
+		}
 	}
 
 	public interface TestEntityContentStore
