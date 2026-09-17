@@ -1,15 +1,8 @@
 package internal.org.springframework.content.azure.store;
 
-import static java.lang.String.format;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Serializable;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.util.*;
-
+import com.azure.storage.blob.BlobServiceClient;
+import internal.org.springframework.content.azure.io.AzureBlobResource;
+import internal.org.springframework.content.commons.utils.ContentPropertyInfoTypeDescriptor;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -22,25 +15,30 @@ import org.springframework.content.commons.mappingcontext.ContentProperty;
 import org.springframework.content.commons.mappingcontext.MappingContext;
 import org.springframework.content.commons.property.PropertyPath;
 import org.springframework.content.commons.repository.SetContentParams;
-import org.springframework.content.commons.store.*;
+import org.springframework.content.commons.store.ContentStore;
+import org.springframework.content.commons.store.GetResourceParams;
+import org.springframework.content.commons.store.StoreAccessException;
+import org.springframework.content.commons.store.UnsetContentParams;
 import org.springframework.content.commons.utils.BeanUtils;
 import org.springframework.content.commons.utils.Condition;
 import org.springframework.content.commons.utils.PlacementService;
-import org.springframework.content.commons.utils.PlacementServiceImpl;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.convert.TypeDescriptor;
-import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.WritableResource;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
-import com.azure.storage.blob.BlobServiceClient;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.Serializable;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.util.UUID;
 
-import internal.org.springframework.content.azure.io.AzureBlobResource;
-import internal.org.springframework.content.commons.utils.ContentPropertyInfoTypeDescriptor;
-import org.springframework.util.ClassUtils;
+import static java.lang.String.format;
 
 @Transactional
 public class DefaultAzureStorageImpl<S, SID extends Serializable>
@@ -82,6 +80,7 @@ public class DefaultAzureStorageImpl<S, SID extends Serializable>
             BlobId blobId;
             if (placementService.canConvert(id.getClass(), BlobId.class)) {
                 blobId = placementService.convert(id, BlobId.class);
+                assert blobId != null;
                 return this.getResourceInternal(blobId);
             }
 
@@ -147,35 +146,17 @@ public class DefaultAzureStorageImpl<S, SID extends Serializable>
     protected Resource getResourceInternal(BlobId id) {
         String bucket = id.bucket();
 
-        String location = null;
+        String location;
         if (placementService.canConvert(BlobId.class, String.class)) {
             location = placementService.convert(id, String.class);
-            location = absolutify(bucket, location);
         } else {
             Object objectId = id.name();
             location = placementService.convert(objectId, String.class);
-            location = absolutify(bucket, location);
         }
+        location = makeAbsolute(bucket, location);
 
-        BlobServiceClient clientToUse = client;
-        ResourceLoader loaderToUse = loader;
-//        if (clientProvider != null) {
-//			Storage client = clientProvider.getAmazonS3();
-//			if (client != null) {
-//				SimpleStorageProtocolResolver s3Protocol = new SimpleStorageProtocolResolver();
-//				s3Protocol.afterPropertiesSet();
-//				s3Protocol.setBeanFactory(context);
-//
-//				DefaultResourceLoader loader = new DefaultResourceLoader();
-//				loader.addProtocolResolver(s3Protocol);
-//
-//				clientToUse = client;
-//				loaderToUse = loader;
-//			}
-//		}
-
-        Resource resource = loaderToUse.getResource(location);
-        return new AzureBlobResource(clientToUse, bucket, resource);
+        Resource resource = loader.getResource(location);
+        return new AzureBlobResource(client, bucket, resource);
     }
 
     @Override
@@ -510,8 +491,8 @@ public class DefaultAzureStorageImpl<S, SID extends Serializable>
         return entity;
     }
 
-    private String absolutify(String bucket, String location) {
-        String locationToUse = null;
+    private static String makeAbsolute(String bucket, String location) {
+        String locationToUse;
         Assert.state(!location.startsWith("azure-blob://"), "resource location must start with azure-blob://");
         if (location.startsWith("/")) {
             locationToUse = location.substring(1);
