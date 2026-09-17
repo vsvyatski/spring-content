@@ -153,7 +153,7 @@ public class DefaultS3StoreImpl<S, SID extends Serializable>
 
 	@Override
 	public Resource getResource(S entity, PropertyPath propertyPath, org.springframework.content.commons.repository.GetResourceParams params) {
-		return this.getResource(entity, propertyPath, org.springframework.content.commons.store.GetResourceParams.builder().range(params.getRange()).build());
+		return this.getResource(entity, propertyPath, org.springframework.content.commons.store.GetResourceParams.builder().range(params.range()).build());
 	}
 
 	protected Resource getResourceInternal(S3ObjectId id, GetResourceParams params) {
@@ -187,7 +187,7 @@ public class DefaultS3StoreImpl<S, SID extends Serializable>
 
 		Resource resource = loaderToUse.getResource(location);
 		S3StoreResource s3Resource = new S3StoreResource(clientToUse, bucket, resource);
-		((RangeableResource)s3Resource).setRange(params.getRange());
+		((RangeableResource)s3Resource).setRange(params.range());
 		return s3Resource;
 	}
 
@@ -330,11 +330,11 @@ public class DefaultS3StoreImpl<S, SID extends Serializable>
 
 	@Override
 	public S setContent(S entity, PropertyPath propertyPath, InputStream content, SetContentParams params) {
-		int ordinal = params.getDisposition().ordinal();
+		int ordinal = params.disposition().ordinal();
 		return this.setContent(entity, propertyPath, content,
 				org.springframework.content.commons.store.SetContentParams.builder()
-						.contentLength(params.getContentLength())
-						.overwriteExistingContent(params.isOverwriteExistingContent())
+						.contentLength(params.contentLength())
+						.overwriteExistingContent(params.overwriteExistingContent())
 						.disposition(org.springframework.content.commons.store.SetContentParams.ContentDisposition.values()[ordinal])
 						.build());
 	}
@@ -347,7 +347,7 @@ public class DefaultS3StoreImpl<S, SID extends Serializable>
 		}
 
 		Object contentId = property.getContentId(entity);
-		if (contentId == null || params.getDisposition().equals(org.springframework.content.commons.store.SetContentParams.ContentDisposition.CreateNew)) {
+		if (contentId == null || params.disposition().equals(org.springframework.content.commons.store.SetContentParams.ContentDisposition.CreateNew)) {
 
 			Serializable newId = UUID.randomUUID().toString();
 
@@ -377,7 +377,7 @@ public class DefaultS3StoreImpl<S, SID extends Serializable>
 		}
 
 		try {
-			long len = params.getContentLength();
+			long len = params.contentLength();
 			if (len == -1L) {
 				len = resource.contentLength();
 			}
@@ -495,7 +495,7 @@ public class DefaultS3StoreImpl<S, SID extends Serializable>
 	@Transactional
 	@Override
 	public S unsetContent(S entity, PropertyPath propertyPath, UnsetContentParams params) {
-		int ordinal = params.getDisposition().ordinal();
+		int ordinal = params.disposition().ordinal();
 		org.springframework.content.commons.store.UnsetContentParams params1 = org.springframework.content.commons.store.UnsetContentParams.builder()
 				.disposition(org.springframework.content.commons.store.UnsetContentParams.Disposition.values()[ordinal])
 				.build();
@@ -515,7 +515,7 @@ public class DefaultS3StoreImpl<S, SID extends Serializable>
 
 		Resource resource = this.getResource(entity, propertyPath);
 
-		if (params.getDisposition().equals(org.springframework.content.commons.store.UnsetContentParams.Disposition.Remove)) {
+		if (params.disposition().equals(org.springframework.content.commons.store.UnsetContentParams.Disposition.Remove)) {
 			deleteIfExists(entity, resource);
 		}
 

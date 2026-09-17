@@ -1,14 +1,13 @@
 package org.springframework.content.commons.store;
 
 import lombok.Builder;
-import lombok.Data;
 
-@Data
 @Builder
-public class UnsetContentParams {
-    @Builder.Default
+public record UnsetContentParams(Disposition disposition) {
 
-    private Disposition disposition = Disposition.Remove;
+    public static class UnsetContentParamsBuilder {
+        private Disposition disposition = Disposition.Remove;
+    }
 
     public enum Disposition {
         Keep, Remove

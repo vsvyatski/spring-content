@@ -106,7 +106,7 @@ public class ContentHandlerMapping extends StoreAwareHandlerMapping {
 
 			    if (isFullyQualifiedContentPropertyRequest(path, info2)) {
 
-					String resolvedContentPropertyPath = requestMappingContext.resolveContentPropertyPath(info2.getDomainObjectClass(), ContentPropertyRequest.from(storeLookupPath).getContentPropertyPath());
+					String resolvedContentPropertyPath = requestMappingContext.resolveContentPropertyPath(info2.getDomainObjectClass(), ContentPropertyRequest.from(storeLookupPath).contentPropertyPath());
 					String resolvedStoreLookupPath = ContentPropertyRequest.from(path[1], path[2], resolvedContentPropertyPath).getRequestURI();
 
 					if (entityResolvers.hasPropertyFor(resolvedStoreLookupPath)) {

@@ -118,7 +118,7 @@ public class DefaultAzureStorageImpl<S, SID extends Serializable>
 
     @Override
     public Resource getResource(S entity, PropertyPath propertyPath, org.springframework.content.commons.repository.GetResourceParams params) {
-        return this.getResource(entity, propertyPath, GetResourceParams.builder().range(params.getRange()).build());
+        return this.getResource(entity, propertyPath, GetResourceParams.builder().range(params.range()).build());
     }
 
     @Override
@@ -148,14 +148,14 @@ public class DefaultAzureStorageImpl<S, SID extends Serializable>
     }
 
     protected Resource getResourceInternal(BlobId id) {
-		String bucket = id.getBucket();
+		String bucket = id.bucket();
 
         String location = null;
         if (placementService.canConvert(BlobId.class, String.class)) {
             location = placementService.convert(id, String.class);
             location = absolutify(bucket, location);
         } else {
-            Object objectId = id.getName();
+            Object objectId = id.name();
             location = placementService.convert(objectId, String.class);
             location = absolutify(bucket, location);
         }
@@ -297,11 +297,11 @@ public class DefaultAzureStorageImpl<S, SID extends Serializable>
 
     @Override
     public S setContent(S entity, PropertyPath propertyPath, InputStream content, SetContentParams params) {
-        int ordinal = params.getDisposition().ordinal();
+        int ordinal = params.disposition().ordinal();
         return this.setContent(entity, propertyPath, content,
                 org.springframework.content.commons.store.SetContentParams.builder()
-                        .contentLength(params.getContentLength())
-                        .overwriteExistingContent(params.isOverwriteExistingContent())
+                        .contentLength(params.contentLength())
+                        .overwriteExistingContent(params.overwriteExistingContent())
                         .disposition(org.springframework.content.commons.store.SetContentParams.ContentDisposition.values()[ordinal])
                         .build());
     }
@@ -314,7 +314,7 @@ public class DefaultAzureStorageImpl<S, SID extends Serializable>
         }
 
         Object contentId = property.getContentId(entity);
-        if (contentId == null || params.getDisposition().equals(org.springframework.content.commons.store.SetContentParams.ContentDisposition.CreateNew)) {
+        if (contentId == null || params.disposition().equals(org.springframework.content.commons.store.SetContentParams.ContentDisposition.CreateNew)) {
 
             Serializable newId = UUID.randomUUID().toString();
 
@@ -340,7 +340,7 @@ public class DefaultAzureStorageImpl<S, SID extends Serializable>
         }
 
         try {
-            long lenToSet = params.getContentLength();
+            long lenToSet = params.contentLength();
             if (lenToSet == -1L) {
                 lenToSet = resource.contentLength();
             }
@@ -473,7 +473,7 @@ public class DefaultAzureStorageImpl<S, SID extends Serializable>
     @Transactional
     @Override
     public S unsetContent(S entity, PropertyPath propertyPath, org.springframework.content.commons.repository.UnsetContentParams params) {
-        int ordinal = params.getDisposition().ordinal();
+        int ordinal = params.disposition().ordinal();
         UnsetContentParams params1 = UnsetContentParams.builder()
                 .disposition(UnsetContentParams.Disposition.values()[ordinal])
                 .build();
@@ -492,7 +492,7 @@ public class DefaultAzureStorageImpl<S, SID extends Serializable>
             return entity;
 
         Resource resource = this.getResource(entity, propertyPath);
-        if (resource != null && resource.exists() && resource instanceof DeletableResource && params.getDisposition().equals(UnsetContentParams.Disposition.Remove)) {
+        if (resource != null && resource.exists() && resource instanceof DeletableResource && params.disposition().equals(UnsetContentParams.Disposition.Remove)) {
 
             try {
                 ((DeletableResource)resource).delete();

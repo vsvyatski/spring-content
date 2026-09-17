@@ -79,7 +79,7 @@ class ContentCryptoService<S, DEK extends StoredDataEncryptionKey> {
         InputStreamRequestParameters requestParams = InputStreamRequestParameters.full();
         try {
             if(getResourceParams != null) {
-                requestParams = parseRangePattern(getResourceParams.getRange(), resource);
+                requestParams = parseRangePattern(getResourceParams.range(), resource);
             }
         } catch(IOException ex) {
             throw new StoreAccessException(String.format("Content property %s can not be accessed".formatted(propertyPath.getName())), ex);

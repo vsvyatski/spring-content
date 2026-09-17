@@ -79,7 +79,7 @@ public class DefaultJpaStoreImpl<S, SID extends Serializable>
 
     @Override
     public Resource getResource(S entity, PropertyPath propertyPath, org.springframework.content.commons.repository.GetResourceParams params) {
-        return this.getResource(entity, propertyPath, GetResourceParams.builder().range(params.getRange()).build());
+        return this.getResource(entity, propertyPath, GetResourceParams.builder().range(params.range()).build());
     }
 
     @Override
@@ -233,10 +233,10 @@ public class DefaultJpaStoreImpl<S, SID extends Serializable>
     @Transactional
     @Override
     public S setContent(S entity, PropertyPath propertyPath, InputStream content, SetContentParams params) {
-        int ordinal = params.getDisposition().ordinal();
+        int ordinal = params.disposition().ordinal();
         return this.setContent(entity, propertyPath, content, org.springframework.content.commons.store.SetContentParams.builder()
-                .contentLength(params.getContentLength())
-                .overwriteExistingContent(params.isOverwriteExistingContent())
+                .contentLength(params.contentLength())
+                .overwriteExistingContent(params.overwriteExistingContent())
                 .disposition(org.springframework.content.commons.store.SetContentParams.ContentDisposition.values()[ordinal])
                 .build());
     }
@@ -250,7 +250,7 @@ public class DefaultJpaStoreImpl<S, SID extends Serializable>
         }
 
         SID contentId = getContentId(entity, propertyPath);
-        if (contentId == null || params.getDisposition().equals(org.springframework.content.commons.store.SetContentParams.ContentDisposition.CreateNew)) {
+        if (contentId == null || params.disposition().equals(org.springframework.content.commons.store.SetContentParams.ContentDisposition.CreateNew)) {
 
             Serializable newId = UuidCreator.getTimeOrdered().toString();
 
@@ -281,7 +281,7 @@ public class DefaultJpaStoreImpl<S, SID extends Serializable>
 
         property.setContentId(entity, ((BlobResource) resource).getId(), null);
 
-        long len = params.getContentLength();
+        long len = params.contentLength();
         if (len == -1L) {
             len = readLen;
         }
@@ -346,7 +346,7 @@ public class DefaultJpaStoreImpl<S, SID extends Serializable>
     @Transactional
     @Override
     public S unsetContent(S entity, PropertyPath propertyPath, org.springframework.content.commons.store.UnsetContentParams params) {
-        int ordinal = params.getDisposition().ordinal();
+        int ordinal = params.disposition().ordinal();
         org.springframework.content.commons.repository.UnsetContentParams params1 = org.springframework.content.commons.repository.UnsetContentParams.builder()
                 .disposition(org.springframework.content.commons.repository.UnsetContentParams.Disposition.values()[ordinal])
                 .build();
@@ -363,7 +363,7 @@ public class DefaultJpaStoreImpl<S, SID extends Serializable>
 
         Resource resource = this.getResource(entity, propertyPath);
 
-        if (resource != null && resource.exists() && resource instanceof DeletableResource && params.getDisposition().equals(UnsetContentParams.Disposition.Remove)) {
+        if (resource != null && resource.exists() && resource instanceof DeletableResource && params.disposition().equals(UnsetContentParams.Disposition.Remove)) {
             try {
                 ((DeletableResource) resource).delete();
             } catch (Exception e) {

@@ -254,7 +254,7 @@ public class EncryptingContentStoreImpl<S, SID extends Serializable> implements
     private static org.springframework.content.commons.store.UnsetContentParams convertParams(
             UnsetContentParams params) {
         return org.springframework.content.commons.store.UnsetContentParams.builder()
-                .disposition(convertDisposition(params.getDisposition()))
+                .disposition(convertDisposition(params.disposition()))
                 .build();
     }
 
@@ -267,15 +267,15 @@ public class EncryptingContentStoreImpl<S, SID extends Serializable> implements
 
     private GetResourceParams convertParams(org.springframework.content.commons.repository.GetResourceParams params) {
         return GetResourceParams.builder()
-                .range(params.getRange())
+                .range(params.range())
                 .build();
     }
 
     private static org.springframework.content.commons.store.SetContentParams convertParams(SetContentParams params) {
         return org.springframework.content.commons.store.SetContentParams.builder()
-                .contentLength(params.getContentLength())
-                .disposition(convertDisposition(params.getDisposition()))
-                .overwriteExistingContent(params.isOverwriteExistingContent())
+                .contentLength(params.contentLength())
+                .disposition(convertDisposition(params.disposition()))
+                .overwriteExistingContent(params.overwriteExistingContent())
                 .build();
     }
 

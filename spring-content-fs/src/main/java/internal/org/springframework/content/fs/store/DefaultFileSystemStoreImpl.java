@@ -217,10 +217,10 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable>
 
     @Override
     public S setContent(S entity, PropertyPath propertyPath, InputStream content, org.springframework.content.commons.repository.SetContentParams params) {
-        int ordinal = params.getDisposition().ordinal();
+        int ordinal = params.disposition().ordinal();
         SetContentParams params1 = SetContentParams.builder()
-                .contentLength(params.getContentLength())
-                .overwriteExistingContent(params.isOverwriteExistingContent())
+                .contentLength(params.contentLength())
+                .overwriteExistingContent(params.overwriteExistingContent())
                 .disposition(org.springframework.content.commons.store.SetContentParams.ContentDisposition.values()[ordinal])
                 .build();
         return this.setContent(entity, propertyPath, content, params1);
@@ -237,7 +237,7 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable>
         }
 
         Object contentId = contentProperty.getContentId(property);
-        if (contentId == null || params.getDisposition()
+        if (contentId == null || params.disposition()
                 .equals(org.springframework.content.commons.store.SetContentParams.ContentDisposition.CreateNew)) {
 
             Serializable newId = UuidCreator.getTimeOrdered().toString();
@@ -274,7 +274,7 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable>
         }
 
         try {
-            long len = params.getContentLength();
+            long len = params.contentLength();
             if (len == -1L) {
                 len = resource.contentLength();
             }
@@ -388,7 +388,7 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable>
     @Override
     public S unsetContent(S entity, PropertyPath propertyPath,
                           org.springframework.content.commons.repository.UnsetContentParams params) {
-        int ordinal = params.getDisposition().ordinal();
+        int ordinal = params.disposition().ordinal();
         return unsetContent(entity, propertyPath, UnsetContentParams.builder().disposition(Disposition.values()[ordinal]).build());
     }
 
@@ -402,7 +402,7 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable>
 
         Resource resource = getResource(entity, propertyPath);
 
-        if (resource != null && resource.exists() && resource instanceof DeletableResource && params.getDisposition().equals(Disposition.Remove)) {
+        if (resource != null && resource.exists() && resource instanceof DeletableResource && params.disposition().equals(Disposition.Remove)) {
             try {
                 ((DeletableResource) resource).delete();
             } catch (IOException e) {
