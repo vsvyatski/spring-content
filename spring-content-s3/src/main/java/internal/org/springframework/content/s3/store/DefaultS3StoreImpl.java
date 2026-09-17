@@ -140,7 +140,7 @@ public class DefaultS3StoreImpl<S, SID extends Serializable>
 		S3ObjectId s3ObjectId = null;
 		TypeDescriptor contentPropertyInfoType = ContentPropertyInfoTypeDescriptor.withGenerics(entity, property);
 		if (placementService.canConvert(contentPropertyInfoType, TypeDescriptor.valueOf(S3ObjectId.class))) {
-			ContentPropertyInfo<S, SID> contentPropertyInfo = ContentPropertyInfo.of(entity,
+			ContentPropertyInfo<S, SID> contentPropertyInfo = new ContentPropertyInfo<>(entity,
 					(SID) property.getContentId(entity), propertyPath, property);
 			s3ObjectId = (S3ObjectId) placementService.convert(contentPropertyInfo, contentPropertyInfoType, TypeDescriptor.valueOf(S3ObjectId.class));
 			Resource r = this.getResourceInternal(s3ObjectId, params);

@@ -126,7 +126,7 @@ public class DefaultGCPStorageImpl<S, SID extends Serializable>
 
         TypeDescriptor contentPropertyInfoType = ContentPropertyInfoTypeDescriptor.withGenerics(entity, property);
         if (placementService.canConvert(contentPropertyInfoType, TypeDescriptor.valueOf(BlobId.class))) {
-            ContentPropertyInfo<S, SID> contentPropertyInfo = ContentPropertyInfo.of(entity,
+            ContentPropertyInfo<S, SID> contentPropertyInfo = new ContentPropertyInfo<>(entity,
                     (SID) property.getContentId(entity), propertyPath, property);
             BlobId blobId = (BlobId) placementService.convert(contentPropertyInfo, contentPropertyInfoType, TypeDescriptor.valueOf(BlobId.class));
 
