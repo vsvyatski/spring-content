@@ -1,7 +1,6 @@
 package internal.org.springframework.content.rest.contentservice;
 
 import internal.org.springframework.content.rest.mappingcontext.ContentPropertyToExportedContext;
-import internal.org.springframework.content.rest.mappingcontext.ContentPropertyToRequestMappingContext;
 import org.springframework.content.commons.mappingcontext.MappingContext;
 import org.springframework.content.commons.repository.AssociativeStore;
 import org.springframework.content.commons.repository.ContentStore;
@@ -40,7 +39,7 @@ public class ContentServiceFactory {
 
             Object entity = ((AssociatedStoreResource)resource).getAssociation();
 
-            return new ContentStoreContentService(config, null, repoInvokerFactory.getInvokerFor(entity.getClass()), mappingContext, exportContext, byteRangeRestRequestHandler);
+            return new ContentStoreContentService(config, repoInvokerFactory.getInvokerFor(entity.getClass()), mappingContext, exportContext, byteRangeRestRequestHandler);
 
         } else if (AssociativeStore.class.isAssignableFrom(resource.getStoreInfo().getInterface()) || org.springframework.content.commons.store.AssociativeStore.class.isAssignableFrom(resource.getStoreInfo().getInterface())) {
 
