@@ -7,7 +7,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import junit.framework.Assert;
-import lombok.*;
 import net.bytebuddy.utility.RandomString;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -293,9 +292,6 @@ public class S3StoreWithEntityConverterIT {
     }
 
     @Entity
-    @Setter
-    @Getter
-    @NoArgsConstructor
     public static class TestEntity {
 
         @Id
@@ -323,8 +319,75 @@ public class S3StoreWithEntityConverterIT {
         @MimeType
         private String renditionContentType;
 
+        public TestEntity() {
+        }
+
         public TestEntity(String contentId) {
             this.contentId = contentId;
+        }
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+
+        public String getBucket() {
+            return bucket;
+        }
+
+        public void setBucket(String bucket) {
+            this.bucket = bucket;
+        }
+
+        public String getContentId() {
+            return contentId;
+        }
+
+        public void setContentId(String contentId) {
+            this.contentId = contentId;
+        }
+
+        public long getContentLen() {
+            return contentLen;
+        }
+
+        public void setContentLen(long contentLen) {
+            this.contentLen = contentLen;
+        }
+
+        public String getContentType() {
+            return contentType;
+        }
+
+        public void setContentType(String contentType) {
+            this.contentType = contentType;
+        }
+
+        public String getRenditionId() {
+            return renditionId;
+        }
+
+        public void setRenditionId(String renditionId) {
+            this.renditionId = renditionId;
+        }
+
+        public long getRenditionLen() {
+            return renditionLen;
+        }
+
+        public void setRenditionLen(long renditionLen) {
+            this.renditionLen = renditionLen;
+        }
+
+        public String getRenditionContentType() {
+            return renditionContentType;
+        }
+
+        public void setRenditionContentType(String renditionContentType) {
+            this.renditionContentType = renditionContentType;
         }
     }
 

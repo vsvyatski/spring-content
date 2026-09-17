@@ -36,11 +36,6 @@
             <artifactId>azure-storage-file-share</artifactId>
             <version>12.29.2</version>
         </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <scope>provided</scope>
-        </dependency>
 
         <!-- Test Dependencies -->
         <dependency>

@@ -9,7 +9,6 @@ import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.contrib.nio.testing.LocalStorageHelper;
 import jakarta.persistence.*;
-import lombok.*;
 import net.bytebuddy.utility.RandomString;
 import org.apache.commons.io.IOUtils;
 import org.hamcrest.Matchers;
@@ -537,9 +536,6 @@ public class GCPStorageIT {
     }
 
     @Entity
-    @Setter
-    @Getter
-    @NoArgsConstructor
     public static class TestEntity {
 
         @Id
@@ -558,8 +554,51 @@ public class GCPStorageIT {
         @ContentLength
         private long renditionLen;
 
+        public TestEntity() {
+        }
+
         public TestEntity(String contentId) {
             this.contentId = contentId;
+        }
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+
+        public String getContentId() {
+            return contentId;
+        }
+
+        public void setContentId(String contentId) {
+            this.contentId = contentId;
+        }
+
+        public Long getContentLen() {
+            return contentLen;
+        }
+
+        public void setContentLen(Long contentLen) {
+            this.contentLen = contentLen;
+        }
+
+        public String getRenditionId() {
+            return renditionId;
+        }
+
+        public void setRenditionId(String renditionId) {
+            this.renditionId = renditionId;
+        }
+
+        public long getRenditionLen() {
+            return renditionLen;
+        }
+
+        public void setRenditionLen(long renditionLen) {
+            this.renditionLen = renditionLen;
         }
     }
 
@@ -570,9 +609,6 @@ public class GCPStorageIT {
     }
 
     @Entity
-    @Setter
-    @Getter
-    @NoArgsConstructor
     public static class SharedIdContentIdEntity {
 
         @jakarta.persistence.Id
@@ -581,6 +617,25 @@ public class GCPStorageIT {
 
         @ContentLength
         private long contentLen;
+
+        public SharedIdContentIdEntity() {
+        }
+
+        public String getContentId() {
+            return contentId;
+        }
+
+        public void setContentId(String contentId) {
+            this.contentId = contentId;
+        }
+
+        public long getContentLen() {
+            return contentLen;
+        }
+
+        public void setContentLen(long contentLen) {
+            this.contentLen = contentLen;
+        }
     }
 
     public interface SharedIdRepository extends JpaRepository<SharedIdContentIdEntity, String> {

@@ -7,9 +7,6 @@ import com.azure.storage.blob.models.BlobItem;
 import com.github.paulcwarren.ginkgo4j.Ginkgo4jConfiguration;
 import com.github.paulcwarren.ginkgo4j.Ginkgo4jRunner;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import net.bytebuddy.utility.RandomString;
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
@@ -500,23 +497,6 @@ public class AzureStorageIT {
                     });
                 });
 
-//                Context("when content is deleted and the id field is shared with spring id", () -> {
-//
-//                    It("should not reset the id field", () -> {
-//                        SharedSpringIdRepository SharedSpringIdRepository = context.getBean(SharedSpringIdRepository.class);
-//                        SharedSpringIdStore SharedSpringIdStore = context.getBean(SharedSpringIdStore.class);
-//
-//                        SharedSpringIdContentIdEntity SharedSpringIdContentIdEntity = SharedSpringIdRepository.save(new SharedSpringIdContentIdEntity());
-//
-//                        SharedSpringIdContentIdEntity = SharedSpringIdStore.setContent(SharedSpringIdContentIdEntity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-//                        SharedSpringIdContentIdEntity = SharedSpringIdRepository.save(SharedSpringIdContentIdEntity);
-//                        String id = SharedSpringIdContentIdEntity.getContentId();
-//                        SharedSpringIdContentIdEntity = SharedSpringIdStore.unsetContent(SharedSpringIdContentIdEntity);
-//                        assertThat(SharedSpringIdContentIdEntity.getContentId(), is(id));
-//                        assertThat(SharedSpringIdContentIdEntity.getContentLen(), is(0L));
-//                    });
-//                });
-
                 Context("@Embedded content", () -> {
                     Context("given a entity with a null embedded content object", () -> {
                         It("should return null when content is fetched", () -> {
@@ -593,9 +573,6 @@ public class AzureStorageIT {
     }
 
     @Entity
-    @Setter
-    @Getter
-    @NoArgsConstructor
     public static class TestEntity {
 
         @Id
@@ -614,8 +591,51 @@ public class AzureStorageIT {
         @ContentLength
         private long renditionLen;
 
+        public TestEntity() {
+        }
+
         public TestEntity(String contentId) {
-            this.contentId = new String(contentId);
+            this.contentId = contentId;
+        }
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+
+        public String getContentId() {
+            return contentId;
+        }
+
+        public void setContentId(String contentId) {
+            this.contentId = contentId;
+        }
+
+        public Long getContentLen() {
+            return contentLen;
+        }
+
+        public void setContentLen(Long contentLen) {
+            this.contentLen = contentLen;
+        }
+
+        public String getRenditionId() {
+            return renditionId;
+        }
+
+        public void setRenditionId(String renditionId) {
+            this.renditionId = renditionId;
+        }
+
+        public long getRenditionLen() {
+            return renditionLen;
+        }
+
+        public void setRenditionLen(long renditionLen) {
+            this.renditionLen = renditionLen;
         }
     }
 
@@ -626,9 +646,6 @@ public class AzureStorageIT {
     }
 
     @Entity
-    @Setter
-    @Getter
-    @NoArgsConstructor
     public static class SharedIdContentIdEntity {
 
         @jakarta.persistence.Id
@@ -637,6 +654,25 @@ public class AzureStorageIT {
 
         @ContentLength
         private long contentLen;
+
+        public SharedIdContentIdEntity() {
+        }
+
+        public String getContentId() {
+            return contentId;
+        }
+
+        public void setContentId(String contentId) {
+            this.contentId = contentId;
+        }
+
+        public long getContentLen() {
+            return contentLen;
+        }
+
+        public void setContentLen(long contentLen) {
+            this.contentLen = contentLen;
+        }
     }
 
     public interface SharedIdRepository extends JpaRepository<SharedIdContentIdEntity, String> {
@@ -644,23 +680,6 @@ public class AzureStorageIT {
 
     public interface SharedIdStore extends ContentStore<SharedIdContentIdEntity, String> {
     }
-
-//    @Entity
-//    @Setter
-//    @Getter
-//    @NoArgsConstructor
-//    public static class SharedSpringIdContentIdEntity {
-//
-//        @org.springframework.data.annotation.Id
-//        @ContentId
-//        private String contentId;
-//
-//        @ContentLength
-//        private long contentLen;
-//    }
-//
-//    public interface SharedSpringIdRepository extends JpaRepository<SharedSpringIdContentIdEntity, String> {}
-//    public interface SharedSpringIdStore extends ContentStore<SharedSpringIdContentIdEntity, String> {}
 
     @Entity
     @Table(name = "entity_with_embedded")

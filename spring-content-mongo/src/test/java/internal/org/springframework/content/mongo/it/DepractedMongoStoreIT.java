@@ -4,8 +4,6 @@ import com.github.paulcwarren.ginkgo4j.Ginkgo4jRunner;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.gridfs.model.GridFSFile;
 import internal.org.springframework.content.mongo.store.DefaultMongoStoreImpl;
-import lombok.Getter;
-import lombok.Setter;
 import net.bytebuddy.utility.RandomString;
 import org.apache.commons.io.IOUtils;
 import org.bson.types.ObjectId;
@@ -496,8 +494,6 @@ public class DepractedMongoStoreIT {
 		void setContentLen(long contentLen);
 	}
 
-	@Getter
-	@Setter
 	public static class TestEntity implements ContentProperty {
 
 		@ContentId
@@ -518,6 +514,38 @@ public class DepractedMongoStoreIT {
 
 		public TestEntity(String contentId) {
 			this.contentId = new String(contentId);
+		}
+
+		public String getContentId() {
+			return contentId;
+		}
+
+		public void setContentId(String contentId) {
+			this.contentId = contentId;
+		}
+
+		public long getContentLen() {
+			return contentLen;
+		}
+
+		public void setContentLen(long contentLen) {
+			this.contentLen = contentLen;
+		}
+
+		public String getRenditionId() {
+			return renditionId;
+		}
+
+		public void setRenditionId(String renditionId) {
+			this.renditionId = renditionId;
+		}
+
+		public long getRenditionLen() {
+			return renditionLen;
+		}
+
+		public void setRenditionLen(long renditionLen) {
+			this.renditionLen = renditionLen;
 		}
 	}
 
