@@ -10,16 +10,11 @@ import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.annotations.MimeType;
 import org.springframework.content.commons.annotations.OriginalFileName;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.springframework.content.rest.RestResource;
-
 @Embeddable
-@Getter
-@Setter
-@NoArgsConstructor
 public class TestEntity10Child {
+
+    public TestEntity10Child() {
+    }
 
     @ContentId public UUID contentId;
 	@ContentLength public Long contentLen;
@@ -34,4 +29,67 @@ public class TestEntity10Child {
 	@Formula("1")
 	private int workaroundForBraindeadJpaImplementation;
 
+	public UUID getContentId() {
+		return contentId;
+	}
+
+	public void setContentId(UUID contentId) {
+		this.contentId = contentId;
+	}
+
+	public Long getContentLen() {
+		return contentLen;
+	}
+
+	public void setContentLen(Long contentLen) {
+		this.contentLen = contentLen;
+	}
+
+	public String getContentMimeType() {
+		return contentMimeType;
+	}
+
+	public void setContentMimeType(String contentMimeType) {
+		this.contentMimeType = contentMimeType;
+	}
+
+	public String getContentFileName() {
+		return contentFileName;
+	}
+
+	public void setContentFileName(String contentFileName) {
+		this.contentFileName = contentFileName;
+	}
+
+	public UUID getPreviewId() {
+		return previewId;
+	}
+
+	public void setPreviewId(UUID previewId) {
+		this.previewId = previewId;
+	}
+
+	public Long getPreviewLen() {
+		return previewLen;
+	}
+
+	public void setPreviewLen(Long previewLen) {
+		this.previewLen = previewLen;
+	}
+
+	public String getPreviewMimeType() {
+		return previewMimeType;
+	}
+
+	public void setPreviewMimeType(String previewMimeType) {
+		this.previewMimeType = previewMimeType;
+	}
+
+	public int getWorkaroundForBraindeadJpaImplementation() {
+		return workaroundForBraindeadJpaImplementation;
+	}
+
+	public void setWorkaroundForBraindeadJpaImplementation(int workaroundForBraindeadJpaImplementation) {
+		this.workaroundForBraindeadJpaImplementation = workaroundForBraindeadJpaImplementation;
+	}
 }

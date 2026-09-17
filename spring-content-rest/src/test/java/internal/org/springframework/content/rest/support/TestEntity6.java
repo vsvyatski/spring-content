@@ -10,12 +10,7 @@ import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.annotations.MimeType;
 
-import lombok.Getter;
-import lombok.Setter;
-
 @Entity
-@Getter
-@Setter
 public class TestEntity6 {
 
     @Id
@@ -28,4 +23,28 @@ public class TestEntity6 {
 
     @MimeType
     private String mimeType;
+
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    public Long getContentLen() {
+        return contentLen;
+    }
+
+    public void setContentLen(Long contentLen) {
+        this.contentLen = contentLen;
+    }
+
+    public String getMimeType() {
+        return mimeType;
+    }
+
+    public void setMimeType(String mimeType) {
+        this.mimeType = mimeType;
+    }
 }

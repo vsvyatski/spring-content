@@ -1,8 +1,5 @@
 package it.internal.org.springframework.content.rest.controllers;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import org.springframework.test.web.servlet.MockMvc;
 
 import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.Context;
@@ -11,8 +8,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@Getter
-@Setter
 public class Cors {
 
 	private MockMvc mvc;
@@ -20,6 +15,22 @@ public class Cors {
 
 	public static Cors tests(){
 		return new Cors();
+	}
+
+	public MockMvc getMvc() {
+		return mvc;
+	}
+
+	public void setMvc(MockMvc mvc) {
+		this.mvc = mvc;
+	}
+
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
 	}
 
 	{

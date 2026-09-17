@@ -3,7 +3,6 @@ package internal.org.springframework.content.rest.links;
 import com.theoryinpractise.halbuilder.api.ReadableRepresentation;
 import com.theoryinpractise.halbuilder.api.RepresentationFactory;
 import com.theoryinpractise.halbuilder.standard.StandardRepresentationFactory;
-import lombok.Setter;
 import org.hamcrest.beans.HasPropertyWithValue;
 import org.springframework.content.commons.repository.ContentStore;
 import org.springframework.content.commons.repository.Store;
@@ -20,7 +19,6 @@ import static org.hamcrest.text.MatchesPattern.matchesPattern;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@Setter
 public class ContentLinkTests {
 
 	private MockMvc mvc;
@@ -33,6 +31,38 @@ public class ContentLinkTests {
 	private String contextPath = "";
 	private String linkRel;
 	private String expectedLinkRegex;
+
+	public void setMvc(MockMvc mvc) {
+		this.mvc = mvc;
+	}
+
+	public void setRepository(CrudRepository repository) {
+		this.repository = repository;
+	}
+
+	public void setStore(Store store) {
+		this.store = store;
+	}
+
+	public void setTestEntity(Object testEntity) {
+		this.testEntity = testEntity;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
+	}
+
+	public void setContextPath(String contextPath) {
+		this.contextPath = contextPath;
+	}
+
+	public void setLinkRel(String linkRel) {
+		this.linkRel = linkRel;
+	}
+
+	public void setExpectedLinkRegex(String expectedLinkRegex) {
+		this.expectedLinkRegex = expectedLinkRegex;
+	}
 
 	{
 		Context("given content is associated", () -> {

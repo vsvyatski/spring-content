@@ -11,9 +11,6 @@ import static org.hamcrest.beans.HasPropertyWithValue.hasProperty;
 import java.util.UUID;
 
 import internal.org.springframework.content.rest.support.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

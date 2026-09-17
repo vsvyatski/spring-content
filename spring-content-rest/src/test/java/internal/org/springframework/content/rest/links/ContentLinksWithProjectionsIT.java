@@ -65,10 +65,6 @@ import com.theoryinpractise.halbuilder.api.ReadableRepresentation;
 import com.theoryinpractise.halbuilder.api.RepresentationFactory;
 import com.theoryinpractise.halbuilder.standard.StandardRepresentationFactory;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
 @RunWith(Ginkgo4jSpringRunner.class)
 @Ginkgo4jConfiguration(threads = 1)
 @WebAppConfiguration
@@ -130,9 +126,6 @@ public class ContentLinksWithProjectionsIT {
 	}
 
 	@Entity
-	@Getter
-	@Setter
-	@NoArgsConstructor
 	public static class TEntity {
 
 	    @Id @GeneratedValue private Long id;
@@ -140,6 +133,49 @@ public class ContentLinksWithProjectionsIT {
 	    private @ContentId UUID contentId;
 	    private @ContentLength Long len;
 	    private @MimeType String mimeType;
+
+	    public TEntity() {
+	    }
+
+	    public Long getId() {
+	        return id;
+	    }
+
+	    public void setId(Long id) {
+	        this.id = id;
+	    }
+
+	    public String getName() {
+	        return name;
+	    }
+
+	    public void setName(String name) {
+	        this.name = name;
+	    }
+
+	    public UUID getContentId() {
+	        return contentId;
+	    }
+
+	    public void setContentId(UUID contentId) {
+	        this.contentId = contentId;
+	    }
+
+	    public Long getLen() {
+	        return len;
+	    }
+
+	    public void setLen(Long len) {
+	        this.len = len;
+	    }
+
+	    public String getMimeType() {
+	        return mimeType;
+	    }
+
+	    public void setMimeType(String mimeType) {
+	        this.mimeType = mimeType;
+	    }
 	}
 
 	@Projection(

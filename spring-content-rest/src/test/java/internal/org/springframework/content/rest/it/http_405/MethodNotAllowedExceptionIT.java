@@ -7,9 +7,6 @@ import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -204,25 +201,89 @@ public class MethodNotAllowedExceptionIT {
     }
 
     @Entity
-    @Getter
-    @Setter
-    @NoArgsConstructor
     public static class TEntity {
         private @Id @GeneratedValue Long id;
         private @ContentId UUID contentId;
         private @ContentLength Long len;
         private @MimeType String mimeType;
+
+        public TEntity() {
+        }
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+
+        public UUID getContentId() {
+            return contentId;
+        }
+
+        public void setContentId(UUID contentId) {
+            this.contentId = contentId;
+        }
+
+        public Long getLen() {
+            return len;
+        }
+
+        public void setLen(Long len) {
+            this.len = len;
+        }
+
+        public String getMimeType() {
+            return mimeType;
+        }
+
+        public void setMimeType(String mimeType) {
+            this.mimeType = mimeType;
+        }
     }
 
     @Entity
-    @Getter
-    @Setter
-    @NoArgsConstructor
     public static class TEntity2 {
         private @Id @GeneratedValue Long id;
         private @ContentId @RestResource(exported=false) UUID contentId;
         private @ContentLength Long len;
         private @MimeType String mimeType;
+
+        public TEntity2() {
+        }
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+
+        public UUID getContentId() {
+            return contentId;
+        }
+
+        public void setContentId(UUID contentId) {
+            this.contentId = contentId;
+        }
+
+        public Long getLen() {
+            return len;
+        }
+
+        public void setLen(Long len) {
+            this.len = len;
+        }
+
+        public String getMimeType() {
+            return mimeType;
+        }
+
+        public void setMimeType(String mimeType) {
+            this.mimeType = mimeType;
+        }
     }
 
     public interface TestEntity2Repo extends CrudRepository<TEntity2, Long> {}
