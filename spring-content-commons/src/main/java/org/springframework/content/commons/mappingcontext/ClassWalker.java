@@ -1,7 +1,5 @@
 package org.springframework.content.commons.mappingcontext;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import org.springframework.content.commons.utils.ContentPropertyUtils;
 import org.springframework.util.StringUtils;
 
@@ -57,21 +55,21 @@ public class ClassWalker {
         return name.split("(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])");
     }
 
-    public void accept(Class<?> klazz) {
+    public void accept(Class<?> clazz) {
 
         boolean fContinue = true;
         Stack<WalkContext> classStack = new Stack<>();
 
-        fContinue &= visitor.visitClass("", klazz);
+        fContinue &= visitor.visitClass("", clazz);
         if (!fContinue) {
             return;
         }
 
-        List<Field> fields = getAllFields(new ArrayList<>(), klazz);
+        List<Field> fields = getAllFields(new ArrayList<>(), clazz);
 
         for (Field field : fields) {
-            fContinue &= visitor.visitFieldBefore("", klazz, field);
-            fContinue &= visitor.visitField("", klazz, field);
+            fContinue &= visitor.visitFieldBefore("", clazz, field);
+            fContinue &= visitor.visitField("", clazz, field);
             if (isObject(field)) {
                 if (notContains(classStack, field.getType())) {
                     classStack.push(new WalkContext(field.getName(), field.getType()));
@@ -79,55 +77,55 @@ public class ClassWalker {
                     classStack.pop();
                 }
             }
-            fContinue &= visitor.visitFieldAfter("", klazz, field);
+            fContinue &= visitor.visitFieldAfter("", clazz, field);
         }
         if (!fContinue) {
             return;
         }
 
-        visitor.visitClassEnd("", klazz);
+        visitor.visitClassEnd("", clazz);
     }
 
-    public void accept(Class<?> klazz, Stack<WalkContext> classStack) {
+    public void accept(Class<?> clazz, Stack<WalkContext> classStack) {
 
         boolean fContinue = true;
 
         WalkContext context = classStack.peek();
 
-        fContinue &= visitor.visitClass(context.getPath(), klazz);
+        fContinue &= visitor.visitClass(context.path(), clazz);
         if (!fContinue) {
             return;
         }
 
-        List<Field> fields = getAllFields(new ArrayList<>(), context.getClazz());
+        List<Field> fields = getAllFields(new ArrayList<>(), context.clazz());
 
         for (Field field : fields) {
-            fContinue &= visitor.visitFieldBefore("", klazz, field);
-            fContinue &= visitor.visitField(context.getPath(), klazz, field);
+            fContinue &= visitor.visitFieldBefore("", clazz, field);
+            fContinue &= visitor.visitField(context.path(), clazz, field);
             if (isObject(field)) {
                 if (notContains(classStack, field.getType())) {
                     String path = field.getName();
-                    if (StringUtils.hasLength(context.getPath())) {
-                        path = String.format("%s/%s", context.getPath(), path);
+                    if (StringUtils.hasLength(context.path())) {
+                        path = String.format("%s/%s", context.path(), path);
                     }
                     classStack.push(new WalkContext(path, field.getType()));
                     this.accept(field.getType(), classStack);
                     classStack.pop();
                 }
             }
-            fContinue &= visitor.visitFieldAfter("", klazz, field);
+            fContinue &= visitor.visitFieldAfter("", clazz, field);
         }
         if (!fContinue) {
             return;
         }
 
-        visitor.visitClassEnd(context.getPath(), klazz);
+        visitor.visitClassEnd(context.path(), clazz);
     }
 
     private boolean notContains(Stack<WalkContext> classStack, Class<?> type) {
 
         for (WalkContext context : classStack) {
-            if (context.getClazz().equals(type)) {
+            if (context.clazz().equals(type)) {
                 return false;
             }
         }
@@ -153,11 +151,6 @@ public class ClassWalker {
         return fields;
     }
 
-    @Getter
-    @AllArgsConstructor
-    public static class WalkContext {
-
-        private String path;
-        private Class<?> clazz;
+    public record WalkContext(String path, Class<?> clazz) {
     }
 }
