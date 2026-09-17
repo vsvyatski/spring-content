@@ -3,24 +3,29 @@ package org.springframework.content.encryption.keys;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import javax.crypto.spec.SecretKeySpec;
-import lombok.RequiredArgsConstructor;
+
 import org.springframework.content.encryption.engine.ContentEncryptionEngine.EncryptionParameters;
 import org.springframework.content.encryption.keys.StoredDataEncryptionKey.EncryptedSymmetricDataEncryptionKey;
 import org.springframework.vault.core.VaultTransitOperations;
 import org.springframework.vault.support.Ciphertext;
 import org.springframework.vault.support.Plaintext;
 
-@RequiredArgsConstructor
 public class VaultTransitDataEncryptionKeyWrapper implements DataEncryptionKeyWrapper<EncryptedSymmetricDataEncryptionKey> {
     private static final String WRAPPING_ALGORITHM = "vault-transit";
 
     private final VaultTransitOperations transitOperations;
     private final String wrappingKeyId;
 
+    public VaultTransitDataEncryptionKeyWrapper(VaultTransitOperations transitOperations, String wrappingKeyId) {
+        this.transitOperations = transitOperations;
+        this.wrappingKeyId = wrappingKeyId;
+    }
+
     @Override
     public boolean supports(StoredDataEncryptionKey storedDataEncryptionKey) {
-        if(storedDataEncryptionKey instanceof EncryptedSymmetricDataEncryptionKey dek) {
-            return Objects.equals(dek.wrappingAlgorithm(), WRAPPING_ALGORITHM) && Objects.equals(dek.wrappingKeyId(), wrappingKeyId);
+        if (storedDataEncryptionKey instanceof EncryptedSymmetricDataEncryptionKey dek) {
+            return Objects.equals(dek.wrappingAlgorithm(), WRAPPING_ALGORITHM)
+                    && Objects.equals(dek.wrappingKeyId(), wrappingKeyId);
         }
         return false;
     }

@@ -8,9 +8,7 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
 class ByteBufferCodec<D, B> {
     private static final Map<Class<?>, BytesConverter<?>> CONVERTERS = Map.of(
             byte[].class, new BytesConverter<>(
@@ -34,12 +32,63 @@ class ByteBufferCodec<D, B> {
                     }
             )
     );
+    private final char marker;
+    private final List<Field<D, B, ?>> fields;
+    private final Supplier<B> builderCreator;
+    private final Function<B, D> builderFinalizer;
 
-    @RequiredArgsConstructor
-    private static class BytesConverter<T> {
-        private final Function<T, Integer> length;
-        private final BiConsumer<ByteBuffer, T> write;
-        private final BiFunction<ByteBuffer, Integer, T> read;
+    ByteBufferCodec(char marker, List<Field<D, B, ?>> fields, Supplier<B> builderCreator, Function<B, D> builderFinalizer) {
+        this.marker = marker;
+        this.fields = fields;
+        this.builderCreator = builderCreator;
+        this.builderFinalizer = builderFinalizer;
+    }
+
+    private static BytesConverter<Object> getConverter(Field<?, ?, ?> field) {
+        var converter = CONVERTERS.get(field.type());
+        if (converter == null) {
+            throw new IllegalArgumentException("Can not convert " + field.type());
+        }
+        return (BytesConverter<Object>) converter;
+    }
+
+    public byte[] encode(D object) {
+        var fieldLength = fields.stream()
+                .mapToInt(field -> getConverter(field).length(field.get(object)) + Integer.BYTES)
+                .sum();
+
+        var bb = ByteBuffer.allocate(Character.BYTES + Integer.BYTES + fieldLength);
+        bb.putChar(marker);
+        bb.putInt(fields.size());
+        for (var field : fields) {
+            var converter = getConverter(field);
+            converter.write(bb, field.get(object));
+        }
+
+        return bb.array();
+    }
+
+    public D decode(byte[] data) {
+        var bb = ByteBuffer.wrap(data);
+        var foundMarker = bb.getChar();
+
+        if (foundMarker != marker) {
+            return null;
+        }
+
+        var fieldLength = bb.getInt();
+        var builder = builderCreator.get();
+        for (int i = 0; i < fieldLength; i++) {
+            var field = (Field<D, B, Object>) fields.get(i);
+            var converter = getConverter(field);
+            builder = field.with(builder, converter.read(bb));
+        }
+
+        return builderFinalizer.apply(builder);
+    }
+
+    private record BytesConverter<T>(Function<T, Integer> length, BiConsumer<ByteBuffer, T> write,
+                                     BiFunction<ByteBuffer, Integer, T> read) {
 
         public int length(T value) {
             return this.length.apply(value);
@@ -51,7 +100,7 @@ class ByteBufferCodec<D, B> {
             var result = read.apply(bb, len);
             var endPos = bb.position();
             var readBytes = endPos - startPos;
-            if(len != readBytes) {
+            if (len != readBytes) {
                 throw new IllegalArgumentException("Read function did not read declared number of bytes (declared %d; read %d)".formatted(len, readBytes));
             }
             return result;
@@ -65,26 +114,14 @@ class ByteBufferCodec<D, B> {
             var endPos = bb.position();
             var writtenBytes = endPos - startPos;
 
-            if(writtenBytes != len) {
-                throw new IllegalStateException("Write function did not write requested number of bytes (requested %d; written %d)".formatted(len, writtenBytes));
+            if (writtenBytes != len) {
+                throw new IllegalStateException(
+                        "Write function did not write requested number of bytes (requested %d; written %d)"
+                                .formatted(len, writtenBytes)
+                );
             }
         }
     }
-
-    private static BytesConverter<Object> getConverter(Field<?, ?, ?> field) {
-        var converter = CONVERTERS.get(field.type());
-        if(converter == null) {
-            throw new IllegalArgumentException("Can not convert "+field.type());
-        }
-        return (BytesConverter<Object>) converter;
-    }
-
-    private final char marker;
-
-    private final List<Field<D, B, ?>> fields;
-
-    private final Supplier<B> builderCreator;
-    private final Function<B, D> builderFinalizer;
 
     public record Field<D, B, T>(
             Class<T> type,
@@ -99,40 +136,4 @@ class ByteBufferCodec<D, B> {
             return builderSetter.apply(builder, item);
         }
     }
-
-    public byte[] encode(D object) {
-        var fieldLength = fields.stream()
-                .mapToInt(field -> getConverter(field).length(field.get(object)) + Integer.BYTES)
-                .sum();
-
-        var bb = ByteBuffer.allocate(Character.BYTES+Integer.BYTES+fieldLength);
-        bb.putChar(marker);
-        bb.putInt(fields.size());
-        for(var field : fields) {
-            var converter = getConverter(field);
-            converter.write(bb, field.get(object));
-        }
-
-        return bb.array();
-    }
-
-    public D decode(byte[] data) {
-        var bb = ByteBuffer.wrap(data);
-        var foundMarker = bb.getChar();
-
-        if(foundMarker != marker) {
-            return null;
-        }
-
-        var fieldLength = bb.getInt();
-        var builder = builderCreator.get();
-        for(int i = 0; i < fieldLength; i++) {
-            var field = (Field<D, B, Object>) fields.get(i);
-            var converter = getConverter(field);
-            builder = field.with(builder, converter.read(bb));
-        }
-
-        return builderFinalizer.apply(builder);
-    }
-
 }
