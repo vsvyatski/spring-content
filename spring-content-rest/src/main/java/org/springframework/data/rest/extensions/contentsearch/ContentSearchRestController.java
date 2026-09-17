@@ -7,11 +7,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import jakarta.persistence.Id;
 
@@ -32,7 +28,6 @@ import org.springframework.content.rest.FulltextEntityLookupQuery;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.core.RepositoryInformation;
 import org.springframework.data.repository.support.Repositories;
@@ -56,36 +51,31 @@ import internal.org.springframework.content.rest.utils.ControllerUtils;
 import internal.org.springframework.content.rest.utils.RepositoryUtils;
 import internal.org.springframework.data.rest.extensions.contentsearch.DefaultEntityLookupStrategy;
 import internal.org.springframework.data.rest.extensions.contentsearch.QueryMethodsEntityLookupStrategy;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @RepositoryRestController
 public class ContentSearchRestController {
 
-    private static final String ENTITY_CONTENTSEARCH_MAPPING = "/{repository}/searchContent";
-    private static final String ENTITY_SEARCHMETHOD_MAPPING = "/{repository}/searchContent/findKeyword";
+    private static final String ENTITY_CONTENT_SEARCH_MAPPING = "/{repository}/searchContent";
+    private static final String ENTITY_SEARCH_METHOD_MAPPING = "/{repository}/searchContent/findKeyword";
 
-    private static Map<String, Method> searchMethods = new HashMap<>();
+    private static final Map<String, Method> searchMethods = new HashMap<>();
 
-    private Repositories repositories;
-    private Stores stores;
-    private PagedResourcesAssembler<Object> pagedResourcesAssembler;
+    private final Repositories repositories;
+    private final Stores stores;
+    private final PagedResourcesAssembler<Object> pagedResourcesAssembler;
     private DefaultEntityLookupStrategy defaultLookupStrategy;
     private QueryMethodsEntityLookupStrategy qmLookupStrategy;
 
     private ReflectionService reflectionService;
 
     static {
-        put(searchMethods, "search", ReflectionUtils.findMethod(Searchable.class, "search", new Class<?>[] { String.class}));
-        put(searchMethods, "search", ReflectionUtils.findMethod(Searchable.class, "search", new Class<?>[] { String.class, Pageable.class}));
-        put(searchMethods, "findKeyword", ReflectionUtils.findMethod(Searchable.class, "findKeyword", new Class<?>[] { String.class }));
+        put("search", ReflectionUtils.findMethod(Searchable.class, "search", String.class));
+        put("search", ReflectionUtils.findMethod(Searchable.class, "search", String.class, Pageable.class));
+        put("findKeyword", ReflectionUtils.findMethod(Searchable.class, "findKeyword", String.class));
     }
 
-    private static void put(Map<String, Method> methods, String key, Method findMethod) {
-
-        methods.put(format("%s:%s", key, Arrays.toString(findMethod.getParameterTypes())), findMethod);
+    private static void put(String key, Method findMethod) {
+        ContentSearchRestController.searchMethods.put(format("%s:%s", key, Arrays.toString(findMethod.getParameterTypes())), findMethod);
     }
 
     @Autowired
@@ -112,31 +102,28 @@ public class ContentSearchRestController {
         this.qmLookupStrategy = lookupStrategy;
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     @StoreType("contentstore")
     @ResponseBody
-    @RequestMapping(value = ENTITY_CONTENTSEARCH_MAPPING, method = RequestMethod.GET)
+    @RequestMapping(value = ENTITY_CONTENT_SEARCH_MAPPING, method = RequestMethod.GET)
     public CollectionModel<?> searchContent(
             RootResourceInformation repoInfo,
             DefaultedPageable pageable,
-            Sort sort,
             PersistentEntityResourceAssembler assembler,
             @PathVariable("repository") String repository,
             @RequestParam(name = "queryString") String queryString) {
 
-        return searchContentInternal(repoInfo, repository, pageable, sort, assembler, "search", new String[] { queryString });
+        return searchContentInternal(repoInfo, repository, pageable, assembler, "search", new String[]{queryString});
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     @StoreType("contentstore")
     @ResponseBody
-    @RequestMapping(value = ENTITY_SEARCHMETHOD_MAPPING, method = RequestMethod.GET)
-    public CollectionModel<?> searchContent(RootResourceInformation repoInfo, DefaultedPageable pageable, Sort sort, PersistentEntityResourceAssembler assembler, @PathVariable("repository") String repository, @RequestParam(name = "keyword") List<String> keywords) {
+    @RequestMapping(value = ENTITY_SEARCH_METHOD_MAPPING, method = RequestMethod.GET)
+    public CollectionModel<?> searchContent(RootResourceInformation repoInfo, DefaultedPageable pageable, PersistentEntityResourceAssembler assembler, @PathVariable("repository") String repository, @RequestParam(name = "keyword") List<String> keywords) {
 
-        return searchContentInternal(repoInfo, repository, pageable, sort, assembler, "findKeyword", keywords.toArray(new String[] {}));
+        return searchContentInternal(repoInfo, repository, pageable, assembler, "findKeyword", keywords.toArray(new String[]{}));
     }
 
-    private CollectionModel<?> searchContentInternal(RootResourceInformation repoInfo, String repository, DefaultedPageable pageable, Sort sort, PersistentEntityResourceAssembler assembler, String searchMethod, String[] keywords) {
+    private CollectionModel<?> searchContentInternal(RootResourceInformation repoInfo, String repository, DefaultedPageable pageable, PersistentEntityResourceAssembler assembler, String searchMethod, String[] keywords) {
 
         StoreInfo[] infos = stores.getStores(ContentStore.class, new StoreFilter() {
             @Override
@@ -155,17 +142,17 @@ public class ContentSearchRestController {
         }
 
         if (infos.length > 1) {
-            throw new IllegalStateException(String.format("Too many content assocation for Entity %s", repoInfo.getDomainType().getCanonicalName()));
+            throw new IllegalStateException(String.format("Too many content association for Entity %s", repoInfo.getDomainType().getCanonicalName()));
         }
 
         StoreInfo info = infos[0];
 
         ContentStore<Object, Serializable> store = info.getImplementation(ContentStore.class);
-        if (store instanceof Searchable == false) {
+        if (!(store instanceof Searchable)) {
             throw new ResourceNotFoundException("Entity content is not searchable");
         }
 
-        Class<?>[] searchMethodArgTypes = (pageable.unpagedIfDefault().isUnpaged() ? new Class<?>[] {String.class} : new Class<?>[] {String.class, Pageable.class} );
+        Class<?>[] searchMethodArgTypes = (pageable.unpagedIfDefault().isUnpaged() ? new Class<?>[]{String.class} : new Class<?>[]{String.class, Pageable.class});
         Method method = searchMethods.get(format("%s:%s", searchMethod, Arrays.toString(searchMethodArgTypes)));
 
         if (method == null) {
@@ -181,16 +168,16 @@ public class ContentSearchRestController {
 
             Method parameterTypeAwareMethod = ReflectionUtils.findMethod(ParameterTypeAware.class, "setGenericArguments", Class[].class);
             if (parameterTypeAwareMethod != null) {
-                reflectionService.invokeMethod(parameterTypeAwareMethod, store, new Object[] {new Class[] {InternalResult.class}});
+                reflectionService.invokeMethod(parameterTypeAwareMethod, store, new Object[]{new Class[]{InternalResult.class}});
             }
 
             returnType = InternalResult.class;
         }
 
-        Object[] argValues = (pageable.unpagedIfDefault().isUnpaged()) ? new String[] {keywords[0]} : new Object[] {keywords[0], pageable.getPageable()};
-        Iterable<?> intermediateResults = (Iterable<?>)reflectionService.invokeMethod(method, store, argValues);
+        Object[] argValues = (pageable.unpagedIfDefault().isUnpaged()) ? new String[]{keywords[0]} : new Object[]{keywords[0], pageable.getPageable()};
+        Iterable<?> intermediateResults = (Iterable<?>) reflectionService.invokeMethod(method, store, argValues);
 
-        if (intermediateResults == null || intermediateResults.iterator().hasNext() == false) {
+        if (intermediateResults == null || !intermediateResults.iterator().hasNext()) {
             return CollectionModel.empty();
         }
 
@@ -207,7 +194,7 @@ public class ContentSearchRestController {
             List<Object> contentIds = new ArrayList<>();
 
             for (Object tempResult : intermediateResults) {
-                InternalResult internalResult = (InternalResult)tempResult;
+                InternalResult internalResult = (InternalResult) tempResult;
                 if (internalResult.getId() != null) {
                     entityIds.add(internalResult.getId());
                 } else if (idFieldEqualsContentIdField) {
@@ -218,22 +205,18 @@ public class ContentSearchRestController {
             }
 
             if (!entityIds.isEmpty()) {
-                repositories.getRepositoryFor(domainClass).ifPresent(r -> {
-
-                    fetchEntitiesInBatches((CrudRepository<?,?>)r, entityIds, results);
-                });
+                repositories.getRepositoryFor(domainClass)
+                        .ifPresent(r -> fetchEntitiesInBatches((CrudRepository<?, ?>) r, entityIds, results));
             }
 
             if (!contentIds.isEmpty()) {
-                if (ri != null) {
-                    if (ri.getQueryMethods()
-                            .stream().noneMatch(m -> m.getAnnotation(FulltextEntityLookupQuery.class) != null)) {
+                if (ri.getQueryMethods()
+                        .stream().noneMatch(m -> m.getAnnotation(FulltextEntityLookupQuery.class) != null)) {
 
-                        defaultLookupStrategy.lookup(repoInfo, ri, contentIds, results);
-                    } else {
+                    defaultLookupStrategy.lookup(repoInfo, ri, contentIds, results);
+                } else {
 
-                        qmLookupStrategy.lookup(repoInfo, ri, contentIds, results);
-                    }
+                    qmLookupStrategy.lookup(repoInfo, ri, contentIds, results);
                 }
             }
 
@@ -251,23 +234,23 @@ public class ContentSearchRestController {
         if (pageable.unpagedIfDefault().isUnpaged()) {
             return results;
         } else if (intermediateResults instanceof Page) {
-            return new PageImpl(results, pageable.getPageable(), ((Page)intermediateResults).getTotalPages());
+            return new PageImpl<>(results, pageable.getPageable(), ((Page) intermediateResults).getTotalPages());
         } else {
-            return new PageImpl(results);
+            return new PageImpl<>(results);
         }
     }
 
-    public static void fetchEntitiesInBatches(CrudRepository<?,?> r, List entityIds, List results) {
+    public static void fetchEntitiesInBatches(CrudRepository<?, ?> r, List entityIds, List results) {
 
         int size = entityIds.size();
 
         Method findAllByIdMethod = ReflectionUtils.findMethod(CrudRepository.class, "findAllById", Iterable.class);
 
-        for (int i=0; i < size; ) {
-            int lowerbound = i;
-            int upperbound = (lowerbound + 250 <= entityIds.size() ? lowerbound + 250 : size);
+        for (int i = 0; i < size; ) {
+            int lowerBound = i;
+            int upperBound = (lowerBound + 250 <= entityIds.size() ? lowerBound + 250 : size);
 
-            List<Object> subset = entityIds.subList(lowerbound, upperbound);
+            List<Object> subset = entityIds.subList(lowerBound, upperBound);
 
             Iterable<?> entities = (Iterable<?>) ReflectionUtils.invokeMethod(findAllByIdMethod, r, subset);
             for (Object entity : entities) {
@@ -284,10 +267,8 @@ public class ContentSearchRestController {
         for (Type t : storeInterfaceClass.getGenericInterfaces()) {
             if (t.getTypeName().startsWith("org.springframework.content.commons.search")) {
                 if (t instanceof ParameterizedType) {
-                    Type[] fragmentGenericTypes = ((ParameterizedType)t).getActualTypeArguments();
-                    if (fragmentGenericTypes != null) {
-                        searchReturnType = (Class<?>)fragmentGenericTypes[0];
-                    }
+                    Type[] fragmentGenericTypes = ((ParameterizedType) t).getActualTypeArguments();
+                    searchReturnType = (Class<?>) fragmentGenericTypes[0];
                 }
             }
         }
@@ -299,16 +280,9 @@ public class ContentSearchRestController {
         Field idField = DomainObjectUtils.getIdField(domainClass);
         Field contentIdField = BeanUtils.findFieldWithAnnotation(domainClass, ContentId.class);
 
-        if (idField.equals(contentIdField)) {
-            return true;
-        }
-        return false;
+        return Objects.equals(idField, contentIdField);
     }
 
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    @AllArgsConstructor
     public static class InternalResult {
 
         @Id
@@ -316,5 +290,29 @@ public class ContentSearchRestController {
 
         @ContentId
         private Object contentId;
+
+        public InternalResult() {
+        }
+
+        public InternalResult(Object id, Object contentId) {
+            this.id = id;
+            this.contentId = contentId;
+        }
+
+        public Object getId() {
+            return id;
+        }
+
+        public void setId(Object id) {
+            this.id = id;
+        }
+
+        public Object getContentId() {
+            return contentId;
+        }
+
+        public void setContentId(Object contentId) {
+            this.contentId = contentId;
+        }
     }
 }
