@@ -452,7 +452,7 @@ public class ContentStoreContentService implements ContentService {
                                 RestResource r = dm.getAnnotation(RestResource.class);
                                 if (r != null && r.exported() == false) {
                                     List<String> paths = Arrays.asList(r.paths());
-                                    if (paths.contains("*") || paths.contains(path.getName())) {
+                                    if (paths.contains("*") || paths.contains(path.name())) {
                                         unexportedMethods.add(m);
                                     }
                                 }
@@ -465,7 +465,7 @@ public class ContentStoreContentService implements ContentService {
             // if developer chooses to decorate content property and annotate with @RestResource(exported=false)
             Pair<Optional<Class<?>>, Class<? extends Serializable>> types = StoreInterfaceUtils.getStoreTypes(storeInterface);
             types.getFirst().ifPresent((clazz) -> {
-                if (exportContext.getMappings(types.getFirst().get()).get(path.getName()) == false) {
+                if (exportContext.getMappings(types.getFirst().get()).get(path.name()) == false) {
                     unexportedMethods.addAll(Arrays.asList(storeMethods));
                 }
             });

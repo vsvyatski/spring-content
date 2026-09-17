@@ -12,7 +12,7 @@ import internal.org.springframework.content.rest.io.AssociatedStoreResourceImpl;
 
 public class AssociativeStoreResourceResolver implements ResourceResolver {
 
-    private MappingContext mappingContext;
+    private final MappingContext mappingContext;
 
     public AssociativeStoreResourceResolver(MappingContext mappingContext) {
         this.mappingContext = mappingContext;
@@ -27,6 +27,7 @@ public class AssociativeStoreResourceResolver implements ResourceResolver {
     public Resource resolve(NativeWebRequest nativeWebRequest, StoreInfo info, Object domainObj, PropertyPath propertyPath) {
         GetResourceParams params = new GetResourceParams(nativeWebRequest.getHeader("Range"));
         Resource r = info.getImplementation(AssociativeStore.class).getResource(domainObj, propertyPath, params);
-        return new AssociatedStoreResourceImpl(info, domainObj, propertyPath, mappingContext.getContentProperty(domainObj.getClass(), propertyPath.getName()), r);
+        return new AssociatedStoreResourceImpl<>(info, domainObj, propertyPath,
+                mappingContext.getContentProperty(domainObj.getClass(), propertyPath.name()), r);
     }
 }

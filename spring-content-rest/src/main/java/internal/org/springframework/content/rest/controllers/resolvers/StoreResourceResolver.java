@@ -28,6 +28,6 @@ public class StoreResourceResolver implements ResourceResolver {
     public Resource resolve(NativeWebRequest nativeWebRequest, StoreInfo info, Object domainObj, PropertyPath property) {
         GetResourceParams params = new GetResourceParams(nativeWebRequest.getHeader("Range"));
         Resource r = info.getImplementation(AssociativeStore.class).getResource(domainObj, property, params);
-        return new AssociatedStoreResourceImpl(info, domainObj, property, mappingContext.getContentProperty(domainObj.getClass(), property.getName()), r);
+        return new AssociatedStoreResourceImpl(info, domainObj, property, mappingContext.getContentProperty(domainObj.getClass(), property.name()), r);
     }
 }

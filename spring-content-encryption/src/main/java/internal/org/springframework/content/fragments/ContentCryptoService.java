@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.content.commons.io.RangeableResource;
 import org.springframework.content.commons.mappingcontext.ContentProperty;
@@ -27,7 +28,7 @@ import org.springframework.util.Assert;
 /**
  * Encryption logic in support of {@link EncryptingContentStoreImpl}
  *
- * @param <S> Type of the entity
+ * @param <S>   Type of the entity
  * @param <DEK> Type of the encrypted data encryption key
  */
 @RequiredArgsConstructor
@@ -66,23 +67,23 @@ class ContentCryptoService<S, DEK extends StoredDataEncryptionKey> {
 
         var encryptedDeks = dataEncryptionKeyAccessor.findKeys(entity, contentProperty);
         var resource = contentGetter.get();
-        if(encryptedDeks == null) {
+        if (encryptedDeks == null) {
             // Content is not encrypted; return the original resource
             return resource;
         }
         var encryptionParameters = decryptEncryptionParameters(encryptedDeks);
         if (encryptionParameters == null) {
-            throw new StoreAccessException(String.format("Content property %s can not be decrypted".formatted(propertyPath.getName())));
+            throw new StoreAccessException(String.format("Content property %s can not be decrypted".formatted(propertyPath.name())));
         }
 
 
         InputStreamRequestParameters requestParams = InputStreamRequestParameters.full();
         try {
-            if(getResourceParams != null) {
+            if (getResourceParams != null) {
                 requestParams = parseRangePattern(getResourceParams.range(), resource);
             }
-        } catch(IOException ex) {
-            throw new StoreAccessException(String.format("Content property %s can not be accessed".formatted(propertyPath.getName())), ex);
+        } catch (IOException ex) {
+            throw new StoreAccessException(String.format("Content property %s can not be accessed".formatted(propertyPath.name())), ex);
         }
 
         InputStreamRequestParameters finalRequestParams = requestParams;
@@ -95,7 +96,7 @@ class ContentCryptoService<S, DEK extends StoredDataEncryptionKey> {
                 try {
                     return resource.getInputStream();
                 } catch (IOException ex) {
-                    throw new StoreAccessException(String.format("Content property %s can not be accessed".formatted(propertyPath.getName())), ex);
+                    throw new StoreAccessException(String.format("Content property %s can not be accessed".formatted(propertyPath.name())), ex);
                 }
             }, encryptionParameters, finalRequestParams);
         }, resource);
@@ -107,9 +108,9 @@ class ContentCryptoService<S, DEK extends StoredDataEncryptionKey> {
     }
 
     private ContentProperty resolveContentPropertyRequired(S entity, PropertyPath propertyPath) {
-        ContentProperty contentProperty = mappingContext.getContentProperty(entity.getClass(), propertyPath.getName());
+        ContentProperty contentProperty = mappingContext.getContentProperty(entity.getClass(), propertyPath.name());
         if (contentProperty == null) {
-            throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.getName()));
+            throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.name()));
         }
         return contentProperty;
     }
@@ -117,7 +118,7 @@ class ContentCryptoService<S, DEK extends StoredDataEncryptionKey> {
     private EncryptionParameters decryptEncryptionParameters(Collection<DEK> encryptedDeks) {
         for (var wrapper : dataEncryptionKeyWrappers) {
             for (var encryptedDek : encryptedDeks) {
-                if(wrapper.supports(encryptedDek)) {
+                if (wrapper.supports(encryptedDek)) {
                     return wrapper.unwrapEncryptionKey(encryptedDek);
                 }
             }
@@ -130,22 +131,22 @@ class ContentCryptoService<S, DEK extends StoredDataEncryptionKey> {
 
     private static InputStreamRequestParameters parseRangePattern(String range, Resource resource)
             throws IOException {
-        if(range == null || range.isEmpty()) {
+        if (range == null || range.isEmpty()) {
             return InputStreamRequestParameters.full();
         }
         var matcher = RANGE_PATTERN.matcher(range);
-        if(matcher.matches()) {
+        if (matcher.matches()) {
             var firstPosStr = matcher.group("firstPos");
             var lastPosStr = matcher.group("lastPos");
-            if(firstPosStr.isEmpty() && lastPosStr.isEmpty()) {
+            if (firstPosStr.isEmpty() && lastPosStr.isEmpty()) {
                 return InputStreamRequestParameters.full();
-            } else if(firstPosStr.isEmpty()) {
+            } else if (firstPosStr.isEmpty()) {
                 var contentLength = resource.contentLength();
                 return InputStreamRequestParameters.startingFrom(contentLength - Long.parseUnsignedLong(lastPosStr));
             } else {
                 return new InputStreamRequestParameters(
                         Long.parseUnsignedLong(firstPosStr),
-                        lastPosStr.isEmpty()?null:Long.parseUnsignedLong(lastPosStr)
+                        lastPosStr.isEmpty() ? null : Long.parseUnsignedLong(lastPosStr)
                 );
             }
         } else {
@@ -154,6 +155,6 @@ class ContentCryptoService<S, DEK extends StoredDataEncryptionKey> {
     }
 
     private static String constructRangePattern(InputStreamRequestParameters parameters) {
-        return "bytes="+parameters.getStartByteOffset()+"-"+ Optional.ofNullable(parameters.getEndByteOffset()).map(Long::toUnsignedString).orElse("");
+        return "bytes=" + parameters.getStartByteOffset() + "-" + Optional.ofNullable(parameters.getEndByteOffset()).map(Long::toUnsignedString).orElse("");
     }
 }

@@ -125,9 +125,9 @@ public class EncryptingContentStoreImpl<S, SID extends Serializable> implements
         Assert.notNull(storeDelegate, "store not set");
         Assert.notNull(cryptoService, "cryptoService not set");
 
-        ContentProperty contentProperty = mappingContext.getContentProperty(entity.getClass(), propertyPath.getName());
+        ContentProperty contentProperty = mappingContext.getContentProperty(entity.getClass(), propertyPath.name());
         if (contentProperty == null) {
-            throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.getName()));
+            throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.name()));
         }
 
         var newEntity = cryptoService.clearKeys(entity, propertyPath);
