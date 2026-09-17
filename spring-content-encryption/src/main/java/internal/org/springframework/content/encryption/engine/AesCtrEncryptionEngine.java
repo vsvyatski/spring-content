@@ -52,8 +52,8 @@ public class AesCtrEncryptionEngine implements ContentEncryptionEngine {
         Cipher cipher = Cipher.getInstance("AES/CTR/NoPadding");
         cipher.init(
                 forEncryption ? Cipher.ENCRYPT_MODE : Cipher.DECRYPT_MODE,
-                parameters.getSecretKey(),
-                new IvParameterSpec(parameters.getInitializationVector())
+                parameters.secretKey(),
+                new IvParameterSpec(parameters.initializationVector())
         );
 
         return cipher;
@@ -74,12 +74,12 @@ public class AesCtrEncryptionEngine implements ContentEncryptionEngine {
             EncryptionParameters encryptionParameters,
             InputStreamRequestParameters requestParameters
     ) {
-        var blockStartOffset = calculateBlockOffset(requestParameters.getStartByteOffset());
+        var blockStartOffset = calculateBlockOffset(requestParameters.startByteOffset());
 
-        var adjustedIv = adjustIvForOffset(encryptionParameters.getInitializationVector(), blockStartOffset);
+        var adjustedIv = adjustIvForOffset(encryptionParameters.initializationVector(), blockStartOffset);
 
         var adjustedParameters = new EncryptionParameters(
-                encryptionParameters.getSecretKey(),
+                encryptionParameters.secretKey(),
                 adjustedIv
         );
 

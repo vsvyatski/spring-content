@@ -47,7 +47,7 @@ class ContentCryptoService<S, DEK extends StoredDataEncryptionKey> {
         var contentProperty = resolveContentPropertyRequired(entity, propertyPath);
 
         var encryptionParameters = encryptionEngine.createNewParameters();
-        var encryptedDeks = dataEncryptionKeyWrappers.stream()
+        var encryptedKeys = dataEncryptionKeyWrappers.stream()
                 .map(wrapper -> wrapper.wrapEncryptionKey(encryptionParameters))
                 .toList();
 
@@ -56,7 +56,7 @@ class ContentCryptoService<S, DEK extends StoredDataEncryptionKey> {
 
         var newEntity = contentSetter.apply(entity, encryptedStream);
 
-        return dataEncryptionKeyAccessor.setKeys(newEntity, contentProperty, encryptedDeks);
+        return dataEncryptionKeyAccessor.setKeys(newEntity, contentProperty, encryptedKeys);
     }
 
     public Resource decrypt(S entity, PropertyPath propertyPath, GetResourceParams getResourceParams, Supplier<Resource> contentGetter) {
@@ -65,13 +65,13 @@ class ContentCryptoService<S, DEK extends StoredDataEncryptionKey> {
 
         var contentProperty = resolveContentPropertyRequired(entity, propertyPath);
 
-        var encryptedDeks = dataEncryptionKeyAccessor.findKeys(entity, contentProperty);
+        var encryptedKeys = dataEncryptionKeyAccessor.findKeys(entity, contentProperty);
         var resource = contentGetter.get();
-        if (encryptedDeks == null) {
+        if (encryptedKeys == null) {
             // Content is not encrypted; return the original resource
             return resource;
         }
-        var encryptionParameters = decryptEncryptionParameters(encryptedDeks);
+        var encryptionParameters = decryptEncryptionParameters(encryptedKeys);
         if (encryptionParameters == null) {
             throw new StoreAccessException(String.format("Content property %s can not be decrypted".formatted(propertyPath.name())));
         }
@@ -88,18 +88,18 @@ class ContentCryptoService<S, DEK extends StoredDataEncryptionKey> {
 
         InputStreamRequestParameters finalRequestParams = requestParams;
 
-        return new DecryptedResource(() -> {
-            return encryptionEngine.decrypt(params -> {
-                if (resource instanceof RangeableResource rr) {
-                    rr.setRange(constructRangePattern(params));
-                }
-                try {
-                    return resource.getInputStream();
-                } catch (IOException ex) {
-                    throw new StoreAccessException(String.format("Content property %s can not be accessed".formatted(propertyPath.name())), ex);
-                }
-            }, encryptionParameters, finalRequestParams);
-        }, resource);
+        return new DecryptedResource(() -> encryptionEngine.decrypt(params -> {
+            if (resource instanceof RangeableResource rr) {
+                rr.setRange(constructRangePattern(params));
+            }
+            try {
+                return resource.getInputStream();
+            } catch (IOException ex) {
+                throw new StoreAccessException(
+                        String.format("Content property %s can not be accessed".formatted(propertyPath.name())), ex
+                );
+            }
+        }, encryptionParameters, finalRequestParams), resource);
 
     }
 
@@ -115,9 +115,9 @@ class ContentCryptoService<S, DEK extends StoredDataEncryptionKey> {
         return contentProperty;
     }
 
-    private EncryptionParameters decryptEncryptionParameters(Collection<DEK> encryptedDeks) {
+    private EncryptionParameters decryptEncryptionParameters(Collection<DEK> encryptedKeys) {
         for (var wrapper : dataEncryptionKeyWrappers) {
-            for (var encryptedDek : encryptedDeks) {
+            for (var encryptedDek : encryptedKeys) {
                 if (wrapper.supports(encryptedDek)) {
                     return wrapper.unwrapEncryptionKey(encryptedDek);
                 }
@@ -127,7 +127,8 @@ class ContentCryptoService<S, DEK extends StoredDataEncryptionKey> {
     }
 
     // As per https://www.rfc-editor.org/rfc/rfc9110.html#name-range; single-range support only
-    private static final Pattern RANGE_PATTERN = Pattern.compile("\\Abytes=(?<firstPos>[0-9]*)-(?<lastPos>[0-9]*)\\Z");
+    private static final Pattern RANGE_PATTERN =
+            Pattern.compile("\\Abytes=(?<firstPos>[0-9]*)-(?<lastPos>[0-9]*)\\Z");
 
     private static InputStreamRequestParameters parseRangePattern(String range, Resource resource)
             throws IOException {
@@ -150,11 +151,14 @@ class ContentCryptoService<S, DEK extends StoredDataEncryptionKey> {
                 );
             }
         } else {
-            throw new StoreAccessException(String.format("Range request '%s' is not supported. Only a single byte-range is supported".formatted(range)));
+            throw new StoreAccessException(String.format(
+                    "Range request '%s' is not supported. Only a single byte-range is supported".formatted(range)
+            ));
         }
     }
 
     private static String constructRangePattern(InputStreamRequestParameters parameters) {
-        return "bytes=" + parameters.getStartByteOffset() + "-" + Optional.ofNullable(parameters.getEndByteOffset()).map(Long::toUnsignedString).orElse("");
+        return "bytes=" + parameters.startByteOffset() + "-" +
+                Optional.ofNullable(parameters.endByteOffset()).map(Long::toUnsignedString).orElse("");
     }
 }

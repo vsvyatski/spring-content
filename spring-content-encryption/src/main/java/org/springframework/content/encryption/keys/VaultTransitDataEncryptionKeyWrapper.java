@@ -27,15 +27,15 @@ public class VaultTransitDataEncryptionKeyWrapper implements DataEncryptionKeyWr
 
     @Override
     public EncryptedSymmetricDataEncryptionKey wrapEncryptionKey(EncryptionParameters dataEncryptionParameters) {
-        var plainText = Plaintext.of(dataEncryptionParameters.getSecretKey().getEncoded());
+        var plainText = Plaintext.of(dataEncryptionParameters.secretKey().getEncoded());
         var encryptedKey = transitOperations.encrypt(wrappingKeyId, plainText);
         return new EncryptedSymmetricDataEncryptionKey(
                 WRAPPING_ALGORITHM,
                 wrappingKeyId,
                 Integer.toString(encryptedKey.getContext().getKeyVersion()),
-                dataEncryptionParameters.getSecretKey().getAlgorithm(),
+                dataEncryptionParameters.secretKey().getAlgorithm(),
                 encryptedKey.getCiphertext().getBytes(StandardCharsets.UTF_8),
-                dataEncryptionParameters.getInitializationVector()
+                dataEncryptionParameters.initializationVector()
         );
     }
 

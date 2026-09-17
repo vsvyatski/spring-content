@@ -309,7 +309,7 @@ public class EncryptionIT {
 
         @Override
         public EncryptedSymmetricDataEncryptionKey wrapEncryptionKey(EncryptionParameters dataEncryptionParameters) {
-            return new EncryptedSymmetricDataEncryptionKey("drop", "", "", dataEncryptionParameters.getSecretKey().getAlgorithm(), new byte[0], new byte[0]);
+            return new EncryptedSymmetricDataEncryptionKey("drop", "", "", dataEncryptionParameters.secretKey().getAlgorithm(), new byte[0], new byte[0]);
         }
 
         @Override
