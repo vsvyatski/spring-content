@@ -9,7 +9,7 @@ with Spring Data entities, store it in pluggable backends, optionally expose it 
 renditions, encryption, and locking/versioning.
 
 - Group ID: `io.github.vsvyatski`
-- Current version: `4.0.2` (keep all modules on the parent version)
+- Current version: `4.1.0-SNAPSHOT` (keep all modules on the parent version)
 - Java 17, Spring Boot 4.x (`spring-boot-dependencies` BOM), Jakarta Persistence 3.2
 - License: Apache 2.0
 - Fork of Paul Warren’s project; this tree targets Spring Boot 4 compatibility
