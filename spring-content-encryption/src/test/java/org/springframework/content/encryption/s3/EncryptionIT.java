@@ -3,10 +3,6 @@ package org.springframework.content.encryption.s3;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.paulcwarren.ginkgo4j.Ginkgo4jSpringRunner;
 import internal.org.springframework.content.fs.boot.autoconfigure.FileSystemContentAutoConfiguration;
-import org.springframework.content.encryption.keys.VaultTransitDataEncryptionKeyWrapper;
-import java.util.List;
-import org.springframework.content.encryption.config.EncryptingContentStoreConfiguration;
-import org.springframework.content.encryption.config.EncryptingContentStoreConfigurer;
 import internal.org.springframework.content.rest.boot.autoconfigure.ContentRestAutoConfiguration;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import io.restassured.module.mockmvc.response.MockMvcResponse;
@@ -14,12 +10,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpStatus;
 import org.hamcrest.Matchers;
+import org.jspecify.annotations.NonNull;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,13 +24,16 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.annotations.MimeType;
+import org.springframework.content.encryption.LocalStack;
+import org.springframework.content.encryption.VaultContainerSupport;
+import org.springframework.content.encryption.config.EncryptingContentStoreConfiguration;
+import org.springframework.content.encryption.config.EncryptingContentStoreConfigurer;
 import org.springframework.content.encryption.engine.ContentEncryptionEngine.EncryptionParameters;
 import org.springframework.content.encryption.keys.DataEncryptionKeyWrapper;
 import org.springframework.content.encryption.keys.StoredDataEncryptionKey;
 import org.springframework.content.encryption.keys.StoredDataEncryptionKey.EncryptedSymmetricDataEncryptionKey;
+import org.springframework.content.encryption.keys.VaultTransitDataEncryptionKeyWrapper;
 import org.springframework.content.encryption.store.EncryptingContentStore;
-import org.springframework.content.encryption.LocalStack;
-import org.springframework.content.encryption.VaultContainerSupport;
 import org.springframework.content.s3.config.EnableS3Stores;
 import org.springframework.content.s3.store.S3ContentStore;
 import org.springframework.context.annotation.Bean;
@@ -54,6 +51,8 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
 
 import java.net.URISyntaxException;
+import java.nio.charset.Charset;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -64,7 +63,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.fail;
 
 @RunWith(Ginkgo4jSpringRunner.class)
-@SpringBootTest(classes = EncryptionIT.Application.class, webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = EncryptionIT.Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class EncryptionIT {
 
     private static final String BUCKET = "test-bucket";
@@ -73,7 +72,7 @@ public class EncryptionIT {
         System.setProperty("spring.content.s3.bucket", BUCKET);
     }
 
-    private static Object mutex = new Object();
+    private static final Object mutex = new Object();
 
     @Autowired
     private FileRepository repo;
@@ -92,7 +91,6 @@ public class EncryptionIT {
 
     private File f;
 
-
     static {
         System.setProperty("spring.content.s3.bucket", "test-bucket");
     }
@@ -102,7 +100,7 @@ public class EncryptionIT {
             BeforeEach(() -> {
                 RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
 
-                synchronized(mutex) {
+                synchronized (mutex) {
                     HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
                             .bucket("test-bucket")
                             .build();
@@ -143,7 +141,7 @@ public class EncryptionIT {
                             .build();
 
                     ResponseInputStream<GetObjectResponse> resp = client.getObject(getObjectRequest);
-                    String contents = IOUtils.toString(resp);
+                    String contents = IOUtils.toString(resp, Charset.defaultCharset());
                     assertThat(contents, is(not("Hello Client-side encryption World!")));
                 });
                 It("should be retrieved decrypted", () -> {
@@ -187,11 +185,6 @@ public class EncryptionIT {
                     BeforeEach(() -> {
                         vaultTemplate.opsForTransit().rotate("my-key");
                     });
-                    /*It("should not change the stored content key", () -> {
-                        f = repo.findById(f.getId()).get();
-
-                        assertThat(new String(f.getContentKey()), startsWith("vault:v1"));
-                    });*/
                     It("should still retrieve content decrypted", () -> {
                         given()
                                 .header("accept", "text/plain")
@@ -202,21 +195,6 @@ public class EncryptionIT {
                                 .contentType(Matchers.startsWith("text/plain"))
                                 .body(Matchers.equalTo("Hello Client-side encryption World!"));
                     });
-                    /*
-                    It("should update the content key version when next stored", () -> {
-                        given()
-                                .contentType("text/plain")
-                                .body("Hello Client-side encryption World!")
-                                .when()
-                                .post("/files/" + f.getId() + "/content")
-                                .then()
-                                .statusCode(HttpStatus.SC_OK);
-
-                        f = repo.findById(f.getId()).get();
-                        assertThat(new String(f.getContentKey()), startsWith("vault:"));
-                        assertThat(new String(f.getContentKey()), not(startsWith("vault:v1")));
-                    });
-                     */
                 });
                 Context("when the content is unset", () -> {
                     It("it should remove the content and clear the content key", () -> {
@@ -239,7 +217,8 @@ public class EncryptionIT {
                         try {
                             client.headObject(getObjectRequest);
                             fail("expected object not to exist");
-                        } catch (NoSuchKeyException nske) {}
+                        } catch (NoSuchKeyException ignored) {
+                        }
                     });
                 });
             });
@@ -247,9 +226,10 @@ public class EncryptionIT {
     }
 
     @Test
-    public void noop() {}
+    public void noop() {
+    }
 
-    @SpringBootApplication(exclude={FileSystemContentAutoConfiguration.class})
+    @SpringBootApplication(exclude = {FileSystemContentAutoConfiguration.class})
     @ImportAutoConfiguration(ContentRestAutoConfiguration.class)
     @EnableJpaRepositories(considerNestedRepositories = true)
     @EnableS3Stores
@@ -262,7 +242,7 @@ public class EncryptionIT {
         public static class Config extends AbstractVaultConfiguration {
 
             @Override
-            public VaultEndpoint vaultEndpoint() {
+            public @NonNull VaultEndpoint vaultEndpoint() {
 
                 String host = VaultContainerSupport.getVaultContainer().getHost();
                 int port = VaultContainerSupport.getVaultContainer().getMappedPort(8200);
@@ -273,7 +253,7 @@ public class EncryptionIT {
             }
 
             @Override
-            public ClientAuthentication clientAuthentication() {
+            public @NonNull ClientAuthentication clientAuthentication() {
                 return new TokenAuthentication("my-root-token");
             }
 
@@ -319,14 +299,13 @@ public class EncryptionIT {
         }
     }
 
-    public interface FileRepository extends CrudRepository<File, Long> {}
+    public interface FileRepository extends CrudRepository<File, Long> {
+    }
 
-    public interface FileContentStore extends S3ContentStore<File, UUID>, EncryptingContentStore<File, UUID> {}
+    public interface FileContentStore extends S3ContentStore<File, UUID>, EncryptingContentStore<File, UUID> {
+    }
 
     @Entity
-    @Getter
-    @Setter
-    @NoArgsConstructor
     public static class File {
         @Id
         @GeneratedValue(strategy = GenerationType.AUTO)
@@ -337,8 +316,59 @@ public class EncryptionIT {
         @JsonIgnore
         private byte[] contentKey;
 
-        @ContentId private UUID contentId;
-        @ContentLength private long contentLength;
-        @MimeType private String contentMimeType;
+        @ContentId
+        private UUID contentId;
+        @ContentLength
+        private long contentLength;
+        @MimeType
+        private String contentMimeType;
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public byte[] getContentKey() {
+            return contentKey;
+        }
+
+        public void setContentKey(byte[] contentKey) {
+            this.contentKey = contentKey;
+        }
+
+        public UUID getContentId() {
+            return contentId;
+        }
+
+        public void setContentId(UUID contentId) {
+            this.contentId = contentId;
+        }
+
+        public long getContentLength() {
+            return contentLength;
+        }
+
+        public void setContentLength(long contentLength) {
+            this.contentLength = contentLength;
+        }
+
+        public String getContentMimeType() {
+            return contentMimeType;
+        }
+
+        public void setContentMimeType(String contentMimeType) {
+            this.contentMimeType = contentMimeType;
+        }
     }
 }

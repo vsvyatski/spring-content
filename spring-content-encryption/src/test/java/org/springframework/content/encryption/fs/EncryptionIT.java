@@ -12,9 +12,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpStatus;
 import org.hamcrest.Matchers;
@@ -50,7 +47,7 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 @RunWith(Ginkgo4jSpringRunner.class)
-@SpringBootTest(classes = EncryptionIT.Application.class, webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = EncryptionIT.Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class EncryptionIT {
 
     @Autowired
@@ -136,9 +133,10 @@ public class EncryptionIT {
     }
 
     @Test
-    public void noop() {}
+    public void noop() {
+    }
 
-    @SpringBootApplication(exclude={S3ContentAutoConfiguration.class})
+    @SpringBootApplication(exclude = {S3ContentAutoConfiguration.class})
     @ImportAutoConfiguration(ContentRestAutoConfiguration.class)
     @EnableJpaRepositories(considerNestedRepositories = true)
     @EnableFileSystemStores
@@ -154,7 +152,8 @@ public class EncryptionIT {
             public java.io.File filesystemRoot() {
                 try {
                     return Files.createTempDirectory("").toFile();
-                } catch (IOException ioe) {}
+                } catch (IOException ignored) {
+                }
                 return null;
             }
 
@@ -175,14 +174,13 @@ public class EncryptionIT {
         }
     }
 
-    public interface FileRepository extends CrudRepository<FsFile, Long> {}
+    public interface FileRepository extends CrudRepository<FsFile, Long> {
+    }
 
-    public interface FileContentStore3 extends FileSystemContentStore<FsFile, UUID>, EncryptingContentStore<FsFile, UUID> {}
+    public interface FileContentStore3 extends FileSystemContentStore<FsFile, UUID>, EncryptingContentStore<FsFile, UUID> {
+    }
 
     @Entity
-    @Getter
-    @Setter
-    @NoArgsConstructor
     public static class FsFile {
         @Id
         @GeneratedValue(strategy = GenerationType.AUTO)
@@ -193,8 +191,59 @@ public class EncryptionIT {
         @JsonIgnore
         private byte[] contentKey;
 
-        @ContentId private UUID contentId;
-        @ContentLength private long contentLength;
-        @MimeType private String contentMimeType;
+        @ContentId
+        private UUID contentId;
+        @ContentLength
+        private long contentLength;
+        @MimeType
+        private String contentMimeType;
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public byte[] getContentKey() {
+            return contentKey;
+        }
+
+        public void setContentKey(byte[] contentKey) {
+            this.contentKey = contentKey;
+        }
+
+        public UUID getContentId() {
+            return contentId;
+        }
+
+        public void setContentId(UUID contentId) {
+            this.contentId = contentId;
+        }
+
+        public long getContentLength() {
+            return contentLength;
+        }
+
+        public void setContentLength(long contentLength) {
+            this.contentLength = contentLength;
+        }
+
+        public String getContentMimeType() {
+            return contentMimeType;
+        }
+
+        public void setContentMimeType(String contentMimeType) {
+            this.contentMimeType = contentMimeType;
+        }
     }
 }

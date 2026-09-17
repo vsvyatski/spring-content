@@ -180,8 +180,6 @@ When changing a store implementation, run that module’s `*Test` and, if behavi
   spaces: copy the file you are editing.
 - New `.java` files: Apache 2.0 header (copy from a neighboring file), class Javadoc with `@author`. Substantial edits:
   add `@author`.
-- Lombok is used in tests and some modules (`provided`). Do not introduce it into a module that does not already use it
-  without need.
 - Prefer existing utilities: `BeanUtils`, `PlacementService`, `MappingContext`, `PropertyPath`, Commons IO.
 - Store mutators that change content are `@LockParticipant` so versioning/locking still applies.
 - Do not add new public APIs in `internal.*`. Do not break binary compatibility of public store interfaces without
