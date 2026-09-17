@@ -134,7 +134,7 @@ public class ResourceHandlerMethodArgumentResolver implements HandlerMethodArgum
                 }
             }
 
-            return matchedResolver.resolve(webRequest, info, result.getEntity(), result.getProperty());
+            return matchedResolver.resolve(webRequest, info, result.entity(), result.property());
 
         } else if (Store.class.isAssignableFrom(info.getInterface()) || org.springframework.content.commons.store.Store.class.isAssignableFrom(info.getInterface())) {
 
