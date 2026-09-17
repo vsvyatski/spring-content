@@ -20,7 +20,7 @@ public class VaultTransitDataEncryptionKeyWrapper implements DataEncryptionKeyWr
     @Override
     public boolean supports(StoredDataEncryptionKey storedDataEncryptionKey) {
         if(storedDataEncryptionKey instanceof EncryptedSymmetricDataEncryptionKey dek) {
-            return Objects.equals(dek.getWrappingAlgorithm(), WRAPPING_ALGORITHM) && Objects.equals(dek.getWrappingKeyId(), wrappingKeyId);
+            return Objects.equals(dek.wrappingAlgorithm(), WRAPPING_ALGORITHM) && Objects.equals(dek.wrappingKeyId(), wrappingKeyId);
         }
         return false;
     }
@@ -42,14 +42,14 @@ public class VaultTransitDataEncryptionKeyWrapper implements DataEncryptionKeyWr
     @Override
     public EncryptionParameters unwrapEncryptionKey(EncryptedSymmetricDataEncryptionKey encryptedDataEncryptionKey) {
         var cipherText = Ciphertext.of(
-                new String(encryptedDataEncryptionKey.getEncryptedKeyData(), StandardCharsets.UTF_8)
+                new String(encryptedDataEncryptionKey.encryptedKeyData(), StandardCharsets.UTF_8)
         );
 
         var decryptedKey = transitOperations.decrypt(wrappingKeyId, cipherText);
 
         return new EncryptionParameters(
-                new SecretKeySpec(decryptedKey.getPlaintext(), encryptedDataEncryptionKey.getDataEncryptionAlgorithm()),
-                encryptedDataEncryptionKey.getInitializationVector()
+                new SecretKeySpec(decryptedKey.getPlaintext(), encryptedDataEncryptionKey.dataEncryptionAlgorithm()),
+                encryptedDataEncryptionKey.initializationVector()
         );
     }
 }

@@ -250,9 +250,9 @@ public class CustomKeyAccessorEncryptionIT {
                         return contentEncryptionKey;
                     });
 
-            encryptionKeyEntity.setAlgorithm(dataEncryptionKey.getAlgorithm());
-            encryptionKeyEntity.setEncryptionKey(dataEncryptionKey.getKeyData());
-            encryptionKeyEntity.setIv(dataEncryptionKey.getInitializationVector());
+            encryptionKeyEntity.setAlgorithm(dataEncryptionKey.algorithm());
+            encryptionKeyEntity.setEncryptionKey(dataEncryptionKey.keyData());
+            encryptionKeyEntity.setIv(dataEncryptionKey.initializationVector());
 
             contentEncryptionKeyRepository.save(encryptionKeyEntity);
 

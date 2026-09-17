@@ -16,8 +16,8 @@ public class UnencryptedSymmetricDataEncryptionKeyWrapper implements
     @Override
     public EncryptionParameters unwrapEncryptionKey(UnencryptedSymmetricDataEncryptionKey encryptedDataEncryptionKey) {
         return new EncryptionParameters(
-                new SecretKeySpec(encryptedDataEncryptionKey.getKeyData(), encryptedDataEncryptionKey.getAlgorithm()),
-                encryptedDataEncryptionKey.getInitializationVector()
+                new SecretKeySpec(encryptedDataEncryptionKey.keyData(), encryptedDataEncryptionKey.algorithm()),
+                encryptedDataEncryptionKey.initializationVector()
         );
     }
 
