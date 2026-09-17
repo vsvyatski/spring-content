@@ -4,21 +4,25 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
-import lombok.RequiredArgsConstructor;
+
+import org.jspecify.annotations.NonNull;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.converter.ConditionalGenericConverter;
 
-@RequiredArgsConstructor
 public class ByteArrayToListConverter implements ConditionalGenericConverter {
     private final ConversionService conversionService;
 
+    public ByteArrayToListConverter(ConversionService conversionService) {
+        this.conversionService = conversionService;
+    }
+
     @Override
-    public boolean matches(TypeDescriptor sourceType, TypeDescriptor targetType) {
-        if(sourceType.getObjectType() != byte[].class) {
+    public boolean matches(TypeDescriptor sourceType, @NonNull TypeDescriptor targetType) {
+        if (sourceType.getObjectType() != byte[].class) {
             return false;
         }
-        if(!targetType.isCollection()) {
+        if (!targetType.isCollection()) {
             return false;
         }
         return conversionService.canConvert(sourceType, targetType.getElementTypeDescriptor());
@@ -30,17 +34,17 @@ public class ByteArrayToListConverter implements ConditionalGenericConverter {
     }
 
     @Override
-    public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+    public Object convert(Object source, @NonNull TypeDescriptor sourceType, @NonNull TypeDescriptor targetType) {
         var list = new ArrayList<>();
-        var bb = ByteBuffer.wrap((byte[])source);
+        var bb = ByteBuffer.wrap((byte[]) source);
 
-        if(bb.getChar() != 'L') { // Marker check
+        if (bb.getChar() != 'L') { // Marker check
             return null;
         }
 
         int length = bb.getInt();
 
-        for(int i = 0; i < length; i++) {
+        for (int i = 0; i < length; i++) {
             var itemSize = bb.getInt();
             var item = new byte[itemSize];
             bb.get(item);
