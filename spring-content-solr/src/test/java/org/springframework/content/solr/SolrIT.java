@@ -6,9 +6,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.request.QueryRequest;
 import org.apache.solr.client.solrj.request.SolrQuery;
@@ -336,9 +333,6 @@ public class SolrIT {
     }
 
     @Entity
-    @Getter
-    @Setter
-    @NoArgsConstructor
     public static class Document {
 
         @Id
@@ -350,6 +344,41 @@ public class SolrIT {
 
         @ContentId
         private UUID contentId;
+
+        public Document() {
+        }
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public void setTitle(String title) {
+            this.title = title;
+        }
+
+        public String getEmail() {
+            return email;
+        }
+
+        public void setEmail(String email) {
+            this.email = email;
+        }
+
+        public UUID getContentId() {
+            return contentId;
+        }
+
+        public void setContentId(UUID contentId) {
+            this.contentId = contentId;
+        }
     }
 
     public interface DocumentRepository extends CrudRepository<Document, Long> {
@@ -361,8 +390,6 @@ public class SolrIT {
     public interface DocumentStoreSearchable extends ContentStore<Document, UUID>, Searchable<FulltextInfo> {
     }
 
-    @Getter
-    @Setter
     public static class FulltextInfo {
 
         @Id
@@ -376,5 +403,37 @@ public class SolrIT {
 
         @Attribute(name = "email")
         private String email;
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+
+        public UUID getContentId() {
+            return contentId;
+        }
+
+        public void setContentId(UUID contentId) {
+            this.contentId = contentId;
+        }
+
+        public String getHighlight() {
+            return highlight;
+        }
+
+        public void setHighlight(String highlight) {
+            this.highlight = highlight;
+        }
+
+        public String getEmail() {
+            return email;
+        }
+
+        public void setEmail(String email) {
+            this.email = email;
+        }
     }
 }

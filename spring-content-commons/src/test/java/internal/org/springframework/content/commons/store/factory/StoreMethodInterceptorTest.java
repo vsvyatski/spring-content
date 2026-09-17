@@ -4,9 +4,6 @@ import com.github.paulcwarren.ginkgo4j.Ginkgo4jConfiguration;
 import com.github.paulcwarren.ginkgo4j.Ginkgo4jRunner;
 import internal.org.springframework.content.commons.config.StoreFragment;
 import internal.org.springframework.content.commons.config.StoreFragments;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
 import org.aopalliance.intercept.MethodInvocation;
 import org.apache.commons.io.IOUtils;
 import org.junit.runner.RunWith;
@@ -529,7 +526,6 @@ public class StoreMethodInterceptorTest {
         }
     }
 
-    @EqualsAndHashCode
     public static class ContentObject {
         @MimeType
         public String mimeType;
@@ -539,10 +535,16 @@ public class StoreMethodInterceptorTest {
         }
     }
 
-    @Getter
-    @Setter
     public static class TEntity {
 
         private UUID contentId;
+
+        public UUID getContentId() {
+            return contentId;
+        }
+
+        public void setContentId(UUID contentId) {
+            this.contentId = contentId;
+        }
     }
 }

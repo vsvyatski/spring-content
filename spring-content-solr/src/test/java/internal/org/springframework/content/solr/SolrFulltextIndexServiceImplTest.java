@@ -1,9 +1,6 @@
 package internal.org.springframework.content.solr;
 
 import com.github.paulcwarren.ginkgo4j.Ginkgo4jRunner;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.junit.runner.RunWith;
@@ -110,13 +107,22 @@ public class SolrFulltextIndexServiceImplTest {
         });
     }
 
-    @AllArgsConstructor
-    @Getter
-    @Setter
     private static class TEntity {
 
         @ContentId
         private String contentId;
+
+        public TEntity(String contentId) {
+            this.contentId = contentId;
+        }
+
+        public String getContentId() {
+            return contentId;
+        }
+
+        public void setContentId(String contentId) {
+            this.contentId = contentId;
+        }
     }
 }
 
