@@ -9,7 +9,6 @@ import java.util.function.BiFunction;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.content.commons.io.RangeableResource;
 import org.springframework.content.commons.mappingcontext.ContentProperty;
 import org.springframework.content.commons.mappingcontext.MappingContext;
@@ -31,13 +30,58 @@ import org.springframework.util.Assert;
  * @param <S>   Type of the entity
  * @param <DEK> Type of the encrypted data encryption key
  */
-@RequiredArgsConstructor
 class ContentCryptoService<S, DEK extends StoredDataEncryptionKey> {
 
+    // As per https://www.rfc-editor.org/rfc/rfc9110.html#name-range; single-range support only
+    private static final Pattern RANGE_PATTERN =
+            Pattern.compile("\\Abytes=(?<firstPos>[0-9]*)-(?<lastPos>[0-9]*)\\Z");
     private final MappingContext mappingContext;
     private final DataEncryptionKeyAccessor<S, DEK> dataEncryptionKeyAccessor;
     private final List<DataEncryptionKeyWrapper<DEK>> dataEncryptionKeyWrappers;
     private final ContentEncryptionEngine encryptionEngine;
+
+    ContentCryptoService(
+            MappingContext mappingContext,
+            DataEncryptionKeyAccessor<S, DEK> dataEncryptionKeyAccessor,
+            List<DataEncryptionKeyWrapper<DEK>> dataEncryptionKeyWrappers,
+            ContentEncryptionEngine encryptionEngine) {
+        this.mappingContext = mappingContext;
+        this.dataEncryptionKeyAccessor = dataEncryptionKeyAccessor;
+        this.dataEncryptionKeyWrappers = dataEncryptionKeyWrappers;
+        this.encryptionEngine = encryptionEngine;
+    }
+
+    private static InputStreamRequestParameters parseRangePattern(String range, Resource resource)
+            throws IOException {
+        if (range == null || range.isEmpty()) {
+            return InputStreamRequestParameters.full();
+        }
+        var matcher = RANGE_PATTERN.matcher(range);
+        if (matcher.matches()) {
+            var firstPosStr = matcher.group("firstPos");
+            var lastPosStr = matcher.group("lastPos");
+            if (firstPosStr.isEmpty() && lastPosStr.isEmpty()) {
+                return InputStreamRequestParameters.full();
+            } else if (firstPosStr.isEmpty()) {
+                var contentLength = resource.contentLength();
+                return InputStreamRequestParameters.startingFrom(contentLength - Long.parseUnsignedLong(lastPosStr));
+            } else {
+                return new InputStreamRequestParameters(
+                        Long.parseUnsignedLong(firstPosStr),
+                        lastPosStr.isEmpty() ? null : Long.parseUnsignedLong(lastPosStr)
+                );
+            }
+        } else {
+            throw new StoreAccessException(String.format(
+                    "Range request '%s' is not supported. Only a single byte-range is supported".formatted(range)
+            ));
+        }
+    }
+
+    private static String constructRangePattern(InputStreamRequestParameters parameters) {
+        return "bytes=" + parameters.startByteOffset() + "-" +
+                Optional.ofNullable(parameters.endByteOffset()).map(Long::toUnsignedString).orElse("");
+    }
 
     public S encrypt(S entity, PropertyPath propertyPath, InputStream plainText, BiFunction<S, InputStream, S> contentSetter) {
         Assert.notNull(entity, "entity not set");
@@ -124,41 +168,5 @@ class ContentCryptoService<S, DEK extends StoredDataEncryptionKey> {
             }
         }
         return null;
-    }
-
-    // As per https://www.rfc-editor.org/rfc/rfc9110.html#name-range; single-range support only
-    private static final Pattern RANGE_PATTERN =
-            Pattern.compile("\\Abytes=(?<firstPos>[0-9]*)-(?<lastPos>[0-9]*)\\Z");
-
-    private static InputStreamRequestParameters parseRangePattern(String range, Resource resource)
-            throws IOException {
-        if (range == null || range.isEmpty()) {
-            return InputStreamRequestParameters.full();
-        }
-        var matcher = RANGE_PATTERN.matcher(range);
-        if (matcher.matches()) {
-            var firstPosStr = matcher.group("firstPos");
-            var lastPosStr = matcher.group("lastPos");
-            if (firstPosStr.isEmpty() && lastPosStr.isEmpty()) {
-                return InputStreamRequestParameters.full();
-            } else if (firstPosStr.isEmpty()) {
-                var contentLength = resource.contentLength();
-                return InputStreamRequestParameters.startingFrom(contentLength - Long.parseUnsignedLong(lastPosStr));
-            } else {
-                return new InputStreamRequestParameters(
-                        Long.parseUnsignedLong(firstPosStr),
-                        lastPosStr.isEmpty() ? null : Long.parseUnsignedLong(lastPosStr)
-                );
-            }
-        } else {
-            throw new StoreAccessException(String.format(
-                    "Range request '%s' is not supported. Only a single byte-range is supported".formatted(range)
-            ));
-        }
-    }
-
-    private static String constructRangePattern(InputStreamRequestParameters parameters) {
-        return "bytes=" + parameters.startByteOffset() + "-" +
-                Optional.ofNullable(parameters.endByteOffset()).map(Long::toUnsignedString).orElse("");
     }
 }
