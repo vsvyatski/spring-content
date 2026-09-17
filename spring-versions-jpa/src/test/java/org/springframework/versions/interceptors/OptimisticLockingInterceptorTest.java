@@ -32,9 +32,6 @@ import org.springframework.util.ReflectionUtils;
 
 import com.github.paulcwarren.ginkgo4j.Ginkgo4jRunner;
 
-import lombok.Getter;
-import lombok.Setter;
-
 @RunWith(Ginkgo4jRunner.class)
 public class OptimisticLockingInterceptorTest {
 
@@ -107,11 +104,11 @@ public class OptimisticLockingInterceptorTest {
                         verify(em).lock(entity, LockModeType.OPTIMISTIC);
                         verify(mi).setArguments(eq(entity), any());
                         verify(mi).proceed();
-                        assertThat(((TestEntity)entity).getVersion(), is(1L));
+                        assertThat(((TestEntity) entity).getVersion(), is(1L));
                     });
                     Context("when the entity is not @Versioned", () -> {
                         BeforeEach(() -> {
-                            entity = new TestEntityUnversionsed();
+                            entity = new TestEntityUnversioned();
                         });
                         It("should still proceed", () -> {
                             verify(mi).proceed();
@@ -134,11 +131,11 @@ public class OptimisticLockingInterceptorTest {
                         verify(em).lock(entity, LockModeType.OPTIMISTIC);
                         verify(mi).setArguments(eq(entity), eq(PropertyPath.from("foo")), any(ByteArrayInputStream.class));
                         verify(mi).proceed();
-                        assertThat(((TestEntity)entity).getVersion(), is(1L));
+                        assertThat(((TestEntity) entity).getVersion(), is(1L));
                     });
                     Context("when the entity is not @Versioned", () -> {
                         BeforeEach(() -> {
-                            entity = new TestEntityUnversionsed();
+                            entity = new TestEntityUnversioned();
                         });
                         It("should still proceed", () -> {
                             verify(mi).proceed();
@@ -161,11 +158,11 @@ public class OptimisticLockingInterceptorTest {
                         verify(em).lock(entity, LockModeType.OPTIMISTIC);
                         verify(mi).setArguments(eq(entity), any());
                         verify(mi).proceed();
-                        assertThat(((TestEntity)entity).getVersion(), is(1L));
+                        assertThat(((TestEntity) entity).getVersion(), is(1L));
                     });
                     Context("when the entity is not @Versioned", () -> {
                         BeforeEach(() -> {
-                            entity = new TestEntityUnversionsed();
+                            entity = new TestEntityUnversioned();
                         });
                         It("should still proceed", () -> {
                             verify(mi).proceed();
@@ -188,11 +185,11 @@ public class OptimisticLockingInterceptorTest {
                         verify(em).lock(entity, LockModeType.OPTIMISTIC);
                         verify(mi).setArguments(eq(entity), eq(PropertyPath.from("foo")), any(FileSystemResource.class));
                         verify(mi).proceed();
-                        assertThat(((TestEntity)entity).getVersion(), is(1L));
+                        assertThat(((TestEntity) entity).getVersion(), is(1L));
                     });
                     Context("when the entity is not @Versioned", () -> {
                         BeforeEach(() -> {
-                            entity = new TestEntityUnversionsed();
+                            entity = new TestEntityUnversioned();
                         });
                         It("should still proceed", () -> {
                             verify(mi).proceed();
@@ -202,7 +199,7 @@ public class OptimisticLockingInterceptorTest {
                 Context("when the method invocation is unsetContent", () -> {
                     BeforeEach(() -> {
                         entity = new TestEntity();
-                        when(mi.getMethod()).thenReturn(ReflectionUtils.findMethod(ContentStore.class,"unsetContent", Object.class));
+                        when(mi.getMethod()).thenReturn(ReflectionUtils.findMethod(ContentStore.class, "unsetContent", Object.class));
                         when(mi.getArguments()).thenReturn(new Object[]{entity});
                         when(em.merge(entity)).thenReturn(entity);
                         when(mi.proceed()).thenReturn(entity);
@@ -215,11 +212,11 @@ public class OptimisticLockingInterceptorTest {
                         verify(em).lock(entity, LockModeType.OPTIMISTIC);
                         verify(mi).setArguments(eq(entity));
                         verify(mi).proceed();
-                        assertThat(((TestEntity)entity).getVersion(), is(1L));
+                        assertThat(((TestEntity) entity).getVersion(), is(1L));
                     });
                     Context("when the entity is not @Versioned", () -> {
                         BeforeEach(() -> {
-                            entity = new TestEntityUnversionsed();
+                            entity = new TestEntityUnversioned();
                         });
                         It("should still proceed", () -> {
                             verify(mi).proceed();
@@ -229,7 +226,7 @@ public class OptimisticLockingInterceptorTest {
                 Context("when the method invocation is unsetContent with PropertyPath", () -> {
                     BeforeEach(() -> {
                         entity = new TestEntity();
-                        when(mi.getMethod()).thenReturn(ReflectionUtils.findMethod(ContentStore.class,"unsetContent", Object.class, PropertyPath.class));
+                        when(mi.getMethod()).thenReturn(ReflectionUtils.findMethod(ContentStore.class, "unsetContent", Object.class, PropertyPath.class));
                         when(mi.getArguments()).thenReturn(new Object[]{entity, PropertyPath.from("foo")});
                         when(em.merge(entity)).thenReturn(entity);
                         when(mi.proceed()).thenReturn(entity);
@@ -242,11 +239,11 @@ public class OptimisticLockingInterceptorTest {
                         verify(em).lock(entity, LockModeType.OPTIMISTIC);
                         verify(mi).setArguments(eq(entity), eq(PropertyPath.from("foo")));
                         verify(mi).proceed();
-                        assertThat(((TestEntity)entity).getVersion(), is(1L));
+                        assertThat(((TestEntity) entity).getVersion(), is(1L));
                     });
                     Context("when the entity is not @Versioned", () -> {
                         BeforeEach(() -> {
-                            entity = new TestEntityUnversionsed();
+                            entity = new TestEntityUnversioned();
                         });
                         It("should still proceed", () -> {
                             verify(mi).proceed();
@@ -257,15 +254,19 @@ public class OptimisticLockingInterceptorTest {
         });
     }
 
-    @Getter
-    @Setter
-    private class TestEntity {
+    private static class TestEntity {
         @Version
         private Long version = 0L;
+
+        public Long getVersion() {
+            return version;
+        }
+
+        public void setVersion(Long version) {
+            this.version = version;
+        }
     }
 
-    @Getter
-    @Setter
-    private class TestEntityUnversionsed {
+    private static class TestEntityUnversioned {
     }
 }

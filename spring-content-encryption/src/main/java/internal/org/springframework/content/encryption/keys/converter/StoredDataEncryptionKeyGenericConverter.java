@@ -1,21 +1,21 @@
 package internal.org.springframework.content.encryption.keys.converter;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Stream;
-import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.NonNull;
 import org.springframework.content.encryption.keys.StoredDataEncryptionKey;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.converter.ConditionalGenericConverter;
 
-@RequiredArgsConstructor
+import java.util.*;
+import java.util.stream.Stream;
+
 public class StoredDataEncryptionKeyGenericConverter implements ConditionalGenericConverter {
 
     private final ConversionService conversionService;
+
+    public StoredDataEncryptionKeyGenericConverter(ConversionService conversionService) {
+        this.conversionService = conversionService;
+    }
 
     private static final TypeDescriptor ENCRYPTED_DEK = TypeDescriptor.valueOf(StoredDataEncryptionKey.class);
     private static final Collection<TypeDescriptor> SUB_TYPES = permittedSubClasses(StoredDataEncryptionKey.class).stream()
@@ -24,7 +24,7 @@ public class StoredDataEncryptionKeyGenericConverter implements ConditionalGener
 
     private static Collection<Class<?>> permittedSubClasses(Class<?> type) {
         var permittedSubclasses = type.getPermittedSubclasses();
-        if(permittedSubclasses == null) {
+        if (permittedSubclasses == null) {
             return Set.of(type);
         }
         var permitted = new LinkedHashSet<Class<?>>(permittedSubclasses.length);
@@ -40,11 +40,11 @@ public class StoredDataEncryptionKeyGenericConverter implements ConditionalGener
     }
 
     @Override
-    public boolean matches(TypeDescriptor sourceType, TypeDescriptor targetType) {
-        if(targetType.isAssignableTo(ENCRYPTED_DEK)) {
+    public boolean matches(@NonNull TypeDescriptor sourceType, TypeDescriptor targetType) {
+        if (targetType.isAssignableTo(ENCRYPTED_DEK)) {
             return typesAssignableTo(targetType)
                     .anyMatch(type -> conversionService.canConvert(sourceType, type));
-        } else if(sourceType.isAssignableTo(ENCRYPTED_DEK)) {
+        } else if (sourceType.isAssignableTo(ENCRYPTED_DEK)) {
             return typesAssignableTo(sourceType)
                     .anyMatch(type -> conversionService.canConvert(type, targetType));
         }
@@ -58,14 +58,14 @@ public class StoredDataEncryptionKeyGenericConverter implements ConditionalGener
     }
 
     @Override
-    public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
-        if(targetType.isAssignableTo(ENCRYPTED_DEK)) {
+    public Object convert(Object source, @NonNull TypeDescriptor sourceType, TypeDescriptor targetType) {
+        if (targetType.isAssignableTo(ENCRYPTED_DEK)) {
             return typesAssignableTo(targetType)
                     .map(type -> conversionService.convert(source, sourceType, type))
                     .filter(Objects::nonNull)
                     .findFirst()
                     .orElse(null);
-        } else if(sourceType.isAssignableTo(ENCRYPTED_DEK)) {
+        } else if (sourceType.isAssignableTo(ENCRYPTED_DEK)) {
             return typesAssignableTo(sourceType)
                     .map(type -> conversionService.convert(source, type, targetType))
                     .filter(Objects::nonNull)

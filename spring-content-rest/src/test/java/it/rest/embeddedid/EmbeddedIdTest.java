@@ -54,10 +54,6 @@ import org.springframework.web.context.WebApplicationContext;
 import com.github.paulcwarren.ginkgo4j.Ginkgo4jConfiguration;
 import com.github.paulcwarren.ginkgo4j.Ginkgo4jSpringRunner;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-
 @RunWith(Ginkgo4jSpringRunner.class)
 @Ginkgo4jConfiguration(threads = 1)
 @SpringBootTest(classes = {EmbeddedIdTest.Application.class},
@@ -151,9 +147,6 @@ public class EmbeddedIdTest {
 
     @Ignore("This is not a test and must not be treated as such.")
     @Entity
-    @Getter
-    @Setter
-    @ToString
     public static class TestEntity {
 
        @EmbeddedId
@@ -170,6 +163,43 @@ public class EmbeddedIdTest {
        @MimeType
        @Column(name = "mime_type")
        private String mimeType = "text/plain";
+
+       public TestEntityId getId() {
+           return id;
+       }
+
+       public void setId(TestEntityId id) {
+           this.id = id;
+       }
+
+       public String getContentId() {
+           return contentId;
+       }
+
+       public void setContentId(String contentId) {
+           this.contentId = contentId;
+       }
+
+       public long getContentLength() {
+           return contentLength;
+       }
+
+       public void setContentLength(long contentLength) {
+           this.contentLength = contentLength;
+       }
+
+       public String getMimeType() {
+           return mimeType;
+       }
+
+       public void setMimeType(String mimeType) {
+           this.mimeType = mimeType;
+       }
+
+       @Override
+       public String toString() {
+           return "TestEntity(id=" + id + ", contentId=" + contentId + ", contentLength=" + contentLength + ", mimeType=" + mimeType + ")";
+       }
     }
 
     @Ignore("This is not a test and must not be treated as such.")

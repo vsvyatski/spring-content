@@ -4,8 +4,6 @@ import java.io.Serializable;
 
 import com.github.paulcwarren.ginkgo4j.Ginkgo4jConfiguration;
 import com.github.paulcwarren.ginkgo4j.Ginkgo4jSpringRunner;
-import lombok.Getter;
-import lombok.Setter;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -67,8 +65,6 @@ public class StoreFragmentTest {
 		String greet(String name);
 	}
 
-	@Getter
-	@Setter
 	public static class CustomizationImpl implements Customization {
 
 		@Autowired
@@ -80,6 +76,30 @@ public class StoreFragmentTest {
 		@Override
 		public String greet(String name) {
 			return "Hello " + bean + " " + name;
+		}
+
+		public String getBean() {
+			return bean;
+		}
+
+		public void setBean(String bean) {
+			this.bean = bean;
+		}
+
+		public Class<?> getDomainClass() {
+			return domainClass;
+		}
+
+		public void setDomainClass(Class<?> domainClass) {
+			this.domainClass = domainClass;
+		}
+
+		public Class<?> getIdClass() {
+			return idClass;
+		}
+
+		public void setIdClass(Class<?> idClass) {
+			this.idClass = idClass;
 		}
 	}
 

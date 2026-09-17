@@ -1,57 +1,83 @@
 package internal.org.springframework.content.encryption.keys.converter;
 
 import internal.org.springframework.content.encryption.keys.converter.ByteBufferCodec.Field;
-import java.util.List;
-import lombok.experimental.UtilityClass;
 import org.springframework.content.encryption.keys.StoredDataEncryptionKey.EncryptedSymmetricDataEncryptionKey;
-import org.springframework.content.encryption.keys.StoredDataEncryptionKey.EncryptedSymmetricDataEncryptionKey.EncryptedSymmetricDataEncryptionKeyBuilder;
 
-@UtilityClass
-public class EncryptedSymmetricDataEncryptionKeyConverter {
-    private static final ByteBufferCodec<EncryptedSymmetricDataEncryptionKey, EncryptedSymmetricDataEncryptionKeyBuilder> CODEC = new ByteBufferCodec<>(
+import java.util.List;
+
+public final class EncryptedSymmetricDataEncryptionKeyConverter {
+
+    private static final ByteBufferCodec<EncryptedSymmetricDataEncryptionKey, Object[]> CODEC = new ByteBufferCodec<>(
             'E',
             List.of(
                     new Field<>(
                             String.class,
-                            EncryptedSymmetricDataEncryptionKey::getWrappingAlgorithm,
-                            EncryptedSymmetricDataEncryptionKeyBuilder::wrappingAlgorithm
+                            EncryptedSymmetricDataEncryptionKey::wrappingAlgorithm,
+                            (acc, v) -> {
+                                acc[0] = v;
+                                return acc;
+                            }
                     ),
                     new Field<>(
                             String.class,
-                            EncryptedSymmetricDataEncryptionKey::getWrappingKeyId,
-                            EncryptedSymmetricDataEncryptionKeyBuilder::wrappingKeyId
+                            EncryptedSymmetricDataEncryptionKey::wrappingKeyId,
+                            (acc, v) -> {
+                                acc[1] = v;
+                                return acc;
+                            }
                     ),
                     new Field<>(
                             String.class,
-                            EncryptedSymmetricDataEncryptionKey::getWrappingKeyVersion,
-                            EncryptedSymmetricDataEncryptionKeyBuilder::wrappingKeyVersion
+                            EncryptedSymmetricDataEncryptionKey::wrappingKeyVersion,
+                            (acc, v) -> {
+                                acc[2] = v;
+                                return acc;
+                            }
                     ),
                     new Field<>(
                             String.class,
-                            EncryptedSymmetricDataEncryptionKey::getDataEncryptionAlgorithm,
-                            EncryptedSymmetricDataEncryptionKeyBuilder::dataEncryptionAlgorithm
+                            EncryptedSymmetricDataEncryptionKey::dataEncryptionAlgorithm,
+                            (acc, v) -> {
+                                acc[3] = v;
+                                return acc;
+                            }
                     ),
                     new Field<>(
                             byte[].class,
-                            EncryptedSymmetricDataEncryptionKey::getEncryptedKeyData,
-                            EncryptedSymmetricDataEncryptionKeyBuilder::encryptedKeyData
+                            EncryptedSymmetricDataEncryptionKey::encryptedKeyData,
+                            (acc, v) -> {
+                                acc[4] = v;
+                                return acc;
+                            }
                     ),
                     new Field<>(
                             byte[].class,
-                            EncryptedSymmetricDataEncryptionKey::getInitializationVector,
-                            EncryptedSymmetricDataEncryptionKeyBuilder::initializationVector
+                            EncryptedSymmetricDataEncryptionKey::initializationVector,
+                            (acc, v) -> {
+                                acc[5] = v;
+                                return acc;
+                            }
                     )
             ),
-            EncryptedSymmetricDataEncryptionKey::builder,
-            EncryptedSymmetricDataEncryptionKeyBuilder::build
+            () -> new Object[6],
+            acc -> new EncryptedSymmetricDataEncryptionKey(
+                    (String) acc[0],
+                    (String) acc[1],
+                    (String) acc[2],
+                    (String) acc[3],
+                    (byte[]) acc[4],
+                    (byte[]) acc[5]
+            )
     );
 
-    public byte[] convert(EncryptedSymmetricDataEncryptionKey source) {
+    private EncryptedSymmetricDataEncryptionKeyConverter() {
+    }
+
+    public static byte[] convert(EncryptedSymmetricDataEncryptionKey source) {
         return CODEC.encode(source);
     }
 
-    public EncryptedSymmetricDataEncryptionKey convert(byte[] bytes) {
+    public static EncryptedSymmetricDataEncryptionKey convert(byte[] bytes) {
         return CODEC.decode(bytes);
     }
 }
-

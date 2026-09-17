@@ -89,10 +89,6 @@ import com.github.paulcwarren.ginkgo4j.Ginkgo4jConfiguration;
 import com.github.paulcwarren.ginkgo4j.Ginkgo4jSpringRunner;
 import com.mongodb.client.MongoClient;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
 import org.springframework.web.context.WebApplicationContext;
 
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.*;
@@ -357,10 +353,6 @@ public class LockingAndVersioningRestIT {
     }
 
     @Entity
-    @Getter
-    @Setter
-    @EqualsAndHashCode
-    @ToString
     @Table(name = "VERSIONED_DOCUMENTS")
     public static class VersionedDocument {
 
@@ -398,6 +390,102 @@ public class LockingAndVersioningRestIT {
             this.setMimeType(doc.getMimeType());
             this.setLockOwner(doc.getLockOwner());
             this.setData(doc.getData());
+        }
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+
+        public Long getVstamp() {
+            return vstamp;
+        }
+
+        public void setVstamp(Long vstamp) {
+            this.vstamp = vstamp;
+        }
+
+        public UUID getContentId() {
+            return contentId;
+        }
+
+        public void setContentId(UUID contentId) {
+            this.contentId = contentId;
+        }
+
+        public long getContentLen() {
+            return contentLen;
+        }
+
+        public void setContentLen(long contentLen) {
+            this.contentLen = contentLen;
+        }
+
+        public String getMimeType() {
+            return mimeType;
+        }
+
+        public void setMimeType(String mimeType) {
+            this.mimeType = mimeType;
+        }
+
+        public String getLockOwner() {
+            return lockOwner;
+        }
+
+        public void setLockOwner(String lockOwner) {
+            this.lockOwner = lockOwner;
+        }
+
+        public Long getAncestorId() {
+            return ancestorId;
+        }
+
+        public void setAncestorId(Long ancestorId) {
+            this.ancestorId = ancestorId;
+        }
+
+        public Long getAncestralRootId() {
+            return ancestralRootId;
+        }
+
+        public void setAncestralRootId(Long ancestralRootId) {
+            this.ancestralRootId = ancestralRootId;
+        }
+
+        public Long getSuccessorId() {
+            return successorId;
+        }
+
+        public void setSuccessorId(Long successorId) {
+            this.successorId = successorId;
+        }
+
+        public String getVersion() {
+            return version;
+        }
+
+        public void setVersion(String version) {
+            this.version = version;
+        }
+
+        public String getLabel() {
+            return label;
+        }
+
+        public void setLabel(String label) {
+            this.label = label;
+        }
+
+        public String getData() {
+            return data;
+        }
+
+        public void setData(String data) {
+            this.data = data;
         }
     }
 

@@ -30,9 +30,6 @@ import com.github.paulcwarren.ginkgo4j.Ginkgo4jRunner;
 
 import internal.org.springframework.versions.AuthenticationFacade;
 import internal.org.springframework.versions.LockingService;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @RunWith(Ginkgo4jRunner.class)
 public class PessimisticLockingInterceptorTest {
@@ -128,19 +125,35 @@ public class PessimisticLockingInterceptorTest {
         });
     }
 
-    @NoArgsConstructor
-    @Getter
-    @Setter
-    public class TestEntity {
+    public static class TestEntity {
         @Id
         private Long id = 0L;
+
+        public TestEntity() {
+        }
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
     }
 
-    @NoArgsConstructor
-    @Getter
-    @Setter
-    public class TestEntity2 {
+    public static class TestEntity2 {
         @org.springframework.data.annotation.Id
         private Long id = 0L;
+
+        public TestEntity2() {
+        }
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
     }
 }

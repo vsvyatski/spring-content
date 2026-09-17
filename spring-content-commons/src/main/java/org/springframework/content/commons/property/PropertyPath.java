@@ -1,8 +1,8 @@
 package org.springframework.content.commons.property;
 
-import lombok.Value;
+public record PropertyPath(String name) {
 
-@Value(staticConstructor = "from")
-public class PropertyPath {
-    private String name;
+    public static PropertyPath from(String name) {
+        return new PropertyPath(name);
+    }
 }

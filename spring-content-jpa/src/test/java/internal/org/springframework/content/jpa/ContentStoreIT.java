@@ -9,9 +9,6 @@ import internal.org.springframework.content.jpa.testsupport.models.ClaimForm;
 import internal.org.springframework.content.jpa.testsupport.repositories.ClaimRepository;
 import internal.org.springframework.content.jpa.testsupport.stores.ClaimStore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.runner.RunWith;
@@ -26,18 +23,19 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
+import org.springframework.util.function.ThrowingSupplier;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.function.Supplier;
 
 import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.*;
 import static internal.org.springframework.content.jpa.StoreIT.getContextName;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.Mockito.mock;
 
 @RunWith(Ginkgo4jRunner.class)
@@ -204,7 +202,7 @@ public class ContentStoreIT {
                                 It("should have the updated content", () -> {
                                     String contentId = claim.getClaimForm().getContentId();
 
-                                    claimFormStore.setContent(claim, PropertyPath.from("claimForm/content"), new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), SetContentParams.builder().disposition(SetContentParams.ContentDisposition.CreateNew).build());
+                                    claimFormStore.setContent(claim, PropertyPath.from("claimForm/content"), new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), new SetContentParams(-1, true, SetContentParams.ContentDisposition.CreateNew));
                                     claim = claimRepo.save(claim);
 
                                     try (InputStream content = claimFormStore.getContent(claim, PropertyPath.from("claimForm/content"))) {
@@ -259,7 +257,7 @@ public class ContentStoreIT {
                         Context("when content is deleted", () -> {
                             BeforeEach(() -> {
                                 id = claim.getClaimForm().getContentId();
-                                claimFormStore.unsetContent(claim, PropertyPath.from("claimForm/content"), UnsetContentParams.builder().disposition(UnsetContentParams.Disposition.Keep).build());
+                                claimFormStore.unsetContent(claim, PropertyPath.from("claimForm/content"), new UnsetContentParams(UnsetContentParams.Disposition.Keep));
                                 claim = claimRepo.save(claim);
                             });
 
@@ -299,8 +297,7 @@ public class ContentStoreIT {
 
                             It("should return null when content is unset", () -> {
                                 EntityWithEmbeddedContent entity = embeddedRepo.save(new EntityWithEmbeddedContent());
-                                EntityWithEmbeddedContent expected = new EntityWithEmbeddedContent(entity.getId(), entity.getContent());
-                                assertThat(embeddedStore.unsetContent(entity, PropertyPath.from("content")), is(expected));
+                                assertThat(embeddedStore.unsetContent(entity, PropertyPath.from("content")), is(sameInstance(entity)));
                             });
                         }));
                     });
@@ -309,11 +306,11 @@ public class ContentStoreIT {
         });
     }
 
-    public static <T> T doInTransaction(PlatformTransactionManager ptm, Supplier<T> block) {
+    public static <T> T doInTransaction(PlatformTransactionManager ptm, ThrowingSupplier<T> block) {
         TransactionStatus status = ptm.getTransaction(new DefaultTransactionDefinition());
 
         try {
-            T result = block.get();
+            T result = block.getWithException();
             ptm.commit(status);
             return result;
         } catch (Exception e) {
@@ -370,9 +367,6 @@ public class ContentStoreIT {
         }
     }
 
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
     @Entity
     @Table(name = "entity_with_embedded")
     public static class EntityWithEmbeddedContent {
@@ -382,11 +376,25 @@ public class ContentStoreIT {
 
         @Embedded
         private EmbeddedContent content;
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
+        }
+
+        public EmbeddedContent getContent() {
+            return content;
+        }
+
+        public void setContent(EmbeddedContent content) {
+            this.content = content;
+        }
     }
 
     @Embeddable
-    @NoArgsConstructor
-    @Data
     public static class EmbeddedContent {
 
         @ContentId
@@ -394,6 +402,22 @@ public class ContentStoreIT {
 
         @ContentLength
         private Long contentLen;
+
+        public String getContentId() {
+            return contentId;
+        }
+
+        public void setContentId(String contentId) {
+            this.contentId = contentId;
+        }
+
+        public Long getContentLen() {
+            return contentLen;
+        }
+
+        public void setContentLen(Long contentLen) {
+            this.contentLen = contentLen;
+        }
     }
 
     public interface EmbeddedRepository extends JpaRepository<EntityWithEmbeddedContent, String> {

@@ -40,7 +40,6 @@ import org.springframework.core.io.Resource;
 import com.github.paulcwarren.ginkgo4j.Ginkgo4jRunner;
 
 import internal.org.springframework.content.s3.io.S3StoreResource;
-import lombok.Data;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
@@ -242,10 +241,17 @@ public class EnableS3StoresTest {
         }
 	}
 
-	@Data
 	public class TestEntity {
 		@ContentId
 		private String contentId;
+
+		public String getContentId() {
+			return contentId;
+		}
+
+		public void setContentId(String contentId) {
+			this.contentId = contentId;
+		}
 	}
 
 	public interface TestEntityContentRepository

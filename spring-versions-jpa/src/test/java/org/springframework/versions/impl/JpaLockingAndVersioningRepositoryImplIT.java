@@ -67,8 +67,6 @@ import org.springframework.versions.jpa.config.JpaLockingAndVersioningConfig;
 import com.github.paulcwarren.ginkgo4j.Ginkgo4jSpringRunner;
 
 import internal.org.springframework.versions.LockingService;
-import lombok.Getter;
-import lombok.Setter;
 
 @RunWith(Ginkgo4jSpringRunner.class)
 @ContextConfiguration(classes={JpaLockingAndVersioningRepositoryImplIT.TestConfig.class})
@@ -933,8 +931,6 @@ public class JpaLockingAndVersioningRepositoryImplIT {
         }
     }
 
-    @Getter
-    @Setter
     @Entity
     public static class TestEntity {
         @Id @GeneratedValue private Long xid;
@@ -948,15 +944,85 @@ public class JpaLockingAndVersioningRepositoryImplIT {
 
         public TestEntity() {}
         public TestEntity(TestEntity entity) {}
+
+        public Long getXid() {
+            return xid;
+        }
+
+        public void setXid(Long xid) {
+            this.xid = xid;
+        }
+
+        public Long getVersion() {
+            return version;
+        }
+
+        public void setVersion(Long version) {
+            this.version = version;
+        }
+
+        public Long getXAncestorId() {
+            return xAncestorId;
+        }
+
+        public void setXAncestorId(Long xAncestorId) {
+            this.xAncestorId = xAncestorId;
+        }
+
+        public Long getXAncestorRootId() {
+            return xAncestorRootId;
+        }
+
+        public void setXAncestorRootId(Long xAncestorRootId) {
+            this.xAncestorRootId = xAncestorRootId;
+        }
+
+        public Long getXSuccessorId() {
+            return xSuccessorId;
+        }
+
+        public void setXSuccessorId(Long xSuccessorId) {
+            this.xSuccessorId = xSuccessorId;
+        }
+
+        public String getXLockOwner() {
+            return xLockOwner;
+        }
+
+        public void setXLockOwner(String xLockOwner) {
+            this.xLockOwner = xLockOwner;
+        }
+
+        public String getVersionNo() {
+            return versionNo;
+        }
+
+        public void setVersionNo(String versionNo) {
+            this.versionNo = versionNo;
+        }
+
+        public String getVersionLabel() {
+            return versionLabel;
+        }
+
+        public void setVersionLabel(String versionLabel) {
+            this.versionLabel = versionLabel;
+        }
     }
 
     public interface TestRepository extends JpaRepository<TestEntity, Long>, LockingAndVersioningRepository<TestEntity> {}
 
-    @Getter
-    @Setter
     @Entity
     public static class OtherTestEntity {
         @Id @GeneratedValue private Long id;
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
     }
 
     public interface OtherTestRepository extends JpaRepository<OtherTestEntity, Long>, LockingAndVersioningRepository<OtherTestEntity> {}

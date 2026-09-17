@@ -114,7 +114,7 @@ public class RepositoryEntityMultipartController {
 
         StoreInfo info = this.stores.getStore(Store.class, StoreUtils.withStorePath(store));
         if (info != null) {
-            ContentStoreContentService service = new ContentStoreContentService(restConfig, info, repoInvokerFactory.getInvokerFor(domainType), mappingContext, exportedMappingContext, byteRangeRestRequestHandler);
+            ContentStoreContentService service = new ContentStoreContentService(restConfig, repoInvokerFactory.getInvokerFor(domainType), mappingContext, exportedMappingContext, byteRangeRestRequestHandler);
             MultiValueMap<String, MultipartFile> files = req.getMultiFileMap();
             for (String path : files.keySet()) {
                 MultipartFile file = files.get(path).get(0);

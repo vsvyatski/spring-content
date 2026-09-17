@@ -9,7 +9,6 @@ import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.contrib.nio.testing.LocalStorageHelper;
 import jakarta.persistence.*;
-import lombok.*;
 import net.bytebuddy.utility.RandomString;
 import org.apache.commons.io.IOUtils;
 import org.hamcrest.Matchers;
@@ -208,7 +207,7 @@ public class GCPStorageIT {
 
                             It("should not honor byte ranges", () -> {
                                 // relies on REST-layer to serve byte range
-                                Resource r = store.getResource(entity, PropertyPath.from("content"), GetResourceParams.builder().range("5-10").build());
+                                Resource r = store.getResource(entity, PropertyPath.from("content"), new GetResourceParams("5-10"));
                                 try (InputStream is = r.getInputStream()) {
                                     assertThat(IOUtils.toString(is, Charset.defaultCharset()), is("Hello Client-side World!"));
                                 }
@@ -349,7 +348,7 @@ public class GCPStorageIT {
                             assertThat(contentId, is(not(nullValue())));
                             assertThat(storage.get(BlobId.of("test-bucket", contentId)).exists(), is(true));
 
-                            store.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), SetContentParams.builder().disposition(SetContentParams.ContentDisposition.CreateNew).build());
+                            store.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), new SetContentParams(-1, true, SetContentParams.ContentDisposition.CreateNew));
                             entity = repo.save(entity);
 
                             try (InputStream content = store.getContent(entity)) {
@@ -394,7 +393,7 @@ public class GCPStorageIT {
                 Context("when content is unset but kept", () -> {
                     BeforeEach(() -> {
                         resourceLocation = entity.getContentId().toString();
-                        entity = store.unsetContent(entity, PropertyPath.from("content"), UnsetContentParams.builder().disposition(UnsetContentParams.Disposition.Keep).build());
+                        entity = store.unsetContent(entity, PropertyPath.from("content"), new UnsetContentParams(UnsetContentParams.Disposition.Keep));
                         entity = repo.save(entity);
                     });
 
@@ -476,8 +475,7 @@ public class GCPStorageIT {
 
                                     It("should return null when content is unset", () -> {
                                         EntityWithEmbeddedContent entity = embeddedRepo.save(new EntityWithEmbeddedContent());
-                                        EntityWithEmbeddedContent expected = new EntityWithEmbeddedContent(entity.getId(), entity.getContent());
-                                        assertThat(embeddedStore.unsetContent(entity, PropertyPath.from("content")), is(expected));
+                                        assertThat(embeddedStore.unsetContent(entity, PropertyPath.from("content")), is(sameInstance(entity)));
                                         int i = 0;
                                     });
                                 }
@@ -538,9 +536,6 @@ public class GCPStorageIT {
     }
 
     @Entity
-    @Setter
-    @Getter
-    @NoArgsConstructor
     public static class TestEntity {
 
         @Id
@@ -559,8 +554,51 @@ public class GCPStorageIT {
         @ContentLength
         private long renditionLen;
 
+        public TestEntity() {
+        }
+
         public TestEntity(String contentId) {
             this.contentId = contentId;
+        }
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+
+        public String getContentId() {
+            return contentId;
+        }
+
+        public void setContentId(String contentId) {
+            this.contentId = contentId;
+        }
+
+        public Long getContentLen() {
+            return contentLen;
+        }
+
+        public void setContentLen(Long contentLen) {
+            this.contentLen = contentLen;
+        }
+
+        public String getRenditionId() {
+            return renditionId;
+        }
+
+        public void setRenditionId(String renditionId) {
+            this.renditionId = renditionId;
+        }
+
+        public long getRenditionLen() {
+            return renditionLen;
+        }
+
+        public void setRenditionLen(long renditionLen) {
+            this.renditionLen = renditionLen;
         }
     }
 
@@ -571,9 +609,6 @@ public class GCPStorageIT {
     }
 
     @Entity
-    @Setter
-    @Getter
-    @NoArgsConstructor
     public static class SharedIdContentIdEntity {
 
         @jakarta.persistence.Id
@@ -582,6 +617,25 @@ public class GCPStorageIT {
 
         @ContentLength
         private long contentLen;
+
+        public SharedIdContentIdEntity() {
+        }
+
+        public String getContentId() {
+            return contentId;
+        }
+
+        public void setContentId(String contentId) {
+            this.contentId = contentId;
+        }
+
+        public long getContentLen() {
+            return contentLen;
+        }
+
+        public void setContentLen(long contentLen) {
+            this.contentLen = contentLen;
+        }
     }
 
     public interface SharedIdRepository extends JpaRepository<SharedIdContentIdEntity, String> {
@@ -590,9 +644,6 @@ public class GCPStorageIT {
     public interface SharedIdStore extends ContentStore<SharedIdContentIdEntity, String> {
     }
 
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
     @Entity
     @Table(name = "entity_with_embedded")
     public static class EntityWithEmbeddedContent {
@@ -602,11 +653,25 @@ public class GCPStorageIT {
 
         @Embedded
         private EmbeddedContent content;
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
+        }
+
+        public EmbeddedContent getContent() {
+            return content;
+        }
+
+        public void setContent(EmbeddedContent content) {
+            this.content = content;
+        }
     }
 
     @Embeddable
-    @NoArgsConstructor
-    @Data
     public static class EmbeddedContent {
 
         @ContentId
@@ -614,6 +679,22 @@ public class GCPStorageIT {
 
         @ContentLength
         private Long contentLen;
+
+        public String getContentId() {
+            return contentId;
+        }
+
+        public void setContentId(String contentId) {
+            this.contentId = contentId;
+        }
+
+        public Long getContentLen() {
+            return contentLen;
+        }
+
+        public void setContentLen(Long contentLen) {
+            this.contentLen = contentLen;
+        }
     }
 
     public interface EmbeddedRepository extends JpaRepository<EntityWithEmbeddedContent, String> {

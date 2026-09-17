@@ -105,7 +105,7 @@ public class ResourceHandlerMethodArgumentResolver implements HandlerMethodArgum
 
         if (AssociativeStore.class.isAssignableFrom(info.getInterface()) || org.springframework.content.commons.store.AssociativeStore.class.isAssignableFrom(info.getInterface())) {
 
-            String resolvedContentPropertyPath = requestMappingContext.resolveContentPropertyPath(info.getDomainObjectClass(), ContentPropertyRequest.from(pathInfo).getContentPropertyPath());
+            String resolvedContentPropertyPath = requestMappingContext.resolveContentPropertyPath(info.getDomainObjectClass(), ContentPropertyRequest.from(pathInfo).contentPropertyPath());
             String resolvedStoreLookupPath = ContentPropertyRequest.from(pathSegments[1], pathSegments[2], resolvedContentPropertyPath).getRequestURI();
 
             EntityResolution result = this.entityResolvers.resolve(resolvedStoreLookupPath);
@@ -134,7 +134,7 @@ public class ResourceHandlerMethodArgumentResolver implements HandlerMethodArgum
                 }
             }
 
-            return matchedResolver.resolve(webRequest, info, result.getEntity(), result.getProperty());
+            return matchedResolver.resolve(webRequest, info, result.entity(), result.property());
 
         } else if (Store.class.isAssignableFrom(info.getInterface()) || org.springframework.content.commons.store.Store.class.isAssignableFrom(info.getInterface())) {
 

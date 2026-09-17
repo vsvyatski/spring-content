@@ -5,15 +5,10 @@ import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.NullValueInNestedPathException;
 import org.springframework.core.convert.TypeDescriptor;
-
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.util.Assert;
 
-@Getter
-@Setter
-@EqualsAndHashCode
+import java.util.Objects;
+
 public class ContentProperty {
 
     private String contentPropertyPath;
@@ -24,13 +19,53 @@ public class ContentProperty {
     private String mimeTypePropertyPath;
     private String originalFileNamePropertyPath;
 
+    public String getContentPropertyPath() {
+        return contentPropertyPath;
+    }
+
+    public void setContentPropertyPath(String contentPropertyPath) {
+        this.contentPropertyPath = contentPropertyPath;
+    }
+
+    public String getContentIdPropertyPath() {
+        return contentIdPropertyPath;
+    }
+
+    public void setContentIdPropertyPath(String contentIdPropertyPath) {
+        this.contentIdPropertyPath = contentIdPropertyPath;
+    }
+
+    public String getContentLengthPropertyPath() {
+        return contentLengthPropertyPath;
+    }
+
+    public void setContentLengthPropertyPath(String contentLengthPropertyPath) {
+        this.contentLengthPropertyPath = contentLengthPropertyPath;
+    }
+
+    public String getMimeTypePropertyPath() {
+        return mimeTypePropertyPath;
+    }
+
+    public void setMimeTypePropertyPath(String mimeTypePropertyPath) {
+        this.mimeTypePropertyPath = mimeTypePropertyPath;
+    }
+
+    public String getOriginalFileNamePropertyPath() {
+        return originalFileNamePropertyPath;
+    }
+
+    public void setOriginalFileNamePropertyPath(String originalFileNamePropertyPath) {
+        this.originalFileNamePropertyPath = originalFileNamePropertyPath;
+    }
+
     public Object getCustomProperty(Object entity, String propertyName) {
         String customContentPropertyPath = getCustomPropertyPropertyPath(propertyName);
 
         BeanWrapper wrapper = getBeanWrapperForRead(entity);
         try {
             return wrapper.getPropertyValue(customContentPropertyPath);
-        } catch (NullValueInNestedPathException nvinpe) {
+        } catch (NullValueInNestedPathException e) {
             return null;
         }
     }
@@ -54,7 +89,7 @@ public class ContentProperty {
         BeanWrapper wrapper = getBeanWrapperForRead(entity);
         try {
             return wrapper.getPropertyValue(contentIdPropertyPath);
-        } catch (NullValueInNestedPathException nvinpe) {
+        } catch (NullValueInNestedPathException e) {
             return null;
         }
     }
@@ -77,6 +112,8 @@ public class ContentProperty {
     }
 
     public TypeDescriptor getContentIdType(Object entity) {
+        // WTF is this method meant for? Originally the "entity" parameter was not used here.
+        Assert.notNull(entity, "entity is null");
         Assert.notNull(this.contentIdType, "content id property type must be set");
         return this.contentIdType;
     }
@@ -98,7 +135,7 @@ public class ContentProperty {
         BeanWrapper wrapper = getBeanWrapperForRead(entity);
         try {
             return wrapper.getPropertyValue(contentLengthPropertyPath);
-        } catch (NullValueInNestedPathException nvinpe) {
+        } catch (NullValueInNestedPathException e) {
             return null;
         }
     }
@@ -129,7 +166,7 @@ public class ContentProperty {
         BeanWrapper wrapper = getBeanWrapperForRead(entity);
         try {
             return wrapper.getPropertyValue(mimeTypePropertyPath);
-        } catch (NullValueInNestedPathException nvinpe) {
+        } catch (NullValueInNestedPathException e) {
             return null;
         }
     }
@@ -160,7 +197,7 @@ public class ContentProperty {
         BeanWrapper wrapper = getBeanWrapperForRead(entity);
         try {
             return wrapper.getPropertyValue(originalFileNamePropertyPath);
-        } catch (NullValueInNestedPathException nvinpe) {
+        } catch (NullValueInNestedPathException e) {
             return null;
         }
     }
@@ -173,5 +210,29 @@ public class ContentProperty {
         BeanWrapper wrapper = new BeanWrapperImpl(entity);
         wrapper.setAutoGrowNestedPaths(true);
         return wrapper;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ContentProperty that = (ContentProperty) o;
+        return Objects.equals(contentPropertyPath, that.contentPropertyPath)
+                && Objects.equals(contentIdPropertyPath, that.contentIdPropertyPath)
+                && Objects.equals(contentIdType, that.contentIdType)
+                && Objects.equals(contentLengthPropertyPath, that.contentLengthPropertyPath)
+                && Objects.equals(contentLengthType, that.contentLengthType)
+                && Objects.equals(mimeTypePropertyPath, that.mimeTypePropertyPath)
+                && Objects.equals(originalFileNamePropertyPath, that.originalFileNamePropertyPath);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(contentPropertyPath, contentIdPropertyPath, contentIdType, contentLengthPropertyPath,
+                contentLengthType, mimeTypePropertyPath, originalFileNamePropertyPath);
     }
 }

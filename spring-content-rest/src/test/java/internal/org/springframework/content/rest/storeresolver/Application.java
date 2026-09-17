@@ -1,7 +1,6 @@
 package internal.org.springframework.content.rest.storeresolver;
 
 import internal.org.springframework.content.rest.it.SecurityConfiguration;
-import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -129,7 +128,6 @@ public class Application {
     }
 
     @Entity
-    @Data
     public static class TEntity {
 
         @Id
@@ -144,6 +142,38 @@ public class Application {
 
         @MimeType
         private String mimeType;
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+
+        public String getContentId() {
+            return contentId;
+        }
+
+        public void setContentId(String contentId) {
+            this.contentId = contentId;
+        }
+
+        public Long getContentLength() {
+            return contentLength;
+        }
+
+        public void setContentLength(Long contentLength) {
+            this.contentLength = contentLength;
+        }
+
+        public String getMimeType() {
+            return mimeType;
+        }
+
+        public void setMimeType(String mimeType) {
+            this.mimeType = mimeType;
+        }
     }
 
     public interface TEntityRepository extends JpaRepository<TEntity, Long> {

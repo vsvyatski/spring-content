@@ -6,7 +6,7 @@
     <parent>
         <artifactId>spring-content</artifactId>
         <groupId>io.github.vsvyatski</groupId>
-        <version>4.0.2</version>
+        <version>4.1.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>spring-content-solr</artifactId>
@@ -77,11 +77,6 @@
             <groupId>com.github.grantwest.eventually</groupId>
             <artifactId>hamcrest-eventually-matchers</artifactId>
             <version>0.0.3</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

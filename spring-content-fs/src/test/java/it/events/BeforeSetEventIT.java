@@ -1,9 +1,6 @@
 package it.events;
 
 import com.github.paulcwarren.ginkgo4j.Ginkgo4jSpringRunner;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -85,12 +82,20 @@ public class BeforeSetEventIT {
         }
     }
 
-    @Getter
-    @Setter
-    @NoArgsConstructor
     public class TestEntity {
         @ContentId
         private String contentId;
+
+        public TestEntity() {
+        }
+
+        public String getContentId() {
+            return contentId;
+        }
+
+        public void setContentId(String contentId) {
+            this.contentId = contentId;
+        }
     }
 
     public interface TestEntityContentStore extends ContentStore<TestEntity, String> {

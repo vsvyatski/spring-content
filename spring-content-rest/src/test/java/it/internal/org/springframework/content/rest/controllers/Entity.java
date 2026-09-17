@@ -26,11 +26,7 @@ import com.theoryinpractise.halbuilder.api.RepresentationFactory;
 import com.theoryinpractise.halbuilder.standard.StandardRepresentationFactory;
 
 import internal.org.springframework.content.rest.support.ContentEntity;
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
-@Setter
 public class Entity {
 
 	private MockMvc mvc;
@@ -41,6 +37,46 @@ public class Entity {
 
 	public static Entity tests() {
 		return new Entity();
+	}
+
+	public MockMvc getMvc() {
+		return mvc;
+	}
+
+	public void setMvc(MockMvc mvc) {
+		this.mvc = mvc;
+	}
+
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
+	}
+
+	public String getLinkRel() {
+		return linkRel;
+	}
+
+	public void setLinkRel(String linkRel) {
+		this.linkRel = linkRel;
+	}
+
+	public ContentEntity getEntity() {
+		return entity;
+	}
+
+	public void setEntity(ContentEntity entity) {
+		this.entity = entity;
+	}
+
+	public CrudRepository getRepository() {
+		return repository;
+	}
+
+	public void setRepository(CrudRepository repository) {
+		this.repository = repository;
 	}
 
 	{

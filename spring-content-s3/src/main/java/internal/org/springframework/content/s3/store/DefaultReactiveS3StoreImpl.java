@@ -75,7 +75,7 @@ public class DefaultReactiveS3StoreImpl<S, SID extends Serializable>
         if (!placementService.canConvert(contentPropertyInfoType, TypeDescriptor.valueOf(S3ObjectId.class))) {
             throw new IllegalStateException(String.format("Unable to convert %s to an S3ObjectId", contentPropertyInfoType));
         }
-        ContentPropertyInfo<S, SID> contentPropertyInfo = ContentPropertyInfo.of(entity, (SID) property.getContentId(entity), path, property);
+        ContentPropertyInfo<S, SID> contentPropertyInfo = new ContentPropertyInfo<>(entity, (SID) property.getContentId(entity), path, property);
         S3ObjectId s3ObjectId = (S3ObjectId) placementService.convert(contentPropertyInfo, contentPropertyInfoType, TypeDescriptor.valueOf(S3ObjectId.class));
         return s3ObjectId;
     }
@@ -84,9 +84,9 @@ public class DefaultReactiveS3StoreImpl<S, SID extends Serializable>
     @Override
     public Mono<S> setContent(S entity, PropertyPath path, long contentLen, Flux<ByteBuffer> buffer) {
 
-        ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), path.getName());
+        ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), path.name());
         if (property == null) {
-            throw new StoreAccessException(String.format("Content property %s does not exist", path.getName()));
+            throw new StoreAccessException(String.format("Content property %s does not exist", path.name()));
         }
 
         Object contentId = property.getContentId(entity);
@@ -146,9 +146,9 @@ public class DefaultReactiveS3StoreImpl<S, SID extends Serializable>
         if (entity == null)
             return Flux.empty();
 
-        ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), path.getName());
+        ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), path.name());
         if (property == null) {
-            throw new StoreAccessException(String.format("Content property %s does not exist", path.getName()));
+            throw new StoreAccessException(String.format("Content property %s does not exist", path.name()));
         }
 
         Object contentId = property.getContentId(entity);
@@ -178,9 +178,9 @@ public class DefaultReactiveS3StoreImpl<S, SID extends Serializable>
         if (entity == null)
             return Mono.just(entity);
 
-        ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.getName());
+        ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.name());
         if (property == null) {
-            throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.getName()));
+            throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.name()));
         }
 
         Object contentId = property.getContentId(entity);

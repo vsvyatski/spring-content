@@ -1,8 +1,6 @@
 package internal.org.springframework.versions.jpa;
 
 import com.github.paulcwarren.ginkgo4j.Ginkgo4jRunner;
-import lombok.Getter;
-import lombok.Setter;
 import org.junit.runner.RunWith;
 import org.springframework.versions.AncestorId;
 import org.springframework.versions.AncestorRootId;
@@ -123,8 +121,6 @@ public class JpaVersioningServiceImplTest {
         });
     }
 
-    @Getter
-    @Setter
     private class TestEntity {
         @Id private Long id;
         @Version private Long version;
@@ -133,6 +129,61 @@ public class JpaVersioningServiceImplTest {
         @SuccessorId private Long successorId;
         @VersionNumber private String versionNo;
         @VersionLabel private String versionLabel;
-//        @VersionStatus private Boolean versionStatus;
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+
+        public Long getVersion() {
+            return version;
+        }
+
+        public void setVersion(Long version) {
+            this.version = version;
+        }
+
+        public Long getAncestorId() {
+            return ancestorId;
+        }
+
+        public void setAncestorId(Long ancestorId) {
+            this.ancestorId = ancestorId;
+        }
+
+        public Long getAncestorRootId() {
+            return ancestorRootId;
+        }
+
+        public void setAncestorRootId(Long ancestorRootId) {
+            this.ancestorRootId = ancestorRootId;
+        }
+
+        public Long getSuccessorId() {
+            return successorId;
+        }
+
+        public void setSuccessorId(Long successorId) {
+            this.successorId = successorId;
+        }
+
+        public String getVersionNo() {
+            return versionNo;
+        }
+
+        public void setVersionNo(String versionNo) {
+            this.versionNo = versionNo;
+        }
+
+        public String getVersionLabel() {
+            return versionLabel;
+        }
+
+        public void setVersionLabel(String versionLabel) {
+            this.versionLabel = versionLabel;
+        }
     }
 }

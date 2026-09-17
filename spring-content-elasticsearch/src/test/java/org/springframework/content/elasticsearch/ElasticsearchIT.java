@@ -56,10 +56,6 @@ import org.springframework.data.repository.CrudRepository;
 import com.github.paulcwarren.ginkgo4j.Ginkgo4jConfiguration;
 import com.github.paulcwarren.ginkgo4j.Ginkgo4jRunner;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
 @RunWith(Ginkgo4jRunner.class)
 @Ginkgo4jConfiguration(threads=1)
 public class ElasticsearchIT {
@@ -455,9 +451,6 @@ public class ElasticsearchIT {
     }
 
     @Entity
-    @NoArgsConstructor
-    @Getter
-    @Setter
     public static class Document {
 
         @Id
@@ -472,11 +465,52 @@ public class ElasticsearchIT {
 
         private String title;
         private String author;
+
+        public Document() {
+        }
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+
+        public UUID getContentId() {
+            return contentId;
+        }
+
+        public void setContentId(UUID contentId) {
+            this.contentId = contentId;
+        }
+
+        public String getMimeType() {
+            return mimeType;
+        }
+
+        public void setMimeType(String mimeType) {
+            this.mimeType = mimeType;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public void setTitle(String title) {
+            this.title = title;
+        }
+
+        public String getAuthor() {
+            return author;
+        }
+
+        public void setAuthor(String author) {
+            this.author = author;
+        }
     }
 
 
-    @Getter
-    @Setter
     public static class FulltextInfo {
 
         @ContentId
@@ -487,5 +521,29 @@ public class ElasticsearchIT {
 
         @Attribute(name = "author")
         private String author;
+
+        public UUID getContentId() {
+            return contentId;
+        }
+
+        public void setContentId(UUID contentId) {
+            this.contentId = contentId;
+        }
+
+        public String getHighlight() {
+            return highlight;
+        }
+
+        public void setHighlight(String highlight) {
+            this.highlight = highlight;
+        }
+
+        public String getAuthor() {
+            return author;
+        }
+
+        public void setAuthor(String author) {
+            this.author = author;
+        }
     }
 }

@@ -7,11 +7,14 @@ import org.springframework.content.commons.annotations.HandleBeforeUnsetContent;
 import org.springframework.content.commons.annotations.StoreEventHandler;
 import org.springframework.content.commons.search.IndexService;
 import org.springframework.content.commons.store.ContentStore;
+import org.springframework.content.commons.store.StoreAccessException;
 import org.springframework.content.commons.store.events.AfterSetContentEvent;
 import org.springframework.content.commons.store.events.BeforeUnsetContentEvent;
 import org.springframework.content.commons.utils.BeanUtils;
 import org.springframework.core.annotation.Order;
 import org.springframework.util.Assert;
+
+import java.io.IOException;
 
 @StoreEventHandler
 public class SolrIndexerStoreEventHandler {
@@ -39,7 +42,11 @@ public class SolrIndexerStoreEventHandler {
 		}
 
 		if (event.getStore() instanceof ContentStore) {
-			indexer.index(event.getSource(), ((ContentStore) event.getStore()).getContent(event.getSource()));
+			try {
+				indexer.index(event.getSource(), ((ContentStore) event.getStore()).getContent(event.getSource()));
+			} catch (IOException e) {
+				throw new StoreAccessException("Error reading content for indexing.", e);
+			}
 		}
 	}
 

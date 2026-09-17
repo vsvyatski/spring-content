@@ -106,19 +106,19 @@ public class DefaultGCPStorageImpl<S, SID extends Serializable>
 
     @Override
     public Resource getResource(S entity, PropertyPath propertyPath) {
-        return this.getResource(entity, propertyPath, GetResourceParams.builder().build());
+        return this.getResource(entity, propertyPath, new GetResourceParams(null));
     }
 
     @Override
     public Resource getResource(S entity, PropertyPath propertyPath, org.springframework.content.commons.repository.GetResourceParams params) {
-        return this.getResource(entity, propertyPath, GetResourceParams.builder().range(params.getRange()).build());
+        return this.getResource(entity, propertyPath, new GetResourceParams(params.range()));
     }
 
     @Override
     public Resource getResource(S entity, PropertyPath propertyPath, GetResourceParams params) {
-        ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.getName());
+        ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.name());
         if (property == null) {
-            throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.getName()));
+            throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.name()));
         }
 
         if (entity == null)
@@ -126,7 +126,7 @@ public class DefaultGCPStorageImpl<S, SID extends Serializable>
 
         TypeDescriptor contentPropertyInfoType = ContentPropertyInfoTypeDescriptor.withGenerics(entity, property);
         if (placementService.canConvert(contentPropertyInfoType, TypeDescriptor.valueOf(BlobId.class))) {
-            ContentPropertyInfo<S, SID> contentPropertyInfo = ContentPropertyInfo.of(entity,
+            ContentPropertyInfo<S, SID> contentPropertyInfo = new ContentPropertyInfo<>(entity,
                     (SID) property.getContentId(entity), propertyPath, property);
             BlobId blobId = (BlobId) placementService.convert(contentPropertyInfo, contentPropertyInfoType, TypeDescriptor.valueOf(BlobId.class));
 
@@ -164,9 +164,9 @@ public class DefaultGCPStorageImpl<S, SID extends Serializable>
     @Override
     public void associate(S entity, PropertyPath propertyPath, SID id) {
 
-        ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.getName());
+        ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.name());
         if (property == null) {
-            throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.getName()));
+            throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.name()));
         }
 
         property.setContentId(entity, id, null);
@@ -175,9 +175,9 @@ public class DefaultGCPStorageImpl<S, SID extends Serializable>
     @Override
     public void unassociate(S entity, PropertyPath propertyPath) {
 
-        ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.getName());
+        ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.name());
         if (property == null) {
-            throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.getName()));
+            throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.name()));
         }
 
         property.setContentId(entity, null, new org.springframework.content.commons.mappingcontext.Condition() {
@@ -257,31 +257,28 @@ public class DefaultGCPStorageImpl<S, SID extends Serializable>
     @Override
     public S setContent(S entity, PropertyPath propertyPath, InputStream content, long contentLen) {
         return this.setContent(entity, propertyPath, content,
-                org.springframework.content.commons.store.SetContentParams.builder()
-                        .contentLength(contentLen)
-                        .build());
+                new org.springframework.content.commons.store.SetContentParams(contentLen, true, org.springframework.content.commons.store.SetContentParams.ContentDisposition.Overwrite));
     }
 
     @Override
     public S setContent(S entity, PropertyPath propertyPath, InputStream content, SetContentParams params) {
-        int ordinal = params.getDisposition().ordinal();
+        int ordinal = params.disposition().ordinal();
         return this.setContent(entity, propertyPath, content,
-                org.springframework.content.commons.store.SetContentParams.builder()
-                        .contentLength(params.getContentLength())
-                        .overwriteExistingContent(params.isOverwriteExistingContent())
-                        .disposition(org.springframework.content.commons.store.SetContentParams.ContentDisposition.values()[ordinal])
-                        .build());
+                new org.springframework.content.commons.store.SetContentParams(
+                        params.contentLength(),
+                        params.overwriteExistingContent(),
+                        org.springframework.content.commons.store.SetContentParams.ContentDisposition.values()[ordinal]));
     }
 
     @Override
     public S setContent(S entity, PropertyPath propertyPath, InputStream content, org.springframework.content.commons.store.SetContentParams params) {
-        ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.getName());
+        ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.name());
         if (property == null) {
-            throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.getName()));
+            throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.name()));
         }
 
         Object contentId = property.getContentId(entity);
-        if (contentId == null || params.getDisposition().equals(org.springframework.content.commons.store.SetContentParams.ContentDisposition.CreateNew)) {
+        if (contentId == null || params.disposition().equals(org.springframework.content.commons.store.SetContentParams.ContentDisposition.CreateNew)) {
 
             Serializable newId = UuidCreator.getTimeOrdered().toString();
 
@@ -308,7 +305,7 @@ public class DefaultGCPStorageImpl<S, SID extends Serializable>
         }
 
         try {
-            long len = params.getContentLength();
+            long len = params.contentLength();
             if (len == -1L) {
                 len = resource.contentLength();
             }
@@ -363,9 +360,9 @@ public class DefaultGCPStorageImpl<S, SID extends Serializable>
     @Override
     public InputStream getContent(S entity, PropertyPath propertyPath) {
 
-        ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.getName());
+        ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.name());
         if (property == null) {
-            throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.getName()));
+            throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.name()));
         }
 
         if (entity == null)
@@ -422,30 +419,28 @@ public class DefaultGCPStorageImpl<S, SID extends Serializable>
     @Transactional
     @Override
     public S unsetContent(S entity, PropertyPath propertyPath) {
-        return this.unsetContent(entity, propertyPath, org.springframework.content.commons.store.UnsetContentParams.builder().build());
+        return this.unsetContent(entity, propertyPath, new org.springframework.content.commons.store.UnsetContentParams(org.springframework.content.commons.store.UnsetContentParams.Disposition.Remove));
     }
 
     @Override
     public S unsetContent(S entity, PropertyPath propertyPath, UnsetContentParams params) {
-        int ordinal = params.getDisposition().ordinal();
-        org.springframework.content.commons.store.UnsetContentParams params1 = org.springframework.content.commons.store.UnsetContentParams.builder()
-                .disposition(org.springframework.content.commons.store.UnsetContentParams.Disposition.values()[ordinal])
-                .build();
+        int ordinal = params.disposition().ordinal();
+        org.springframework.content.commons.store.UnsetContentParams params1 = new org.springframework.content.commons.store.UnsetContentParams(org.springframework.content.commons.store.UnsetContentParams.Disposition.values()[ordinal]);
         return this.unsetContent(entity, propertyPath, params1);
     }
 
     @Override
     public S unsetContent(S entity, PropertyPath propertyPath, org.springframework.content.commons.store.UnsetContentParams params) {
-        ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.getName());
+        ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.name());
         if (property == null) {
-            throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.getName()));
+            throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.name()));
         }
 
         if (entity == null)
             return entity;
 
         Resource resource = this.getResource(entity, propertyPath);
-        if (resource != null && resource.exists() && resource instanceof DeletableResource && params.getDisposition().equals(org.springframework.content.commons.store.UnsetContentParams.Disposition.Remove)) {
+        if (resource != null && resource.exists() && resource instanceof DeletableResource && params.disposition().equals(org.springframework.content.commons.store.UnsetContentParams.Disposition.Remove)) {
 
             try {
                 ((DeletableResource) resource).delete();

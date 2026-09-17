@@ -5,9 +5,6 @@ import com.github.paulcwarren.ginkgo4j.Ginkgo4jSpringRunner;
 import internal.org.springframework.content.rest.support.TestEntityChild;
 import jakarta.persistence.*;
 import jakarta.transaction.Transactional;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.apache.commons.io.IOUtils;
 import org.hibernate.annotations.Formula;
 import org.junit.Test;
@@ -211,8 +208,6 @@ public class ContentLinkRelIT {
 
     @Entity
     @EntityListeners(AuditingEntityListener.class)
-    @Getter
-    @Setter
     public static class TestEntity5 {
         public @Id @GeneratedValue Long id;
 
@@ -229,6 +224,94 @@ public class ContentLinkRelIT {
         private @Version Long version;
         private @CreatedDate Date createdDate;
         private @LastModifiedDate Date modifiedDate;
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public UUID getContentPropertyId() {
+            return contentPropertyId;
+        }
+
+        public void setContentPropertyId(UUID contentPropertyId) {
+            this.contentPropertyId = contentPropertyId;
+        }
+
+        public Long getContentPropertyLen() {
+            return contentPropertyLen;
+        }
+
+        public void setContentPropertyLen(Long contentPropertyLen) {
+            this.contentPropertyLen = contentPropertyLen;
+        }
+
+        public String getContentPropertyMimeType() {
+            return contentPropertyMimeType;
+        }
+
+        public void setContentPropertyMimeType(String contentPropertyMimeType) {
+            this.contentPropertyMimeType = contentPropertyMimeType;
+        }
+
+        public UUID getRenditionPropertyId() {
+            return renditionPropertyId;
+        }
+
+        public void setRenditionPropertyId(UUID renditionPropertyId) {
+            this.renditionPropertyId = renditionPropertyId;
+        }
+
+        public Long getRenditionPropertyLen() {
+            return renditionPropertyLen;
+        }
+
+        public void setRenditionPropertyLen(Long renditionPropertyLen) {
+            this.renditionPropertyLen = renditionPropertyLen;
+        }
+
+        public String getRenditionPropertyMimeType() {
+            return renditionPropertyMimeType;
+        }
+
+        public void setRenditionPropertyMimeType(String renditionPropertyMimeType) {
+            this.renditionPropertyMimeType = renditionPropertyMimeType;
+        }
+
+        public Long getVersion() {
+            return version;
+        }
+
+        public void setVersion(Long version) {
+            this.version = version;
+        }
+
+        public Date getCreatedDate() {
+            return createdDate;
+        }
+
+        public void setCreatedDate(Date createdDate) {
+            this.createdDate = createdDate;
+        }
+
+        public Date getModifiedDate() {
+            return modifiedDate;
+        }
+
+        public void setModifiedDate(Date modifiedDate) {
+            this.modifiedDate = modifiedDate;
+        }
     }
 
     @StoreRestResource(linkRel="foo")
@@ -242,8 +325,6 @@ public class ContentLinkRelIT {
     public interface TestEntity5Repository extends JpaRepository<TestEntity5, Long> {}
 
     @Entity
-    @Getter
-    @Setter
     public static class TestEntity {
         private @Id @GeneratedValue Long id;
         private String name;
@@ -252,6 +333,62 @@ public class ContentLinkRelIT {
         private @MimeType String mimeType;
         private @OriginalFileName String originalFileName;
         private String title;
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public UUID getContentId() {
+            return contentId;
+        }
+
+        public void setContentId(UUID contentId) {
+            this.contentId = contentId;
+        }
+
+        public Long getLen() {
+            return len;
+        }
+
+        public void setLen(Long len) {
+            this.len = len;
+        }
+
+        public String getMimeType() {
+            return mimeType;
+        }
+
+        public void setMimeType(String mimeType) {
+            this.mimeType = mimeType;
+        }
+
+        public String getOriginalFileName() {
+            return originalFileName;
+        }
+
+        public void setOriginalFileName(String originalFileName) {
+            this.originalFileName = originalFileName;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public void setTitle(String title) {
+            this.title = title;
+        }
     }
 
     @CrossOrigin(origins = "http://www.someurl.com")
@@ -266,8 +403,6 @@ public class ContentLinkRelIT {
 
     @Entity
     @EntityListeners(AuditingEntityListener.class)
-    @Getter
-    @Setter
     public static class TestEntity2 {
         private @Id @GeneratedValue Long id;
 
@@ -276,6 +411,46 @@ public class ContentLinkRelIT {
         private @LastModifiedDate Date modifiedDate;
 
         private @Embedded TestEntityChild child = new TestEntityChild();
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+
+        public Long getVersion() {
+            return version;
+        }
+
+        public void setVersion(Long version) {
+            this.version = version;
+        }
+
+        public Date getCreatedDate() {
+            return createdDate;
+        }
+
+        public void setCreatedDate(Date createdDate) {
+            this.createdDate = createdDate;
+        }
+
+        public Date getModifiedDate() {
+            return modifiedDate;
+        }
+
+        public void setModifiedDate(Date modifiedDate) {
+            this.modifiedDate = modifiedDate;
+        }
+
+        public TestEntityChild getChild() {
+            return child;
+        }
+
+        public void setChild(TestEntityChild child) {
+            this.child = child;
+        }
     }
 
     @StoreRestResource(path = "files", linkRel = "foo")
@@ -287,9 +462,6 @@ public class ContentLinkRelIT {
     }
 
     @Entity
-    @Getter
-    @Setter
-    @NoArgsConstructor
     @EntityListeners(AuditingEntityListener.class)
     public static class TestEntity10 {
 
@@ -302,12 +474,52 @@ public class ContentLinkRelIT {
         private @LastModifiedDate Date modifiedDate;
 
         private @Embedded TestEntity10Child child = new TestEntity10Child();
+
+        public TestEntity10() {
+        }
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+
+        public Long getVersion() {
+            return version;
+        }
+
+        public void setVersion(Long version) {
+            this.version = version;
+        }
+
+        public Date getCreatedDate() {
+            return createdDate;
+        }
+
+        public void setCreatedDate(Date createdDate) {
+            this.createdDate = createdDate;
+        }
+
+        public Date getModifiedDate() {
+            return modifiedDate;
+        }
+
+        public void setModifiedDate(Date modifiedDate) {
+            this.modifiedDate = modifiedDate;
+        }
+
+        public TestEntity10Child getChild() {
+            return child;
+        }
+
+        public void setChild(TestEntity10Child child) {
+            this.child = child;
+        }
     }
 
     @Embeddable
-    @Getter
-    @Setter
-    @NoArgsConstructor
     public static class TestEntity10Child {
 
         @ContentId public UUID contentId;
@@ -323,6 +535,72 @@ public class ContentLinkRelIT {
         @Formula("1")
         private int workaroundForBraindeadJpaImplementation;
 
+        public TestEntity10Child() {
+        }
+
+        public UUID getContentId() {
+            return contentId;
+        }
+
+        public void setContentId(UUID contentId) {
+            this.contentId = contentId;
+        }
+
+        public Long getContentLen() {
+            return contentLen;
+        }
+
+        public void setContentLen(Long contentLen) {
+            this.contentLen = contentLen;
+        }
+
+        public String getContentMimeType() {
+            return contentMimeType;
+        }
+
+        public void setContentMimeType(String contentMimeType) {
+            this.contentMimeType = contentMimeType;
+        }
+
+        public String getContentFileName() {
+            return contentFileName;
+        }
+
+        public void setContentFileName(String contentFileName) {
+            this.contentFileName = contentFileName;
+        }
+
+        public UUID getPreviewId() {
+            return previewId;
+        }
+
+        public void setPreviewId(UUID previewId) {
+            this.previewId = previewId;
+        }
+
+        public Long getPreviewLen() {
+            return previewLen;
+        }
+
+        public void setPreviewLen(Long previewLen) {
+            this.previewLen = previewLen;
+        }
+
+        public String getPreviewMimeType() {
+            return previewMimeType;
+        }
+
+        public void setPreviewMimeType(String previewMimeType) {
+            this.previewMimeType = previewMimeType;
+        }
+
+        public int getWorkaroundForBraindeadJpaImplementation() {
+            return workaroundForBraindeadJpaImplementation;
+        }
+
+        public void setWorkaroundForBraindeadJpaImplementation(int workaroundForBraindeadJpaImplementation) {
+            this.workaroundForBraindeadJpaImplementation = workaroundForBraindeadJpaImplementation;
+        }
     }
 
     public interface TestEntity10Repository extends CrudRepository<TestEntity10, Long> {
@@ -333,8 +611,6 @@ public class ContentLinkRelIT {
     }
 
     @Entity
-    @Getter
-    @Setter
     public class TestEntity3 {
         public @Id @GeneratedValue Long id;
         public String name;
@@ -343,6 +619,62 @@ public class ContentLinkRelIT {
         public @MimeType String mimeType;
         private @OriginalFileName String originalFileName;
         private String title;
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public UUID getContentId() {
+            return contentId;
+        }
+
+        public void setContentId(UUID contentId) {
+            this.contentId = contentId;
+        }
+
+        public Long getLen() {
+            return len;
+        }
+
+        public void setLen(Long len) {
+            this.len = len;
+        }
+
+        public String getMimeType() {
+            return mimeType;
+        }
+
+        public void setMimeType(String mimeType) {
+            this.mimeType = mimeType;
+        }
+
+        public String getOriginalFileName() {
+            return originalFileName;
+        }
+
+        public void setOriginalFileName(String originalFileName) {
+            this.originalFileName = originalFileName;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public void setTitle(String title) {
+            this.title = title;
+        }
     }
 
 

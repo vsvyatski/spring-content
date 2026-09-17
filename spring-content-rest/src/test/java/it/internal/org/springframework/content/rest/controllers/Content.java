@@ -25,11 +25,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 
 import internal.org.springframework.content.rest.support.ContentEntity;
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
-@Setter
 public class Content {
 
     private MockMvc mvc;
@@ -41,6 +37,54 @@ public class Content {
 
     public static Content tests() {
         return new Content();
+    }
+
+    public MockMvc getMvc() {
+        return mvc;
+    }
+
+    public void setMvc(MockMvc mvc) {
+        this.mvc = mvc;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public String getContextPath() {
+        return contextPath;
+    }
+
+    public void setContextPath(String contextPath) {
+        this.contextPath = contextPath;
+    }
+
+    public ContentEntity getEntity() {
+        return entity;
+    }
+
+    public void setEntity(ContentEntity entity) {
+        this.entity = entity;
+    }
+
+    public CrudRepository getRepository() {
+        return repository;
+    }
+
+    public void setRepository(CrudRepository repository) {
+        this.repository = repository;
+    }
+
+    public Store getStore() {
+        return store;
+    }
+
+    public void setStore(Store store) {
+        this.store = store;
     }
 
     {

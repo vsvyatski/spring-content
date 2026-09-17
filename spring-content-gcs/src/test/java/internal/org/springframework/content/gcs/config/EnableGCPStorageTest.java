@@ -4,7 +4,6 @@ import com.github.paulcwarren.ginkgo4j.Ginkgo4jRunner;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.contrib.nio.testing.LocalStorageHelper;
-import lombok.Data;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -131,10 +130,17 @@ public class EnableGCPStorageTest {
         }
     }
 
-    @Data
     public static class TestEntity {
         @ContentId
         private String contentId;
+
+        public String getContentId() {
+            return contentId;
+        }
+
+        public void setContentId(String contentId) {
+            this.contentId = contentId;
+        }
     }
 
     public interface TestEntityContentStore extends ContentStore<TestEntity, String> {

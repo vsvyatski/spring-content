@@ -1,7 +1,7 @@
 package internal.org.springframework.content.encryption.keys;
 
 import java.util.Collection;
-import lombok.RequiredArgsConstructor;
+
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.content.commons.mappingcontext.ContentProperty;
 import org.springframework.content.encryption.keys.DataEncryptionKeyAccessor;
@@ -10,11 +10,15 @@ import org.springframework.core.ResolvableType;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
 
-@RequiredArgsConstructor
 public class ContentPropertyDataEncryptionKeyAccessor<S, T extends StoredDataEncryptionKey> implements DataEncryptionKeyAccessor<S, T> {
 
     private final String customPropertyName;
     private final ConversionService conversionService;
+
+    public ContentPropertyDataEncryptionKeyAccessor(String customPropertyName, ConversionService conversionService) {
+        this.customPropertyName = customPropertyName;
+        this.conversionService = conversionService;
+    }
 
     private static final TypeDescriptor ENCRYPTED_DEK = new TypeDescriptor(
             ResolvableType.forClass(StoredDataEncryptionKey.class), null, null);

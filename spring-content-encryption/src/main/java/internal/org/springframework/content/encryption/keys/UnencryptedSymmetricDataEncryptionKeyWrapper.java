@@ -1,6 +1,7 @@
 package internal.org.springframework.content.encryption.keys;
 
 import javax.crypto.spec.SecretKeySpec;
+
 import org.springframework.content.encryption.engine.ContentEncryptionEngine.EncryptionParameters;
 import org.springframework.content.encryption.keys.DataEncryptionKeyWrapper;
 import org.springframework.content.encryption.keys.StoredDataEncryptionKey;
@@ -16,16 +17,15 @@ public class UnencryptedSymmetricDataEncryptionKeyWrapper implements
     @Override
     public EncryptionParameters unwrapEncryptionKey(UnencryptedSymmetricDataEncryptionKey encryptedDataEncryptionKey) {
         return new EncryptionParameters(
-                new SecretKeySpec(encryptedDataEncryptionKey.getKeyData(), encryptedDataEncryptionKey.getAlgorithm()),
-                encryptedDataEncryptionKey.getInitializationVector()
+                new SecretKeySpec(encryptedDataEncryptionKey.keyData(), encryptedDataEncryptionKey.algorithm()),
+                encryptedDataEncryptionKey.initializationVector()
         );
     }
 
     @Override
     public UnencryptedSymmetricDataEncryptionKey wrapEncryptionKey(EncryptionParameters dataEncryptionParameters) {
-        return new UnencryptedSymmetricDataEncryptionKey(dataEncryptionParameters.getSecretKey().getAlgorithm(),
-                dataEncryptionParameters.getSecretKey().getEncoded(),
-                dataEncryptionParameters.getInitializationVector());
+        return new UnencryptedSymmetricDataEncryptionKey(dataEncryptionParameters.secretKey().getAlgorithm(),
+                dataEncryptionParameters.secretKey().getEncoded(),
+                dataEncryptionParameters.initializationVector());
     }
-
 }

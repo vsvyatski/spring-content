@@ -14,16 +14,12 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
 @Entity
-@Getter
-@Setter
-@NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 public class TestEntity8 {
+
+    public TestEntity8() {
+    }
 
     @Id
     @GeneratedValue
@@ -39,4 +35,60 @@ public class TestEntity8 {
     private @LastModifiedDate Date modifiedDate;
 
     private @Embedded TestEntity8Child child = new TestEntity8Child();
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getHidden() {
+        return hidden;
+    }
+
+    public void setHidden(String hidden) {
+        this.hidden = hidden;
+    }
+
+    public Long getVersion() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
+    }
+
+    public Date getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(Date createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public Date getModifiedDate() {
+        return modifiedDate;
+    }
+
+    public void setModifiedDate(Date modifiedDate) {
+        this.modifiedDate = modifiedDate;
+    }
+
+    public TestEntity8Child getChild() {
+        return child;
+    }
+
+    public void setChild(TestEntity8Child child) {
+        this.child = child;
+    }
 }

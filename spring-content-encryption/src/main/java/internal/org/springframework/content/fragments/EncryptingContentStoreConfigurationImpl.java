@@ -3,14 +3,9 @@ package internal.org.springframework.content.fragments;
 import internal.org.springframework.content.encryption.engine.AesCtrEncryptionEngine;
 import internal.org.springframework.content.encryption.keys.ContentPropertyDataEncryptionKeyAccessor;
 import internal.org.springframework.content.encryption.keys.UnencryptedSymmetricDataEncryptionKeyWrapper;
-import internal.org.springframework.content.encryption.keys.converter.ByteArrayToListConverter;
-import internal.org.springframework.content.encryption.keys.converter.StoredDataEncryptionKeyGenericConverter;
-import internal.org.springframework.content.encryption.keys.converter.EncryptedSymmetricDataEncryptionKeyConverter;
-import internal.org.springframework.content.encryption.keys.converter.ListToByteArrayConverter;
-import internal.org.springframework.content.encryption.keys.converter.UnencryptedSymmetricDataEncryptionKeyConverter;
-import java.util.List;
-import java.util.function.Consumer;
-import lombok.extern.slf4j.Slf4j;
+import internal.org.springframework.content.encryption.keys.converter.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.content.commons.mappingcontext.MappingContext;
 import org.springframework.content.commons.store.Store;
 import org.springframework.content.encryption.config.EncryptingContentStoreConfiguration;
@@ -24,14 +19,19 @@ import org.springframework.core.convert.converter.ConverterRegistry;
 import org.springframework.core.convert.support.ConfigurableConversionService;
 import org.springframework.core.convert.support.GenericConversionService;
 
-@Slf4j
+import java.util.List;
+import java.util.function.Consumer;
+
 class EncryptingContentStoreConfigurationImpl<S> implements EncryptingContentStoreConfiguration<S> {
+
+    private static final Logger logger = LoggerFactory.getLogger(EncryptingContentStoreConfigurationImpl.class);
 
     private DataEncryptionKeyAccessor<S, ? extends StoredDataEncryptionKey> dataEncryptionKeyAccessor;
     private List<DataEncryptionKeyWrapper<? extends StoredDataEncryptionKey>> dataEncryptionKeyWrappers;
     private ContentEncryptionEngine contentEncryptionEngine;
 
     private final ConfigurableConversionService conversionService = new GenericConversionService();
+
     {
         conversionService.addConverter(new ByteArrayToListConverter(conversionService));
         conversionService.addConverter(new ListToByteArrayConverter(conversionService));
@@ -82,7 +82,7 @@ class EncryptingContentStoreConfigurationImpl<S> implements EncryptingContentSto
 
     @Override
     public EncryptingContentStoreConfiguration<S> contentEncryptionMethod(ContentEncryptionMethod contentEncryptionMethod) {
-        return contentEncryptionEngine(switch(contentEncryptionMethod) {
+        return contentEncryptionEngine(switch (contentEncryptionMethod) {
             case AES_CTR_128 -> new AesCtrEncryptionEngine(128);
             case AES_CTR_192 -> new AesCtrEncryptionEngine(192);
             case AES_CTR_256 -> new AesCtrEncryptionEngine(256);
@@ -90,19 +90,19 @@ class EncryptingContentStoreConfigurationImpl<S> implements EncryptingContentSto
     }
 
     ContentCryptoService<S, ?> initializeCryptoService(MappingContext mappingContext, Class<? extends Store<?>> storeClass) {
-        if(dataEncryptionKeyAccessor == null) {
+        if (dataEncryptionKeyAccessor == null) {
             encryptionKeyContentProperty("encryption");
         }
-        if(dataEncryptionKeyWrappers == null) {
-            log.warn("Data Encryption Keys are NOT encrypted: No DataEncryptionKeyWrapper configured on store {}", storeClass);
+        if (dataEncryptionKeyWrappers == null) {
+            logger.warn("Data Encryption Keys are NOT encrypted: No DataEncryptionKeyWrapper configured on store {}", storeClass);
             unencryptedDataEncryptionKeys();
         }
-        if(contentEncryptionEngine == null) {
-            log.warn("Using AES-CTR-128 as default encryption for store {}", storeClass);
+        if (contentEncryptionEngine == null) {
+            logger.warn("Using AES-CTR-128 as default encryption for store {}", storeClass);
             contentEncryptionMethod(ContentEncryptionMethod.AES_CTR_128);
         }
 
-        if(dataEncryptionKeyWrappers.isEmpty()) {
+        if (dataEncryptionKeyWrappers.isEmpty()) {
             throw new IllegalStateException("No DataEncryptionKeyWrappers configured on store %s. Refusing to start as encrypted content would be unrecoverable.".formatted(storeClass));
         }
         return new ContentCryptoService(

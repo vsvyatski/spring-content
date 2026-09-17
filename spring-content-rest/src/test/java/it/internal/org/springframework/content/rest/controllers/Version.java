@@ -9,7 +9,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import internal.org.springframework.content.rest.support.ContentEntity;
 import internal.org.springframework.content.rest.support.TestEntity2;
 import internal.org.springframework.content.rest.support.TestEntity4;
-import lombok.Setter;
 import org.apache.commons.io.IOUtils;
 
 import org.springframework.content.commons.repository.ContentStore;
@@ -32,7 +31,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@Setter
 public class Version {
 
     private MockMvc mvc;
@@ -46,6 +44,38 @@ public class Version {
 
     public static Version tests() {
         return new Version();
+    }
+
+    public void setMvc(MockMvc mvc) {
+        this.mvc = mvc;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public void setCollectionUrl(String collectionUrl) {
+        this.collectionUrl = collectionUrl;
+    }
+
+    public void setContentLinkRel(String contentLinkRel) {
+        this.contentLinkRel = contentLinkRel;
+    }
+
+    public void setRepo(CrudRepository repo) {
+        this.repo = repo;
+    }
+
+    public void setStore(Store store) {
+        this.store = store;
+    }
+
+    public void setEtag(String etag) {
+        this.etag = etag;
+    }
+
+    public void setEntity(ContentEntity entity) {
+        this.entity = entity;
     }
 
     {

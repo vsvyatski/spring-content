@@ -82,14 +82,14 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable>
 
     @Override
     public Resource getResource(S entity, PropertyPath propertyPath) {
-        return this.getResource(entity, propertyPath, GetResourceParams.builder().build());
+        return this.getResource(entity, propertyPath, new GetResourceParams(null));
     }
 
     @Override
     public Resource getResource(S entity, PropertyPath propertyPath, GetResourceParams params) {
-        ContentProperty contentProperty = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.getName());
+        ContentProperty contentProperty = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.name());
         if (contentProperty == null) {
-            throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.getName()));
+            throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.name()));
         }
 
         SID contentId = (SID) contentProperty.getContentId(entity);
@@ -103,9 +103,9 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable>
     public Resource getResource(S entity, PropertyPath propertyPath,
                                 org.springframework.content.commons.repository.GetResourceParams params) {
         ContentProperty contentProperty = this.mappingContext
-                .getContentProperty(entity.getClass(), propertyPath.getName());
+                .getContentProperty(entity.getClass(), propertyPath.name());
         if (contentProperty == null) {
-            throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.getName()));
+            throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.name()));
         }
 
         SID contentId = (SID) contentProperty.getContentId(entity);
@@ -212,17 +212,16 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable>
     @Transactional
     @Override
     public S setContent(S property, PropertyPath propertyPath, InputStream content, long contentLen) {
-        return this.setContent(property, propertyPath, content, SetContentParams.builder().contentLength(contentLen).build());
+        return this.setContent(property, propertyPath, content, new SetContentParams(contentLen, true, SetContentParams.ContentDisposition.Overwrite));
     }
 
     @Override
     public S setContent(S entity, PropertyPath propertyPath, InputStream content, org.springframework.content.commons.repository.SetContentParams params) {
-        int ordinal = params.getDisposition().ordinal();
-        SetContentParams params1 = SetContentParams.builder()
-                .contentLength(params.getContentLength())
-                .overwriteExistingContent(params.isOverwriteExistingContent())
-                .disposition(org.springframework.content.commons.store.SetContentParams.ContentDisposition.values()[ordinal])
-                .build();
+        int ordinal = params.disposition().ordinal();
+        SetContentParams params1 = new SetContentParams(
+                params.contentLength(),
+                params.overwriteExistingContent(),
+                org.springframework.content.commons.store.SetContentParams.ContentDisposition.values()[ordinal]);
         return this.setContent(entity, propertyPath, content, params1);
     }
 
@@ -231,13 +230,13 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable>
     public S setContent(S property, PropertyPath propertyPath, InputStream content, SetContentParams params) {
 
         ContentProperty contentProperty = this.mappingContext
-                .getContentProperty(property.getClass(), propertyPath.getName());
+                .getContentProperty(property.getClass(), propertyPath.name());
         if (contentProperty == null) {
-            throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.getName()));
+            throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.name()));
         }
 
         Object contentId = contentProperty.getContentId(property);
-        if (contentId == null || params.getDisposition()
+        if (contentId == null || params.disposition()
                 .equals(org.springframework.content.commons.store.SetContentParams.ContentDisposition.CreateNew)) {
 
             Serializable newId = UuidCreator.getTimeOrdered().toString();
@@ -274,7 +273,7 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable>
         }
 
         try {
-            long len = params.getContentLength();
+            long len = params.contentLength();
             if (len == -1L) {
                 len = resource.contentLength();
             }
@@ -381,28 +380,28 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable>
     @Transactional
     @Override
     public S unsetContent(S entity, PropertyPath propertyPath) {
-        return unsetContent(entity, propertyPath, UnsetContentParams.builder().disposition(Disposition.Remove).build());
+        return unsetContent(entity, propertyPath, new UnsetContentParams(Disposition.Remove));
     }
 
     @Transactional
     @Override
     public S unsetContent(S entity, PropertyPath propertyPath,
                           org.springframework.content.commons.repository.UnsetContentParams params) {
-        int ordinal = params.getDisposition().ordinal();
-        return unsetContent(entity, propertyPath, UnsetContentParams.builder().disposition(Disposition.values()[ordinal]).build());
+        int ordinal = params.disposition().ordinal();
+        return unsetContent(entity, propertyPath, new UnsetContentParams(Disposition.values()[ordinal]));
     }
 
     @Transactional
     @Override
     public S unsetContent(S entity, PropertyPath propertyPath, UnsetContentParams params) {
-        ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.getName());
+        ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.name());
         if (property == null) {
-            throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.getName()));
+            throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.name()));
         }
 
         Resource resource = getResource(entity, propertyPath);
 
-        if (resource != null && resource.exists() && resource instanceof DeletableResource && params.getDisposition().equals(Disposition.Remove)) {
+        if (resource != null && resource.exists() && resource instanceof DeletableResource && params.disposition().equals(Disposition.Remove)) {
             try {
                 ((DeletableResource) resource).delete();
             } catch (IOException e) {
@@ -436,9 +435,9 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable>
         Assert.notNull(entity, "entity must not be null");
         Assert.notNull(propertyPath, "propertyPath must not be null");
 
-        ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.getName());
+        ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.name());
         if (property == null) {
-            throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.getName()));
+            throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.name()));
         }
         property.setContentId(entity, contentId, condition);
     }

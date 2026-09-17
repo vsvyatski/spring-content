@@ -16,13 +16,8 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import lombok.Getter;
-import lombok.Setter;
-
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-@Getter
-@Setter
 public class TestEntity5 {
 	public @Id @GeneratedValue Long id;
 
@@ -39,4 +34,92 @@ public class TestEntity5 {
 	private @Version Long version;
 	private @CreatedDate Date createdDate;
 	private @LastModifiedDate Date modifiedDate;
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public UUID getContentId() {
+		return contentId;
+	}
+
+	public void setContentId(UUID contentId) {
+		this.contentId = contentId;
+	}
+
+	public Long getContentLen() {
+		return contentLen;
+	}
+
+	public void setContentLen(Long contentLen) {
+		this.contentLen = contentLen;
+	}
+
+	public String getContentMimeType() {
+		return contentMimeType;
+	}
+
+	public void setContentMimeType(String contentMimeType) {
+		this.contentMimeType = contentMimeType;
+	}
+
+	public UUID getRenditionId() {
+		return renditionId;
+	}
+
+	public void setRenditionId(UUID renditionId) {
+		this.renditionId = renditionId;
+	}
+
+	public Long getRenditionLen() {
+		return renditionLen;
+	}
+
+	public void setRenditionLen(Long renditionLen) {
+		this.renditionLen = renditionLen;
+	}
+
+	public String getRenditionMimeType() {
+		return renditionMimeType;
+	}
+
+	public void setRenditionMimeType(String renditionMimeType) {
+		this.renditionMimeType = renditionMimeType;
+	}
+
+	public Long getVersion() {
+		return version;
+	}
+
+	public void setVersion(Long version) {
+		this.version = version;
+	}
+
+	public Date getCreatedDate() {
+		return createdDate;
+	}
+
+	public void setCreatedDate(Date createdDate) {
+		this.createdDate = createdDate;
+	}
+
+	public Date getModifiedDate() {
+		return modifiedDate;
+	}
+
+	public void setModifiedDate(Date modifiedDate) {
+		this.modifiedDate = modifiedDate;
+	}
 }

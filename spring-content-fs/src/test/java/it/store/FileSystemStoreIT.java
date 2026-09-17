@@ -4,9 +4,6 @@ import com.github.f4b6a3.uuid.UuidCreator;
 import com.github.paulcwarren.ginkgo4j.Ginkgo4jConfiguration;
 import com.github.paulcwarren.ginkgo4j.Ginkgo4jRunner;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import net.bytebuddy.utility.RandomString;
 import org.apache.commons.io.IOUtils;
 import org.hamcrest.Matchers;
@@ -192,7 +189,7 @@ public class FileSystemStoreIT {
 
                             It("should not honor byte ranges", () -> {
                                 // relies on REST-layer to serve byte range
-                                Resource r = store.getResource(entity, PropertyPath.from("content"), GetResourceParams.builder().range("5-10").build());
+                                Resource r = store.getResource(entity, PropertyPath.from("content"), new GetResourceParams("5-10"));
                                 try (InputStream is = r.getInputStream()) {
                                     assertThat(IOUtils.toString(is, Charset.defaultCharset()), is("Hello Client-side World!"));
                                 }
@@ -342,7 +339,7 @@ public class FileSystemStoreIT {
                             String contentId = entity.getContentId();
                             assertThat(new File(loader.getRootResource().getPath(), contentId).exists(), is(true));
 
-                            store.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), SetContentParams.builder().disposition(SetContentParams.ContentDisposition.CreateNew).build());
+                            store.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), new SetContentParams(-1, true, SetContentParams.ContentDisposition.CreateNew));
                             entity = repo.save(entity);
 
                             try (InputStream content = store.getContent(entity)) {
@@ -390,7 +387,7 @@ public class FileSystemStoreIT {
                 Context("when content is unset but kept", () -> {
                     BeforeEach(() -> {
                         resourceLocation = entity.getContentId();
-                        entity = store.unsetContent(entity, PropertyPath.from("content"), UnsetContentParams.builder().disposition(UnsetContentParams.Disposition.Keep).build());
+                        entity = store.unsetContent(entity, PropertyPath.from("content"), new UnsetContentParams(UnsetContentParams.Disposition.Keep));
                         entity = repo.save(entity);
                     });
 
@@ -473,8 +470,7 @@ public class FileSystemStoreIT {
 
                             It("should return null when content is unset", () -> {
                                 EntityWithEmbeddedContent entity = embeddedRepo.save(new EntityWithEmbeddedContent());
-                                EntityWithEmbeddedContent expected = new EntityWithEmbeddedContent(entity.getId(), entity.getContent());
-                                assertThat(embeddedStore.unsetContent(entity, PropertyPath.from("content")), is(expected));
+                                assertThat(embeddedStore.unsetContent(entity, PropertyPath.from("content")), is(sameInstance(entity)));
                                 int i = 0;
                             });
                         }));
@@ -669,9 +665,6 @@ public class FileSystemStoreIT {
     }
 
     @Ignore("It's not a test and must not be considered as one.")
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
     @Entity
     @Table(name = "entity_with_embedded")
     public static class EntityWithEmbeddedContent {
@@ -681,12 +674,26 @@ public class FileSystemStoreIT {
 
         @Embedded
         private EmbeddedContent content;
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
+        }
+
+        public EmbeddedContent getContent() {
+            return content;
+        }
+
+        public void setContent(EmbeddedContent content) {
+            this.content = content;
+        }
     }
 
     @Ignore("It's not a test and must not be considered as one.")
     @Embeddable
-    @NoArgsConstructor
-    @Data
     public static class EmbeddedContent {
 
         @ContentId
@@ -694,5 +701,21 @@ public class FileSystemStoreIT {
 
         @ContentLength
         private Long contentLen;
+
+        public String getContentId() {
+            return contentId;
+        }
+
+        public void setContentId(String contentId) {
+            this.contentId = contentId;
+        }
+
+        public Long getContentLen() {
+            return contentLen;
+        }
+
+        public void setContentLen(Long contentLen) {
+            this.contentLen = contentLen;
+        }
     }
 }

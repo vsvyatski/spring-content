@@ -6,12 +6,7 @@ import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.annotations.MimeType;
 
-import lombok.Getter;
-import lombok.Setter;
-
 @Embeddable
-@Getter
-@Setter
 public class ClaimForm {
 
 	@ContentId
@@ -28,6 +23,46 @@ public class ClaimForm {
 
     @ContentLength
     private long renditionLen;
+
+	public String getContentId() {
+		return contentId;
+	}
+
+	public void setContentId(String contentId) {
+		this.contentId = contentId;
+	}
+
+	public Long getContentLength() {
+		return contentLength;
+	}
+
+	public void setContentLength(Long contentLength) {
+		this.contentLength = contentLength;
+	}
+
+	public String getContentMimeType() {
+		return contentMimeType;
+	}
+
+	public void setContentMimeType(String contentMimeType) {
+		this.contentMimeType = contentMimeType;
+	}
+
+	public String getRenditionId() {
+		return renditionId;
+	}
+
+	public void setRenditionId(String renditionId) {
+		this.renditionId = renditionId;
+	}
+
+	public long getRenditionLen() {
+		return renditionLen;
+	}
+
+	public void setRenditionLen(long renditionLen) {
+		this.renditionLen = renditionLen;
+	}
 
 	// Ensure we can handle entities with "computed" getters; i.e. getters that
 	// dont have an associated field

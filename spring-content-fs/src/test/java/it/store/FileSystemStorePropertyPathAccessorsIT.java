@@ -4,9 +4,6 @@ import com.github.paulcwarren.ginkgo4j.Ginkgo4jConfiguration;
 import com.github.paulcwarren.ginkgo4j.Ginkgo4jRunner;
 import internal.org.springframework.content.fs.store.DefaultFileSystemStoreImpl;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import net.bytebuddy.utility.RandomString;
 import org.apache.commons.io.IOUtils;
 import org.hamcrest.Matchers;
@@ -424,9 +421,6 @@ public class FileSystemStorePropertyPathAccessorsIT {
     }
 
     @Entity
-    @NoArgsConstructor
-    @Getter
-    @Setter
     @Table(name = "tentity_content")
     public static class TEntity {
 
@@ -439,12 +433,36 @@ public class FileSystemStorePropertyPathAccessorsIT {
         @Embedded
         @AttributeOverride(name = "id", column = @Column(name = "content__id"))
         private EmbeddedContent content = new EmbeddedContent();
+
+        public TEntity() {
+        }
+
+        public UUID getId() {
+            return id;
+        }
+
+        public void setId(UUID id) {
+            this.id = id;
+        }
+
+        public String getNumber() {
+            return number;
+        }
+
+        public void setNumber(String number) {
+            this.number = number;
+        }
+
+        public EmbeddedContent getContent() {
+            return content;
+        }
+
+        public void setContent(EmbeddedContent content) {
+            this.content = content;
+        }
     }
 
     @Embeddable
-    @NoArgsConstructor
-    @Getter
-    @Setter
     public static class EmbeddedContent {
         @ContentId
         private String id;
@@ -457,6 +475,41 @@ public class FileSystemStorePropertyPathAccessorsIT {
 
         @OriginalFileName
         private String filename;
+
+        public EmbeddedContent() {
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
+        }
+
+        public long getLength() {
+            return length;
+        }
+
+        public void setLength(long length) {
+            this.length = length;
+        }
+
+        public String getMimetype() {
+            return mimetype;
+        }
+
+        public void setMimetype(String mimetype) {
+            this.mimetype = mimetype;
+        }
+
+        public String getFilename() {
+            return filename;
+        }
+
+        public void setFilename(String filename) {
+            this.filename = filename;
+        }
     }
 
     public interface TestEntityRepository extends JpaRepository<TEntity, UUID> {

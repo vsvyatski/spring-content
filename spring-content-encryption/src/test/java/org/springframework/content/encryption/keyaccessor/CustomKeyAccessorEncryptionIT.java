@@ -1,8 +1,9 @@
 package org.springframework.content.encryption.keyaccessor;
 
 import com.github.paulcwarren.ginkgo4j.Ginkgo4jSpringRunner;
+
 import java.util.Collection;
-import lombok.RequiredArgsConstructor;
+
 import org.springframework.content.commons.mappingcontext.ContentProperty;
 import org.springframework.content.encryption.config.EncryptingContentStoreConfiguration;
 import org.springframework.content.encryption.config.EncryptingContentStoreConfigurer;
@@ -13,9 +14,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpStatus;
 import org.hamcrest.Matchers;
@@ -53,7 +51,7 @@ import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 @RunWith(Ginkgo4jSpringRunner.class)
-@SpringBootTest(classes = CustomKeyAccessorEncryptionIT.Application.class, webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = CustomKeyAccessorEncryptionIT.Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class CustomKeyAccessorEncryptionIT {
 
     @Autowired
@@ -130,9 +128,10 @@ public class CustomKeyAccessorEncryptionIT {
     }
 
     @Test
-    public void noop() {}
+    public void noop() {
+    }
 
-    @SpringBootApplication(exclude={S3ContentAutoConfiguration.class})
+    @SpringBootApplication(exclude = {S3ContentAutoConfiguration.class})
     @ImportAutoConfiguration(ContentRestAutoConfiguration.class)
     @EnableJpaRepositories(considerNestedRepositories = true)
     @EnableFileSystemStores
@@ -148,7 +147,8 @@ public class CustomKeyAccessorEncryptionIT {
             public java.io.File filesystemRoot() {
                 try {
                     return Files.createTempDirectory("").toFile();
-                } catch (IOException ioe) {}
+                } catch (IOException ignored) {
+                }
                 return null;
             }
 
@@ -169,14 +169,13 @@ public class CustomKeyAccessorEncryptionIT {
         }
     }
 
-    public interface FileRepository extends CrudRepository<FsFile, Long> {}
+    public interface FileRepository extends CrudRepository<FsFile, Long> {
+    }
 
-    public interface FileContentStore3 extends FileSystemContentStore<FsFile, UUID>, EncryptingContentStore<FsFile, UUID> {}
+    public interface FileContentStore3 extends FileSystemContentStore<FsFile, UUID>, EncryptingContentStore<FsFile, UUID> {
+    }
 
     @Entity
-    @Getter
-    @Setter
-    @NoArgsConstructor
     public static class FsFile {
         @Id
         @GeneratedValue(strategy = GenerationType.AUTO)
@@ -184,20 +183,58 @@ public class CustomKeyAccessorEncryptionIT {
 
         private String name;
 
-        @ContentId private UUID contentId;
-        @ContentLength private long contentLength;
-        @MimeType private String contentMimeType;
+        @ContentId
+        private UUID contentId;
+        @ContentLength
+        private long contentLength;
+        @MimeType
+        private String contentMimeType;
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public UUID getContentId() {
+            return contentId;
+        }
+
+        public void setContentId(UUID contentId) {
+            this.contentId = contentId;
+        }
+
+        public long getContentLength() {
+            return contentLength;
+        }
+
+        public void setContentLength(long contentLength) {
+            this.contentLength = contentLength;
+        }
+
+        public String getContentMimeType() {
+            return contentMimeType;
+        }
+
+        public void setContentMimeType(String contentMimeType) {
+            this.contentMimeType = contentMimeType;
+        }
     }
 
     public interface ContentEncryptionKeyRepository extends CrudRepository<ContentEncryptionKey, UUID> {
-
-
     }
 
     @Entity
-    @Getter
-    @Setter
-    @NoArgsConstructor
     public static class ContentEncryptionKey {
         @Id
         private UUID contentId;
@@ -207,16 +244,47 @@ public class CustomKeyAccessorEncryptionIT {
         private byte[] encryptionKey;
 
         private byte[] iv;
+
+        public UUID getContentId() {
+            return contentId;
+        }
+
+        public void setContentId(UUID contentId) {
+            this.contentId = contentId;
+        }
+
+        public String getAlgorithm() {
+            return algorithm;
+        }
+
+        public void setAlgorithm(String algorithm) {
+            this.algorithm = algorithm;
+        }
+
+        public byte[] getEncryptionKey() {
+            return encryptionKey;
+        }
+
+        public void setEncryptionKey(byte[] encryptionKey) {
+            this.encryptionKey = encryptionKey;
+        }
+
+        public byte[] getIv() {
+            return iv;
+        }
+
+        public void setIv(byte[] iv) {
+            this.iv = iv;
+        }
     }
 
-    @RequiredArgsConstructor
-    private static class EntityStorageDataEncryptionKeyAccessor<S> implements DataEncryptionKeyAccessor<S, UnencryptedSymmetricDataEncryptionKey> {
-        private final ContentEncryptionKeyRepository contentEncryptionKeyRepository;
+    private record EntityStorageDataEncryptionKeyAccessor<S>(
+            ContentEncryptionKeyRepository contentEncryptionKeyRepository) implements DataEncryptionKeyAccessor<S, UnencryptedSymmetricDataEncryptionKey> {
 
         @Override
         public Collection<UnencryptedSymmetricDataEncryptionKey> findKeys(S entity, ContentProperty contentProperty) {
-            var contentId = (UUID)contentProperty.getContentId(entity);
-            if(contentId == null) {
+            var contentId = (UUID) contentProperty.getContentId(entity);
+            if (contentId == null) {
                 return null;
             }
             return contentEncryptionKeyRepository.findById(contentId).stream()
@@ -230,12 +298,12 @@ public class CustomKeyAccessorEncryptionIT {
 
         @Override
         public S setKeys(S entity, ContentProperty contentProperty,
-                Collection<UnencryptedSymmetricDataEncryptionKey> dataEncryptionKeys
+                         Collection<UnencryptedSymmetricDataEncryptionKey> dataEncryptionKeys
         ) {
-            var contentId = (UUID)contentProperty.getContentId(entity);
+            var contentId = (UUID) contentProperty.getContentId(entity);
             var maybeDataEncryptionKey = dataEncryptionKeys.stream().findFirst();
 
-            if(maybeDataEncryptionKey.isEmpty()) {
+            if (maybeDataEncryptionKey.isEmpty()) {
                 contentEncryptionKeyRepository.deleteById(contentId);
                 return entity;
             }
@@ -250,9 +318,9 @@ public class CustomKeyAccessorEncryptionIT {
                         return contentEncryptionKey;
                     });
 
-            encryptionKeyEntity.setAlgorithm(dataEncryptionKey.getAlgorithm());
-            encryptionKeyEntity.setEncryptionKey(dataEncryptionKey.getKeyData());
-            encryptionKeyEntity.setIv(dataEncryptionKey.getInitializationVector());
+            encryptionKeyEntity.setAlgorithm(dataEncryptionKey.algorithm());
+            encryptionKeyEntity.setEncryptionKey(dataEncryptionKey.keyData());
+            encryptionKeyEntity.setIv(dataEncryptionKey.initializationVector());
 
             contentEncryptionKeyRepository.save(encryptionKeyEntity);
 

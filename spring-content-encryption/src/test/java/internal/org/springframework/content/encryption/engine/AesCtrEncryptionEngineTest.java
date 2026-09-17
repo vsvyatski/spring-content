@@ -48,10 +48,10 @@ public class AesCtrEncryptionEngineTest {
                 var engine = new AesCtrEncryptionEngine(128);
                 var parameters = engine.createNewParameters();
 
-                assertThat(parameters.getSecretKey().getAlgorithm(), is(equalTo("AES")));
-                assertThat(parameters.getSecretKey().getEncoded().length, is(equalTo(16)));
+                assertThat(parameters.secretKey().getAlgorithm(), is(equalTo("AES")));
+                assertThat(parameters.secretKey().getEncoded().length, is(equalTo(16)));
 
-                assertThat(parameters.getInitializationVector().length, is(equalTo(16)));
+                assertThat(parameters.initializationVector().length, is(equalTo(16)));
             });
 
             It("Encrypts plaintext according to the encryption parameters", () -> {
@@ -145,7 +145,7 @@ public class AesCtrEncryptionEngineTest {
 
                     var offsetStart = BLOCK_1_PLAIN.length + BLOCK_2_PLAIN.length;
                     try(var decrypted = engine.decrypt(req -> {
-                                assertThat(req.getStartByteOffset(), is(greaterThan(0L)));
+                                assertThat(req.startByteOffset(), is(greaterThan(0L)));
                                 return onlyByteRange(new ByteArrayInputStream(CIPHERTEXT), req);
                             }, PARAMS, InputStreamRequestParameters.startingFrom(offsetStart)
                     )) {
@@ -165,7 +165,7 @@ public class AesCtrEncryptionEngineTest {
                     var offsetStart = BLOCK_1_PLAIN.length+BLOCK_2_PLAIN.length/2;
 
                     try(var decrypted = engine.decrypt(req -> {
-                        assertThat(req.getStartByteOffset(), is(greaterThan(0L))); // We do not start requesting from the first byte
+                        assertThat(req.startByteOffset(), is(greaterThan(0L))); // We do not start requesting from the first byte
                         return onlyByteRange(new ByteArrayInputStream(CIPHERTEXT), req);
                     }, PARAMS, InputStreamRequestParameters.startingFrom(offsetStart))) {
                         var original = new ByteArrayInputStream(PLAINTEXT);
@@ -188,8 +188,8 @@ public class AesCtrEncryptionEngineTest {
                     var offsetEnd = BLOCK_1_PLAIN.length+BLOCK_2_PLAIN.length;
 
                     try(var decrypted = engine.decrypt(req -> {
-                                assertThat(req.getStartByteOffset(), is(equalTo(0L)));
-                                assertThat(req.getEndByteOffset(), is(lessThan((long)CIPHERTEXT.length))); // We don't need to read the full ciphertext
+                                assertThat(req.startByteOffset(), is(equalTo(0L)));
+                                assertThat(req.endByteOffset(), is(lessThan((long)CIPHERTEXT.length))); // We don't need to read the full ciphertext
                                 return onlyByteRange(new ByteArrayInputStream(CIPHERTEXT), req);
                             }, PARAMS, new InputStreamRequestParameters(0, (long)offsetEnd)
                     )) {
@@ -206,8 +206,8 @@ public class AesCtrEncryptionEngineTest {
                     var offsetEnd = BLOCK_1_PLAIN.length+BLOCK_2_PLAIN.length + BLOCK_3_PLAIN.length/2;
 
                     try(var decrypted = engine.decrypt(req -> {
-                                assertThat(req.getStartByteOffset(), is(equalTo(0L)));
-                                assertThat(req.getEndByteOffset(), is(lessThan((long)CIPHERTEXT.length))); // We don't need to read the full ciphertext
+                                assertThat(req.startByteOffset(), is(equalTo(0L)));
+                                assertThat(req.endByteOffset(), is(lessThan((long)CIPHERTEXT.length))); // We don't need to read the full ciphertext
                                 return onlyByteRange(new ByteArrayInputStream(CIPHERTEXT), req);
                             }, PARAMS, new InputStreamRequestParameters(0, (long)offsetEnd)
                     )) {
@@ -241,6 +241,6 @@ public class AesCtrEncryptionEngineTest {
     }
 
     private static InputStream onlyByteRange(InputStream inputStream, InputStreamRequestParameters params) {
-        return new ZeroPrefixedInputStream(new SkippingInputStream(inputStream, params.getStartByteOffset()), params.getStartByteOffset());
+        return new ZeroPrefixedInputStream(new SkippingInputStream(inputStream, params.startByteOffset()), params.startByteOffset());
     }
 }

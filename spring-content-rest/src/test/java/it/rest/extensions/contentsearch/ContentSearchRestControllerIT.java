@@ -84,10 +84,6 @@ import com.theoryinpractise.halbuilder.standard.StandardRepresentationFactory;
 import internal.org.springframework.content.rest.support.config.JpaInfrastructureConfig;
 import internal.org.springframework.data.rest.extensions.contentsearch.DefaultEntityLookupStrategy;
 import internal.org.springframework.data.rest.extensions.contentsearch.QueryMethodsEntityLookupStrategy;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @RunWith(Ginkgo4jSpringRunner.class)
 // because the controller bean is shared and we need to instruct the reflection service
@@ -684,7 +680,6 @@ public class ContentSearchRestControllerIT {
     }
 
     @MappedSuperclass
-    @NoArgsConstructor
     public static class AbstractTestEntity {
         @Id
         @ContentId
@@ -824,14 +819,30 @@ public class ContentSearchRestControllerIT {
     }
 
     @Entity
-    @Getter
-    @Setter
-    @NoArgsConstructor
     public static class TestEntity2 {
         @Id
         private String id = UUID.randomUUID().toString();
         @ContentId
         private String contentId = UUID.randomUUID().toString();
+
+        public TestEntity2() {
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
+        }
+
+        public String getContentId() {
+            return contentId;
+        }
+
+        public void setContentId(String contentId) {
+            this.contentId = contentId;
+        }
     }
 
     @RepositoryRestResource(path="repoWithNoLookupStrategy")
@@ -844,14 +855,30 @@ public class ContentSearchRestControllerIT {
     }
 
     @Entity
-    @Getter
-    @Setter
-    @NoArgsConstructor
     public static class TestEntity3 {
         @Id
         private String id = UUID.randomUUID().toString();
         @ContentId
         private String contentId = UUID.randomUUID().toString();
+
+        public TestEntity3() {
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
+        }
+
+        public String getContentId() {
+            return contentId;
+        }
+
+        public void setContentId(String contentId) {
+            this.contentId = contentId;
+        }
     }
 
     @RepositoryRestResource(path="repoWithCustomSearchReturnType")
@@ -863,9 +890,6 @@ public class ContentSearchRestControllerIT {
         extends FileSystemContentStore<TestEntity3, String>, Searchable<CustomResult> {
     }
 
-    @Getter
-    @Setter
-    @AllArgsConstructor
     public class CustomResult {
 
         @ContentId
@@ -879,5 +903,44 @@ public class ContentSearchRestControllerIT {
 
         @Attribute(name="bar")
         private String bar;
+
+        public CustomResult(String contentId, String highlight, String foo, String bar) {
+            this.contentId = contentId;
+            this.highlight = highlight;
+            this.foo = foo;
+            this.bar = bar;
+        }
+
+        public String getContentId() {
+            return contentId;
+        }
+
+        public void setContentId(String contentId) {
+            this.contentId = contentId;
+        }
+
+        public String getHighlight() {
+            return highlight;
+        }
+
+        public void setHighlight(String highlight) {
+            this.highlight = highlight;
+        }
+
+        public String getFoo() {
+            return foo;
+        }
+
+        public void setFoo(String foo) {
+            this.foo = foo;
+        }
+
+        public String getBar() {
+            return bar;
+        }
+
+        public void setBar(String bar) {
+            this.bar = bar;
+        }
     }
 }

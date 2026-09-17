@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import lombok.Data;
 import org.apache.commons.io.IOUtils;
 import org.bson.types.ObjectId;
 import org.hamcrest.Matchers;
@@ -45,8 +44,6 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.gridfs.model.GridFSFile;
 
 import internal.org.springframework.content.mongo.store.DefaultMongoStoreImpl;
-import lombok.Getter;
-import lombok.Setter;
 import net.bytebuddy.utility.RandomString;
 
 @RunWith(Ginkgo4jRunner.class)
@@ -216,7 +213,7 @@ public class MongoStoreIT {
 
 								It("should not honor byte ranges", () -> {
 									// relies on REST-layer to serve byte range
-									Resource r = store.getResource(entity, PropertyPath.from("content"), GetResourceParams.builder().range("5-10").build());
+									Resource r = store.getResource(entity, PropertyPath.from("content"), new GetResourceParams("5-10"));
 									try (InputStream is = r.getInputStream()) {
 										assertThat(IOUtils.toString(is), is("Hello Client-side World!"));
 									}
@@ -359,7 +356,7 @@ public class MongoStoreIT {
 						String contentId = entity.getContentId();
 						assertThat(gridFsTemplate.getResource(contentId).exists(), is(true));
 
-						store.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), SetContentParams.builder().disposition(SetContentParams.ContentDisposition.CreateNew).build());
+						store.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), new SetContentParams(-1, true, SetContentParams.ContentDisposition.CreateNew));
 						entity = repo.save(entity);
 
 						boolean matches = false;
@@ -408,7 +405,7 @@ public class MongoStoreIT {
 				Context("when content is unset but kept", () -> {
 					BeforeEach(() -> {
 						resourceLocation = entity.getContentId().toString();
-						entity = store.unsetContent(entity, PropertyPath.from("content"), UnsetContentParams.builder().disposition(UnsetContentParams.Disposition.Keep).build());
+						entity = store.unsetContent(entity, PropertyPath.from("content"), new UnsetContentParams(UnsetContentParams.Disposition.Keep));
 						entity = repo.save(entity);
 					});
 
@@ -543,8 +540,6 @@ public class MongoStoreIT {
 		void setContentLen(Long contentLen);
 	}
 
-	@Getter
-	@Setter
 	public static class TestEntity implements ContentProperty {
 
 		@ContentId
@@ -566,12 +561,43 @@ public class MongoStoreIT {
 		public TestEntity(String contentId) {
 			this.contentId = new String(contentId);
 		}
+
+		public String getContentId() {
+			return contentId;
+		}
+
+		public void setContentId(String contentId) {
+			this.contentId = contentId;
+		}
+
+		public Long getContentLen() {
+			return contentLen;
+		}
+
+		public void setContentLen(Long contentLen) {
+			this.contentLen = contentLen;
+		}
+
+		public String getRenditionId() {
+			return renditionId;
+		}
+
+		public void setRenditionId(String renditionId) {
+			this.renditionId = renditionId;
+		}
+
+		public long getRenditionLen() {
+			return renditionLen;
+		}
+
+		public void setRenditionLen(long renditionLen) {
+			this.renditionLen = renditionLen;
+		}
 	}
 
 	public interface TestEntityRepository extends MongoRepository<TestEntity, String> {}
 	public interface TestEntityStore extends ContentStore<TestEntity, String> {}
 
-	@Data
 	public static class SharedIdContentIdEntity implements ContentProperty {
 
 		@jakarta.persistence.Id
@@ -584,12 +610,31 @@ public class MongoStoreIT {
 		public SharedIdContentIdEntity() {
 			this.contentId = null;
 		}
+
+		@Override
+		public String getContentId() {
+			return contentId;
+		}
+
+		@Override
+		public void setContentId(String contentId) {
+			this.contentId = contentId;
+		}
+
+		@Override
+		public Long getContentLen() {
+			return contentLen;
+		}
+
+		@Override
+		public void setContentLen(Long contentLen) {
+			this.contentLen = contentLen;
+		}
 	}
 
 	public interface SharedIdRepository extends MongoRepository<SharedIdContentIdEntity, String> {}
 	public interface SharedIdStore extends ContentStore<SharedIdContentIdEntity, String> {}
 
-	@Data
 	public static class SharedSpringIdContentIdEntity implements ContentProperty {
 
 		@org.springframework.data.annotation.Id
@@ -601,6 +646,26 @@ public class MongoStoreIT {
 
 		public SharedSpringIdContentIdEntity() {
 			this.contentId = null;
+		}
+
+		@Override
+		public String getContentId() {
+			return contentId;
+		}
+
+		@Override
+		public void setContentId(String contentId) {
+			this.contentId = contentId;
+		}
+
+		@Override
+		public Long getContentLen() {
+			return contentLen;
+		}
+
+		@Override
+		public void setContentLen(Long contentLen) {
+			this.contentLen = contentLen;
 		}
 	}
 

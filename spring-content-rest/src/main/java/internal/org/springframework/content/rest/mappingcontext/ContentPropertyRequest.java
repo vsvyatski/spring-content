@@ -1,27 +1,18 @@
 package internal.org.springframework.content.rest.mappingcontext;
 
 import internal.org.springframework.content.rest.utils.StoreUtils;
-import lombok.Data;
 import org.springframework.util.Assert;
 
 import java.net.URI;
 
 import static org.apache.commons.lang3.StringUtils.join;
 
-@Data
-public class ContentPropertyRequest {
+public record ContentPropertyRequest(String store, String id, String contentPropertyPath) {
 
-    private final String store;
-    private final String id;
-    private final String contentPropertyPath;
-
-    private ContentPropertyRequest(String store, String id, String contentPropertyPath) {
+    public ContentPropertyRequest {
         Assert.hasLength(store, "invalid store");
-        this.store = store;
         Assert.hasLength(store, "invalid id");
-        this.id = id;
         Assert.notNull(store, "invalid content property path");
-        this.contentPropertyPath = contentPropertyPath;
     }
 
     public String getRequestURI() {

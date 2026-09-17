@@ -6,7 +6,7 @@
     <parent>
         <artifactId>spring-content</artifactId>
         <groupId>io.github.vsvyatski</groupId>
-        <version>4.0.2</version>
+        <version>4.1.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>spring-versions-jpa</artifactId>
@@ -74,11 +74,6 @@
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest</artifactId>
             <version>${hamcrest.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

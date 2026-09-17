@@ -54,12 +54,6 @@ import com.azure.storage.blob.BlobServiceClientBuilder;
 import com.github.paulcwarren.ginkgo4j.Ginkgo4jConfiguration;
 import com.github.paulcwarren.ginkgo4j.Ginkgo4jRunner;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
 @RunWith(Ginkgo4jRunner.class)
 @Ginkgo4jConfiguration(threads=1)
 public class AzureStorageWithEntityConverterIT {
@@ -87,12 +81,28 @@ public class AzureStorageWithEntityConverterIT {
         };
     }
 
-    @Data
-    @AllArgsConstructor
     private static class TestData {
         private String name;
         private Class[] config;
         private String bucket;
+
+        public TestData(String name, Class[] config, String bucket) {
+            this.name = name;
+            this.config = config;
+            this.bucket = bucket;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public Class[] getConfig() {
+            return config;
+        }
+
+        public String getBucket() {
+            return bucket;
+        }
     }
 
     private TestEntity entity;
@@ -245,9 +255,6 @@ public class AzureStorageWithEntityConverterIT {
     }
 
     @Entity
-    @Setter
-    @Getter
-    @NoArgsConstructor
     @Table(name="test_entity")
     public static class TestEntity {
 
@@ -276,8 +283,75 @@ public class AzureStorageWithEntityConverterIT {
         @MimeType
         private String renditionContentType;
 
+        public TestEntity() {
+        }
+
         public TestEntity(String contentId) {
             this.contentId = contentId;
+        }
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+
+        public String getBucket() {
+            return bucket;
+        }
+
+        public void setBucket(String bucket) {
+            this.bucket = bucket;
+        }
+
+        public String getContentId() {
+            return contentId;
+        }
+
+        public void setContentId(String contentId) {
+            this.contentId = contentId;
+        }
+
+        public long getContentLen() {
+            return contentLen;
+        }
+
+        public void setContentLen(long contentLen) {
+            this.contentLen = contentLen;
+        }
+
+        public String getContentType() {
+            return contentType;
+        }
+
+        public void setContentType(String contentType) {
+            this.contentType = contentType;
+        }
+
+        public String getRenditionId() {
+            return renditionId;
+        }
+
+        public void setRenditionId(String renditionId) {
+            this.renditionId = renditionId;
+        }
+
+        public long getRenditionLen() {
+            return renditionLen;
+        }
+
+        public void setRenditionLen(long renditionLen) {
+            this.renditionLen = renditionLen;
+        }
+
+        public String getRenditionContentType() {
+            return renditionContentType;
+        }
+
+        public void setRenditionContentType(String renditionContentType) {
+            this.renditionContentType = renditionContentType;
         }
     }
 

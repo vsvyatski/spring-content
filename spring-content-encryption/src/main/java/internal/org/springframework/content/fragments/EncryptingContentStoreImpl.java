@@ -8,7 +8,7 @@ import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import lombok.SneakyThrows;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.content.commons.fragments.ContentStoreAware;
 import org.springframework.content.commons.mappingcontext.ContentProperty;
@@ -64,7 +64,7 @@ public class EncryptingContentStoreImpl<S, SID extends Serializable> implements
     @Override
     public S setContent(S entity, PropertyPath propertyPath, InputStream inputStream, long l) {
         return this.setContent(entity, propertyPath, inputStream,
-                org.springframework.content.commons.store.SetContentParams.builder().contentLength(l).build());
+                new org.springframework.content.commons.store.SetContentParams(l, true, org.springframework.content.commons.store.SetContentParams.ContentDisposition.Overwrite));
     }
 
     @Override
@@ -110,7 +110,7 @@ public class EncryptingContentStoreImpl<S, SID extends Serializable> implements
     @Override
     public S unsetContent(S entity, PropertyPath propertyPath) {
         return unsetContent(entity, propertyPath,
-                org.springframework.content.commons.store.UnsetContentParams.builder().build());
+                new org.springframework.content.commons.store.UnsetContentParams(org.springframework.content.commons.store.UnsetContentParams.Disposition.Remove));
     }
 
     @Override
@@ -125,9 +125,9 @@ public class EncryptingContentStoreImpl<S, SID extends Serializable> implements
         Assert.notNull(storeDelegate, "store not set");
         Assert.notNull(cryptoService, "cryptoService not set");
 
-        ContentProperty contentProperty = mappingContext.getContentProperty(entity.getClass(), propertyPath.getName());
+        ContentProperty contentProperty = mappingContext.getContentProperty(entity.getClass(), propertyPath.name());
         if (contentProperty == null) {
-            throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.getName()));
+            throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.name()));
         }
 
         var newEntity = cryptoService.clearKeys(entity, propertyPath);
@@ -140,9 +140,8 @@ public class EncryptingContentStoreImpl<S, SID extends Serializable> implements
         throw new UnsupportedOperationException();
     }
 
-    @SneakyThrows(IOException.class)
     @Override
-    public InputStream getContent(S entity, PropertyPath propertyPath) {
+    public InputStream getContent(S entity, PropertyPath propertyPath) throws IOException {
         Assert.notNull(entity, "entity not set");
         Assert.notNull(propertyPath, "propertyPath not set");
         Assert.notNull(storeDelegate, "store not set");
@@ -169,7 +168,7 @@ public class EncryptingContentStoreImpl<S, SID extends Serializable> implements
 
     @Override
     public Resource getResource(S entity, PropertyPath propertyPath,
-            org.springframework.content.commons.repository.GetResourceParams params) {
+                                org.springframework.content.commons.repository.GetResourceParams params) {
         return getResource(entity, propertyPath, convertParams(params));
     }
 
@@ -240,7 +239,7 @@ public class EncryptingContentStoreImpl<S, SID extends Serializable> implements
             if (interfaces.isEmpty())
                 continue;
 
-            Type[] genericArguments = ((ParameterizedType)interfaces.get()).getActualTypeArguments();
+            Type[] genericArguments = ((ParameterizedType) interfaces.get()).getActualTypeArguments();
             if (genericArguments.length < 1)
                 continue;
 
@@ -254,9 +253,7 @@ public class EncryptingContentStoreImpl<S, SID extends Serializable> implements
 
     private static org.springframework.content.commons.store.UnsetContentParams convertParams(
             UnsetContentParams params) {
-        return org.springframework.content.commons.store.UnsetContentParams.builder()
-                .disposition(convertDisposition(params.getDisposition()))
-                .build();
+        return new org.springframework.content.commons.store.UnsetContentParams(convertDisposition(params.disposition()));
     }
 
     private static Disposition convertDisposition(UnsetContentParams.Disposition disposition) {
@@ -267,17 +264,14 @@ public class EncryptingContentStoreImpl<S, SID extends Serializable> implements
     }
 
     private GetResourceParams convertParams(org.springframework.content.commons.repository.GetResourceParams params) {
-        return GetResourceParams.builder()
-                .range(params.getRange())
-                .build();
+        return new GetResourceParams(params.range());
     }
 
     private static org.springframework.content.commons.store.SetContentParams convertParams(SetContentParams params) {
-        return org.springframework.content.commons.store.SetContentParams.builder()
-                .contentLength(params.getContentLength())
-                .disposition(convertDisposition(params.getDisposition()))
-                .overwriteExistingContent(params.isOverwriteExistingContent())
-                .build();
+        return new org.springframework.content.commons.store.SetContentParams(
+                params.contentLength(),
+                params.overwriteExistingContent(),
+                convertDisposition(params.disposition()));
     }
 
     private static ContentDisposition convertDisposition(SetContentParams.ContentDisposition disposition) {

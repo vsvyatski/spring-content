@@ -51,7 +51,6 @@ import internal.org.springframework.content.rest.support.StoreConfig;
 import internal.org.springframework.content.rest.support.TestEntity5;
 import internal.org.springframework.content.rest.support.TestEntity5Repository;
 import internal.org.springframework.content.rest.support.TestEntity5Store;
-import lombok.Getter;
 
 @RunWith(Ginkgo4jSpringRunner.class)
 // @Ginkgo4jConfiguration(threads=1)
@@ -203,7 +202,6 @@ public class StoredRenditionsRestIT {
         }
     }
 
-    @Getter
     @StoreEventHandler
     public static class TestEventHandler {
 

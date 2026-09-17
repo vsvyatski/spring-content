@@ -49,9 +49,6 @@ import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfigu
 import com.github.paulcwarren.ginkgo4j.Ginkgo4jSpringRunner;
 
 import internal.org.springframework.content.rest.support.config.JpaInfrastructureConfig;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @RunWith(Ginkgo4jSpringRunner.class)
 // @Ginkgo4jConfiguration(threads=1)
@@ -156,9 +153,6 @@ public class RevisionPropertyRestEndpointsIT {
 
     @Entity
     @Audited
-    @Getter
-    @Setter
-    @NoArgsConstructor
     public static class TEntity {
 
         @Id
@@ -173,5 +167,40 @@ public class RevisionPropertyRestEndpointsIT {
 
         @MimeType
         private String mimeType;
+
+        public TEntity() {
+        }
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+
+        public String getContentId() {
+            return contentId;
+        }
+
+        public void setContentId(String contentId) {
+            this.contentId = contentId;
+        }
+
+        public Long getContentLen() {
+            return contentLen;
+        }
+
+        public void setContentLen(Long contentLen) {
+            this.contentLen = contentLen;
+        }
+
+        public String getMimeType() {
+            return mimeType;
+        }
+
+        public void setMimeType(String mimeType) {
+            this.mimeType = mimeType;
+        }
     }
 }

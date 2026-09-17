@@ -105,7 +105,7 @@ public class RenderableImpl implements Renderable<Object>, ContentStoreAware {
 
         Object fromMimeType;
 
-        ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.getName());
+        ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.name());
         if (property == null) {
             return null;
         }
@@ -151,7 +151,7 @@ public class RenderableImpl implements Renderable<Object>, ContentStoreAware {
     @Override
     public boolean hasRendition(Object entity, PropertyPath propertyPath, String mimeType) {
 
-        ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.getName());
+        ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.name());
         // todo: property == null
 
         Object fromMimeType = property.getMimeType(entity);

@@ -4,7 +4,6 @@ import com.github.paulcwarren.ginkgo4j.Ginkgo4jConfiguration;
 import com.github.paulcwarren.ginkgo4j.Ginkgo4jSpringRunner;
 import jakarta.persistence.*;
 import java.util.Arrays;
-import lombok.*;
 import net.bytebuddy.utility.RandomString;
 import org.apache.commons.io.IOUtils;
 import org.hamcrest.CoreMatchers;
@@ -419,7 +418,7 @@ public class S3StoreIT {
                         String contentId = entity.getContentId();
                         client.headObject(HeadObjectRequest.builder().bucket(BUCKET).key(contentId).build());
 
-                        store.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), SetContentParams.builder().disposition(SetContentParams.ContentDisposition.CreateNew).build());
+                        store.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), new SetContentParams(-1, true, SetContentParams.ContentDisposition.CreateNew));
                         entity = repo.save(entity);
 
                         boolean matches = false;
@@ -469,7 +468,7 @@ public class S3StoreIT {
                 Context("when content is unset but kept", () -> {
                     BeforeEach(() -> {
                         resourceLocation = entity.getContentId().toString();
-                        entity = store.unsetContent(entity, PropertyPath.from("content"), UnsetContentParams.builder().disposition(UnsetContentParams.Disposition.Keep).build());
+                        entity = store.unsetContent(entity, PropertyPath.from("content"), new UnsetContentParams(UnsetContentParams.Disposition.Keep));
                         entity = repo.save(entity);
                     });
 
@@ -567,8 +566,7 @@ public class S3StoreIT {
 
                         It("should return null when content is unset", () -> {
                             EntityWithEmbeddedContent entity = embeddedRepo.save(new EntityWithEmbeddedContent());
-                            EntityWithEmbeddedContent expected = new EntityWithEmbeddedContent(entity.getId(), entity.getContent());
-                            assertThat(embeddedStore.unsetContent(entity, PropertyPath.from("content")), is(expected));
+                            assertThat(embeddedStore.unsetContent(entity, PropertyPath.from("content")), is(sameInstance(entity)));
                         });
                     });
                 });
@@ -598,9 +596,6 @@ public class S3StoreIT {
     }
 
     @Entity
-    @Setter
-    @Getter
-    @NoArgsConstructor
     public static class TestEntity {
 
         @Id
@@ -625,8 +620,67 @@ public class S3StoreIT {
         @MimeType
         private String renditionType;
 
+        public TestEntity() {
+        }
+
         public TestEntity(String contentId) {
             this.contentId = new String(contentId);
+        }
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+
+        public String getContentId() {
+            return contentId;
+        }
+
+        public void setContentId(String contentId) {
+            this.contentId = contentId;
+        }
+
+        public Long getContentLen() {
+            return contentLen;
+        }
+
+        public void setContentLen(Long contentLen) {
+            this.contentLen = contentLen;
+        }
+
+        public String getContentType() {
+            return contentType;
+        }
+
+        public void setContentType(String contentType) {
+            this.contentType = contentType;
+        }
+
+        public String getRenditionId() {
+            return renditionId;
+        }
+
+        public void setRenditionId(String renditionId) {
+            this.renditionId = renditionId;
+        }
+
+        public long getRenditionLen() {
+            return renditionLen;
+        }
+
+        public void setRenditionLen(long renditionLen) {
+            this.renditionLen = renditionLen;
+        }
+
+        public String getRenditionType() {
+            return renditionType;
+        }
+
+        public void setRenditionType(String renditionType) {
+            this.renditionType = renditionType;
         }
     }
 
@@ -634,9 +688,6 @@ public class S3StoreIT {
     public interface TestEntityStore extends ContentStore<TestEntity, String> {}
 
     @Entity
-    @Setter
-    @Getter
-    @NoArgsConstructor
     public static class SharedIdContentIdEntity {
 
         @jakarta.persistence.Id
@@ -645,14 +696,30 @@ public class S3StoreIT {
 
         @ContentLength
         private long contentLen;
+
+        public SharedIdContentIdEntity() {
+        }
+
+        public String getContentId() {
+            return contentId;
+        }
+
+        public void setContentId(String contentId) {
+            this.contentId = contentId;
+        }
+
+        public long getContentLen() {
+            return contentLen;
+        }
+
+        public void setContentLen(long contentLen) {
+            this.contentLen = contentLen;
+        }
     }
 
     public interface SharedIdRepository extends JpaRepository<SharedIdContentIdEntity, String> {}
     public interface SharedIdStore extends ContentStore<SharedIdContentIdEntity, String> {}
 
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
     @Entity
     @Table(name="entity_with_embedded")
     public static class EntityWithEmbeddedContent {
@@ -662,11 +729,25 @@ public class S3StoreIT {
 
         @Embedded
         private EmbeddedContent content;
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
+        }
+
+        public EmbeddedContent getContent() {
+            return content;
+        }
+
+        public void setContent(EmbeddedContent content) {
+            this.content = content;
+        }
     }
 
     @Embeddable
-    @NoArgsConstructor
-    @Data
     public static class EmbeddedContent {
 
         @ContentId
@@ -674,6 +755,22 @@ public class S3StoreIT {
 
         @ContentLength
         private Long contentLen;
+
+        public String getContentId() {
+            return contentId;
+        }
+
+        public void setContentId(String contentId) {
+            this.contentId = contentId;
+        }
+
+        public Long getContentLen() {
+            return contentLen;
+        }
+
+        public void setContentLen(Long contentLen) {
+            this.contentLen = contentLen;
+        }
     }
 
     public interface EmbeddedRepository extends JpaRepository<EntityWithEmbeddedContent, String> {}

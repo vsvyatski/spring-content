@@ -42,9 +42,6 @@ import internal.org.springframework.content.jpa.StoreIT.HSQLConfig;
 import internal.org.springframework.content.jpa.StoreIT.MySqlConfig;
 import internal.org.springframework.content.jpa.StoreIT.PostgresConfig;
 import internal.org.springframework.content.jpa.StoreIT.SqlServerConfig;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @RunWith(Ginkgo4jRunner.class)
 @Ginkgo4jConfiguration(threads = 1) // required
@@ -148,9 +145,6 @@ public class TransactionIT {
 	}
 
 	@Entity
-	@Getter
-	@Setter
-	@NoArgsConstructor
 	@Table(name="test_entities")
 	public class TestEntity {
 
@@ -160,6 +154,25 @@ public class TransactionIT {
 
 		@ContentId
 		private String contentId;
+
+		public TestEntity() {
+		}
+
+		public Long getId() {
+			return id;
+		}
+
+		public void setId(Long id) {
+			this.id = id;
+		}
+
+		public String getContentId() {
+			return contentId;
+		}
+
+		public void setContentId(String contentId) {
+			this.contentId = contentId;
+		}
 	}
 
 	public interface TestEntityRepository extends JpaRepository<TestEntity, String> {

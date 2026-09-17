@@ -6,6 +6,7 @@ import org.springframework.content.commons.annotations.HandleAfterSetContent;
 import org.springframework.content.commons.annotations.HandleBeforeUnsetContent;
 import org.springframework.content.commons.annotations.StoreEventHandler;
 import org.springframework.content.commons.repository.ContentStore;
+import org.springframework.content.commons.repository.StoreAccessException;
 import org.springframework.content.commons.repository.events.AfterSetContentEvent;
 import org.springframework.content.commons.repository.events.BeforeUnsetContentEvent;
 import org.springframework.content.commons.search.IndexService;
@@ -39,7 +40,11 @@ public class DeprecatedSolrIndexerStoreEventHandler {
 		}
 
 		if (event.getStore() instanceof ContentStore) {
-			indexer.index(event.getSource(), ((ContentStore) event.getStore()).getContent(event.getSource()));
+			try {
+				indexer.index(event.getSource(), ((ContentStore) event.getStore()).getContent(event.getSource()));
+			} catch (java.io.IOException e) {
+				throw new StoreAccessException("error reading content for indexing", e);
+			}
 		}
 	}
 
