@@ -1,14 +1,12 @@
 package internal.org.springframework.content.encryption.keys.converter;
 
 import internal.org.springframework.content.encryption.keys.converter.ByteBufferCodec.Field;
+import org.springframework.content.encryption.keys.StoredDataEncryptionKey.EncryptedSymmetricDataEncryptionKey;
 
 import java.util.List;
 
-import lombok.experimental.UtilityClass;
-import org.springframework.content.encryption.keys.StoredDataEncryptionKey.EncryptedSymmetricDataEncryptionKey;
+public final class EncryptedSymmetricDataEncryptionKeyConverter {
 
-@UtilityClass
-public class EncryptedSymmetricDataEncryptionKeyConverter {
     private static final ByteBufferCodec<EncryptedSymmetricDataEncryptionKey, Object[]> CODEC = new ByteBufferCodec<>(
             'E',
             List.of(
@@ -72,11 +70,14 @@ public class EncryptedSymmetricDataEncryptionKeyConverter {
             )
     );
 
-    public byte[] convert(EncryptedSymmetricDataEncryptionKey source) {
+    private EncryptedSymmetricDataEncryptionKeyConverter() {
+    }
+
+    public static byte[] convert(EncryptedSymmetricDataEncryptionKey source) {
         return CODEC.encode(source);
     }
 
-    public EncryptedSymmetricDataEncryptionKey convert(byte[] bytes) {
+    public static EncryptedSymmetricDataEncryptionKey convert(byte[] bytes) {
         return CODEC.decode(bytes);
     }
 }
