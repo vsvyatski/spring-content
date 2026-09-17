@@ -74,12 +74,12 @@ public class DefaultJpaStoreImpl<S, SID extends Serializable>
 
     @Override
     public Resource getResource(S entity, PropertyPath propertyPath) {
-        return this.getResource(entity, propertyPath, GetResourceParams.builder().build());
+        return this.getResource(entity, propertyPath, new GetResourceParams(null));
     }
 
     @Override
     public Resource getResource(S entity, PropertyPath propertyPath, org.springframework.content.commons.repository.GetResourceParams params) {
-        return this.getResource(entity, propertyPath, GetResourceParams.builder().range(params.range()).build());
+        return this.getResource(entity, propertyPath, new GetResourceParams(params.range()));
     }
 
     @Override
@@ -225,20 +225,17 @@ public class DefaultJpaStoreImpl<S, SID extends Serializable>
     @Transactional
     @Override
     public S setContent(S entity, PropertyPath propertyPath, InputStream content, long contentLen) {
-        return this.setContent(entity, propertyPath, content, org.springframework.content.commons.store.SetContentParams.builder()
-                .contentLength(contentLen)
-                .build());
+        return this.setContent(entity, propertyPath, content, new org.springframework.content.commons.store.SetContentParams(contentLen, true, org.springframework.content.commons.store.SetContentParams.ContentDisposition.Overwrite));
     }
 
     @Transactional
     @Override
     public S setContent(S entity, PropertyPath propertyPath, InputStream content, SetContentParams params) {
         int ordinal = params.disposition().ordinal();
-        return this.setContent(entity, propertyPath, content, org.springframework.content.commons.store.SetContentParams.builder()
-                .contentLength(params.contentLength())
-                .overwriteExistingContent(params.overwriteExistingContent())
-                .disposition(org.springframework.content.commons.store.SetContentParams.ContentDisposition.values()[ordinal])
-                .build());
+        return this.setContent(entity, propertyPath, content, new org.springframework.content.commons.store.SetContentParams(
+                params.contentLength(),
+                params.overwriteExistingContent(),
+                org.springframework.content.commons.store.SetContentParams.ContentDisposition.values()[ordinal]));
     }
 
     @Transactional
@@ -340,16 +337,14 @@ public class DefaultJpaStoreImpl<S, SID extends Serializable>
     @Transactional
     @Override
     public S unsetContent(S entity, PropertyPath propertyPath) {
-        return this.unsetContent(entity, propertyPath, org.springframework.content.commons.store.UnsetContentParams.builder().build());
+        return this.unsetContent(entity, propertyPath, new org.springframework.content.commons.store.UnsetContentParams(org.springframework.content.commons.store.UnsetContentParams.Disposition.Remove));
     }
 
     @Transactional
     @Override
     public S unsetContent(S entity, PropertyPath propertyPath, org.springframework.content.commons.store.UnsetContentParams params) {
         int ordinal = params.disposition().ordinal();
-        org.springframework.content.commons.repository.UnsetContentParams params1 = org.springframework.content.commons.repository.UnsetContentParams.builder()
-                .disposition(org.springframework.content.commons.repository.UnsetContentParams.Disposition.values()[ordinal])
-                .build();
+        org.springframework.content.commons.repository.UnsetContentParams params1 = new org.springframework.content.commons.repository.UnsetContentParams(org.springframework.content.commons.repository.UnsetContentParams.Disposition.values()[ordinal]);
         return this.unsetContent(entity, propertyPath, params1);
     }
 

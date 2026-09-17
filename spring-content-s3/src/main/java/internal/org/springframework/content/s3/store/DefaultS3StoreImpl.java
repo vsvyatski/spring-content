@@ -89,12 +89,12 @@ public class DefaultS3StoreImpl<S, SID extends Serializable>
 			S3ObjectId s3ObjectId = null;
 			if (placementService.canConvert(id.getClass(), S3ObjectId.class)) {
 				s3ObjectId = placementService.convert(id, S3ObjectId.class);
-				return this.getResourceInternal(s3ObjectId, GetResourceParams.builder().build());
+				return this.getResourceInternal(s3ObjectId, new GetResourceParams(null));
 			}
 
 			throw new StoreAccessException(format("Unable to convert from %s to S3ObjectId", id));
 		} else {
-			return this.getResourceInternal((S3ObjectId) id, GetResourceParams.builder().build());
+			return this.getResourceInternal((S3ObjectId) id, new GetResourceParams(null));
 		}
 	}
 
@@ -112,7 +112,7 @@ public class DefaultS3StoreImpl<S, SID extends Serializable>
 			s3ObjectId = placementService.convert(entity, S3ObjectId.class);
 
 			if (s3ObjectId != null) {
-				return this.getResourceInternal(s3ObjectId, GetResourceParams.builder().build());
+				return this.getResourceInternal(s3ObjectId, new GetResourceParams(null));
 			}
 		}
 
@@ -121,7 +121,7 @@ public class DefaultS3StoreImpl<S, SID extends Serializable>
 
     @Override
     public Resource getResource(S entity, PropertyPath propertyPath) {
-		return this.getResource(entity, propertyPath, GetResourceParams.builder().build());
+		return this.getResource(entity, propertyPath, new GetResourceParams(null));
     }
 
 	@Override
@@ -153,7 +153,7 @@ public class DefaultS3StoreImpl<S, SID extends Serializable>
 
 	@Override
 	public Resource getResource(S entity, PropertyPath propertyPath, org.springframework.content.commons.repository.GetResourceParams params) {
-		return this.getResource(entity, propertyPath, org.springframework.content.commons.store.GetResourceParams.builder().range(params.range()).build());
+		return this.getResource(entity, propertyPath, new org.springframework.content.commons.store.GetResourceParams(params.range()));
 	}
 
 	protected Resource getResourceInternal(S3ObjectId id, GetResourceParams params) {
@@ -323,20 +323,17 @@ public class DefaultS3StoreImpl<S, SID extends Serializable>
 	@Override
 	public S setContent(S entity, PropertyPath propertyPath, InputStream content, long contentLen) {
 		return this.setContent(entity, propertyPath, content,
-				org.springframework.content.commons.store.SetContentParams.builder()
-						.contentLength(contentLen)
-						.build());
+				new org.springframework.content.commons.store.SetContentParams(contentLen, true, org.springframework.content.commons.store.SetContentParams.ContentDisposition.Overwrite));
 	}
 
 	@Override
 	public S setContent(S entity, PropertyPath propertyPath, InputStream content, SetContentParams params) {
 		int ordinal = params.disposition().ordinal();
 		return this.setContent(entity, propertyPath, content,
-				org.springframework.content.commons.store.SetContentParams.builder()
-						.contentLength(params.contentLength())
-						.overwriteExistingContent(params.overwriteExistingContent())
-						.disposition(org.springframework.content.commons.store.SetContentParams.ContentDisposition.values()[ordinal])
-						.build());
+				new org.springframework.content.commons.store.SetContentParams(
+						params.contentLength(),
+						params.overwriteExistingContent(),
+						org.springframework.content.commons.store.SetContentParams.ContentDisposition.values()[ordinal]));
 	}
 
 	@Override
@@ -488,7 +485,7 @@ public class DefaultS3StoreImpl<S, SID extends Serializable>
     @Transactional
     @Override
     public S unsetContent(S entity, PropertyPath propertyPath) {
-		return this.unsetContent(entity, propertyPath, org.springframework.content.commons.store.UnsetContentParams.builder().build());
+		return this.unsetContent(entity, propertyPath, new org.springframework.content.commons.store.UnsetContentParams(org.springframework.content.commons.store.UnsetContentParams.Disposition.Remove));
     }
 
 
@@ -496,9 +493,7 @@ public class DefaultS3StoreImpl<S, SID extends Serializable>
 	@Override
 	public S unsetContent(S entity, PropertyPath propertyPath, UnsetContentParams params) {
 		int ordinal = params.disposition().ordinal();
-		org.springframework.content.commons.store.UnsetContentParams params1 = org.springframework.content.commons.store.UnsetContentParams.builder()
-				.disposition(org.springframework.content.commons.store.UnsetContentParams.Disposition.values()[ordinal])
-				.build();
+		org.springframework.content.commons.store.UnsetContentParams params1 = new org.springframework.content.commons.store.UnsetContentParams(org.springframework.content.commons.store.UnsetContentParams.Disposition.values()[ordinal]);
 		return this.unsetContent(entity, propertyPath, params1);
 	}
 

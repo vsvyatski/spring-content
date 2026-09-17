@@ -204,7 +204,7 @@ public class ContentStoreIT {
                                 It("should have the updated content", () -> {
                                     String contentId = claim.getClaimForm().getContentId();
 
-                                    claimFormStore.setContent(claim, PropertyPath.from("claimForm/content"), new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), SetContentParams.builder().disposition(SetContentParams.ContentDisposition.CreateNew).build());
+                                    claimFormStore.setContent(claim, PropertyPath.from("claimForm/content"), new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), new SetContentParams(-1, true, SetContentParams.ContentDisposition.CreateNew));
                                     claim = claimRepo.save(claim);
 
                                     try (InputStream content = claimFormStore.getContent(claim, PropertyPath.from("claimForm/content"))) {
@@ -259,7 +259,7 @@ public class ContentStoreIT {
                         Context("when content is deleted", () -> {
                             BeforeEach(() -> {
                                 id = claim.getClaimForm().getContentId();
-                                claimFormStore.unsetContent(claim, PropertyPath.from("claimForm/content"), UnsetContentParams.builder().disposition(UnsetContentParams.Disposition.Keep).build());
+                                claimFormStore.unsetContent(claim, PropertyPath.from("claimForm/content"), new UnsetContentParams(UnsetContentParams.Disposition.Keep));
                                 claim = claimRepo.save(claim);
                             });
 

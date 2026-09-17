@@ -109,7 +109,7 @@ public class AssociativeStoreIT {
                                     });
                                     It("should not honor byte ranges", () -> {
                                         // relies on REST-layer to serve byte range
-                                        Resource r = store.getResource(document, PropertyPath.from("content"), GetResourceParams.builder().range("5-10").build());
+                                        Resource r = store.getResource(document, PropertyPath.from("content"), new GetResourceParams("5-10"));
                                         try (InputStream is = r.getInputStream()) {
                                             assertThat(IOUtils.toString(is, Charset.defaultCharset()), is("Hello Client-side World!"));
                                         }

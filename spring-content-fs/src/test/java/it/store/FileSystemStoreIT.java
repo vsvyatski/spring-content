@@ -192,7 +192,7 @@ public class FileSystemStoreIT {
 
                             It("should not honor byte ranges", () -> {
                                 // relies on REST-layer to serve byte range
-                                Resource r = store.getResource(entity, PropertyPath.from("content"), GetResourceParams.builder().range("5-10").build());
+                                Resource r = store.getResource(entity, PropertyPath.from("content"), new GetResourceParams("5-10"));
                                 try (InputStream is = r.getInputStream()) {
                                     assertThat(IOUtils.toString(is, Charset.defaultCharset()), is("Hello Client-side World!"));
                                 }
@@ -342,7 +342,7 @@ public class FileSystemStoreIT {
                             String contentId = entity.getContentId();
                             assertThat(new File(loader.getRootResource().getPath(), contentId).exists(), is(true));
 
-                            store.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), SetContentParams.builder().disposition(SetContentParams.ContentDisposition.CreateNew).build());
+                            store.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), new SetContentParams(-1, true, SetContentParams.ContentDisposition.CreateNew));
                             entity = repo.save(entity);
 
                             try (InputStream content = store.getContent(entity)) {
@@ -390,7 +390,7 @@ public class FileSystemStoreIT {
                 Context("when content is unset but kept", () -> {
                     BeforeEach(() -> {
                         resourceLocation = entity.getContentId();
-                        entity = store.unsetContent(entity, PropertyPath.from("content"), UnsetContentParams.builder().disposition(UnsetContentParams.Disposition.Keep).build());
+                        entity = store.unsetContent(entity, PropertyPath.from("content"), new UnsetContentParams(UnsetContentParams.Disposition.Keep));
                         entity = repo.save(entity);
                     });
 

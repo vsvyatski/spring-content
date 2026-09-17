@@ -216,7 +216,7 @@ public class MongoStoreIT {
 
 								It("should not honor byte ranges", () -> {
 									// relies on REST-layer to serve byte range
-									Resource r = store.getResource(entity, PropertyPath.from("content"), GetResourceParams.builder().range("5-10").build());
+									Resource r = store.getResource(entity, PropertyPath.from("content"), new GetResourceParams("5-10"));
 									try (InputStream is = r.getInputStream()) {
 										assertThat(IOUtils.toString(is), is("Hello Client-side World!"));
 									}
@@ -359,7 +359,7 @@ public class MongoStoreIT {
 						String contentId = entity.getContentId();
 						assertThat(gridFsTemplate.getResource(contentId).exists(), is(true));
 
-						store.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), SetContentParams.builder().disposition(SetContentParams.ContentDisposition.CreateNew).build());
+						store.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), new SetContentParams(-1, true, SetContentParams.ContentDisposition.CreateNew));
 						entity = repo.save(entity);
 
 						boolean matches = false;
@@ -408,7 +408,7 @@ public class MongoStoreIT {
 				Context("when content is unset but kept", () -> {
 					BeforeEach(() -> {
 						resourceLocation = entity.getContentId().toString();
-						entity = store.unsetContent(entity, PropertyPath.from("content"), UnsetContentParams.builder().disposition(UnsetContentParams.Disposition.Keep).build());
+						entity = store.unsetContent(entity, PropertyPath.from("content"), new UnsetContentParams(UnsetContentParams.Disposition.Keep));
 						entity = repo.save(entity);
 					});
 

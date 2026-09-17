@@ -82,7 +82,7 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable>
 
     @Override
     public Resource getResource(S entity, PropertyPath propertyPath) {
-        return this.getResource(entity, propertyPath, GetResourceParams.builder().build());
+        return this.getResource(entity, propertyPath, new GetResourceParams(null));
     }
 
     @Override
@@ -212,17 +212,16 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable>
     @Transactional
     @Override
     public S setContent(S property, PropertyPath propertyPath, InputStream content, long contentLen) {
-        return this.setContent(property, propertyPath, content, SetContentParams.builder().contentLength(contentLen).build());
+        return this.setContent(property, propertyPath, content, new SetContentParams(contentLen, true, SetContentParams.ContentDisposition.Overwrite));
     }
 
     @Override
     public S setContent(S entity, PropertyPath propertyPath, InputStream content, org.springframework.content.commons.repository.SetContentParams params) {
         int ordinal = params.disposition().ordinal();
-        SetContentParams params1 = SetContentParams.builder()
-                .contentLength(params.contentLength())
-                .overwriteExistingContent(params.overwriteExistingContent())
-                .disposition(org.springframework.content.commons.store.SetContentParams.ContentDisposition.values()[ordinal])
-                .build();
+        SetContentParams params1 = new SetContentParams(
+                params.contentLength(),
+                params.overwriteExistingContent(),
+                org.springframework.content.commons.store.SetContentParams.ContentDisposition.values()[ordinal]);
         return this.setContent(entity, propertyPath, content, params1);
     }
 
@@ -381,7 +380,7 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable>
     @Transactional
     @Override
     public S unsetContent(S entity, PropertyPath propertyPath) {
-        return unsetContent(entity, propertyPath, UnsetContentParams.builder().disposition(Disposition.Remove).build());
+        return unsetContent(entity, propertyPath, new UnsetContentParams(Disposition.Remove));
     }
 
     @Transactional
@@ -389,7 +388,7 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable>
     public S unsetContent(S entity, PropertyPath propertyPath,
                           org.springframework.content.commons.repository.UnsetContentParams params) {
         int ordinal = params.disposition().ordinal();
-        return unsetContent(entity, propertyPath, UnsetContentParams.builder().disposition(Disposition.values()[ordinal]).build());
+        return unsetContent(entity, propertyPath, new UnsetContentParams(Disposition.values()[ordinal]));
     }
 
     @Transactional

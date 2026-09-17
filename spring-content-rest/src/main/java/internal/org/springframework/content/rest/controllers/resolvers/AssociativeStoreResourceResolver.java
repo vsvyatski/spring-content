@@ -25,7 +25,7 @@ public class AssociativeStoreResourceResolver implements ResourceResolver {
 
     @Override
     public Resource resolve(NativeWebRequest nativeWebRequest, StoreInfo info, Object domainObj, PropertyPath propertyPath) {
-        GetResourceParams params = GetResourceParams.builder().range(nativeWebRequest.getHeader("Range")).build();
+        GetResourceParams params = new GetResourceParams(nativeWebRequest.getHeader("Range"));
         Resource r = info.getImplementation(AssociativeStore.class).getResource(domainObj, propertyPath, params);
         return new AssociatedStoreResourceImpl(info, domainObj, propertyPath, mappingContext.getContentProperty(domainObj.getClass(), propertyPath.getName()), r);
     }

@@ -192,29 +192,25 @@ public class ContentStoreContentService implements ContentService {
             }
             argsList.add(len);
         } else if (methodToUse.getParameters().length > 3 && methodToUse.getParameters()[3].getType().equals(org.springframework.content.commons.store.SetContentParams.class)) {
-            var params = org.springframework.content.commons.store.SetContentParams.builder();
-
-            // if available use the original content length
+            long contentLength = -1L;
             if (headers.containsHeader(HttpHeaders.CONTENT_LENGTH)) {
-                params.contentLength(headers.getContentLength());
+                contentLength = headers.getContentLength();
             }
-
             int ordinal = config.getSetContentDisposition().ordinal();
-            params.disposition(org.springframework.content.commons.store.SetContentParams.ContentDisposition.values()[ordinal]);
-
-            argsList.add(params.build());
+            argsList.add(new org.springframework.content.commons.store.SetContentParams(
+                    contentLength,
+                    true,
+                    org.springframework.content.commons.store.SetContentParams.ContentDisposition.values()[ordinal]));
         } else if (methodToUse.getParameters().length > 3 && methodToUse.getParameters()[3].getType().equals(SetContentParams.class)) {
-            var params = SetContentParams.builder();
-
-            // if available use the original content length
+            long contentLength = -1L;
             if (headers.containsHeader(HttpHeaders.CONTENT_LENGTH)) {
-                params.contentLength(headers.getContentLength());
+                contentLength = headers.getContentLength();
             }
-
             int ordinal = config.getSetContentDisposition().ordinal();
-            params.disposition(SetContentParams.ContentDisposition.values()[ordinal]);
-
-            argsList.add(params.build());
+            argsList.add(new SetContentParams(
+                    contentLength,
+                    true,
+                    SetContentParams.ContentDisposition.values()[ordinal]));
         }
 
         try {
@@ -251,14 +247,10 @@ public class ContentStoreContentService implements ContentService {
         Object unsetParams = null;
         if (methodsToUse[0].getParameters().length == 3 && methodsToUse[0].getParameters()[2].getType().equals(org.springframework.content.commons.store.UnsetContentParams.class)) {
             int ordinal = config.getUnsetContentDisposition().ordinal();
-            unsetParams = org.springframework.content.commons.store.UnsetContentParams.builder()
-                    .disposition(org.springframework.content.commons.store.UnsetContentParams.Disposition.values()[ordinal])
-                    .build();
+            unsetParams = new org.springframework.content.commons.store.UnsetContentParams(org.springframework.content.commons.store.UnsetContentParams.Disposition.values()[ordinal]);
         } else if (methodsToUse[0].getParameters().length == 3 && methodsToUse[0].getParameters()[2].getType().equals(UnsetContentParams.class)) {
             int ordinal = config.getUnsetContentDisposition().ordinal();
-            unsetParams = UnsetContentParams.builder()
-                    .disposition(UnsetContentParams.Disposition.values()[ordinal])
-                    .build();
+            unsetParams = new UnsetContentParams(UnsetContentParams.Disposition.values()[ordinal]);
         }
 
         ReflectionUtils.makeAccessible(methodsToUse[0]);

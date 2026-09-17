@@ -64,7 +64,7 @@ public class EncryptingContentStoreImpl<S, SID extends Serializable> implements
     @Override
     public S setContent(S entity, PropertyPath propertyPath, InputStream inputStream, long l) {
         return this.setContent(entity, propertyPath, inputStream,
-                org.springframework.content.commons.store.SetContentParams.builder().contentLength(l).build());
+                new org.springframework.content.commons.store.SetContentParams(l, true, org.springframework.content.commons.store.SetContentParams.ContentDisposition.Overwrite));
     }
 
     @Override
@@ -110,7 +110,7 @@ public class EncryptingContentStoreImpl<S, SID extends Serializable> implements
     @Override
     public S unsetContent(S entity, PropertyPath propertyPath) {
         return unsetContent(entity, propertyPath,
-                org.springframework.content.commons.store.UnsetContentParams.builder().build());
+                new org.springframework.content.commons.store.UnsetContentParams(org.springframework.content.commons.store.UnsetContentParams.Disposition.Remove));
     }
 
     @Override
@@ -253,9 +253,7 @@ public class EncryptingContentStoreImpl<S, SID extends Serializable> implements
 
     private static org.springframework.content.commons.store.UnsetContentParams convertParams(
             UnsetContentParams params) {
-        return org.springframework.content.commons.store.UnsetContentParams.builder()
-                .disposition(convertDisposition(params.disposition()))
-                .build();
+        return new org.springframework.content.commons.store.UnsetContentParams(convertDisposition(params.disposition()));
     }
 
     private static Disposition convertDisposition(UnsetContentParams.Disposition disposition) {
@@ -266,17 +264,14 @@ public class EncryptingContentStoreImpl<S, SID extends Serializable> implements
     }
 
     private GetResourceParams convertParams(org.springframework.content.commons.repository.GetResourceParams params) {
-        return GetResourceParams.builder()
-                .range(params.range())
-                .build();
+        return new GetResourceParams(params.range());
     }
 
     private static org.springframework.content.commons.store.SetContentParams convertParams(SetContentParams params) {
-        return org.springframework.content.commons.store.SetContentParams.builder()
-                .contentLength(params.contentLength())
-                .disposition(convertDisposition(params.disposition()))
-                .overwriteExistingContent(params.overwriteExistingContent())
-                .build();
+        return new org.springframework.content.commons.store.SetContentParams(
+                params.contentLength(),
+                params.overwriteExistingContent(),
+                convertDisposition(params.disposition()));
     }
 
     private static ContentDisposition convertDisposition(SetContentParams.ContentDisposition disposition) {

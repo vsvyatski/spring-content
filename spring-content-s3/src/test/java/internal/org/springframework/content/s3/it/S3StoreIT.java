@@ -419,7 +419,7 @@ public class S3StoreIT {
                         String contentId = entity.getContentId();
                         client.headObject(HeadObjectRequest.builder().bucket(BUCKET).key(contentId).build());
 
-                        store.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), SetContentParams.builder().disposition(SetContentParams.ContentDisposition.CreateNew).build());
+                        store.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), new SetContentParams(-1, true, SetContentParams.ContentDisposition.CreateNew));
                         entity = repo.save(entity);
 
                         boolean matches = false;
@@ -469,7 +469,7 @@ public class S3StoreIT {
                 Context("when content is unset but kept", () -> {
                     BeforeEach(() -> {
                         resourceLocation = entity.getContentId().toString();
-                        entity = store.unsetContent(entity, PropertyPath.from("content"), UnsetContentParams.builder().disposition(UnsetContentParams.Disposition.Keep).build());
+                        entity = store.unsetContent(entity, PropertyPath.from("content"), new UnsetContentParams(UnsetContentParams.Disposition.Keep));
                         entity = repo.save(entity);
                     });
 
