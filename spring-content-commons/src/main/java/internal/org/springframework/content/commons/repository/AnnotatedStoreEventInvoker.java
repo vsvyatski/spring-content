@@ -67,7 +67,7 @@ public class AnnotatedStoreEventInvoker
 
             @Override
             public void doWith(@NonNull Method method)
-                    throws IllegalArgumentException, IllegalAccessException {
+                    throws IllegalArgumentException {
                 findHandler(bean, method, HandleBeforeGetResource.class, BeforeGetResourceEvent.class);
                 findHandler(bean, method, HandleAfterGetResource.class, AfterGetResourceEvent.class);
                 findHandler(bean, method, HandleBeforeAssociate.class, BeforeAssociateEvent.class);
@@ -130,8 +130,8 @@ public class AnnotatedStoreEventInvoker
         return ClassUtils.isAssignable(StoreEvent.class, type);
     }
 
-    <H extends Annotation, E> void findHandler(Object bean, Method method,
-                                               Class<H> handler, Class<? extends ApplicationEvent> eventType) {
+    <H extends Annotation> void findHandler(Object bean, Method method,
+                                            Class<H> handler, Class<? extends ApplicationEvent> eventType) {
         H annotation = AnnotationUtils.findAnnotation(method, handler);
 
         if (annotation == null) {

@@ -93,7 +93,7 @@ public class StoreMethodInterceptorTest {
 
             JustBeforeEach(() -> {
                 interceptor = new StoreMethodInterceptor();
-                StoreFragments fragments = new StoreFragments(Collections.singletonList(new StoreFragment(TestContentStore.class, new StoreImpl(TestContentStore.class, store, publisher, Paths.get(System.getProperty("java.io.tmpdir"))))));
+                StoreFragments fragments = new StoreFragments(Collections.singletonList(new StoreFragment(TestContentStore.class, new StoreImpl(store, publisher, Paths.get(System.getProperty("java.io.tmpdir"))))));
                 interceptor.setStoreFragments(fragments);
                 try {
                     interceptor.invoke(invocation);
@@ -474,7 +474,7 @@ public class StoreMethodInterceptorTest {
                 try {
                     Method m = ReflectionUtils.findMethod(TestContentStore.class, "unsetContent", Object.class);
                     assertThat(m, is(not(nullValue())));
-                    Method actual = interceptor.getMethod(m, new StoreFragment(TestContentStore.class, new StoreImpl(TestContentStore.class, store, publisher, Paths.get(System.getProperty("java.io.tmpdir")))));
+                    Method actual = interceptor.getMethod(m, new StoreFragment(TestContentStore.class, new StoreImpl(store, publisher, Paths.get(System.getProperty("java.io.tmpdir")))));
                     assertThat(actual, is(ReflectionUtils.findMethod(StoreImpl.class, "unsetContent", Object.class)));
                 } catch (Exception invokeException) {
                     e = invokeException;
@@ -488,7 +488,7 @@ public class StoreMethodInterceptorTest {
                 try {
                     Method m = ReflectionUtils.findMethod(TestContentStore.class, "setContent", TEntity.class, InputStream.class);
                     assertThat(m, is(not(nullValue())));
-                    Method actual = interceptor.getMethod(m, new StoreFragment(TestContentStore.class, new StoreImpl(TestContentStore.class, store, publisher, Paths.get(System.getProperty("java.io.tmpdir")))));
+                    Method actual = interceptor.getMethod(m, new StoreFragment(TestContentStore.class, new StoreImpl(store, publisher, Paths.get(System.getProperty("java.io.tmpdir")))));
                     assertThat(actual, is(ReflectionUtils.findMethod(StoreImpl.class, "setContent", Object.class, InputStream.class)));
                 } catch (Exception invokeException) {
                     e = invokeException;

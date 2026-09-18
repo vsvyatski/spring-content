@@ -45,7 +45,7 @@ public class StoreImplTest {
                     }
                 }
 
-                stores = new StoreImpl(ContentStore.class, store, publisher, contentCopyPathRoot);
+                stores = new StoreImpl(store, publisher, contentCopyPathRoot);
             });
 
             Context("#setContent - inputStream", () -> {

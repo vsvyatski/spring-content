@@ -186,7 +186,7 @@ public abstract class AbstractStoreFactoryBean implements BeanFactoryAware, Init
 		StoreMethodInterceptor interceptor = new StoreMethodInterceptor();
 
 		if (!ClassUtils.getAllInterfaces(storeInterface).contains(ReactiveContentStore.class)) {
-			storeFragments.add(new StoreFragment(storeInterface, new StoreImpl(storeInterface, target, publisher, Paths.get(System.getProperty("java.io.tmpdir")))));
+			storeFragments.add(new StoreFragment(storeInterface, new StoreImpl(target, publisher, Paths.get(System.getProperty("java.io.tmpdir")))));
 		} else {
 			storeFragments.add(new StoreFragment(storeInterface, new ReactiveStoreImpl((ReactiveContentStore<Object>) target)));
 		}

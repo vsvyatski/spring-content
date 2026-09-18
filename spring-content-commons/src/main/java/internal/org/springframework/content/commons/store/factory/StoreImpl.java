@@ -24,7 +24,7 @@ public class StoreImpl implements ContentStore<Object, Serializable> {
     private final ApplicationEventPublisher publisher;
     private final Path copyContentRootPath;
 
-    public StoreImpl(Class<?> storeInterface, Object delegate, ApplicationEventPublisher publisher, Path copyContentRootPath) {
+    public StoreImpl(Object delegate, ApplicationEventPublisher publisher, Path copyContentRootPath) {
         this.delegate = delegate;
         this.publisher = publisher;
         this.copyContentRootPath = copyContentRootPath;
@@ -81,7 +81,7 @@ public class StoreImpl implements ContentStore<Object, Serializable> {
             after.setResult(result);
             publisher.publishEvent(after);
         } catch (IOException ioException) {
-            ioException.printStackTrace();
+            logger.error("", ioException);
         } finally {
             if (contentCopyStream != null) {
                 IOUtils.closeQuietly(contentCopyStream);
