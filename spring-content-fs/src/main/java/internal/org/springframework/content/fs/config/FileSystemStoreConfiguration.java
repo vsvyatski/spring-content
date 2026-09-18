@@ -39,7 +39,7 @@ public class FileSystemStoreConfiguration {
     /**
      * Important! We have a dedicated class here instead of in-place interface creation (I guess the compiler just
      * generates similar class on its own). The problem is, certain IDEs will show a warning and offer you to
-     * transform that into a lambda expression. Unfortunately, that causes an exception in runtime. To avoid that
+     * transform that into a lambda expression. Unfortunately, that causes an exception at runtime. To avoid that
      * warning from IDEs we just implement the interface ourselves.
      */
     private static class URIStringConverter implements Converter<URI, String> {

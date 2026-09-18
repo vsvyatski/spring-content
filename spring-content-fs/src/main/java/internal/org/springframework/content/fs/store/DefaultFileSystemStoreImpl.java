@@ -10,13 +10,7 @@ import org.springframework.content.commons.io.DeletableResource;
 import org.springframework.content.commons.mappingcontext.ContentProperty;
 import org.springframework.content.commons.mappingcontext.MappingContext;
 import org.springframework.content.commons.property.PropertyPath;
-import org.springframework.content.commons.store.AssociativeStore;
-import org.springframework.content.commons.store.ContentStore;
-import org.springframework.content.commons.store.Store;
-import org.springframework.content.commons.store.GetResourceParams;
-import org.springframework.content.commons.store.SetContentParams;
-import org.springframework.content.commons.store.StoreAccessException;
-import org.springframework.content.commons.store.UnsetContentParams;
+import org.springframework.content.commons.store.*;
 import org.springframework.content.commons.store.UnsetContentParams.Disposition;
 import org.springframework.content.commons.utils.BeanUtils;
 import org.springframework.content.commons.utils.FileService;
@@ -30,7 +24,6 @@ import org.springframework.util.Assert;
 
 import java.io.*;
 import java.lang.annotation.Annotation;
-import java.util.UUID;
 
 import static java.lang.String.format;
 
@@ -71,9 +64,12 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable>
             return loader.getResource(location);
         }
 
-        SID contentId = (SID) BeanUtils.getFieldWithAnnotation(entity, ContentId.class);
-        if (contentId != null) {
-            return getResource(contentId);
+        try {
+            @SuppressWarnings("unchecked")
+            SID contentId = (SID) BeanUtils.getFieldWithAnnotation(entity, ContentId.class);
+            if (contentId != null) return getResource(contentId);
+        } catch (ClassCastException e) {
+            logger.warn("Failed casting a field marked with @ContentId.", e);
         }
 
         return null;
@@ -91,11 +87,15 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable>
             throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.name()));
         }
 
-        SID contentId = (SID) contentProperty.getContentId(entity);
-        if (contentId == null) {
-            return null;
+        try {
+            @SuppressWarnings("unchecked")
+            SID contentId = (SID) contentProperty.getContentId(entity);
+            if (contentId != null) return getResource(contentId);
+        } catch (ClassCastException e) {
+            logger.warn("Failed casting a field marked with @ContentId.", e);
         }
-        return getResource(contentId);
+
+        return null;
     }
 
     @Override
@@ -252,9 +252,7 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable>
             }
             contentProperty.setContentLength(property, len);
         } catch (IOException e) {
-            logger.error(format(
-                    "Unexpected error setting content length for content for resource %s",
-                    resource), e);
+            logger.error(format("Unexpected error setting content length for content for resource %s", resource), e);
         }
 
         return property;

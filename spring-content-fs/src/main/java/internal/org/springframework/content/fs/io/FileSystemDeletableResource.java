@@ -26,8 +26,7 @@ public class FileSystemDeletableResource implements WritableResource, DeletableR
     private final FileSystemResource resource;
     private Serializable id;
     private final FileService fileService;
-
-
+    
     public FileSystemDeletableResource(FileSystemResource resource, FileService fileService) {
         this.resource = resource;
         this.fileService = fileService;

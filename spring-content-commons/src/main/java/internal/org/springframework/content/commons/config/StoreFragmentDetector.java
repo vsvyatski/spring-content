@@ -57,8 +57,6 @@ public class StoreFragmentDetector {
         provider.setMetadataReaderFactory(metadataReaderFactory);
         provider.addIncludeFilter((reader, factory) -> true);
 
-//		config.getExcludeFilters().forEach(it -> provider.addExcludeFilter(it));
-
         return basePackages.stream()
                 .flatMap(it -> provider.findCandidateComponents(it).stream())
                 .collect(Collectors.toSet());
