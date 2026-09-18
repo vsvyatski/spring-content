@@ -19,7 +19,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.content.commons.mappingcontext.ContentProperty;
 import org.springframework.content.commons.mappingcontext.MappingContext;
-import org.springframework.content.commons.repository.AssociativeStore;
+import org.springframework.content.commons.store.AssociativeStore;
 import org.springframework.content.commons.storeservice.StoreInfo;
 import org.springframework.content.commons.storeservice.Stores;
 import org.springframework.content.commons.utils.DomainObjectUtils;

@@ -10,13 +10,7 @@ import org.springframework.content.commons.io.DeletableResource;
 import org.springframework.content.commons.mappingcontext.ContentProperty;
 import org.springframework.content.commons.mappingcontext.MappingContext;
 import org.springframework.content.commons.property.PropertyPath;
-import org.springframework.content.commons.repository.AssociativeStore;
-import org.springframework.content.commons.repository.ContentStore;
-import org.springframework.content.commons.repository.Store;
-import org.springframework.content.commons.store.GetResourceParams;
-import org.springframework.content.commons.store.SetContentParams;
-import org.springframework.content.commons.store.StoreAccessException;
-import org.springframework.content.commons.store.UnsetContentParams;
+import org.springframework.content.commons.store.*;
 import org.springframework.content.commons.store.UnsetContentParams.Disposition;
 import org.springframework.content.commons.utils.BeanUtils;
 import org.springframework.content.commons.utils.FileService;
@@ -30,14 +24,12 @@ import org.springframework.util.Assert;
 
 import java.io.*;
 import java.lang.annotation.Annotation;
-import java.util.UUID;
 
 import static java.lang.String.format;
 
 @Transactional(readOnly = true)
 public class DefaultFileSystemStoreImpl<S, SID extends Serializable>
-        implements Store<SID>, AssociativeStore<S, SID>, ContentStore<S, SID>,
-        org.springframework.content.commons.store.ContentStore<S, SID> {
+        implements ContentStore<S, SID> {
 
     private static final Log logger = LogFactory.getLog(DefaultFileSystemStoreImpl.class);
 
@@ -72,9 +64,12 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable>
             return loader.getResource(location);
         }
 
-        SID contentId = (SID) BeanUtils.getFieldWithAnnotation(entity, ContentId.class);
-        if (contentId != null) {
-            return getResource(contentId);
+        try {
+            @SuppressWarnings("unchecked")
+            SID contentId = (SID) BeanUtils.getFieldWithAnnotation(entity, ContentId.class);
+            if (contentId != null) return getResource(contentId);
+        } catch (ClassCastException e) {
+            logger.warn("Failed casting a field marked with @ContentId.", e);
         }
 
         return null;
@@ -92,27 +87,15 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable>
             throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.name()));
         }
 
-        SID contentId = (SID) contentProperty.getContentId(entity);
-        if (contentId == null) {
-            return null;
-        }
-        return getResource(contentId);
-    }
-
-    @Override
-    public Resource getResource(S entity, PropertyPath propertyPath,
-                                org.springframework.content.commons.repository.GetResourceParams params) {
-        ContentProperty contentProperty = this.mappingContext
-                .getContentProperty(entity.getClass(), propertyPath.name());
-        if (contentProperty == null) {
-            throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.name()));
+        try {
+            @SuppressWarnings("unchecked")
+            SID contentId = (SID) contentProperty.getContentId(entity);
+            if (contentId != null) return getResource(contentId);
+        } catch (ClassCastException e) {
+            logger.warn("Failed casting a field marked with @ContentId.", e);
         }
 
-        SID contentId = (SID) contentProperty.getContentId(entity);
-        if (contentId == null) {
-            return null;
-        }
-        return getResource(contentId);
+        return null;
     }
 
     @Override
@@ -215,16 +198,6 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable>
         return this.setContent(property, propertyPath, content, new SetContentParams(contentLen, true, SetContentParams.ContentDisposition.Overwrite));
     }
 
-    @Override
-    public S setContent(S entity, PropertyPath propertyPath, InputStream content, org.springframework.content.commons.repository.SetContentParams params) {
-        int ordinal = params.disposition().ordinal();
-        SetContentParams params1 = new SetContentParams(
-                params.contentLength(),
-                params.overwriteExistingContent(),
-                org.springframework.content.commons.store.SetContentParams.ContentDisposition.values()[ordinal]);
-        return this.setContent(entity, propertyPath, content, params1);
-    }
-
     @Transactional
     @Override
     public S setContent(S property, PropertyPath propertyPath, InputStream content, SetContentParams params) {
@@ -279,9 +252,7 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable>
             }
             contentProperty.setContentLength(property, len);
         } catch (IOException e) {
-            logger.error(format(
-                    "Unexpected error setting content length for content for resource %s",
-                    resource), e);
+            logger.error(format("Unexpected error setting content length for content for resource %s", resource), e);
         }
 
         return property;
@@ -381,14 +352,6 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable>
     @Override
     public S unsetContent(S entity, PropertyPath propertyPath) {
         return unsetContent(entity, propertyPath, new UnsetContentParams(Disposition.Remove));
-    }
-
-    @Transactional
-    @Override
-    public S unsetContent(S entity, PropertyPath propertyPath,
-                          org.springframework.content.commons.repository.UnsetContentParams params) {
-        int ordinal = params.disposition().ordinal();
-        return unsetContent(entity, propertyPath, new UnsetContentParams(Disposition.values()[ordinal]));
     }
 
     @Transactional

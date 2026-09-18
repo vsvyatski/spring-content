@@ -16,10 +16,10 @@ import org.springframework.content.commons.io.RangeableResource;
 import org.springframework.content.commons.mappingcontext.ContentProperty;
 import org.springframework.content.commons.mappingcontext.MappingContext;
 import org.springframework.content.commons.property.PropertyPath;
-import org.springframework.content.commons.repository.ContentStore;
-import org.springframework.content.commons.repository.SetContentParams;
-import org.springframework.content.commons.repository.Store;
-import org.springframework.content.commons.repository.UnsetContentParams;
+import org.springframework.content.commons.store.ContentStore;
+import org.springframework.content.commons.store.SetContentParams;
+import org.springframework.content.commons.store.Store;
+import org.springframework.content.commons.store.UnsetContentParams;
 import org.springframework.content.commons.utils.StoreInterfaceUtils;
 import org.springframework.content.rest.RestResource;
 import org.springframework.content.rest.config.RestConfiguration;
@@ -67,7 +67,7 @@ public class ContentStoreContentService implements ContentService {
         this.byteRangeRestRequestHandler = byteRangeRestRequestHandler;
     }
 
-    public static StoreExportedMethodsMap getExportedMethodsFor(Class<? extends Store> storeInterfaceClass, PropertyPath path, ContentPropertyToExportedContext exportContext) {
+    public static StoreExportedMethodsMap getExportedMethodsFor(Class<?> storeInterfaceClass, PropertyPath path, ContentPropertyToExportedContext exportContext) {
 
         String key = storeInterfaceClass.getCanonicalName() + "#" + path.toString();
         StoreExportedMethodsMap exportMap = storeExportedMethods.get(key);
@@ -210,16 +210,6 @@ public class ContentStoreContentService implements ContentService {
                 len = headers.getContentLength();
             }
             argsList.add(len);
-        } else if (methodToUse.getParameters().length > 3 && methodToUse.getParameters()[3].getType().equals(org.springframework.content.commons.store.SetContentParams.class)) {
-            long contentLength = -1L;
-            if (headers.containsHeader(HttpHeaders.CONTENT_LENGTH)) {
-                contentLength = headers.getContentLength();
-            }
-            int ordinal = config.getSetContentDisposition().ordinal();
-            argsList.add(new org.springframework.content.commons.store.SetContentParams(
-                    contentLength,
-                    true,
-                    org.springframework.content.commons.store.SetContentParams.ContentDisposition.values()[ordinal]));
         } else if (methodToUse.getParameters().length > 3 && methodToUse.getParameters()[3].getType().equals(SetContentParams.class)) {
             long contentLength = -1L;
             if (headers.containsHeader(HttpHeaders.CONTENT_LENGTH)) {
@@ -264,10 +254,7 @@ public class ContentStoreContentService implements ContentService {
         Object targetObj = storeResource.getStoreInfo().getImplementation(ContentStore.class);
 
         Object unsetParams = null;
-        if (methodsToUse[0].getParameters().length == 3 && methodsToUse[0].getParameters()[2].getType().equals(org.springframework.content.commons.store.UnsetContentParams.class)) {
-            int ordinal = config.getUnsetContentDisposition().ordinal();
-            unsetParams = new org.springframework.content.commons.store.UnsetContentParams(org.springframework.content.commons.store.UnsetContentParams.Disposition.values()[ordinal]);
-        } else if (methodsToUse[0].getParameters().length == 3 && methodsToUse[0].getParameters()[2].getType().equals(UnsetContentParams.class)) {
+        if (methodsToUse[0].getParameters().length == 3 && methodsToUse[0].getParameters()[2].getType().equals(UnsetContentParams.class)) {
             int ordinal = config.getUnsetContentDisposition().ordinal();
             unsetParams = new UnsetContentParams(UnsetContentParams.Disposition.values()[ordinal]);
         }
@@ -380,28 +367,17 @@ public class ContentStoreContentService implements ContentService {
 
     public static class StoreExportedMethodsMap {
 
-        private static final Method[] SET_CONTENT_METHODS_3x;
-        private static final Method[] SET_CONTENT_METHODS_2x;
-        private static final Method[] UNSET_CONTENT_METHODS_3x;
-        private static final Method[] UNSET_CONTENT_METHODS_2x;
+        private static final Method[] SET_CONTENT_METHODS;
+        private static final Method[] UNSET_CONTENT_METHODS;
         private static final Method[] GET_CONTENT_METHODS;
 
         static {
-            SET_CONTENT_METHODS_3x = new Method[]{
-                    ReflectionUtils.findMethod(org.springframework.content.commons.store.ContentStore.class, "setContent", Object.class, PropertyPath.class, InputStream.class, org.springframework.content.commons.store.SetContentParams.class),
-                    ReflectionUtils.findMethod(org.springframework.content.commons.store.ContentStore.class, "setContent", Object.class, PropertyPath.class, Resource.class),
-            };
-
-            SET_CONTENT_METHODS_2x = new Method[]{
+            SET_CONTENT_METHODS = new Method[]{
                     ReflectionUtils.findMethod(ContentStore.class, "setContent", Object.class, PropertyPath.class, InputStream.class, SetContentParams.class),
                     ReflectionUtils.findMethod(ContentStore.class, "setContent", Object.class, PropertyPath.class, Resource.class),
             };
 
-            UNSET_CONTENT_METHODS_3x = new Method[]{
-                    ReflectionUtils.findMethod(org.springframework.content.commons.store.ContentStore.class, "unsetContent", Object.class, PropertyPath.class, org.springframework.content.commons.store.UnsetContentParams.class),
-            };
-
-            UNSET_CONTENT_METHODS_2x = new Method[]{
+            UNSET_CONTENT_METHODS = new Method[]{
                     ReflectionUtils.findMethod(ContentStore.class, "unsetContent", Object.class, PropertyPath.class, UnsetContentParams.class),
             };
 
@@ -411,21 +387,16 @@ public class ContentStoreContentService implements ContentService {
         }
 
 
-        private final Class<? extends Store> storeInterface;
+        private final Class<?> storeInterface;
         private final Method[] getContentMethods;
         private final Method[] setContentMethods;
         private final Method[] unsetContentMethods;
 
-        public StoreExportedMethodsMap(Class<? extends Store> storeInterface, PropertyPath path, ContentPropertyToExportedContext exportContext) {
+        public StoreExportedMethodsMap(Class<?> storeInterface, PropertyPath path, ContentPropertyToExportedContext exportContext) {
             this.storeInterface = storeInterface;
             this.getContentMethods = calculateExports(GET_CONTENT_METHODS, path, exportContext);
-            if (org.springframework.content.commons.store.ContentStore.class.isAssignableFrom(storeInterface)) {
-                this.setContentMethods = calculateExports(SET_CONTENT_METHODS_3x, path, exportContext);
-                this.unsetContentMethods = calculateExports(UNSET_CONTENT_METHODS_3x, path, exportContext);
-            } else {
-                this.setContentMethods = calculateExports(SET_CONTENT_METHODS_2x, path, exportContext);
-                this.unsetContentMethods = calculateExports(UNSET_CONTENT_METHODS_2x, path, exportContext);
-            }
+            this.setContentMethods = calculateExports(SET_CONTENT_METHODS, path, exportContext);
+            this.unsetContentMethods = calculateExports(UNSET_CONTENT_METHODS, path, exportContext);
         }
 
         public Method[] getContentMethods() {

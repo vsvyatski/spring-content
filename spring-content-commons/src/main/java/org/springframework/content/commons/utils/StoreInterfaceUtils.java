@@ -17,18 +17,14 @@ public final class StoreInterfaceUtils {
     }
 
     public static Pair<Optional<Class<?>>, Class<? extends Serializable>> getStoreTypes(
-            Class<? extends org.springframework.content.commons.repository.Store> storeClass) {
+            Class<?> storeClass) {
         List<TypeInformation<?>> types = null;
 
         Class<?>[] candidateStoreClasses = new Class<?>[]{
                 ContentStore.class,
                 AssociativeStore.class,
                 Store.class,
-                ReactiveContentStore.class,
-                org.springframework.content.commons.repository.ContentStore.class,
-                org.springframework.content.commons.repository.AssociativeStore.class,
-                org.springframework.content.commons.repository.Store.class,
-                org.springframework.content.commons.repository.ReactiveContentStore.class
+                ReactiveContentStore.class
         };
         for (Class<?> candidateStoreClass : candidateStoreClasses) {
             try {

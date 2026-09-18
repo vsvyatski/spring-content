@@ -725,7 +725,7 @@ public class SomeClass {
 		InputStream content = contentStore.getContent(sopDocument);
 		...
 
-		List<SopDocument> docs = doc.findAllByContentId(contentStore.findKeyword("interesting"));
+		List<SopDocument> docs = doc.findAllByContentId(contentStore.search("interesting"));
 		...
 
 	}

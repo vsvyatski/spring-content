@@ -9,7 +9,7 @@ import org.mockito.Mockito;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.io.DeletableResource;
-import org.springframework.content.commons.repository.StoreAccessException;
+import org.springframework.content.commons.store.StoreAccessException;
 import org.springframework.content.commons.utils.FileService;
 import org.springframework.content.commons.utils.PlacementService;
 import org.springframework.content.commons.utils.PlacementServiceImpl;

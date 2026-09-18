@@ -13,8 +13,8 @@ import internal.org.springframework.content.jpa.testsupport.stores.DocumentAssoc
 import org.apache.commons.io.IOUtils;
 import org.junit.runner.RunWith;
 import org.springframework.content.commons.property.PropertyPath;
-import org.springframework.content.commons.repository.GetResourceParams;
-import org.springframework.content.commons.repository.StoreAccessException;
+import org.springframework.content.commons.store.GetResourceParams;
+import org.springframework.content.commons.store.StoreAccessException;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.WritableResource;

@@ -14,14 +14,10 @@ import org.springframework.content.commons.fragments.ContentStoreAware;
 import org.springframework.content.commons.mappingcontext.ContentProperty;
 import org.springframework.content.commons.mappingcontext.MappingContext;
 import org.springframework.content.commons.property.PropertyPath;
-import org.springframework.content.commons.repository.SetContentParams;
-import org.springframework.content.commons.repository.UnsetContentParams;
 import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.commons.store.GetResourceParams;
-import org.springframework.content.commons.store.SetContentParams.ContentDisposition;
 import org.springframework.content.commons.store.Store;
 import org.springframework.content.commons.store.StoreAccessException;
-import org.springframework.content.commons.store.UnsetContentParams.Disposition;
 import org.springframework.content.encryption.config.EncryptingContentStoreConfigurer;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -29,7 +25,6 @@ import org.springframework.util.Assert;
 
 public class EncryptingContentStoreImpl<S, SID extends Serializable> implements
         org.springframework.content.commons.store.ContentStore<S, SID>,
-        org.springframework.content.commons.repository.ContentStore<S, SID>,
         ContentStoreAware {
 
     private final MappingContext mappingContext;
@@ -65,11 +60,6 @@ public class EncryptingContentStoreImpl<S, SID extends Serializable> implements
     public S setContent(S entity, PropertyPath propertyPath, InputStream inputStream, long l) {
         return this.setContent(entity, propertyPath, inputStream,
                 new org.springframework.content.commons.store.SetContentParams(l, true, org.springframework.content.commons.store.SetContentParams.ContentDisposition.Overwrite));
-    }
-
-    @Override
-    public S setContent(S entity, PropertyPath propertyPath, InputStream content, SetContentParams params) {
-        return setContent(entity, propertyPath, content, convertParams(params));
     }
 
     @Override
@@ -111,11 +101,6 @@ public class EncryptingContentStoreImpl<S, SID extends Serializable> implements
     public S unsetContent(S entity, PropertyPath propertyPath) {
         return unsetContent(entity, propertyPath,
                 new org.springframework.content.commons.store.UnsetContentParams(org.springframework.content.commons.store.UnsetContentParams.Disposition.Remove));
-    }
-
-    @Override
-    public S unsetContent(S entity, PropertyPath propertyPath, UnsetContentParams params) {
-        return unsetContent(entity, propertyPath, convertParams(params));
     }
 
     @Override
@@ -167,12 +152,6 @@ public class EncryptingContentStoreImpl<S, SID extends Serializable> implements
     }
 
     @Override
-    public Resource getResource(S entity, PropertyPath propertyPath,
-                                org.springframework.content.commons.repository.GetResourceParams params) {
-        return getResource(entity, propertyPath, convertParams(params));
-    }
-
-    @Override
     public Resource getResource(S entity, PropertyPath propertyPath, GetResourceParams params) {
         Assert.notNull(entity, "entity not set");
         Assert.notNull(propertyPath, "propertyPath not set");
@@ -217,10 +196,6 @@ public class EncryptingContentStoreImpl<S, SID extends Serializable> implements
     }
 
     @Override
-    public void setContentStore(org.springframework.content.commons.repository.ContentStore store) {
-    }
-
-    @Override
     public void setContentStore(ContentStore store) {
         this.storeDelegate = store;
     }
@@ -249,35 +224,5 @@ public class EncryptingContentStoreImpl<S, SID extends Serializable> implements
         }
 
         cryptoService = config.initializeCryptoService(mappingContext, storeInterfaceClass);
-    }
-
-    private static org.springframework.content.commons.store.UnsetContentParams convertParams(
-            UnsetContentParams params) {
-        return new org.springframework.content.commons.store.UnsetContentParams(convertDisposition(params.disposition()));
-    }
-
-    private static Disposition convertDisposition(UnsetContentParams.Disposition disposition) {
-        return switch (disposition) {
-            case Keep -> Disposition.Keep;
-            case Remove -> Disposition.Remove;
-        };
-    }
-
-    private GetResourceParams convertParams(org.springframework.content.commons.repository.GetResourceParams params) {
-        return new GetResourceParams(params.range());
-    }
-
-    private static org.springframework.content.commons.store.SetContentParams convertParams(SetContentParams params) {
-        return new org.springframework.content.commons.store.SetContentParams(
-                params.contentLength(),
-                params.overwriteExistingContent(),
-                convertDisposition(params.disposition()));
-    }
-
-    private static ContentDisposition convertDisposition(SetContentParams.ContentDisposition disposition) {
-        return switch (disposition) {
-            case Overwrite -> ContentDisposition.Overwrite;
-            case CreateNew -> ContentDisposition.CreateNew;
-        };
     }
 }

@@ -8,7 +8,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jspecify.annotations.NonNull;
 import org.springframework.content.commons.fragments.ContentStoreAware;
-import org.springframework.content.commons.repository.ContentStore;
+import org.springframework.content.commons.store.ContentStore;
 import org.springframework.util.Assert;
 import org.springframework.util.ConcurrentReferenceHashMap;
 import org.springframework.util.ReflectionUtils;
@@ -24,15 +24,11 @@ public class StoreMethodInterceptor implements MethodInterceptor {
 
     private static final Log LOGGER = LogFactory.getLog(StoreMethodInterceptor.class);
     // ContentStoreAware methods
-    private static final Method deprecatedSetContentStoreMethod;
     private static final Method setContentStoreMethod;
 
     static {
-        deprecatedSetContentStoreMethod = ReflectionUtils.findMethod(ContentStoreAware.class,
-                "setContentStore", ContentStore.class);
-        Assert.notNull(deprecatedSetContentStoreMethod, "setContentStore method not found");
         setContentStoreMethod = ReflectionUtils.findMethod(ContentStoreAware.class,
-                "setContentStore", org.springframework.content.commons.store.ContentStore.class);
+                "setContentStore", ContentStore.class);
         Assert.notNull(setContentStoreMethod, "setContentStore method not found");
     }
 
@@ -64,11 +60,6 @@ public class StoreMethodInterceptor implements MethodInterceptor {
                     format("No fragment found for method %s", invocation.getMethod())));
 
             StoreFragment<?> f = fragment.get();
-            if (f.hasImplementationMethod(deprecatedSetContentStoreMethod)) {
-                assert deprecatedSetContentStoreMethod != null;
-                ReflectionUtils.invokeMethod(deprecatedSetContentStoreMethod, f.getImplementation(),
-                        invocation.getThis());
-            }
             if (f.hasImplementationMethod(setContentStoreMethod)) {
                 assert setContentStoreMethod != null;
                 ReflectionUtils.invokeMethod(setContentStoreMethod, f.getImplementation(), invocation.getThis());

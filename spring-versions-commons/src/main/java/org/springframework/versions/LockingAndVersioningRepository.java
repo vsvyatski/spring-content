@@ -3,7 +3,6 @@ package org.springframework.versions;
 import java.util.List;
 
 import org.springframework.data.domain.Sort;
-import org.springframework.data.rest.core.annotation.RestResource;
 
 public interface LockingAndVersioningRepository<T> {
 
@@ -77,19 +76,6 @@ public interface LockingAndVersioningRepository<T> {
      * @throws SecurityException             if no authentication exists
      */
     <S extends T> S version(S entity, VersionInfo info);
-
-    /**
-     * Returns the latest version of all entities.  When extending LockingAndVersioningRepository this
-     * method would usually be preferred over CrudRepository's findAll that would find all versions
-     * of all entities.
-     *
-     * @param <S> the type of entity
-     * @return list of latest versionWithEntity entities
-     * @deprecated
-     */
-    @RestResource(exported = false)
-    @Deprecated
-    <S extends T> List<S> findAllVersionsLatest();
 
     /**
      * Returns the latest version of all entities.  When extending LockingAndVersioningRepository this

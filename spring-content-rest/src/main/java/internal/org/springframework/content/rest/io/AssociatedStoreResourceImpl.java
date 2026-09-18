@@ -23,7 +23,7 @@ import org.springframework.content.commons.io.RangeableResource;
 import org.springframework.content.commons.mappingcontext.ContentProperty;
 import org.springframework.content.commons.property.PropertyPath;
 import org.springframework.content.commons.renditions.Renderable;
-import org.springframework.content.commons.repository.AssociativeStore;
+import org.springframework.content.commons.store.AssociativeStore;
 import org.springframework.content.commons.storeservice.StoreInfo;
 import org.springframework.content.commons.utils.BeanUtils;
 import org.springframework.core.convert.ConversionService;

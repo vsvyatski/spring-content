@@ -8,7 +8,7 @@ public abstract class AbstractStoreEventListener<T>
 		implements ApplicationListener<StoreEvent> {
 
 	private final Class<?> INTERESTED_TYPE = resolveTypeArgument(getClass(),
-			org.springframework.content.commons.repository.events.AbstractStoreEventListener.class);
+			AbstractStoreEventListener.class);
 
 	/*
 	 * (non-Javadoc)

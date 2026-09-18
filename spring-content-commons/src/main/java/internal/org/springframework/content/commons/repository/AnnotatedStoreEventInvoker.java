@@ -6,10 +6,11 @@ import org.jspecify.annotations.NonNull;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.content.commons.annotations.*;
-import org.springframework.content.commons.repository.StoreEvent;
+import org.springframework.content.commons.store.events.StoreEvent;
 import org.springframework.content.commons.store.events.*;
 import org.springframework.content.commons.utils.ReflectionService;
 import org.springframework.content.commons.utils.ReflectionServiceImpl;
+import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -25,11 +26,11 @@ import java.util.Collections;
 import java.util.List;
 
 public class AnnotatedStoreEventInvoker
-        implements ApplicationListener<StoreEvent>, BeanPostProcessor {
+        implements ApplicationListener<ApplicationEvent>, BeanPostProcessor {
 
     private static final Log logger = LogFactory.getLog(AnnotatedStoreEventInvoker.class);
 
-    private final MultiValueMap<Class<? extends StoreEvent>, EventHandlerMethod> handlerMethods = new LinkedMultiValueMap<>();
+    private final MultiValueMap<Class<? extends ApplicationEvent>, EventHandlerMethod> handlerMethods = new LinkedMultiValueMap<>();
 
     private final ReflectionService reflectionService;
 
@@ -41,7 +42,7 @@ public class AnnotatedStoreEventInvoker
         this.reflectionService = reflectionService;
     }
 
-    MultiValueMap<Class<? extends StoreEvent>, EventHandlerMethod> getHandlers() {
+    MultiValueMap<Class<? extends ApplicationEvent>, EventHandlerMethod> getHandlers() {
         return handlerMethods;
     }
 
@@ -66,19 +67,7 @@ public class AnnotatedStoreEventInvoker
 
             @Override
             public void doWith(@NonNull Method method)
-                    throws IllegalArgumentException, IllegalAccessException {
-                findHandler(bean, method, HandleBeforeGetResource.class, org.springframework.content.commons.repository.events.BeforeGetResourceEvent.class);
-                findHandler(bean, method, HandleAfterGetResource.class, org.springframework.content.commons.repository.events.AfterGetResourceEvent.class);
-                findHandler(bean, method, HandleBeforeAssociate.class, org.springframework.content.commons.repository.events.BeforeAssociateEvent.class);
-                findHandler(bean, method, HandleAfterAssociate.class, org.springframework.content.commons.repository.events.AfterAssociateEvent.class);
-                findHandler(bean, method, HandleBeforeUnassociate.class, org.springframework.content.commons.repository.events.BeforeUnassociateEvent.class);
-                findHandler(bean, method, HandleAfterUnassociate.class, org.springframework.content.commons.repository.events.AfterUnassociateEvent.class);
-                findHandler(bean, method, HandleBeforeGetContent.class, org.springframework.content.commons.repository.events.BeforeGetContentEvent.class);
-                findHandler(bean, method, HandleAfterGetContent.class, org.springframework.content.commons.repository.events.AfterGetContentEvent.class);
-                findHandler(bean, method, HandleBeforeSetContent.class, org.springframework.content.commons.repository.events.BeforeSetContentEvent.class);
-                findHandler(bean, method, HandleAfterSetContent.class, org.springframework.content.commons.repository.events.AfterSetContentEvent.class);
-                findHandler(bean, method, HandleBeforeUnsetContent.class, org.springframework.content.commons.repository.events.BeforeUnsetContentEvent.class);
-                findHandler(bean, method, HandleAfterUnsetContent.class, org.springframework.content.commons.repository.events.AfterUnsetContentEvent.class);
+                    throws IllegalArgumentException {
                 findHandler(bean, method, HandleBeforeGetResource.class, BeforeGetResourceEvent.class);
                 findHandler(bean, method, HandleAfterGetResource.class, AfterGetResourceEvent.class);
                 findHandler(bean, method, HandleBeforeAssociate.class, BeforeAssociateEvent.class);
@@ -99,8 +88,11 @@ public class AnnotatedStoreEventInvoker
     }
 
     @Override
-    public void onApplicationEvent(StoreEvent event) {
-        Class<? extends StoreEvent> eventType = event.getClass();
+    public void onApplicationEvent(ApplicationEvent event) {
+        if (!(event instanceof StoreEvent)) {
+            return;
+        }
+        Class<? extends ApplicationEvent> eventType = event.getClass();
 
         if (!handlerMethods.containsKey(eventType)) {
             return;
@@ -110,15 +102,15 @@ public class AnnotatedStoreEventInvoker
 
             Object src = event.getSource();
 
-            if ((ClassUtils.isAssignable(StoreEvent.class, handlerMethod.targetType) &&
+            if ((isStoreEventType(handlerMethod.targetType) &&
                     !ClassUtils.isAssignable(handlerMethod.targetType, event.getClass())) ||
-                    (!ClassUtils.isAssignable(StoreEvent.class, handlerMethod.targetType) &&
+                    (!isStoreEventType(handlerMethod.targetType) &&
                             !ClassUtils.isAssignable(handlerMethod.targetType, src.getClass()))) {
                 continue;
             }
 
             List<Object> parameters = new ArrayList<>();
-            if (ClassUtils.isAssignable(StoreEvent.class, handlerMethod.targetType)) {
+            if (isStoreEventType(handlerMethod.targetType)) {
                 parameters.add(event);
             } else {
                 parameters.add(src);
@@ -134,8 +126,12 @@ public class AnnotatedStoreEventInvoker
         }
     }
 
-    <H extends Annotation, E> void findHandler(Object bean, Method method,
-                                               Class<H> handler, Class<? extends StoreEvent> eventType) {
+    private static boolean isStoreEventType(Class<?> type) {
+        return ClassUtils.isAssignable(StoreEvent.class, type);
+    }
+
+    <H extends Annotation> void findHandler(Object bean, Method method,
+                                            Class<H> handler, Class<? extends ApplicationEvent> eventType) {
         H annotation = AnnotationUtils.findAnnotation(method, handler);
 
         if (annotation == null) {

@@ -13,8 +13,8 @@ import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.fragments.ContentStoreAware;
 import org.springframework.content.commons.fulltext.Attribute;
 import org.springframework.content.commons.fulltext.Highlight;
-import org.springframework.content.commons.repository.ContentStore;
-import org.springframework.content.commons.repository.StoreAccessException;
+import org.springframework.content.commons.store.ContentStore;
+import org.springframework.content.commons.store.StoreAccessException;
 import org.springframework.content.commons.search.Searchable;
 import org.springframework.content.commons.utils.BeanUtils;
 import org.springframework.content.commons.utils.ContentPropertyUtils;
@@ -27,7 +27,6 @@ import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.util.Assert;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -81,86 +80,6 @@ public class SearchableImpl implements Searchable<Object>, ContentStoreAware {
     @Override
     public Page<Object> search(String queryStr, Pageable pageable) {
         return getResults(executeQuery(this.getDomainClass(), queryStr, pageable, genericArguments[0]), pageable, genericArguments[0], PageImpl.class);
-    }
-
-    @Override
-    public List<Object> findKeyword(String queryStr) {
-        return getResults(executeQuery(this.getDomainClass(), queryStr, null, genericArguments[0]), null, genericArguments[0], ArrayList.class);
-    }
-
-    @Override
-    public List<Object> findAllKeywords(String... terms) {
-        String queryStr = this.parseTerms("AND", terms);
-        return getResults(executeQuery(this.getDomainClass(), queryStr, null, genericArguments[0]), null, genericArguments[0], ArrayList.class);
-    }
-
-    @Override
-    public List<Object> findAnyKeywords(String... terms) {
-        String queryStr = this.parseTerms("OR", terms);
-        return getResults(executeQuery(this.getDomainClass(), queryStr, null, genericArguments[0]), null, genericArguments[0], ArrayList.class);
-    }
-
-    @Override
-    public List<Object> findKeywordsNear(int proximity, String... terms) {
-        String termStr = this.parseTerms("NONE", terms);
-        String queryStr = "\"" + termStr + "\"~" + Integer.toString(proximity);
-        return getResults(executeQuery(this.getDomainClass(), queryStr, null, genericArguments[0]), null, genericArguments[0], ArrayList.class);
-    }
-
-    @Override
-    public List<Object> findKeywordStartsWith(String term) {
-        String queryStr = term + "*";
-        return getResults(executeQuery(this.getDomainClass(), queryStr, null, genericArguments[0]), null, genericArguments[0], ArrayList.class);
-    }
-
-    @Override
-    public List<Object> findKeywordStartsWithAndEndsWith(String a, String b) {
-        String queryStr = a + "*" + b;
-        return getResults(executeQuery(this.getDomainClass(), queryStr, null, genericArguments[0]), null, genericArguments[0], ArrayList.class);
-    }
-
-    @Override
-    public List<Object> findAllKeywordsWithWeights(String[] terms, double[] weights) {
-        String queryStr = parseTermsAndWeights("AND", terms, weights);
-        return getResults(executeQuery(this.getDomainClass(), queryStr, null, genericArguments[0]), null, genericArguments[0], ArrayList.class);
-    }
-
-    /* package */ String parseTermsAndWeights(String operator, String[] terms,
-                                              double[] weights) {
-        Assert.state(terms.length == weights.length, "all terms must have a weight");
-
-        StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < terms.length - 1; i++) {
-            builder.append("(");
-            builder.append(terms[i]);
-            builder.append(")^");
-            builder.append(weights[i]);
-            builder.append(' ').append(operator).append(' ');
-        }
-        builder.append("(");
-        builder.append(terms[terms.length - 1]);
-        builder.append(")^");
-        builder.append(weights[weights.length - 1]);
-
-        return builder.toString();
-    }
-
-    /* package */ String parseTerms(String operator, String... terms) {
-        String separator;
-
-        if ("NONE".equals(operator)) {
-            separator = " ";
-        } else {
-            separator = " " + operator + " ";
-        }
-        StringBuilder builder = new StringBuilder();
-
-        for (int i = 0; i < terms.length - 1; i++) {
-            builder.append(terms[i]);
-            builder.append(separator);
-        }
-        builder.append(terms[terms.length - 1]);
-        return builder.toString();
     }
 
     /* package */ QueryRequest solrAuthenticate(QueryRequest request) {
@@ -281,10 +200,6 @@ public class SearchableImpl implements Searchable<Object>, ContentStoreAware {
 
     @Override
     public void setContentStore(ContentStore store) {
-    }
-
-    @Override
-    public void setContentStore(org.springframework.content.commons.store.ContentStore store) {
     }
 
 

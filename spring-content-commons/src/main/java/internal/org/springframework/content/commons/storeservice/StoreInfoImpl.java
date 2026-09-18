@@ -3,7 +3,7 @@ package internal.org.springframework.content.commons.storeservice;
 import java.io.Serializable;
 import java.util.function.Supplier;
 
-import org.springframework.content.commons.repository.Store;
+import org.springframework.content.commons.store.Store;
 import org.springframework.content.commons.storeservice.StoreInfo;
 
 public class StoreInfoImpl implements StoreInfo {

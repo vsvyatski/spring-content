@@ -3,7 +3,7 @@ package internal.org.springframework.content.rest.mappings;
 import java.util.UUID;
 
 import org.junit.runner.RunWith;
-import org.springframework.content.commons.repository.Store;
+import org.springframework.content.commons.store.Store;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.cors.CorsConfiguration;

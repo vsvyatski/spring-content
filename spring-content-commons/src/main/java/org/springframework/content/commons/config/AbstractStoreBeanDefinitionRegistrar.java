@@ -57,11 +57,10 @@ import static java.util.stream.Collectors.toList;
 public abstract class AbstractStoreBeanDefinitionRegistrar
         implements ImportBeanDefinitionRegistrar, EnvironmentAware, ResourceLoaderAware, BeanFactoryAware {
 
-    public static final String STORE_INTERFACE_PROPERTY = "storeInterface";
     public static final String DOMAIN_CLASS_PROPERTY = "domainClass";
     public static final String ID_CLASS_PROPERTY = "idClass";
     public static final String STORE_INTERFACE_CLASS_PROPERTY = "storeInterfaceClass";
-    private static final Log LOGGER = LogFactory.getLog(AbstractStoreBeanDefinitionRegistrar.class);
+    private static final Log logger = LogFactory.getLog(AbstractStoreBeanDefinitionRegistrar.class);
     private Environment environment;
     private ResourceLoader resourceLoader;
     private BeanFactory beanFactory;
@@ -108,12 +107,6 @@ public abstract class AbstractStoreBeanDefinitionRegistrar
         Assert.isTrue(registry instanceof ConfigurableListableBeanFactory,
                 "BeanDefinitionRegistry must be instance of ConfigurableListableBeanFactory");
 
-        // Guard against calls for subclasses
-        // if (importingClassMetadata.getAnnotationAttributes(getAnnotation().getName())
-        // == null) {
-        // return;
-        // }
-
         BeanDefinition annotatedStoreEventHandlerDef = createBeanDefinition();
         if (!registry.containsBeanDefinition("annotatedStoreEventHandler")) {
             registry.registerBeanDefinition("annotatedStoreEventHandler", annotatedStoreEventHandlerDef);
@@ -158,7 +151,7 @@ public abstract class AbstractStoreBeanDefinitionRegistrar
             try {
                 storeClass = loadStoreClass((ConfigurableListableBeanFactory) registry, definition);
             } catch (ClassNotFoundException e) {
-                LOGGER.error("Failed to instantiate store class.", e);
+                logger.error("Failed to instantiate store class.", e);
             }
 
             builder.addConstructorArgValue(storeClass);
@@ -171,7 +164,7 @@ public abstract class AbstractStoreBeanDefinitionRegistrar
                 assert storeInterface != null;
                 interfaces = metadataReaderFactory.getMetadataReader(storeInterface).getClassMetadata().getInterfaceNames();
             } catch (IOException e) {
-                LOGGER.error(format("Reading store interface %s", storeInterface), e);
+                logger.error(format("Reading store interface %s", storeInterface), e);
             }
 
             StoreFragmentDetector detector = new StoreFragmentDetector(environment, resourceLoader, "Impl", basePackages, metadataReaderFactory);
@@ -223,8 +216,7 @@ public abstract class AbstractStoreBeanDefinitionRegistrar
                                                     BeanDefinition definition) throws ClassNotFoundException {
         Class<?> candidateStoreClass = ClassUtils.forName(Objects.requireNonNull(definition.getBeanClassName()),
                 registry.getBeanClassLoader());
-        if (!Store.class.isAssignableFrom(candidateStoreClass) && !ReactiveContentStore.class.isAssignableFrom(candidateStoreClass) &&
-                !org.springframework.content.commons.repository.Store.class.isAssignableFrom(candidateStoreClass) && !org.springframework.content.commons.repository.ReactiveContentStore.class.isAssignableFrom(candidateStoreClass)) {
+        if (!Store.class.isAssignableFrom(candidateStoreClass) && !ReactiveContentStore.class.isAssignableFrom(candidateStoreClass)) {
             throw new IllegalStateException(String.format("Store class %s is not assignable from Store or ReactiveContentStore", definition.getBeanClassName()));
         }
         return (Class<? extends Store>) candidateStoreClass;
@@ -261,7 +253,7 @@ public abstract class AbstractStoreBeanDefinitionRegistrar
                         .add("genericArguments", genericArguments.toArray(new Class[]{}));
             }
         } catch (ClassNotFoundException e) {
-            LOGGER.error("Failed setting fragment generic arguments", e);
+            logger.error("Failed setting fragment generic arguments", e);
         }
 
         try {
@@ -273,7 +265,7 @@ public abstract class AbstractStoreBeanDefinitionRegistrar
                 fragmentDefinition.getBeanDefinition().getPropertyValues().add(DOMAIN_CLASS_PROPERTY, domainClass);
             }
         } catch (ClassNotFoundException e) {
-            LOGGER.error("Failed setting fragment domain class", e);
+            logger.error("Failed setting fragment domain class", e);
         }
 
         try {
@@ -284,7 +276,7 @@ public abstract class AbstractStoreBeanDefinitionRegistrar
                 fragmentDefinition.getBeanDefinition().getPropertyValues().add(ID_CLASS_PROPERTY, idClass);
             }
         } catch (ClassNotFoundException e) {
-            LOGGER.error("Failed setting fragment ID class", e);
+            logger.error("Failed setting fragment ID class", e);
         }
 
         try {
@@ -296,7 +288,7 @@ public abstract class AbstractStoreBeanDefinitionRegistrar
                         .add(STORE_INTERFACE_CLASS_PROPERTY, storeInterfaceClass);
             }
         } catch (ClassNotFoundException e) {
-            LOGGER.error("Failed setting fragment ID class", e);
+            logger.error("Failed setting fragment ID class", e);
         }
 
         registry.registerBeanDefinition(beanName, fragmentDefinition.getBeanDefinition());
@@ -321,14 +313,14 @@ public abstract class AbstractStoreBeanDefinitionRegistrar
 
     protected boolean multipleStoreImplementationsDetected() {
 
-        boolean multipleOldModulesFound = SpringFactoriesLoader.loadFactoryNames(org.springframework.content.commons.repository.factory.AbstractStoreFactoryBean.class, resourceLoader.getClassLoader()).size() > 1;
-        boolean multipleNewModulesFound = SpringFactoriesLoader.loadFactoryNames(AbstractStoreFactoryBean.class, resourceLoader.getClassLoader()).size() > 1;
+        boolean multipleModulesFound = SpringFactoriesLoader
+                .loadFactoryNames(AbstractStoreFactoryBean.class, resourceLoader.getClassLoader()).size() > 1;
 
-        if (multipleOldModulesFound || multipleNewModulesFound) {
-            LOGGER.info("Multiple store modules detected.  Entering strict resolution mode");
+        if (multipleModulesFound) {
+            logger.info("Multiple store modules detected.  Entering strict resolution mode");
         }
 
-        return multipleOldModulesFound || multipleNewModulesFound;
+        return multipleModulesFound;
     }
 
     /**
@@ -354,22 +346,12 @@ public abstract class AbstractStoreBeanDefinitionRegistrar
         return "";
     }
 
-    private static class IsCandidatePredicate implements Predicate<String> {
-
-        private final Class<?>[] additionalTypes;
-
-        public IsCandidatePredicate(Class<?>[] additionalTypes) {
-            this.additionalTypes = additionalTypes;
-        }
+    private record IsCandidatePredicate(Class<?>[] additionalTypes) implements Predicate<String> {
 
         @Override
         public boolean test(String s) {
 
-            if (org.springframework.content.commons.repository.Store.class.getName().equals(s) ||
-                    org.springframework.content.commons.repository.AssociativeStore.class.getName().equals(s) ||
-                    org.springframework.content.commons.repository.ContentStore.class.getName().equals(s) ||
-                    org.springframework.content.commons.repository.ReactiveContentStore.class.getName().equals(s) ||
-                    Store.class.getName().equals(s) ||
+            if (Store.class.getName().equals(s) ||
                     AssociativeStore.class.getName().equals(s) ||
                     ContentStore.class.getName().equals(s) ||
                     ReactiveContentStore.class.getName().equals(s) ||

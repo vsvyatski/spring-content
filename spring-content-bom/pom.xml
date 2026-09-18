@@ -127,36 +127,6 @@
             </dependency>
             <dependency>
                 <groupId>io.github.vsvyatski</groupId>
-                <artifactId>content-fs-spring-boot-starter</artifactId>
-                <version>${spring-content.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.vsvyatski</groupId>
-                <artifactId>content-jpa-spring-boot-starter</artifactId>
-                <version>${spring-content.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.vsvyatski</groupId>
-                <artifactId>content-mongo-spring-boot-starter</artifactId>
-                <version>${spring-content.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.vsvyatski</groupId>
-                <artifactId>content-rest-spring-boot-starter</artifactId>
-                <version>${spring-content.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.vsvyatski</groupId>
-                <artifactId>content-s3-spring-boot-starter</artifactId>
-                <version>${spring-content.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.vsvyatski</groupId>
-                <artifactId>content-solr-spring-boot-starter</artifactId>
-                <version>${spring-content.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.vsvyatski</groupId>
                 <artifactId>spring-versions-commons</artifactId>
                 <version>${spring-content.version}</version>
             </dependency>

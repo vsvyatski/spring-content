@@ -23,11 +23,10 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.property.PropertyPath;
-import org.springframework.content.commons.repository.ContentStore;
-import org.springframework.content.commons.repository.GetResourceParams;
-import org.springframework.content.commons.repository.SetContentParams;
-import org.springframework.content.commons.repository.UnsetContentParams;
-import org.springframework.content.jpa.config.EnableJpaContentRepositories;
+import org.springframework.content.commons.store.ContentStore;
+import org.springframework.content.commons.store.GetResourceParams;
+import org.springframework.content.commons.store.SetContentParams;
+import org.springframework.content.commons.store.UnsetContentParams;
 import org.springframework.content.jpa.config.EnableJpaStores;
 import org.springframework.content.jpa.io.BlobResourceLoader;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -84,10 +83,6 @@ public class EnableJpaStoresTest {
 				});
 			});
 		});
-
-		Describe("EnableJpaContentRepositories", () -> {
-			basicConfigurationTests(context, EnableJpaContentRepositoriesConfig.class);
-		});
 	}
 
 	private static void basicConfigurationTests(AnnotationConfigApplicationContext context, Class configClass) {
@@ -143,12 +138,6 @@ public class EnableJpaStoresTest {
 	@EnableJpaStores
 	@Import(InfrastructureConfig.class)
 	public static class TestConfig {
-	}
-
-	@Configuration
-	@EnableJpaContentRepositories
-	@Import(InfrastructureConfig.class)
-	public static class EnableJpaContentRepositoriesConfig {
 	}
 
 	@Configuration

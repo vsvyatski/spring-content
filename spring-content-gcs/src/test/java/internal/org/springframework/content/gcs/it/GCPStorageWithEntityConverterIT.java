@@ -27,7 +27,7 @@ import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.annotations.MimeType;
 import org.springframework.content.commons.config.ContentPropertyInfo;
 import org.springframework.content.commons.property.PropertyPath;
-import org.springframework.content.commons.repository.ContentStore;
+import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.gcs.Bucket;
 import org.springframework.content.gcs.config.EnableGCPStorage;
 import org.springframework.content.gcs.config.GCPStorageConfigurer;

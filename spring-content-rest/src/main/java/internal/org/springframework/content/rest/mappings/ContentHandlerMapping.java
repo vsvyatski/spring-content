@@ -14,9 +14,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import internal.org.springframework.content.rest.mappingcontext.ContentPropertyRequest;
 import internal.org.springframework.content.rest.mappingcontext.ContentPropertyToRequestMappingContext;
 import org.apache.commons.io.FilenameUtils;
-import org.springframework.content.commons.repository.AssociativeStore;
-import org.springframework.content.commons.repository.ContentStore;
-import org.springframework.content.commons.repository.Store;
+import org.springframework.content.commons.store.AssociativeStore;
+import org.springframework.content.commons.store.ContentStore;
+import org.springframework.content.commons.store.Store;
 import org.springframework.content.commons.storeservice.StoreInfo;
 import org.springframework.content.commons.storeservice.Stores;
 import org.springframework.content.rest.config.RestConfiguration;
@@ -244,9 +244,11 @@ public class ContentHandlerMapping extends StoreAwareHandlerMapping {
 			StoreInfo info = stores.getStore(Store.class, StoreUtils.withStorePath(segments[1]));
 			if (info != null
 					&& ((Store.class.isAssignableFrom(info.getInterface())
+							|| org.springframework.content.commons.store.Store.class.isAssignableFrom(info.getInterface()))
 							&& "store".equals(storeType))
-					|| (ContentStore.class.isAssignableFrom(info.getInterface())
-							&& "contentstore".equals(storeType)))
+					|| ((ContentStore.class.isAssignableFrom(info.getInterface())
+							|| org.springframework.content.commons.store.ContentStore.class.isAssignableFrom(info.getInterface()))
+							&& "contentstore".equals(storeType))
 				) {
 				return this;
 			}
@@ -288,9 +290,11 @@ public class ContentHandlerMapping extends StoreAwareHandlerMapping {
 			}
 			StoreInfo info = stores.getStore(Store.class, StoreUtils.withStorePath(segments[1]));
 			if (info != null
-					&& (Store.class.isAssignableFrom(info.getInterface())
+					&& ((Store.class.isAssignableFrom(info.getInterface())
+							|| org.springframework.content.commons.store.Store.class.isAssignableFrom(info.getInterface()))
 							&& "store".equals(storeType))
-					|| (ContentStore.class.isAssignableFrom(info.getInterface())
+					|| ((ContentStore.class.isAssignableFrom(info.getInterface())
+							|| org.springframework.content.commons.store.ContentStore.class.isAssignableFrom(info.getInterface()))
 							&& "contentstore".equals(storeType))) {
 				return true;
 			}

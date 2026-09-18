@@ -16,7 +16,7 @@ import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.annotations.MimeType;
 import org.springframework.content.commons.config.ContentPropertyInfo;
 import org.springframework.content.commons.property.PropertyPath;
-import org.springframework.content.commons.repository.ContentStore;
+import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.s3.Bucket;
 import org.springframework.content.s3.S3ObjectId;
 import org.springframework.content.s3.config.EnableS3Stores;

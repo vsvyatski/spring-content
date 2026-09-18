@@ -150,12 +150,6 @@ public class S3StoreConfiguration  {
                     }
                 });
             }
-
-
-            @Override
-            public void configureS3ObjectIdResolvers(S3ObjectIdResolvers resolvers) {
-                // deprecated
-            }
         }
 	}
 }
@@ -194,11 +188,6 @@ public class S3StoreConfiguration  {
                         return String.format("/%s", source.toString().replaceAll("-", "/"));
                     }
                 });
-            }
-
-            @Override
-            public void configureS3ObjectIdResolvers(S3ObjectIdResolvers resolvers) {
-                // deprecated
             }
         }
 	}

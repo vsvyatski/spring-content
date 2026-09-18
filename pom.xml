@@ -49,13 +49,13 @@
 
         <spring-content.version>${project.version}</spring-content.version>
         <ginkgo4j.version>2.2.0</ginkgo4j.version>
-        <springboot.version>4.0.3</springboot.version>
-        <commons-io.version>2.21.0</commons-io.version>
+        <springboot.version>4.1.1</springboot.version>
+        <commons-io.version>2.22.0</commons-io.version>
         <commons-lang.version>3.20.0</commons-lang.version>
-        <common-logging.version>1.3.5</common-logging.version>
+        <commons-logging.version>1.4.0</commons-logging.version>
         <commons-text.version>1.15.0</commons-text.version>
         <jakarta-persistence-api.version>3.2.0</jakarta-persistence-api.version>
-        <hibernate-orm.version>7.2.6.Final</hibernate-orm.version>
+        <hibernate-orm.version>7.4.9.Final</hibernate-orm.version>
         <solr-solrj.version>10.0.0</solr-solrj.version>
         <elasticsearch-rest-high-level-client.version>7.17.29</elasticsearch-rest-high-level-client.version>
         <uuid-creator.version>6.1.1</uuid-creator.version>
@@ -63,8 +63,8 @@
         <!-- Test dependencies -->
         <test-containers.version>1.21.4</test-containers.version>
         <mockito.version>4.11.0</mockito.version>
-        <mysql-connector.version>9.6.0</mysql-connector.version>
-        <ojdbc.version>23.26.1.0.0</ojdbc.version>
+        <mysql-connector.version>9.7.0</mysql-connector.version>
+        <ojdbc.version>23.26.3.0.0</ojdbc.version>
         <hamcrest.version>3.0</hamcrest.version>
 
         <docs.output.dir>../target/generated-docs/refs/${env.BUILD_TYPE}/</docs.output.dir>
@@ -118,12 +118,6 @@
         <module>./spring-content-solr-boot-starter</module>
         <module>./spring-content-elasticsearch</module>
         <module>./spring-content-elasticsearch-boot-starter</module>
-        <module>./content-fs-spring-boot-starter</module>
-        <module>./content-jpa-spring-boot-starter</module>
-        <module>./content-mongo-spring-boot-starter</module>
-        <module>./content-rest-spring-boot-starter</module>
-        <module>./content-s3-spring-boot-starter</module>
-        <module>./content-solr-spring-boot-starter</module>
         <module>./spring-versions-commons</module>
         <module>./spring-versions-jpa</module>
         <module>./spring-versions-jpa-boot-starter</module>
@@ -254,7 +248,7 @@
                             <properties>
                                 <property>
                                     <name>listener</name>
-                                    <value>io.github.vsvyatski.ginkgo4j.maven.JUnitRunListener</value>
+                                    <value>com.github.paulcwarren.ginkgo4j.maven.JUnitRunListener</value>
                                 </property>
                             </properties>
                         </configuration>

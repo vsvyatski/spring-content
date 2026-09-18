@@ -2,7 +2,8 @@ package internal.org.springframework.content.commons.store.factory;
 
 import com.github.paulcwarren.ginkgo4j.Ginkgo4jRunner;
 import org.junit.runner.RunWith;
-import org.springframework.content.commons.repository.ContentStore;
+import org.springframework.content.commons.store.ContentStore;
+import org.springframework.content.commons.store.StoreAccessException;
 import org.springframework.context.ApplicationEventPublisher;
 
 import java.io.ByteArrayInputStream;
@@ -44,7 +45,7 @@ public class StoreImplTest {
                     }
                 }
 
-                stores = new StoreImpl(ContentStore.class, store, publisher, contentCopyPathRoot);
+                stores = new StoreImpl(store, publisher, contentCopyPathRoot);
             });
 
             Context("#setContent - inputStream", () -> {
@@ -60,6 +61,17 @@ public class StoreImplTest {
                         if (f.getName().endsWith(".tmp")) {
                             fail("Found orphaned content copy path");
                         }
+                    }
+                });
+            });
+
+            Context("#getContent", () -> {
+                It("should propagate StoreAccessException", () -> {
+                    when(store.getContent(any())).thenThrow(new StoreAccessException("missing property"));
+                    try {
+                        stores.getContent(new Object());
+                        fail("expected StoreAccessException");
+                    } catch (StoreAccessException expected) {
                     }
                 });
             });

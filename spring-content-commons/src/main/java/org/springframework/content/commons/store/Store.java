@@ -4,7 +4,7 @@ import org.springframework.core.io.Resource;
 
 import java.io.Serializable;
 
-public interface Store<SID extends Serializable> extends org.springframework.content.commons.repository.Store<SID> {
+public interface Store<SID extends Serializable> {
 	/**
 	 * Returns a resource handle for the specified id.
 	 *

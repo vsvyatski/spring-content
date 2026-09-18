@@ -5,7 +5,7 @@ import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.junit.runner.RunWith;
 import org.springframework.content.commons.annotations.ContentId;
-import org.springframework.content.commons.repository.StoreAccessException;
+import org.springframework.content.commons.store.StoreAccessException;
 import org.springframework.content.solr.SolrProperties;
 
 import java.io.ByteArrayInputStream;

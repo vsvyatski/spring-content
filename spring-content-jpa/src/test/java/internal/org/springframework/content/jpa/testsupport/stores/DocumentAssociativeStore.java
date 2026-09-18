@@ -1,6 +1,6 @@
 package internal.org.springframework.content.jpa.testsupport.stores;
 
-import org.springframework.content.commons.repository.AssociativeStore;
+import org.springframework.content.commons.store.AssociativeStore;
 
 import internal.org.springframework.content.jpa.testsupport.models.Document;
 

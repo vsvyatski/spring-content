@@ -2,12 +2,11 @@ package internal.org.springframework.content.rest.utils;
 
 import com.github.paulcwarren.ginkgo4j.Ginkgo4jRunner;
 import internal.org.springframework.content.commons.storeservice.StoreInfoImpl;
-import internal.org.springframework.content.rest.annotations.ContentStoreRestResource;
 import internal.org.springframework.content.rest.support.TestEntity;
 import org.junit.runner.RunWith;
 import org.springframework.content.commons.renditions.Renderable;
-import org.springframework.content.commons.repository.ContentStore;
-import org.springframework.content.commons.repository.Store;
+import org.springframework.content.commons.store.ContentStore;
+import org.springframework.content.commons.store.Store;
 import org.springframework.content.commons.storeservice.StoreInfo;
 import org.springframework.content.rest.StoreRestResource;
 
@@ -37,27 +36,6 @@ public class StoreUtilsTest {
 				});
 				It("should return return 'testEntities'", () -> {
 					assertThat(storePath, is("testEntities"));
-				});
-			});
-			Context("given a content store with a deprecated ContentStoreRestResource annotation", () -> {
-				BeforeEach(() -> {
-					ContentStore storeImpl = mock(ContentStoreWithDeprecatedAnnotation.class);
-					info = new StoreInfoImpl(
-							ContentStoreWithDeprecatedAnnotation.class,
-							TestEntity.class, storeImpl);
-				});
-				It("should return return the specified path", () -> {
-					assertThat(storePath, is("testEntities"));
-				});
-			});
-			Context("given a content store with a deprecated ContentStoreRestResource annotation that specifies a path", () -> {
-				BeforeEach(() -> {
-					ContentStore storeImpl = mock(ContentStoreWithPath.class);
-					info = new StoreInfoImpl(ContentStoreWithPath.class,
-							TestEntity.class, storeImpl);
-				});
-				It("should return return the specified path", () -> {
-					assertThat(storePath, is("some-path"));
 				});
 			});
 			Context("given a content store with a StoreRestResource annotation", () -> {
@@ -118,12 +96,6 @@ public class StoreUtilsTest {
 	public interface TestStoreWithPath extends Store<String> {}
 
 	public interface TestContentStore extends ContentStore<TestEntity, UUID> {}
-
-	@ContentStoreRestResource
-	public interface ContentStoreWithDeprecatedAnnotation extends ContentStore<TestEntity, UUID> {}
-
-	@ContentStoreRestResource(path = "some-path")
-	public interface ContentStoreWithPath extends ContentStore<TestEntity, UUID> {}
 
 	@StoreRestResource
 	public interface ContentStoreWithAnnotation extends ContentStore<TestEntity, UUID> {}

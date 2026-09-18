@@ -22,8 +22,8 @@ import org.springframework.content.commons.io.RangeableResource;
 import org.springframework.content.commons.mappingcontext.ContentProperty;
 import org.springframework.content.commons.mappingcontext.MappingContext;
 import org.springframework.content.commons.property.PropertyPath;
-import org.springframework.content.commons.repository.SetContentParams;
-import org.springframework.content.commons.repository.UnsetContentParams;
+import org.springframework.content.commons.store.SetContentParams;
+import org.springframework.content.commons.store.UnsetContentParams;
 import org.springframework.content.commons.store.AssociativeStore;
 import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.commons.store.GetResourceParams;
@@ -49,10 +49,7 @@ import software.amazon.awssdk.services.s3.S3Client;
 
 @Transactional
 public class DefaultS3StoreImpl<S, SID extends Serializable>
-		implements org.springframework.content.commons.repository.Store<SID>,
-				   org.springframework.content.commons.repository.AssociativeStore<S, SID>,
-				   org.springframework.content.commons.repository.ContentStore<S, SID>,
-		           ContentStore<S, SID> {
+		implements ContentStore<S, SID> {
 
 	private static Log logger = LogFactory.getLog(DefaultS3StoreImpl.class);
 
@@ -149,11 +146,6 @@ public class DefaultS3StoreImpl<S, SID extends Serializable>
 
 		SID contentId = (SID) property.getContentId(entity);
 		return this.getResource(contentId);
-	}
-
-	@Override
-	public Resource getResource(S entity, PropertyPath propertyPath, org.springframework.content.commons.repository.GetResourceParams params) {
-		return this.getResource(entity, propertyPath, new org.springframework.content.commons.store.GetResourceParams(params.range()));
 	}
 
 	protected Resource getResourceInternal(S3ObjectId id, GetResourceParams params) {
@@ -327,16 +319,6 @@ public class DefaultS3StoreImpl<S, SID extends Serializable>
 	}
 
 	@Override
-	public S setContent(S entity, PropertyPath propertyPath, InputStream content, SetContentParams params) {
-		int ordinal = params.disposition().ordinal();
-		return this.setContent(entity, propertyPath, content,
-				new org.springframework.content.commons.store.SetContentParams(
-						params.contentLength(),
-						params.overwriteExistingContent(),
-						org.springframework.content.commons.store.SetContentParams.ContentDisposition.values()[ordinal]));
-	}
-
-	@Override
 	public S setContent(S entity, PropertyPath propertyPath, InputStream content, org.springframework.content.commons.store.SetContentParams params) {
 		ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.name());
 		if (property == null) {
@@ -488,14 +470,6 @@ public class DefaultS3StoreImpl<S, SID extends Serializable>
 		return this.unsetContent(entity, propertyPath, new org.springframework.content.commons.store.UnsetContentParams(org.springframework.content.commons.store.UnsetContentParams.Disposition.Remove));
     }
 
-
-	@Transactional
-	@Override
-	public S unsetContent(S entity, PropertyPath propertyPath, UnsetContentParams params) {
-		int ordinal = params.disposition().ordinal();
-		org.springframework.content.commons.store.UnsetContentParams params1 = new org.springframework.content.commons.store.UnsetContentParams(org.springframework.content.commons.store.UnsetContentParams.Disposition.values()[ordinal]);
-		return this.unsetContent(entity, propertyPath, params1);
-	}
 
 	@Transactional
 	@Override

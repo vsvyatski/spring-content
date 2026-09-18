@@ -2,8 +2,8 @@ package internal.org.springframework.content.rest.contentservice;
 
 import internal.org.springframework.content.rest.mappingcontext.ContentPropertyToExportedContext;
 import org.springframework.content.commons.mappingcontext.MappingContext;
-import org.springframework.content.commons.repository.AssociativeStore;
-import org.springframework.content.commons.repository.ContentStore;
+import org.springframework.content.commons.store.AssociativeStore;
+import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.commons.storeservice.Stores;
 import org.springframework.content.rest.config.RestConfiguration;
 import org.springframework.data.repository.support.Repositories;

@@ -14,7 +14,7 @@ import org.springframework.content.commons.io.DeletableResource;
 import org.springframework.content.commons.mappingcontext.ContentProperty;
 import org.springframework.content.commons.mappingcontext.MappingContext;
 import org.springframework.content.commons.property.PropertyPath;
-import org.springframework.content.commons.repository.SetContentParams;
+import org.springframework.content.commons.store.SetContentParams;
 import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.commons.store.GetResourceParams;
 import org.springframework.content.commons.store.StoreAccessException;
@@ -42,10 +42,7 @@ import static java.lang.String.format;
 
 @Transactional
 public class DefaultAzureStorageImpl<S, SID extends Serializable>
-        implements org.springframework.content.commons.repository.Store<SID>,
-        org.springframework.content.commons.repository.AssociativeStore<S, SID>,
-        org.springframework.content.commons.repository.ContentStore<S, SID>,
-        ContentStore<S, SID> {
+        implements ContentStore<S, SID> {
 
     private static final Log logger = LogFactory.getLog(DefaultAzureStorageImpl.class);
 
@@ -111,11 +108,6 @@ public class DefaultAzureStorageImpl<S, SID extends Serializable>
     @Override
     public Resource getResource(S entity, PropertyPath propertyPath) {
         return this.getResource(entity, propertyPath, new GetResourceParams(null));
-    }
-
-    @Override
-    public Resource getResource(S entity, PropertyPath propertyPath, org.springframework.content.commons.repository.GetResourceParams params) {
-        return this.getResource(entity, propertyPath, new GetResourceParams(params.range()));
     }
 
     @Override
@@ -269,16 +261,6 @@ public class DefaultAzureStorageImpl<S, SID extends Serializable>
     @Override
     public S setContent(S entity, PropertyPath propertyPath, InputStream content, long contentLen) {
         return this.setContent(entity, propertyPath, content, new org.springframework.content.commons.store.SetContentParams(contentLen, true, org.springframework.content.commons.store.SetContentParams.ContentDisposition.Overwrite));
-    }
-
-    @Override
-    public S setContent(S entity, PropertyPath propertyPath, InputStream content, SetContentParams params) {
-        int ordinal = params.disposition().ordinal();
-        return this.setContent(entity, propertyPath, content,
-                new org.springframework.content.commons.store.SetContentParams(
-                        params.contentLength(),
-                        params.overwriteExistingContent(),
-                        org.springframework.content.commons.store.SetContentParams.ContentDisposition.values()[ordinal]));
     }
 
     @Override
@@ -436,14 +418,6 @@ public class DefaultAzureStorageImpl<S, SID extends Serializable>
     @Override
     public S unsetContent(S entity, PropertyPath propertyPath) {
         return this.unsetContent(entity, propertyPath, new UnsetContentParams(UnsetContentParams.Disposition.Remove));
-    }
-
-    @Transactional
-    @Override
-    public S unsetContent(S entity, PropertyPath propertyPath, org.springframework.content.commons.repository.UnsetContentParams params) {
-        int ordinal = params.disposition().ordinal();
-        UnsetContentParams params1 = new UnsetContentParams(UnsetContentParams.Disposition.values()[ordinal]);
-        return this.unsetContent(entity, propertyPath, params1);
     }
 
     @Transactional

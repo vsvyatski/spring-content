@@ -25,7 +25,7 @@ import jakarta.persistence.Version;
 import org.junit.runner.RunWith;
 import org.springframework.aop.ProxyMethodInvocation;
 import org.springframework.content.commons.property.PropertyPath;
-import org.springframework.content.commons.repository.ContentStore;
+import org.springframework.content.commons.store.ContentStore;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.ReflectionUtils;

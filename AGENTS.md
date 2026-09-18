@@ -61,25 +61,16 @@ task.
 
 ### Boot starters
 
-Prefer the current names: `spring-content-*-boot-starter`.
-
-Legacy aliases still in the reactor (same dependencies, keep in sync if you change a starter):
-
-- `content-fs-spring-boot-starter`
-- `content-jpa-spring-boot-starter`
-- `content-mongo-spring-boot-starter`
-- `content-rest-spring-boot-starter`
-- `content-s3-spring-boot-starter`
-- `content-solr-spring-boot-starter`
+Use `spring-content-*-boot-starter`.
 
 GCS, Azure, and encryption have **no** boot starters. Auto-config currently covers FS, JPA, Mongo, S3, REST, Solr,
 Elasticsearch, renditions, and JPA versions.
 
 ## Architecture agents must respect
 
-### Store hierarchy (use the non-deprecated types)
+### Store hierarchy
 
-Prefer `org.springframework.content.commons.store`:
+Use `org.springframework.content.commons.store`:
 
 ```
 Store<SID>
@@ -90,10 +81,6 @@ Store<SID>
 - `Store`: `getResource(id)`
 - `AssociativeStore`: associate/unassociate entity ↔ content, including `PropertyPath` for nested content properties
 - `ContentStore`: `setContent` / `getContent` / `unsetContent`
-
-`org.springframework.content.commons.repository.ContentStore` (and related types) are **deprecated**. New code should
-use `org.springframework.content.commons.store`. Store implementations often still implement both for compatibility; do
-not drop the old interfaces without an explicit migration.
 
 Backend-specific store interfaces (e.g. `FileSystemContentStore`) extend the commons `ContentStore` and are the types
 applications declare. Implementations are created by `*StoreFactoryBean` + method interceptor, not by users
@@ -184,8 +171,6 @@ When changing a store implementation, run that module’s `*Test` and, if behavi
 - Store mutators that change content are `@LockParticipant` so versioning/locking still applies.
 - Do not add new public APIs in `internal.*`. Do not break binary compatibility of public store interfaces without
   deprecation.
-- Dual boot starters: if you change `spring-content-fs-boot-starter`, apply the same change to
-  `content-fs-spring-boot-starter` (and the same pairing for jpa/mongo/rest/s3/solr).
 
 ## Docs
 
@@ -211,7 +196,6 @@ Do:
 
 - Touch the smallest set of modules that implement the change
 - Mirror patterns from a sibling backend when adding store features (FS and JPA are the usual templates)
-- Keep deprecated `commons.repository` types working alongside `commons.store`
 
 Don’t:
 

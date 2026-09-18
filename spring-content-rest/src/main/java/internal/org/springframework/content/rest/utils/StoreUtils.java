@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 
-import internal.org.springframework.content.rest.annotations.ContentStoreRestResource;
 import org.atteo.evo.inflector.English;
 
 import org.springframework.content.commons.storeservice.*;
@@ -39,18 +38,9 @@ public final class StoreUtils {
 
 	public static String storePath(StoreInfo info) {
 		Class<?> clazz = info.getInterface();
-		String path = null;
-
-		ContentStoreRestResource oldAnnotation = AnnotationUtils.findAnnotation(clazz,
-				ContentStoreRestResource.class);
-		if (oldAnnotation != null) {
-			path = oldAnnotation == null ? null : oldAnnotation.path().trim();
-		}
-		else {
-			StoreRestResource newAnnotation = AnnotationUtils.findAnnotation(clazz,
-					StoreRestResource.class);
-			path = newAnnotation == null ? null : newAnnotation.path().trim();
-		}
+		StoreRestResource annotation = AnnotationUtils.findAnnotation(clazz,
+				StoreRestResource.class);
+		String path = annotation == null ? null : annotation.path().trim();
 		path = StringUtils.hasText(path) ? path
 				: English.plural(StringUtils.uncapitalize(getSimpleName(info)));
 		return path;
