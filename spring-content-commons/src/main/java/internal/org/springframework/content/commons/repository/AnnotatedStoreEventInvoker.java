@@ -10,6 +10,7 @@ import org.springframework.content.commons.repository.StoreEvent;
 import org.springframework.content.commons.store.events.*;
 import org.springframework.content.commons.utils.ReflectionService;
 import org.springframework.content.commons.utils.ReflectionServiceImpl;
+import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -25,11 +26,11 @@ import java.util.Collections;
 import java.util.List;
 
 public class AnnotatedStoreEventInvoker
-        implements ApplicationListener<StoreEvent>, BeanPostProcessor {
+        implements ApplicationListener<ApplicationEvent>, BeanPostProcessor {
 
     private static final Log logger = LogFactory.getLog(AnnotatedStoreEventInvoker.class);
 
-    private final MultiValueMap<Class<? extends StoreEvent>, EventHandlerMethod> handlerMethods = new LinkedMultiValueMap<>();
+    private final MultiValueMap<Class<? extends ApplicationEvent>, EventHandlerMethod> handlerMethods = new LinkedMultiValueMap<>();
 
     private final ReflectionService reflectionService;
 
@@ -41,7 +42,7 @@ public class AnnotatedStoreEventInvoker
         this.reflectionService = reflectionService;
     }
 
-    MultiValueMap<Class<? extends StoreEvent>, EventHandlerMethod> getHandlers() {
+    MultiValueMap<Class<? extends ApplicationEvent>, EventHandlerMethod> getHandlers() {
         return handlerMethods;
     }
 
@@ -99,8 +100,11 @@ public class AnnotatedStoreEventInvoker
     }
 
     @Override
-    public void onApplicationEvent(StoreEvent event) {
-        Class<? extends StoreEvent> eventType = event.getClass();
+    public void onApplicationEvent(ApplicationEvent event) {
+        if (!(event instanceof StoreEvent) && !(event instanceof org.springframework.content.commons.store.events.StoreEvent)) {
+            return;
+        }
+        Class<? extends ApplicationEvent> eventType = event.getClass();
 
         if (!handlerMethods.containsKey(eventType)) {
             return;
@@ -110,15 +114,15 @@ public class AnnotatedStoreEventInvoker
 
             Object src = event.getSource();
 
-            if ((ClassUtils.isAssignable(StoreEvent.class, handlerMethod.targetType) &&
+            if ((isStoreEventType(handlerMethod.targetType) &&
                     !ClassUtils.isAssignable(handlerMethod.targetType, event.getClass())) ||
-                    (!ClassUtils.isAssignable(StoreEvent.class, handlerMethod.targetType) &&
+                    (!isStoreEventType(handlerMethod.targetType) &&
                             !ClassUtils.isAssignable(handlerMethod.targetType, src.getClass()))) {
                 continue;
             }
 
             List<Object> parameters = new ArrayList<>();
-            if (ClassUtils.isAssignable(StoreEvent.class, handlerMethod.targetType)) {
+            if (isStoreEventType(handlerMethod.targetType)) {
                 parameters.add(event);
             } else {
                 parameters.add(src);
@@ -134,8 +138,13 @@ public class AnnotatedStoreEventInvoker
         }
     }
 
+    private static boolean isStoreEventType(Class<?> type) {
+        return ClassUtils.isAssignable(StoreEvent.class, type)
+                || ClassUtils.isAssignable(org.springframework.content.commons.store.events.StoreEvent.class, type);
+    }
+
     <H extends Annotation, E> void findHandler(Object bean, Method method,
-                                               Class<H> handler, Class<? extends StoreEvent> eventType) {
+                                               Class<H> handler, Class<? extends ApplicationEvent> eventType) {
         H annotation = AnnotationUtils.findAnnotation(method, handler);
 
         if (annotation == null) {

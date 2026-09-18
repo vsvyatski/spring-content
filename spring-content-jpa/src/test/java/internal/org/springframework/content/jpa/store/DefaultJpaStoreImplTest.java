@@ -7,7 +7,7 @@ import org.hamcrest.CoreMatchers;
 import org.junit.runner.RunWith;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.annotations.ContentLength;
-import org.springframework.content.commons.repository.StoreAccessException;
+import org.springframework.content.commons.store.StoreAccessException;
 import org.springframework.content.jpa.io.BlobResource;
 import org.springframework.content.jpa.io.BlobResourceLoader;
 import org.springframework.core.io.InputStreamResource;

@@ -14,9 +14,9 @@ import static org.mockito.Mockito.mock;
 import java.io.Serializable;
 
 import org.junit.runner.RunWith;
-import org.springframework.content.commons.repository.AssociativeStore;
-import org.springframework.content.commons.repository.ContentStore;
-import org.springframework.content.commons.repository.Store;
+import org.springframework.content.commons.store.AssociativeStore;
+import org.springframework.content.commons.store.ContentStore;
+import org.springframework.content.commons.store.Store;
 import org.springframework.content.commons.utils.PlacementService;
 import org.springframework.context.support.GenericApplicationContext;
 

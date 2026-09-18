@@ -244,9 +244,11 @@ public class ContentHandlerMapping extends StoreAwareHandlerMapping {
 			StoreInfo info = stores.getStore(Store.class, StoreUtils.withStorePath(segments[1]));
 			if (info != null
 					&& ((Store.class.isAssignableFrom(info.getInterface())
+							|| org.springframework.content.commons.store.Store.class.isAssignableFrom(info.getInterface()))
 							&& "store".equals(storeType))
-					|| (ContentStore.class.isAssignableFrom(info.getInterface())
-							&& "contentstore".equals(storeType)))
+					|| ((ContentStore.class.isAssignableFrom(info.getInterface())
+							|| org.springframework.content.commons.store.ContentStore.class.isAssignableFrom(info.getInterface()))
+							&& "contentstore".equals(storeType))
 				) {
 				return this;
 			}
@@ -288,9 +290,11 @@ public class ContentHandlerMapping extends StoreAwareHandlerMapping {
 			}
 			StoreInfo info = stores.getStore(Store.class, StoreUtils.withStorePath(segments[1]));
 			if (info != null
-					&& (Store.class.isAssignableFrom(info.getInterface())
+					&& ((Store.class.isAssignableFrom(info.getInterface())
+							|| org.springframework.content.commons.store.Store.class.isAssignableFrom(info.getInterface()))
 							&& "store".equals(storeType))
-					|| (ContentStore.class.isAssignableFrom(info.getInterface())
+					|| ((ContentStore.class.isAssignableFrom(info.getInterface())
+							|| org.springframework.content.commons.store.ContentStore.class.isAssignableFrom(info.getInterface()))
 							&& "contentstore".equals(storeType))) {
 				return true;
 			}

@@ -52,7 +52,7 @@ public class AbstractStoreFactoryBeanTest {
 		});
 	}
 
-	public static class TestContentStoreFactory extends AbstractStoreFactoryBean {
+	public static class TestContentStoreFactory extends org.springframework.content.commons.store.factory.AbstractStoreFactoryBean {
 		protected TestContentStoreFactory(Class<? extends Store> storeInterface) {
 			super(storeInterface);
 		}

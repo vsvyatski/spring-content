@@ -14,8 +14,8 @@ import java.util.function.Supplier;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.content.commons.repository.ContentStore;
-import org.springframework.content.commons.repository.Store;
+import org.springframework.content.commons.store.ContentStore;
+import org.springframework.content.commons.store.Store;
 import internal.org.springframework.content.commons.store.factory.StoreFactory;
 import org.springframework.content.commons.storeservice.StoreFilter;
 import org.springframework.content.commons.storeservice.StoreInfo;
@@ -47,16 +47,16 @@ public class StoresImpl implements Stores, InitializingBean {
         for (String name : names) {
             StoreFactory factory = this.factory.getBean(name, StoreFactory.class);
 
-            if (ContentStore.class.isAssignableFrom(factory.getStoreInterface())) {
+            if (org.springframework.content.commons.repository.ContentStore.class.isAssignableFrom(factory.getStoreInterface())) {
+                StoreInfo info = new StoreInfoImpl(
+                        factory.getStoreInterface(),
+                        TypeInformation.of(factory.getStoreInterface()).getRequiredSuperTypeInformation(org.springframework.content.commons.repository.ContentStore.class).getTypeArguments().get(0).getType(),
+                        new StoreSupplier(this.factory, beanNameFromFactoryBeanName(name)));
+                storeInfos.add(info);
+            } else if (ContentStore.class.isAssignableFrom(factory.getStoreInterface())) {
                 StoreInfo info = new StoreInfoImpl(
                         factory.getStoreInterface(),
                         TypeInformation.of(factory.getStoreInterface()).getRequiredSuperTypeInformation(ContentStore.class).getTypeArguments().get(0).getType(),
-                        new StoreSupplier(this.factory, beanNameFromFactoryBeanName(name)));
-                storeInfos.add(info);
-            } else if (org.springframework.content.commons.store.ContentStore.class.isAssignableFrom(factory.getStoreInterface())) {
-                StoreInfo info = new StoreInfoImpl(
-                        factory.getStoreInterface(),
-                        TypeInformation.of(factory.getStoreInterface()).getRequiredSuperTypeInformation(org.springframework.content.commons.store.ContentStore.class).getTypeArguments().get(0).getType(),
                         new StoreSupplier(this.factory, beanNameFromFactoryBeanName(name)));
                 storeInfos.add(info);
             } else {

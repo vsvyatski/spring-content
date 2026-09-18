@@ -4,7 +4,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.content.commons.property.PropertyPath;
-import org.springframework.content.commons.repository.Store;
 import org.springframework.content.commons.store.*;
 import org.springframework.content.commons.store.events.*;
 import org.springframework.context.ApplicationEventPublisher;
@@ -21,16 +20,35 @@ public class StoreImpl implements org.springframework.content.commons.repository
 
     private static final Log logger = LogFactory.getLog(StoreImpl.class);
 
-    private final Class<? extends Store> storeInterface;
-    private final Store<Serializable> delegate;
+    private final Class<?> storeInterface;
+    private final Object delegate;
     private final ApplicationEventPublisher publisher;
     private final Path copyContentRootPath;
 
-    public StoreImpl(Class<? extends Store> storeInterface, Store<Serializable> delegate, ApplicationEventPublisher publisher, Path copyContentRootPath) {
+    public StoreImpl(Class<?> storeInterface, Object delegate, ApplicationEventPublisher publisher, Path copyContentRootPath) {
         this.storeInterface = storeInterface;
         this.delegate = delegate;
         this.publisher = publisher;
         this.copyContentRootPath = copyContentRootPath;
+    }
+
+    private boolean dualContent() {
+        return org.springframework.content.commons.repository.ContentStore.class.isAssignableFrom(storeInterface)
+                || org.springframework.content.commons.store.ContentStore.class.isAssignableFrom(storeInterface);
+    }
+
+    private org.springframework.content.commons.repository.Store<Serializable> oldDelegate() {
+        return delegate instanceof org.springframework.content.commons.repository.Store
+                ? (org.springframework.content.commons.repository.Store<Serializable>) delegate
+                : null;
+    }
+
+    private boolean publishOldContentEvents() {
+        return dualContent() && oldDelegate() != null;
+    }
+
+    private boolean publishNewContentEvents() {
+        return dualContent() && castToContentStore(delegate) != null;
     }
 
     @Override
@@ -92,12 +110,12 @@ public class StoreImpl implements org.springframework.content.commons.repository
             org.springframework.content.commons.repository.events.BeforeSetContentEvent oldBefore = null;
             BeforeSetContentEvent before = null;
 
-            if (org.springframework.content.commons.repository.ContentStore.class.isAssignableFrom(storeInterface)) {
-                oldBefore = new org.springframework.content.commons.repository.events.BeforeSetContentEvent(property, propertyPath, delegate, contentCopyStream);
+            if (publishOldContentEvents()) {
+                oldBefore = new org.springframework.content.commons.repository.events.BeforeSetContentEvent(property, propertyPath, oldDelegate(), contentCopyStream);
                 publisher.publishEvent(oldBefore);
             }
 
-            if (org.springframework.content.commons.store.ContentStore.class.isAssignableFrom(storeInterface)) {
+            if (publishNewContentEvents()) {
                 before = new BeforeSetContentEvent(property, propertyPath, castToContentStore(delegate), contentCopyStream);
                 publisher.publishEvent(before);
             }
@@ -120,13 +138,13 @@ public class StoreImpl implements org.springframework.content.commons.repository
 
             result = invocation.apply(content);
 
-            if (org.springframework.content.commons.repository.ContentStore.class.isAssignableFrom(storeInterface)) {
-                org.springframework.content.commons.repository.events.AfterSetContentEvent oldAfter = new org.springframework.content.commons.repository.events.AfterSetContentEvent(property, propertyPath, delegate);
+            if (publishOldContentEvents()) {
+                org.springframework.content.commons.repository.events.AfterSetContentEvent oldAfter = new org.springframework.content.commons.repository.events.AfterSetContentEvent(property, propertyPath, oldDelegate());
                 oldAfter.setResult(result);
                 publisher.publishEvent(oldAfter);
             }
 
-            if (org.springframework.content.commons.store.ContentStore.class.isAssignableFrom(storeInterface)) {
+            if (publishNewContentEvents()) {
                 AfterSetContentEvent after = new AfterSetContentEvent(property, propertyPath, castToContentStore(delegate));
                 after.setResult(result);
                 publisher.publishEvent(after);
@@ -172,25 +190,25 @@ public class StoreImpl implements org.springframework.content.commons.repository
     }
 
     public Object internalSetContent(Object property, PropertyPath propertyPath, Resource resourceContent, Supplier invocation) {
-        if (org.springframework.content.commons.repository.ContentStore.class.isAssignableFrom(storeInterface)) {
-            org.springframework.content.commons.repository.events.BeforeSetContentEvent oldBefore = new org.springframework.content.commons.repository.events.BeforeSetContentEvent(property, propertyPath, delegate, resourceContent);
+        if (publishOldContentEvents()) {
+            org.springframework.content.commons.repository.events.BeforeSetContentEvent oldBefore = new org.springframework.content.commons.repository.events.BeforeSetContentEvent(property, propertyPath, oldDelegate(), resourceContent);
             publisher.publishEvent(oldBefore);
         }
 
-        if (org.springframework.content.commons.store.ContentStore.class.isAssignableFrom(storeInterface)) {
+        if (publishNewContentEvents()) {
             BeforeSetContentEvent before = new BeforeSetContentEvent(property, propertyPath, castToContentStore(delegate), resourceContent);
             publisher.publishEvent(before);
         }
 
         Object result = invocation.get();
 
-        if (org.springframework.content.commons.repository.ContentStore.class.isAssignableFrom(storeInterface)) {
-            org.springframework.content.commons.repository.events.AfterSetContentEvent oldAfter = new org.springframework.content.commons.repository.events.AfterSetContentEvent(property, propertyPath, delegate);
+        if (publishOldContentEvents()) {
+            org.springframework.content.commons.repository.events.AfterSetContentEvent oldAfter = new org.springframework.content.commons.repository.events.AfterSetContentEvent(property, propertyPath, oldDelegate());
             oldAfter.setResult(result);
             publisher.publishEvent(oldAfter);
         }
 
-        if (org.springframework.content.commons.store.ContentStore.class.isAssignableFrom(storeInterface)) {
+        if (publishNewContentEvents()) {
             AfterSetContentEvent after = new AfterSetContentEvent(property, propertyPath, castToContentStore(delegate));
             after.setResult(result);
             publisher.publishEvent(after);
@@ -257,25 +275,25 @@ public class StoreImpl implements org.springframework.content.commons.repository
 
     public Object internalUnsetContent(Object entity, PropertyPath propertyPath, Supplier invocation) {
 
-        if (org.springframework.content.commons.repository.ContentStore.class.isAssignableFrom(storeInterface)) {
-            org.springframework.content.commons.repository.events.BeforeUnsetContentEvent oldBefore = new org.springframework.content.commons.repository.events.BeforeUnsetContentEvent(entity, propertyPath, delegate);
+        if (publishOldContentEvents()) {
+            org.springframework.content.commons.repository.events.BeforeUnsetContentEvent oldBefore = new org.springframework.content.commons.repository.events.BeforeUnsetContentEvent(entity, propertyPath, oldDelegate());
             publisher.publishEvent(oldBefore);
         }
 
-        if (org.springframework.content.commons.store.ContentStore.class.isAssignableFrom(storeInterface)) {
+        if (publishNewContentEvents()) {
             BeforeUnsetContentEvent before = new BeforeUnsetContentEvent(entity, propertyPath, castToContentStore(delegate));
             publisher.publishEvent(before);
         }
 
         Object result = invocation.get();
 
-        if (org.springframework.content.commons.repository.ContentStore.class.isAssignableFrom(storeInterface)) {
-            org.springframework.content.commons.repository.events.AfterUnsetContentEvent oldAfter = new org.springframework.content.commons.repository.events.AfterUnsetContentEvent(entity, propertyPath, delegate);
+        if (publishOldContentEvents()) {
+            org.springframework.content.commons.repository.events.AfterUnsetContentEvent oldAfter = new org.springframework.content.commons.repository.events.AfterUnsetContentEvent(entity, propertyPath, oldDelegate());
             oldAfter.setResult(result);
             publisher.publishEvent(oldAfter);
         }
 
-        if (org.springframework.content.commons.store.ContentStore.class.isAssignableFrom(storeInterface)) {
+        if (publishNewContentEvents()) {
             AfterUnsetContentEvent after = new AfterUnsetContentEvent(entity, propertyPath, castToContentStore(delegate));
             after.setResult(result);
             publisher.publishEvent(after);
@@ -315,12 +333,12 @@ public class StoreImpl implements org.springframework.content.commons.repository
     public InputStream internalGetContent(Object entity, PropertyPath propertyPath, ThrowingSupplier<InputStream> invocation)
             throws IOException {
 
-        if (org.springframework.content.commons.repository.ContentStore.class.isAssignableFrom(storeInterface)) {
-            org.springframework.content.commons.repository.events.BeforeGetContentEvent oldBefore = new org.springframework.content.commons.repository.events.BeforeGetContentEvent(entity, propertyPath, delegate);
+        if (publishOldContentEvents()) {
+            org.springframework.content.commons.repository.events.BeforeGetContentEvent oldBefore = new org.springframework.content.commons.repository.events.BeforeGetContentEvent(entity, propertyPath, oldDelegate());
             publisher.publishEvent(oldBefore);
         }
 
-        if (org.springframework.content.commons.store.ContentStore.class.isAssignableFrom(storeInterface)) {
+        if (publishNewContentEvents()) {
             BeforeGetContentEvent before = new BeforeGetContentEvent(entity, propertyPath, castToContentStore(this.delegate));
             publisher.publishEvent(before);
         }
@@ -334,8 +352,8 @@ public class StoreImpl implements org.springframework.content.commons.repository
             throw new IOException("Error reading content.", anyOther);
         }
 
-        if (org.springframework.content.commons.repository.ContentStore.class.isAssignableFrom(storeInterface)) {
-            org.springframework.content.commons.repository.events.AfterGetContentEvent oldAfter = new org.springframework.content.commons.repository.events.AfterGetContentEvent(entity, propertyPath, delegate);
+        if (publishOldContentEvents()) {
+            org.springframework.content.commons.repository.events.AfterGetContentEvent oldAfter = new org.springframework.content.commons.repository.events.AfterGetContentEvent(entity, propertyPath, oldDelegate());
             oldAfter.setResult(result);
             publisher.publishEvent(oldAfter);
             if (oldAfter.getResult() != null) {
@@ -343,7 +361,7 @@ public class StoreImpl implements org.springframework.content.commons.repository
             }
         }
 
-        if (org.springframework.content.commons.store.ContentStore.class.isAssignableFrom(storeInterface)) {
+        if (publishNewContentEvents()) {
             AfterGetContentEvent after = new AfterGetContentEvent(entity, propertyPath, castToContentStore(this.delegate));
             after.setResult(result);
             publisher.publishEvent(after);
@@ -395,20 +413,20 @@ public class StoreImpl implements org.springframework.content.commons.repository
 
     public Resource internalGetResource(Object entity, PropertyPath propertyPath, Supplier<Resource> invocation) {
 
-        if (org.springframework.content.commons.repository.ContentStore.class.isAssignableFrom(storeInterface)) {
-            org.springframework.content.commons.repository.events.BeforeGetResourceEvent oldBefore = new org.springframework.content.commons.repository.events.BeforeGetResourceEvent(entity, propertyPath, delegate);
+        if (publishOldContentEvents()) {
+            org.springframework.content.commons.repository.events.BeforeGetResourceEvent oldBefore = new org.springframework.content.commons.repository.events.BeforeGetResourceEvent(entity, propertyPath, oldDelegate());
             publisher.publishEvent(oldBefore);
         }
 
-        if (org.springframework.content.commons.store.ContentStore.class.isAssignableFrom(storeInterface)) {
+        if (publishNewContentEvents()) {
             BeforeGetResourceEvent before = new BeforeGetResourceEvent(entity, propertyPath, castToContentStore(delegate));
             publisher.publishEvent(before);
         }
 
         Resource result = invocation.get();
 
-        if (org.springframework.content.commons.repository.ContentStore.class.isAssignableFrom(storeInterface)) {
-            org.springframework.content.commons.repository.events.AfterGetResourceEvent oldAfter = new org.springframework.content.commons.repository.events.AfterGetResourceEvent(entity, propertyPath, delegate);
+        if (publishOldContentEvents()) {
+            org.springframework.content.commons.repository.events.AfterGetResourceEvent oldAfter = new org.springframework.content.commons.repository.events.AfterGetResourceEvent(entity, propertyPath, oldDelegate());
             oldAfter.setResult(result);
             publisher.publishEvent(oldAfter);
             if (oldAfter.getResult() != null) {
@@ -416,7 +434,7 @@ public class StoreImpl implements org.springframework.content.commons.repository
             }
         }
 
-        if (org.springframework.content.commons.store.ContentStore.class.isAssignableFrom(storeInterface)) {
+        if (publishNewContentEvents()) {
             AfterGetResourceEvent after = new AfterGetResourceEvent(entity, propertyPath, castToContentStore(delegate));
             after.setResult(result);
             publisher.publishEvent(after);
@@ -431,23 +449,33 @@ public class StoreImpl implements org.springframework.content.commons.repository
     @Override
     public Resource getResource(Serializable id) {
 
-        org.springframework.content.commons.repository.events.BeforeGetResourceEvent oldBefore = new org.springframework.content.commons.repository.events.BeforeGetResourceEvent(id, delegate);
-        publisher.publishEvent(oldBefore);
+        if (oldDelegate() != null) {
+            org.springframework.content.commons.repository.events.BeforeGetResourceEvent oldBefore = new org.springframework.content.commons.repository.events.BeforeGetResourceEvent(id, oldDelegate());
+            publisher.publishEvent(oldBefore);
+        }
 
-        ContentStore contentStore = castToContentStore(delegate);
-        if (contentStore != null) {
-            BeforeGetResourceEvent before = new BeforeGetResourceEvent(id, contentStore);
+        org.springframework.content.commons.store.Store<Serializable> storeDelegate = null;
+        if (delegate instanceof org.springframework.content.commons.store.Store) {
+            storeDelegate = (org.springframework.content.commons.store.Store<Serializable>) delegate;
+            BeforeGetResourceEvent before = new BeforeGetResourceEvent(id, storeDelegate);
             publisher.publishEvent(before);
         }
 
-        Resource result = delegate.getResource(id);
+        Resource result;
+        if (storeDelegate != null) {
+            result = storeDelegate.getResource(id);
+        } else {
+            result = oldDelegate().getResource(id);
+        }
 
-        org.springframework.content.commons.repository.events.AfterGetResourceEvent oldAfter = new org.springframework.content.commons.repository.events.AfterGetResourceEvent(id, delegate);
-        oldAfter.setResult(result);
-        publisher.publishEvent(oldAfter);
+        if (oldDelegate() != null) {
+            org.springframework.content.commons.repository.events.AfterGetResourceEvent oldAfter = new org.springframework.content.commons.repository.events.AfterGetResourceEvent(id, oldDelegate());
+            oldAfter.setResult(result);
+            publisher.publishEvent(oldAfter);
+        }
 
-        if (contentStore != null) {
-            AfterGetResourceEvent after = new AfterGetResourceEvent(id, contentStore);
+        if (storeDelegate != null) {
+            AfterGetResourceEvent after = new AfterGetResourceEvent(id, storeDelegate);
             after.setResult(result);
             publisher.publishEvent(after);
         }
@@ -458,12 +486,12 @@ public class StoreImpl implements org.springframework.content.commons.repository
     @Override
     public void associate(Object entity, Serializable id) {
 
-        if (org.springframework.content.commons.repository.ContentStore.class.isAssignableFrom(storeInterface)) {
-            org.springframework.content.commons.repository.events.BeforeAssociateEvent oldBefore = new org.springframework.content.commons.repository.events.BeforeAssociateEvent(entity, delegate);
+        if (publishOldContentEvents()) {
+            org.springframework.content.commons.repository.events.BeforeAssociateEvent oldBefore = new org.springframework.content.commons.repository.events.BeforeAssociateEvent(entity, oldDelegate());
             publisher.publishEvent(oldBefore);
         }
 
-        if (org.springframework.content.commons.store.ContentStore.class.isAssignableFrom(storeInterface)) {
+        if (publishNewContentEvents()) {
             BeforeAssociateEvent before = new BeforeAssociateEvent(entity, castToContentStore(delegate));
             publisher.publishEvent(before);
         }
@@ -474,12 +502,12 @@ public class StoreImpl implements org.springframework.content.commons.repository
             ((org.springframework.content.commons.repository.AssociativeStore) (delegate)).associate(entity, id);
         }
 
-        if (org.springframework.content.commons.repository.ContentStore.class.isAssignableFrom(storeInterface)) {
-            org.springframework.content.commons.repository.events.AfterAssociateEvent oldAfter = new org.springframework.content.commons.repository.events.AfterAssociateEvent(entity, delegate);
+        if (publishOldContentEvents()) {
+            org.springframework.content.commons.repository.events.AfterAssociateEvent oldAfter = new org.springframework.content.commons.repository.events.AfterAssociateEvent(entity, oldDelegate());
             publisher.publishEvent(oldAfter);
         }
 
-        if (org.springframework.content.commons.store.ContentStore.class.isAssignableFrom(storeInterface)) {
+        if (publishNewContentEvents()) {
             AfterAssociateEvent after = new AfterAssociateEvent(entity, castToContentStore(delegate));
             publisher.publishEvent(after);
         }
@@ -488,12 +516,12 @@ public class StoreImpl implements org.springframework.content.commons.repository
     @Override
     public void associate(Object entity, PropertyPath propertyPath, Serializable id) {
 
-        if (org.springframework.content.commons.repository.ContentStore.class.isAssignableFrom(storeInterface)) {
-            org.springframework.content.commons.repository.events.BeforeAssociateEvent oldBefore = new org.springframework.content.commons.repository.events.BeforeAssociateEvent(entity, propertyPath, delegate);
+        if (publishOldContentEvents()) {
+            org.springframework.content.commons.repository.events.BeforeAssociateEvent oldBefore = new org.springframework.content.commons.repository.events.BeforeAssociateEvent(entity, propertyPath, oldDelegate());
             publisher.publishEvent(oldBefore);
         }
 
-        if (org.springframework.content.commons.store.ContentStore.class.isAssignableFrom(storeInterface)) {
+        if (publishNewContentEvents()) {
             BeforeAssociateEvent before = new BeforeAssociateEvent(entity, propertyPath, castToContentStore(delegate));
             publisher.publishEvent(before);
         }
@@ -504,12 +532,12 @@ public class StoreImpl implements org.springframework.content.commons.repository
             ((org.springframework.content.commons.repository.AssociativeStore) (delegate)).associate(entity, propertyPath, id);
         }
 
-        if (org.springframework.content.commons.repository.ContentStore.class.isAssignableFrom(storeInterface)) {
-            org.springframework.content.commons.repository.events.AfterAssociateEvent oldAfter = new org.springframework.content.commons.repository.events.AfterAssociateEvent(entity, propertyPath, delegate);
+        if (publishOldContentEvents()) {
+            org.springframework.content.commons.repository.events.AfterAssociateEvent oldAfter = new org.springframework.content.commons.repository.events.AfterAssociateEvent(entity, propertyPath, oldDelegate());
             publisher.publishEvent(oldAfter);
         }
 
-        if (org.springframework.content.commons.store.ContentStore.class.isAssignableFrom(storeInterface)) {
+        if (publishNewContentEvents()) {
             AfterAssociateEvent after = new AfterAssociateEvent(entity, propertyPath, castToContentStore(delegate));
             publisher.publishEvent(after);
         }
@@ -518,12 +546,12 @@ public class StoreImpl implements org.springframework.content.commons.repository
     @Override
     public void unassociate(Object entity) {
 
-        if (org.springframework.content.commons.repository.ContentStore.class.isAssignableFrom(storeInterface)) {
-            org.springframework.content.commons.repository.events.BeforeUnassociateEvent oldBefore = new org.springframework.content.commons.repository.events.BeforeUnassociateEvent(entity, delegate);
+        if (publishOldContentEvents()) {
+            org.springframework.content.commons.repository.events.BeforeUnassociateEvent oldBefore = new org.springframework.content.commons.repository.events.BeforeUnassociateEvent(entity, oldDelegate());
             publisher.publishEvent(oldBefore);
         }
 
-        if (org.springframework.content.commons.store.ContentStore.class.isAssignableFrom(storeInterface)) {
+        if (publishNewContentEvents()) {
             BeforeUnassociateEvent before = new BeforeUnassociateEvent(entity, castToContentStore(delegate));
             publisher.publishEvent(before);
         }
@@ -534,12 +562,12 @@ public class StoreImpl implements org.springframework.content.commons.repository
             ((org.springframework.content.commons.repository.AssociativeStore) (delegate)).unassociate(entity);
         }
 
-        if (org.springframework.content.commons.repository.ContentStore.class.isAssignableFrom(storeInterface)) {
-            org.springframework.content.commons.repository.events.AfterUnassociateEvent oldAfter = new org.springframework.content.commons.repository.events.AfterUnassociateEvent(entity, delegate);
+        if (publishOldContentEvents()) {
+            org.springframework.content.commons.repository.events.AfterUnassociateEvent oldAfter = new org.springframework.content.commons.repository.events.AfterUnassociateEvent(entity, oldDelegate());
             publisher.publishEvent(oldAfter);
         }
 
-        if (org.springframework.content.commons.store.ContentStore.class.isAssignableFrom(storeInterface)) {
+        if (publishNewContentEvents()) {
             AfterUnassociateEvent after = new AfterUnassociateEvent(entity, castToContentStore(delegate));
             publisher.publishEvent(after);
         }
@@ -548,12 +576,12 @@ public class StoreImpl implements org.springframework.content.commons.repository
     @Override
     public void unassociate(Object entity, PropertyPath propertyPath) {
 
-        if (org.springframework.content.commons.repository.ContentStore.class.isAssignableFrom(storeInterface)) {
-            org.springframework.content.commons.repository.events.BeforeUnassociateEvent oldBefore = new org.springframework.content.commons.repository.events.BeforeUnassociateEvent(entity, propertyPath, delegate);
+        if (publishOldContentEvents()) {
+            org.springframework.content.commons.repository.events.BeforeUnassociateEvent oldBefore = new org.springframework.content.commons.repository.events.BeforeUnassociateEvent(entity, propertyPath, oldDelegate());
             publisher.publishEvent(oldBefore);
         }
 
-        if (org.springframework.content.commons.store.ContentStore.class.isAssignableFrom(storeInterface)) {
+        if (publishNewContentEvents()) {
             BeforeUnassociateEvent before = new BeforeUnassociateEvent(entity, propertyPath, castToContentStore(delegate));
             publisher.publishEvent(before);
         }
@@ -564,25 +592,25 @@ public class StoreImpl implements org.springframework.content.commons.repository
             ((org.springframework.content.commons.repository.AssociativeStore) (delegate)).unassociate(entity, propertyPath);
         }
 
-        if (org.springframework.content.commons.repository.ContentStore.class.isAssignableFrom(storeInterface)) {
-            org.springframework.content.commons.repository.events.AfterUnassociateEvent oldAfter = new org.springframework.content.commons.repository.events.AfterUnassociateEvent(entity, propertyPath, delegate);
+        if (publishOldContentEvents()) {
+            org.springframework.content.commons.repository.events.AfterUnassociateEvent oldAfter = new org.springframework.content.commons.repository.events.AfterUnassociateEvent(entity, propertyPath, oldDelegate());
             publisher.publishEvent(oldAfter);
         }
 
-        if (org.springframework.content.commons.store.ContentStore.class.isAssignableFrom(storeInterface)) {
+        if (publishNewContentEvents()) {
             AfterUnassociateEvent after = new AfterUnassociateEvent(entity, propertyPath, castToContentStore(delegate));
             publisher.publishEvent(after);
         }
     }
 
-    private <SID extends Serializable> ContentStore<Object, SID> castToContentStore(Store<Serializable> delegate) {
+    private <SID extends Serializable> ContentStore<Object, SID> castToContentStore(Object delegate) {
         if (!(delegate instanceof ContentStore)) {
             return null;
         }
         return (ContentStore) delegate;
     }
 
-    private <SID extends Serializable> org.springframework.content.commons.repository.ContentStore<Object, SID> castToOldContentStore(Store<Serializable> delegate) {
+    private <SID extends Serializable> org.springframework.content.commons.repository.ContentStore<Object, SID> castToOldContentStore(Object delegate) {
         if (!(delegate instanceof org.springframework.content.commons.repository.ContentStore)) {
             return null;
         }

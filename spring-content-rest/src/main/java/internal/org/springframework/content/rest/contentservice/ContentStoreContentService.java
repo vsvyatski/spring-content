@@ -67,7 +67,7 @@ public class ContentStoreContentService implements ContentService {
         this.byteRangeRestRequestHandler = byteRangeRestRequestHandler;
     }
 
-    public static StoreExportedMethodsMap getExportedMethodsFor(Class<? extends Store> storeInterfaceClass, PropertyPath path, ContentPropertyToExportedContext exportContext) {
+    public static StoreExportedMethodsMap getExportedMethodsFor(Class<?> storeInterfaceClass, PropertyPath path, ContentPropertyToExportedContext exportContext) {
 
         String key = storeInterfaceClass.getCanonicalName() + "#" + path.toString();
         StoreExportedMethodsMap exportMap = storeExportedMethods.get(key);
@@ -411,12 +411,12 @@ public class ContentStoreContentService implements ContentService {
         }
 
 
-        private final Class<? extends Store> storeInterface;
+        private final Class<?> storeInterface;
         private final Method[] getContentMethods;
         private final Method[] setContentMethods;
         private final Method[] unsetContentMethods;
 
-        public StoreExportedMethodsMap(Class<? extends Store> storeInterface, PropertyPath path, ContentPropertyToExportedContext exportContext) {
+        public StoreExportedMethodsMap(Class<?> storeInterface, PropertyPath path, ContentPropertyToExportedContext exportContext) {
             this.storeInterface = storeInterface;
             this.getContentMethods = calculateExports(GET_CONTENT_METHODS, path, exportContext);
             if (org.springframework.content.commons.store.ContentStore.class.isAssignableFrom(storeInterface)) {

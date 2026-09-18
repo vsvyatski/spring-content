@@ -11,8 +11,8 @@ import internal.org.springframework.content.rest.support.TestEntity2;
 import internal.org.springframework.content.rest.support.TestEntity4;
 import org.apache.commons.io.IOUtils;
 
-import org.springframework.content.commons.repository.ContentStore;
-import org.springframework.content.commons.repository.Store;
+import org.springframework.content.commons.store.ContentStore;
+import org.springframework.content.commons.store.Store;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockMultipartFile;

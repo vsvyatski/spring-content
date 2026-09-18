@@ -1,6 +1,6 @@
 package org.springframework.content.commons.storeservice;
 
-import org.springframework.content.commons.repository.Store;
+import org.springframework.content.commons.store.Store;
 
 public interface StoreInfo {
     /**

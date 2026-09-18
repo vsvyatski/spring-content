@@ -37,7 +37,7 @@ import java.util.Set;
 @Deprecated
 public abstract class AbstractStoreFactoryBean implements BeanFactoryAware, InitializingBean, BeanClassLoaderAware,
         FactoryBean<org.springframework.content.commons.repository.Store<? extends Serializable>>,
-        ApplicationEventPublisherAware, StoreFactory {
+        ApplicationEventPublisherAware {
 
     private static final Log logger = LogFactory.getLog(AbstractStoreFactoryBean.class);
 
@@ -55,7 +55,7 @@ public abstract class AbstractStoreFactoryBean implements BeanFactoryAware, Init
     private ClassLoader classLoader;
     private ApplicationEventPublisher publisher;
 
-    private Store<? extends Serializable> store;
+    private org.springframework.content.commons.repository.Store<? extends Serializable> store;
 
     @Autowired(required = false)
     private Set<StoreExtension> extensions = Collections.emptySet();
@@ -117,27 +117,13 @@ public abstract class AbstractStoreFactoryBean implements BeanFactoryAware, Init
         this.storeFragments = storeFragments;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.springframework.content.commons.repository.factory.ContentStoreFactory#
-     * getContentStoreInterface()
-     */
-    @Override
     public Class<? extends org.springframework.content.commons.repository.Store> getStoreInterface() {
         return this.storeInterface;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.springframework.content.commons.repository.factory.ContentStoreFactory#
-     * getContentStore()
-     */
-    @Override
     @SuppressWarnings("unchecked")
-    public Store<Serializable> getStore() {
-        return (Store<Serializable>) getObject();
+    public org.springframework.content.commons.repository.Store<Serializable> getStore() {
+        return (org.springframework.content.commons.repository.Store<Serializable>) getObject();
     }
 
     /*
@@ -169,19 +155,14 @@ public abstract class AbstractStoreFactoryBean implements BeanFactoryAware, Init
      * @see org.springframework.beans.factory.FactoryBean#getObject()
      */
     @Override
-    public Store<? extends Serializable> getObject() {
+    public org.springframework.content.commons.repository.Store<? extends Serializable> getObject() {
         return initAndReturn();
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.springframework.beans.factory.FactoryBean#getObjectType()
-     */
     @Override
     @SuppressWarnings("unchecked")
-    public Class<? extends Store<? extends Serializable>> getObjectType() {
-        return (Class<? extends Store<? extends Serializable>>) this.storeInterface;
+    public Class<? extends org.springframework.content.commons.repository.Store<? extends Serializable>> getObjectType() {
+        return (Class<? extends org.springframework.content.commons.repository.Store<? extends Serializable>>) this.storeInterface;
     }
 
     /*
@@ -204,7 +185,7 @@ public abstract class AbstractStoreFactoryBean implements BeanFactoryAware, Init
         initAndReturn();
     }
 
-    private Store<? extends Serializable> initAndReturn() {
+    private org.springframework.content.commons.repository.Store<? extends Serializable> initAndReturn() {
         if (store == null) {
             store = createContentStore();
         }
@@ -212,7 +193,7 @@ public abstract class AbstractStoreFactoryBean implements BeanFactoryAware, Init
     }
 
     @SuppressWarnings("unchecked")
-    protected Store<? extends Serializable> createContentStore() {
+    protected org.springframework.content.commons.repository.Store<? extends Serializable> createContentStore() {
         Object target = getContentStoreImpl();
 
         // Create proxy
@@ -256,7 +237,7 @@ public abstract class AbstractStoreFactoryBean implements BeanFactoryAware, Init
         StoreMethodInterceptor interceptor = new StoreMethodInterceptor();
 
         if (!ClassUtils.getAllInterfaces(storeInterface).contains(ReactiveContentStore.class) && !ClassUtils.getAllInterfaces(storeInterface).contains(org.springframework.content.commons.repository.ReactiveContentStore.class)) {
-            storeFragments.add(new StoreFragment(storeInterface, new StoreImpl(storeInterface, (org.springframework.content.commons.repository.Store<Serializable>) target, publisher, Paths.get(System.getProperty("java.io.tmpdir")))));
+            storeFragments.add(new StoreFragment(storeInterface, new StoreImpl(storeInterface, target, publisher, Paths.get(System.getProperty("java.io.tmpdir")))));
         } else {
             storeFragments.add(new StoreFragment(storeInterface, new ReactiveStoreImpl((ReactiveContentStore<Object>) target)));
         }
@@ -265,7 +246,7 @@ public abstract class AbstractStoreFactoryBean implements BeanFactoryAware, Init
         result.addAdvice(new StoreExceptionTranslatorInterceptor(beanFactory));
         result.addAdvice(interceptor);
 
-        return (Store<? extends Serializable>) result.getProxy(classLoader);
+        return (org.springframework.content.commons.repository.Store<? extends Serializable>) result.getProxy(classLoader);
     }
 
     /*

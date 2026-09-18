@@ -30,7 +30,7 @@ import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.config.ContentPropertyInfo;
 import org.springframework.content.commons.io.RangeableResource;
 import org.springframework.content.commons.property.PropertyPath;
-import org.springframework.content.commons.repository.StoreAccessException;
+import org.springframework.content.commons.store.StoreAccessException;
 import org.springframework.content.commons.utils.PlacementService;
 import org.springframework.content.commons.utils.PlacementServiceImpl;
 import org.springframework.content.s3.Bucket;
