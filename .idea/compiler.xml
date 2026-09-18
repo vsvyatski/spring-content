@@ -12,23 +12,23 @@
         <module name="spring-content-solr" />
         <module name="spring-content-gcs" />
         <module name="spring-content-mongo-boot-starter" />
+        <module name="spring-content-commons" />
+        <module name="spring-content-rest-boot-starter" />
         <module name="spring-content-azure-storage" />
+        <module name="spring-content-jpa-boot-starter" />
+        <module name="spring-content-fs-boot-starter" />
         <module name="spring-content-encryption" />
+        <module name="spring-content-fs" />
         <module name="spring-content-renditions-boot-starter" />
+        <module name="spring-versions-commons" />
         <module name="spring-content-elasticsearch-boot-starter" />
+        <module name="spring-content-autoconfigure" />
         <module name="spring-content-elasticsearch" />
         <module name="spring-content-solr-boot-starter" />
         <module name="spring-content-s3-boot-starter" />
         <module name="spring-versions-jpa" />
-        <module name="spring-content-rest" />
-        <module name="spring-content-commons" />
-        <module name="spring-content-rest-boot-starter" />
-        <module name="spring-content-jpa-boot-starter" />
-        <module name="spring-content-fs-boot-starter" />
-        <module name="spring-content-fs" />
-        <module name="spring-versions-commons" />
-        <module name="spring-content-autoconfigure" />
         <module name="spring-content-renditions" />
+        <module name="spring-content-rest" />
         <module name="spring-content-s3" />
       </profile>
     </annotationProcessing>
