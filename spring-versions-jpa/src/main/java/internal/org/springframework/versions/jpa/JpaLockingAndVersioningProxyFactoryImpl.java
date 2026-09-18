@@ -2,11 +2,12 @@ package internal.org.springframework.versions.jpa;
 
 import internal.org.springframework.versions.AuthenticationFacade;
 import internal.org.springframework.versions.LockingService;
+import jakarta.persistence.EntityManager;
 import org.aopalliance.aop.Advice;
 import org.springframework.aop.Advisor;
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.beans.factory.BeanFactory;
-import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionManager;
 import org.springframework.transaction.annotation.AnnotationTransactionAttributeSource;
 import org.springframework.transaction.interceptor.TransactionInterceptor;
 import org.springframework.util.Assert;
@@ -14,21 +15,19 @@ import org.springframework.versions.LockingAndVersioningProxyFactory;
 import org.springframework.versions.interceptors.OptimisticLockingInterceptor;
 import org.springframework.versions.interceptors.PessimisticLockingInterceptor;
 
-import jakarta.persistence.EntityManager;
-
 public class JpaLockingAndVersioningProxyFactoryImpl implements LockingAndVersioningProxyFactory {
 
-    private BeanFactory beanFactory;
-    private PlatformTransactionManager ptm;
-    private EntityManager em;
-    private LockingService locker;
-    private AuthenticationFacade auth;
+    private final BeanFactory beanFactory;
+    private final TransactionManager ptm;
+    private final EntityManager em;
+    private final LockingService locker;
+    private final AuthenticationFacade auth;
 
     public JpaLockingAndVersioningProxyFactoryImpl(BeanFactory beanFactory,
-            PlatformTransactionManager ptm,
-            EntityManager em,
-            LockingService locker,
-            AuthenticationFacade auth) {
+                                                   TransactionManager ptm,
+                                                   EntityManager em,
+                                                   LockingService locker,
+                                                   AuthenticationFacade auth) {
         this.beanFactory = beanFactory;
         this.ptm = ptm;
         this.em = em;
@@ -43,23 +42,24 @@ public class JpaLockingAndVersioningProxyFactoryImpl implements LockingAndVersio
         Assert.notNull(locker, "Locking and Versioning requires a locking service");
         Assert.notNull(auth, "Locking and Versioning requires an authentication service");
 
-        addTransactionAdviceIfNeeded(proxy, ptm);
+        addTransactionAdviceIfNeeded(proxy);
         proxy.addAdvice(new OptimisticLockingInterceptor(em));
         proxy.addAdvice(new PessimisticLockingInterceptor(locker, auth));
     }
 
-    protected void addTransactionAdviceIfNeeded(ProxyFactory proxy, PlatformTransactionManager ptm) {
+    protected void addTransactionAdviceIfNeeded(ProxyFactory proxy) {
         Advisor[] advisors = proxy.getAdvisors();
         for (Advisor advisor : advisors) {
             if (advisor.getAdvice() instanceof TransactionInterceptor) {
                 return;
             }
         }
-        proxy.addAdvice(transactionInterceptor(ptm));
+        proxy.addAdvice(transactionInterceptor());
     }
 
-    protected Advice transactionInterceptor(PlatformTransactionManager ptm) {
-        TransactionInterceptor transactionInterceptor = new TransactionInterceptor(this.ptm, new AnnotationTransactionAttributeSource());
+    protected Advice transactionInterceptor() {
+        TransactionInterceptor transactionInterceptor =
+                new TransactionInterceptor(this.ptm, new AnnotationTransactionAttributeSource());
         transactionInterceptor.setBeanFactory(beanFactory);
         transactionInterceptor.afterPropertiesSet();
         return transactionInterceptor;
