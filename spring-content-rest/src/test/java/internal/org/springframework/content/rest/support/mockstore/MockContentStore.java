@@ -1,6 +1,6 @@
 package internal.org.springframework.content.rest.support.mockstore;
 
-import org.springframework.content.commons.repository.ContentStore;
+import org.springframework.content.commons.store.ContentStore;
 
 import java.io.Serializable;
 

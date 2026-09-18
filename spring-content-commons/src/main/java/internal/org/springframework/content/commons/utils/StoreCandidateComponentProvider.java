@@ -17,8 +17,6 @@ public class StoreCandidateComponentProvider
 
     public StoreCandidateComponentProvider(boolean useDefaultFilters, Environment env) {
         super(useDefaultFilters, env);
-        this.addIncludeFilter(new InterfaceTypeFilter(org.springframework.content.commons.repository.ContentRepository.class));
-        this.addIncludeFilter(new InterfaceTypeFilter(org.springframework.content.commons.repository.Store.class));
         this.addIncludeFilter(new InterfaceTypeFilter(Store.class));
         this.addIncludeFilter(new InterfaceTypeFilter(ReactiveContentStore.class));
     }

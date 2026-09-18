@@ -29,7 +29,7 @@ Spring Content MongoDB Stores are enabled with the following Java Config.
 [source, java]
 ----
 @Configuration
-@EnableMongoContentRepositories
+@EnableMongoStores
 public static class ApplicationConfig extends AbstractMongoConfiguration { <1> 
 
   	@Override

@@ -6,7 +6,7 @@ import org.jspecify.annotations.NonNull;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.content.commons.annotations.*;
-import org.springframework.content.commons.repository.StoreEvent;
+import org.springframework.content.commons.store.events.StoreEvent;
 import org.springframework.content.commons.store.events.*;
 import org.springframework.content.commons.utils.ReflectionService;
 import org.springframework.content.commons.utils.ReflectionServiceImpl;
@@ -68,18 +68,6 @@ public class AnnotatedStoreEventInvoker
             @Override
             public void doWith(@NonNull Method method)
                     throws IllegalArgumentException, IllegalAccessException {
-                findHandler(bean, method, HandleBeforeGetResource.class, org.springframework.content.commons.repository.events.BeforeGetResourceEvent.class);
-                findHandler(bean, method, HandleAfterGetResource.class, org.springframework.content.commons.repository.events.AfterGetResourceEvent.class);
-                findHandler(bean, method, HandleBeforeAssociate.class, org.springframework.content.commons.repository.events.BeforeAssociateEvent.class);
-                findHandler(bean, method, HandleAfterAssociate.class, org.springframework.content.commons.repository.events.AfterAssociateEvent.class);
-                findHandler(bean, method, HandleBeforeUnassociate.class, org.springframework.content.commons.repository.events.BeforeUnassociateEvent.class);
-                findHandler(bean, method, HandleAfterUnassociate.class, org.springframework.content.commons.repository.events.AfterUnassociateEvent.class);
-                findHandler(bean, method, HandleBeforeGetContent.class, org.springframework.content.commons.repository.events.BeforeGetContentEvent.class);
-                findHandler(bean, method, HandleAfterGetContent.class, org.springframework.content.commons.repository.events.AfterGetContentEvent.class);
-                findHandler(bean, method, HandleBeforeSetContent.class, org.springframework.content.commons.repository.events.BeforeSetContentEvent.class);
-                findHandler(bean, method, HandleAfterSetContent.class, org.springframework.content.commons.repository.events.AfterSetContentEvent.class);
-                findHandler(bean, method, HandleBeforeUnsetContent.class, org.springframework.content.commons.repository.events.BeforeUnsetContentEvent.class);
-                findHandler(bean, method, HandleAfterUnsetContent.class, org.springframework.content.commons.repository.events.AfterUnsetContentEvent.class);
                 findHandler(bean, method, HandleBeforeGetResource.class, BeforeGetResourceEvent.class);
                 findHandler(bean, method, HandleAfterGetResource.class, AfterGetResourceEvent.class);
                 findHandler(bean, method, HandleBeforeAssociate.class, BeforeAssociateEvent.class);
@@ -101,7 +89,7 @@ public class AnnotatedStoreEventInvoker
 
     @Override
     public void onApplicationEvent(ApplicationEvent event) {
-        if (!(event instanceof StoreEvent) && !(event instanceof org.springframework.content.commons.store.events.StoreEvent)) {
+        if (!(event instanceof StoreEvent)) {
             return;
         }
         Class<? extends ApplicationEvent> eventType = event.getClass();
@@ -139,8 +127,7 @@ public class AnnotatedStoreEventInvoker
     }
 
     private static boolean isStoreEventType(Class<?> type) {
-        return ClassUtils.isAssignable(StoreEvent.class, type)
-                || ClassUtils.isAssignable(org.springframework.content.commons.store.events.StoreEvent.class, type);
+        return ClassUtils.isAssignable(StoreEvent.class, type);
     }
 
     <H extends Annotation, E> void findHandler(Object bean, Method method,

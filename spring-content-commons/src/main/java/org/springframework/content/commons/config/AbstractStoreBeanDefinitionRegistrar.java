@@ -223,8 +223,7 @@ public abstract class AbstractStoreBeanDefinitionRegistrar
                                                     BeanDefinition definition) throws ClassNotFoundException {
         Class<?> candidateStoreClass = ClassUtils.forName(Objects.requireNonNull(definition.getBeanClassName()),
                 registry.getBeanClassLoader());
-        if (!Store.class.isAssignableFrom(candidateStoreClass) && !ReactiveContentStore.class.isAssignableFrom(candidateStoreClass) &&
-                !org.springframework.content.commons.repository.Store.class.isAssignableFrom(candidateStoreClass) && !org.springframework.content.commons.repository.ReactiveContentStore.class.isAssignableFrom(candidateStoreClass)) {
+        if (!Store.class.isAssignableFrom(candidateStoreClass) && !ReactiveContentStore.class.isAssignableFrom(candidateStoreClass)) {
             throw new IllegalStateException(String.format("Store class %s is not assignable from Store or ReactiveContentStore", definition.getBeanClassName()));
         }
         return (Class<? extends Store>) candidateStoreClass;
@@ -321,14 +320,13 @@ public abstract class AbstractStoreBeanDefinitionRegistrar
 
     protected boolean multipleStoreImplementationsDetected() {
 
-        boolean multipleOldModulesFound = SpringFactoriesLoader.loadFactoryNames(org.springframework.content.commons.repository.factory.AbstractStoreFactoryBean.class, resourceLoader.getClassLoader()).size() > 1;
-        boolean multipleNewModulesFound = SpringFactoriesLoader.loadFactoryNames(AbstractStoreFactoryBean.class, resourceLoader.getClassLoader()).size() > 1;
+        boolean multipleModulesFound = SpringFactoriesLoader.loadFactoryNames(AbstractStoreFactoryBean.class, resourceLoader.getClassLoader()).size() > 1;
 
-        if (multipleOldModulesFound || multipleNewModulesFound) {
+        if (multipleModulesFound) {
             LOGGER.info("Multiple store modules detected.  Entering strict resolution mode");
         }
 
-        return multipleOldModulesFound || multipleNewModulesFound;
+        return multipleModulesFound;
     }
 
     /**
@@ -365,11 +363,7 @@ public abstract class AbstractStoreBeanDefinitionRegistrar
         @Override
         public boolean test(String s) {
 
-            if (org.springframework.content.commons.repository.Store.class.getName().equals(s) ||
-                    org.springframework.content.commons.repository.AssociativeStore.class.getName().equals(s) ||
-                    org.springframework.content.commons.repository.ContentStore.class.getName().equals(s) ||
-                    org.springframework.content.commons.repository.ReactiveContentStore.class.getName().equals(s) ||
-                    Store.class.getName().equals(s) ||
+            if (Store.class.getName().equals(s) ||
                     AssociativeStore.class.getName().equals(s) ||
                     ContentStore.class.getName().equals(s) ||
                     ReactiveContentStore.class.getName().equals(s) ||

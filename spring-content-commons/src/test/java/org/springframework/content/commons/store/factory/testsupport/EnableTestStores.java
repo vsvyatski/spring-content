@@ -1,4 +1,4 @@
-package org.springframework.content.commons.repository.factory.testsupport;
+package org.springframework.content.commons.store.factory.testsupport;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -8,7 +8,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.springframework.beans.factory.FactoryBean;
-import org.springframework.content.commons.repository.factory.AbstractStoreFactoryBeanTest.TestContentStoreFactory;
+import org.springframework.content.commons.store.factory.AbstractStoreFactoryBeanTest.TestContentStoreFactory;
 import org.springframework.context.annotation.Import;
 
 @Target(ElementType.TYPE)

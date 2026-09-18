@@ -21,7 +21,7 @@ import jakarta.persistence.Id;
 
 import org.junit.runner.RunWith;
 import org.springframework.aop.ProxyMethodInvocation;
-import org.springframework.content.commons.repository.ContentStore;
+import org.springframework.content.commons.store.ContentStore;
 import org.springframework.security.core.Authentication;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.versions.LockOwnerException;

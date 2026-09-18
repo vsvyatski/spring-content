@@ -8,7 +8,7 @@ import java.io.InputStream;
 
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.springframework.content.commons.repository.ContentStore;
+import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.commons.store.Store;
 import org.springframework.content.commons.store.factory.AbstractStoreFactoryBean;
 import org.springframework.core.io.Resource;

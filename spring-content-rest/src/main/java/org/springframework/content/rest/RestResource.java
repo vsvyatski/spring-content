@@ -22,7 +22,6 @@ public @interface RestResource {
      * The set of paths that are governed by this export when exported=false
      *
      * @return  an array of paths
-     * @deprecated
      */
     String[] paths() default {"*"};
 

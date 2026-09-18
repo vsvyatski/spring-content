@@ -19,7 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.fulltext.Attribute;
 import org.springframework.content.commons.fulltext.Highlight;
-import org.springframework.content.commons.repository.ContentStore;
+import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.commons.search.Searchable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.repository.CrudRepository;

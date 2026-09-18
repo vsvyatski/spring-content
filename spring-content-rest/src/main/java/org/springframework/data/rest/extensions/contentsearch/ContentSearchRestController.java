@@ -14,7 +14,7 @@ import jakarta.persistence.Id;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.fragments.ParameterTypeAware;
-import org.springframework.content.commons.repository.ContentStore;
+import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.commons.search.Searchable;
 import org.springframework.content.commons.storeservice.StoreFilter;
 import org.springframework.content.commons.storeservice.StoreInfo;
@@ -56,7 +56,6 @@ import internal.org.springframework.data.rest.extensions.contentsearch.QueryMeth
 public class ContentSearchRestController {
 
     private static final String ENTITY_CONTENT_SEARCH_MAPPING = "/{repository}/searchContent";
-    private static final String ENTITY_SEARCH_METHOD_MAPPING = "/{repository}/searchContent/findKeyword";
 
     private static final Map<String, Method> searchMethods = new HashMap<>();
 
@@ -71,7 +70,6 @@ public class ContentSearchRestController {
     static {
         put("search", ReflectionUtils.findMethod(Searchable.class, "search", String.class));
         put("search", ReflectionUtils.findMethod(Searchable.class, "search", String.class, Pageable.class));
-        put("findKeyword", ReflectionUtils.findMethod(Searchable.class, "findKeyword", String.class));
     }
 
     private static void put(String key, Method findMethod) {
@@ -79,7 +77,7 @@ public class ContentSearchRestController {
     }
 
     @Autowired
-    public ContentSearchRestController(Repositories repositories, Stores stores, PagedResourcesAssembler<Object> assembler) {
+    public ContentSearchRestController(@Autowired(required = false) Repositories repositories, Stores stores, PagedResourcesAssembler<Object> assembler) {
 
         this.repositories = repositories;
         this.stores = stores;
@@ -115,16 +113,11 @@ public class ContentSearchRestController {
         return searchContentInternal(repoInfo, repository, pageable, assembler, "search", new String[]{queryString});
     }
 
-    @StoreType("contentstore")
-    @ResponseBody
-    @RequestMapping(value = ENTITY_SEARCH_METHOD_MAPPING, method = RequestMethod.GET)
-    public CollectionModel<?> searchContent(RootResourceInformation repoInfo, DefaultedPageable pageable, PersistentEntityResourceAssembler assembler, @PathVariable("repository") String repository, @RequestParam(name = "keyword") List<String> keywords) {
-
-        return searchContentInternal(repoInfo, repository, pageable, assembler, "findKeyword", keywords.toArray(new String[]{}));
-    }
-
     private CollectionModel<?> searchContentInternal(RootResourceInformation repoInfo, String repository, DefaultedPageable pageable, PersistentEntityResourceAssembler assembler, String searchMethod, String[] keywords) {
 
+        if (repositories == null) {
+            throw new ResourceNotFoundException("Entity has no content associations");
+        }
         StoreInfo[] infos = stores.getStores(ContentStore.class, new StoreFilter() {
             @Override
             public String name() {
@@ -204,7 +197,7 @@ public class ContentSearchRestController {
                 }
             }
 
-            if (!entityIds.isEmpty()) {
+            if (!entityIds.isEmpty() && repositories != null) {
                 repositories.getRepositoryFor(domainClass)
                         .ifPresent(r -> fetchEntitiesInBatches((CrudRepository<?, ?>) r, entityIds, results));
             }

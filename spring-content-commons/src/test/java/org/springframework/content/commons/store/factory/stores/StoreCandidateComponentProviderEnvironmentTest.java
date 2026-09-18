@@ -1,4 +1,4 @@
-package org.springframework.content.commons.repository.factory.stores;
+package org.springframework.content.commons.store.factory.stores;
 
 import java.net.URI;
 
@@ -8,10 +8,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.content.commons.repository.AssociativeStore;
-import org.springframework.content.commons.repository.ContentStore;
-import org.springframework.content.commons.repository.Store;
-import org.springframework.content.commons.repository.factory.testsupport.EnableTestStores;
+import org.springframework.content.commons.store.AssociativeStore;
+import org.springframework.content.commons.store.ContentStore;
+import org.springframework.content.commons.store.Store;
+import org.springframework.content.commons.store.factory.testsupport.EnableTestStores;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;

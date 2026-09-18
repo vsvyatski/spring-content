@@ -16,7 +16,7 @@ import org.apache.solr.client.solrj.request.UpdateRequest;
 import org.apache.solr.common.util.ContentStreamBase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.content.commons.annotations.ContentId;
-import org.springframework.content.commons.repository.StoreAccessException;
+import org.springframework.content.commons.store.StoreAccessException;
 import org.springframework.content.commons.search.IndexService;
 import org.springframework.content.commons.utils.BeanUtils;
 import org.springframework.content.commons.utils.DomainObjectUtils;

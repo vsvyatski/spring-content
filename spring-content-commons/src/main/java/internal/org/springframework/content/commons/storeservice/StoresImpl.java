@@ -47,13 +47,7 @@ public class StoresImpl implements Stores, InitializingBean {
         for (String name : names) {
             StoreFactory factory = this.factory.getBean(name, StoreFactory.class);
 
-            if (org.springframework.content.commons.repository.ContentStore.class.isAssignableFrom(factory.getStoreInterface())) {
-                StoreInfo info = new StoreInfoImpl(
-                        factory.getStoreInterface(),
-                        TypeInformation.of(factory.getStoreInterface()).getRequiredSuperTypeInformation(org.springframework.content.commons.repository.ContentStore.class).getTypeArguments().get(0).getType(),
-                        new StoreSupplier(this.factory, beanNameFromFactoryBeanName(name)));
-                storeInfos.add(info);
-            } else if (ContentStore.class.isAssignableFrom(factory.getStoreInterface())) {
+            if (ContentStore.class.isAssignableFrom(factory.getStoreInterface())) {
                 StoreInfo info = new StoreInfoImpl(
                         factory.getStoreInterface(),
                         TypeInformation.of(factory.getStoreInterface()).getRequiredSuperTypeInformation(ContentStore.class).getTypeArguments().get(0).getType(),

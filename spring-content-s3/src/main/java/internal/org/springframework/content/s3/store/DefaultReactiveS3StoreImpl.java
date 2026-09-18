@@ -41,8 +41,7 @@ import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 
 @Transactional
 public class DefaultReactiveS3StoreImpl<S, SID extends Serializable>
-		implements org.springframework.content.commons.repository.ReactiveContentStore<S>,
-        ReactiveContentStore<S> {
+		implements ReactiveContentStore<S> {
 
 	private static Log logger = LogFactory.getLog(DefaultReactiveS3StoreImpl.class);
 

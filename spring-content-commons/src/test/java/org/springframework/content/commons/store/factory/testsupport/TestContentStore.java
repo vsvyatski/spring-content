@@ -1,4 +1,4 @@
-package org.springframework.content.commons.repository.factory.testsupport;
+package org.springframework.content.commons.store.factory.testsupport;
 
 import java.io.Serializable;
 

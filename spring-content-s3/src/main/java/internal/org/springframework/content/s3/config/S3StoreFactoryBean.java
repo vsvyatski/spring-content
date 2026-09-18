@@ -81,8 +81,7 @@ public class S3StoreFactoryBean extends AbstractStoreFactoryBean {
 		DefaultResourceLoader loader = new DefaultResourceLoader();
 		loader.addProtocolResolver(s3Protocol);
 
-        if (!ClassUtils.getAllInterfaces(getStoreInterface()).contains(ReactiveContentStore.class)
-                && !ClassUtils.getAllInterfaces(getStoreInterface()).contains(org.springframework.content.commons.repository.ReactiveContentStore.class)) {
+        if (!ClassUtils.getAllInterfaces(getStoreInterface()).contains(ReactiveContentStore.class)) {
 		    if (client == null) {
 		        throw new NoSuchBeanDefinitionException(S3Client.class.getCanonicalName());
 		    }

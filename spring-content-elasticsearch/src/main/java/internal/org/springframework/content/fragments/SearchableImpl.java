@@ -28,7 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.fulltext.Attribute;
 import org.springframework.content.commons.fulltext.Highlight;
-import org.springframework.content.commons.repository.StoreAccessException;
+import org.springframework.content.commons.store.StoreAccessException;
 import org.springframework.content.commons.search.Searchable;
 import org.springframework.content.commons.utils.BeanUtils;
 import org.springframework.content.commons.utils.ContentPropertyUtils;
@@ -156,70 +156,6 @@ public class SearchableImpl implements Searchable<Object> {
         }
 
         return getResults(res.getHits(), pageable, searchType, returnType);
-    }
-
-    @Override
-    public Iterable<Object> findKeyword(String query) {
-        SearchRequest searchRequest = new SearchRequest(manager.indexName(domainClass));
-        searchRequest.types(domainClass.getName());
-
-        SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
-        sourceBuilder.query(QueryBuilders.queryStringQuery(query));
-        searchRequest.source(sourceBuilder);
-
-        SearchResponse res = null;
-        try {
-            res = client.search(searchRequest, RequestOptions.DEFAULT);
-        }
-        catch (IOException ioe) {
-            throw new StoreAccessException(format("Error searching indexed content for '%s'", query), ioe);
-        }
-
-        return getIDs(res.getHits());
-    }
-
-    @Override
-    public Iterable<Object> findAllKeywords(String... terms) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Iterable<Object> findAnyKeywords(String... terms) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Iterable<Object> findKeywordsNear(int proximity, String... terms) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Iterable<Object> findKeywordStartsWith(String term) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Iterable<Object> findKeywordStartsWithAndEndsWith(String a, String b) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Iterable<Object> findAllKeywordsWithWeights(String[] terms, double[] weights) {
-        throw new UnsupportedOperationException();
-    }
-
-    private List<Object> getIDs(SearchHits result) {
-        List<Object> contents = new ArrayList<>();
-
-        if (result == null || result.getTotalHits().value == 0) {
-            return contents;
-        }
-
-        for (SearchHit hit : result.getHits()) {
-            contents.add(hit.getId());
-        }
-
-        return contents;
     }
 
     private <R> R getResults(SearchHits result, Pageable pageable, Class<?> resultType, Class<R> returnType) {

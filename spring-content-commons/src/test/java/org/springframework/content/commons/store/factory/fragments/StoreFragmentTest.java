@@ -1,4 +1,4 @@
-package org.springframework.content.commons.repository.factory.fragments;
+package org.springframework.content.commons.store.factory.fragments;
 
 import java.io.Serializable;
 
@@ -8,8 +8,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.content.commons.repository.ContentStore;
-import org.springframework.content.commons.repository.factory.testsupport.EnableTestStores;
+import org.springframework.content.commons.store.ContentStore;
+import org.springframework.content.commons.store.factory.testsupport.EnableTestStores;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

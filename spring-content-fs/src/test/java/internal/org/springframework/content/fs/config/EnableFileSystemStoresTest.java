@@ -7,8 +7,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.content.commons.annotations.ContentId;
-import org.springframework.content.commons.repository.ContentStore;
-import org.springframework.content.fs.config.EnableFileSystemContentRepositories;
+import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.fs.config.EnableFileSystemStores;
 import org.springframework.content.fs.config.FileSystemStoreConfigurer;
 import org.springframework.content.fs.config.FileSystemStoreConverter;
@@ -34,7 +33,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-@SuppressWarnings("deprecation")
 @RunWith(Ginkgo4jRunner.class)
 @Ginkgo4jConfiguration(threads = 1)
 public class EnableFileSystemStoresTest {
@@ -93,22 +91,6 @@ public class EnableFileSystemStoresTest {
                 });
             });
         });
-
-        Describe("EnableFileSystemContentRepositories", () ->
-                Context("given a context and a configuration with a file system content repository bean", () -> {
-                    BeforeEach(() -> {
-                        context = new AnnotationConfigApplicationContext();
-                        context.register(BackwardCompatibilityConfig.class);
-                        context.refresh();
-                    });
-                    AfterEach(() -> context.close());
-                    It("should have a ContentRepository bean", () -> assertThat(
-                            context.getBean(TestEntityContentRepository.class),
-                            is(not(nullValue()))
-                    ));
-                })
-        );
-
     }
 
     @Test
@@ -157,20 +139,6 @@ public class EnableFileSystemStoresTest {
         FileSystemResourceLoader fileSystemResourceLoader() {
             return new FileSystemResourceLoader(filesystemRoot);
         }
-    }
-
-    @EnableFileSystemContentRepositories
-    @PropertySource("classpath:/test.properties")
-    public static class BackwardCompatibilityConfig {
-
-        @Value("${spring.content.fs.filesystemRoot:#{null}}")
-        private String filesystemRoot;
-
-        @Bean
-        FileSystemResourceLoader fileSystemResourceLoader() {
-            return new FileSystemResourceLoader(filesystemRoot);
-        }
-
     }
 
     public static class TestEntity {

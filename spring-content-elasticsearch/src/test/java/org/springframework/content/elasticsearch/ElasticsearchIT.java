@@ -46,7 +46,7 @@ import org.springframework.content.commons.annotations.MimeType;
 import org.springframework.content.commons.fulltext.Attribute;
 import org.springframework.content.commons.fulltext.Highlight;
 import org.springframework.content.commons.renditions.Renderable;
-import org.springframework.content.commons.repository.ContentStore;
+import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.commons.search.IndexService;
 import org.springframework.content.commons.search.Searchable;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;

@@ -24,11 +24,7 @@ public final class StoreInterfaceUtils {
                 ContentStore.class,
                 AssociativeStore.class,
                 Store.class,
-                ReactiveContentStore.class,
-                org.springframework.content.commons.repository.ContentStore.class,
-                org.springframework.content.commons.repository.AssociativeStore.class,
-                org.springframework.content.commons.repository.Store.class,
-                org.springframework.content.commons.repository.ReactiveContentStore.class
+                ReactiveContentStore.class
         };
         for (Class<?> candidateStoreClass : candidateStoreClasses) {
             try {

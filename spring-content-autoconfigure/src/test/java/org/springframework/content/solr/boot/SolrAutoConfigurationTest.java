@@ -15,7 +15,6 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.content.commons.search.IndexService;
-import org.springframework.content.solr.DeprecatedSolrIndexerStoreEventHandler;
 import org.springframework.content.solr.SolrIndexerStoreEventHandler;
 import org.springframework.content.solr.SolrProperties;
 import org.springframework.context.annotation.Bean;
@@ -64,11 +63,6 @@ public class SolrAutoConfigurationTest {
         @Bean
         public IndexService solrIndexService() {
             return new SolrFulltextIndexServiceImpl(solrClient, props);
-        }
-
-        @Bean
-        public Object deprecatedSolrFulltextEventListener() {
-            return new DeprecatedSolrIndexerStoreEventHandler(solrIndexService());
         }
 
         @Bean

@@ -8,7 +8,7 @@ import org.apache.solr.client.solrj.impl.HttpJdkSolrClient;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.content.commons.repository.ContentStore;
+import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.commons.search.IndexService;
 import org.springframework.content.commons.search.Searchable;
 import org.springframework.content.fs.config.EnableFileSystemStores;

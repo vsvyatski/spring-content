@@ -15,7 +15,7 @@ import org.junit.runner.RunWith;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.content.commons.renditions.Renderable;
-import org.springframework.content.commons.repository.ContentStore;
+import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.renditions.renderers.JpegToPngRenditionProvider;
 import org.springframework.content.renditions.renderers.PdfToJpegRenderer;
 import org.springframework.content.renditions.renderers.TextplainToJpegRenderer;

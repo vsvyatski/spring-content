@@ -573,55 +573,6 @@ public class ContentSearchRestControllerIT {
                 });
             });
 
-            Describe("#findKeyword endpoint", () -> {
-
-                BeforeEach(() -> {
-                    entity3 = new TestEntityWithSeparateId();
-                    entityWithSeparateRepository.save(entity3);
-
-                    entity4 = new TestEntityWithSeparateId();
-                    entityWithSeparateRepository.save(entity4);
-
-                    internalResults = new ArrayList<>();
-                    internalResults.add(new InternalResult(null, entity3.getContentId()));
-                    internalResults.add(new InternalResult(entity4.getId(), entity4.getContentId()));
-
-                    contentIds = new ArrayList<>();
-                    contentIds.add(entity3.getContentId());
-                    contentIds.add(entity4.getContentId());
-
-                    when(reflectionService.invokeMethod(any(), any(),
-                            eq("else"))).thenReturn(internalResults);
-                });
-
-                It("should return a response entity with the entity", () -> {
-
-                    MvcResult result = mvc.perform(get(
-                            "/testEntityWithSeparateIds/searchContent/findKeyword?keyword=else")
-                            .accept("application/hal+json"))
-                            .andExpect(status().isOk()).andReturn();
-
-                    ReadableRepresentation halResponse = representationFactory
-                            .readRepresentation("application/hal+json",
-                                    new StringReader(result.getResponse()
-                                            .getContentAsString()));
-
-                    assertThat(halResponse.getResourcesByRel("testEntityWithSeparateIds").size(), is(2));
-
-                    String id1 = halResponse
-                            .getResourcesByRel("testEntityWithSeparateIds").get(0)
-                            .getValue("contentId").toString();
-
-                    String id2 = halResponse
-                            .getResourcesByRel("testEntityWithSeparateIds").get(1)
-                            .getValue("contentId").toString();
-
-                    assertThat(contentIds, hasItem(id1));
-                    assertThat(contentIds, hasItem(id2));
-                    assertThat(id1, is(not(id2)));
-                });
-            });
-
             Describe("#fetchEntitiesInBatches", () -> {
 
                 It("should batch queries appropriately", () -> {
@@ -741,41 +692,6 @@ public class ContentSearchRestControllerIT {
 
         @Override
         public Page<String> search(String queryString, Pageable pageable) {
-            return null;
-        }
-
-        @Override
-        public Iterable<String> findKeyword(String query) {
-            return null;
-        }
-
-        @Override
-        public Iterable<String> findAllKeywords(String... terms) {
-            return null;
-        }
-
-        @Override
-        public Iterable<String> findAnyKeywords(String... terms) {
-            return null;
-        }
-
-        @Override
-        public Iterable<String> findKeywordsNear(int proximity, String... terms) {
-            return null;
-        }
-
-        @Override
-        public Iterable<String> findKeywordStartsWith(String term) {
-            return null;
-        }
-
-        @Override
-        public Iterable<String> findKeywordStartsWithAndEndsWith(String a, String b) {
-            return null;
-        }
-
-        @Override
-        public Iterable<String> findAllKeywordsWithWeights(String[] terms, double[] weights) {
             return null;
         }
     }

@@ -30,7 +30,7 @@ import org.elasticsearch.xcontent.XContentType;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.annotations.MimeType;
 import org.springframework.content.commons.renditions.RenditionService;
-import org.springframework.content.commons.repository.StoreAccessException;
+import org.springframework.content.commons.store.StoreAccessException;
 import org.springframework.content.commons.search.IndexService;
 import org.springframework.content.commons.utils.BeanUtils;
 import org.springframework.content.elasticsearch.AttributeProvider;

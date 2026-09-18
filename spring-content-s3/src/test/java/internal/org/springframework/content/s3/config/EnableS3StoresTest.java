@@ -22,10 +22,9 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.content.commons.annotations.ContentId;
-import org.springframework.content.commons.repository.AssociativeStore;
-import org.springframework.content.commons.repository.ContentStore;
+import org.springframework.content.commons.store.AssociativeStore;
+import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.s3.S3ObjectId;
-import org.springframework.content.s3.config.EnableS3ContentRepositories;
 import org.springframework.content.s3.config.EnableS3Stores;
 import org.springframework.content.s3.config.MultiTenantS3ClientProvider;
 import org.springframework.content.s3.config.S3StoreConfigurer;
@@ -140,28 +139,6 @@ public class EnableS3StoresTest {
 			});
 
 		});
-
-		Describe("EnableS3ContentRepositories", () -> {
-			Context("given a context and a configuration with an S3 content repository bean",
-					() -> {
-						BeforeEach(() -> {
-							context = new AnnotationConfigApplicationContext();
-							context.register(EnableS3ContentRepositoriesConfig.class);
-							context.refresh();
-						});
-						AfterEach(() -> {
-							context.close();
-						});
-						It("should have a Content Repository bean", () -> {
-							assertThat(context.getBean(TestEntityContentRepository.class),
-									is(not(nullValue())));
-						});
-						It("should have an Placement Service", () -> {
-							assertThat(context.getBean("s3StorePlacementService"),
-									is(not(nullValue())));
-						});
-					});
-		});
 	}
 
 	@Test
@@ -206,12 +183,6 @@ public class EnableS3StoresTest {
 	}
 
 	public interface TestEntityStore extends AssociativeStore<TestEntity, S3ObjectId> {
-	}
-
-	@Configuration
-	@EnableS3ContentRepositories
-	@Import(InfrastructureConfig.class)
-	public static class EnableS3ContentRepositoriesConfig {
 	}
 
 	@Configuration

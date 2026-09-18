@@ -7,8 +7,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.content.commons.annotations.ContentId;
-import org.springframework.content.commons.repository.ContentStore;
-import org.springframework.content.mongo.config.EnableMongoContentRepositories;
+import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.mongo.config.EnableMongoStores;
 import org.springframework.content.mongo.config.MongoStoreConverter;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -103,28 +102,6 @@ public class EnableMongoStoresTest {
 								});
 					});
 		});
-
-		Describe("EnableMongoContentRepositories", () -> {
-			Context("given an enabled configuration with a mongo content repository bean",
-					() -> {
-						BeforeEach(() -> {
-							context = new AnnotationConfigApplicationContext();
-							context.register(EnableMongoContentRepositoriesConfig.class);
-							context.refresh();
-						});
-						AfterEach(() -> {
-							context.close();
-						});
-						It("should have a mongo content repository bean", () -> {
-							assertThat(context.getBean(TestEntityContentRepository.class),
-									is(not(nullValue())));
-						});
-						It("should have a mongo store converter", () -> {
-							assertThat(context.getBean("mongoStorePlacementService"),
-									is(not(nullValue())));
-						});
-					});
-		});
 	}
 
 	@Test
@@ -147,14 +124,7 @@ public class EnableMongoStoresTest {
 	}
 
 	@Configuration
-	@EnableMongoContentRepositories
-	@Import(InfrastructureConfig.class)
-	public static class EnableMongoContentRepositoriesConfig {
-		//
-	}
-
-	@Configuration
-	@EnableMongoContentRepositories
+	@EnableMongoStores
 	@Import(InfrastructureConfig.class)
 	public static class ConverterConfig {
 		@Bean

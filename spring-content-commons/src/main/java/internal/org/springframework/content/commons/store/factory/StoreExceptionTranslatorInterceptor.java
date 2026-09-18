@@ -23,7 +23,7 @@ public class StoreExceptionTranslatorInterceptor implements MethodInterceptor {
         try {
             return invocation.proceed();
         } catch (RuntimeException re) {
-            if (re instanceof StoreAccessException || re instanceof org.springframework.content.commons.repository.StoreAccessException) {
+            if (re instanceof StoreAccessException) {
                 throw re;
             }
             if (translators == null) {

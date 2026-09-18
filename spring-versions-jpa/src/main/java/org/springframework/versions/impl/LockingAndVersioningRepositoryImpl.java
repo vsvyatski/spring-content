@@ -275,11 +275,6 @@ public class LockingAndVersioningRepositoryImpl<T, ID extends Serializable> impl
     }
 
     @Override
-    public <S extends T> List<S> findAllVersionsLatest() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public <S extends T> List<S> findAllVersionsLatest(Class<S> entityClass) {
 
         String sql = "select t from ${entityClass} t where t.${successorId} IS NULL and t.${id} NOT IN (select f1.${id} FROM ${entityClass} f1 inner join ${entityClass} f2 on f1.${ancestorId} = f2.${id} and f2.${successorId} IS NULL)";

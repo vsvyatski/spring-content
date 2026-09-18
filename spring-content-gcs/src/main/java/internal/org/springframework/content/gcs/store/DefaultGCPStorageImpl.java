@@ -15,8 +15,8 @@ import org.springframework.content.commons.io.DeletableResource;
 import org.springframework.content.commons.mappingcontext.ContentProperty;
 import org.springframework.content.commons.mappingcontext.MappingContext;
 import org.springframework.content.commons.property.PropertyPath;
-import org.springframework.content.commons.repository.SetContentParams;
-import org.springframework.content.commons.repository.UnsetContentParams;
+import org.springframework.content.commons.store.SetContentParams;
+import org.springframework.content.commons.store.UnsetContentParams;
 import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.commons.store.GetResourceParams;
 import org.springframework.content.commons.store.StoreAccessException;
@@ -42,10 +42,7 @@ import static java.lang.String.format;
 
 @Transactional
 public class DefaultGCPStorageImpl<S, SID extends Serializable>
-        implements org.springframework.content.commons.repository.Store<SID>,
-        org.springframework.content.commons.repository.AssociativeStore<S, SID>,
-        org.springframework.content.commons.repository.ContentStore<S, SID>,
-        ContentStore<S, SID> {
+        implements ContentStore<S, SID> {
 
     private static final Log logger = LogFactory.getLog(DefaultGCPStorageImpl.class);
 
@@ -107,11 +104,6 @@ public class DefaultGCPStorageImpl<S, SID extends Serializable>
     @Override
     public Resource getResource(S entity, PropertyPath propertyPath) {
         return this.getResource(entity, propertyPath, new GetResourceParams(null));
-    }
-
-    @Override
-    public Resource getResource(S entity, PropertyPath propertyPath, org.springframework.content.commons.repository.GetResourceParams params) {
-        return this.getResource(entity, propertyPath, new GetResourceParams(params.range()));
     }
 
     @Override
@@ -258,16 +250,6 @@ public class DefaultGCPStorageImpl<S, SID extends Serializable>
     public S setContent(S entity, PropertyPath propertyPath, InputStream content, long contentLen) {
         return this.setContent(entity, propertyPath, content,
                 new org.springframework.content.commons.store.SetContentParams(contentLen, true, org.springframework.content.commons.store.SetContentParams.ContentDisposition.Overwrite));
-    }
-
-    @Override
-    public S setContent(S entity, PropertyPath propertyPath, InputStream content, SetContentParams params) {
-        int ordinal = params.disposition().ordinal();
-        return this.setContent(entity, propertyPath, content,
-                new org.springframework.content.commons.store.SetContentParams(
-                        params.contentLength(),
-                        params.overwriteExistingContent(),
-                        org.springframework.content.commons.store.SetContentParams.ContentDisposition.values()[ordinal]));
     }
 
     @Override
@@ -420,13 +402,6 @@ public class DefaultGCPStorageImpl<S, SID extends Serializable>
     @Override
     public S unsetContent(S entity, PropertyPath propertyPath) {
         return this.unsetContent(entity, propertyPath, new org.springframework.content.commons.store.UnsetContentParams(org.springframework.content.commons.store.UnsetContentParams.Disposition.Remove));
-    }
-
-    @Override
-    public S unsetContent(S entity, PropertyPath propertyPath, UnsetContentParams params) {
-        int ordinal = params.disposition().ordinal();
-        org.springframework.content.commons.store.UnsetContentParams params1 = new org.springframework.content.commons.store.UnsetContentParams(org.springframework.content.commons.store.UnsetContentParams.Disposition.values()[ordinal]);
-        return this.unsetContent(entity, propertyPath, params1);
     }
 
     @Override

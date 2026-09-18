@@ -164,12 +164,9 @@ public abstract class AbstractStoreFactoryBean implements BeanFactoryAware, Init
 
 		ProxyFactory result = new ProxyFactory();
 		result.setTarget(target);
-		if (!ClassUtils.getAllInterfaces(storeInterface).contains(ReactiveContentStore.class) && !ClassUtils.getAllInterfaces(storeInterface).contains(org.springframework.content.commons.repository.ReactiveContentStore.class)) {
+		if (!ClassUtils.getAllInterfaces(storeInterface).contains(ReactiveContentStore.class)) {
 			result.setInterfaces(new Class[]{
 					storeInterface,
-					org.springframework.content.commons.repository.Store.class,
-					org.springframework.content.commons.repository.AssociativeStore.class,
-					org.springframework.content.commons.repository.ContentStore.class,
 					Store.class,
 					AssociativeStore.class,
 					ContentStore.class,
@@ -178,8 +175,6 @@ public abstract class AbstractStoreFactoryBean implements BeanFactoryAware, Init
 		} else {
 			result.setInterfaces(new Class[]{
 					storeInterface,
-					org.springframework.content.commons.repository.Store.class,
-					org.springframework.content.commons.repository.ReactiveContentStore.class,
 					Store.class,
 					ReactiveContentStore.class,
 					ParameterTypeAware.class
@@ -190,7 +185,7 @@ public abstract class AbstractStoreFactoryBean implements BeanFactoryAware, Init
 
 		StoreMethodInterceptor interceptor = new StoreMethodInterceptor();
 
-		if (!ClassUtils.getAllInterfaces(storeInterface).contains(ReactiveContentStore.class) && !ClassUtils.getAllInterfaces(storeInterface).contains(org.springframework.content.commons.repository.ReactiveContentStore.class)) {
+		if (!ClassUtils.getAllInterfaces(storeInterface).contains(ReactiveContentStore.class)) {
 			storeFragments.add(new StoreFragment(storeInterface, new StoreImpl(storeInterface, target, publisher, Paths.get(System.getProperty("java.io.tmpdir")))));
 		} else {
 			storeFragments.add(new StoreFragment(storeInterface, new ReactiveStoreImpl((ReactiveContentStore<Object>) target)));
