@@ -22,11 +22,12 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.ConverterRegistry;
 
-import com.azure.spring.autoconfigure.storage.resource.AzureStorageProtocolResolver;
-import org.springframework.core.convert.converter.GenericConverter;
+import com.azure.spring.cloud.core.resource.AzureStorageBlobProtocolResolver;
+import com.azure.storage.blob.BlobServiceClient;
+import com.azure.storage.blob.BlobServiceClientBuilder;
 
 @Configuration
-@Import(AzureStorageProtocolResolver.class)
+@Import(AzureStorageBlobProtocolResolver.class)
 public class AzureStorageConfiguration implements InitializingBean {
 
 	private static Log logger = LogFactory.getLog(AzureStorageConfiguration.class);
@@ -46,6 +47,11 @@ public class AzureStorageConfiguration implements InitializingBean {
 	@Bean
 	public PlacementService azureStoragePlacementService() {
 		return conversion;
+	}
+
+	@Bean
+	public BlobServiceClient blobServiceClient(BlobServiceClientBuilder builder) {
+		return builder.buildClient();
 	}
 
 	public static void addDefaultConverters(PlacementService conversion, String bucket) {

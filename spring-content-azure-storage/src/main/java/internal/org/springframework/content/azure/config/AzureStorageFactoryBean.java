@@ -11,9 +11,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.versions.LockingAndVersioningProxyFactory;
 
-import com.azure.spring.autoconfigure.storage.resource.AzureStorageProtocolResolver;
+import com.azure.spring.cloud.core.resource.AzureStorageBlobProtocolResolver;
 import com.azure.storage.blob.BlobServiceClient;
-import com.azure.storage.blob.BlobServiceClientBuilder;
 
 import internal.org.springframework.content.azure.store.DefaultAzureStorageImpl;
 
@@ -22,12 +21,11 @@ public class AzureStorageFactoryBean extends AbstractStoreFactoryBean {
 
     private ApplicationContext context;
 
-	private BlobServiceClientBuilder clientBuilder;
     private BlobServiceClient client;
 
 	private PlacementService storePlacementService;
 
-	private AzureStorageProtocolResolver resolver;
+	private AzureStorageBlobProtocolResolver resolver;
 
 //	@Autowired(required=false)
 //	private MultiTenantS3ClientProvider s3Provider = null;
@@ -49,9 +47,8 @@ public class AzureStorageFactoryBean extends AbstractStoreFactoryBean {
 	}
 
 	@Autowired
-	public void setClientBuilder(BlobServiceClientBuilder clientBuilder) {
-		this.clientBuilder = clientBuilder;
-		this.client = clientBuilder.buildClient();
+	public void setClient(BlobServiceClient client) {
+		this.client = client;
 	}
 
 	@Autowired
@@ -60,7 +57,7 @@ public class AzureStorageFactoryBean extends AbstractStoreFactoryBean {
 	}
 
 	@Autowired
-	public void setResolver(AzureStorageProtocolResolver resolver) {
+	public void setResolver(AzureStorageBlobProtocolResolver resolver) {
 		this.resolver = resolver;
 	}
 

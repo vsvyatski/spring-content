@@ -18,8 +18,7 @@ import com.azure.storage.blob.BlobServiceClientBuilder;
 
 public class Azurite extends GenericContainer<Azurite> implements Serializable {
 
-    // Will default to latest tag on every test run
-    private static final String DOCKER_IMAGE_NAME = "mcr.microsoft.com/azure-storage/azurite";
+    private static final String DOCKER_IMAGE_NAME = "mcr.microsoft.com/azure-storage/azurite:3.35.0";
 
     // Default config as per Azurite docs
     private static final int BLOB_SERVICE_PORT = 10000;
