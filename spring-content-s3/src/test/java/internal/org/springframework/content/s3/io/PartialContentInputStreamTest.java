@@ -35,13 +35,11 @@ public class PartialContentInputStreamTest {
                         new ByteArrayInputStream(FULL_DATA, 0, 4),
                         "bytes 0-3/"+FULL_DATA.length // bytes in the range description are *inclusive*
                 );
-
             }
 
             @AfterEach
             void tearDown() throws IOException {
                 inputStream.close();
-
             }
 
             @Test
@@ -60,7 +58,6 @@ public class PartialContentInputStreamTest {
 
                 // Stream is at EOF after reading all the bytes
                 assertThat(inputStream.read()).isEqualTo(-1);
-
             }
 
             @Test
@@ -73,7 +70,6 @@ public class PartialContentInputStreamTest {
                 assertThat(readData[0]).isEqualTo(FULL_DATA[2]);
                 assertThat(readData[1]).isEqualTo(FULL_DATA[3]);
                 assertThat(readData[2]).isEqualTo(NUL);
-
             }
 
             @Test
@@ -82,7 +78,6 @@ public class PartialContentInputStreamTest {
                 inputStream.skipNBytes(2); // Bytes 1 & 2 are skipped
                 assertThat(inputStream.read()).isEqualTo(FULL_DATA[3] & 0xff);
                 assertThat(inputStream.read()).isEqualTo(NUL & 0xff);
-
             }
 
             @Test
@@ -91,7 +86,6 @@ public class PartialContentInputStreamTest {
                 inputStream.skipNBytes(FULL_DATA.length - 1); // Skip until past the end of the range; right up until the end of the data
 
                 assertThat(inputStream.read()).isEqualTo(-1); // EOF
-
             }
 
             @Test
@@ -99,7 +93,6 @@ public class PartialContentInputStreamTest {
                 inputStream.skipNBytes(4); // Skip right up to the end of the range
 
                 assertThat(inputStream.skip(Long.MAX_VALUE)).isEqualTo((long)FULL_DATA.length - 4); // All the rest of the bytes can be skipped at once
-
             }
 
         }
@@ -112,13 +105,11 @@ public class PartialContentInputStreamTest {
                         new ByteArrayInputStream(FULL_DATA, 10, FULL_DATA.length-10),
                         "bytes 10-"+FULL_DATA.length+"/*"
                 );
-
             }
 
             @AfterEach
             void tearDown() throws IOException {
                 inputStream.close();
-
             }
 
             @Test
@@ -135,7 +126,6 @@ public class PartialContentInputStreamTest {
                 }
                 // Stream is at EOF after reading all the bytes
                 assertThat(inputStream.read()).isEqualTo(-1);
-
             }
 
             @Test
@@ -153,7 +143,6 @@ public class PartialContentInputStreamTest {
                 }
 
                 assertThat(inputStream.read()).isEqualTo(-1); // EOF
-
             }
 
             @Test
@@ -165,7 +154,6 @@ public class PartialContentInputStreamTest {
                 for(int i = 0; i < 6; i++) {
                     assertThat(readData[i]).isEqualTo(FULL_DATA[15+i]);
                 }
-
             }
 
             @Test
@@ -175,7 +163,6 @@ public class PartialContentInputStreamTest {
                 assertThat(inputStream.read()).isEqualTo(FULL_DATA[10] & 0xff);
                 inputStream.skipNBytes(2); // bytes 11 & 12 are skipped
                 assertThat(inputStream.read()).isEqualTo(FULL_DATA[13] & 0xff);
-
             }
 
             @Test
@@ -185,7 +172,6 @@ public class PartialContentInputStreamTest {
                 inputStream.skipNBytes(FULL_DATA.length - 11); // Skip until the end of the range
 
                 assertThat(inputStream.read()).isEqualTo(-1); // EOF
-
             }
 
         }
@@ -198,13 +184,11 @@ public class PartialContentInputStreamTest {
                         new ByteArrayInputStream(FULL_DATA, 3, 4),
                         "bytes 3-6/"+FULL_DATA.length // bytes in the range description are *inclusive*
                 );
-
             }
 
             @AfterEach
             void tearDown() throws IOException {
                 inputStream.close();
-
             }
 
             @Test
@@ -226,7 +210,6 @@ public class PartialContentInputStreamTest {
 
                 // Stream is at EOF after reading all the bytes
                 assertThat(inputStream.read()).isEqualTo(-1);
-
             }
 
             @Test
@@ -243,7 +226,6 @@ public class PartialContentInputStreamTest {
                 assertThat(readData[3]).isEqualTo(FULL_DATA[5]);
                 assertThat(readData[4]).isEqualTo(FULL_DATA[6]);
                 assertThat(readData[5]).isEqualTo(NUL);
-
             }
 
             @Test
@@ -257,7 +239,6 @@ public class PartialContentInputStreamTest {
                 assertThat(readData[1]).isEqualTo(FULL_DATA[5]);
                 assertThat(readData[2]).isEqualTo(FULL_DATA[6]);
                 assertThat(readData[3]).isEqualTo(NUL);
-
             }
 
             @Test
@@ -268,7 +249,6 @@ public class PartialContentInputStreamTest {
                 inputStream.skipNBytes(2); // Bytes 4 & 5 are skipped
                 assertThat(inputStream.read()).isEqualTo(FULL_DATA[6] & 0xff);
                 assertThat(inputStream.read()).isEqualTo(NUL & 0xff);
-
             }
 
             @Test
@@ -278,7 +258,6 @@ public class PartialContentInputStreamTest {
                 inputStream.skipNBytes(FULL_DATA.length - 4); // Skip until past the end of the range; right up until the end of the data
 
                 assertThat(inputStream.read()).isEqualTo(-1); // EOF
-
             }
 
             @Test
@@ -286,7 +265,6 @@ public class PartialContentInputStreamTest {
                 inputStream.skipNBytes(7); // Skip right up to the end of the range
 
                 assertThat(inputStream.skip(Long.MAX_VALUE)).isEqualTo((long)FULL_DATA.length - 7); // All the rest of the bytes can be skipped at once
-
             }
 
         }

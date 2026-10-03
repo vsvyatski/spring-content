@@ -238,7 +238,6 @@ public class FileSystemStorePropertyPathAccessorsIT {
                     resourceLocation = random.nextString();
 
                     genericResource = store.getResource(resourceLocation);
-
                 }
 
                 @AfterEach
@@ -278,7 +277,6 @@ public class FileSystemStorePropertyPathAccessorsIT {
                                 IOUtils.copy(is, os);
                             }
                         }
-
                     }
 
                     @AfterEach
@@ -671,7 +669,6 @@ public class FileSystemStorePropertyPathAccessorsIT {
 
                     store.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()));
                     entity = repo.save(entity);
-
                 }
 
                 @AfterEach
@@ -801,7 +798,6 @@ public class FileSystemStorePropertyPathAccessorsIT {
                         FileSystemStorePropertyPathAccessorsIT.this.e = sae;
                     }
                     assertThat(e).isInstanceOf(StoreAccessException.class);
-
                 }
             }
 

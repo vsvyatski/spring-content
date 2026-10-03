@@ -33,13 +33,11 @@ public class POIServiceTest {
                     poi = new POIServiceImpl();
 
                     stream = this.getClass().getResourceAsStream("/sample-docx.docx");
-
                 }
 
                 @Test
                 void shouldReturnAnInstanceOfAnXPWFDocument() throws IOException {
                     assertThat(poi.xwpfDocument(stream)).isNotNull();
-
                 }
 
             }
@@ -49,7 +47,6 @@ public class POIServiceTest {
                 @BeforeEach
                 void setUp() {
                     poi = new POIServiceImpl();
-
                 }
 
                 @Test
@@ -62,7 +59,6 @@ public class POIServiceTest {
                     	assertThat(e).isNotNull();
                     	assertThat(e).isInstanceOf(IllegalArgumentException.class);
                     }
-
                 }
 
             }
@@ -74,7 +70,6 @@ public class POIServiceTest {
                     poi = new POIServiceImpl();
 
                     stream = new ByteArrayInputStream("asdhg".getBytes());
-
                 }
 
                 @Test
@@ -87,7 +82,6 @@ public class POIServiceTest {
                     	assertThat(e).isNotNull();
                     	assertThat(e).isInstanceOf(NotOfficeXmlFileException.class);
                     }
-
                 }
 
             }

@@ -59,7 +59,6 @@ public class StoreResolverRestConfigurationIT {
 
                 tEntity = new Application.TEntity();
                 tEntity = repo.save(tEntity);
-
             }
 
             @Test
@@ -88,7 +87,6 @@ public class StoreResolverRestConfigurationIT {
                 try (InputStream is = jpaStore.getContent(tEntity)) {
                     assertThat(is).isNull();
                 }
-
             }
 
         }

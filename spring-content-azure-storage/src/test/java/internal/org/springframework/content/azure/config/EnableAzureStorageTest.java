@@ -57,25 +57,21 @@ public class EnableAzureStorageTest {
                 context = new AnnotationConfigApplicationContext();
                 context.register(TestConfig.class);
                 context.refresh();
-
             }
 
             @AfterEach
             void tearDown() {
                 context.close();
-
             }
 
             @Test
             void shouldHaveAContentStoreBean() {
                 assertThat(context.getBean(TestEntityContentStore.class)).isNotNull();
-
             }
 
             @Test
             void shouldHaveAnPlacementService() {
                 assertThat(context.getBean("azureStoragePlacementService")).isNotNull();
-
             }
 
         }
@@ -89,19 +85,16 @@ public class EnableAzureStorageTest {
                 context = new AnnotationConfigApplicationContext();
                 context.register(ConverterConfig.class);
                 context.refresh();
-
             }
 
             @AfterEach
             void tearDown() {
                 context.close();
-
             }
 
             @Test
             void shouldCallThatConfigurerToHelpSetupTheStore() {
                 verify(configurer).configureAzureStorageConverters(any());
-
             }
 
         }
@@ -113,13 +106,11 @@ public class EnableAzureStorageTest {
                 context = new AnnotationConfigApplicationContext();
                 context.register(EmptyConfig.class);
                 context.refresh();
-
             }
 
             @AfterEach
             void tearDown() {
                 context.close();
-
             }
 
             @Test
@@ -131,7 +122,6 @@ public class EnableAzureStorageTest {
                 catch (NoSuchBeanDefinitionException e) {
                 	assertThat(true).isTrue();
                 }
-
             }
 
         }

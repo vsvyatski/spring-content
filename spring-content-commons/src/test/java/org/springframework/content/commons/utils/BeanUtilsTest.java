@@ -27,14 +27,12 @@ public class BeanUtilsTest {
                 @BeforeEach
                 void setUp() {
                     testEntity = new TestEntity();
-
                 }
 
                 @Test
                 void shouldSetFieldDirectly() {
                     BeanUtils.setFieldWithAnnotation(testEntity, ContentId.class,"a value");
                     assertThat(testEntity.fieldOnly).isEqualTo("a value");
-
                 }
 
                 @Test
@@ -42,7 +40,6 @@ public class BeanUtilsTest {
                     BeanUtils.setFieldWithAnnotation(testEntity, ContentLength.class,
                     		"b value");
                     assertThat(testEntity.getFieldWithGetterSetter()).isEqualTo("b value");
-
                 }
 
                 @Test
@@ -54,7 +51,6 @@ public class BeanUtilsTest {
                     catch (Exception e) {
                     	fail("should not fail");
                     }
-
                 }
 
             }
@@ -64,7 +60,6 @@ public class BeanUtilsTest {
                 @BeforeEach
                 void setUp() {
                     testEntity = new InheritingTestEntity();
-
                 }
 
                 @Test
@@ -72,7 +67,6 @@ public class BeanUtilsTest {
                     BeanUtils.setFieldWithAnnotation(testEntity, ContentId.class,
                     		"a value");
                     assertThat(testEntity.fieldOnly).isEqualTo("a value");
-
                 }
 
                 @Test
@@ -80,7 +74,6 @@ public class BeanUtilsTest {
                     BeanUtils.setFieldWithAnnotation(testEntity, ContentLength.class,
                     		"b value");
                     assertThat(testEntity.getFieldWithGetterSetter()).isEqualTo("b value");
-
                 }
 
                 @Test
@@ -92,7 +85,6 @@ public class BeanUtilsTest {
                     catch (Exception e) {
                     	fail("should not fail");
                     }
-
                 }
 
             }
@@ -106,7 +98,6 @@ public class BeanUtilsTest {
                 @BeforeEach
                 void setUp() {
                     testEntity = new TestEntity();
-
                 }
 
                 @Test
@@ -115,7 +106,6 @@ public class BeanUtilsTest {
                     		ContentId.class, "a value", new MatchingCondition() {
                     		});
                     assertThat(testEntity.fieldOnly).isEqualTo("a value");
-
                 }
 
                 @Test
@@ -124,7 +114,6 @@ public class BeanUtilsTest {
                     		ContentLength.class, "b value", new MatchingCondition() {
                     		});
                     assertThat(testEntity.getFieldWithGetterSetter()).isEqualTo("b value");
-
                 }
 
                 @Test
@@ -133,7 +122,6 @@ public class BeanUtilsTest {
                     		ContentId.class, "a value", new UnmatchingCondition() {
                     		});
                     assertThat(testEntity.fieldOnly).isNull();
-
                 }
 
                 @Test
@@ -143,7 +131,6 @@ public class BeanUtilsTest {
                     		new UnmatchingCondition() {
                     		});
                     assertThat(testEntity.getFieldWithGetterSetter()).isNull();
-
                 }
 
                 @Test
@@ -155,7 +142,6 @@ public class BeanUtilsTest {
                     catch (Exception e) {
                     	fail("should not fail");
                     }
-
                 }
 
             }
@@ -165,7 +151,6 @@ public class BeanUtilsTest {
                 @BeforeEach
                 void setUp() {
                     testEntity = new InheritingTestEntity();
-
                 }
 
                 @Test
@@ -174,7 +159,6 @@ public class BeanUtilsTest {
                     		ContentId.class, "a value", new MatchingCondition() {
                     		});
                     assertThat(testEntity.fieldOnly).isEqualTo("a value");
-
                 }
 
                 @Test
@@ -183,7 +167,6 @@ public class BeanUtilsTest {
                     		ContentLength.class, "b value", new MatchingCondition() {
                     		});
                     assertThat(testEntity.getFieldWithGetterSetter()).isEqualTo("b value");
-
                 }
 
                 @Test
@@ -192,7 +175,6 @@ public class BeanUtilsTest {
                     		ContentId.class, "a value", new UnmatchingCondition() {
                     		});
                     assertThat(testEntity.fieldOnly).isNull();
-
                 }
 
                 @Test
@@ -202,7 +184,6 @@ public class BeanUtilsTest {
                     		new UnmatchingCondition() {
                     		});
                     assertThat(testEntity.getFieldWithGetterSetter()).isNull();
-
                 }
 
                 @Test
@@ -214,7 +195,6 @@ public class BeanUtilsTest {
                     catch (Exception e) {
                     	fail("should not fail");
                     }
-
                 }
 
             }
@@ -230,7 +210,6 @@ public class BeanUtilsTest {
                     testEntity = new TestEntity();
                     testEntity.fieldOnly = "a value";
                     testEntity.setFieldWithGetterSetter("b value");
-
                 }
 
                 @Test
@@ -238,7 +217,6 @@ public class BeanUtilsTest {
                     Object value = BeanUtils.getFieldWithAnnotation(testEntity,
                     		ContentId.class);
                     assertThat(value).isEqualTo("a value");
-
                 }
 
                 @Test
@@ -246,7 +224,6 @@ public class BeanUtilsTest {
                     Object value = BeanUtils.getFieldWithAnnotation(testEntity,
                     		ContentLength.class);
                     assertThat(value).isEqualTo("b value");
-
                 }
 
                 @Test
@@ -257,7 +234,6 @@ public class BeanUtilsTest {
                     catch (Exception e) {
                     	fail("should not fail");
                     }
-
                 }
 
             }
@@ -269,7 +245,6 @@ public class BeanUtilsTest {
                     testEntity = new InheritingTestEntity();
                     testEntity.fieldOnly = "a value";
                     testEntity.setFieldWithGetterSetter("b value");
-
                 }
 
                 @Test
@@ -277,7 +252,6 @@ public class BeanUtilsTest {
                     Object value = BeanUtils.getFieldWithAnnotation(testEntity,
                     		ContentId.class);
                     assertThat(value).isEqualTo("a value");
-
                 }
 
                 @Test
@@ -285,7 +259,6 @@ public class BeanUtilsTest {
                     Object value = BeanUtils.getFieldWithAnnotation(testEntity,
                     		ContentLength.class);
                     assertThat(value).isEqualTo("b value");
-
                 }
 
                 @Test
@@ -296,7 +269,6 @@ public class BeanUtilsTest {
                     catch (Exception e) {
                     	fail("should not fail");
                     }
-
                 }
 
             }
@@ -310,21 +282,18 @@ public class BeanUtilsTest {
                 @BeforeEach
                 void setUp() {
                     testEntity = new TestEntity();
-
                 }
 
                 @Test
                 void shouldReturnTrueForAnnotatedPublicFields() {
                     assertThat(BeanUtils.hasFieldWithAnnotation(testEntity,
                     		ContentId.class)).isTrue();
-
                 }
 
                 @Test
                 void shouldReturnTrueForAnnotatedPrivateFieldsWithGetter() {
                     assertThat(BeanUtils.hasFieldWithAnnotation(testEntity,
                     		ContentLength.class)).isTrue();
-
                 }
 
                 @Test
@@ -335,7 +304,6 @@ public class BeanUtilsTest {
                     catch (Exception e) {
                     	fail("should not fail");
                     }
-
                 }
 
             }
@@ -345,21 +313,18 @@ public class BeanUtilsTest {
                 @BeforeEach
                 void setUp() {
                     testEntity = new InheritingTestEntity();
-
                 }
 
                 @Test
                 void shouldReturnTrueForAnnotatedPublicFields() {
                     assertThat(BeanUtils.hasFieldWithAnnotation(testEntity,
                     		ContentId.class)).isTrue();
-
                 }
 
                 @Test
                 void shouldReturnTrueForAnnotatedPrivateFieldsWithGetter() {
                     assertThat(BeanUtils.hasFieldWithAnnotation(testEntity,
                     		ContentLength.class)).isTrue();
-
                 }
 
                 @Test
@@ -370,7 +335,6 @@ public class BeanUtilsTest {
                     catch (Exception e) {
                     	fail("should not fail");
                     }
-
                 }
 
             }
@@ -384,21 +348,18 @@ public class BeanUtilsTest {
                 @BeforeEach
                 void setUp() {
                     testEntity = new TestEntity();
-
                 }
 
                 @Test
                 void shouldReturnTrueForAnnotatedPublicFields() {
                     assertThat(BeanUtils.getFieldWithAnnotationType(testEntity,
                     				ContentId.class)).isEqualTo(String.class);
-
                 }
 
                 @Test
                 void shouldReturnTrueForAnnotatedPrivateFieldsWithGetter() {
                     assertThat(BeanUtils.getFieldWithAnnotationType(testEntity,
                     				ContentLength.class)).isEqualTo(String.class);
-
                 }
 
                 @Test
@@ -410,7 +371,6 @@ public class BeanUtilsTest {
                     catch (Exception e) {
                     	fail("should not fail");
                     }
-
                 }
 
             }
@@ -420,21 +380,18 @@ public class BeanUtilsTest {
                 @BeforeEach
                 void setUp() {
                     testEntity = new InheritingTestEntity();
-
                 }
 
                 @Test
                 void shouldReturnTrueForAnnotatedPublicFields() {
                     assertThat(BeanUtils.getFieldWithAnnotationType(testEntity,
                     				ContentId.class)).isEqualTo(String.class);
-
                 }
 
                 @Test
                 void shouldReturnTrueForAnnotatedPrivateFieldsWithGetter() {
                     assertThat(BeanUtils.getFieldWithAnnotationType(testEntity,
                     				ContentLength.class)).isEqualTo(String.class);
-
                 }
 
                 @Test
@@ -446,7 +403,6 @@ public class BeanUtilsTest {
                     catch (Exception e) {
                     	fail("should not fail");
                     }
-
                 }
 
             }
@@ -460,21 +416,18 @@ public class BeanUtilsTest {
                 @BeforeEach
                 void setUp() {
                     testEntity = new TestEntity();
-
                 }
 
                 @Test
                 void shouldFindFields() {
                     assertThat(BeanUtils.findFieldWithAnnotation(testEntity,
                     		ContentId.class)).isNotNull();
-
                 }
 
                 @Test
                 void shouldFindFieldsWithGetters() {
                     assertThat(BeanUtils.findFieldWithAnnotation(testEntity,
                     		ContentLength.class)).isNotNull();
-
                 }
 
                 @Test
@@ -485,7 +438,6 @@ public class BeanUtilsTest {
                     catch (Exception e) {
                     	fail("should not fail");
                     }
-
                 }
 
             }
@@ -495,21 +447,18 @@ public class BeanUtilsTest {
                 @BeforeEach
                 void setUp() {
                     testEntity = new InheritingTestEntity();
-
                 }
 
                 @Test
                 void shouldFindFields() {
                     assertThat(BeanUtils.findFieldWithAnnotation(testEntity,
                     		ContentId.class)).isNotNull();
-
                 }
 
                 @Test
                 void shouldFindFieldsWithGetters() {
                     assertThat(BeanUtils.findFieldWithAnnotation(testEntity,
                     		ContentLength.class)).isNotNull();
-
                 }
 
                 @Test
@@ -520,7 +469,6 @@ public class BeanUtilsTest {
                     catch (Exception e) {
                     	fail("should not fail");
                     }
-
                 }
 
             }
@@ -532,7 +480,6 @@ public class BeanUtilsTest {
             @Test
             void shouldFindFields() {
                 assertThat(BeanUtils.findFieldsWithAnnotation(TestEntity2.class, MimeType.class, new BeanWrapperImpl(new TestEntity2())).length).isEqualTo(1);
-
             }
 
         }
@@ -546,7 +493,6 @@ public class BeanUtilsTest {
                 t.setOtherContentId("200");
 
                 assertThat(BeanUtils.getFieldsWithAnnotation(t, ContentId.class)).isEqualTo(new Object[]{"100", "200"});
-
             }
 
         }

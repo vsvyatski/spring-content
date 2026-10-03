@@ -26,13 +26,11 @@ public class FileRemoverTest {
                 observer = new FileRemover(file);
 
                 observer.closed();
-
             }
 
             @Test
             void shouldDeleteTheUnderlyingFile() {
                 verify(file).delete();
-
             }
 
         }

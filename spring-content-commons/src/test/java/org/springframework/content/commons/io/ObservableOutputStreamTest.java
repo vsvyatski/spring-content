@@ -37,13 +37,11 @@ public class ObservableOutputStreamTest {
                 observable = new ObservableOutputStream(os);
                 observable.addObservers(observer1);
                 observable.addObservers(observer2);
-
             }
 
             @Test
             void shouldReturnThem() {
                 assertThat(observable.getObservers()).contains(observer1);
-
             }
 
         }
@@ -61,13 +59,11 @@ public class ObservableOutputStreamTest {
                 observable.addObservers(observer2);
 
                 observable.write(32);
-
             }
 
             @Test
             void shouldDelegateToTheUnderlyingInputStream() throws IOException {
                 verify(os).write(32);
-
             }
 
         }
@@ -85,7 +81,6 @@ public class ObservableOutputStreamTest {
                 observable.addObservers(observer2);
 
                 observable.close();
-
             }
 
             @Test
@@ -94,7 +89,6 @@ public class ObservableOutputStreamTest {
                 verify(observer1).closed();
                 verify(observer2).closed();
                 verifyNoMoreInteractions(observer1, observer2);
-
             }
 
         }
@@ -118,14 +112,12 @@ public class ObservableOutputStreamTest {
                 } catch (Exception e) {
                     exception = e;
                 }
-
             }
 
             @Test
             void shouldCallListenersOnClosedEventHandlerAndThrowTheException() {
                 verify(observer1).closed();
                 assertThat(exception).isNotNull();
-
             }
 
         }

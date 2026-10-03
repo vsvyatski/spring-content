@@ -50,7 +50,6 @@ public class ContentRestAutoConfigurationTest {
                 assertThat(context.getBean("contentLinksProcessor")).isNotNull();
 
                 context.close();
-
             }
 
         }
@@ -64,7 +63,6 @@ public class ContentRestAutoConfigurationTest {
                                System.setProperty("spring.content.rest.shortcut-request-mappings.disabled", "true");
                 System.setProperty("spring.content.rest.shortcut-request-mappings.excludes", "GET=a/b,c/d:PUT=*/*");
                 System.setProperty("spring.content.rest.overwrite-existing-content", "false");
-
             }
 
             @AfterEach
@@ -74,7 +72,6 @@ public class ContentRestAutoConfigurationTest {
                                System.clearProperty("spring.content.rest.shortcut-request-mappings.disabled");
                                System.clearProperty("spring.content.rest.shortcut-request-mappings.excludes");
                 System.clearProperty("spring.content.rest.overwrite-existing-content");
-
             }
 
             @Test
@@ -93,7 +90,6 @@ public class ContentRestAutoConfigurationTest {
                 assertThat(context.getBean(SpringBootContentRestConfigurer.class)).isNotNull();
 
                 context.close();
-
             }
 
         }

@@ -73,14 +73,12 @@ public class PessimisticLockingInterceptorTest {
                             } catch (Exception e) {
                                 PessimisticLockingInterceptorTest.this.e = e;
                             }
-
                         }
 
                         @Test
                         void shouldProceed() throws Throwable {
                             verify(locker).lockOwner(0L);
                             verify(mi).proceed();
-
                         }
 
                     }
@@ -111,7 +109,6 @@ public class PessimisticLockingInterceptorTest {
                             } catch (Exception e) {
                                 PessimisticLockingInterceptorTest.this.e = e;
                             }
-
                         }
 
                         @Test
@@ -119,7 +116,6 @@ public class PessimisticLockingInterceptorTest {
                             verify(locker).lockOwner(0L);
                             verify(locker).isLockOwner(0L,  principal);
                             verify(mi).proceed();
-
                         }
 
                     }
@@ -151,13 +147,11 @@ public class PessimisticLockingInterceptorTest {
                             } catch (Exception e) {
                                 PessimisticLockingInterceptorTest.this.e = e;
                             }
-
                         }
 
                         @Test
                         void shouldProceed() {
                             assertThat(e).isInstanceOf(LockOwnerException.class);
-
                         }
 
                     }
@@ -185,13 +179,11 @@ public class PessimisticLockingInterceptorTest {
                             } catch (Exception e) {
                                 PessimisticLockingInterceptorTest.this.e = e;
                             }
-
                         }
 
                         @Test
                         void shouldProceed() throws Throwable {
                             verify(mi).proceed();
-
                         }
 
                     }

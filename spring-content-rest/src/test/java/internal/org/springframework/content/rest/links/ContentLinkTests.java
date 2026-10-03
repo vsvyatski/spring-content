@@ -72,7 +72,6 @@ public class ContentLinkTests {
         class AGETToApiRepositoryId {
             @BeforeEach
             void setUp() {
-
             }
             @Test
             void shouldProvideAResponseWithAContentLink() throws Exception {

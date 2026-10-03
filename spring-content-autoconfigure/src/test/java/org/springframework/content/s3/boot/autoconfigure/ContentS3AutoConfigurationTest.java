@@ -44,7 +44,6 @@ public class ContentS3AutoConfigurationTest {
             void setUp() {
                 contextRunner = new ApplicationContextRunner()
                 		.withConfiguration(AutoConfigurations.of(S3ContentAutoConfiguration.class));
-
             }
 
             @Test
@@ -53,7 +52,6 @@ public class ContentS3AutoConfigurationTest {
                 	Assertions.assertThat(context).hasSingleBean(TestEntityContentRepository.class);
                 	Assertions.assertThat(context).hasSingleBean(S3Client.class);
                 });
-
             }
 
         }
@@ -64,7 +62,6 @@ public class ContentS3AutoConfigurationTest {
             void setUp() {
                 contextRunner = new ApplicationContextRunner()
                 		.withConfiguration(AutoConfigurations.of(S3ContentAutoConfiguration.class));
-
             }
 
             @Test
@@ -73,7 +70,6 @@ public class ContentS3AutoConfigurationTest {
                 	Assertions.assertThat(context).hasSingleBean(TestEntityContentRepository.class);
                 	Assertions.assertThat(context).hasSingleBean(S3Client.class);
                 });
-
             }
 
         }
@@ -84,7 +80,6 @@ public class ContentS3AutoConfigurationTest {
             void setUp() {
                 contextRunner = new ApplicationContextRunner()
                 		.withConfiguration(AutoConfigurations.of(S3ContentAutoConfiguration.class));
-
             }
 
             @Test
@@ -93,7 +88,6 @@ public class ContentS3AutoConfigurationTest {
                 	Assertions.assertThat(context).hasSingleBean(TestEntityContentRepository.class);
                 	Assertions.assertThat(context).hasSingleBean(S3Client.class);
                 });
-
             }
 
         }
@@ -109,7 +103,6 @@ public class ContentS3AutoConfigurationTest {
                 System.setProperty("spring.content.s3.accessKey", "foo");
                 System.setProperty("spring.content.s3.secretKey", "bar");
                 System.setProperty("spring.content.s3.pathStyleAccess", "true");
-
             }
 
             @AfterEach
@@ -118,7 +111,6 @@ public class ContentS3AutoConfigurationTest {
                 System.clearProperty("spring.content.s3.accessKey");
                 System.clearProperty("spring.content.s3.secretKey");
                 System.clearProperty("spring.content.s3.pathStyleAccess");
-
             }
 
             @Test
@@ -126,7 +118,6 @@ public class ContentS3AutoConfigurationTest {
                 contextRunner.withUserConfiguration(TestConfigWithProperties.class).run((context) -> {
                 	Assertions.assertThat(context).hasSingleBean(S3Client.class);
                 });
-
             }
 
         }

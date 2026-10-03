@@ -59,14 +59,12 @@ public class JpaLockingServiceImplTest {
                     } catch (Exception e) {
                         JpaLockingServiceImplTest.this.e = e;
                     }
-
                 }
 
                 @Test
                 void shouldThrowTheDataAccessExceptionClass() {
                     assertThat(e).isInstanceOf(DataAccessException.class);
                     assertThat(e.getMessage()).isEqualTo("connection-error");
-
                 }
 
             }
@@ -92,14 +90,12 @@ public class JpaLockingServiceImplTest {
                     } catch (Exception e) {
                         JpaLockingServiceImplTest.this.e = e;
                     }
-
                 }
 
                 @Test
                 void shouldThrowTheDataAccessExceptionClass() {
                     assertThat(e).isInstanceOf(DataAccessException.class);
                     assertThat(e.getMessage()).isEqualTo("connection-error");
-
                 }
 
             }
@@ -127,14 +123,12 @@ public class JpaLockingServiceImplTest {
                     } catch (Exception e) {
                         JpaLockingServiceImplTest.this.e = e;
                     }
-
                 }
 
                 @Test
                 void shouldThrowADataAccessException() {
                     assertThat(e).isInstanceOf(DataAccessException.class);
                     assertThat(e.getMessage()).isEqualTo("connection-error");
-
                 }
 
             }
@@ -162,13 +156,11 @@ public class JpaLockingServiceImplTest {
                     } catch (Exception e) {
                         JpaLockingServiceImplTest.this.e = e;
                     }
-
                 }
 
                 @Test
                 void shouldThrowASecurityException() {
                     assertThat(e).isInstanceOf(SecurityException.class);
-
                 }
 
             }
@@ -192,13 +184,11 @@ public class JpaLockingServiceImplTest {
                     } catch (Exception e) {
                         JpaLockingServiceImplTest.this.e = e;
                     }
-
                 }
 
                 @Test
                 void shouldThrowTheDataAccessException() {
                     assertThat(e).isInstanceOf(DataAccessException.class);
-
                 }
 
             }
@@ -224,13 +214,11 @@ public class JpaLockingServiceImplTest {
                     } catch (Exception e) {
                         JpaLockingServiceImplTest.this.e = e;
                     }
-
                 }
 
                 @Test
                 void shouldReturnTrue() {
                     assertThat(result).isEqualTo(true);
-
                 }
 
             }
@@ -256,13 +244,11 @@ public class JpaLockingServiceImplTest {
                     } catch (Exception e) {
                         JpaLockingServiceImplTest.this.e = e;
                     }
-
                 }
 
                 @Test
                 void shouldReturnFalse() {
                     assertThat(result).isEqualTo(false);
-
                 }
 
             }
@@ -288,13 +274,11 @@ public class JpaLockingServiceImplTest {
                     } catch (Exception e) {
                         JpaLockingServiceImplTest.this.e = e;
                     }
-
                 }
 
                 @Test
                 void shouldThrowTheDataAccessException() {
                     assertThat(e).isInstanceOf(DataAccessException.class);
-
                 }
 
             }
@@ -316,13 +300,11 @@ public class JpaLockingServiceImplTest {
                     } catch (Exception e) {
                         JpaLockingServiceImplTest.this.e = e;
                     }
-
                 }
 
                 @Test
                 void shouldReturnNull() {
                     assertThat(result).isNull();
-
                 }
 
             }
@@ -344,14 +326,12 @@ public class JpaLockingServiceImplTest {
                     } catch (Exception e) {
                         JpaLockingServiceImplTest.this.e = e;
                     }
-
                 }
 
                 @Test
                 void shouldReturnAPrincipal() {
                     assertThat(result).isInstanceOf(Principal.class);
                     assertThat(((Principal)result).getName()).isEqualTo("some-principal");
-
                 }
 
             }
@@ -373,13 +353,11 @@ public class JpaLockingServiceImplTest {
                     } catch (Exception e) {
                         JpaLockingServiceImplTest.this.e = e;
                     }
-
                 }
 
                 @Test
                 void shouldThrowAnIncorrectResultSizeException() {
                     assertThat(e).isInstanceOf(IncorrectResultSizeDataAccessException.class);
-
                 }
 
             }

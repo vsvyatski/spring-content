@@ -60,7 +60,6 @@ public class DelegatingBlobResourceLoaderTest {
 
                     service = new DelegatingBlobResourceLoader(ds, loaders);
                     resource = service.getResource("some-id");
-
                 }
 
                 @Test
@@ -89,7 +88,6 @@ public class DelegatingBlobResourceLoaderTest {
 
                     service = new DelegatingBlobResourceLoader(ds, loaders);
                     resource = service.getResource("some-id");
-
                 }
 
                 @Test

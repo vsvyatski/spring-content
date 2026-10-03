@@ -17,13 +17,11 @@ public class PlacementServiceImplTest {
             @BeforeEach
             void setUp() {
                 placer = new PlacementServiceImpl();
-
             }
 
             @Test
             void shouldHaveRemovedTheFallbackObjectToStringConverter() {
                 assertThat(placer.canConvert(Object.class, String.class)).isFalse();
-
             }
 
         }

@@ -45,7 +45,6 @@ public class ElasticsearchAutoConfigurationTest {
                 assertThat(context).hasSingleBean(ElasticsearchIndexServiceImpl.class);
                 assertThat(context).hasSingleBean(IndexManager.class);
             });
-
         }
 
     }
@@ -60,7 +59,6 @@ public class ElasticsearchAutoConfigurationTest {
             contextRunner.withUserConfiguration(ContextWithClientBean.class)
                     .run((context) ->
                             assertThat(context).getBean(RestHighLevelClient.class).isEqualTo(client));
-
         }
 
     }
@@ -85,7 +83,6 @@ public class ElasticsearchAutoConfigurationTest {
             contextRunner.withUserConfiguration(ContextWithClientBean.class)
                     .run((context) ->
                             assertThat(context).doesNotHaveBean(ElasticsearchIndexer.class));
-
         }
 
     }
@@ -110,7 +107,6 @@ public class ElasticsearchAutoConfigurationTest {
             contextRunner.withUserConfiguration(ContextWithClientBean.class)
                     .run((context) ->
                             assertThat(context).hasSingleBean(ElasticsearchIndexer.class));
-
         }
 
     }
@@ -125,7 +121,6 @@ public class ElasticsearchAutoConfigurationTest {
             contextRunner.withUserConfiguration(ContextWithEnablement.class)
                     .run((context) ->
                             assertThat(context).hasSingleBean(RestHighLevelClient.class));
-
         }
 
     }

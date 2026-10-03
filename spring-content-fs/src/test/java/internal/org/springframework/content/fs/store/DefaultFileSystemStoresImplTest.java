@@ -133,7 +133,6 @@ public class DefaultFileSystemStoresImplTest {
                     void shouldUseThePlacerServiceToGetAResourcePath() {
                         verify(placer).convert(eq("12345-67890"), eq(String.class));
                         verify(loader).getResource(eq("/12345/67890"));
-
                     }
                 }
 
@@ -316,7 +315,6 @@ public class DefaultFileSystemStoresImplTest {
                             verify(writeableResource).getOutputStream();
                             verify(output, times(1)).write(ArgumentMatchers.any(), eq(0),
                                     eq(20));
-
                         }
                     }
 
@@ -352,7 +350,6 @@ public class DefaultFileSystemStoresImplTest {
                             } catch (Exception e) {
                                 DefaultFileSystemStoresImplTest.this.e = e;
                             }
-
                         }
 
                         @Test

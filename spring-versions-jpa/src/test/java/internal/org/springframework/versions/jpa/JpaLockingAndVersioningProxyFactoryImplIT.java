@@ -71,7 +71,6 @@ public class JpaLockingAndVersioningProxyFactoryImplIT {
                         factory = new JpaLockingAndVersioningProxyFactoryImpl(context, txn, em, locker, auth);
 
                         factory.apply(proxyFactory);
-
                     }
 
                     @Test
@@ -81,7 +80,6 @@ public class JpaLockingAndVersioningProxyFactoryImplIT {
                         assertThat(advices[0].getAdvice()).isInstanceOf(TransactionInterceptor.class);
                         assertThat(advices[1].getAdvice()).isInstanceOf(OptimisticLockingInterceptor.class);
                         assertThat(advices[2].getAdvice()).isInstanceOf(PessimisticLockingInterceptor.class);
-
                     }
 
                 }
@@ -106,7 +104,6 @@ public class JpaLockingAndVersioningProxyFactoryImplIT {
                         factory = new JpaLockingAndVersioningProxyFactoryImpl(context, txn, em, locker, auth);
 
                         factory.apply(proxyFactory);
-
                     }
 
                     @Test
@@ -116,7 +113,6 @@ public class JpaLockingAndVersioningProxyFactoryImplIT {
                         assertThat(advices[0].getAdvice()).isInstanceOf(TransactionInterceptor.class);
                         assertThat(advices[1].getAdvice()).isInstanceOf(OptimisticLockingInterceptor.class);
                         assertThat(advices[2].getAdvice()).isInstanceOf(PessimisticLockingInterceptor.class);
-
                     }
 
                 }

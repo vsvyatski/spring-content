@@ -42,7 +42,6 @@ public class StoreCandidateComponentProviderEnvironmentTest {
             assertThat(store).isNotNull();
             assertThat(associativeStore).isNull();
             assertThat(contentStore).isNotNull();
-
         }
 
     }

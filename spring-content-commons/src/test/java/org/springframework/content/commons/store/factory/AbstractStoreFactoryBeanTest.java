@@ -24,7 +24,6 @@ public class AbstractStoreFactoryBeanTest {
                 TestContentStoreFactory factory = new TestContentStoreFactory(TestStore.class);
                 Class<?> domainClass = factory.getDomainClass(TestStore.class);
                 assertThat(domainClass).isEqualTo(String.class);
-
             }
 
             @Test
@@ -33,7 +32,6 @@ public class AbstractStoreFactoryBeanTest {
                 Class<?> domainClass = factory.getDomainClass(
                 		ContentStoreNotFirstIntefaceStore.class);
                 assertThat(domainClass).isEqualTo(String.class);
-
             }
 
         }
@@ -46,7 +44,6 @@ public class AbstractStoreFactoryBeanTest {
                 Class<? extends Serializable> domainId = factory
                 		.getContentIdClass(TestStore.class);
                 assertThat(domainId).isEqualTo(UUID.class);
-
             }
 
         }
@@ -94,12 +91,10 @@ public class AbstractStoreFactoryBeanTest {
 
 		@Override
 		public void associate(Object entity, Serializable id) {
-
 		}
 
 		@Override
 		public void unassociate(Object entity) {
-
 		}
 
 		@Override
@@ -122,13 +117,11 @@ public class AbstractStoreFactoryBeanTest {
 		@Override
         public void associate(Object entity, PropertyPath propertyPath, Serializable id) {
             // TODO Auto-generated method stub
-
         }
 
         @Override
         public void unassociate(Object entity, PropertyPath propertyPath) {
             // TODO Auto-generated method stub
-
         }
 
         @Override

@@ -49,7 +49,6 @@ public class ContentRenditionsAutoConfigurationTest {
                 //					assertThat(context.getBean(WordToTextRenditionProvider.class)).isNotNull();
 
                                     context.close();
-
             }
 
         }

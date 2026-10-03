@@ -60,7 +60,6 @@ public class GenericBlobResourceTest {
                     when(rs.next()).thenThrow(new SQLException("badness"));
                     resource = new GenericBlobResource(id, template, txnMgr);
                     result = resource.exists();
-
                 }
 
                 @Test
@@ -93,7 +92,6 @@ public class GenericBlobResourceTest {
                     when(rs.next()).thenThrow(new SQLException("badness"));
                     resource = new GenericBlobResource(id, template, txnMgr);
                     result = resource.getInputStream();
-
                 }
 
                 @Test

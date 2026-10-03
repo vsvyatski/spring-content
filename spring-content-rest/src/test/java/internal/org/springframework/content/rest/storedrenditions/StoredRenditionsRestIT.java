@@ -88,7 +88,6 @@ public class StoredRenditionsRestIT {
                     testEntity5 = repo.save(new TestEntity5());
 
                     mvc.perform(put("/testEntity5s/" + testEntity5.getId() + "/content").content("foo").contentType("text/plain")).andExpect(status().is2xxSuccessful());
-
                 }
 
                 @Test
@@ -103,7 +102,6 @@ public class StoredRenditionsRestIT {
                     try (InputStream actual = r.getInputStream()) {
                         assertThat(IOUtils.toString(actual)).isEqualTo("<html><head><title>Stored Rendition</title></head><body>foo</body></html>");
                     }
-
                 }
 
                 @Nested
@@ -115,7 +113,6 @@ public class StoredRenditionsRestIT {
                         testEntity5 = repo.save(new TestEntity5());
 
                         mvc.perform(put("/testEntity5s/" + testEntity5.getId() + "/content").content("foo").contentType("text/plain")).andExpect(status().is2xxSuccessful());
-
                     }
 
                     @Test
@@ -128,7 +125,6 @@ public class StoredRenditionsRestIT {
                             .andExpect(status().isOk())
                             .andExpect(content().string(not("<html><head><title>Dynamic Rendition</title></head><body>foo</body></html>")))
                             .andExpect(content().string("<html><head><title>Stored Rendition</title></head><body>foo</body></html>"));
-
                     }
 
                 }
@@ -142,7 +138,6 @@ public class StoredRenditionsRestIT {
                         testEntity5 = repo.save(new TestEntity5());
 
                         mvc.perform(put("/testEntity5s/" + testEntity5.getId() + "/content").content("foo").contentType("text/plain")).andExpect(status().is2xxSuccessful());
-
                     }
 
                     @Test
@@ -153,7 +148,6 @@ public class StoredRenditionsRestIT {
                                 get("/testEntity5s/" + testEntity5.getId() + "/rendition")
                                 .accept("text/html"))
                             .andExpect(status().isMethodNotAllowed());
-
                     }
 
                 }
@@ -167,7 +161,6 @@ public class StoredRenditionsRestIT {
                         testEntity5 = repo.save(new TestEntity5());
 
                         mvc.perform(put("/testEntity5s/" + testEntity5.getId() + "/content").content("foo").contentType("text/plain")).andExpect(status().is2xxSuccessful());
-
                     }
 
                     @Test
@@ -185,7 +178,6 @@ public class StoredRenditionsRestIT {
                         assertThat(fetched.get().getRenditionId()).isNull();
                         assertThat(fetched.get().getRenditionLen()).isEqualTo(0L);
                         assertThat(fetched.get().getRenditionMimeType()).isNull();
-
                     }
 
                 }

@@ -14,7 +14,6 @@ public class GCSStorageContainer /*extends GenericContainer<GCSStorageContainer>
 //        this.setExposedPorts(Collections.singletonList(4443));
 //        this.setCommand("foo");
 //        this.start();
-
     }
 
     public static Storage getStorage() {

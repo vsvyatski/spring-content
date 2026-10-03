@@ -40,13 +40,11 @@ public class S3AutoConfigurationTest {
                         .withConfiguration(AutoConfigurations.of(S3ContentAutoConfiguration.class));
 
                 System.setProperty("spring.content.storage.type.default", "s3");
-
             }
 
             @AfterEach
             void tearDown() {
                 System.clearProperty("spring.content.storage.type.default");
-
             }
 
             @Test
@@ -54,7 +52,6 @@ public class S3AutoConfigurationTest {
                 contextRunner.withUserConfiguration(TestConfigWithoutBeans.class).run((context) -> {
                     Assertions.assertThat(context).hasSingleBean(S3Client.class);
                 });
-
             }
 
         }
@@ -67,13 +64,11 @@ public class S3AutoConfigurationTest {
                         .withConfiguration(AutoConfigurations.of(S3ContentAutoConfiguration.class));
 
                 System.setProperty("spring.content.storage.type.default", "fs");
-
             }
 
             @AfterEach
             void tearDown() {
                 System.clearProperty("spring.content.storage.type.default");
-
             }
 
             @Test
@@ -81,7 +76,6 @@ public class S3AutoConfigurationTest {
                 contextRunner.withUserConfiguration(TestConfigWithoutBeans.class).run((context) -> {
                     Assertions.assertThat(context).doesNotHaveBean(S3Client.class);
                 });
-
             }
 
         }
@@ -92,7 +86,6 @@ public class S3AutoConfigurationTest {
             void setUp() {
                 contextRunner = new ApplicationContextRunner()
                         .withConfiguration(AutoConfigurations.of(S3ContentAutoConfiguration.class));
-
             }
 
             @Test
@@ -100,7 +93,6 @@ public class S3AutoConfigurationTest {
                 contextRunner.withUserConfiguration(TestConfigWithoutBeans.class).run((context) -> {
                     Assertions.assertThat(context).hasSingleBean(S3Client.class);
                 });
-
             }
 
         }

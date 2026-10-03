@@ -78,7 +78,6 @@ public class CacheControlIT {
         @BeforeEach
         void setUp() {
             RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
-
         }
 
         @Test
@@ -96,7 +95,6 @@ public class CacheControlIT {
             .then()
                 .statusCode(200)
                 .header("Cache-Control", "max-age=60");
-
         }
 
         @Test
@@ -114,7 +112,6 @@ public class CacheControlIT {
             .then()
                 .statusCode(200)
                 .header("Cache-Control", "no-cache, no-store, max-age=0, must-revalidate");
-
         }
 
     }

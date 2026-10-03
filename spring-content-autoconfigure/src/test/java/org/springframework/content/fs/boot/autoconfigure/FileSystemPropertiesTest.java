@@ -38,7 +38,6 @@ public class FileSystemPropertiesTest {
                                         "C:\\some\\random\\path" : "/some/random/path";
                 props = new FileSystemContentAutoConfiguration.FileSystemProperties();
                 props.setFileSystemRoot(someRandomPath);
-
             }
 
             @Test

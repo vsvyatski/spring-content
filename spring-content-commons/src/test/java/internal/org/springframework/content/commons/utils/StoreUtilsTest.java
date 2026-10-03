@@ -60,7 +60,6 @@ public class StoreUtilsTest {
                     identifyingTypes = new Class<?>[] {StoreUtilsTest.StoreType1.class };
 
                     multiStoreMode = true;
-
                 }
 
                 @Test
@@ -68,7 +67,6 @@ public class StoreUtilsTest {
                     Set<GenericBeanDefinition> beans = StoreUtils.getStoreCandidates(scanner, env, loader, basePackages, multiStoreMode, identifyingTypes, registrarId);
                     assertThat(beans).contains(def1);
                     assertThat(beans).doesNotContain(def2);
-
                 }
 
                 @Nested
@@ -102,7 +100,6 @@ public class StoreUtilsTest {
                         identifyingTypes = new Class<?>[] {};
 
                         when(env.getProperty("spring.content.storage.type.default")).thenReturn("test");
-
                     }
 
                     @Test
@@ -110,7 +107,6 @@ public class StoreUtilsTest {
                         Set<GenericBeanDefinition> beans = StoreUtils.getStoreCandidates(scanner, env, loader, basePackages, multiStoreMode, identifyingTypes, registrarId);
                         assertThat(beans).contains(def1);
                         assertThat(beans).contains(def2);
-
                     }
 
                 }
@@ -147,7 +143,6 @@ public class StoreUtilsTest {
                         registrarId = "other-id";
 
                         when(env.getProperty("spring.content.storage.type.default")).thenReturn("test");
-
                     }
 
                     @Test
@@ -155,7 +150,6 @@ public class StoreUtilsTest {
                         Set<GenericBeanDefinition> beans = StoreUtils.getStoreCandidates(scanner, env, loader, basePackages, multiStoreMode, identifyingTypes, registrarId);
                         assertThat(beans).doesNotContain(def1);
                         assertThat(beans).doesNotContain(def2);
-
                     }
 
                 }
@@ -187,7 +181,6 @@ public class StoreUtilsTest {
                     identifyingTypes = new Class<?>[] {StoreUtilsTest.StoreType1.class };
 
                     multiStoreMode = false;
-
                 }
 
                 @Test
@@ -195,7 +188,6 @@ public class StoreUtilsTest {
                     Set<GenericBeanDefinition> beans = StoreUtils.getStoreCandidates(scanner, env, loader, basePackages, multiStoreMode, identifyingTypes, "test");
                     assertThat(beans).contains(def1);
                     assertThat(beans).contains(def2);
-
                 }
 
             }

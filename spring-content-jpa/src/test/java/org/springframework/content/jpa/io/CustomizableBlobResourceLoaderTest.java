@@ -45,13 +45,11 @@ public class CustomizableBlobResourceLoaderTest {
                 loader = new CustomizableBlobResourceLoader(template, txnMgr);
 
                 result = loader.getDatabaseName();
-
             }
 
             @Test
             void shouldReturnGENERIC() {
                 assertThat(result.toString()).isEqualTo("GENERIC");
-
             }
 
         }
@@ -72,13 +70,11 @@ public class CustomizableBlobResourceLoaderTest {
                 loader = new CustomizableBlobResourceLoader(template, txnMgr);
 
                 result = loader.getResource("some-id");
-
             }
 
             @Test
             void shouldReturnAGenericBlobResource() {
                 assertThat(result).isInstanceOf(GenericBlobResource.class);
-
             }
 
         }
@@ -90,13 +86,11 @@ public class CustomizableBlobResourceLoaderTest {
                 loader = new CustomizableBlobResourceLoader(template, txnMgr);
 
                 result = loader.getClassLoader();
-
             }
 
             @Test
             void shouldReturnAClassLoader() {
                 assertThat(result).isInstanceOf(ClassLoader.class);
-
             }
 
         }
@@ -118,13 +112,11 @@ public class CustomizableBlobResourceLoaderTest {
                     loader = new CustomizableBlobResourceLoader(template, txnMgr, "CUSTOM_DB", (l, t, txn) -> { return customDBResource; });
 
                     result = loader.getResource("some-id");
-
                 }
 
                 @Test
                 void shouldReturnTheResourceProvidersCustomResource() {
                     assertThat(result).isEqualTo(customDBResource);
-
                 }
 
             }

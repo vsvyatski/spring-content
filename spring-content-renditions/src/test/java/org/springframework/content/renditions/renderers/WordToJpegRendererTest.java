@@ -42,13 +42,11 @@ public class WordToJpegRendererTest {
             void setUp() {
                 poi = mock(POIService.class);
                 renderer = new WordToJpegRenderer(poi);
-
             }
 
             @Test
             void shouldReturnWordMlMimetype() {
                 assertThat(renderer.consumes()).isEqualTo("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
-
             }
 
         }
@@ -59,13 +57,11 @@ public class WordToJpegRendererTest {
             void setUp() {
                 poi = mock(POIService.class);
                 renderer = new WordToJpegRenderer(poi);
-
             }
 
             @Test
             void shouldReturnJpegMimetype() {
                 assertThat(renderer.produces()).contains("image/jpg");
-
             }
 
         }
@@ -91,13 +87,11 @@ public class WordToJpegRendererTest {
                     } catch (Exception e) {
                         WordToJpegRendererTest.this.e = e;
                     }
-
                 }
 
                 @Test
                 void shouldGetTheEmbeddedThumbnailFromTheXWPFDocumentSProperties() throws IOException {
                     verify(props).getThumbnailImage();
-
                 }
 
                 @Nested
@@ -123,14 +117,12 @@ public class WordToJpegRendererTest {
                         } catch (Exception e) {
                             WordToJpegRendererTest.this.e = e;
                         }
-
                     }
 
                     @Test
                     void shouldThrowARenditionException() {
                         assertThat(e).isNotNull();
                         assertThat(e).isInstanceOf(RenditionException.class);
-
                     }
 
                 }
@@ -159,14 +151,12 @@ public class WordToJpegRendererTest {
                         } catch (Exception e) {
                             WordToJpegRendererTest.this.e = e;
                         }
-
                     }
 
                     @Test
                     void shouldThrowARenditionException() {
                         assertThat(e).isNotNull();
                         assertThat(e).isInstanceOf(RenditionException.class);
-
                     }
 
                 }
@@ -196,14 +186,12 @@ public class WordToJpegRendererTest {
                         } catch (Exception e) {
                             WordToJpegRendererTest.this.e = e;
                         }
-
                     }
 
                     @Test
                     void shouldThrowARenditionException() {
                         assertThat(e).isNotNull();
                         assertThat(e).isInstanceOf(RenditionException.class);
-
                     }
 
                 }
@@ -222,13 +210,11 @@ public class WordToJpegRendererTest {
                     } catch (Exception e) {
                         WordToJpegRendererTest.this.e = e;
                     }
-
                 }
 
                 @Test
                 void shouldGetTheEmbeddedThumbnailFromTheXWPFDocumentSProperties() {
                     assertThat(e).isNotNull();
-
                 }
 
             }

@@ -71,14 +71,12 @@ public class SolrIndexerStoreEventHandlerTest {
                     } catch (Throwable e) {
                         SolrIndexerStoreEventHandlerTest.this.e = e;
                     }
-
                 }
 
                 @Test
                 void shouldUseTheIndexerToIndexTheContent() {
                     assertThat(e).isNull();
                     verify(indexer).index(eq(contentEntity), eq(content));
-
                 }
 
                 @Nested
@@ -106,7 +104,6 @@ public class SolrIndexerStoreEventHandlerTest {
                         } catch (Throwable e) {
                             SolrIndexerStoreEventHandlerTest.this.e = e;
                         }
-
                     }
 
                     @Test
@@ -134,14 +131,12 @@ public class SolrIndexerStoreEventHandlerTest {
                     } catch (Throwable e) {
                         SolrIndexerStoreEventHandlerTest.this.e = e;
                     }
-
                 }
 
                 @Test
                 void shouldCallUpdate() {
                     assertThat(e).isNull();
                     verify(indexer, never()).index(any(), any());
-
                 }
 
             }
@@ -162,14 +157,12 @@ public class SolrIndexerStoreEventHandlerTest {
                     } catch (Throwable e) {
                         SolrIndexerStoreEventHandlerTest.this.e = e;
                     }
-
                 }
 
                 @Test
                 void spec() {
                     assertThat(e).isNull();
                     verify(indexer, never()).index(any(), any());
-
                 }
 
             }
@@ -198,14 +191,12 @@ public class SolrIndexerStoreEventHandlerTest {
                     } catch (Exception e) {
                         SolrIndexerStoreEventHandlerTest.this.e = e;
                     }
-
                 }
 
                 @Test
                 void shouldUseTheIndexerToUnindexTheContent() {
                     assertThat(e).isNull();
                     verify(indexer).unindex(eq(contentEntity));
-
                 }
 
                 @Nested
@@ -231,7 +222,6 @@ public class SolrIndexerStoreEventHandlerTest {
                         } catch (Exception e) {
                             SolrIndexerStoreEventHandlerTest.this.e = e;
                         }
-
                     }
 
                     @Test
@@ -259,14 +249,12 @@ public class SolrIndexerStoreEventHandlerTest {
                     } catch (Exception e) {
                         SolrIndexerStoreEventHandlerTest.this.e = e;
                     }
-
                 }
 
                 @Test
                 void shouldCallUpdate() {
                     assertThat(e).isNull();
                     verify(indexer, never()).unindex(any());
-
                 }
 
             }
@@ -287,14 +275,12 @@ public class SolrIndexerStoreEventHandlerTest {
                     } catch (Exception e) {
                         SolrIndexerStoreEventHandlerTest.this.e = e;
                     }
-
                 }
 
                 @Test
                 void shouldNeverAttemptDeletion() {
                     assertThat(e).isNull();
                     verify(indexer, never()).unindex(any());
-
                 }
 
             }

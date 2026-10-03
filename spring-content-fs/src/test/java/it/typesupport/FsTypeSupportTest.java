@@ -53,14 +53,12 @@ public class FsTypeSupportTest {
                     ((UUIDBasedContentEntity) entity).setContentId((UUID) id);
 
                     uuidStore.setContent((UUIDBasedContentEntity) entity, new ByteArrayInputStream("uuid".getBytes()));
-
                 }
 
                 @AfterEach
                 void tearDown() {
                     uuidStore.unsetContent((UUIDBasedContentEntity) entity);
                     assertThat(((UUIDBasedContentEntity) entity).getContentId()).isNull();
-
                 }
 
                 @Test
@@ -88,7 +86,6 @@ public class FsTypeSupportTest {
                 void tearDown() {
                     uuidStore.unsetContent((UUIDBasedContentEntity) entity);
                     assertThat(((UUIDBasedContentEntity) entity).getContentId()).isNull();
-
                 }
 
                 @Test
@@ -118,14 +115,12 @@ public class FsTypeSupportTest {
                     ((URIBasedContentEntity) entity).setContentId((URI) id);
 
                     uriStore.setContent((URIBasedContentEntity) entity, new ByteArrayInputStream("uri".getBytes()));
-
                 }
 
                 @AfterEach
                 void tearDown() {
                     uriStore.unsetContent((URIBasedContentEntity) entity);
                     assertThat(((URIBasedContentEntity) entity).getContentId()).isNull();
-
                 }
 
                 @Test
@@ -155,14 +150,12 @@ public class FsTypeSupportTest {
                     ((LongBasedContentEntity) entity).setContentId((Long) id);
 
                     longStore.setContent((LongBasedContentEntity) entity, new ByteArrayInputStream("long".getBytes()));
-
                 }
 
                 @AfterEach
                 void tearDown() {
                     longStore.unsetContent((LongBasedContentEntity) entity);
                     assertThat(((LongBasedContentEntity) entity).getContentId()).isNull();
-
                 }
 
                 @Test
@@ -192,14 +185,12 @@ public class FsTypeSupportTest {
                     ((BigIntegerBasedContentEntity) entity).setContentId((BigInteger) id);
 
                     bigIntStore.setContent((BigIntegerBasedContentEntity) entity, new ByteArrayInputStream("big-int".getBytes()));
-
                 }
 
                 @AfterEach
                 void tearDown() {
                     bigIntStore.unsetContent((BigIntegerBasedContentEntity) entity);
                     assertThat(((BigIntegerBasedContentEntity) entity).getContentId()).isNull();
-
                 }
 
                 @Test

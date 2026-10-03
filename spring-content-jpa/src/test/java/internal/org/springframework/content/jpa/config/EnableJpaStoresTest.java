@@ -208,12 +208,10 @@ public class EnableJpaStoresTest {
 
 		@Override
 		public void associate(TestEntity entity, String id) {
-
 		}
 
 		@Override
 		public void unassociate(TestEntity entity) {
-
 		}
 
 		@Override
@@ -236,13 +234,11 @@ public class EnableJpaStoresTest {
 		@Override
         public void associate(TestEntity entity, PropertyPath propertyPath, String id) {
             // TODO Auto-generated method stub
-
         }
 
         @Override
         public void unassociate(TestEntity entity, PropertyPath propertyPath) {
             // TODO Auto-generated method stub
-
         }
 
         @Override

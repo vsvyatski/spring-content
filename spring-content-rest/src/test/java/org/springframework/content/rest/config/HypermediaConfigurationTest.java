@@ -41,7 +41,6 @@ public class HypermediaConfigurationTest {
                         RepositoryRestMvcConfiguration.class,
                         HypermediaConfiguration.class);
                 context.refresh();
-
             }
 
             @Test

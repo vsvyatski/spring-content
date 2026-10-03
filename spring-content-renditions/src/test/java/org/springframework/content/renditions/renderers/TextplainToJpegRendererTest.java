@@ -32,13 +32,11 @@ public class TextplainToJpegRendererTest {
             @BeforeEach
             void setUp() {
                 renderer = new TextplainToJpegRenderer(wrapText);
-
             }
 
             @Test
             void shouldReturnTextPlain() {
                 assertThat(renderer.consumes()).isEqualTo("text/plain");
-
             }
 
         }
@@ -48,14 +46,12 @@ public class TextplainToJpegRendererTest {
             @BeforeEach
             void setUp() {
                 renderer = new TextplainToJpegRenderer(wrapText);
-
             }
 
             @Test
             void shouldReturnJpegMimetype() {
                 assertThat(renderer.produces()).contains("image/jpg");
                 assertThat(renderer.produces()).contains("image/jpeg");
-
             }
 
         }
@@ -79,7 +75,6 @@ public class TextplainToJpegRendererTest {
                         catch (Exception e) {
                         	TextplainToJpegRendererTest.this.e = e;
                         }
-
                     }
 
                     @Test
@@ -93,7 +88,6 @@ public class TextplainToJpegRendererTest {
                         // assertThat(expected).isNotNull();
                         // assertThat(IOUtils.contentEquals(expected, result),
                         // is(true));
-
                     }
 
                 }
@@ -113,7 +107,6 @@ public class TextplainToJpegRendererTest {
                         catch (Exception e) {
                         	TextplainToJpegRendererTest.this.e = e;
                         }
-
                     }
 
                     @Test
@@ -121,7 +114,6 @@ public class TextplainToJpegRendererTest {
                         assertThat(result).isNotNull();
                         // assertThat(IOUtils.contentEquals(this.getClass().getResourceAsStream("/textplaintorenderer/multi-line.jpeg"),
                         // result)).isTrue();
-
                     }
 
                 }
@@ -143,7 +135,6 @@ public class TextplainToJpegRendererTest {
                         catch (Exception e) {
                         	TextplainToJpegRendererTest.this.e = e;
                         }
-
                     }
 
                     @Test
@@ -151,7 +142,6 @@ public class TextplainToJpegRendererTest {
                         assertThat(result).isNotNull();
                         // assertThat(IOUtils.contentEquals(this.getClass().getResourceAsStream("/textplaintorenderer/wrapped-line.jpeg"),
                         // result)).isTrue();
-
                     }
 
                 }
@@ -172,7 +162,6 @@ public class TextplainToJpegRendererTest {
                         catch (Exception e) {
                         	TextplainToJpegRendererTest.this.e = e;
                         }
-
                     }
 
                     @Test
@@ -180,7 +169,6 @@ public class TextplainToJpegRendererTest {
                         assertThat(result).isNotNull();
                         // assertThat(IOUtils.contentEquals(this.getClass().getResourceAsStream("/textplaintorenderer/overflowed-line.jpeg"),
                         // result)).isTrue();
-
                     }
 
                 }
@@ -201,7 +189,6 @@ public class TextplainToJpegRendererTest {
                         catch (Exception e) {
                         	TextplainToJpegRendererTest.this.e = e;
                         }
-
                     }
 
                     @Test
@@ -209,7 +196,6 @@ public class TextplainToJpegRendererTest {
                         assertThat(result).isNotNull();
                         // assertThat(IOUtils.contentEquals(this.getClass().getResourceAsStream("/textplaintorenderer/overflowed-image.jpeg"),
                         // result)).isTrue();
-
                     }
 
                 }
@@ -230,13 +216,11 @@ public class TextplainToJpegRendererTest {
                     catch (Exception e) {
                     	TextplainToJpegRendererTest.this.e = e;
                     }
-
                 }
 
                 @Test
                 void shouldNotError() {
                     assertThat(e).isNull();
-
                 }
 
             }
@@ -253,13 +237,11 @@ public class TextplainToJpegRendererTest {
                     catch (Exception e) {
                     	TextplainToJpegRendererTest.this.e = e;
                     }
-
                 }
 
                 @Test
                 void shouldReturnAnError() {
                     assertThat(e).isNotNull();
-
                 }
 
             }

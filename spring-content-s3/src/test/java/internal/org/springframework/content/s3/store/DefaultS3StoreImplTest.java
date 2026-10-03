@@ -124,7 +124,6 @@ public class DefaultS3StoreImplTest {
                         } catch (Exception e) {
                         	DefaultS3StoreImplTest.this.e = e;
                         }
-
                     }
 
                     @Test
@@ -133,7 +132,6 @@ public class DefaultS3StoreImplTest {
                         assertThat(r).isInstanceOf(S3StoreResource.class);
                         assertThat(((S3StoreResource)r).getClient()).isEqualTo(client);
                         assertThat(r.getDescription()).isEqualTo(format("Amazon s3 resource [bucket='%s' and object='%s']","some-defaultBucket", "some/object/id"));
-
                     }
 
                 }
@@ -193,7 +191,6 @@ public class DefaultS3StoreImplTest {
                                     catch (Exception e) {
                                     	DefaultS3StoreImplTest.this.e = e;
                                     }
-
                                 }
 
                                 @Test
@@ -202,7 +199,6 @@ public class DefaultS3StoreImplTest {
                                     assertThat(r).isInstanceOf(S3StoreResource.class);
                                     assertThat(((S3StoreResource)r).getClient()).isEqualTo(client);
                                     assertThat(r.getDescription()).isEqualTo(format("Amazon s3 resource [bucket='%s' and object='%s']","some-customer", "some-object-id"));
-
                                 }
 
                             }
@@ -250,13 +246,11 @@ public class DefaultS3StoreImplTest {
                                     catch (Exception e) {
                                     	DefaultS3StoreImplTest.this.e = e;
                                     }
-
                                 }
 
                                 @Test
                                 void shouldThrowAnError() {
                                     assertThat(e).isInstanceOf(ConversionFailedException.class);
-
                                 }
 
                             }
@@ -305,7 +299,6 @@ public class DefaultS3StoreImplTest {
                         catch (Exception e) {
                         	DefaultS3StoreImplTest.this.e = e;
                         }
-
                     }
 
                     @Test
@@ -314,7 +307,6 @@ public class DefaultS3StoreImplTest {
                         assertThat(r).isInstanceOf(S3StoreResource.class);
                         assertThat(((S3StoreResource)r).getClient()).isEqualTo(client2);
                         assertThat(r.getDescription()).isEqualTo(format("Amazon s3 resource [bucket='%s' and object='%s']","some-bucket", "some-object-id"));
-
                     }
 
                 }
@@ -377,7 +369,6 @@ public class DefaultS3StoreImplTest {
                                 catch (Exception e) {
                                 	DefaultS3StoreImplTest.this.e = e;
                                 }
-
                             }
 
                             @Test
@@ -386,7 +377,6 @@ public class DefaultS3StoreImplTest {
                                 assertThat(r).isInstanceOf(S3StoreResource.class);
                                 assertThat(((S3StoreResource)r).getClient()).isEqualTo(client);
                                 assertThat(r.getDescription()).isEqualTo(format("Amazon s3 resource [bucket='%s' and object='%s']","default-defaultBucket", "12345/67890"));
-
                             }
 
                         }
@@ -433,7 +423,6 @@ public class DefaultS3StoreImplTest {
                                 catch (Exception e) {
                                 	DefaultS3StoreImplTest.this.e = e;
                                 }
-
                             }
 
                             @Test
@@ -442,7 +431,6 @@ public class DefaultS3StoreImplTest {
                                 assertThat(r).isInstanceOf(S3StoreResource.class);
                                 assertThat(((S3StoreResource)r).getClient()).isEqualTo(client);
                                 assertThat(r.getDescription()).isEqualTo(format("Amazon s3 resource [bucket='%s' and object='%s']","some-other-bucket", "12345-67890"));
-
                             }
 
                         }
@@ -479,14 +467,12 @@ public class DefaultS3StoreImplTest {
                                 catch (Exception e) {
                                 	DefaultS3StoreImplTest.this.e = e;
                                 }
-
                             }
 
                             @Test
                             void shouldReturnNull() {
                                 assertThat(r).isNull();
                                 assertThat(e).isNull();
-
                             }
 
                         }
@@ -545,7 +531,6 @@ public class DefaultS3StoreImplTest {
                                 catch (Exception e) {
                                 	DefaultS3StoreImplTest.this.e = e;
                                 }
-
                             }
 
                             @Test
@@ -554,7 +539,6 @@ public class DefaultS3StoreImplTest {
                                 assertThat(r).isInstanceOf(S3StoreResource.class);
                                 assertThat(((S3StoreResource)r).getClient()).isEqualTo(client);
                                 assertThat(r.getDescription()).isEqualTo(format("Amazon s3 resource [bucket='%s' and object='%s']","custom-bucket", "custom-object-id"));
-
                             }
 
                         }
@@ -608,13 +592,11 @@ public class DefaultS3StoreImplTest {
                                 catch (Exception e) {
                                 	DefaultS3StoreImplTest.this.e = e;
                                 }
-
                             }
 
                             @Test
                             void shouldThrowAnException() {
                                 assertThat(e).isInstanceOf(ConversionFailedException.class);
-
                             }
 
                         }
@@ -677,7 +659,6 @@ public class DefaultS3StoreImplTest {
                                 catch (Exception e) {
                                 	DefaultS3StoreImplTest.this.e = e;
                                 }
-
                             }
 
                             @Test
@@ -686,7 +667,6 @@ public class DefaultS3StoreImplTest {
                                 assertThat(r).isInstanceOf(S3StoreResource.class);
                                 assertThat(((S3StoreResource)r).getClient()).isEqualTo(client);
                                 assertThat(r.getDescription()).isEqualTo(format("Amazon s3 resource [bucket='%s' and object='%s']","default-defaultBucket", "12345/67890"));
-
                             }
 
                         }
@@ -733,7 +713,6 @@ public class DefaultS3StoreImplTest {
                                 catch (Exception e) {
                                 	DefaultS3StoreImplTest.this.e = e;
                                 }
-
                             }
 
                             @Test
@@ -742,7 +721,6 @@ public class DefaultS3StoreImplTest {
                                 assertThat(r).isInstanceOf(S3StoreResource.class);
                                 assertThat(((S3StoreResource)r).getClient()).isEqualTo(client);
                                 assertThat(r.getDescription()).isEqualTo(format("Amazon s3 resource [bucket='%s' and object='%s']","some-other-bucket", "12345-67890"));
-
                             }
 
                         }
@@ -779,14 +757,12 @@ public class DefaultS3StoreImplTest {
                                 catch (Exception e) {
                                 	DefaultS3StoreImplTest.this.e = e;
                                 }
-
                             }
 
                             @Test
                             void shouldReturnNull() {
                                 assertThat(r).isNull();
                                 assertThat(e).isNull();
-
                             }
 
                         }
@@ -863,7 +839,6 @@ public class DefaultS3StoreImplTest {
                                 catch (Exception e) {
                                 	DefaultS3StoreImplTest.this.e = e;
                                 }
-
                             }
 
                             @Test
@@ -872,7 +847,6 @@ public class DefaultS3StoreImplTest {
                                 assertThat(r).isInstanceOf(S3StoreResource.class);
                                 assertThat(((S3StoreResource)r).getClient()).isEqualTo(client);
                                 assertThat(r.getDescription()).isEqualTo(format("Amazon s3 resource [bucket='%s' and object='%s']","custom-bucket", "test-entity/custom-object-id-string-based"));
-
                             }
 
                         }
@@ -926,13 +900,11 @@ public class DefaultS3StoreImplTest {
                                 catch (Exception e) {
                                 	DefaultS3StoreImplTest.this.e = e;
                                 }
-
                             }
 
                             @Test
                             void shouldThrowAnException() {
                                 assertThat(e).isInstanceOf(ConversionFailedException.class);
-
                             }
 
                         }
@@ -969,13 +941,11 @@ public class DefaultS3StoreImplTest {
                     s3StoreImpl = new DefaultS3StoreImpl<ContentProperty, String>(context,loader,null,placementService,client,null);
 
                     s3StoreImpl.associate(entity, id);
-
                 }
 
                 @Test
                 void shouldSetTheEntitySContentIDAttribute() {
                     assertThat(entity.getContentId()).isEqualTo("12345-67890");
-
                 }
 
             }
@@ -1006,13 +976,11 @@ public class DefaultS3StoreImplTest {
                     s3StoreImpl = new DefaultS3StoreImpl<ContentProperty, String>(context,loader,null,placementService,client,null);
 
                     s3StoreImpl.unassociate(entity);
-
                 }
 
                 @Test
                 void shouldResetTheEntitySContentIDAttribute() {
                     assertThat(entity.getContentId()).isNull();
-
                 }
 
             }
@@ -1073,19 +1041,16 @@ public class DefaultS3StoreImplTest {
                                 } catch (Exception e) {
                                 	DefaultS3StoreImplTest.this.e = e;
                                 }
-
                             }
 
                             @Test
                             void shouldFetchTheResource() {
                                 verify(loader).getResource(eq("s3://default-defaultBucket/abcd-efgh"));
-
                             }
 
                             @Test
                             void shouldChangeTheContentLength() {
                                 assertThat(entity.getContentLen()).isEqualTo(20L);
-
                             }
 
                             @Test
@@ -1093,7 +1058,6 @@ public class DefaultS3StoreImplTest {
                                 verify(resource).getOutputStream();
                                 verify(output, times(1)).write(any(byte[].class),
                                 		eq(0), eq(20));
-
                             }
 
                             @Nested
@@ -1144,14 +1108,12 @@ public class DefaultS3StoreImplTest {
                                     } catch (Exception e) {
                                     	DefaultS3StoreImplTest.this.e = e;
                                     }
-
                                 }
 
                                 @Test
                                 void shouldThrowAStoreAccessException() {
                                     assertThat(e).isInstanceOf(StoreAccessException.class);
                                     assertThat(e.getCause().getMessage()).isEqualTo("set-ioexception");
-
                                 }
 
                             }
@@ -1208,19 +1170,16 @@ public class DefaultS3StoreImplTest {
                                 } catch (Exception e) {
                                 	DefaultS3StoreImplTest.this.e = e;
                                 }
-
                             }
 
                             @Test
                             void shouldMakeANewUUID() {
                                 assertThat(entity.getContentId()).isNotNull();
-
                             }
 
                             @Test
                             void shouldCreateANewResource() {
                                 verify(loader).getResource(matches("^s3://.*[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"));
-
                             }
 
                             @Test
@@ -1228,7 +1187,6 @@ public class DefaultS3StoreImplTest {
                                 verify(resource).getOutputStream();
                                 verify(output, times(1)).write(any(byte[].class),
                                 		eq(0), eq(20));
-
                             }
 
                         }
@@ -1277,13 +1235,11 @@ public class DefaultS3StoreImplTest {
                                 } catch (Exception e) {
                                 	DefaultS3StoreImplTest.this.e = e;
                                 }
-
                             }
 
                             @Test
                             void shouldDoSomething() {
                                 assertThat(e).isInstanceOf(S3Exception.class);
-
                             }
 
                         }
@@ -1325,13 +1281,11 @@ public class DefaultS3StoreImplTest {
                     } catch (Exception e) {
                     	DefaultS3StoreImplTest.this.e = e;
                     }
-
                 }
 
                 @Test
                 void shouldDelegate() {
                     verify(s3StoreImpl).setContent(eq(entity), eq(content));
-
                 }
 
                 @Nested
@@ -1368,14 +1322,12 @@ public class DefaultS3StoreImplTest {
                         } catch (Exception e) {
                         	DefaultS3StoreImplTest.this.e = e;
                         }
-
                     }
 
                     @Test
                     void shouldThrowAStoreAccessException() {
                         assertThat(e).isInstanceOf(StoreAccessException.class);
                         assertThat(e.getCause().getMessage()).contains("setContent badness");
-
                     }
 
                 }
@@ -1431,19 +1383,16 @@ public class DefaultS3StoreImplTest {
                                     } catch (Exception e) {
                                     	DefaultS3StoreImplTest.this.e = e;
                                     }
-
                                 }
 
                                 @Test
                                 void shouldFetchTheResource() {
                                     verify(loader).getResource(eq("s3://default-defaultBucket/abcd-efgh"));
-
                                 }
 
                                 @Test
                                 void shouldGetContent() {
                                     assertThat(result).isEqualTo(content);
-
                                 }
 
                                 @Nested
@@ -1489,14 +1438,12 @@ public class DefaultS3StoreImplTest {
                                         } catch (Exception e) {
                                         	DefaultS3StoreImplTest.this.e = e;
                                         }
-
                                     }
 
                                     @Test
                                     void shouldThrowAStoreAccessException() {
                                         assertThat(e).isInstanceOf(StoreAccessException.class);
                                         assertThat(e.getCause().getMessage()).isEqualTo("get-ioexception");
-
                                     }
 
                                 }
@@ -1547,19 +1494,16 @@ public class DefaultS3StoreImplTest {
                                     } catch (Exception e) {
                                     	DefaultS3StoreImplTest.this.e = e;
                                     }
-
                                 }
 
                                 @Test
                                 void shouldFetchTheResource() {
                                     verify(loader).getResource(eq("s3://default-defaultBucket/abcd-efgh"));
-
                                 }
 
                                 @Test
                                 void shouldNotFindTheContent() {
                                     assertThat(result).isNull();
-
                                 }
 
                             }
@@ -1605,14 +1549,12 @@ public class DefaultS3StoreImplTest {
                                     } catch (Exception e) {
                                     	DefaultS3StoreImplTest.this.e = e;
                                     }
-
                                 }
 
                                 @Test
                                 void shouldReturnNull() {
                                     assertThat(result).isNull();
                                     assertThat(e).isNull();
-
                                 }
 
                             }
@@ -1673,13 +1615,11 @@ public class DefaultS3StoreImplTest {
                                     } catch (Exception e) {
                                     	DefaultS3StoreImplTest.this.e = e;
                                     }
-
                                 }
 
                                 @Test
                                 void shouldFetchTheResource() {
                                     verify(loader).getResource(eq("s3://default-defaultBucket/abcd-efgh"));
-
                                 }
 
                                 @Nested
@@ -1722,14 +1662,12 @@ public class DefaultS3StoreImplTest {
                                         } catch (Exception e) {
                                         	DefaultS3StoreImplTest.this.e = e;
                                         }
-
                                     }
 
                                     @Test
                                     void shouldResetTheMetadata() {
                                         assertThat(entity.getContentId()).isNull();
                                         assertThat(entity.getContentLen()).isEqualTo(0L);
-
                                     }
 
                                 }
@@ -1777,14 +1715,12 @@ public class DefaultS3StoreImplTest {
                                         } catch (Exception e) {
                                         	DefaultS3StoreImplTest.this.e = e;
                                         }
-
                                     }
 
                                     @Test
                                     void shouldNotResetTheContentIdMetadata() {
                                         assertThat(entity.getContentId()).isEqualTo("abcd-efgh");
                                         assertThat(entity.getContentLen()).isEqualTo(0L);
-
                                     }
 
                                 }
@@ -1832,14 +1768,12 @@ public class DefaultS3StoreImplTest {
                                         } catch (Exception e) {
                                         	DefaultS3StoreImplTest.this.e = e;
                                         }
-
                                     }
 
                                     @Test
                                     void shouldNotResetTheContentIdMetadata() {
                                         assertThat(entity.getContentId()).isEqualTo("abcd-efgh");
                                         assertThat(entity.getContentLen()).isEqualTo(0L);
-
                                     }
 
                                 }
@@ -1887,13 +1821,11 @@ public class DefaultS3StoreImplTest {
                                     } catch (Exception e) {
                                     	DefaultS3StoreImplTest.this.e = e;
                                     }
-
                                 }
 
                                 @Test
                                 void shouldFetchTheResource() {
                                     verify(loader).getResource(eq("s3://default-defaultBucket/abcd-efgh"));
-
                                 }
 
                                 @Test
@@ -1901,7 +1833,6 @@ public class DefaultS3StoreImplTest {
                                     verify(client, never()).deleteObject(any(DeleteObjectRequest.class));
                                     assertThat(entity.getContentId()).isNull();
                                     assertThat(entity.getContentLen()).isEqualTo(0L);
-
                                 }
 
                             }

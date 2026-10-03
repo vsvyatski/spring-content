@@ -49,7 +49,6 @@ public class AnnotatedStoreEventInvokerTest {
                 invoker = new AnnotatedStoreEventInvoker(reflectionService);
                 invoker.postProcessAfterInitialization(new CustomEventHandler(),
                         "custom-bean");
-
             }
 
             @Test
@@ -66,7 +65,6 @@ public class AnnotatedStoreEventInvokerTest {
                 assertThat(invoker.getHandlers().get(AfterSetContentEvent.class).size()).isEqualTo(2);
                 assertThat(invoker.getHandlers().get(BeforeUnsetContentEvent.class).size()).isEqualTo(2);
                 assertThat(invoker.getHandlers().get(AfterUnsetContentEvent.class).size()).isEqualTo(2);
-
             }
 
             @Nested
@@ -89,7 +87,6 @@ public class AnnotatedStoreEventInvokerTest {
                     assertThat(invoker.getHandlers().get(BeforeGetResourceEvent.class).size()).isEqualTo(3);
 
                     assertThat(invoker.getHandlers().get(BeforeGetResourceEvent.class).get(0).handler).isEqualTo(priorityHandler);
-
                 }
 
             }
@@ -113,7 +110,6 @@ public class AnnotatedStoreEventInvokerTest {
                 invoker.postProcessAfterInitialization(new CustomEventHandler(),
                         "custom-bean");
                 invoker.onApplicationEvent(event);
-
             }
 
             @Test
@@ -125,7 +121,6 @@ public class AnnotatedStoreEventInvokerTest {
                 verify(reflectionService).invokeMethod(org.mockito.ArgumentMatchers.eq(handler),
                         org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
                         org.mockito.ArgumentMatchers.eq(event.getSource()));
-
             }
 
         }
@@ -143,7 +138,6 @@ public class AnnotatedStoreEventInvokerTest {
                 invoker.postProcessAfterInitialization(new CustomEventHandler(),
                         "custom-bean");
                 invoker.onApplicationEvent(event);
-
             }
 
             @Test
@@ -155,7 +149,6 @@ public class AnnotatedStoreEventInvokerTest {
                 verify(reflectionService).invokeMethod(org.mockito.ArgumentMatchers.eq(handler),
                         org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
                         org.mockito.ArgumentMatchers.eq(event));
-
             }
 
         }
@@ -173,7 +166,6 @@ public class AnnotatedStoreEventInvokerTest {
                 invoker.postProcessAfterInitialization(new CustomEventHandler(),
                         "custom-bean");
                 invoker.onApplicationEvent(event);
-
             }
 
             @Test
@@ -185,7 +177,6 @@ public class AnnotatedStoreEventInvokerTest {
                 verify(reflectionService).invokeMethod(org.mockito.ArgumentMatchers.eq(handler),
                         org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
                         org.mockito.ArgumentMatchers.eq(event.getSource()));
-
             }
 
         }
@@ -203,7 +194,6 @@ public class AnnotatedStoreEventInvokerTest {
                 invoker.postProcessAfterInitialization(new CustomEventHandler(),
                         "custom-bean");
                 invoker.onApplicationEvent(event);
-
             }
 
             @Test
@@ -215,7 +205,6 @@ public class AnnotatedStoreEventInvokerTest {
                 verify(reflectionService).invokeMethod(org.mockito.ArgumentMatchers.eq(handler),
                         org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
                         org.mockito.ArgumentMatchers.eq(event));
-
             }
 
         }
@@ -233,7 +222,6 @@ public class AnnotatedStoreEventInvokerTest {
                 invoker.postProcessAfterInitialization(new CustomEventHandler(),
                         "custom-bean");
                 invoker.onApplicationEvent(event);
-
             }
 
             @Test
@@ -245,7 +233,6 @@ public class AnnotatedStoreEventInvokerTest {
                 verify(reflectionService).invokeMethod(org.mockito.ArgumentMatchers.eq(handler),
                         org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
                         org.mockito.ArgumentMatchers.eq(event.getSource()));
-
             }
 
         }
@@ -263,7 +250,6 @@ public class AnnotatedStoreEventInvokerTest {
                 invoker.postProcessAfterInitialization(new CustomEventHandler(),
                         "custom-bean");
                 invoker.onApplicationEvent(event);
-
             }
 
             @Test
@@ -275,7 +261,6 @@ public class AnnotatedStoreEventInvokerTest {
                 verify(reflectionService).invokeMethod(org.mockito.ArgumentMatchers.eq(handler),
                         org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
                         org.mockito.ArgumentMatchers.eq(event));
-
             }
 
         }
@@ -293,7 +278,6 @@ public class AnnotatedStoreEventInvokerTest {
                 invoker.postProcessAfterInitialization(new CustomEventHandler(),
                         "custom-bean");
                 invoker.onApplicationEvent(event);
-
             }
 
             @Test
@@ -305,7 +289,6 @@ public class AnnotatedStoreEventInvokerTest {
                 verify(reflectionService).invokeMethod(org.mockito.ArgumentMatchers.eq(handler),
                         org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
                         org.mockito.ArgumentMatchers.eq(event.getSource()));
-
             }
 
         }
@@ -323,7 +306,6 @@ public class AnnotatedStoreEventInvokerTest {
                 invoker.postProcessAfterInitialization(new CustomEventHandler(),
                         "custom-bean");
                 invoker.onApplicationEvent(event);
-
             }
 
             @Test
@@ -335,7 +317,6 @@ public class AnnotatedStoreEventInvokerTest {
                 verify(reflectionService).invokeMethod(org.mockito.ArgumentMatchers.eq(handler),
                         org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
                         org.mockito.ArgumentMatchers.eq(event));
-
             }
 
         }
@@ -353,7 +334,6 @@ public class AnnotatedStoreEventInvokerTest {
                 invoker.postProcessAfterInitialization(new CustomEventHandler(),
                         "custom-bean");
                 invoker.onApplicationEvent(event);
-
             }
 
             @Test
@@ -365,7 +345,6 @@ public class AnnotatedStoreEventInvokerTest {
                 verify(reflectionService).invokeMethod(org.mockito.ArgumentMatchers.eq(handler),
                         org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
                         org.mockito.ArgumentMatchers.eq(event.getSource()));
-
             }
 
         }
@@ -383,7 +362,6 @@ public class AnnotatedStoreEventInvokerTest {
                 invoker.postProcessAfterInitialization(new CustomEventHandler(),
                         "custom-bean");
                 invoker.onApplicationEvent(event);
-
             }
 
             @Test
@@ -395,7 +373,6 @@ public class AnnotatedStoreEventInvokerTest {
                 verify(reflectionService).invokeMethod(org.mockito.ArgumentMatchers.eq(handler),
                         org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
                         org.mockito.ArgumentMatchers.eq(event));
-
             }
 
         }
@@ -413,7 +390,6 @@ public class AnnotatedStoreEventInvokerTest {
                 invoker.postProcessAfterInitialization(new CustomEventHandler(),
                         "custom-bean");
                 invoker.onApplicationEvent(event);
-
             }
 
             @Test
@@ -425,7 +401,6 @@ public class AnnotatedStoreEventInvokerTest {
                 verify(reflectionService).invokeMethod(org.mockito.ArgumentMatchers.eq(handler),
                         org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
                         org.mockito.ArgumentMatchers.eq(event.getSource()));
-
             }
 
         }
@@ -443,7 +418,6 @@ public class AnnotatedStoreEventInvokerTest {
                 invoker.postProcessAfterInitialization(new CustomEventHandler(),
                         "custom-bean");
                 invoker.onApplicationEvent(event);
-
             }
 
             @Test
@@ -455,7 +429,6 @@ public class AnnotatedStoreEventInvokerTest {
                 verify(reflectionService).invokeMethod(org.mockito.ArgumentMatchers.eq(handler),
                         org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
                         org.mockito.ArgumentMatchers.eq(event));
-
             }
 
         }
@@ -473,7 +446,6 @@ public class AnnotatedStoreEventInvokerTest {
                 invoker.postProcessAfterInitialization(new CustomEventHandler(),
                         "custom-bean");
                 invoker.onApplicationEvent(event);
-
             }
 
             @Test
@@ -485,7 +457,6 @@ public class AnnotatedStoreEventInvokerTest {
                 verify(reflectionService).invokeMethod(org.mockito.ArgumentMatchers.eq(handler),
                         org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
                         org.mockito.ArgumentMatchers.eq(event.getSource()));
-
             }
 
         }
@@ -503,7 +474,6 @@ public class AnnotatedStoreEventInvokerTest {
                 invoker.postProcessAfterInitialization(new CustomEventHandler(),
                         "custom-bean");
                 invoker.onApplicationEvent(event);
-
             }
 
             @Test
@@ -515,7 +485,6 @@ public class AnnotatedStoreEventInvokerTest {
                 verify(reflectionService).invokeMethod(org.mockito.ArgumentMatchers.eq(handler),
                         org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
                         org.mockito.ArgumentMatchers.eq(event));
-
             }
 
         }
@@ -533,7 +502,6 @@ public class AnnotatedStoreEventInvokerTest {
                 invoker.postProcessAfterInitialization(new CustomEventHandler(),
                         "custom-bean");
                 invoker.onApplicationEvent(event);
-
             }
 
             @Test
@@ -545,7 +513,6 @@ public class AnnotatedStoreEventInvokerTest {
                 verify(reflectionService).invokeMethod(org.mockito.ArgumentMatchers.eq(handler),
                         org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
                         org.mockito.ArgumentMatchers.eq(event.getSource()));
-
             }
 
         }
@@ -563,7 +530,6 @@ public class AnnotatedStoreEventInvokerTest {
                 invoker.postProcessAfterInitialization(new CustomEventHandler(),
                         "custom-bean");
                 invoker.onApplicationEvent(event);
-
             }
 
             @Test
@@ -575,7 +541,6 @@ public class AnnotatedStoreEventInvokerTest {
                 verify(reflectionService).invokeMethod(org.mockito.ArgumentMatchers.eq(handler),
                         org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
                         org.mockito.ArgumentMatchers.eq(event));
-
             }
 
         }
@@ -593,7 +558,6 @@ public class AnnotatedStoreEventInvokerTest {
                 invoker.postProcessAfterInitialization(new CustomEventHandler(),
                         "custom-bean");
                 invoker.onApplicationEvent(event);
-
             }
 
             @Test
@@ -605,7 +569,6 @@ public class AnnotatedStoreEventInvokerTest {
                 verify(reflectionService).invokeMethod(org.mockito.ArgumentMatchers.eq(handler),
                         org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
                         org.mockito.ArgumentMatchers.eq(event.getSource()));
-
             }
 
         }
@@ -623,7 +586,6 @@ public class AnnotatedStoreEventInvokerTest {
                 invoker.postProcessAfterInitialization(new CustomEventHandler(),
                         "custom-bean");
                 invoker.onApplicationEvent(event);
-
             }
 
             @Test
@@ -635,7 +597,6 @@ public class AnnotatedStoreEventInvokerTest {
                 verify(reflectionService).invokeMethod(org.mockito.ArgumentMatchers.eq(handler),
                         org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
                         org.mockito.ArgumentMatchers.eq(event));
-
             }
 
         }
@@ -653,7 +614,6 @@ public class AnnotatedStoreEventInvokerTest {
                 invoker.postProcessAfterInitialization(new CustomEventHandler(),
                         "custom-bean");
                 invoker.onApplicationEvent(event);
-
             }
 
             @Test
@@ -665,7 +625,6 @@ public class AnnotatedStoreEventInvokerTest {
                 verify(reflectionService).invokeMethod(org.mockito.ArgumentMatchers.eq(handler),
                         org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
                         org.mockito.ArgumentMatchers.eq(event.getSource()));
-
             }
 
         }
@@ -683,7 +642,6 @@ public class AnnotatedStoreEventInvokerTest {
                 invoker.postProcessAfterInitialization(new CustomEventHandler(),
                         "custom-bean");
                 invoker.onApplicationEvent(event);
-
             }
 
             @Test
@@ -695,7 +653,6 @@ public class AnnotatedStoreEventInvokerTest {
                 verify(reflectionService).invokeMethod(org.mockito.ArgumentMatchers.eq(handler),
                         org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
                         org.mockito.ArgumentMatchers.eq(event));
-
             }
 
         }
@@ -713,7 +670,6 @@ public class AnnotatedStoreEventInvokerTest {
                 invoker.postProcessAfterInitialization(new CustomEventHandler(),
                         "custom-bean");
                 invoker.onApplicationEvent(event);
-
             }
 
             @Test
@@ -725,7 +681,6 @@ public class AnnotatedStoreEventInvokerTest {
                 verify(reflectionService).invokeMethod(org.mockito.ArgumentMatchers.eq(handler),
                         org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
                         org.mockito.ArgumentMatchers.eq(event.getSource()));
-
             }
 
         }
@@ -743,7 +698,6 @@ public class AnnotatedStoreEventInvokerTest {
                 invoker.postProcessAfterInitialization(new CustomEventHandler(),
                         "custom-bean");
                 invoker.onApplicationEvent(event);
-
             }
 
             @Test
@@ -755,7 +709,6 @@ public class AnnotatedStoreEventInvokerTest {
                 verify(reflectionService).invokeMethod(org.mockito.ArgumentMatchers.eq(handler),
                         org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
                         org.mockito.ArgumentMatchers.eq(event));
-
             }
 
         }
@@ -773,7 +726,6 @@ public class AnnotatedStoreEventInvokerTest {
                 invoker.postProcessAfterInitialization(new CustomEventHandler(),
                         "custom-bean");
                 invoker.onApplicationEvent(event);
-
             }
 
             @Test
@@ -785,7 +737,6 @@ public class AnnotatedStoreEventInvokerTest {
                 verify(reflectionService).invokeMethod(org.mockito.ArgumentMatchers.eq(handler),
                         org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
                         org.mockito.ArgumentMatchers.eq(event.getSource()));
-
             }
 
         }
@@ -803,7 +754,6 @@ public class AnnotatedStoreEventInvokerTest {
                 invoker.postProcessAfterInitialization(new CustomEventHandler(),
                         "custom-bean");
                 invoker.onApplicationEvent(event);
-
             }
 
             @Test
@@ -815,7 +765,6 @@ public class AnnotatedStoreEventInvokerTest {
                 verify(reflectionService).invokeMethod(org.mockito.ArgumentMatchers.eq(handler),
                         org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
                         org.mockito.ArgumentMatchers.eq(event));
-
             }
 
         }
@@ -833,7 +782,6 @@ public class AnnotatedStoreEventInvokerTest {
                 invoker.postProcessAfterInitialization(new CustomEventHandler(),
                         "custom-bean");
                 invoker.onApplicationEvent(event);
-
             }
 
             @Test
@@ -843,7 +791,6 @@ public class AnnotatedStoreEventInvokerTest {
                 assertThat(handler).isNotNull();
 
                 verify(reflectionService, never()).invokeMethod(any(), any(), any());
-
             }
 
         }

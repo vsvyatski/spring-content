@@ -81,7 +81,6 @@ public class RevisionPropertyRestEndpointsIT {
                     testEntity = repository.save(testEntity);
 
                     assertThat(repository.findRevisions(testEntity.getId()).toList().size()).isEqualTo(2);
-
                 }
 
                 @Test
@@ -90,7 +89,6 @@ public class RevisionPropertyRestEndpointsIT {
                         get("/tEntities/" + testEntity.getId() + "/revisions/1/content").
                             accept("text/plain")).
                         andExpect(status().isNotFound());
-
                 }
 
             }
@@ -107,7 +105,6 @@ public class RevisionPropertyRestEndpointsIT {
                     testEntity = repository.save(testEntity);
 
                     assertThat(repository.findRevisions(testEntity.getId()).toList().size()).isEqualTo(2);
-
                 }
 
                 @Test
@@ -124,7 +121,6 @@ public class RevisionPropertyRestEndpointsIT {
 
                     assertThat(response).isNotNull();
                     assertThat(response.getContentAsString()).isEqualTo("Hello Spring Content World!");
-
                 }
 
             }

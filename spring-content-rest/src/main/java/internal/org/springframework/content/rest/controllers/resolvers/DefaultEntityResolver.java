@@ -457,8 +457,6 @@ public class DefaultEntityResolver implements EntityResolver {
         @Override
         public void setCharacterEncoding(String env)
                 throws UnsupportedEncodingException {
-
-
         }
 
         @Override
@@ -555,14 +553,10 @@ public class DefaultEntityResolver implements EntityResolver {
 
         @Override
         public void setAttribute(String name, Object o) {
-
-
         }
 
         @Override
         public void removeAttribute(String name) {
-
-
         }
 
         @Override
@@ -830,15 +824,11 @@ public class DefaultEntityResolver implements EntityResolver {
         @Override
         public void login(String username, String password)
                 throws ServletException {
-
-
         }
 
         @Override
         public void logout()
                 throws ServletException {
-
-
         }
 
         @Override

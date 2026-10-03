@@ -46,7 +46,6 @@ public class JpaVersionsAutoConfigurationTest {
             void setUp() {
                 contextRunner = new ApplicationContextRunner()
                         .withConfiguration(AutoConfigurations.of(JpaVersionsAutoConfiguration.class));
-
             }
 
             @Test
@@ -54,7 +53,6 @@ public class JpaVersionsAutoConfigurationTest {
                 contextRunner.withUserConfiguration(StarterConfig.class).run((context) -> {
                     Assertions.assertThat(context).hasSingleBean(JpaVersionsDatabaseInitializer.class);
                 });
-
             }
 
         }
@@ -65,7 +63,6 @@ public class JpaVersionsAutoConfigurationTest {
             void setUp() {
                 contextRunner = new ApplicationContextRunner()
                         .withConfiguration(AutoConfigurations.of(JpaVersionsAutoConfiguration.class));
-
             }
 
             @Test
@@ -73,7 +70,6 @@ public class JpaVersionsAutoConfigurationTest {
                 contextRunner.withUserConfiguration(StarterWithAnnotationConfig.class).run((context) -> {
                     Assertions.assertThat(context).hasSingleBean(NestedTestEntityRepository.class);
                 });
-
             }
 
         }

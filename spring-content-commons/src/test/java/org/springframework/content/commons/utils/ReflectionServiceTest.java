@@ -31,13 +31,11 @@ public class ReflectionServiceTest {
                 reflectionService.invokeMethod(ReflectionUtils
                 		.findMethod(HelloWorldService.class, "helloWorld"), service,
                 		new Object[] {});
-
             }
 
             @Test
             void shouldInvokeTheMethod() {
                 verify(service).helloWorld();
-
             }
 
         }

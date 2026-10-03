@@ -73,7 +73,6 @@ public class ShortcutExclusionsIT {
 
                 testEntity = repo.save(new TestEntity3());
                             testEntity = repo.save(testEntity);
-
             }
 
             @Test
@@ -90,7 +89,6 @@ public class ShortcutExclusionsIT {
                                 new StringReader(response.getContentAsString()));
                 assertThat(halResponse.getLinks().size()).isGreaterThan(2);
                 assertThat(halResponse.getLinksByRel("testEntity3")).isNotNull();
-
             }
 
         }

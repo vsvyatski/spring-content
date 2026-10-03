@@ -85,7 +85,6 @@ public class ClassWalkerTest {
             expectedOtherCamelCaseProperty.setMimeTypePropertyPath("otherCamelCaseProperty.camelCasePropertyMimetypes");
             expectedOtherCamelCaseProperty.setOriginalFileNamePropertyPath("otherCamelCaseProperty.camelCasePropertyFilenames");
             assertThat(visitor.getProperties()).containsEntry("otherCamelCaseProperty", expectedOtherCamelCaseProperty);
-
         }
 
     }
@@ -107,7 +106,6 @@ public class ClassWalkerTest {
             expectedProperty2.setMimeTypePropertyPath("mimeType");
             expectedProperty2.setOriginalFileNamePropertyPath("originalFileName");
             assertThat(visitor.getProperties()).containsEntry("content", expectedProperty2);
-
         }
 
     }
@@ -129,7 +127,6 @@ public class ClassWalkerTest {
             expectedProperty2.setMimeTypePropertyPath("contentMimeType");
             expectedProperty2.setOriginalFileNamePropertyPath("contentOriginalFileName");
             assertThat(visitor.getProperties()).containsEntry("content", expectedProperty2);
-
         }
 
     }
@@ -151,7 +148,6 @@ public class ClassWalkerTest {
             expectedProperty.setMimeTypePropertyPath("child.mimeType");
             expectedProperty.setOriginalFileNamePropertyPath("child.originalFileName");
             assertThat(visitor.getProperties()).containsEntry("child", expectedProperty);
-
         }
 
     }
@@ -165,7 +161,6 @@ public class ClassWalkerTest {
             walker.accept(TestClass3.class);
 
             assertThat(visitor.getProperties().size()).isEqualTo(0);
-
         }
 
     }
@@ -187,7 +182,6 @@ public class ClassWalkerTest {
             expectedProperty.setMimeTypePropertyPath("contentMimeType");
             expectedProperty.setOriginalFileNamePropertyPath("contentOriginalFileName");
             assertThat(visitor.getProperties()).containsEntry("content", expectedProperty);
-
         }
 
     }
@@ -219,7 +213,6 @@ public class ClassWalkerTest {
             expectedProperty3.setMimeTypePropertyPath("child2.mimeType");
             expectedProperty3.setOriginalFileNamePropertyPath("child2.originalFileName");
             assertThat(visitor.getProperties()).containsEntry("child2", expectedProperty3);
-
         }
 
     }
@@ -251,7 +244,6 @@ public class ClassWalkerTest {
             expectedProperty3.setMimeTypePropertyPath("child.previewMimeType");
             expectedProperty3.setOriginalFileNamePropertyPath("child.previewOriginalFileName");
             assertThat(visitor.getProperties()).containsEntry("child/preview", expectedProperty3);
-
         }
 
     }
@@ -283,7 +275,6 @@ public class ClassWalkerTest {
             expectedProperty2.setMimeTypePropertyPath("child.child.previewMimeType");
             expectedProperty2.setOriginalFileNamePropertyPath("child.child.previewOriginalFileName");
             assertThat(visitor.getProperties()).containsEntry("child/child/preview", expectedProperty2);
-
         }
 
     }

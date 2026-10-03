@@ -148,7 +148,6 @@ public class ContentEntityRestEndpointsIT {
                     void shouldReturn200() throws Exception {
                         mvc.perform(delete("/testEntity3s/" + testEntity3.id + "/softDelete"))
                                 .andExpect(status().is2xxSuccessful());
-
                     }
 
                 }
@@ -180,7 +179,6 @@ public class ContentEntityRestEndpointsIT {
                         		.header("Origin", "http://www.someurl.com"))
                         		.andExpect(status().isOk())
                         		.andExpect(header().string("Access-Control-Allow-Origin","http://www.someurl.com"));
-
                     }
 
                 }
@@ -237,7 +235,6 @@ public class ContentEntityRestEndpointsIT {
 
                     testEntity6 = new TestEntity6();
                     testEntity6 = repo6.save(testEntity6);
-
                 }
 
                 @Test
@@ -245,7 +242,6 @@ public class ContentEntityRestEndpointsIT {
                     mvc.perform(get("/testEntity6s/" + testEntity6.getId())
                     			.accept("text/plain"))
                     	.andExpect(status().isNotFound());
-
                 }
 
             }
@@ -257,7 +253,6 @@ public class ContentEntityRestEndpointsIT {
             @BeforeEach
             void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
-
             }
 
             @Test
@@ -300,7 +295,6 @@ public class ContentEntityRestEndpointsIT {
                 		.andReturn().getResponse();
 
                 assertThat(response.getContentAsString()).isEqualTo(newContent);
-
             }
 
         }
@@ -312,7 +306,6 @@ public class ContentEntityRestEndpointsIT {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
-
                 }
 
                 @Test
@@ -349,7 +342,6 @@ public class ContentEntityRestEndpointsIT {
                     		.andReturn().getResponse();
 
                     assertThat(response.getContentAsString()).isEqualTo(newContent);
-
                 }
 
             }
@@ -359,7 +351,6 @@ public class ContentEntityRestEndpointsIT {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
-
                 }
 
                 @Test
@@ -382,7 +373,6 @@ public class ContentEntityRestEndpointsIT {
                     assertThat(fetchedEntity.get().getContentId()).isNull();
                     assertThat(fetchedEntity.get().getLen()).isNull();
                     assertThat(fetchedEntity.get().getOriginalFileName()).isNull();
-
                 }
 
             }
@@ -396,7 +386,6 @@ public class ContentEntityRestEndpointsIT {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                 testEntity9 = repo9.save(new TestEntity9());
-
             }
 
             @Test
@@ -424,7 +413,6 @@ public class ContentEntityRestEndpointsIT {
 
                 assertThat(response).isNotNull();
                 assertThat(response.getContentAsString()).isEqualTo("Hello Spring Content World!");
-
             }
 
         }
@@ -434,7 +422,6 @@ public class ContentEntityRestEndpointsIT {
             @BeforeEach
             void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
-
             }
 
             @Test
@@ -467,7 +454,6 @@ public class ContentEntityRestEndpointsIT {
                 		.andExpect(status().isOk())
                 		.andReturn().getResponse();
                 assertThat(response.getContentAsString()).isEqualTo(newContent);
-
             }
 
         }
@@ -477,7 +463,6 @@ public class ContentEntityRestEndpointsIT {
             @BeforeEach
             void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
-
             }
 
             @Test
@@ -506,7 +491,6 @@ public class ContentEntityRestEndpointsIT {
                 assertThat(fetchedEntity.get().getContentId()).isNull();
                 assertThat(fetchedEntity.get().getLen()).isNull();
                 assertThat(fetchedEntity.get().getOriginalFileName()).isNull();
-
             }
 
         }
@@ -518,7 +502,6 @@ public class ContentEntityRestEndpointsIT {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                 eventListener.clear();
-
             }
 
             @Test
@@ -537,7 +520,6 @@ public class ContentEntityRestEndpointsIT {
                 assertThat(eventListener.getAfterCreate().size()).isEqualTo(1);
                 assertThat(((TestEntity3) eventListener.getBeforeCreate().get(0)).getName()).isEqualTo("foo foo");
                 assertThat(((TestEntity3) eventListener.getAfterCreate().get(0)).getName()).isEqualTo("foo foo");
-
             }
 
         }
@@ -547,7 +529,6 @@ public class ContentEntityRestEndpointsIT {
             @BeforeEach
             void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
-
             }
 
             @Test
@@ -571,7 +552,6 @@ public class ContentEntityRestEndpointsIT {
                 );
 
                 assertThat(repo3.count()).isEqualTo(before);
-
             }
 
         }
@@ -581,7 +561,6 @@ public class ContentEntityRestEndpointsIT {
             @BeforeEach
             void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
-
             }
 
             @Test
@@ -612,7 +591,6 @@ public class ContentEntityRestEndpointsIT {
                 		.andExpect(status().isOk())
                 		.andReturn().getResponse();
                 assertThat(response.getContentAsString()).isEqualTo(newContent);
-
             }
 
         }

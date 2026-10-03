@@ -96,7 +96,6 @@ public class LockingAndVersioningRestIT {
                 doc = new VersionedDocument();
                 doc.setData("John");
                 doc = repo.save(doc);
-
             }
 
             @Test
@@ -182,7 +181,6 @@ public class LockingAndVersioningRestIT {
                 assertThat((Object) response.get("_embedded.versionedDocuments[0].successorId")).isEqualTo((int)(doc.getId() + 1));
                 assertThat((Object) response.get("_embedded.versionedDocuments[1].version")).isEqualTo("1.1");
                 assertThat((Object) response.get("_embedded.versionedDocuments[1].successorId")).isNull();
-
             }
 
         }
@@ -284,7 +282,6 @@ public class LockingAndVersioningRestIT {
                      withUser(User.withDefaultPasswordEncoder().username("paul123").password("password").roles("USER")).
                      withUser(User.withDefaultPasswordEncoder().username("john123").password("password").roles("USER").
                              build());
-
         }
 
         @Bean

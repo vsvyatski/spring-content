@@ -40,7 +40,6 @@ public class FileServiceTest {
                 catch (Exception e) {
                 	ex = e;
                 }
-
             }
 
             @AfterEach
@@ -52,7 +51,6 @@ public class FileServiceTest {
             void shouldThrowAnIOException() {
                 assertThat(ex).isNotNull();
                 assertThat(ex).isInstanceOf(IOException.class);
-
             }
 
         }
@@ -72,7 +70,6 @@ public class FileServiceTest {
                 catch (Exception e) {
                 	ex = e;
                 }
-
             }
 
             @AfterEach
@@ -89,7 +86,6 @@ public class FileServiceTest {
             void shouldCreateTheDirectory() {
                 assertThat(file.isDirectory()).isTrue();
                 assertThat(file.exists()).isTrue();
-
             }
 
         }
@@ -110,7 +106,6 @@ public class FileServiceTest {
                 catch (Exception e) {
                 	ex = e;
                 }
-
             }
 
             @AfterEach
@@ -123,7 +118,6 @@ public class FileServiceTest {
                 assertThat(ex).isNull();
                 assertThat(file.exists()).isTrue();
                 assertThat(file.isDirectory()).isTrue();
-
             }
 
         }
@@ -143,7 +137,6 @@ public class FileServiceTest {
                 catch (Exception e) {
                 	ex = e;
                 }
-
             }
 
             @AfterEach
@@ -156,7 +149,6 @@ public class FileServiceTest {
                 assertThat(ex).isNull();
                 assertThat(file.exists()).isTrue();
                 assertThat(file.isDirectory()).isTrue();
-
             }
 
         }
@@ -174,14 +166,12 @@ public class FileServiceTest {
                 catch (Exception e) {
                 	ex = e;
                 }
-
             }
 
             @Test
             void shouldThrowAnIllegalArgumentException() {
                 assertThat(ex).isNotNull();
                 assertThat(ex).isInstanceOf(IllegalArgumentException.class);
-
             }
 
         }
@@ -206,7 +196,6 @@ public class FileServiceTest {
             assertThat(p2.toFile().exists()).isFalse();
             assertThat(p1.toFile().exists()).isFalse();
             assertThat(p0.toFile().exists()).isTrue();
-
         }
 
         @Test
@@ -219,7 +208,6 @@ public class FileServiceTest {
             } catch (IOException e) {
             	assertThat(e).isNotNull();
             }
-
         }
 
         @Test
@@ -235,7 +223,6 @@ public class FileServiceTest {
             assertThat(p1.toFile().exists()).isTrue();
             assertThat(f1.toFile().exists()).isTrue();
             assertThat(p0.toFile().exists()).isTrue();
-
         }
 
         @Test
@@ -245,7 +232,6 @@ public class FileServiceTest {
             fileService.rmdirs(p0.toFile(), p0.toFile());
 
             assertThat(p0.toFile().exists()).isTrue();
-
         }
 
     }

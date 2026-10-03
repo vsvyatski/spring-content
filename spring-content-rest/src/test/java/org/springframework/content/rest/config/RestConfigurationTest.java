@@ -50,19 +50,16 @@ public class RestConfigurationTest {
                       RepositoryRestMvcConfiguration.class,
                       RestConfiguration.class);
                 context.refresh();
-
             }
 
             @Test
             void shouldHaveAContentHandlerMappingBean() {
                 assertThat(context.getBean("contentHandlerMapping")).isNotNull();
-
             }
 
             @Test
             void shouldHaveTheContentRestControllers() {
                 assertThat(context.getBean("storeRestController")).isNotNull();
-
             }
 
             @Test
@@ -71,7 +68,6 @@ public class RestConfigurationTest {
                 assertThat(config).isNotNull();
 
                 verify(configurer).configure(config);
-
             }
 
         }

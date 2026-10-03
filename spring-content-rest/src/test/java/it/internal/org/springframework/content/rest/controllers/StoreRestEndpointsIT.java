@@ -70,13 +70,11 @@ public class StoreRestEndpointsIT {
 
                     path = "/" + UUID.randomUUID() + ".txt";
                     request = "/teststore" + path;
-
                 }
 
                 @Test
                 void shouldReturn404() throws Exception {
                     mvc.perform(get(request)).andExpect(status().isNotFound());
-
                 }
 
             }
@@ -89,7 +87,6 @@ public class StoreRestEndpointsIT {
 
                     path = "/" + UUID.randomUUID() + ".txt";
                     request = "/teststore" + path;
-
                 }
 
                 @Test
@@ -105,7 +102,6 @@ public class StoreRestEndpointsIT {
                     		new ByteArrayInputStream("New multi-part content".getBytes()),
                     		r.getInputStream())).isTrue();
                     assertThat(r.contentLength()).isEqualTo(Long.valueOf(content.length()));
-
                 }
 
             }
@@ -118,13 +114,11 @@ public class StoreRestEndpointsIT {
 
                     path = "/" + UUID.randomUUID() + ".txt";
                     request = "/teststore" + path;
-
                 }
 
                 @Test
                 void shouldReturnA404() throws Exception {
                     mvc.perform(delete(request)).andExpect(status().isNotFound());
-
                 }
 
             }
@@ -159,7 +153,6 @@ public class StoreRestEndpointsIT {
 
                 assertThat(response).isNotNull();
                 assertThat(response.getContentAsString()).isEqualTo("Existing content");
-
             }
 
             @Test
@@ -171,7 +164,6 @@ public class StoreRestEndpointsIT {
 
                 assertThat(response).isNotNull();
                 assertThat(response.getContentAsString()).isEqualTo("cont");
-
             }
 
             @Test
@@ -183,7 +175,6 @@ public class StoreRestEndpointsIT {
                 assertThat(IOUtils.contentEquals(
                 		new ByteArrayInputStream("New Existing content".getBytes()),
                 		r.getInputStream())).isTrue();
-
             }
 
             @Test
@@ -192,7 +183,6 @@ public class StoreRestEndpointsIT {
 
                 Resource r = store.getResource(path);
                 assertThat(r.exists()).isFalse();
-
             }
 
             @Nested
@@ -230,7 +220,6 @@ public class StoreRestEndpointsIT {
                     				"New multi-part content".getBytes()),
                     		r.getInputStream())).isTrue();
                     assertThat(r.contentLength()).isEqualTo(Long.valueOf(content.length()));
-
                 }
 
             }
@@ -251,7 +240,6 @@ public class StoreRestEndpointsIT {
                 			new ByteArrayInputStream("Existing content".getBytes()),
                 			((WritableResource) r).getOutputStream());
                 }
-
             }
 
             @Test
@@ -261,7 +249,6 @@ public class StoreRestEndpointsIT {
 
                 assertThat(response).isNotNull();
                 assertThat(response.getContentAsString()).isEqualTo("Existing content");
-
             }
 
             @Test
@@ -273,7 +260,6 @@ public class StoreRestEndpointsIT {
 
                 assertThat(response).isNotNull();
                 assertThat(response.getContentAsString()).isEqualTo("cont");
-
             }
 
             @Test
@@ -285,7 +271,6 @@ public class StoreRestEndpointsIT {
                 assertThat(IOUtils.contentEquals(
                 		new ByteArrayInputStream("New Existing content".getBytes()),
                 		r.getInputStream())).isTrue();
-
             }
 
             @Test
@@ -294,7 +279,6 @@ public class StoreRestEndpointsIT {
 
                 Resource r = store.getResource(path);
                 assertThat(r.exists()).isFalse();
-
             }
 
             @Nested
@@ -311,7 +295,6 @@ public class StoreRestEndpointsIT {
                     			new ByteArrayInputStream("Existing content".getBytes()),
                     			((WritableResource) r).getOutputStream());
                     }
-
                 }
 
                 @Test
@@ -324,7 +307,6 @@ public class StoreRestEndpointsIT {
 
                     assertThat(response).isNotNull();
                     assertThat(response.getContentAsString()).isEqualTo("Existing content");
-
                 }
 
             }
@@ -343,7 +325,6 @@ public class StoreRestEndpointsIT {
                     			new ByteArrayInputStream("Existing content".getBytes()),
                     			((WritableResource) r).getOutputStream());
                     }
-
                 }
 
                 @Test
@@ -360,7 +341,6 @@ public class StoreRestEndpointsIT {
                     				"New multi-part content".getBytes()),
                     		r.getInputStream())).isTrue();
                     assertThat(r.contentLength()).isEqualTo(Long.valueOf(content.length()));
-
                 }
 
             }

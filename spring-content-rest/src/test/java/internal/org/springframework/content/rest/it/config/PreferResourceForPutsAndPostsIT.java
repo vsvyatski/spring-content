@@ -74,7 +74,6 @@ public class PreferResourceForPutsAndPostsIT {
         @BeforeEach
         void setUp() {
             RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
-
         }
 
         @Test
@@ -91,7 +90,6 @@ public class PreferResourceForPutsAndPostsIT {
             MockStoreFactoryBean storeFactory = context.getBean(MockStoreFactoryBean.class);
 
             verify(storeFactory.getMock()).setContent(org.mockito.ArgumentMatchers.isA(TestEntity.class), org.mockito.ArgumentMatchers.isA(PropertyPath.class), (Resource)org.mockito.ArgumentMatchers.isA(Resource.class));
-
         }
 
     }

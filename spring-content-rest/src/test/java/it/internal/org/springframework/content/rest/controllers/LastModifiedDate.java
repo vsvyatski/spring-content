@@ -71,7 +71,6 @@ public abstract class LastModifiedDate {
             assertThat(response).isNotNull();
             assertThat(response.getContentAsString()).isEqualTo(content);
             assertThat(isWithinASecond(lastModifiedDate).matches(response.getHeader("last-modified"))).isTrue();
-
         }
 
     }
@@ -97,7 +96,6 @@ public abstract class LastModifiedDate {
             assertThat(response).isNotNull();
             assertThat(response.getContentAsString()).isEqualTo(content);
             assertThat(isWithinASecond(lastModifiedDate).matches(response.getHeader("last-modified"))).isTrue();
-
         }
 
     }
@@ -111,7 +109,6 @@ public abstract class LastModifiedDate {
                     .header("if-modified-since", toHeaderDateFormat(lastModifiedDate)))
                     .andExpect(status().isNotModified())
                     .andExpect(content().string(""));
-
         }
 
     }
@@ -125,7 +122,6 @@ public abstract class LastModifiedDate {
                     .header("if-unmodified-since", toHeaderDateFormat(addDays(lastModifiedDate, -1))))
                     .andExpect(status().isPreconditionFailed())
                     .andReturn();
-
         }
 
     }
@@ -139,7 +135,6 @@ public abstract class LastModifiedDate {
                     .header("if-unmodified-since", isWithinASecond(lastModifiedDate)))
                     .andExpect(status().isOk())
                     .andExpect(content().string(content));
-
         }
 
     }
@@ -153,7 +148,6 @@ public abstract class LastModifiedDate {
                     .contentType("text/plain")
                     .header("if-unmodified-since", toHeaderDateFormat(addDays(lastModifiedDate, -1))))
                     .andExpect(status().isPreconditionFailed());
-
         }
 
     }
@@ -167,7 +161,6 @@ public abstract class LastModifiedDate {
                     .contentType("text/plain")
                     .header("if-unmodified-since", toHeaderDateFormat(lastModifiedDate)))
                     .andExpect(status().isOk());
-
         }
 
     }
@@ -184,7 +177,6 @@ public abstract class LastModifiedDate {
                         .header("if-none-match", etag))
                         .andExpect(status().isPreconditionFailed());
             }
-
         }
 
     }
@@ -196,7 +188,6 @@ public abstract class LastModifiedDate {
             mvc.perform(delete(url)
                     .header("if-unmodified-since", toHeaderDateFormat(addDays(lastModifiedDate, -1))))
                     .andExpect(status().isPreconditionFailed());
-
         }
 
     }
@@ -208,7 +199,6 @@ public abstract class LastModifiedDate {
             mvc.perform(delete(url)
                     .header("if-unmodified-since", toHeaderDateFormat(lastModifiedDate)))
                     .andExpect(status().isNoContent());
-
         }
 
     }

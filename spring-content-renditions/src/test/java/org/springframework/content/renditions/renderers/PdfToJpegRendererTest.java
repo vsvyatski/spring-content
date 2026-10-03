@@ -44,7 +44,6 @@ public class PdfToJpegRendererTest {
             void setUp() {
                 pdf = mock(PDFService.class);
                 renderer = new PdfToJpegRenderer(pdf);
-
             }
 
             @Test
@@ -60,7 +59,6 @@ public class PdfToJpegRendererTest {
             void setUp() {
                 pdf = mock(PDFService.class);
                 renderer = new PdfToJpegRenderer(pdf);
-
             }
 
             @Test
@@ -94,7 +92,6 @@ public class PdfToJpegRendererTest {
                         } catch (Exception e) {
                             PdfToJpegRendererTest.this.e = e;
                         }
-
                     }
 
                     @Test
@@ -129,14 +126,12 @@ public class PdfToJpegRendererTest {
                             } catch (Exception e) {
                                 PdfToJpegRendererTest.this.e = e;
                             }
-
                         }
 
                         @Test
                         void shouldThrowARenditionException() {
                             assertThat(e).isNotNull();
                             assertThat(e).isInstanceOf(RenditionException.class);
-
                         }
 
                         @Test
@@ -168,14 +163,12 @@ public class PdfToJpegRendererTest {
                         } catch (Exception e) {
                             PdfToJpegRendererTest.this.e = e;
                         }
-
                     }
 
                     @Test
                     void shouldThrowARenditionException() {
                         assertThat(e).isNotNull();
                         assertThat(e).isInstanceOf(RenditionException.class);
-
                     }
 
                 }
@@ -194,7 +187,6 @@ public class PdfToJpegRendererTest {
                     } catch (Exception e) {
                         PdfToJpegRendererTest.this.e = e;
                     }
-
                 }
 
                 @Test

@@ -64,7 +64,6 @@ public abstract class AbstractRestIT {
 
                     existingClaim = new TestEntity2();
                     claimRepo.save(existingClaim);
-
                 }
 
                 @Test
@@ -96,7 +95,6 @@ public abstract class AbstractRestIT {
                     .extract().response();
                     assertThat(response1.getContentType()).startsWith("text/plain");
                     assertThat(response1.asString()).isEqualTo(newContent);
-
                 }
 
                 @Nested
@@ -125,7 +123,6 @@ public abstract class AbstractRestIT {
                         existingClaim.getChild().setMimeType("text/plain");
                         claimFormStore.setContent(existingClaim, PropertyPath.from("child"), new ByteArrayInputStream("This is plain text content!".getBytes()));
                         claimRepo.save(existingClaim);
-
                     }
 
                     @Test
@@ -138,7 +135,6 @@ public abstract class AbstractRestIT {
                         .extract().response();
                         assertThat(response2.getContentType()).startsWith("text/plain");
                         assertThat(response2.asString()).isEqualTo("This is plain text content!");
-
                     }
 
                     @Test
@@ -161,7 +157,6 @@ public abstract class AbstractRestIT {
                         .extract().response();
                         assertThat(response3.getContentType()).startsWith("text/plain");
                         assertThat(response3.asString()).isEqualTo(newContent);
-
                     }
 
                     @Test
@@ -178,7 +173,6 @@ public abstract class AbstractRestIT {
                         .then()
                         .assertThat()
                         .statusCode(HttpStatus.SC_NOT_FOUND);
-
                     }
 
                 }

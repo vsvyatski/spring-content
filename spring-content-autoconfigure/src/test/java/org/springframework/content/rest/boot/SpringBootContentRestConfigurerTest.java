@@ -49,13 +49,11 @@ public class SpringBootContentRestConfigurerTest {
 
                     configurer = new SpringBootContentRestConfigurer(properties);
                     configurer.configure(restConfig);
-
                 }
 
                 @Test
                 void shouldSetThePropertyOnTheRestConfiguration() {
                     verify(restConfig).setBaseUri(eq(properties.getBaseUri()));
-
                 }
 
             }
@@ -73,13 +71,11 @@ public class SpringBootContentRestConfigurerTest {
 
                     configurer = new SpringBootContentRestConfigurer(properties);
                     configurer.configure(restConfig);
-
                 }
 
                 @Test
                 void shouldSetThePropertyOnTheRestConfiguration() {
                     verify(restConfig).setFullyQualifiedLinks(eq(true));
-
                 }
 
             }
@@ -99,13 +95,11 @@ public class SpringBootContentRestConfigurerTest {
 
                     configurer = new SpringBootContentRestConfigurer(properties);
                     configurer.configure(restConfig);
-
                 }
 
                 @Test
                 void shouldDisableTheShortcutLinks() {
                     verify(restConfig).setShortcutLinks(false);
-
                 }
 
             }
@@ -125,7 +119,6 @@ public class SpringBootContentRestConfigurerTest {
 
                     configurer = new SpringBootContentRestConfigurer(properties);
                     configurer.configure(restConfig);
-
                 }
 
                 @Test
@@ -133,7 +126,6 @@ public class SpringBootContentRestConfigurerTest {
                     verify(exclusions).exclude("GET", MediaType.parseMediaType("a/b"));
                     verify(exclusions).exclude("GET", MediaType.parseMediaType("c/d"));
                     verify(exclusions).exclude("PUT", MediaType.parseMediaType("*/*"));
-
                 }
 
             }
@@ -153,13 +145,11 @@ public class SpringBootContentRestConfigurerTest {
 
                     configurer = new SpringBootContentRestConfigurer(properties);
                     configurer.configure(restConfig);
-
                 }
 
                 @Test
                 void shouldNotSetTheExclusionsPropertyOnTheRestConfiguration() {
                     verify(exclusions, never()).exclude(any(), any());
-
                 }
 
             }
@@ -179,13 +169,11 @@ public class SpringBootContentRestConfigurerTest {
 
                     configurer = new SpringBootContentRestConfigurer(properties);
                     configurer.configure(restConfig);
-
                 }
 
                 @Test
                 void shouldNotSetTheExclusionsPropertyOnTheRestConfiguration() {
                     verify(exclusions, never()).exclude(any(), any());
-
                 }
 
             }
@@ -205,13 +193,11 @@ public class SpringBootContentRestConfigurerTest {
 
                     configurer = new SpringBootContentRestConfigurer(properties);
                     configurer.configure(restConfig);
-
                 }
 
                 @Test
                 void shouldNotSetTheExclusionsPropertyOnTheRestConfiguration() {
                     verify(exclusions, never()).exclude(any(), any());
-
                 }
 
             }
@@ -227,13 +213,11 @@ public class SpringBootContentRestConfigurerTest {
 
                     configurer = new SpringBootContentRestConfigurer(properties);
                     configurer.configure(restConfig);
-
                 }
 
                 @Test
                 void shouldNotSetThePropertyOnTheRestConfiguration() {
                     verify(restConfig, never()).setBaseUri(any());
-
                 }
 
             }
@@ -251,14 +235,12 @@ public class SpringBootContentRestConfigurerTest {
 
                     configurer = new SpringBootContentRestConfigurer(properties);
                     configurer.configure(restConfig);
-
                 }
 
                 @Test
                 void shouldNotSetThePropertyOnTheRestConfiguration() {
                     verify(restConfig, never()).setBaseUri(any());
                     verify(restConfig, never()).setFullyQualifiedLinks(anyBoolean());
-
                 }
 
             }

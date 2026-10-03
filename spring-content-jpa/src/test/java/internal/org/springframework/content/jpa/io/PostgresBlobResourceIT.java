@@ -128,7 +128,6 @@ public class PostgresBlobResourceIT {
                     assertThat(rs.next()).isFalse();
                     rs.close();
                     stmt.close();
-
                 }
 
             }

@@ -83,7 +83,6 @@ public class NestedContentPropertiesRestEndpointsIT {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                     testEntity10 = repository.save(new TestEntity10());
-
                 }
 
                 @Test
@@ -91,7 +90,6 @@ public class NestedContentPropertiesRestEndpointsIT {
                     mvc.perform(
                             get("/testEntity10s/9999999/foo"))
                             .andExpect(status().isNotFound());
-
                 }
 
             }
@@ -103,7 +101,6 @@ public class NestedContentPropertiesRestEndpointsIT {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                     testEntity10 = repository.save(new TestEntity10());
-
                 }
 
                 @Test
@@ -111,7 +108,6 @@ public class NestedContentPropertiesRestEndpointsIT {
                     mvc.perform(
                             get("/testEntity10s/" + testEntity10.getId() + "/doesnotexist"))
                             .andExpect(status().isNotFound());
-
                 }
 
             }
@@ -125,7 +121,6 @@ public class NestedContentPropertiesRestEndpointsIT {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                         testEntity10 = repository.save(new TestEntity10());
-
                     }
 
                     @Test
@@ -133,7 +128,6 @@ public class NestedContentPropertiesRestEndpointsIT {
                         mvc.perform(
                           get("/testEntity10s/" + testEntity10.getId() + "/child"))
                           .andExpect(status().isNotFound());
-
                     }
 
                 }
@@ -145,7 +139,6 @@ public class NestedContentPropertiesRestEndpointsIT {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                         testEntity10 = repository.save(new TestEntity10());
-
                     }
 
                     @Test
@@ -179,7 +172,6 @@ public class NestedContentPropertiesRestEndpointsIT {
                                        try (InputStream actual = store.getResource(fetched.get(), PropertyPath.from("child/preview")).getInputStream()) {
                                            IOUtils.contentEquals(actual, new ByteArrayInputStream("Hello New Spring Content Preview World!".getBytes()));
                                        }
-
                     }
 
                 }
@@ -191,7 +183,6 @@ public class NestedContentPropertiesRestEndpointsIT {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                         testEntity10 = repository.save(new TestEntity10());
-
                     }
 
                     @Test
@@ -211,7 +202,6 @@ public class NestedContentPropertiesRestEndpointsIT {
                                  try (InputStream actual = store.getResource(fetched.get(), PropertyPath.from("child/content")).getInputStream()) {
                                      IOUtils.contentEquals(actual, new ByteArrayInputStream(content.getBytes()));
                                  }
-
                     }
 
                 }
@@ -264,7 +254,6 @@ public class NestedContentPropertiesRestEndpointsIT {
 
                         assertThat(response).isNotNull();
                         assertThat(response.getContentAsString()).isEqualTo("Hello Spring Content World!");
-
                     }
 
                 }
@@ -312,7 +301,6 @@ public class NestedContentPropertiesRestEndpointsIT {
 
                         assertThat(response).isNotNull();
                         assertThat(response.getContentAsString()).isEqualTo("<html><body>Hello Spring Content World!</body></html>");
-
                     }
 
                 }
@@ -361,7 +349,6 @@ public class NestedContentPropertiesRestEndpointsIT {
 
                         assertThat(response).isNotNull();
                         assertThat(response.getContentAsString()).isEqualTo("Hello Spring Content World!");
-
                     }
 
                 }
@@ -411,7 +398,6 @@ public class NestedContentPropertiesRestEndpointsIT {
                         assertThat(fetched.get().getChild().contentId).isNotNull();
                         assertThat(fetched.get().getChild().contentLen).isEqualTo(31L);
                         assertThat(fetched.get().getChild().contentMimeType).isEqualTo("text/plain");
-
                     }
 
                 }
@@ -458,7 +444,6 @@ public class NestedContentPropertiesRestEndpointsIT {
                         assertThat(fetched.get().getChild().contentId).isNull();
                         assertThat(fetched.get().getChild().contentLen).isNull();
                                        assertThat(fetched.get().getChild().contentMimeType).isNull();
-
                     }
 
                 }
@@ -472,7 +457,6 @@ public class NestedContentPropertiesRestEndpointsIT {
             @BeforeEach
             void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
-
             }
 
             @Test
@@ -512,7 +496,6 @@ public class NestedContentPropertiesRestEndpointsIT {
                   .andReturn().getResponse();
 
                 assertThat(response.getContentAsString()).isEqualTo(previewContent);
-
             }
 
         }

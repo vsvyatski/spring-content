@@ -33,13 +33,11 @@ public class ObservableInputStreamTest {
                     observer = mock(InputStreamObserver.class);
 
                     ois = new ObservableInputStream(fis, observer);
-
                 }
 
                 @Test
                 void shouldReturnThem() {
                     assertThat(ois.getObservers()).contains(observer);
-
                 }
 
             }
@@ -54,13 +52,11 @@ public class ObservableInputStreamTest {
                     ois = new ObservableInputStream(fis, observer);
 
                     ois.read();
-
                 }
 
                 @Test
                 void shouldDelegateToTheUnderlyingInputStream() throws IOException {
                     verify(fis).read();
-
                 }
 
             }
@@ -75,13 +71,11 @@ public class ObservableInputStreamTest {
                     ois = new ObservableInputStream(fis, observer);
 
                     ois.close();
-
                 }
 
                 @Test
                 void shouldCallListenersOnClosedEventHandler() {
                     verify(observer).closed();
-
                 }
 
             }

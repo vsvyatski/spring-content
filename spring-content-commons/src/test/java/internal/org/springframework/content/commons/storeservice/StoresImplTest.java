@@ -39,13 +39,11 @@ public class StoresImplTest {
 
                 contentRepoService = new StoresImpl(context);
                 contentRepoService.afterPropertiesSet();
-
             }
 
             @Test
             void shouldAlwaysReturnEmpty() {
                 assertThat(contentRepoService.getStores(Store.class)).isEqualTo(new StoreInfo[] {});
-
             }
 
         }
@@ -73,14 +71,12 @@ public class StoresImplTest {
 
                 contentRepoService = new StoresImpl(context);
                 contentRepoService.afterPropertiesSet();
-
             }
 
             @Test
             void shouldReturnNoStoreInfo() {
                 StoreInfo[] infos = contentRepoService.getStores(Store.class);
                 assertThat(infos.length).isEqualTo(1);
-
             }
 
             @Test
@@ -88,14 +84,12 @@ public class StoresImplTest {
                 StoreInfo[] infos = contentRepoService
                 		.getStores(AssociativeStore.class);
                 assertThat(infos.length).isEqualTo(1);
-
             }
 
             @Test
             void shouldReturnContentStoreInfo() {
                 StoreInfo[] infos = contentRepoService.getStores(ContentStore.class);
                 assertThat(infos.length).isEqualTo(1);
-
             }
 
         }
@@ -124,14 +118,12 @@ public class StoresImplTest {
 
                 contentRepoService = new StoresImpl(context);
                 contentRepoService.afterPropertiesSet();
-
             }
 
             @Test
             void shouldReturnStoreInfo() {
                 StoreInfo[] infos = contentRepoService.getStores(Store.class);
                 assertThat(infos.length).isEqualTo(1);
-
             }
 
             @Test
@@ -139,14 +131,12 @@ public class StoresImplTest {
                 StoreInfo[] infos = contentRepoService
                 		.getStores(AssociativeStore.class);
                 assertThat(infos.length).isEqualTo(0);
-
             }
 
             @Test
             void shouldReturnNoContentStoreInfo() {
                 StoreInfo[] infos = contentRepoService.getStores(ContentStore.class);
                 assertThat(infos.length).isEqualTo(0);
-
             }
 
         }
@@ -175,21 +165,18 @@ public class StoresImplTest {
 
                 contentRepoService = new StoresImpl(context);
                 contentRepoService.afterPropertiesSet();
-
             }
 
             @Test
             void shouldReturnNoContentStoreInfo() {
                 StoreInfo[] infos = contentRepoService.getStores(ContentStore.class);
                 assertThat(infos.length).isEqualTo(0);
-
             }
 
             @Test
             void shouldReturnStoreInfo() {
                 StoreInfo[] infos = contentRepoService.getStores(Store.class);
                 assertThat(infos.length).isEqualTo(1);
-
             }
 
             @Test
@@ -197,7 +184,6 @@ public class StoresImplTest {
                 StoreInfo[] infos = contentRepoService
                 		.getStores(AssociativeStore.class);
                 assertThat(infos.length).isEqualTo(1);
-
             }
 
         }
@@ -239,7 +225,6 @@ public class StoresImplTest {
 
                 contentRepoService = new StoresImpl(context);
                 contentRepoService.afterPropertiesSet();
-
             }
 
             @Test
@@ -247,7 +232,6 @@ public class StoresImplTest {
                 StoreInfo[] infos = contentRepoService.getStores(
                 		AssociativeStore.class, Stores.MATCH_ALL);
                 assertThat(infos.length).isEqualTo(2);
-
             }
 
             @Test
@@ -265,7 +249,6 @@ public class StoresImplTest {
                 			}
                 		});
                 assertThat(infos.length).isEqualTo(0);
-
             }
 
         }
@@ -307,14 +290,12 @@ public class StoresImplTest {
 
                 contentRepoService = new StoresImpl(context);
                 contentRepoService.afterPropertiesSet();
-
             }
 
             @Test
             void shouldReturnStoresThatMatchTheFilter() {
                 StoreInfo[] infos = contentRepoService.getStores(ContentStore.class, Stores.MATCH_ALL);
                 assertThat(infos.length).isEqualTo(2);
-
             }
 
         }

@@ -71,7 +71,6 @@ public class SolrIT {
             doc = docRepo.save(doc);
             doc = docContentRepo.setContent(doc, this.getClass().getResourceAsStream("/one.docx"));
             doc = docRepo.save(doc);
-
         }
 
         @AfterEach
@@ -89,7 +88,6 @@ public class SolrIT {
                 req.process(solr, null);
                 req.commit(solr, null);
             }
-
         }
 
         @Test
@@ -104,7 +102,6 @@ public class SolrIT {
                 QueryResponse response = request.process(solr);
                 assertThat(response.getResults()).hasSize(1);
             });
-
         }
 
         @Nested
@@ -120,7 +117,6 @@ public class SolrIT {
                 doc = docRepo.save(doc);
                 doc = docContentRepo.setContent(doc, this.getClass().getResourceAsStream("/one.docx"));
                 doc = docRepo.save(doc);
-
             }
 
             @AfterEach
@@ -138,14 +134,12 @@ public class SolrIT {
                     req.process(solr, null);
                     req.commit(solr, null);
                 }
-
             }
 
             @Test
             void shouldReturnTheSearchedContent() {
                 Iterable<UUID> content = docContentRepo.search("one");
                 assertThat(content).contains(doc.getContentId());
-
             }
 
         }
@@ -166,7 +160,6 @@ public class SolrIT {
 
                 docContentRepo.setContent(doc, this.getClass().getResourceAsStream("/two.rtf"));
                 docRepo.save(doc);
-
             }
 
             @AfterEach
@@ -184,7 +177,6 @@ public class SolrIT {
                     req.process(solr, null);
                     req.commit(solr, null);
                 }
-
             }
 
             @Test
@@ -199,7 +191,6 @@ public class SolrIT {
                     QueryResponse response = request.process(solr);
                     assertThat(response.getResults()).hasSize(1);
                 });
-
             }
 
         }
@@ -221,7 +212,6 @@ public class SolrIT {
                 id = doc.getContentId();
                 docContentRepo.unsetContent(doc);
                 docRepo.delete(doc);
-
             }
 
             @AfterEach
@@ -239,7 +229,6 @@ public class SolrIT {
                     req.process(solr, null);
                     req.commit(solr, null);
                 }
-
             }
 
             @Test
@@ -256,7 +245,6 @@ public class SolrIT {
                 SolrDocumentList results = response.getResults();
 
                 assertThat(results.size()).isEqualTo(0);
-
             }
 
         }
@@ -279,7 +267,6 @@ public class SolrIT {
                     doc = docContentRepo.setContent(doc, this.getClass().getResourceAsStream("/one.docx"));
                     docRepo.save(doc);
                 }
-
             }
 
             @AfterEach
@@ -299,7 +286,6 @@ public class SolrIT {
                     req.process(solr, null);
                     req.commit(solr, null);
                 }
-
             }
 
             @Test
@@ -327,7 +313,6 @@ public class SolrIT {
     assertThat(page.getNumberOfElements()).isEqualTo(1);
 
 });
-
             }
 
             @Test
@@ -337,7 +322,6 @@ public class SolrIT {
     assertThat(page.getNumberOfElements()).isEqualTo(1);
 
 });
-
             }
 
         }
@@ -362,7 +346,6 @@ public class SolrIT {
             doc2.setEmail("author@abc.com");
             store.setContent(doc2, this.getClass().getResourceAsStream("/one.docx"));
             doc2 = docRepo.save(doc2);
-
         }
 
         @AfterEach
@@ -380,7 +363,6 @@ public class SolrIT {
                 req.process(solr, null);
                 req.commit(solr, null);
             }
-
         }
 
         @Test
@@ -393,7 +375,6 @@ public class SolrIT {
 
             assertThat(results).contains(doc.getContentId());
             assertThat(results).doesNotContain(doc2.getContentId());
-
         }
 
     }
@@ -410,7 +391,6 @@ public class SolrIT {
             doc.setEmail("author@email.com");
             doc = docRepo.save(doc);
             doc = store.setContent(doc, this.getClass().getResourceAsStream("/one.docx"));
-
         }
 
         @AfterEach
@@ -428,7 +408,6 @@ public class SolrIT {
                 req.process(solr, null);
                 req.commit(solr, null);
             }
-
         }
 
         @Test
@@ -441,7 +420,6 @@ public class SolrIT {
     assertThat(iterator.hasNext()).isFalse();
 
 });
-
         }
 
     }

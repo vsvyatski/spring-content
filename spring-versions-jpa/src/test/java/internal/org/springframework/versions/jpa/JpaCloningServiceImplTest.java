@@ -34,14 +34,12 @@ public class JpaCloningServiceImplTest {
                     } catch (Exception e) {
                         JpaCloningServiceImplTest.this.e = e;
                     }
-
                 }
 
                 @Test
                 void shouldCloneTheEntity() {
                     assertThat(result).isNotNull();
                     assertThat(result).isNotEqualTo(entity);
-
                 }
 
             }
@@ -59,14 +57,12 @@ public class JpaCloningServiceImplTest {
                     } catch (Exception e) {
                         JpaCloningServiceImplTest.this.e = e;
                     }
-
                 }
 
                 @Test
                 void shouldCloneTheEntity() {
                     assertThat(e).isInstanceOf(LockingAndVersioningException.class);
                     assertThat(e.getMessage()).contains("no copy constructor");
-
                 }
 
             }
@@ -84,14 +80,12 @@ public class JpaCloningServiceImplTest {
                     } catch (Exception e) {
                         JpaCloningServiceImplTest.this.e = e;
                     }
-
                 }
 
                 @Test
                 void shouldCloneTheEntity() {
                     assertThat(e).isInstanceOf(LockingAndVersioningException.class);
                     assertThat(e.getMessage()).contains("copy constructor failed");
-
                 }
 
             }

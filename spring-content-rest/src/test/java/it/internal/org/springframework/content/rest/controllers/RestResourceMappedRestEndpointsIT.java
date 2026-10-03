@@ -83,7 +83,6 @@ public class RestResourceMappedRestEndpointsIT {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                     testEntity11 = repo.save(new TestEntity11());
-
                 }
 
                 @Test
@@ -91,7 +90,6 @@ public class RestResourceMappedRestEndpointsIT {
                     mvc.perform(
                             get("/testEntity11s/9999999/package/content"))
                             .andExpect(status().isNotFound());
-
                 }
 
             }
@@ -103,7 +101,6 @@ public class RestResourceMappedRestEndpointsIT {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                     testEntity11 = repo.save(new TestEntity11());
-
                 }
 
                 @Test
@@ -111,7 +108,6 @@ public class RestResourceMappedRestEndpointsIT {
                     mvc.perform(
                             get("/testEntity11s/" + testEntity11.getId() + "/doesnotexist"))
                             .andExpect(status().isNotFound());
-
                 }
 
             }
@@ -125,7 +121,6 @@ public class RestResourceMappedRestEndpointsIT {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                         testEntity11 = repo.save(new TestEntity11());
-
                     }
 
                     @Test
@@ -133,7 +128,6 @@ public class RestResourceMappedRestEndpointsIT {
                         mvc.perform(
                           get("/testEntity11s/" + testEntity11.getId() + "/package/content"))
                           .andExpect(status().isNotFound());
-
                     }
 
                 }
@@ -145,7 +139,6 @@ public class RestResourceMappedRestEndpointsIT {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                         testEntity11 = repo.save(new TestEntity11());
-
                     }
 
                     @Test
@@ -164,7 +157,6 @@ public class RestResourceMappedRestEndpointsIT {
                         try (InputStream actual = store.getResource(fetched.get(), PropertyPath.from("_package/content")).getInputStream()) {
                             IOUtils.contentEquals(actual, new ByteArrayInputStream("Hello New Spring Content World!".getBytes()));
                         }
-
                     }
 
                 }
@@ -176,7 +168,6 @@ public class RestResourceMappedRestEndpointsIT {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                         testEntity11 = repo.save(new TestEntity11());
-
                     }
 
                     @Test
@@ -196,7 +187,6 @@ public class RestResourceMappedRestEndpointsIT {
                                  try (InputStream actual = store.getResource(fetched.get(), PropertyPath.from("_package/content")).getInputStream()) {
                                      IOUtils.contentEquals(actual, new ByteArrayInputStream(content.getBytes()));
                                  }
-
                     }
 
                 }
@@ -250,7 +240,6 @@ public class RestResourceMappedRestEndpointsIT {
                         Object val = parse(obj, "_links", "package/content", "href");
                         assertThat(val).isNotNull();
                         assertThat(val.toString()).matches("http://localhost/testEntity11s/.*/package/content");
-
                     }
 
                 }
@@ -299,7 +288,6 @@ public class RestResourceMappedRestEndpointsIT {
 
                         assertThat(response).isNotNull();
                         assertThat(response.getContentAsString()).isEqualTo("Hello Spring Content World!");
-
                     }
 
                 }
@@ -346,7 +334,6 @@ public class RestResourceMappedRestEndpointsIT {
 
                         assertThat(response).isNotNull();
                         assertThat(response.getContentAsString()).isEqualTo("<html><body>Hello Spring Content World!</body></html>");
-
                     }
 
                 }
@@ -393,7 +380,6 @@ public class RestResourceMappedRestEndpointsIT {
 
                         assertThat(response).isNotNull();
                         assertThat(response.getContentAsString()).isEqualTo("Hello Spring Content World!");
-
                     }
 
                 }
@@ -442,7 +428,6 @@ public class RestResourceMappedRestEndpointsIT {
                         assertThat(fetched.get().get_package().contentId).isNotNull();
                         assertThat(fetched.get().get_package().contentLen).isEqualTo(31L);
                         assertThat(fetched.get().get_package().contentMimeType).isEqualTo("text/plain");
-
                     }
 
                 }
@@ -489,7 +474,6 @@ public class RestResourceMappedRestEndpointsIT {
                         assertThat(fetched.get().get_package().contentId).isNull();
                         assertThat(fetched.get().get_package().contentLen).isNull();
                                        assertThat(fetched.get().get_package().contentMimeType).isNull();
-
                     }
 
                 }

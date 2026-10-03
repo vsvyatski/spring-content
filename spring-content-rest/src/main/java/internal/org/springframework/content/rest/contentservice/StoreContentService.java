@@ -105,7 +105,6 @@ public class StoreContentService implements ContentService {
         IOUtils.copy(in, out);
         IOUtils.closeQuietly(out);
         IOUtils.closeQuietly(in);
-
     }
 
     @Override

@@ -43,7 +43,6 @@ public class FileSystemResourceLoaderTest {
                     } catch (Exception e) {
                         ex = e;
                     }
-
                 }
 
                 @Test
@@ -52,7 +51,6 @@ public class FileSystemResourceLoaderTest {
                     final String expected = getPathWithProperSeparators("/some/well-formed/path/something");
                     assertThat(loader.getResource("/something").getFile().getPath()).isEqualTo(expected);
                     assertThat(loader.getResource("/something")).isInstanceOf(DeletableResource.class);
-
                 }
 
             }
@@ -67,7 +65,6 @@ public class FileSystemResourceLoaderTest {
                     } catch (Exception e) {
                         ex = e;
                     }
-
                 }
 
                 @Test
@@ -76,7 +73,6 @@ public class FileSystemResourceLoaderTest {
                     final String expected = getPathWithProperSeparators("/some/malformed/path/something");
                     assertThat(loader.getResource("/something").getFile().getPath()).isEqualTo(expected);
                     assertThat(loader.getResource("/something")).isInstanceOf(DeletableResource.class);
-
                 }
 
             }
@@ -103,7 +99,6 @@ public class FileSystemResourceLoaderTest {
                     Resource resource = loader.getResource(location);
                     assertThat(resource).isInstanceOf(DeletableResource.class);
                     ((DeletableResource) resource).delete();
-
                 }
 
                 @Test

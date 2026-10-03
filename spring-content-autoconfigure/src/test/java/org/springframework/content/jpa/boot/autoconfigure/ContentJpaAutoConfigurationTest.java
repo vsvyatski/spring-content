@@ -54,7 +54,6 @@ public class ContentJpaAutoConfigurationTest {
             initializer = mock(ContentJpaDatabaseInitializer.class);
             contextRunner = new ApplicationContextRunner()
             		.withConfiguration(AutoConfigurations.of(JpaContentAutoConfiguration.class));
-
         }
 
         @Test
@@ -64,7 +63,6 @@ public class ContentJpaAutoConfigurationTest {
             	Assertions.assertThat(context).hasSingleBean(ContentJpaDatabaseInitializer.class);
             	Assertions.assertThat(context).hasBean("copyBufferSize");
             });
-
         }
 
         @Nested
@@ -74,7 +72,6 @@ public class ContentJpaAutoConfigurationTest {
                 initializer = mock(ContentJpaDatabaseInitializer.class);
                 contextRunner = new ApplicationContextRunner()
                 		.withConfiguration(AutoConfigurations.of(JpaContentAutoConfiguration.class));
-
             }
 
             @Test
@@ -83,7 +80,6 @@ public class ContentJpaAutoConfigurationTest {
                 	Assertions.assertThat(context).getBean(ContentJpaDatabaseInitializer.class).isEqualTo(initializer);
                 	Assertions.assertThat(context).getBean("copyBufferSize").isEqualTo(16192);
                 });
-
             }
 
         }
@@ -95,7 +91,6 @@ public class ContentJpaAutoConfigurationTest {
                 initializer = mock(ContentJpaDatabaseInitializer.class);
                 contextRunner = new ApplicationContextRunner()
                 		.withConfiguration(AutoConfigurations.of(JpaContentAutoConfiguration.class));
-
             }
 
             @Test
@@ -106,7 +101,6 @@ public class ContentJpaAutoConfigurationTest {
                 	Assertions.assertThat(context).hasSingleBean(ContentJpaDatabaseInitializer.class);
                 	Assertions.assertThat(context).hasBean("copyBufferSize");
                 });
-
             }
 
         }

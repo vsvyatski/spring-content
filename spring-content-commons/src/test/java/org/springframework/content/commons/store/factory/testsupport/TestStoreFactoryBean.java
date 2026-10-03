@@ -79,13 +79,11 @@ public class TestStoreFactoryBean extends AbstractStoreFactoryBean {
         @Override
         public void associate(Object entity, PropertyPath propertyPath, Serializable id) {
             // TODO Auto-generated method stub
-
         }
 
         @Override
         public void unassociate(Object entity, PropertyPath propertyPath) {
             // TODO Auto-generated method stub
-
         }
 
         @Override

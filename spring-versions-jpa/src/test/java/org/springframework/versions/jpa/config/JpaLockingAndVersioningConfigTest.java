@@ -34,43 +34,36 @@ public class JpaLockingAndVersioningConfigTest {
             context = new AnnotationConfigApplicationContext();
             context.register(TestConfig.class);
             context.refresh();
-
         }
 
         @Test
         void shouldHaveAnAuthenticationFacadeBean() {
             assertThat(context.getBean(AuthenticationFacade.class)).isNotNull();
-
         }
 
         @Test
         void shouldHaveAnEntityInformationFacadeBean() {
             assertThat(context.getBean(EntityInformationFacade.class)).isNotNull();
-
         }
 
         @Test
         void shouldHaveALockingServiceBean() {
             assertThat(context.getBean(LockingService.class)).isNotNull();
-
         }
 
         @Test
         void shouldHaveAVersioningServiceBean() {
             assertThat(context.getBean(VersioningService.class)).isNotNull();
-
         }
 
         @Test
         void shouldHaveACloningServiceBean() {
             assertThat(context.getBean(CloningService.class)).isNotNull();
-
         }
 
         @Test
         void shouldHaveALockingAndVersioningProxyFactoryBean() {
             assertThat(context.getBean(LockingAndVersioningProxyFactory.class)).isNotNull();
-
         }
 
     }

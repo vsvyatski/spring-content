@@ -54,7 +54,6 @@ public class AbstractStoreEventListenerTest {
                     event = new BeforeGetResourceEvent(new EventSource(), store);
 
                     listener.onApplicationEvent(event);
-
                 }
 
                 @Test
@@ -65,14 +64,12 @@ public class AbstractStoreEventListenerTest {
                     assertThat(argumentCaptor.getValue()).isEqualTo(event);
                     assertThat(argumentCaptor.getValue().getSource()).isEqualTo(event.getSource());
                     assertThat(argumentCaptor.getValue().getStore()).isEqualTo(store);
-
                 }
 
                 @Test
                 void shouldCallTheEventSourceConsumer() {
                     verify(consumer)
                     		.onBeforeGetResource(org.mockito.ArgumentMatchers.eq(event.getSource()));
-
                 }
 
             }
@@ -89,7 +86,6 @@ public class AbstractStoreEventListenerTest {
                     event = new AfterGetResourceEvent(new EventSource(), store);
 
                     listener.onApplicationEvent(event);
-
                 }
 
                 @Test
@@ -100,14 +96,12 @@ public class AbstractStoreEventListenerTest {
                     assertThat(argumentCaptor.getValue()).isEqualTo(event);
                     assertThat(argumentCaptor.getValue().getSource()).isEqualTo(event.getSource());
                     assertThat(argumentCaptor.getValue().getStore()).isEqualTo(store);
-
                 }
 
                 @Test
                 void shouldCallTheEventSourceConsumer() {
                     verify(consumer)
                     		.onAfterGetResource(org.mockito.ArgumentMatchers.eq(event.getSource()));
-
                 }
 
             }
@@ -124,7 +118,6 @@ public class AbstractStoreEventListenerTest {
                     event = new BeforeAssociateEvent(new EventSource(), store);
 
                     listener.onApplicationEvent(event);
-
                 }
 
                 @Test
@@ -135,14 +128,12 @@ public class AbstractStoreEventListenerTest {
                     assertThat(argumentCaptor.getValue()).isEqualTo(event);
                     assertThat(argumentCaptor.getValue().getSource()).isEqualTo(event.getSource());
                     assertThat(argumentCaptor.getValue().getStore()).isEqualTo(store);
-
                 }
 
                 @Test
                 void shouldCallTheEventSourceConsumer() {
                     verify(consumer)
                     		.onBeforeAssociate(org.mockito.ArgumentMatchers.eq(event.getSource()));
-
                 }
 
             }
@@ -159,7 +150,6 @@ public class AbstractStoreEventListenerTest {
                     event = new AfterAssociateEvent(new EventSource(), store);
 
                     listener.onApplicationEvent(event);
-
                 }
 
                 @Test
@@ -170,14 +160,12 @@ public class AbstractStoreEventListenerTest {
                     assertThat(argumentCaptor.getValue()).isEqualTo(event);
                     assertThat(argumentCaptor.getValue().getSource()).isEqualTo(event.getSource());
                     assertThat(argumentCaptor.getValue().getStore()).isEqualTo(store);
-
                 }
 
                 @Test
                 void shouldCallTheEventSourceConsumer() {
                     verify(consumer)
                     		.onAfterAssociate(org.mockito.ArgumentMatchers.eq(event.getSource()));
-
                 }
 
             }
@@ -194,7 +182,6 @@ public class AbstractStoreEventListenerTest {
                     event = new BeforeUnassociateEvent(new EventSource(), store);
 
                     listener.onApplicationEvent(event);
-
                 }
 
                 @Test
@@ -205,14 +192,12 @@ public class AbstractStoreEventListenerTest {
                     assertThat(argumentCaptor.getValue()).isEqualTo(event);
                     assertThat(argumentCaptor.getValue().getSource()).isEqualTo(event.getSource());
                     assertThat(argumentCaptor.getValue().getStore()).isEqualTo(store);
-
                 }
 
                 @Test
                 void shouldCallTheEventSourceConsumer() {
                     verify(consumer)
                     		.onBeforeUnassociate(org.mockito.ArgumentMatchers.eq(event.getSource()));
-
                 }
 
             }
@@ -229,7 +214,6 @@ public class AbstractStoreEventListenerTest {
                     event = new AfterUnassociateEvent(new EventSource(), store);
 
                     listener.onApplicationEvent(event);
-
                 }
 
                 @Test
@@ -240,14 +224,12 @@ public class AbstractStoreEventListenerTest {
                     assertThat(argumentCaptor.getValue()).isEqualTo(event);
                     assertThat(argumentCaptor.getValue().getSource()).isEqualTo(event.getSource());
                     assertThat(argumentCaptor.getValue().getStore()).isEqualTo(store);
-
                 }
 
                 @Test
                 void shouldCallTheEventSourceConsumer() {
                     verify(consumer)
                     		.onAfterUnassociate(org.mockito.ArgumentMatchers.eq(event.getSource()));
-
                 }
 
             }
@@ -264,7 +246,6 @@ public class AbstractStoreEventListenerTest {
                     event = new BeforeGetContentEvent(new EventSource(), store);
 
                     listener.onApplicationEvent(event);
-
                 }
 
                 @Test
@@ -275,14 +256,12 @@ public class AbstractStoreEventListenerTest {
                     assertThat(argumentCaptor.getValue()).isEqualTo(event);
                     assertThat(argumentCaptor.getValue().getSource()).isEqualTo(event.getSource());
                     assertThat(argumentCaptor.getValue().getStore()).isEqualTo(store);
-
                 }
 
                 @Test
                 void shouldCallTheEventSourceConsumer() {
                     verify(consumer)
                     		.onBeforeGetContent(org.mockito.ArgumentMatchers.eq(event.getSource()));
-
                 }
 
             }
@@ -299,7 +278,6 @@ public class AbstractStoreEventListenerTest {
                     event = new AfterGetContentEvent(new EventSource(), store);
 
                     listener.onApplicationEvent(event);
-
                 }
 
                 @Test
@@ -310,14 +288,12 @@ public class AbstractStoreEventListenerTest {
                     assertThat(argumentCaptor.getValue()).isEqualTo(event);
                     assertThat(argumentCaptor.getValue().getSource()).isEqualTo(event.getSource());
                     assertThat(argumentCaptor.getValue().getStore()).isEqualTo(store);
-
                 }
 
                 @Test
                 void shouldCallTheEventSourceConsumer() {
                     verify(consumer)
                     		.onAfterGetContent(org.mockito.ArgumentMatchers.eq(event.getSource()));
-
                 }
 
             }
@@ -334,7 +310,6 @@ public class AbstractStoreEventListenerTest {
                     event = new BeforeSetContentEvent(new EventSource(), store, (InputStream)null);
 
                     listener.onApplicationEvent(event);
-
                 }
 
                 @Test
@@ -345,14 +320,12 @@ public class AbstractStoreEventListenerTest {
                     assertThat(argumentCaptor.getValue()).isEqualTo(event);
                     assertThat(argumentCaptor.getValue().getSource()).isEqualTo(event.getSource());
                     assertThat(argumentCaptor.getValue().getStore()).isEqualTo(store);
-
                 }
 
                 @Test
                 void shouldCallTheEventSourceConsumer() {
                     verify(consumer)
                     		.onBeforeSetContent(org.mockito.ArgumentMatchers.eq(event.getSource()));
-
                 }
 
             }
@@ -369,7 +342,6 @@ public class AbstractStoreEventListenerTest {
                     event = new AfterSetContentEvent(new EventSource(), store);
 
                     listener.onApplicationEvent(event);
-
                 }
 
                 @Test
@@ -380,14 +352,12 @@ public class AbstractStoreEventListenerTest {
                     assertThat(argumentCaptor.getValue()).isEqualTo(event);
                     assertThat(argumentCaptor.getValue().getSource()).isEqualTo(event.getSource());
                     assertThat(argumentCaptor.getValue().getStore()).isEqualTo(store);
-
                 }
 
                 @Test
                 void shouldCallTheEventSourceConsumer() {
                     verify(consumer)
                     		.onAfterSetContent(org.mockito.ArgumentMatchers.eq(event.getSource()));
-
                 }
 
             }
@@ -404,7 +374,6 @@ public class AbstractStoreEventListenerTest {
                     event = new BeforeUnsetContentEvent(new EventSource(), store);
 
                     listener.onApplicationEvent(event);
-
                 }
 
                 @Test
@@ -415,14 +384,12 @@ public class AbstractStoreEventListenerTest {
                     assertThat(argumentCaptor.getValue()).isEqualTo(event);
                     assertThat(argumentCaptor.getValue().getSource()).isEqualTo(event.getSource());
                     assertThat(argumentCaptor.getValue().getStore()).isEqualTo(store);
-
                 }
 
                 @Test
                 void shouldCallTheEventSourceConsumer() {
                     verify(consumer)
                     		.onBeforeUnsetContent(org.mockito.ArgumentMatchers.eq(event.getSource()));
-
                 }
 
             }
@@ -439,7 +406,6 @@ public class AbstractStoreEventListenerTest {
                     event = new AfterUnsetContentEvent(new EventSource(), store);
 
                     listener.onApplicationEvent(event);
-
                 }
 
                 @Test
@@ -450,14 +416,12 @@ public class AbstractStoreEventListenerTest {
                     assertThat(argumentCaptor.getValue()).isEqualTo(event);
                     assertThat(argumentCaptor.getValue().getSource()).isEqualTo(event.getSource());
                     assertThat(argumentCaptor.getValue().getStore()).isEqualTo(store);
-
                 }
 
                 @Test
                 void shouldCallTheEventSourceConsumer() {
                     verify(consumer)
                     		.onAfterUnsetContent(org.mockito.ArgumentMatchers.eq(event.getSource()));
-
                 }
 
             }

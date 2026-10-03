@@ -90,7 +90,6 @@ public class DefaultJpaStoreImplTest {
                     void shouldReturnNull() {
                         verify(blobResourceLoader, never()).getResource(any());
                         assertThat(resource).isNull();
-
                     }
 
                 }
@@ -196,7 +195,6 @@ public class DefaultJpaStoreImplTest {
                         } catch (Exception e) {
                             DefaultJpaStoreImplTest.this.e = e;
                         }
-
                     }
 
                     @Test
@@ -232,7 +230,6 @@ public class DefaultJpaStoreImplTest {
                         } catch (Exception e) {
                             DefaultJpaStoreImplTest.this.e = e;
                         }
-
                     }
 
                     @Test
@@ -240,7 +237,6 @@ public class DefaultJpaStoreImplTest {
                         assertThat(inputStream).isNull();
                         assertThat(e).isInstanceOf(StoreAccessException.class);
                         assertThat(e.getCause().getMessage()).isEqualTo("get-ioexception");
-
                     }
 
                 }
@@ -274,7 +270,6 @@ public class DefaultJpaStoreImplTest {
                     } catch (Exception e) {
                         DefaultJpaStoreImplTest.this.e = e;
                     }
-
                 }
 
                 @Test
@@ -321,14 +316,12 @@ public class DefaultJpaStoreImplTest {
                         } catch (Exception e) {
                             DefaultJpaStoreImplTest.this.e = e;
                         }
-
                     }
 
                     @Test
                     void shouldThrowAStoreAccessException() {
                         assertThat(e).isInstanceOf(StoreAccessException.class);
                         assertThat(e.getCause().getMessage()).isEqualTo("set-ioexception");
-
                     }
 
                 }
@@ -350,7 +343,6 @@ public class DefaultJpaStoreImplTest {
                     } catch (Exception e) {
                         DefaultJpaStoreImplTest.this.e = e;
                     }
-
                 }
 
                 @Test
@@ -376,14 +368,12 @@ public class DefaultJpaStoreImplTest {
                         } catch (Exception e) {
                             DefaultJpaStoreImplTest.this.e = e;
                         }
-
                     }
 
                     @Test
                     void shouldThrowAStoreAccessException() {
                         assertThat(e).isInstanceOf(StoreAccessException.class);
                         assertThat(e.getCause().getMessage()).contains("setContent badness");
-
                     }
 
                 }
@@ -409,7 +399,6 @@ public class DefaultJpaStoreImplTest {
                     } catch (Exception e) {
                         DefaultJpaStoreImplTest.this.e = e;
                     }
-
                 }
 
                 @Test
@@ -437,14 +426,12 @@ public class DefaultJpaStoreImplTest {
                         } catch (Exception e) {
                             DefaultJpaStoreImplTest.this.e = e;
                         }
-
                     }
 
                     @Test
                     void shouldThrowAStoreAccessException() {
                         assertThat(e).isInstanceOf(StoreAccessException.class);
                         assertThat(e.getCause().getMessage()).isEqualTo("unset-ioexception");
-
                     }
 
                 }
