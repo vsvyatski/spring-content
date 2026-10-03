@@ -24,7 +24,7 @@ public class ByteArrayToListConverterTest {
     }
 
     @Test
-    public void encodesAndDecodes() throws Throwable {
+    public void encodesAndDecodes() {
         var data = List.of("abc", "def");
 
         var encodedList = conversionService.convert(data, STRING_LIST_TYPE, TypeDescriptor.valueOf(byte[].class));
@@ -35,7 +35,7 @@ public class ByteArrayToListConverterTest {
     }
 
     @Test
-    public void encodesAndDecodesEmptyList() throws Throwable {
+    public void encodesAndDecodesEmptyList() {
         var data = List.of();
 
         var encodedList = conversionService.convert(data, STRING_LIST_TYPE, TypeDescriptor.valueOf(byte[].class));

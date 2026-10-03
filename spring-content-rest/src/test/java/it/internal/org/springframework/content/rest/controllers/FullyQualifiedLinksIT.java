@@ -52,7 +52,7 @@ public class FullyQualifiedLinksIT {
         @DisplayName("given an entity is the subject of a repository and storage")
         class GivenAnEntityIsTheSubjectOfARepositoryAndStorageContent extends Content {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
                 testEntity3 = repo3.save(new TestEntity());
                 testEntity3 = repo3.save(testEntity3);

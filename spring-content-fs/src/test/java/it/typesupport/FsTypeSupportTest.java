@@ -19,6 +19,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.util.UUID;
 
@@ -46,7 +47,7 @@ public class FsTypeSupportTest {
             @Nested
             class GivenTheApplicationSetsTheID {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     entity = new UUIDBasedContentEntity();
                     id = UuidCreator.getTimeOrdered();
                     ((UUIDBasedContentEntity) entity).setContentId((UUID) id);
@@ -56,14 +57,14 @@ public class FsTypeSupportTest {
                 }
 
                 @AfterEach
-                void tearDown() throws Throwable {
+                void tearDown() {
                     uuidStore.unsetContent((UUIDBasedContentEntity) entity);
                     assertThat(((UUIDBasedContentEntity) entity).getContentId()).isNull();
 
                 }
 
                 @Test
-                void shouldStoreTheContentSuccessfully() throws Throwable {
+                void shouldStoreTheContentSuccessfully() throws IOException {
                     assertThat(IOUtils.contentEquals(
                                                 uuidStore.getContent((UUIDBasedContentEntity) entity),
                                                 IOUtils.toInputStream("uuid", Charset.defaultCharset())
@@ -75,7 +76,7 @@ public class FsTypeSupportTest {
             @Nested
             class GivenSpringContentGeneratesTheID {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     entity = new UUIDBasedContentEntity();
                     uuidStore.setContent(
                                                 (UUIDBasedContentEntity) entity,
@@ -84,14 +85,14 @@ public class FsTypeSupportTest {
                 }
 
                 @AfterEach
-                void tearDown() throws Throwable {
+                void tearDown() {
                     uuidStore.unsetContent((UUIDBasedContentEntity) entity);
                     assertThat(((UUIDBasedContentEntity) entity).getContentId()).isNull();
 
                 }
 
                 @Test
-                void shouldStoreTheContentSuccessfully() throws Throwable {
+                void shouldStoreTheContentSuccessfully() throws IOException {
                     assertThat(IOUtils.contentEquals(
                                                 uuidStore.getContent((UUIDBasedContentEntity) entity),
                                                 IOUtils.toInputStream("uuid", Charset.defaultCharset())
@@ -111,7 +112,7 @@ public class FsTypeSupportTest {
             @Nested
             class GivenTheApplicationSetsTheID {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() throws URISyntaxException {
                     entity = new URIBasedContentEntity();
                     id = new URI("http://some.org/deep/location.html");
                     ((URIBasedContentEntity) entity).setContentId((URI) id);
@@ -121,14 +122,14 @@ public class FsTypeSupportTest {
                 }
 
                 @AfterEach
-                void tearDown() throws Throwable {
+                void tearDown() {
                     uriStore.unsetContent((URIBasedContentEntity) entity);
                     assertThat(((URIBasedContentEntity) entity).getContentId()).isNull();
 
                 }
 
                 @Test
-                void shouldStoreTheContentSuccessfully() throws Throwable {
+                void shouldStoreTheContentSuccessfully() throws IOException {
                     assertThat(IOUtils.contentEquals(
                                                 uriStore.getContent((URIBasedContentEntity) entity),
                                                 IOUtils.toInputStream("uri", Charset.defaultCharset())
@@ -148,7 +149,7 @@ public class FsTypeSupportTest {
             @Nested
             class GivenTheApplicationSetsTheID {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     entity = new LongBasedContentEntity();
                     id = Long.MAX_VALUE;
                     ((LongBasedContentEntity) entity).setContentId((Long) id);
@@ -158,14 +159,14 @@ public class FsTypeSupportTest {
                 }
 
                 @AfterEach
-                void tearDown() throws Throwable {
+                void tearDown() {
                     longStore.unsetContent((LongBasedContentEntity) entity);
                     assertThat(((LongBasedContentEntity) entity).getContentId()).isNull();
 
                 }
 
                 @Test
-                void shouldStoreTheContentSuccessfully() throws Throwable {
+                void shouldStoreTheContentSuccessfully() throws IOException {
                     assertThat(IOUtils.contentEquals(
                                                 longStore.getContent((LongBasedContentEntity) entity),
                                                 IOUtils.toInputStream("long", Charset.defaultCharset())
@@ -185,7 +186,7 @@ public class FsTypeSupportTest {
             @Nested
             class GivenTheApplicationSetsTheID {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     entity = new BigIntegerBasedContentEntity();
                     id = BigInteger.valueOf(Long.MAX_VALUE);
                     ((BigIntegerBasedContentEntity) entity).setContentId((BigInteger) id);
@@ -195,14 +196,14 @@ public class FsTypeSupportTest {
                 }
 
                 @AfterEach
-                void tearDown() throws Throwable {
+                void tearDown() {
                     bigIntStore.unsetContent((BigIntegerBasedContentEntity) entity);
                     assertThat(((BigIntegerBasedContentEntity) entity).getContentId()).isNull();
 
                 }
 
                 @Test
-                void shouldStoreTheContentSuccessfully() throws Throwable {
+                void shouldStoreTheContentSuccessfully() throws IOException {
                     assertThat(IOUtils.contentEquals(
                                                 bigIntStore.getContent((BigIntegerBasedContentEntity) entity),
                                                 IOUtils.toInputStream("big-int", Charset.defaultCharset())

@@ -21,7 +21,7 @@ public class RestResourceMappingBuilderTest {
     @Nested
     class RestResourceMappingBuilderCases {
         @Test
-        void shouldCreateAMapOfContentPropertyPathsToRequestMappingPaths() throws Throwable {
+        void shouldCreateAMapOfContentPropertyPathsToRequestMappingPaths() {
             RestResourceMappingBuilder visitor = new RestResourceMappingBuilder((restResourceAnnotation) -> restResourceAnnotation.path());
             ClassWalker walker = new ClassWalker(visitor);
             walker.accept(TestClass.class);

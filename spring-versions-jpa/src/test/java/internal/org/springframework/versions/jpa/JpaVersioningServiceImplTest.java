@@ -34,7 +34,7 @@ public class JpaVersioningServiceImplTest {
         @Nested
         class EstablishAncestralRoot {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 entity = new TestEntity();
 
                 versioner = new JpaVersioningServiceImpl(em);
@@ -42,22 +42,22 @@ public class JpaVersioningServiceImplTest {
                 result = versioner.establishAncestralRoot(entity);
             }
             @Test
-            void shouldSetTheAncestorIdToNull() throws Throwable {
+            void shouldSetTheAncestorIdToNull() {
                 assertThat(entity.getAncestorId()).isNull();
             }
             @Test
-            void shouldSetTheAncestorRootIdToItSOwnId() throws Throwable {
+            void shouldSetTheAncestorRootIdToItSOwnId() {
                 assertThat(entity.getAncestorRootId()).isEqualTo(entity.getId());
             }
             @Test
-            void shouldReturnTheEntity() throws Throwable {
+            void shouldReturnTheEntity() {
                 assertThat(result).isEqualTo(entity);
             }
         }
         @Nested
         class EstablishAncestor {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 entity = new TestEntity();
                                     successor = new TestEntity();
                                     successor.setId(999L);
@@ -67,18 +67,18 @@ public class JpaVersioningServiceImplTest {
                 result = versioner.establishAncestor(entity, successor);
             }
             @Test
-            void shouldSetTheSuccessorIdToNull() throws Throwable {
+            void shouldSetTheSuccessorIdToNull() {
                 assertThat(entity.getSuccessorId()).isEqualTo(999L);
             }
             @Test
-            void shouldReturnTheEntity() throws Throwable {
+            void shouldReturnTheEntity() {
                 assertThat(result).isEqualTo(entity);
             }
         }
         @Nested
         class EstablishSuccessor {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 successor = new TestEntity();
                                     ancestralRoot = new TestEntity();
                                     ancestralRoot.setId(1234L);
@@ -92,27 +92,27 @@ public class JpaVersioningServiceImplTest {
                 result = versioner.establishSuccessor(successor, versionNo, versionLabel, ancestralRoot, ancestor);
             }
             @Test
-            void shouldSetTheVersionNumber() throws Throwable {
+            void shouldSetTheVersionNumber() {
                 assertThat(successor.getVersionNo()).isEqualTo("1.1");
             }
             @Test
-            void shouldSetTheVersionLabel() throws Throwable {
+            void shouldSetTheVersionLabel() {
                 assertThat(successor.getVersionLabel()).isEqualTo("a new version");
             }
             @Test
-            void shouldSetTheSuccessorIdToNull() throws Throwable {
+            void shouldSetTheSuccessorIdToNull() {
                 assertThat(successor.getSuccessorId()).isNull();
             }
             @Test
-            void shouldSetTheAncestorRootId() throws Throwable {
+            void shouldSetTheAncestorRootId() {
                 assertThat(successor.getAncestorRootId()).isEqualTo(1234L);
             }
             @Test
-            void shouldSetTheAncestorId() throws Throwable {
+            void shouldSetTheAncestorId() {
                 assertThat(successor.getAncestorId()).isEqualTo(5678L);
             }
             @Test
-            void shouldReturnTheEntity() throws Throwable {
+            void shouldReturnTheEntity() {
                 assertThat(result).isEqualTo(successor);
             }
         }

@@ -82,7 +82,7 @@ public class StoredRenditionsRestIT {
             @Nested
             class APUTToRepositoryIdContentProperty {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() throws Exception {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                     testEntity5 = repo.save(new TestEntity5());
@@ -92,7 +92,7 @@ public class StoredRenditionsRestIT {
                 }
 
                 @Test
-                void shouldStoreTheRendition() throws Throwable {
+                void shouldStoreTheRendition() throws IOException {
                     testEntity5 = repo.findById(testEntity5.getId()).get();
                     Resource r = store.getResource(testEntity5, PropertyPath.from("content"));
                     try (InputStream actual = r.getInputStream()) {
@@ -109,7 +109,7 @@ public class StoredRenditionsRestIT {
                 @Nested
                 class AGETToRepositoryIdContentProperty {
                     @BeforeEach
-                    void setUp() throws Throwable {
+                    void setUp() throws Exception {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                         testEntity5 = repo.save(new TestEntity5());
@@ -119,7 +119,7 @@ public class StoredRenditionsRestIT {
                     }
 
                     @Test
-                    void shouldGetTheStoredRendition() throws Throwable {
+                    void shouldGetTheStoredRendition() throws Exception {
                         Long id = testEntity5.getId();
 
                         mvc.perform(
@@ -136,7 +136,7 @@ public class StoredRenditionsRestIT {
                 @Nested
                 class AGETToRepositoryIdRenditionProperty {
                     @BeforeEach
-                    void setUp() throws Throwable {
+                    void setUp() throws Exception {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                         testEntity5 = repo.save(new TestEntity5());
@@ -146,7 +146,7 @@ public class StoredRenditionsRestIT {
                     }
 
                     @Test
-                    void shouldReturnA405() throws Throwable {
+                    void shouldReturnA405() throws Exception {
                         Long id = testEntity5.getId();
 
                         mvc.perform(
@@ -161,7 +161,7 @@ public class StoredRenditionsRestIT {
                 @Nested
                 class ADELETEToRepositoryIdContentProperty {
                     @BeforeEach
-                    void setUp() throws Throwable {
+                    void setUp() throws Exception {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                         testEntity5 = repo.save(new TestEntity5());
@@ -171,7 +171,7 @@ public class StoredRenditionsRestIT {
                     }
 
                     @Test
-                    void shouldAlsoDeleteTheRendition() throws Throwable {
+                    void shouldAlsoDeleteTheRendition() throws Exception {
                         Long id = testEntity5.getId();
 
                         mvc.perform(delete("/testEntity5s/" + testEntity5.getId() + "/content")).andExpect(status().isNoContent());
@@ -245,8 +245,7 @@ public class StoredRenditionsRestIT {
         private TestEntity5Store store;
 
         @HandleAfterSetContent
-        public void onAfterSetContent(AfterSetContentEvent event)
-                throws IOException {
+        public void onAfterSetContent(AfterSetContentEvent event) throws IOException {
 
             TestEntity5 entity = (TestEntity5)event.getSource();
 

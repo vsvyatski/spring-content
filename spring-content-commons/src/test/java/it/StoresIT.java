@@ -43,7 +43,7 @@ public class StoresIT {
         @Nested
         class WhenThereAreTwoStoresThatTheFilterMatchesButNoStoreResolver {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 TestStoreFactoryBean factory1 = new TestStoreFactoryBean(WrongStore.class);
                                     factory1.setBeanClassLoader(this.getClass().getClassLoader());
                                     factories.add(factory1);
@@ -61,7 +61,7 @@ public class StoresIT {
                                     stores.afterPropertiesSet();
             }
             @Test
-            void shouldReturnTheRightStore() throws Throwable {
+            void shouldReturnTheRightStore() {
                 try {
                                         stores.getStore(Store.class, new StoreFilter() {
                                             @Override
@@ -83,7 +83,7 @@ public class StoresIT {
         @Nested
         class WhenThereAreTwoStoresThatTheFilterMatchesAndAStoreResolver {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 TestStoreFactoryBean factory1 = new TestStoreFactoryBean(WrongStore.class);
                                     factory1.setBeanClassLoader(this.getClass().getClassLoader());
                                     factories.add(factory1);
@@ -113,7 +113,7 @@ public class StoresIT {
                                     });
             }
             @Test
-            void shouldReturnTheRightStore() throws Throwable {
+            void shouldReturnTheRightStore() {
                 StoreInfo info = stores.getStore(Store.class, new StoreFilter() {
                                         @Override
                                         public String name() {
@@ -134,7 +134,7 @@ public class StoresIT {
         @Nested
         class GivenThereIsNoStoreExceptionTranslatorRegistered {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 // All TestContentStore methods throw an UnsupportedOperationException, this test relies on this
                                 TestStoreFactoryBean factory = new TestStoreFactoryBean(RuntimeExceptionThrowingStore.class);
                                 factory.setBeanClassLoader(this.getClass().getClassLoader());
@@ -148,7 +148,7 @@ public class StoresIT {
                                     stores.afterPropertiesSet();
             }
             @Test
-            void shouldReThrowRuntimeExceptionAsStoreAccessException() throws Throwable {
+            void shouldReThrowRuntimeExceptionAsStoreAccessException() {
                 StoreInfo storeInfo = stores.getStore(Store.class, new StoreFilter() {
                                             @Override
                                             public String name() {
@@ -171,7 +171,7 @@ public class StoresIT {
         @Nested
         class GivenThereIsAStoreExceptionTranslatorRegistered {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 // All TestContentStore methods throw an UnsupportedOperationException, this test relies on this
                                 TestStoreFactoryBean factory = new TestStoreFactoryBean(RuntimeExceptionThrowingStore.class);
                                 factory.setBeanClassLoader(this.getClass().getClassLoader());
@@ -191,7 +191,7 @@ public class StoresIT {
                                     stores.afterPropertiesSet();
             }
             @Test
-            void shouldReThrowRuntimeExceptionAsStoreAccessException() throws Throwable {
+            void shouldReThrowRuntimeExceptionAsStoreAccessException() {
                 StoreInfo storeInfo = stores.getStore(Store.class, new StoreFilter() {
                                         @Override
                                         public String name() {

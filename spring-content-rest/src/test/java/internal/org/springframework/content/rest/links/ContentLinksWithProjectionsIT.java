@@ -91,7 +91,7 @@ public class ContentLinksWithProjectionsIT {
             @Nested
             class AGETToApiRepositoryIdProjectionId {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                     testEntity = new TEntity();
@@ -100,7 +100,7 @@ public class ContentLinksWithProjectionsIT {
                     	                testEntity = repository.save(testEntity);
                 }
                 @Test
-                void shouldProvideAResponseWithAContentLink() throws Throwable {
+                void shouldProvideAResponseWithAContentLink() throws Exception {
                     MockHttpServletResponse response = mvc.perform(get("/tEntities/" + testEntity.getId() + "?projection=customTEntity")
                     	                                    .accept("application/hal+json"))
                     	                            .andExpect(status().isOk()).andReturn().getResponse();

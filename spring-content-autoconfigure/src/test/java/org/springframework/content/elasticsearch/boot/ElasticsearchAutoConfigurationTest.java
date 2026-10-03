@@ -32,7 +32,7 @@ public class ElasticsearchAutoConfigurationTest {
     @Nested
     class GivenAContextWithoutARestHighLevelClientConfigured {
         @Test
-        void shouldCreateAClient() throws Throwable {
+        void shouldCreateAClient() {
             final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
                     .withConfiguration(AutoConfigurations.of(ElasticsearchAutoConfiguration.class));
 
@@ -53,7 +53,7 @@ public class ElasticsearchAutoConfigurationTest {
     @Nested
     class GivenAContextWithARestHighLevelClientConfigured {
         @Test
-        void shouldUseThatClient() throws Throwable {
+        void shouldUseThatClient() {
             final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
                     .withConfiguration(AutoConfigurations.of(ElasticsearchAutoConfiguration.class));
 
@@ -68,17 +68,17 @@ public class ElasticsearchAutoConfigurationTest {
     @Nested
     class GivenAContextWithAutoIndexingDisabled {
         @BeforeEach
-        void setUp() throws Throwable {
+        void setUp() {
             System.setProperty("spring.content.elasticsearch.autoindex", "false");
         }
 
         @AfterEach
-        void tearDown() throws Throwable {
+        void tearDown() {
             System.clearProperty("spring.content.elasticsearch.autoindex");
         }
 
         @Test
-        void shouldNotConfigureTheIndexingEventHandler() throws Throwable {
+        void shouldNotConfigureTheIndexingEventHandler() {
             final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
                     .withConfiguration(AutoConfigurations.of(ElasticsearchAutoConfiguration.class));
 
@@ -93,17 +93,17 @@ public class ElasticsearchAutoConfigurationTest {
     @Nested
     class GivenAContextWithAutoIndexingConfigured {
         @BeforeEach
-        void setUp() throws Throwable {
+        void setUp() {
             System.setProperty("spring.content.elasticsearch.autoindex", "true");
         }
 
         @AfterEach
-        void tearDown() throws Throwable {
+        void tearDown() {
             System.clearProperty("spring.content.elasticsearch.autoindex");
         }
 
         @Test
-        void shouldLoadTheContext() throws Throwable {
+        void shouldLoadTheContext() {
             final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
                     .withConfiguration(AutoConfigurations.of(ElasticsearchAutoConfiguration.class));
 
@@ -118,7 +118,7 @@ public class ElasticsearchAutoConfigurationTest {
     @Nested
     class GivenAContextThatAlreadyEnablesElasticSearchFulltextIndexing {
         @Test
-        void shouldLoadTheContextAndNotThrowABeanDefinitionOverrideException() throws Throwable {
+        void shouldLoadTheContextAndNotThrowABeanDefinitionOverrideException() {
             final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
                     .withConfiguration(AutoConfigurations.of(ElasticsearchAutoConfiguration.class));
 

@@ -68,7 +68,7 @@ public class ShortcutExclusionsIT {
         @Nested
         class WhenAllContentPropertyShortcutGETsAreExcludedAndANonJsonRequestIsMade {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                 testEntity = repo.save(new TestEntity3());
@@ -77,7 +77,7 @@ public class ShortcutExclusionsIT {
             }
 
             @Test
-            void shouldReturnTheEntity() throws Throwable {
+            void shouldReturnTheEntity() throws Exception {
                 MockHttpServletResponse response = mvc
                         .perform(get("/testEntity3s/" + testEntity.getId())
                                 .accept("*/*"))

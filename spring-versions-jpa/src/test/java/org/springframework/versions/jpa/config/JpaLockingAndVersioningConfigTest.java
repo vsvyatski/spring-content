@@ -30,7 +30,7 @@ public class JpaLockingAndVersioningConfigTest {
     @Nested
     class JpaLockingAndVersioningConfigCases {
         @BeforeEach
-        void setUp() throws Throwable {
+        void setUp() {
             context = new AnnotationConfigApplicationContext();
             context.register(TestConfig.class);
             context.refresh();
@@ -38,37 +38,37 @@ public class JpaLockingAndVersioningConfigTest {
         }
 
         @Test
-        void shouldHaveAnAuthenticationFacadeBean() throws Throwable {
+        void shouldHaveAnAuthenticationFacadeBean() {
             assertThat(context.getBean(AuthenticationFacade.class)).isNotNull();
 
         }
 
         @Test
-        void shouldHaveAnEntityInformationFacadeBean() throws Throwable {
+        void shouldHaveAnEntityInformationFacadeBean() {
             assertThat(context.getBean(EntityInformationFacade.class)).isNotNull();
 
         }
 
         @Test
-        void shouldHaveALockingServiceBean() throws Throwable {
+        void shouldHaveALockingServiceBean() {
             assertThat(context.getBean(LockingService.class)).isNotNull();
 
         }
 
         @Test
-        void shouldHaveAVersioningServiceBean() throws Throwable {
+        void shouldHaveAVersioningServiceBean() {
             assertThat(context.getBean(VersioningService.class)).isNotNull();
 
         }
 
         @Test
-        void shouldHaveACloningServiceBean() throws Throwable {
+        void shouldHaveACloningServiceBean() {
             assertThat(context.getBean(CloningService.class)).isNotNull();
 
         }
 
         @Test
-        void shouldHaveALockingAndVersioningProxyFactoryBean() throws Throwable {
+        void shouldHaveALockingAndVersioningProxyFactoryBean() {
             assertThat(context.getBean(LockingAndVersioningProxyFactory.class)).isNotNull();
 
         }

@@ -50,7 +50,7 @@ public class ContentJpaAutoConfigurationTest {
     @Nested
     class ContentJpaAutoConfiguration {
         @BeforeEach
-        void setUp() throws Throwable {
+        void setUp() {
             initializer = mock(ContentJpaDatabaseInitializer.class);
             contextRunner = new ApplicationContextRunner()
             		.withConfiguration(AutoConfigurations.of(JpaContentAutoConfiguration.class));
@@ -58,7 +58,7 @@ public class ContentJpaAutoConfigurationTest {
         }
 
         @Test
-        void shouldHaveAContentRepository() throws Throwable {
+        void shouldHaveAContentRepository() {
             contextRunner.withUserConfiguration(TestConfig.class).run((context) -> {
             	Assertions.assertThat(context).hasSingleBean(TestEntityContentRepository.class);
             	Assertions.assertThat(context).hasSingleBean(ContentJpaDatabaseInitializer.class);
@@ -70,7 +70,7 @@ public class ContentJpaAutoConfigurationTest {
         @Nested
         class WhenACustomBeanConfigurationIsUsed {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 initializer = mock(ContentJpaDatabaseInitializer.class);
                 contextRunner = new ApplicationContextRunner()
                 		.withConfiguration(AutoConfigurations.of(JpaContentAutoConfiguration.class));
@@ -78,7 +78,7 @@ public class ContentJpaAutoConfigurationTest {
             }
 
             @Test
-            void shouldUseTheSuppliedCustomBean() throws Throwable {
+            void shouldUseTheSuppliedCustomBean() {
                 contextRunner.withUserConfiguration(CustomBeanConfig.class).run((context) -> {
                 	Assertions.assertThat(context).getBean(ContentJpaDatabaseInitializer.class).isEqualTo(initializer);
                 	Assertions.assertThat(context).getBean("copyBufferSize").isEqualTo(16192);
@@ -91,7 +91,7 @@ public class ContentJpaAutoConfigurationTest {
         @Nested
         class WhenAnExplicitEnableFileSystemStoresIsUsed {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 initializer = mock(ContentJpaDatabaseInitializer.class);
                 contextRunner = new ApplicationContextRunner()
                 		.withConfiguration(AutoConfigurations.of(JpaContentAutoConfiguration.class));
@@ -99,7 +99,7 @@ public class ContentJpaAutoConfigurationTest {
             }
 
             @Test
-            void shouldLoadTheContext() throws Throwable {
+            void shouldLoadTheContext() {
                 contextRunner.withUserConfiguration(ConfigWithExplicitEnableJpaStores.class).run((context) -> {
                 	Assertions.assertThat(context).hasSingleBean(TestEntityContentRepository.class);
                 	Assertions.assertThat(context).hasSingleBean(ContentJpaProperties.class);

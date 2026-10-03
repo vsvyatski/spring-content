@@ -71,7 +71,7 @@ public class EntityContentLinksIT {
         @DisplayName("when entity links are enabled")
         class WhenEntityLinksAreEnabledContentLinkTests extends ContentLinkTests {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
                 testEntity3 = new TestEntity3();
                 contentRepository3.setContent(testEntity3, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));

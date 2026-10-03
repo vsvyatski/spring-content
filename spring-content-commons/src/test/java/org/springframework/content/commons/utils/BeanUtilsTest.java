@@ -25,20 +25,20 @@ public class BeanUtilsTest {
             @Nested
             class GivenASimpleNonInheritingClass {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     testEntity = new TestEntity();
 
                 }
 
                 @Test
-                void shouldSetFieldDirectly() throws Throwable {
+                void shouldSetFieldDirectly() {
                     BeanUtils.setFieldWithAnnotation(testEntity, ContentId.class,"a value");
                     assertThat(testEntity.fieldOnly).isEqualTo("a value");
 
                 }
 
                 @Test
-                void shouldSetFieldViaItsSetter() throws Throwable {
+                void shouldSetFieldViaItsSetter() {
                     BeanUtils.setFieldWithAnnotation(testEntity, ContentLength.class,
                     		"b value");
                     assertThat(testEntity.getFieldWithGetterSetter()).isEqualTo("b value");
@@ -46,7 +46,7 @@ public class BeanUtilsTest {
                 }
 
                 @Test
-                void shouldNotFailWhenToldToSetOnAMissingField() throws Throwable {
+                void shouldNotFailWhenToldToSetOnAMissingField() {
                     try {
                     	BeanUtils.setFieldWithAnnotation(testEntity, Override.class,
                     			"value");
@@ -62,13 +62,13 @@ public class BeanUtilsTest {
             @Nested
             class GivenAnInheritingClass {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     testEntity = new InheritingTestEntity();
 
                 }
 
                 @Test
-                void shouldSetFieldDirectly() throws Throwable {
+                void shouldSetFieldDirectly() {
                     BeanUtils.setFieldWithAnnotation(testEntity, ContentId.class,
                     		"a value");
                     assertThat(testEntity.fieldOnly).isEqualTo("a value");
@@ -76,7 +76,7 @@ public class BeanUtilsTest {
                 }
 
                 @Test
-                void shouldSetFieldViaItsSetter() throws Throwable {
+                void shouldSetFieldViaItsSetter() {
                     BeanUtils.setFieldWithAnnotation(testEntity, ContentLength.class,
                     		"b value");
                     assertThat(testEntity.getFieldWithGetterSetter()).isEqualTo("b value");
@@ -84,7 +84,7 @@ public class BeanUtilsTest {
                 }
 
                 @Test
-                void shouldNotFailWhenToldToSetOnAMissingField() throws Throwable {
+                void shouldNotFailWhenToldToSetOnAMissingField() {
                     try {
                     	BeanUtils.setFieldWithAnnotation(testEntity, Override.class,
                     			"value");
@@ -104,13 +104,13 @@ public class BeanUtilsTest {
             @Nested
             class GivenASimpleNonInheritingClass {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     testEntity = new TestEntity();
 
                 }
 
                 @Test
-                void shouldSetFieldIfTheConditionMatches() throws Throwable {
+                void shouldSetFieldIfTheConditionMatches() {
                     BeanUtils.setFieldWithAnnotationConditionally(testEntity,
                     		ContentId.class, "a value", new MatchingCondition() {
                     		});
@@ -119,7 +119,7 @@ public class BeanUtilsTest {
                 }
 
                 @Test
-                void shouldSetFieldViaItsSetterIfTheConditionMatches() throws Throwable {
+                void shouldSetFieldViaItsSetterIfTheConditionMatches() {
                     BeanUtils.setFieldWithAnnotationConditionally(testEntity,
                     		ContentLength.class, "b value", new MatchingCondition() {
                     		});
@@ -128,7 +128,7 @@ public class BeanUtilsTest {
                 }
 
                 @Test
-                void shouldNotSetFieldIfTheConditionDoesNotMatch() throws Throwable {
+                void shouldNotSetFieldIfTheConditionDoesNotMatch() {
                     BeanUtils.setFieldWithAnnotationConditionally(testEntity,
                     		ContentId.class, "a value", new UnmatchingCondition() {
                     		});
@@ -137,7 +137,7 @@ public class BeanUtilsTest {
                 }
 
                 @Test
-                void shouldNotSetFieldViaItsSetterIfTheConditionDoesNotMatch() throws Throwable {
+                void shouldNotSetFieldViaItsSetterIfTheConditionDoesNotMatch() {
                     BeanUtils.setFieldWithAnnotationConditionally(testEntity,
                     		ContentLength.class, "b value",
                     		new UnmatchingCondition() {
@@ -147,7 +147,7 @@ public class BeanUtilsTest {
                 }
 
                 @Test
-                void shouldNotFailWhenToldToSetOnAMissingField() throws Throwable {
+                void shouldNotFailWhenToldToSetOnAMissingField() {
                     try {
                     	BeanUtils.setFieldWithAnnotation(testEntity, Override.class,
                     			"value");
@@ -163,13 +163,13 @@ public class BeanUtilsTest {
             @Nested
             class GivenAnInheritingClass {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     testEntity = new InheritingTestEntity();
 
                 }
 
                 @Test
-                void shouldSetFieldIfTheConditionMatches() throws Throwable {
+                void shouldSetFieldIfTheConditionMatches() {
                     BeanUtils.setFieldWithAnnotationConditionally(testEntity,
                     		ContentId.class, "a value", new MatchingCondition() {
                     		});
@@ -178,7 +178,7 @@ public class BeanUtilsTest {
                 }
 
                 @Test
-                void shouldSetFieldViaItsSetterIfTheConditionMatches() throws Throwable {
+                void shouldSetFieldViaItsSetterIfTheConditionMatches() {
                     BeanUtils.setFieldWithAnnotationConditionally(testEntity,
                     		ContentLength.class, "b value", new MatchingCondition() {
                     		});
@@ -187,7 +187,7 @@ public class BeanUtilsTest {
                 }
 
                 @Test
-                void shouldNotSetFieldIfTheConditionDoesNotMatch() throws Throwable {
+                void shouldNotSetFieldIfTheConditionDoesNotMatch() {
                     BeanUtils.setFieldWithAnnotationConditionally(testEntity,
                     		ContentId.class, "a value", new UnmatchingCondition() {
                     		});
@@ -196,7 +196,7 @@ public class BeanUtilsTest {
                 }
 
                 @Test
-                void shouldNotSetFieldViaItsSetterIfTheConditionDoesNotMatch() throws Throwable {
+                void shouldNotSetFieldViaItsSetterIfTheConditionDoesNotMatch() {
                     BeanUtils.setFieldWithAnnotationConditionally(testEntity,
                     		ContentLength.class, "b value",
                     		new UnmatchingCondition() {
@@ -206,7 +206,7 @@ public class BeanUtilsTest {
                 }
 
                 @Test
-                void shouldNotFailWhenToldToSetOnAMissingField() throws Throwable {
+                void shouldNotFailWhenToldToSetOnAMissingField() {
                     try {
                     	BeanUtils.setFieldWithAnnotation(testEntity, Override.class,
                     			"value");
@@ -226,7 +226,7 @@ public class BeanUtilsTest {
             @Nested
             class GivenASimpleNonInheritingClass {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     testEntity = new TestEntity();
                     testEntity.fieldOnly = "a value";
                     testEntity.setFieldWithGetterSetter("b value");
@@ -234,7 +234,7 @@ public class BeanUtilsTest {
                 }
 
                 @Test
-                void shouldGetFieldDirectly() throws Throwable {
+                void shouldGetFieldDirectly() {
                     Object value = BeanUtils.getFieldWithAnnotation(testEntity,
                     		ContentId.class);
                     assertThat(value).isEqualTo("a value");
@@ -242,7 +242,7 @@ public class BeanUtilsTest {
                 }
 
                 @Test
-                void shouldGetFieldViaItsGetter() throws Throwable {
+                void shouldGetFieldViaItsGetter() {
                     Object value = BeanUtils.getFieldWithAnnotation(testEntity,
                     		ContentLength.class);
                     assertThat(value).isEqualTo("b value");
@@ -250,7 +250,7 @@ public class BeanUtilsTest {
                 }
 
                 @Test
-                void shouldNotFailWhenToldToGetOnAMissingField() throws Throwable {
+                void shouldNotFailWhenToldToGetOnAMissingField() {
                     try {
                     	BeanUtils.getFieldWithAnnotation(testEntity, Override.class);
                     }
@@ -265,7 +265,7 @@ public class BeanUtilsTest {
             @Nested
             class GivenAnInheritingClass {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     testEntity = new InheritingTestEntity();
                     testEntity.fieldOnly = "a value";
                     testEntity.setFieldWithGetterSetter("b value");
@@ -273,7 +273,7 @@ public class BeanUtilsTest {
                 }
 
                 @Test
-                void shouldGetFieldDirectly() throws Throwable {
+                void shouldGetFieldDirectly() {
                     Object value = BeanUtils.getFieldWithAnnotation(testEntity,
                     		ContentId.class);
                     assertThat(value).isEqualTo("a value");
@@ -281,7 +281,7 @@ public class BeanUtilsTest {
                 }
 
                 @Test
-                void shouldGetFieldViaItsGetter() throws Throwable {
+                void shouldGetFieldViaItsGetter() {
                     Object value = BeanUtils.getFieldWithAnnotation(testEntity,
                     		ContentLength.class);
                     assertThat(value).isEqualTo("b value");
@@ -289,7 +289,7 @@ public class BeanUtilsTest {
                 }
 
                 @Test
-                void shouldNotFailWhenToldToGetOnAMissingField() throws Throwable {
+                void shouldNotFailWhenToldToGetOnAMissingField() {
                     try {
                     	BeanUtils.getFieldWithAnnotation(testEntity, Override.class);
                     }
@@ -308,27 +308,27 @@ public class BeanUtilsTest {
             @Nested
             class GivenASimpleNonInheritingClass {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     testEntity = new TestEntity();
 
                 }
 
                 @Test
-                void shouldReturnTrueForAnnotatedPublicFields() throws Throwable {
+                void shouldReturnTrueForAnnotatedPublicFields() {
                     assertThat(BeanUtils.hasFieldWithAnnotation(testEntity,
                     		ContentId.class)).isTrue();
 
                 }
 
                 @Test
-                void shouldReturnTrueForAnnotatedPrivateFieldsWithGetter() throws Throwable {
+                void shouldReturnTrueForAnnotatedPrivateFieldsWithGetter() {
                     assertThat(BeanUtils.hasFieldWithAnnotation(testEntity,
                     		ContentLength.class)).isTrue();
 
                 }
 
                 @Test
-                void shouldNotFailWhenAboutAMissingField() throws Throwable {
+                void shouldNotFailWhenAboutAMissingField() {
                     try {
                     	BeanUtils.hasFieldWithAnnotation(testEntity, Override.class);
                     }
@@ -343,27 +343,27 @@ public class BeanUtilsTest {
             @Nested
             class GivenAnInheritingClass {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     testEntity = new InheritingTestEntity();
 
                 }
 
                 @Test
-                void shouldReturnTrueForAnnotatedPublicFields() throws Throwable {
+                void shouldReturnTrueForAnnotatedPublicFields() {
                     assertThat(BeanUtils.hasFieldWithAnnotation(testEntity,
                     		ContentId.class)).isTrue();
 
                 }
 
                 @Test
-                void shouldReturnTrueForAnnotatedPrivateFieldsWithGetter() throws Throwable {
+                void shouldReturnTrueForAnnotatedPrivateFieldsWithGetter() {
                     assertThat(BeanUtils.hasFieldWithAnnotation(testEntity,
                     		ContentLength.class)).isTrue();
 
                 }
 
                 @Test
-                void shouldNotFailWhenAboutAMissingField() throws Throwable {
+                void shouldNotFailWhenAboutAMissingField() {
                     try {
                     	BeanUtils.hasFieldWithAnnotation(testEntity, Override.class);
                     }
@@ -382,27 +382,27 @@ public class BeanUtilsTest {
             @Nested
             class GivenASimpleNonInheritingClass {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     testEntity = new TestEntity();
 
                 }
 
                 @Test
-                void shouldReturnTrueForAnnotatedPublicFields() throws Throwable {
+                void shouldReturnTrueForAnnotatedPublicFields() {
                     assertThat(BeanUtils.getFieldWithAnnotationType(testEntity,
                     				ContentId.class)).isEqualTo(String.class);
 
                 }
 
                 @Test
-                void shouldReturnTrueForAnnotatedPrivateFieldsWithGetter() throws Throwable {
+                void shouldReturnTrueForAnnotatedPrivateFieldsWithGetter() {
                     assertThat(BeanUtils.getFieldWithAnnotationType(testEntity,
                     				ContentLength.class)).isEqualTo(String.class);
 
                 }
 
                 @Test
-                void shouldNotFailWhenAskedAboutAMissingField() throws Throwable {
+                void shouldNotFailWhenAskedAboutAMissingField() {
                     try {
                     	BeanUtils.getFieldWithAnnotationType(testEntity,
                     			Override.class);
@@ -418,27 +418,27 @@ public class BeanUtilsTest {
             @Nested
             class GivenAnInheritingClass {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     testEntity = new InheritingTestEntity();
 
                 }
 
                 @Test
-                void shouldReturnTrueForAnnotatedPublicFields() throws Throwable {
+                void shouldReturnTrueForAnnotatedPublicFields() {
                     assertThat(BeanUtils.getFieldWithAnnotationType(testEntity,
                     				ContentId.class)).isEqualTo(String.class);
 
                 }
 
                 @Test
-                void shouldReturnTrueForAnnotatedPrivateFieldsWithGetter() throws Throwable {
+                void shouldReturnTrueForAnnotatedPrivateFieldsWithGetter() {
                     assertThat(BeanUtils.getFieldWithAnnotationType(testEntity,
                     				ContentLength.class)).isEqualTo(String.class);
 
                 }
 
                 @Test
-                void shouldNotFailWhenAskedAboutAMissingField() throws Throwable {
+                void shouldNotFailWhenAskedAboutAMissingField() {
                     try {
                     	BeanUtils.getFieldWithAnnotationType(testEntity,
                     			Override.class);
@@ -458,27 +458,27 @@ public class BeanUtilsTest {
             @Nested
             class GivenASimpleNonInheritingClass {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     testEntity = new TestEntity();
 
                 }
 
                 @Test
-                void shouldFindFields() throws Throwable {
+                void shouldFindFields() {
                     assertThat(BeanUtils.findFieldWithAnnotation(testEntity,
                     		ContentId.class)).isNotNull();
 
                 }
 
                 @Test
-                void shouldFindFieldsWithGetters() throws Throwable {
+                void shouldFindFieldsWithGetters() {
                     assertThat(BeanUtils.findFieldWithAnnotation(testEntity,
                     		ContentLength.class)).isNotNull();
 
                 }
 
                 @Test
-                void shouldNotFailWhenAboutAMissingField() throws Throwable {
+                void shouldNotFailWhenAboutAMissingField() {
                     try {
                     	BeanUtils.findFieldWithAnnotation(testEntity, Override.class);
                     }
@@ -493,27 +493,27 @@ public class BeanUtilsTest {
             @Nested
             class GivenAnInheritingClass {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     testEntity = new InheritingTestEntity();
 
                 }
 
                 @Test
-                void shouldFindFields() throws Throwable {
+                void shouldFindFields() {
                     assertThat(BeanUtils.findFieldWithAnnotation(testEntity,
                     		ContentId.class)).isNotNull();
 
                 }
 
                 @Test
-                void shouldFindFieldsWithGetters() throws Throwable {
+                void shouldFindFieldsWithGetters() {
                     assertThat(BeanUtils.findFieldWithAnnotation(testEntity,
                     		ContentLength.class)).isNotNull();
 
                 }
 
                 @Test
-                void shouldNotFailWhenAboutAMissingField() throws Throwable {
+                void shouldNotFailWhenAboutAMissingField() {
                     try {
                     	BeanUtils.findFieldWithAnnotation(testEntity, Override.class);
                     }
@@ -530,7 +530,7 @@ public class BeanUtilsTest {
         @Nested
         class FindFieldsWithAnnotation {
             @Test
-            void shouldFindFields() throws Throwable {
+            void shouldFindFields() {
                 assertThat(BeanUtils.findFieldsWithAnnotation(TestEntity2.class, MimeType.class, new BeanWrapperImpl(new TestEntity2())).length).isEqualTo(1);
 
             }
@@ -540,7 +540,7 @@ public class BeanUtilsTest {
         @Nested
         class GetFieldsWithAnnotation {
             @Test
-            void shouldFindFields() throws Throwable {
+            void shouldFindFields() {
                 TestEntity2 t = new TestEntity2();
                 t.setContentId("100");
                 t.setOtherContentId("200");

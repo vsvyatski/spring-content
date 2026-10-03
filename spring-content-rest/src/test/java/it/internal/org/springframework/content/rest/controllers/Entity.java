@@ -25,6 +25,7 @@ import com.theoryinpractise.halbuilder.api.RepresentationFactory;
 import com.theoryinpractise.halbuilder.standard.StandardRepresentationFactory;
 
 import internal.org.springframework.content.rest.support.ContentEntity;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 public class Entity {
 
@@ -82,7 +83,7 @@ public class Entity {
     @Nested
     class AGETToStoreIdAcceptingHalJson {
         @Test
-        void shouldReturnTheEntity() throws Throwable {
+        void shouldReturnTheEntity() throws Exception {
             MockHttpServletResponse response = mvc
             						.perform(get(url)
             								.accept("application/hal+json"))
@@ -101,7 +102,7 @@ public class Entity {
     @Nested
     class APUTToStoreIdWithAJsonBody {
         @Test
-        void shouldSetEntitiesDataAndReturn200() throws Throwable {
+        void shouldSetEntitiesDataAndReturn200() throws Exception, JsonProcessingException {
             entity.setTitle("Spring Content");
             				mvc.perform(put(url)
             						.content(new ObjectMapper().writeValueAsString(entity))
@@ -118,7 +119,7 @@ public class Entity {
     @Nested
     class APATCHToStoreIdWithAJsonBody {
         @Test
-        void shouldPatchTheEntityDataAndReturn200() throws Throwable {
+        void shouldPatchTheEntityDataAndReturn200() throws Exception {
             mvc.perform(patch(url)
             						.content("{\"title\":\"Spring Content Modified\"}")
             						.contentType("application/hal+json"))
@@ -135,7 +136,7 @@ public class Entity {
     @Nested
     class AHEADToStoreIdWithAJsonBody {
         @Test
-        void shouldReturn200() throws Throwable {
+        void shouldReturn200() throws Exception {
             mvc.perform(head(url))
             						.andExpect(status().is2xxSuccessful());
         }

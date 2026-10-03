@@ -32,7 +32,7 @@ public class StoresImplTest {
         @Nested
         class GivenNoFactories {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 context = mock(ApplicationContext.class);
 
                 when(context.getBeanNamesForType(StoreFactory.class)).thenReturn(new String[]{});
@@ -43,7 +43,7 @@ public class StoresImplTest {
             }
 
             @Test
-            void shouldAlwaysReturnEmpty() throws Throwable {
+            void shouldAlwaysReturnEmpty() {
                 assertThat(contentRepoService.getStores(Store.class)).isEqualTo(new StoreInfo[] {});
 
             }
@@ -53,7 +53,7 @@ public class StoresImplTest {
         @Nested
         class GivenAContentStoreFactory {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 context = mock(ApplicationContext.class);
 
                 mockFactory = mock(StoreFactory.class);
@@ -62,8 +62,7 @@ public class StoresImplTest {
                 when(mockFactory.getStoreInterface())
                 		.thenAnswer(new Answer<Object>() {
                 			@Override
-                			public Object answer(InvocationOnMock invocation)
-                					throws Throwable {
+                			public Object answer(InvocationOnMock invocation) {
                 				return ContentRepositoryInterface.class;
                 			}
                 		});
@@ -78,14 +77,14 @@ public class StoresImplTest {
             }
 
             @Test
-            void shouldReturnNoStoreInfo() throws Throwable {
+            void shouldReturnNoStoreInfo() {
                 StoreInfo[] infos = contentRepoService.getStores(Store.class);
                 assertThat(infos.length).isEqualTo(1);
 
             }
 
             @Test
-            void shouldReturnNoAssociativestoreInfo() throws Throwable {
+            void shouldReturnNoAssociativestoreInfo() {
                 StoreInfo[] infos = contentRepoService
                 		.getStores(AssociativeStore.class);
                 assertThat(infos.length).isEqualTo(1);
@@ -93,7 +92,7 @@ public class StoresImplTest {
             }
 
             @Test
-            void shouldReturnContentStoreInfo() throws Throwable {
+            void shouldReturnContentStoreInfo() {
                 StoreInfo[] infos = contentRepoService.getStores(ContentStore.class);
                 assertThat(infos.length).isEqualTo(1);
 
@@ -104,7 +103,7 @@ public class StoresImplTest {
         @Nested
         class GivenAStoreFactory {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 context = mock(ApplicationContext.class);
 
                 mockFactory = mock(StoreFactory.class);
@@ -113,8 +112,7 @@ public class StoresImplTest {
                 when(mockFactory.getStoreInterface())
                 		.thenAnswer(new Answer<Object>() {
                 			@Override
-                			public Object answer(InvocationOnMock invocation)
-                					throws Throwable {
+                			public Object answer(InvocationOnMock invocation) {
                 				return StoreInterface.class;
                 			}
                 		});
@@ -130,14 +128,14 @@ public class StoresImplTest {
             }
 
             @Test
-            void shouldReturnStoreInfo() throws Throwable {
+            void shouldReturnStoreInfo() {
                 StoreInfo[] infos = contentRepoService.getStores(Store.class);
                 assertThat(infos.length).isEqualTo(1);
 
             }
 
             @Test
-            void shouldReturnAssociativestoreInfo() throws Throwable {
+            void shouldReturnAssociativestoreInfo() {
                 StoreInfo[] infos = contentRepoService
                 		.getStores(AssociativeStore.class);
                 assertThat(infos.length).isEqualTo(0);
@@ -145,7 +143,7 @@ public class StoresImplTest {
             }
 
             @Test
-            void shouldReturnNoContentStoreInfo() throws Throwable {
+            void shouldReturnNoContentStoreInfo() {
                 StoreInfo[] infos = contentRepoService.getStores(ContentStore.class);
                 assertThat(infos.length).isEqualTo(0);
 
@@ -156,7 +154,7 @@ public class StoresImplTest {
         @Nested
         class GivenAnAssociativeStoreFactory {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 context = mock(ApplicationContext.class);
 
                 mockFactory = mock(StoreFactory.class);
@@ -165,8 +163,7 @@ public class StoresImplTest {
                 when(mockFactory.getStoreInterface())
                 		.thenAnswer(new Answer<Object>() {
                 			@Override
-                			public Object answer(InvocationOnMock invocation)
-                					throws Throwable {
+                			public Object answer(InvocationOnMock invocation) {
                 				return AssociativeStoreInterface.class;
                 			}
                 		});
@@ -182,21 +179,21 @@ public class StoresImplTest {
             }
 
             @Test
-            void shouldReturnNoContentStoreInfo() throws Throwable {
+            void shouldReturnNoContentStoreInfo() {
                 StoreInfo[] infos = contentRepoService.getStores(ContentStore.class);
                 assertThat(infos.length).isEqualTo(0);
 
             }
 
             @Test
-            void shouldReturnStoreInfo() throws Throwable {
+            void shouldReturnStoreInfo() {
                 StoreInfo[] infos = contentRepoService.getStores(Store.class);
                 assertThat(infos.length).isEqualTo(1);
 
             }
 
             @Test
-            void shouldReturnAssociativestoreInfo() throws Throwable {
+            void shouldReturnAssociativestoreInfo() {
                 StoreInfo[] infos = contentRepoService
                 		.getStores(AssociativeStore.class);
                 assertThat(infos.length).isEqualTo(1);
@@ -208,7 +205,7 @@ public class StoresImplTest {
         @Nested
         class GivenMultipleStores {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 context = mock(ApplicationContext.class);
 
                 mockFactory = mock(StoreFactory.class);
@@ -217,8 +214,7 @@ public class StoresImplTest {
                 when(mockFactory.getStoreInterface())
                 		.thenAnswer(new Answer<Object>() {
                 			@Override
-                			public Object answer(InvocationOnMock invocation)
-                					throws Throwable {
+                			public Object answer(InvocationOnMock invocation) {
                 				return EntityStoreInterface.class;
                 			}
                 		});
@@ -229,8 +225,7 @@ public class StoresImplTest {
                 when(mockFactory2.getStoreInterface())
                 		.thenAnswer(new Answer<Object>() {
                 			@Override
-                			public Object answer(InvocationOnMock invocation)
-                					throws Throwable {
+                			public Object answer(InvocationOnMock invocation) {
                 				return OtherEntityStoreInterface.class;
                 			}
                 		});
@@ -248,7 +243,7 @@ public class StoresImplTest {
             }
 
             @Test
-            void shouldReturnStoresThatMatchTheFilter() throws Throwable {
+            void shouldReturnStoresThatMatchTheFilter() {
                 StoreInfo[] infos = contentRepoService.getStores(
                 		AssociativeStore.class, Stores.MATCH_ALL);
                 assertThat(infos.length).isEqualTo(2);
@@ -256,7 +251,7 @@ public class StoresImplTest {
             }
 
             @Test
-            void shouldNotReturnStoresThatDontMatchTheFilter() throws Throwable {
+            void shouldNotReturnStoresThatDontMatchTheFilter() {
                 StoreInfo[] infos = contentRepoService
                 		.getStores(AssociativeStore.class, new StoreFilter() {
                 			@Override
@@ -278,7 +273,7 @@ public class StoresImplTest {
         @Nested
         class GivenMultipleStoresForTheSameEntity {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 context = mock(ApplicationContext.class);
 
                 mockFactory = mock(StoreFactory.class);
@@ -287,8 +282,7 @@ public class StoresImplTest {
                 when(mockFactory.getStoreInterface())
                 		.thenAnswer(new Answer<Object>() {
                 			@Override
-                			public Object answer(InvocationOnMock invocation)
-                					throws Throwable {
+                			public Object answer(InvocationOnMock invocation) {
                 				return FsEntityStoreInterface.class;
                 			}
                 		});
@@ -299,8 +293,7 @@ public class StoresImplTest {
                 when(mockFactory2.getStoreInterface())
                 		.thenAnswer(new Answer<Object>() {
                 			@Override
-                			public Object answer(InvocationOnMock invocation)
-                					throws Throwable {
+                			public Object answer(InvocationOnMock invocation) {
                 				return JpaEntityStoreInterface.class;
                 			}
                 		});
@@ -318,7 +311,7 @@ public class StoresImplTest {
             }
 
             @Test
-            void shouldReturnStoresThatMatchTheFilter() throws Throwable {
+            void shouldReturnStoresThatMatchTheFilter() {
                 StoreInfo[] infos = contentRepoService.getStores(ContentStore.class, Stores.MATCH_ALL);
                 assertThat(infos.length).isEqualTo(2);
 
@@ -329,7 +322,7 @@ public class StoresImplTest {
     }
 
 	@Test
-	public void test() throws Throwable {
+	public void test() {
 	}
 
 	public interface StoreInterface extends Store<String> {

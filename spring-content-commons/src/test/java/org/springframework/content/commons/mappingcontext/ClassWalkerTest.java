@@ -31,7 +31,7 @@ public class ClassWalkerTest {
     @Nested
     class ClassWalkerCases {
         @Test
-        void shouldVisitAllFields() throws Throwable {
+        void shouldVisitAllFields() {
             ContentPropertyMappingContextVisitor visitor = new ContentPropertyMappingContextVisitor("/", ".");
             ClassWalker walker = new ClassWalker(visitor);
             walker.accept(TestClass.class);
@@ -93,7 +93,7 @@ public class ClassWalkerTest {
     @Nested
     class GivenAClassWithUncorrelatedAttributes {
         @Test
-        void shouldReturnTwoContentProperties() throws Throwable {
+        void shouldReturnTwoContentProperties() {
             ContentPropertyMappingContextVisitor visitor = new ContentPropertyMappingContextVisitor("/", ".");
             ClassWalker walker = new ClassWalker(visitor);
             walker.accept(UncorrelatedAttrClass.class);
@@ -115,7 +115,7 @@ public class ClassWalkerTest {
     @Nested
     class GivenAClassWithCorrelatedAttributes {
         @Test
-        void shouldReturnTwoContentProperties() throws Throwable {
+        void shouldReturnTwoContentProperties() {
             ContentPropertyMappingContextVisitor visitor = new ContentPropertyMappingContextVisitor("/", ".");
             ClassWalker walker = new ClassWalker(visitor);
             walker.accept(CorrelatedAttrClass.class);
@@ -137,7 +137,7 @@ public class ClassWalkerTest {
     @Nested
     class GivenAClassWithAChildWithUncorrelatedAttributes {
         @Test
-        void shouldReturnTwoContentProperties() throws Throwable {
+        void shouldReturnTwoContentProperties() {
             ContentPropertyMappingContextVisitor visitor = new ContentPropertyMappingContextVisitor("/", ".");
             ClassWalker walker = new ClassWalker(visitor);
             walker.accept(TestClass2.class);
@@ -159,7 +159,7 @@ public class ClassWalkerTest {
     @Nested
     class GivenAClassWithRelationAttributes {
         @Test
-        void shouldNotTraverseThem() throws Throwable {
+        void shouldNotTraverseThem() {
             ContentPropertyMappingContextVisitor visitor = new ContentPropertyMappingContextVisitor("/", ".");
             ClassWalker walker = new ClassWalker(visitor);
             walker.accept(TestClass3.class);
@@ -173,7 +173,7 @@ public class ClassWalkerTest {
     @Nested
     class GivenAClassWithContentPropertiesInItsSuperClass {
         @Test
-        void shouldVisitThem() throws Throwable {
+        void shouldVisitThem() {
             ContentPropertyMappingContextVisitor visitor = new ContentPropertyMappingContextVisitor("/", ".");
             ClassWalker walker = new ClassWalker(visitor);
             walker.accept(TestClass4.class);
@@ -195,7 +195,7 @@ public class ClassWalkerTest {
     @Nested
     class GivenAClassWithMultipleChildContentPropertyObjects {
         @Test
-        void shouldReturnTwoContentProperties() throws Throwable {
+        void shouldReturnTwoContentProperties() {
             ContentPropertyMappingContextVisitor visitor = new ContentPropertyMappingContextVisitor("/", ".");
             ClassWalker walker = new ClassWalker(visitor);
             walker.accept(TestClass5.class);
@@ -227,7 +227,7 @@ public class ClassWalkerTest {
     @Nested
     class GivenAClassWithAChildWithMultipleContentPropertyObjects {
         @Test
-        void shouldReturnTwoContentProperties() throws Throwable {
+        void shouldReturnTwoContentProperties() {
             ContentPropertyMappingContextVisitor visitor = new ContentPropertyMappingContextVisitor("/", ".");
             ClassWalker walker = new ClassWalker(visitor);
             walker.accept(TestClass6.class);
@@ -259,7 +259,7 @@ public class ClassWalkerTest {
     @Nested
     class GivenAClassWithAChildWithAChildWithMultipleContentPropertyObjects {
         @Test
-        void shouldReturnTwoContentProperties() throws Throwable {
+        void shouldReturnTwoContentProperties() {
             ContentPropertyMappingContextVisitor visitor = new ContentPropertyMappingContextVisitor("/", ".");
             ClassWalker walker = new ClassWalker(visitor);
             walker.accept(TestClass7.class);

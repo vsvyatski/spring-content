@@ -29,7 +29,7 @@ public class POIServiceTest {
             @Nested
             class GivenAnInputStream {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     poi = new POIServiceImpl();
 
                     stream = this.getClass().getResourceAsStream("/sample-docx.docx");
@@ -37,7 +37,7 @@ public class POIServiceTest {
                 }
 
                 @Test
-                void shouldReturnAnInstanceOfAnXPWFDocument() throws Throwable {
+                void shouldReturnAnInstanceOfAnXPWFDocument() throws IOException {
                     assertThat(poi.xwpfDocument(stream)).isNotNull();
 
                 }
@@ -47,13 +47,13 @@ public class POIServiceTest {
             @Nested
             class GivenANullInputstream {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     poi = new POIServiceImpl();
 
                 }
 
                 @Test
-                void shouldThrowAnException() throws Throwable {
+                void shouldThrowAnException() {
                     try {
                     	poi.xwpfDocument(stream);
                     	fail("no exception thrown");
@@ -70,7 +70,7 @@ public class POIServiceTest {
             @Nested
             class GivenAnInvalidInputstream {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     poi = new POIServiceImpl();
 
                     stream = new ByteArrayInputStream("asdhg".getBytes());
@@ -78,7 +78,7 @@ public class POIServiceTest {
                 }
 
                 @Test
-                void shouldThrowAnException() throws Throwable {
+                void shouldThrowAnException() {
                     try {
                     	poi.xwpfDocument(stream);
                     	fail("no exception thrown");

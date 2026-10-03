@@ -15,6 +15,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
@@ -78,7 +79,7 @@ public class NestedContentPropertiesRestEndpointsIT {
             @Nested
             class GivenARequestToANonExistentEntity {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                     testEntity10 = repository.save(new TestEntity10());
@@ -86,7 +87,7 @@ public class NestedContentPropertiesRestEndpointsIT {
                 }
 
                 @Test
-                void shouldReturn404() throws Throwable {
+                void shouldReturn404() throws Exception {
                     mvc.perform(
                             get("/testEntity10s/9999999/foo"))
                             .andExpect(status().isNotFound());
@@ -98,7 +99,7 @@ public class NestedContentPropertiesRestEndpointsIT {
             @Nested
             class GivenARequestToANonExistentContentProperty {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                     testEntity10 = repository.save(new TestEntity10());
@@ -106,7 +107,7 @@ public class NestedContentPropertiesRestEndpointsIT {
                 }
 
                 @Test
-                void shouldReturn404() throws Throwable {
+                void shouldReturn404() throws Exception {
                     mvc.perform(
                             get("/testEntity10s/" + testEntity10.getId() + "/doesnotexist"))
                             .andExpect(status().isNotFound());
@@ -120,7 +121,7 @@ public class NestedContentPropertiesRestEndpointsIT {
                 @Nested
                 class AGETToRepositoryIdContentProperty {
                     @BeforeEach
-                    void setUp() throws Throwable {
+                    void setUp() {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                         testEntity10 = repository.save(new TestEntity10());
@@ -128,7 +129,7 @@ public class NestedContentPropertiesRestEndpointsIT {
                     }
 
                     @Test
-                    void shouldReturn404() throws Throwable {
+                    void shouldReturn404() throws Exception {
                         mvc.perform(
                           get("/testEntity10s/" + testEntity10.getId() + "/child"))
                           .andExpect(status().isNotFound());
@@ -140,7 +141,7 @@ public class NestedContentPropertiesRestEndpointsIT {
                 @Nested
                 class APUTToRepositoryIdPropertyContentProperty {
                     @BeforeEach
-                    void setUp() throws Throwable {
+                    void setUp() {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                         testEntity10 = repository.save(new TestEntity10());
@@ -148,7 +149,7 @@ public class NestedContentPropertiesRestEndpointsIT {
                     }
 
                     @Test
-                    void shouldCreateTheContent() throws Throwable {
+                    void shouldCreateTheContent() throws Exception {
                         mvc.perform(
                           put("/testEntity10s/" + testEntity10.getId() + "/child/content")
                         		  .content("Hello New Spring Content World!")
@@ -186,7 +187,7 @@ public class NestedContentPropertiesRestEndpointsIT {
                 @Nested
                 class APUTToStoreIdPropertyContentPropertyWithJsonContent {
                     @BeforeEach
-                    void setUp() throws Throwable {
+                    void setUp() {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                         testEntity10 = repository.save(new TestEntity10());
@@ -194,7 +195,7 @@ public class NestedContentPropertiesRestEndpointsIT {
                     }
 
                     @Test
-                    void shouldSetTheContentAndReturn201() throws Throwable {
+                    void shouldSetTheContentAndReturn201() throws Exception {
                         String content = "{\"content\":\"Hello New Spring Content World!\"}";
                         mvc.perform(
                                        put("/testEntity10s/" + testEntity10.getId() + "/child/content")
@@ -222,7 +223,7 @@ public class NestedContentPropertiesRestEndpointsIT {
                 @Nested
                 class AGETToRepositoryIdContentProperty {
                     @BeforeEach
-                    void setUp() throws Throwable {
+                    void setUp() throws IOException {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                         testEntity10 = repository.save(new TestEntity10());
@@ -251,7 +252,7 @@ public class NestedContentPropertiesRestEndpointsIT {
                     }
 
                     @Test
-                    void shouldReturnTheContent() throws Throwable {
+                    void shouldReturnTheContent() throws Exception {
                         MockHttpServletResponse response = mvc
                           .perform(get("/testEntity10s/" + testEntity10.getId() + "/child/content")
                         		  .accept("text/plain"))
@@ -271,7 +272,7 @@ public class NestedContentPropertiesRestEndpointsIT {
                 @Nested
                 class AGETToRepositoryIdContentPropertyWithAMimeTypeThatMatchesARenderer {
                     @BeforeEach
-                    void setUp() throws Throwable {
+                    void setUp() throws IOException {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                         testEntity10 = repository.save(new TestEntity10());
@@ -300,7 +301,7 @@ public class NestedContentPropertiesRestEndpointsIT {
                     }
 
                     @Test
-                    void shouldReturnTheRenditionAnd200() throws Throwable {
+                    void shouldReturnTheRenditionAnd200() throws Exception {
                         MockHttpServletResponse response = mvc
                           .perform(get(
                         		  "/testEntity10s/" + testEntity10.getId()
@@ -319,7 +320,7 @@ public class NestedContentPropertiesRestEndpointsIT {
                 @Nested
                 class AGETToRepositoryIdContentPropertyWithMultipleMimeTypesTheLastOfWhichMatchesTheCo {
                     @BeforeEach
-                    void setUp() throws Throwable {
+                    void setUp() throws IOException {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                         testEntity10 = repository.save(new TestEntity10());
@@ -348,7 +349,7 @@ public class NestedContentPropertiesRestEndpointsIT {
                     }
 
                     @Test
-                    void shouldReturnTheOriginalContentAnd200() throws Throwable {
+                    void shouldReturnTheOriginalContentAnd200() throws Exception {
                         MockHttpServletResponse response = mvc
                           .perform(get("/testEntity10s/"
                         		  + testEntity10.getId()
@@ -368,7 +369,7 @@ public class NestedContentPropertiesRestEndpointsIT {
                 @Nested
                 class APUTToRepositoryIdContentProperty {
                     @BeforeEach
-                    void setUp() throws Throwable {
+                    void setUp() throws IOException {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                         testEntity10 = repository.save(new TestEntity10());
@@ -397,7 +398,7 @@ public class NestedContentPropertiesRestEndpointsIT {
                     }
 
                     @Test
-                    void shouldCreateTheContent() throws Throwable {
+                    void shouldCreateTheContent() throws Exception {
                         mvc.perform(
                           put("/testEntity10s/" + testEntity10.getId() + "/child/content")
                         		  .content("Hello New Spring Content World!")
@@ -418,7 +419,7 @@ public class NestedContentPropertiesRestEndpointsIT {
                 @Nested
                 class ADELETEToRepositoryIdContentProperty {
                     @BeforeEach
-                    void setUp() throws Throwable {
+                    void setUp() throws IOException {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                         testEntity10 = repository.save(new TestEntity10());
@@ -447,7 +448,7 @@ public class NestedContentPropertiesRestEndpointsIT {
                     }
 
                     @Test
-                    void shouldDeleteTheContent() throws Throwable {
+                    void shouldDeleteTheContent() throws Exception {
                         mvc.perform(delete(
                           "/testEntity10s/" + testEntity10.getId() + "/child/content"))
                           .andExpect(status().isNoContent());
@@ -469,13 +470,13 @@ public class NestedContentPropertiesRestEndpointsIT {
         @Nested
         class GivenAPOSTToTheEntityEndpointWithAMultipartFormRequest {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
             }
 
             @Test
-            void shouldCreateANewEntityAndItsContentAndRespondWithA201Created() throws Throwable {
+            void shouldCreateANewEntityAndItsContentAndRespondWithA201Created() throws Exception {
                 // assert content does not exist
                 String content = "This is some new content";
                 String previewContent = "This is some new preview content";

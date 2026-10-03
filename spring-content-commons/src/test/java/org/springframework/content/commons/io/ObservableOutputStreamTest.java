@@ -29,7 +29,7 @@ public class ObservableOutputStreamTest {
         @Nested
         class WhenTheOutputStreamHasListeners {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 os = mock(OutputStream.class);
                 observer1 = mock(OutputStreamObserver.class);
                 observer2 = mock(OutputStreamObserver.class);
@@ -41,7 +41,7 @@ public class ObservableOutputStreamTest {
             }
 
             @Test
-            void shouldReturnThem() throws Throwable {
+            void shouldReturnThem() {
                 assertThat(observable.getObservers()).contains(observer1);
 
             }
@@ -51,7 +51,7 @@ public class ObservableOutputStreamTest {
         @Nested
         class WhenTheOutputStreamIsWrittenTo {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() throws IOException {
                 os = mock(OutputStream.class);
                 observer1 = mock(OutputStreamObserver.class);
                 observer2 = mock(OutputStreamObserver.class);
@@ -65,7 +65,7 @@ public class ObservableOutputStreamTest {
             }
 
             @Test
-            void shouldDelegateToTheUnderlyingInputStream() throws Throwable {
+            void shouldDelegateToTheUnderlyingInputStream() throws IOException {
                 verify(os).write(32);
 
             }
@@ -75,7 +75,7 @@ public class ObservableOutputStreamTest {
         @Nested
         class WhenTheOutputStreamIsClosed {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() throws IOException {
                 os = mock(OutputStream.class);
                 observer1 = mock(OutputStreamObserver.class);
                 observer2 = mock(OutputStreamObserver.class);
@@ -89,7 +89,7 @@ public class ObservableOutputStreamTest {
             }
 
             @Test
-            void shouldCallListenersOnClosedEventHandlerInOrder() throws Throwable {
+            void shouldCallListenersOnClosedEventHandlerInOrder() {
                 InOrder inOrder = inOrder(observer1, observer2);
                 verify(observer1).closed();
                 verify(observer2).closed();
@@ -102,7 +102,7 @@ public class ObservableOutputStreamTest {
         @Nested
         class WhenTheOutputStreamIsClosedAndThrowsAnException {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() throws IOException {
                 os = mock(OutputStream.class);
                 observer1 = mock(OutputStreamObserver.class);
                 observer2 = mock(OutputStreamObserver.class);
@@ -122,7 +122,7 @@ public class ObservableOutputStreamTest {
             }
 
             @Test
-            void shouldCallListenersOnClosedEventHandlerAndThrowTheException() throws Throwable {
+            void shouldCallListenersOnClosedEventHandlerAndThrowTheException() {
                 verify(observer1).closed();
                 assertThat(exception).isNotNull();
 

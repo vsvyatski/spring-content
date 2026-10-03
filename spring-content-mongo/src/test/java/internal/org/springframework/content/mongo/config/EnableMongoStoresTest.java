@@ -41,38 +41,38 @@ public class EnableMongoStoresTest {
         @Nested
         class GivenAnEnabledConfigurationWithAMongoContentRepositoryBean {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 context = new AnnotationConfigApplicationContext();
                 							context.register(TestConfig.class);
                 							context.refresh();
             }
             @AfterEach
-            void tearDown() throws Throwable {
+            void tearDown() {
                 context.close();
             }
             @Test
-            void shouldHaveAMongoContentRepositoryBean() throws Throwable {
+            void shouldHaveAMongoContentRepositoryBean() {
                 assertThat(context.getBean(TestEntityContentRepository.class)).isNotNull();
             }
             @Test
-            void shouldHaveAMongoStoreConverter() throws Throwable {
+            void shouldHaveAMongoStoreConverter() {
                 assertThat(context.getBean("mongoStorePlacementService")).isNotNull();
             }
         }
         @Nested
         class GivenAContextWithACustomConverter {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 context = new AnnotationConfigApplicationContext();
                 					context.register(ConverterConfig.class);
                 					context.refresh();
             }
             @AfterEach
-            void tearDown() throws Throwable {
+            void tearDown() {
                 context.close();
             }
             @Test
-            void shouldUseThatConverter() throws Throwable {
+            void shouldUseThatConverter() {
                 ConversionService converters = (ConversionService) context
                 							.getBean("mongoStorePlacementService");
                 					assertThat(converters.convert(
@@ -84,17 +84,17 @@ public class EnableMongoStoresTest {
         @Nested
         class GivenAnEnabledConfigurationWithNoMongoContentRepositoryBeans {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 context = new AnnotationConfigApplicationContext();
                 							context.register(EmptyConfig.class);
                 							context.refresh();
             }
             @AfterEach
-            void tearDown() throws Throwable {
+            void tearDown() {
                 context.close();
             }
             @Test
-            void shouldLoadTheContextButHaveNoMongoRepositoryBeans() throws Throwable {
+            void shouldLoadTheContextButHaveNoMongoRepositoryBeans() {
                 try {
                 										context.getBean(
                 												TestEntityContentRepository.class);

@@ -91,7 +91,7 @@ public class Content {
     @Nested
     class AGETToStoreIdAccepting {
         @Test
-        void shouldReturn404() throws Throwable {
+        void shouldReturn404() throws Exception {
             mvc.perform(get(url)
                                     .accept("*/*"))
                             .andExpect(status().isNotFound());
@@ -100,7 +100,7 @@ public class Content {
     @Nested
     class AGETToStoreIdAcceptingAContentMimeType {
         @Test
-        void shouldReturn404() throws Throwable {
+        void shouldReturn404() throws Exception {
             mvc.perform(get(url)
                                     .accept("text/plain"))
                             .andExpect(status().isNotFound());
@@ -109,7 +109,7 @@ public class Content {
     @Nested
     class APUTToStoreIdWithAContentBody {
         @Test
-        void shouldSetTheContentAndReturn201() throws Throwable {
+        void shouldSetTheContentAndReturn201() throws Exception {
             String content = "Hello New Spring Content World!";
                             mvc.perform(
                                     put(url)
@@ -129,7 +129,7 @@ public class Content {
     @Nested
     class ADELETEToStoreIdWithAMimeType {
         @Test
-        void shouldReturn404() throws Throwable {
+        void shouldReturn404() throws Exception {
             mvc.perform(delete(url)
                                     .contextPath(contextPath)
                                     .accept("text/plain")).andExpect(status().isNotFound());
@@ -138,7 +138,7 @@ public class Content {
     @Nested
     class APOSTToStoreIdWithAMultiPartFormDataRequest {
         @Test
-        void shouldSetTheContentAndReturn200() throws Throwable {
+        void shouldSetTheContentAndReturn200() throws Exception {
             String content = "This is Spring Content!";
 
                             mvc.perform(multipart(url)
@@ -160,7 +160,7 @@ public class Content {
         @Nested
         class AGETToStoreId {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 String content = "Hello Spring Content World!";
                                 entity = (ContentEntity) ((ContentStore)store).setContent(entity, new ByteArrayInputStream(content.getBytes()));
                                 entity.setMimeType("text/plain");
@@ -168,7 +168,7 @@ public class Content {
                                 entity = (ContentEntity) repository.save(entity);
             }
             @Test
-            void shouldReturnTheOriginalContentFilenameAnd200() throws Throwable {
+            void shouldReturnTheOriginalContentFilenameAnd200() throws Exception {
                 assertThat(Charset.defaultCharset()).isEqualTo(Charset.forName("UTF-8"));
 
                                     MockHttpServletResponse response = mvc
@@ -185,7 +185,7 @@ public class Content {
         @Nested
         class AGETToStoreIdWithNoAcceptHeader {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 String content = "Hello Spring Content World!";
                                 entity = (ContentEntity) ((ContentStore)store).setContent(entity, new ByteArrayInputStream(content.getBytes()));
                                 entity.setMimeType("text/plain");
@@ -193,7 +193,7 @@ public class Content {
                                 entity = (ContentEntity) repository.save(entity);
             }
             @Test
-            void shouldReturnTheOriginalContent() throws Throwable {
+            void shouldReturnTheOriginalContent() throws Exception {
                 MockHttpServletResponse response = mvc.perform(
                                             get(url)
                                             .contextPath(contextPath)
@@ -208,7 +208,7 @@ public class Content {
         @Nested
         class AGETToStoreIdWithAMimeTypeThatMatchesARenderer {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 String content = "Hello Spring Content World!";
                                 entity = (ContentEntity) ((ContentStore)store).setContent(entity, new ByteArrayInputStream(content.getBytes()));
                                 entity.setMimeType("text/plain");
@@ -216,7 +216,7 @@ public class Content {
                                 entity = (ContentEntity) repository.save(entity);
             }
             @Test
-            void shouldReturnTheRenditionAnd200() throws Throwable {
+            void shouldReturnTheRenditionAnd200() throws Exception {
                 MockHttpServletResponse response = mvc
                                             .perform(get(url)
                                                     .contextPath(contextPath)
@@ -232,7 +232,7 @@ public class Content {
         @Nested
         class AGETToStoreIdWithAMimeTypeThatMatchesARendererAndTheOriginalContentType {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 String content = "Hello Spring Content World!";
                                 entity = (ContentEntity) ((ContentStore)store).setContent(entity, new ByteArrayInputStream(content.getBytes()));
                                 entity.setMimeType("text/plain");
@@ -244,7 +244,7 @@ public class Content {
                                     entity = (ContentEntity) repository.save(entity);
             }
             @Test
-            void shouldReturnTheRenditionAnd200() throws Throwable {
+            void shouldReturnTheRenditionAnd200() throws Exception {
                 MockHttpServletResponse response = mvc
                                             .perform(get(url)
                                                     .contextPath(contextPath)
@@ -260,7 +260,7 @@ public class Content {
         @Nested
         class AGETToStoreIdWithMultipleMimeTypesTheLastOfWhichMatchesTheContent {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 String content = "Hello Spring Content World!";
                                 entity = (ContentEntity) ((ContentStore)store).setContent(entity, new ByteArrayInputStream(content.getBytes()));
                                 entity.setMimeType("text/plain");
@@ -268,7 +268,7 @@ public class Content {
                                 entity = (ContentEntity) repository.save(entity);
             }
             @Test
-            void shouldReturnTheOriginalContentAnd200() throws Throwable {
+            void shouldReturnTheOriginalContentAnd200() throws Exception {
                 MockHttpServletResponse response = mvc.perform(get(url)
                                             .contextPath(contextPath)
                                             .accept(new String[] { "text/xml", "text/plain" }))
@@ -283,7 +283,7 @@ public class Content {
         @Nested
         class AGETToStoreIdWithMultipleMimeTypesTheMiddleOfWhichMatchesTheContent {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 String content = "Hello Spring Content World!";
                                 entity = (ContentEntity) ((ContentStore)store).setContent(entity, new ByteArrayInputStream(content.getBytes()));
                                 entity.setMimeType("text/plain");
@@ -291,7 +291,7 @@ public class Content {
                                 entity = (ContentEntity) repository.save(entity);
             }
             @Test
-            void shouldReturnTheOriginalContentAnd200() throws Throwable {
+            void shouldReturnTheOriginalContentAnd200() throws Exception {
                 MockHttpServletResponse response = mvc.perform(get(url)
                                             .contextPath(contextPath)
                                             .accept(new String[] { "text/xml", "text/html", "*/*" }))
@@ -306,7 +306,7 @@ public class Content {
         @Nested
         class AGETToStoreIdWithJustAnAcceptAllMimeType {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 String content = "Hello Spring Content World!";
                                 entity = (ContentEntity) ((ContentStore)store).setContent(entity, new ByteArrayInputStream(content.getBytes()));
                                 entity.setMimeType("text/plain");
@@ -314,7 +314,7 @@ public class Content {
                                 entity = (ContentEntity) repository.save(entity);
             }
             @Test
-            void shouldReturnTheOriginalContentAnd200() throws Throwable {
+            void shouldReturnTheOriginalContentAnd200() throws Exception {
                 MockHttpServletResponse response = mvc.perform(get(url)
                                             .contextPath(contextPath)
                                             .accept(new String[] { "*/*" }))
@@ -329,7 +329,7 @@ public class Content {
         @Nested
         class AGETToStoreIdWithAMimeTypeSpecifyingCharset {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 String content = "Hello Spring Content World!";
                                 entity = (ContentEntity) ((ContentStore)store).setContent(entity, new ByteArrayInputStream(content.getBytes()));
                                 entity.setMimeType("text/plain");
@@ -337,7 +337,7 @@ public class Content {
                                 entity = (ContentEntity) repository.save(entity);
             }
             @Test
-            void shouldReturnTheOriginalContentAnd200() throws Throwable {
+            void shouldReturnTheOriginalContentAnd200() throws Exception {
                 MockHttpServletResponse response = mvc.perform(get(url)
                                             .contextPath(contextPath)
                                             .accept("text/html;charset=ISO-8859-1"))
@@ -352,7 +352,7 @@ public class Content {
         @Nested
         class AGETToStoreIdWhenTheOriginalMimeTypeHasACharset {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 String content = "Hello Spring Content World!";
                                 entity = (ContentEntity) ((ContentStore)store).setContent(entity, new ByteArrayInputStream(content.getBytes()));
                                 entity.setMimeType("text/plain");
@@ -363,7 +363,7 @@ public class Content {
                                     entity = (ContentEntity) repository.save(entity);
             }
             @Test
-            void shouldReturnTheOriginalContentAnd200() throws Throwable {
+            void shouldReturnTheOriginalContentAnd200() throws Exception {
                 MockHttpServletResponse response = mvc.perform(get(url)
                                             .contextPath(contextPath)
                                             .accept(new String[] { "text/plain" }))
@@ -378,7 +378,7 @@ public class Content {
         @Nested
         class AGETToStoreIdWithAMimeTypeThatDoesNotMatchARendererOrTheOriginalContent {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 String content = "Hello Spring Content World!";
                                 entity = (ContentEntity) ((ContentStore)store).setContent(entity, new ByteArrayInputStream(content.getBytes()));
                                 entity.setMimeType("text/plain");
@@ -386,7 +386,7 @@ public class Content {
                                 entity = (ContentEntity) repository.save(entity);
             }
             @Test
-            void shouldReturnTheOriginalContentAnd200() throws Throwable {
+            void shouldReturnTheOriginalContentAnd200() throws Exception {
                 mvc.perform(get(url)
                                         .contextPath(contextPath)
                                         .accept("text/css"))
@@ -396,7 +396,7 @@ public class Content {
         @Nested
         class AGETToStoreIdWithARangeHeader {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 String content = "Hello Spring Content World!";
                                 entity = (ContentEntity) ((ContentStore)store).setContent(entity, new ByteArrayInputStream(content.getBytes()));
                                 entity.setMimeType("text/plain");
@@ -404,7 +404,7 @@ public class Content {
                                 entity = (ContentEntity) repository.save(entity);
             }
             @Test
-            void shouldReturnTheContentRangeAnd206() throws Throwable {
+            void shouldReturnTheContentRangeAnd206() throws Exception {
                 MockHttpServletResponse response = mvc
                                             .perform(get(url)
                                                     .contextPath(contextPath)
@@ -420,7 +420,7 @@ public class Content {
         @Nested
         class APUTToStoreId {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 String content = "Hello Spring Content World!";
                                 entity = (ContentEntity) ((ContentStore)store).setContent(entity, new ByteArrayInputStream(content.getBytes()));
                                 entity.setMimeType("text/plain");
@@ -428,7 +428,7 @@ public class Content {
                                 entity = (ContentEntity) repository.save(entity);
             }
             @Test
-            void shouldOverwriteTheContentAndReturn200() throws Throwable {
+            void shouldOverwriteTheContentAndReturn200() throws Exception {
                 mvc.perform(put(url)
                                             .contextPath(contextPath)
                                             .content("Hello Modified Spring Content World!")
@@ -441,7 +441,7 @@ public class Content {
         @Nested
         class APOSTToStoreIdWithAMultiPartRequest {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 String content = "Hello Spring Content World!";
                                 entity = (ContentEntity) ((ContentStore)store).setContent(entity, new ByteArrayInputStream(content.getBytes()));
                                 entity.setMimeType("text/plain");
@@ -449,7 +449,7 @@ public class Content {
                                 entity = (ContentEntity) repository.save(entity);
             }
             @Test
-            void shouldOverwriteTheContentAndReturn200() throws Throwable {
+            void shouldOverwriteTheContentAndReturn200() throws Exception {
                 String content = "This is Modified Spring Content!";
 
                                     mvc.perform(multipart(url)
@@ -471,7 +471,7 @@ public class Content {
         @Nested
         class APOSTToStoreIdWithAMissingContentType {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 String content = "Hello Spring Content World!";
                                 entity = (ContentEntity) ((ContentStore)store).setContent(entity, new ByteArrayInputStream(content.getBytes()));
                                 entity.setMimeType("text/plain");
@@ -479,7 +479,7 @@ public class Content {
                                 entity = (ContentEntity) repository.save(entity);
             }
             @Test
-            void shouldReturn400BadRequest() throws Throwable {
+            void shouldReturn400BadRequest() throws Exception {
                 mvc.perform(post(url)
                                                     .content("some content")
                                                     .contextPath(contextPath)
@@ -490,7 +490,7 @@ public class Content {
         @Nested
         class APUTToStoreIdWithAMultiPartRequest {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 String content = "Hello Spring Content World!";
                                 entity = (ContentEntity) ((ContentStore)store).setContent(entity, new ByteArrayInputStream(content.getBytes()));
                                 entity.setMimeType("text/plain");
@@ -498,7 +498,7 @@ public class Content {
                                 entity = (ContentEntity) repository.save(entity);
             }
             @Test
-            void shouldOverwriteTheContentAndReturn200() throws Throwable {
+            void shouldOverwriteTheContentAndReturn200() throws Exception {
                 String content = "This is Modified Spring Content!";
 
                                     mvc.perform(multipart(HttpMethod.PUT, url)
@@ -520,7 +520,7 @@ public class Content {
         @Nested
         class ADELETEToStoreIdWithTheMimetype {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 String content = "Hello Spring Content World!";
                                 entity = (ContentEntity) ((ContentStore)store).setContent(entity, new ByteArrayInputStream(content.getBytes()));
                                 entity.setMimeType("text/plain");
@@ -528,7 +528,7 @@ public class Content {
                                 entity = (ContentEntity) repository.save(entity);
             }
             @Test
-            void shouldDeleteTheContentAttributesAndReturnA200Response() throws Throwable {
+            void shouldDeleteTheContentAttributesAndReturnA200Response() throws Exception {
                 mvc.perform(delete(url)
                                             .contentType("text/plain")
                                             .contextPath(contextPath)

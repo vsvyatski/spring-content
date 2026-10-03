@@ -60,6 +60,7 @@ import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.io.IOException;
 
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 
@@ -104,7 +105,7 @@ public class EncryptionIT {
             @Nested
             class Tests {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
 
                                     synchronized (mutex) {
@@ -136,7 +137,7 @@ public class EncryptionIT {
                                                 .statusCode(HttpStatus.SC_CREATED);
                 }
                 @Test
-                void shouldBeStoredEncrypted() throws Throwable {
+                void shouldBeStoredEncrypted() throws IOException {
                     Optional<File> fetched = repo.findById(f.getId());
                                         assertThat(fetched.isPresent()).isTrue();
                                         f = fetched.get();
@@ -151,7 +152,7 @@ public class EncryptionIT {
                                         assertThat(contents).isNotEqualTo("Hello Client-side encryption World!");
                 }
                 @Test
-                void shouldBeRetrievedDecrypted() throws Throwable {
+                void shouldBeRetrievedDecrypted() {
                     MockMvcResponse response =
                                                 given()
                                                 .header("accept", "text/plain")
@@ -163,7 +164,7 @@ public class EncryptionIT {
                                         assertThat(response.asString()).isEqualTo("Hello Client-side encryption World!");
                 }
                 @Test
-                void shouldHandleByteRangeRequests() throws Throwable {
+                void shouldHandleByteRangeRequests() {
                     MockMvcResponse r =
                                                 given()
                                                         .header("accept", "text/plain")
@@ -192,7 +193,7 @@ public class EncryptionIT {
             @Nested
             class WhenTheKeyringIsRotated {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
 
                                     synchronized (mutex) {
@@ -226,7 +227,7 @@ public class EncryptionIT {
                     vaultTemplate.opsForTransit().rotate("my-key");
                 }
                 @Test
-                void shouldStillRetrieveContentDecrypted() throws Throwable {
+                void shouldStillRetrieveContentDecrypted() {
                     MockMvcResponse response =
                                                     given()
                                                     .header("accept", "text/plain")
@@ -241,7 +242,7 @@ public class EncryptionIT {
             @Nested
             class WhenTheContentIsUnset {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
 
                                     synchronized (mutex) {
@@ -273,7 +274,7 @@ public class EncryptionIT {
                                                 .statusCode(HttpStatus.SC_CREATED);
                 }
                 @Test
-                void itShouldRemoveTheContentAndClearTheContentKey() throws Throwable {
+                void itShouldRemoveTheContentAndClearTheContentKey() {
                     f = repo.findById(f.getId()).get();
                                             String contentId = f.getContentId().toString();
 

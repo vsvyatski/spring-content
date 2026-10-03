@@ -19,6 +19,7 @@ import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
+import java.io.IOException;
 
 public class GenericBlobResourceTest {
 
@@ -43,7 +44,7 @@ public class GenericBlobResourceTest {
             @Nested
             class GivenTheResultsetThrowsSQLException {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() throws SQLException {
                     ds = mock(DataSource.class);
                     template = new JdbcTemplate(ds);
                     txnMgr = new DataSourceTransactionManager(ds);
@@ -63,7 +64,7 @@ public class GenericBlobResourceTest {
                 }
 
                 @Test
-                void shouldReturnFalse() throws Throwable {
+                void shouldReturnFalse() {
                     assertThat(result).isEqualTo(false);
                 }
 
@@ -76,7 +77,7 @@ public class GenericBlobResourceTest {
             @Nested
             class GivenASQLExceptionIsThrown {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() throws IOException, SQLException {
                     ds = mock(DataSource.class);
                     template = new JdbcTemplate(ds);
                     txnMgr = new DataSourceTransactionManager(ds);
@@ -96,7 +97,7 @@ public class GenericBlobResourceTest {
                 }
 
                 @Test
-                void shouldReturnNull() throws Throwable {
+                void shouldReturnNull() {
                     assertThat(result).isNull();
                 }
 

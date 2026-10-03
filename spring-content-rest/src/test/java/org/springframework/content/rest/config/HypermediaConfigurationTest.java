@@ -33,7 +33,7 @@ public class HypermediaConfigurationTest {
         @Nested
         class GivenAContextWithAContentRestConfiguration {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 context = new AnnotationConfigWebApplicationContext();
                 context.setServletContext(new MockServletContext());
                 context.register(TestConfig.class,
@@ -45,7 +45,7 @@ public class HypermediaConfigurationTest {
             }
 
             @Test
-            void shouldHaveAContentLinksProcessorBean() throws Throwable {
+            void shouldHaveAContentLinksProcessorBean() {
                 assertThat(context.getBean("contentLinksProcessor")).isNotNull();
             }
 

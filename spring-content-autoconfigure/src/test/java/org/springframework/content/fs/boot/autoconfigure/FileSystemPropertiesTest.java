@@ -19,12 +19,12 @@ public class FileSystemPropertiesTest {
         @Nested
         class GivenAFilesystemPropertiesWithNoRootSet {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 props = new FileSystemContentAutoConfiguration.FileSystemProperties();
             }
 
             @Test
-            void shouldReturnAJAVAIOTMPDIRBasedDefault() throws Throwable {
+            void shouldReturnAJAVAIOTMPDIRBasedDefault() {
                 assertThat(props.getFileSystemRoot()).startsWith(System.getProperty("java.io.tmpdir"));
             }
 
@@ -33,7 +33,7 @@ public class FileSystemPropertiesTest {
         @Nested
         class GivenAFilesystemPropertiesWithRootSet {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 someRandomPath = SystemUtils.IS_OS_WINDOWS ?
                                         "C:\\some\\random\\path" : "/some/random/path";
                 props = new FileSystemContentAutoConfiguration.FileSystemProperties();
@@ -42,7 +42,7 @@ public class FileSystemPropertiesTest {
             }
 
             @Test
-            void shouldReturnAJAVAIOTMPDIRBasedDefault() throws Throwable {
+            void shouldReturnAJAVAIOTMPDIRBasedDefault() {
                 assertThat(props.getFileSystemRoot()).isEqualTo(someRandomPath);
             }
 

@@ -45,7 +45,7 @@ public class AbstractStoreEventListenerTest {
             @Nested
             class GivenABeforeGetResourceEvent {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     consumer = mock(TestContentEventConsumer.class);
                     store = (ContentStore<Object, Serializable>) mock(ContentStore.class);
 
@@ -58,7 +58,7 @@ public class AbstractStoreEventListenerTest {
                 }
 
                 @Test
-                void shouldCallTheEventConsumer() throws Throwable {
+                void shouldCallTheEventConsumer() {
                     ArgumentCaptor<BeforeGetResourceEvent> argumentCaptor = ArgumentCaptor
                     		.forClass(BeforeGetResourceEvent.class);
                     verify(consumer).onBeforeGetResource(argumentCaptor.capture());
@@ -69,7 +69,7 @@ public class AbstractStoreEventListenerTest {
                 }
 
                 @Test
-                void shouldCallTheEventSourceConsumer() throws Throwable {
+                void shouldCallTheEventSourceConsumer() {
                     verify(consumer)
                     		.onBeforeGetResource(org.mockito.ArgumentMatchers.eq(event.getSource()));
 
@@ -80,7 +80,7 @@ public class AbstractStoreEventListenerTest {
             @Nested
             class GivenAnAfterGetResourceEvent {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     consumer = mock(TestContentEventConsumer.class);
                     store = (ContentStore<Object, Serializable>) mock(ContentStore.class);
 
@@ -93,7 +93,7 @@ public class AbstractStoreEventListenerTest {
                 }
 
                 @Test
-                void shouldCallTheEventConsumer() throws Throwable {
+                void shouldCallTheEventConsumer() {
                     ArgumentCaptor<AfterGetResourceEvent> argumentCaptor = ArgumentCaptor
                     		.forClass(AfterGetResourceEvent.class);
                     verify(consumer).onAfterGetResource(argumentCaptor.capture());
@@ -104,7 +104,7 @@ public class AbstractStoreEventListenerTest {
                 }
 
                 @Test
-                void shouldCallTheEventSourceConsumer() throws Throwable {
+                void shouldCallTheEventSourceConsumer() {
                     verify(consumer)
                     		.onAfterGetResource(org.mockito.ArgumentMatchers.eq(event.getSource()));
 
@@ -115,7 +115,7 @@ public class AbstractStoreEventListenerTest {
             @Nested
             class GivenABeforeAssociateEvent {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     consumer = mock(TestContentEventConsumer.class);
                     store = (ContentStore<Object, Serializable>) mock(ContentStore.class);
 
@@ -128,7 +128,7 @@ public class AbstractStoreEventListenerTest {
                 }
 
                 @Test
-                void shouldCallTheEventConsumer() throws Throwable {
+                void shouldCallTheEventConsumer() {
                     ArgumentCaptor<BeforeAssociateEvent> argumentCaptor = ArgumentCaptor
                     		.forClass(BeforeAssociateEvent.class);
                     verify(consumer).onBeforeAssociate(argumentCaptor.capture());
@@ -139,7 +139,7 @@ public class AbstractStoreEventListenerTest {
                 }
 
                 @Test
-                void shouldCallTheEventSourceConsumer() throws Throwable {
+                void shouldCallTheEventSourceConsumer() {
                     verify(consumer)
                     		.onBeforeAssociate(org.mockito.ArgumentMatchers.eq(event.getSource()));
 
@@ -150,7 +150,7 @@ public class AbstractStoreEventListenerTest {
             @Nested
             class GivenAnAfterAssociateEvent {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     consumer = mock(TestContentEventConsumer.class);
                     store = (ContentStore<Object, Serializable>) mock(ContentStore.class);
 
@@ -163,7 +163,7 @@ public class AbstractStoreEventListenerTest {
                 }
 
                 @Test
-                void shouldCallTheEventConsumer() throws Throwable {
+                void shouldCallTheEventConsumer() {
                     ArgumentCaptor<AfterAssociateEvent> argumentCaptor = ArgumentCaptor
                     		.forClass(AfterAssociateEvent.class);
                     verify(consumer).onAfterAssociate(argumentCaptor.capture());
@@ -174,7 +174,7 @@ public class AbstractStoreEventListenerTest {
                 }
 
                 @Test
-                void shouldCallTheEventSourceConsumer() throws Throwable {
+                void shouldCallTheEventSourceConsumer() {
                     verify(consumer)
                     		.onAfterAssociate(org.mockito.ArgumentMatchers.eq(event.getSource()));
 
@@ -185,7 +185,7 @@ public class AbstractStoreEventListenerTest {
             @Nested
             class GivenABeforeUnassociateEvent {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     consumer = mock(TestContentEventConsumer.class);
                     store = (ContentStore<Object, Serializable>) mock(ContentStore.class);
 
@@ -198,7 +198,7 @@ public class AbstractStoreEventListenerTest {
                 }
 
                 @Test
-                void shouldCallTheEventConsumer() throws Throwable {
+                void shouldCallTheEventConsumer() {
                     ArgumentCaptor<BeforeUnassociateEvent> argumentCaptor = ArgumentCaptor
                     		.forClass(BeforeUnassociateEvent.class);
                     verify(consumer).onBeforeUnassociate(argumentCaptor.capture());
@@ -209,7 +209,7 @@ public class AbstractStoreEventListenerTest {
                 }
 
                 @Test
-                void shouldCallTheEventSourceConsumer() throws Throwable {
+                void shouldCallTheEventSourceConsumer() {
                     verify(consumer)
                     		.onBeforeUnassociate(org.mockito.ArgumentMatchers.eq(event.getSource()));
 
@@ -220,7 +220,7 @@ public class AbstractStoreEventListenerTest {
             @Nested
             class GivenAnAfterUnassociateEvent {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     consumer = mock(TestContentEventConsumer.class);
                     store = (ContentStore<Object, Serializable>) mock(ContentStore.class);
 
@@ -233,7 +233,7 @@ public class AbstractStoreEventListenerTest {
                 }
 
                 @Test
-                void shouldCallTheEventConsumer() throws Throwable {
+                void shouldCallTheEventConsumer() {
                     ArgumentCaptor<AfterUnassociateEvent> argumentCaptor = ArgumentCaptor
                     		.forClass(AfterUnassociateEvent.class);
                     verify(consumer).onAfterUnassociate(argumentCaptor.capture());
@@ -244,7 +244,7 @@ public class AbstractStoreEventListenerTest {
                 }
 
                 @Test
-                void shouldCallTheEventSourceConsumer() throws Throwable {
+                void shouldCallTheEventSourceConsumer() {
                     verify(consumer)
                     		.onAfterUnassociate(org.mockito.ArgumentMatchers.eq(event.getSource()));
 
@@ -255,7 +255,7 @@ public class AbstractStoreEventListenerTest {
             @Nested
             class GivenABeforeGetContentEvent {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     consumer = mock(TestContentEventConsumer.class);
                     store = (ContentStore<Object, Serializable>) mock(ContentStore.class);
 
@@ -268,7 +268,7 @@ public class AbstractStoreEventListenerTest {
                 }
 
                 @Test
-                void shouldCallTheEventConsumer() throws Throwable {
+                void shouldCallTheEventConsumer() {
                     ArgumentCaptor<BeforeGetContentEvent> argumentCaptor = ArgumentCaptor
                     		.forClass(BeforeGetContentEvent.class);
                     verify(consumer).onBeforeGetContent(argumentCaptor.capture());
@@ -279,7 +279,7 @@ public class AbstractStoreEventListenerTest {
                 }
 
                 @Test
-                void shouldCallTheEventSourceConsumer() throws Throwable {
+                void shouldCallTheEventSourceConsumer() {
                     verify(consumer)
                     		.onBeforeGetContent(org.mockito.ArgumentMatchers.eq(event.getSource()));
 
@@ -290,7 +290,7 @@ public class AbstractStoreEventListenerTest {
             @Nested
             class GivenAnAfterGetContentEvent {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     consumer = mock(TestContentEventConsumer.class);
                     store = (ContentStore<Object, Serializable>) mock(ContentStore.class);
 
@@ -303,7 +303,7 @@ public class AbstractStoreEventListenerTest {
                 }
 
                 @Test
-                void shouldCallTheEventConsumer() throws Throwable {
+                void shouldCallTheEventConsumer() {
                     ArgumentCaptor<AfterGetContentEvent> argumentCaptor = ArgumentCaptor
                     		.forClass(AfterGetContentEvent.class);
                     verify(consumer).onAfterGetContent(argumentCaptor.capture());
@@ -314,7 +314,7 @@ public class AbstractStoreEventListenerTest {
                 }
 
                 @Test
-                void shouldCallTheEventSourceConsumer() throws Throwable {
+                void shouldCallTheEventSourceConsumer() {
                     verify(consumer)
                     		.onAfterGetContent(org.mockito.ArgumentMatchers.eq(event.getSource()));
 
@@ -325,7 +325,7 @@ public class AbstractStoreEventListenerTest {
             @Nested
             class GivenABeforeSetContentEvent {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     consumer = mock(TestContentEventConsumer.class);
                     store = (ContentStore<Object, Serializable>) mock(ContentStore.class);
 
@@ -338,7 +338,7 @@ public class AbstractStoreEventListenerTest {
                 }
 
                 @Test
-                void shouldCallTheEventConsumer() throws Throwable {
+                void shouldCallTheEventConsumer() {
                     ArgumentCaptor<BeforeSetContentEvent> argumentCaptor = ArgumentCaptor
                     		.forClass(BeforeSetContentEvent.class);
                     verify(consumer).onBeforeSetContent(argumentCaptor.capture());
@@ -349,7 +349,7 @@ public class AbstractStoreEventListenerTest {
                 }
 
                 @Test
-                void shouldCallTheEventSourceConsumer() throws Throwable {
+                void shouldCallTheEventSourceConsumer() {
                     verify(consumer)
                     		.onBeforeSetContent(org.mockito.ArgumentMatchers.eq(event.getSource()));
 
@@ -360,7 +360,7 @@ public class AbstractStoreEventListenerTest {
             @Nested
             class GivenAAfterSetContentEvent {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     consumer = mock(TestContentEventConsumer.class);
                     store = (ContentStore<Object, Serializable>) mock(ContentStore.class);
 
@@ -373,7 +373,7 @@ public class AbstractStoreEventListenerTest {
                 }
 
                 @Test
-                void shouldCallTheEventConsumer() throws Throwable {
+                void shouldCallTheEventConsumer() {
                     ArgumentCaptor<AfterSetContentEvent> argumentCaptor = ArgumentCaptor
                     		.forClass(AfterSetContentEvent.class);
                     verify(consumer).onAfterSetContent(argumentCaptor.capture());
@@ -384,7 +384,7 @@ public class AbstractStoreEventListenerTest {
                 }
 
                 @Test
-                void shouldCallTheEventSourceConsumer() throws Throwable {
+                void shouldCallTheEventSourceConsumer() {
                     verify(consumer)
                     		.onAfterSetContent(org.mockito.ArgumentMatchers.eq(event.getSource()));
 
@@ -395,7 +395,7 @@ public class AbstractStoreEventListenerTest {
             @Nested
             class GivenABeforeUnsetContentEvent {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     consumer = mock(TestContentEventConsumer.class);
                     store = (ContentStore<Object, Serializable>) mock(ContentStore.class);
 
@@ -408,7 +408,7 @@ public class AbstractStoreEventListenerTest {
                 }
 
                 @Test
-                void shouldCallTheEventConsumer() throws Throwable {
+                void shouldCallTheEventConsumer() {
                     ArgumentCaptor<BeforeUnsetContentEvent> argumentCaptor = ArgumentCaptor
                     		.forClass(BeforeUnsetContentEvent.class);
                     verify(consumer).onBeforeUnsetContent(argumentCaptor.capture());
@@ -419,7 +419,7 @@ public class AbstractStoreEventListenerTest {
                 }
 
                 @Test
-                void shouldCallTheEventSourceConsumer() throws Throwable {
+                void shouldCallTheEventSourceConsumer() {
                     verify(consumer)
                     		.onBeforeUnsetContent(org.mockito.ArgumentMatchers.eq(event.getSource()));
 
@@ -430,7 +430,7 @@ public class AbstractStoreEventListenerTest {
             @Nested
             class GivenAAfterUnsetContentEvent {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     consumer = mock(TestContentEventConsumer.class);
                     store = (ContentStore<Object, Serializable>) mock(ContentStore.class);
 
@@ -443,7 +443,7 @@ public class AbstractStoreEventListenerTest {
                 }
 
                 @Test
-                void shouldCallTheEventConsumer() throws Throwable {
+                void shouldCallTheEventConsumer() {
                     ArgumentCaptor<AfterUnsetContentEvent> argumentCaptor = ArgumentCaptor
                     		.forClass(AfterUnsetContentEvent.class);
                     verify(consumer).onAfterUnsetContent(argumentCaptor.capture());
@@ -454,7 +454,7 @@ public class AbstractStoreEventListenerTest {
                 }
 
                 @Test
-                void shouldCallTheEventSourceConsumer() throws Throwable {
+                void shouldCallTheEventSourceConsumer() {
                     verify(consumer)
                     		.onAfterUnsetContent(org.mockito.ArgumentMatchers.eq(event.getSource()));
 

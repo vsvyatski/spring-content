@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.UUID;
@@ -51,7 +52,7 @@ public class SolrIndexerStoreEventHandlerTest {
             @Nested
             class GivenAContentEntity {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() throws IOException {
                     store = mock(ContentStore.class);
                     content = mock(InputStream.class);
                     indexer = mock(IndexService.class);
@@ -74,7 +75,7 @@ public class SolrIndexerStoreEventHandlerTest {
                 }
 
                 @Test
-                void shouldUseTheIndexerToIndexTheContent() throws Throwable {
+                void shouldUseTheIndexerToIndexTheContent() {
                     assertThat(e).isNull();
                     verify(indexer).index(eq(contentEntity), eq(content));
 
@@ -83,7 +84,7 @@ public class SolrIndexerStoreEventHandlerTest {
                 @Nested
                 class GivenTheIndexerThrowsAnException {
                     @BeforeEach
-                    void setUp() throws Throwable {
+                    void setUp() throws IOException {
                         store = mock(ContentStore.class);
                         content = mock(InputStream.class);
                         indexer = mock(IndexService.class);
@@ -109,7 +110,7 @@ public class SolrIndexerStoreEventHandlerTest {
                     }
 
                     @Test
-                    void shouldReThrowThatException() throws Throwable {
+                    void shouldReThrowThatException() {
                         assertThat(e).isEqualTo(sae);
                     }
 
@@ -120,7 +121,7 @@ public class SolrIndexerStoreEventHandlerTest {
             @Nested
             class GivenAContentEntityWithANullContentId {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     store = mock(ContentStore.class);
                     content = mock(InputStream.class);
                     indexer = mock(IndexService.class);
@@ -137,7 +138,7 @@ public class SolrIndexerStoreEventHandlerTest {
                 }
 
                 @Test
-                void shouldCallUpdate() throws Throwable {
+                void shouldCallUpdate() {
                     assertThat(e).isNull();
                     verify(indexer, never()).index(any(), any());
 
@@ -148,7 +149,7 @@ public class SolrIndexerStoreEventHandlerTest {
             @Nested
             class GivenABogusContentEntity {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     store = mock(ContentStore.class);
                     content = mock(InputStream.class);
                     indexer = mock(IndexService.class);
@@ -165,7 +166,7 @@ public class SolrIndexerStoreEventHandlerTest {
                 }
 
                 @Test
-                void spec() throws Throwable {
+                void spec() {
                     assertThat(e).isNull();
                     verify(indexer, never()).index(any(), any());
 
@@ -180,7 +181,7 @@ public class SolrIndexerStoreEventHandlerTest {
             @Nested
             class GivenAContentEntity {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     store = mock(ContentStore.class);
                     content = mock(InputStream.class);
                     indexer = mock(IndexService.class);
@@ -201,7 +202,7 @@ public class SolrIndexerStoreEventHandlerTest {
                 }
 
                 @Test
-                void shouldUseTheIndexerToUnindexTheContent() throws Throwable {
+                void shouldUseTheIndexerToUnindexTheContent() {
                     assertThat(e).isNull();
                     verify(indexer).unindex(eq(contentEntity));
 
@@ -210,7 +211,7 @@ public class SolrIndexerStoreEventHandlerTest {
                 @Nested
                 class GivenAIOException {
                     @BeforeEach
-                    void setUp() throws Throwable {
+                    void setUp() {
                         store = mock(ContentStore.class);
                         content = mock(InputStream.class);
                         indexer = mock(IndexService.class);
@@ -234,7 +235,7 @@ public class SolrIndexerStoreEventHandlerTest {
                     }
 
                     @Test
-                    void shouldThrowAContextAccessException() throws Throwable {
+                    void shouldThrowAContextAccessException() {
                         assertThat(e).isEqualTo(sae);
                     }
 
@@ -245,7 +246,7 @@ public class SolrIndexerStoreEventHandlerTest {
             @Nested
             class GivenAContentEntityWithANullContentId {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     store = mock(ContentStore.class);
                     content = mock(InputStream.class);
                     indexer = mock(IndexService.class);
@@ -262,7 +263,7 @@ public class SolrIndexerStoreEventHandlerTest {
                 }
 
                 @Test
-                void shouldCallUpdate() throws Throwable {
+                void shouldCallUpdate() {
                     assertThat(e).isNull();
                     verify(indexer, never()).unindex(any());
 
@@ -273,7 +274,7 @@ public class SolrIndexerStoreEventHandlerTest {
             @Nested
             class GivenABogusContentEntity {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     store = mock(ContentStore.class);
                     content = mock(InputStream.class);
                     indexer = mock(IndexService.class);
@@ -290,7 +291,7 @@ public class SolrIndexerStoreEventHandlerTest {
                 }
 
                 @Test
-                void shouldNeverAttemptDeletion() throws Throwable {
+                void shouldNeverAttemptDeletion() {
                     assertThat(e).isNull();
                     verify(indexer, never()).unindex(any());
 
@@ -303,7 +304,7 @@ public class SolrIndexerStoreEventHandlerTest {
     }
 
     @Test
-    public void test() throws Throwable {
+    public void test() {
     }
 
     public static class ContentEntity {

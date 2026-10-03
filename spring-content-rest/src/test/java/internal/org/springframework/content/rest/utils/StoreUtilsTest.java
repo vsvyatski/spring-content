@@ -30,21 +30,21 @@ public class StoreUtilsTest {
         @Nested
         class GivenAContentStoreWithNoAnnotation {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 ContentStore storeImpl = mock(TestContentStore.class);
                 					info = new StoreInfoImpl(TestContentStore.class, TestEntity.class, storeImpl);
 
                 storePath = StoreUtils.storePath(info);
             }
             @Test
-            void shouldReturnReturnTestEntities() throws Throwable {
+            void shouldReturnReturnTestEntities() {
                 assertThat(storePath).isEqualTo("testEntities");
             }
         }
         @Nested
         class GivenAContentStoreWithAStoreRestResourceAnnotation {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 ContentStore storeImpl = mock(ContentStoreWithAnnotation.class);
                 					info = new StoreInfoImpl(ContentStoreWithAnnotation.class,
                 							TestEntity.class, storeImpl);
@@ -52,63 +52,63 @@ public class StoreUtilsTest {
                 storePath = StoreUtils.storePath(info);
             }
             @Test
-            void shouldReturnReturnTheSpecifiedPath() throws Throwable {
+            void shouldReturnReturnTheSpecifiedPath() {
                 assertThat(storePath).isEqualTo("testEntities");
             }
         }
         @Nested
         class GivenAContentStoreWithAStoreRestResourceAnnotationThatSpecifiesAPath {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 ContentStore storeImpl = mock(ContentStoreWithAnotherPath.class);
                 					info = new StoreInfoImpl(ContentStoreWithAnotherPath.class, TestEntity.class, storeImpl);
 
                 storePath = StoreUtils.storePath(info);
             }
             @Test
-            void shouldReturnReturnTheSpecifiedPath() throws Throwable {
+            void shouldReturnReturnTheSpecifiedPath() {
                 assertThat(storePath).isEqualTo("some-other-path");
             }
         }
         @Nested
         class GivenAStoreWithNoAnnotations {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 Store storeImpl = mock(TestStore.class);
                 					info = new StoreInfoImpl(TestStore.class, null, storeImpl);
 
                 storePath = StoreUtils.storePath(info);
             }
             @Test
-            void shouldReturnTests() throws Throwable {
+            void shouldReturnTests() {
                 assertThat(storePath).isEqualTo("tests");
             }
         }
         @Nested
         class GivenAStoreWithAStoreRestResourceAnnotation {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 Store storeImpl = mock(TestStoreWithAnnotation.class);
                 					info = new StoreInfoImpl(TestStoreWithAnnotation.class, null, storeImpl);
 
                 storePath = StoreUtils.storePath(info);
             }
             @Test
-            void shouldReturnTests() throws Throwable {
+            void shouldReturnTests() {
                 assertThat(storePath).isEqualTo("testWithAnnotations");
             }
         }
         @Nested
         class GivenAStoreWithAStoreRestResourceAnnotationWithAPathOfFoo {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 Store storeImpl = mock(TestStoreWithPath.class);
                 					info = new StoreInfoImpl(TestStoreWithPath.class, null, storeImpl);
 
                 storePath = StoreUtils.storePath(info);
             }
             @Test
-            void shouldReturnTests() throws Throwable {
+            void shouldReturnTests() {
                 assertThat(storePath).isEqualTo("foo");
             }
         }

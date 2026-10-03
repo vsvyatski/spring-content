@@ -34,31 +34,31 @@ public class StoreTest {
         @Nested
         class GivenTheApplicationContext {
             @Test
-            void shouldHaveAStoreBean() throws Throwable {
+            void shouldHaveAStoreBean() {
                 assertThat(context.getBean(TestContentRepository.class)).isNotNull();
 
             }
 
             @Test
-            void shouldHaveTheCoreSpringContentServiceBeans() throws Throwable {
+            void shouldHaveTheCoreSpringContentServiceBeans() {
                 assertThat(context.getBean(AnnotatedStoreEventInvoker.class)).isNotNull();
 
             }
 
             @Test
-            void shouldHaveATestStoreBean() throws Throwable {
+            void shouldHaveATestStoreBean() {
                 assertThat(context.getBean(TestStore.class)).isNotNull();
 
             }
 
             @Test
-            void shouldHaveAnTestAssociativeStoreBean() throws Throwable {
+            void shouldHaveAnTestAssociativeStoreBean() {
                 assertThat(context.getBean(TestAssociativeStore.class)).isNotNull();
 
             }
 
             @Test
-            void shouldHaveAnTestAssociativeAndContentStoreBean() throws Throwable {
+            void shouldHaveAnTestAssociativeAndContentStoreBean() {
                 assertThat(context.getBean(TestAssociativeAndContentStore.class)).isNotNull();
 
             }

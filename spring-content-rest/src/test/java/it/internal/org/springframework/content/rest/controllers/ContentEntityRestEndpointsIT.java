@@ -126,7 +126,7 @@ public class ContentEntityRestEndpointsIT {
                 @Nested
                 class ADELETEToStoreIdSoftDeleteCustomHandler {
                     @BeforeEach
-                    void setUp() throws Throwable {
+                    void setUp() {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                         testEntity3 = repo3.save(new TestEntity3());
@@ -145,7 +145,7 @@ public class ContentEntityRestEndpointsIT {
                     }
 
                     @Test
-                    void shouldReturn200() throws Throwable {
+                    void shouldReturn200() throws Exception {
                         mvc.perform(delete("/testEntity3s/" + testEntity3.id + "/softDelete"))
                                 .andExpect(status().is2xxSuccessful());
 
@@ -160,7 +160,7 @@ public class ContentEntityRestEndpointsIT {
                 @Nested
                 class AnOPTIONSRequestToTheRepositoryFromAKnownHost {
                     @BeforeEach
-                    void setUp() throws Throwable {
+                    void setUp() {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                         testEntity = repository.save(new TestEntity());
@@ -174,7 +174,7 @@ public class ContentEntityRestEndpointsIT {
                     }
 
                     @Test
-                    void shouldReturnTheRelevantCORSHeadersAndOK() throws Throwable {
+                    void shouldReturnTheRelevantCORSHeadersAndOK() throws Exception {
                         mvc.perform(options("/testEntities/" + testEntity.getId())
                         		.header("Access-Control-Request-Method", "PUT")
                         		.header("Origin", "http://www.someurl.com"))
@@ -191,7 +191,7 @@ public class ContentEntityRestEndpointsIT {
             @DisplayName("given an entity with @Version")
             class GivenAnEntityWithVersionVersion extends Version {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
                     testEntity4 = new TestEntity4();
                     testEntity4 = store4.setContent(testEntity4, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
@@ -213,7 +213,7 @@ public class ContentEntityRestEndpointsIT {
             @DisplayName("given an entity with @LastModifiedDate")
             class GivenAnEntityWithLastModifiedDateLastModifiedDate extends LastModifiedDate {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
                     String content = "Hello Spring Content LastModifiedDate World!";
                     testEntity4 = new TestEntity4();
@@ -232,7 +232,7 @@ public class ContentEntityRestEndpointsIT {
             @Nested
             class GivenAnEntityWithASharedIdAndContentIdField {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                     testEntity6 = new TestEntity6();
@@ -241,7 +241,7 @@ public class ContentEntityRestEndpointsIT {
                 }
 
                 @Test
-                void shouldReturn404WhenNoContentIsSet() throws Throwable {
+                void shouldReturn404WhenNoContentIsSet() throws Exception {
                     mvc.perform(get("/testEntity6s/" + testEntity6.getId())
                     			.accept("text/plain"))
                     	.andExpect(status().isNotFound());
@@ -255,13 +255,13 @@ public class ContentEntityRestEndpointsIT {
         @Nested
         class GivenAMultipartFormPOSTToAnEntityWithASingleUncorrelatedContentProperty {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
             }
 
             @Test
-            void shouldCreateANewEntityAndItsContentAndRespondWithA201Created() throws Throwable {
+            void shouldCreateANewEntityAndItsContentAndRespondWithA201Created() throws Exception {
                 // assert content does not exist
                 String newContent = "This is some new content";
 
@@ -310,13 +310,13 @@ public class ContentEntityRestEndpointsIT {
             @Nested
             class WithContent {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                 }
 
                 @Test
-                void shouldCreateANewEntityAndItsContentAndRespondWithA201Created() throws Throwable {
+                void shouldCreateANewEntityAndItsContentAndRespondWithA201Created() throws Exception {
                     String newContent = "This is some new content";
 
                     MockMultipartFile file = new MockMultipartFile("content", "filename.txt", "text/plain",
@@ -357,13 +357,13 @@ public class ContentEntityRestEndpointsIT {
             @Nested
             class WithoutContent {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                 }
 
                 @Test
-                void shouldCreateANewEntityAndRespondWithA201Created() throws Throwable {
+                void shouldCreateANewEntityAndRespondWithA201Created() throws Exception {
                     // POST the entity
                     MockHttpServletResponse response = mvc.perform(multipart("/testEntity4s")
                     				.param("name", "foo")
@@ -392,7 +392,7 @@ public class ContentEntityRestEndpointsIT {
         @Nested
         class GivenAnEntityWithASingleCorrelatedContentProperty {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                 testEntity9 = repo9.save(new TestEntity9());
@@ -400,7 +400,7 @@ public class ContentEntityRestEndpointsIT {
             }
 
             @Test
-            void shouldSupportContentOperations() throws Throwable {
+            void shouldSupportContentOperations() throws Exception {
                 String content = "Hello Spring Content World!";
                 mvc.perform(
                         put("/testEntity9s/" + testEntity9.id)
@@ -432,13 +432,13 @@ public class ContentEntityRestEndpointsIT {
         @Nested
         class GivenAMultipartFormPOSTToAnEntityWithASingleCorrelatedContentProperty {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
             }
 
             @Test
-            void shouldCreateANewEntityAndItsContentAndRespondWithA201Created() throws Throwable {
+            void shouldCreateANewEntityAndItsContentAndRespondWithA201Created() throws Exception {
                 // assert content does not exist
                 String newContent = "This is some new content";
 
@@ -475,13 +475,13 @@ public class ContentEntityRestEndpointsIT {
         @Nested
         class GivenAMultipartFormPOSTThatDoesnTIncludeTheContentProperty {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
             }
 
             @Test
-            void shouldCreateANewEntityWithNoContentAndRespondWithA201Created() throws Throwable {
+            void shouldCreateANewEntityWithNoContentAndRespondWithA201Created() throws Exception {
                 var testEntity4Id = repo4.save(new TestEntity4()).getId();
 
                 // POST the entity
@@ -514,7 +514,7 @@ public class ContentEntityRestEndpointsIT {
         @Nested
         class GivenAMultipartFormPOSTAndAnEventListener {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                 eventListener.clear();
@@ -522,7 +522,7 @@ public class ContentEntityRestEndpointsIT {
             }
 
             @Test
-            void shouldCreateANewEntityAndFireTheOnBeforeCreateOnAfterCreateEvents() throws Throwable {
+            void shouldCreateANewEntityAndFireTheOnBeforeCreateOnAfterCreateEvents() throws Exception {
                 // POST the entity
                 MockHttpServletResponse response = mvc.perform(multipart("/testEntity3s")
                 				.param("name", "foo foo")
@@ -545,13 +545,13 @@ public class ContentEntityRestEndpointsIT {
         @Nested
         class GivenAMultipartFormPOSTButWithTheWrongContentPropertyName {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
             }
 
             @Test
-            void shouldReturnAnErrorAndNotMakeTheEntity() throws Throwable {
+            void shouldReturnAnErrorAndNotMakeTheEntity() {
                 MockMultipartFile file = new MockMultipartFile("oopsDoesntExist", "filename.txt", "text/plain",
                 		"foo".getBytes());
 
@@ -579,13 +579,13 @@ public class ContentEntityRestEndpointsIT {
         @Nested
         class GivenAMultipartFormPOSTToAnEntityWithAMappedContentProperty {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
             }
 
             @Test
-            void shouldCreateANewEntityAndItsContentAndRespondWithA201Created() throws Throwable {
+            void shouldCreateANewEntityAndItsContentAndRespondWithA201Created() throws Exception {
                 // assert content does not exist
                 String newContent = "This is some new content";
 

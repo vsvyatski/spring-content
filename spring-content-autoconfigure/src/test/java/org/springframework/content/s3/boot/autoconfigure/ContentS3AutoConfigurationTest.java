@@ -41,14 +41,14 @@ public class ContentS3AutoConfigurationTest {
         @Nested
         class GivenAConfigurationWithBeans {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 contextRunner = new ApplicationContextRunner()
                 		.withConfiguration(AutoConfigurations.of(S3ContentAutoConfiguration.class));
 
             }
 
             @Test
-            void shouldLoadTheContext() throws Throwable {
+            void shouldLoadTheContext() {
                 contextRunner.withUserConfiguration(TestConfig.class).run((context) -> {
                 	Assertions.assertThat(context).hasSingleBean(TestEntityContentRepository.class);
                 	Assertions.assertThat(context).hasSingleBean(S3Client.class);
@@ -61,14 +61,14 @@ public class ContentS3AutoConfigurationTest {
         @Nested
         class GivenAConfigurationWithoutAnyBeans {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 contextRunner = new ApplicationContextRunner()
                 		.withConfiguration(AutoConfigurations.of(S3ContentAutoConfiguration.class));
 
             }
 
             @Test
-            void shouldLoadTheContext() throws Throwable {
+            void shouldLoadTheContext() {
                 contextRunner.withUserConfiguration(TestConfigWithoutBeans.class).run((context) -> {
                 	Assertions.assertThat(context).hasSingleBean(TestEntityContentRepository.class);
                 	Assertions.assertThat(context).hasSingleBean(S3Client.class);
@@ -81,14 +81,14 @@ public class ContentS3AutoConfigurationTest {
         @Nested
         class GivenAConfigurationWithAnExplicitEnableS3StoresAnnotation {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 contextRunner = new ApplicationContextRunner()
                 		.withConfiguration(AutoConfigurations.of(S3ContentAutoConfiguration.class));
 
             }
 
             @Test
-            void shouldLoadTheContext() throws Throwable {
+            void shouldLoadTheContext() {
                 contextRunner.withUserConfiguration(TestConfigWithExplicitEnableS3Stores.class).run((context) -> {
                 	Assertions.assertThat(context).hasSingleBean(TestEntityContentRepository.class);
                 	Assertions.assertThat(context).hasSingleBean(S3Client.class);
@@ -101,7 +101,7 @@ public class ContentS3AutoConfigurationTest {
         @Nested
         class GivenAnEnvironmentSpecifyingS3Properties {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 contextRunner = new ApplicationContextRunner()
                 		.withConfiguration(AutoConfigurations.of(S3ContentAutoConfiguration.class));
 
@@ -113,7 +113,7 @@ public class ContentS3AutoConfigurationTest {
             }
 
             @AfterEach
-            void tearDown() throws Throwable {
+            void tearDown() {
                 System.clearProperty("spring.content.s3.endpoint");
                 System.clearProperty("spring.content.s3.accessKey");
                 System.clearProperty("spring.content.s3.secretKey");
@@ -122,7 +122,7 @@ public class ContentS3AutoConfigurationTest {
             }
 
             @Test
-            void shouldHaveAFilesystemPropertiesBeanWithTheCorrectRootSet() throws Throwable {
+            void shouldHaveAFilesystemPropertiesBeanWithTheCorrectRootSet() {
                 contextRunner.withUserConfiguration(TestConfigWithProperties.class).run((context) -> {
                 	Assertions.assertThat(context).hasSingleBean(S3Client.class);
                 });

@@ -97,7 +97,7 @@ public class BaseUriIT {
             @DisplayName("given the repository and storage are exported to the same URI")
             class GivenTheRepositoryAndStorageAreExportedToTheSameURIEntity extends Entity {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
                     testEntity3 = repo3.save(new TestEntity3());
                     testEntity3.name = "tests";
@@ -114,7 +114,7 @@ public class BaseUriIT {
             @DisplayName("given the repository and storage are exported to the same URI")
             class GivenTheRepositoryAndStorageAreExportedToTheSameURIContent extends Content {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
                     testEntity3 = repo3.save(new TestEntity3());
                     testEntity3.name = "tests";
@@ -131,7 +131,7 @@ public class BaseUriIT {
             @DisplayName("given the repository and storage are exported to different URIs")
             class GivenTheRepositoryAndStorageAreExportedToDifferentURIsContent extends Content {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
                     testEntity = repository.save(new TestEntity());
                     this.setMvc(mvc);
@@ -146,7 +146,7 @@ public class BaseUriIT {
             @DisplayName("given the repository and storage are exported to different URIs")
             class GivenTheRepositoryAndStorageAreExportedToDifferentURIsCors extends Cors {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
                     testEntity = repository.save(new TestEntity());
                     this.setMvc(mvc);
@@ -158,7 +158,7 @@ public class BaseUriIT {
             @DisplayName("given an entity with @Version")
             class GivenAnEntityWithVersionVersion extends Version {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
                     testEntity4 = new TestEntity4();
                     testEntity4 = store4.setContent(testEntity4, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
@@ -180,7 +180,7 @@ public class BaseUriIT {
             @DisplayName("given an entity with @LastModifiedDate")
             class GivenAnEntityWithLastModifiedDateLastModifiedDate extends LastModifiedDate {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
                     String content = "Hello Spring Content LastModifiedDate World!";
                     testEntity4 = new TestEntity4();

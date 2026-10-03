@@ -38,7 +38,7 @@ public class StoreCandidateComponentProviderEnvironmentTest {
     @Nested
     class GivenTwoStoresWithProfiles {
         @Test
-        void shouldHaveAStoreBean() throws Throwable {
+        void shouldHaveAStoreBean() {
             assertThat(store).isNotNull();
             assertThat(associativeStore).isNull();
             assertThat(contentStore).isNotNull();

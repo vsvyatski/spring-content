@@ -1,12 +1,9 @@
 package internal.org.springframework.content.fs.config;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.AfterEach;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
-
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.content.commons.annotations.ContentId;
@@ -22,6 +19,8 @@ import org.springframework.context.annotation.PropertySource;
 
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -33,73 +32,83 @@ public class EnableFileSystemStoresTest {
     // mocks
     static FileSystemStoreConfigurer configurer;
 
-    
+
     @Nested
     class EnableFileSystemStoresCases {
         @Nested
         class GivenAContextAndAConfigurationWithAFilesystemContentRepositoryBean {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 context = new AnnotationConfigApplicationContext();
-                                            context.register(TestConfig.class);
-                                            context.refresh();
+                context.register(TestConfig.class);
+                context.refresh();
             }
+
             @AfterEach
-            void tearDown() throws Throwable {
+            void tearDown() {
                 context.close();
             }
+
             @Test
-            void shouldHaveAContentRepositoryBean() throws Throwable {
+            void shouldHaveAContentRepositoryBean() {
                 assertThat(context.getBean(TestEntityContentRepository.class)).isNotNull();
             }
+
             @Test
-            void shouldHaveAFilesystemPlacementServiceBean() throws Throwable {
+            void shouldHaveAFilesystemPlacementServiceBean() {
                 assertThat(context.getBean("filesystemStorePlacementService")).isNotNull();
             }
+
             @Test
-            void shouldHaveAFileSystemResourceLoaderBean() throws Throwable {
+            void shouldHaveAFileSystemResourceLoaderBean() {
                 assertThat(context.getBean("fileSystemResourceLoader")).isNotNull();
             }
         }
+
         @Nested
         class GivenAContextWithAConfigurer {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 configurer = mock(FileSystemStoreConfigurer.class);
 
-                                    context = new AnnotationConfigApplicationContext();
-                                    context.register(ConverterConfig.class);
-                                    context.refresh();
+                context = new AnnotationConfigApplicationContext();
+                context.register(ConverterConfig.class);
+                context.refresh();
             }
+
             @AfterEach
-            void tearDown() throws Throwable {
+            void tearDown() {
                 context.close();
             }
+
             @Test
-            void shouldCallThatConfigurerToHelpCustomizeTheStore() throws Throwable {
+            void shouldCallThatConfigurerToHelpCustomizeTheStore() {
                 verify(configurer).configureFileSystemStoreConverters(any());
             }
         }
+
         @Nested
         class GivenAContextWithAnEmptyConfiguration {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 context = new AnnotationConfigApplicationContext();
-                                    context.register(EmptyConfig.class);
-                                    context.refresh();
+                context.register(EmptyConfig.class);
+                context.refresh();
             }
+
             @AfterEach
-            void tearDown() throws Throwable {
+            void tearDown() {
                 context.close();
             }
+
             @Test
-            void shouldNotContainAnyFilesystemRepositoryBeans() throws Throwable {
+            void shouldNotContainAnyFilesystemRepositoryBeans() {
                 try {
-                                        context.getBean(TestEntityContentRepository.class);
-                                        fail("expected no such bean");
-                                    } catch (NoSuchBeanDefinitionException e) {
-                                        assertThat(true).isTrue();
-                                    }
+                    context.getBean(TestEntityContentRepository.class);
+                    fail("expected no such bean");
+                } catch (NoSuchBeanDefinitionException e) {
+                    assertThat(true).isTrue();
+                }
             }
         }
     }
@@ -158,7 +167,6 @@ public class EnableFileSystemStoresTest {
         private String contentId;
     }
 
-    public interface TestEntityContentRepository
-            extends ContentStore<TestEntity, String> {
+    public interface TestEntityContentRepository extends ContentStore<TestEntity, String> {
     }
 }

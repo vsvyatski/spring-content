@@ -38,13 +38,13 @@ public class ContentMongoAutoConfigurationTest {
     @Nested
     class ContentMongoAutoConfiguration {
         @BeforeEach
-        void setUp() throws Throwable {
+        void setUp() {
             contextRunner = new ApplicationContextRunner()
                                 .withConfiguration(AutoConfigurations.of(MongoContentAutoConfiguration.class));
         }
 
         @Test
-        void shouldLoadTheContext() throws Throwable {
+        void shouldLoadTheContext() {
             contextRunner.withUserConfiguration(TestConfig.class)
                                 .run((context) ->
                                         Assertions.assertThat(context).hasSingleBean(TestEntityContentRepository.class));

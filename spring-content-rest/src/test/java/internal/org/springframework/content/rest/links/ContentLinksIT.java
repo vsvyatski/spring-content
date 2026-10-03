@@ -101,7 +101,7 @@ public class ContentLinksIT {
         @DisplayName("given a store and an entity with a top-level uncorrelated content property")
         class GivenAStoreAndAnEntityWithATopLevelUncorrelatedContentPropertyContentLinkTests extends ContentLinkTests {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
                 testEntity3 = new TestEntity3();
                 contentRepository3.setContent(testEntity3, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
@@ -120,7 +120,7 @@ public class ContentLinksIT {
         @DisplayName("given a store and an entity with top-level correlated content properties")
         class GivenAStoreAndAnEntityWithTopLevelCorrelatedContentPropertiesContentLinkTests extends ContentLinkTests {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
                 testEntity5 = new TestEntity5();
                 store5.setContent(testEntity5, PropertyPath.from("content"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
@@ -139,7 +139,7 @@ public class ContentLinksIT {
         @DisplayName("given a store specifying a linkrel and an entity a nested content property")
         class GivenAStoreSpecifyingALinkrelAndAnEntityANestedContentPropertyContentLinkTests extends ContentLinkTests {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
                 testEntity2 = new TestEntity2();
                 testEntity2.getChild().setMimeType("text/plain");
@@ -159,7 +159,7 @@ public class ContentLinksIT {
         @DisplayName("given a store specifying a linkrel and an entity with nested content properties")
         class GivenAStoreSpecifyingALinkrelAndAnEntityWithNestedContentPropertiesContentLinkTe extends ContentLinkTests {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
                 testEntity10 = new TestEntity10();
                 store10.setContent(testEntity10, PropertyPath.from("child/content"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));

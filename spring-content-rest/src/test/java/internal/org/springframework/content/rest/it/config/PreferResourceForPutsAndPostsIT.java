@@ -72,13 +72,13 @@ public class PreferResourceForPutsAndPostsIT {
     @Nested
     class PreferResourceForPutsAndPosts {
         @BeforeEach
-        void setUp() throws Throwable {
+        void setUp() {
             RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
 
         }
 
         @Test
-        void shouldUseTheSetContentSResourceMethod() throws Throwable {
+        void shouldUseTheSetContentSResourceMethod() {
             TestEntity tentity = new TestEntity();
             tentity = repo.save(tentity);
 

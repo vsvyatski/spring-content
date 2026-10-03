@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 
@@ -21,18 +22,18 @@ public class JpegToPngRenditionProviderTest {
 	private RenditionProvider service;
 
 	@BeforeEach
-	public void setUp() throws Throwable {
+	public void setUp() {
 		service = new JpegToPngRenditionProvider();
 	}
 
 	@Test
-	public void testCanConvert() throws Throwable {
+	public void testCanConvert() {
 		assertThat(service.consumes()).isEqualTo("image/jpeg");
 		assertThat(Arrays.asList(service.produces())).contains("image/png");
 	}
 
 	@Test
-	public void testConvert() throws Throwable {
+	public void testConvert() throws IOException {
 		InputStream converted = service.convert(this.getClass().getResourceAsStream("/sample.jpeg"), "image/png");
 
 		assertThat(converted.available()).isGreaterThan(0);

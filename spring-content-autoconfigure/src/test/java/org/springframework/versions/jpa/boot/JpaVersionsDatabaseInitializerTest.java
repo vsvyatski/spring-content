@@ -12,6 +12,7 @@ import org.springframework.boot.sql.init.DatabaseInitializationMode;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 import static org.mockito.ArgumentMatchers.anyString;
@@ -36,7 +37,7 @@ public class JpaVersionsDatabaseInitializerTest {
             @Nested
             class WhenInitializationIsEnabled {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() throws SQLException {
                     ds = mock(DataSource.class);
                     props = new JpaVersionsProperties();
 
@@ -53,7 +54,7 @@ public class JpaVersionsDatabaseInitializerTest {
                 }
 
                 @Test
-                void shouldExecuteCREATETABLEStatementsOnTheDatabase() throws Throwable {
+                void shouldExecuteCREATETABLEStatementsOnTheDatabase() throws SQLException {
                     verify(stmt, atLeastOnce()).execute(org.mockito.ArgumentMatchers.argThat(v -> String.valueOf(v).contains("CREATE TABLE")));
                 }
 
@@ -62,7 +63,7 @@ public class JpaVersionsDatabaseInitializerTest {
             @Nested
             class WhenInitializationIsDisabled {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() throws SQLException {
                     ds = mock(DataSource.class);
                     props = new JpaVersionsProperties();
 
@@ -79,7 +80,7 @@ public class JpaVersionsDatabaseInitializerTest {
                 }
 
                 @Test
-                void shouldNotExecuteAnyStatementsOnTheDatabase() throws Throwable {
+                void shouldNotExecuteAnyStatementsOnTheDatabase() throws SQLException {
                     verify(stmt, never()).execute(anyString());
                 }
 

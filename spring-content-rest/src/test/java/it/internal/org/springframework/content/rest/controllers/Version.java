@@ -23,6 +23,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -80,7 +81,7 @@ public class Version {
     @Nested
     class Issue1975 {
         @Test
-        void shouldAlwaysEvaluateIfMatchHeaderEvenAfterContentDeletion() throws Throwable {
+        void shouldAlwaysEvaluateIfMatchHeaderEvenAfterContentDeletion() throws Exception, JsonProcessingException {
             String entityUrl = mvc.perform(post(collectionUrl).content("{}"))
                                     .andExpect(status().is2xxSuccessful()).andReturn().getResponse().getHeader("Location");
                             assertThat(entityUrl).isNotNull();
@@ -105,7 +106,7 @@ public class Version {
     @Nested
     class AGETRequestToStoreId {
         @Test
-        void shouldReturnAnEtagHeader() throws Throwable {
+        void shouldReturnAnEtagHeader() throws Exception {
             MockHttpServletResponse response = mvc
                                     .perform(get(url)
                                             .accept("text/plain"))
@@ -120,7 +121,7 @@ public class Version {
     @Nested
     class AGETRequestToStoreIdWithAMatchingIfNoneMatchHeader {
         @Test
-        void shouldRespondWithA304NotModified() throws Throwable {
+        void shouldRespondWithA304NotModified() throws Exception {
             mvc.perform(get(url)
                                     .accept("text/plain")
                                     .header("if-none-match", etag))
@@ -130,7 +131,7 @@ public class Version {
     @Nested
     class AGETRequestToStoreIdWithAnNonMatchingIfNoneMatchHeader {
         @Test
-        void shouldRespondWithTheContent() throws Throwable {
+        void shouldRespondWithTheContent() throws Exception {
             MockHttpServletResponse response = mvc
                                     .perform(get(url)
                                             .accept("text/plain")
@@ -146,7 +147,7 @@ public class Version {
     @Nested
     class APUTToStoreIdWithAMatchingIfMatchHeader {
         @Test
-        void shouldUpdateTheContent() throws Throwable {
+        void shouldUpdateTheContent() throws Exception {
             mvc.perform(put(url)
                                     .content("Hello Modified Spring Content World!")
                                     .contentType("text/other")
@@ -154,7 +155,7 @@ public class Version {
                                     .andExpect(status().isOk());
         }
         @Test
-        void shouldUpdateTheContentAttributes() throws Throwable {
+        void shouldUpdateTheContentAttributes() throws Exception {
             mvc.perform(multipart(url)
                                     .file(new MockMultipartFile("file",
                                             "test-file-modified.txt",
@@ -174,7 +175,7 @@ public class Version {
     @Nested
     class ADELETEToStoreIdWithAMatchingIfMatchHeader {
         @Test
-        void shouldDeleteTheContentAttributesAndReturnA200Response() throws Throwable {
+        void shouldDeleteTheContentAttributesAndReturnA200Response() throws Exception {
             mvc.perform(delete(url)
                                     .contentType("text/plain"))
                                     .andExpect(status().isNoContent());
@@ -192,7 +193,7 @@ public class Version {
     @Nested
     class APUTToStoreIdWithANonMatchingIfMatchHeader {
         @Test
-        void shouldRespondWith412PreconditionFailed() throws Throwable {
+        void shouldRespondWith412PreconditionFailed() throws Exception {
             mvc.perform(put(url)
                                     .content("Hello Modified Spring Content World!")
                                     .contentType("text/plain")
@@ -203,7 +204,7 @@ public class Version {
     @Nested
     class APUTToStoreIdWithAMatchingIfNoneMatchHeader {
         @Test
-        void shouldRespondWithA412PreconditionFailed() throws Throwable {
+        void shouldRespondWithA412PreconditionFailed() throws Exception {
             mvc.perform(put(url)
                                     .content("Hello Modified Spring Content World!")
                                     .contentType("text/plain")
@@ -214,7 +215,7 @@ public class Version {
     @Nested
     class APUTToStoreIdWithANonMatchingIfNoneMatchHeader {
         @Test
-        void shouldRespondWith200OKAndSetTheContent() throws Throwable {
+        void shouldRespondWith200OKAndSetTheContent() throws Exception {
             mvc.perform(put(url)
                                     .content("Hello Modified Spring Content World!")
                                     .contentType("text/plain")
@@ -225,7 +226,7 @@ public class Version {
     @Nested
     class APUTToStoreIdWithAMatchingIfMatchHeaderAndAMatchingIfNoneMatchHeader {
         @Test
-        void shouldRespondWithA412PreconditionFailed() throws Throwable {
+        void shouldRespondWithA412PreconditionFailed() throws Exception {
             mvc.perform(put(url)
                                     .content("Hello Modified Spring Content World!")
                                     .contentType("text/plain")
@@ -237,7 +238,7 @@ public class Version {
     @Nested
     class APOSTToStoreIdWithANonMatchingIfMatchHeader {
         @Test
-        void shouldRespondWith412PreconditionFailed() throws Throwable {
+        void shouldRespondWith412PreconditionFailed() throws Exception {
             mvc.perform(multipart(url)
                                     .file(new MockMultipartFile("file",
                                             "tests-file-modified.txt",
@@ -249,7 +250,7 @@ public class Version {
     @Nested
     class ADELETEToStoreIdWithANonMatchingIfMatchHeader {
         @Test
-        void shouldRespondWith412PreconditionFailed() throws Throwable {
+        void shouldRespondWith412PreconditionFailed() throws Exception {
             mvc.perform(delete(url)
                                     .header("if-match", "\"999\""))
                                     .andExpect(status().isPreconditionFailed());

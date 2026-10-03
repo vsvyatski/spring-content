@@ -76,13 +76,13 @@ public class CacheControlIT {
     @Nested
     class CacheControlCases {
         @BeforeEach
-        void setUp() throws Throwable {
+        void setUp() {
             RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
 
         }
 
         @Test
-        void givenThePatternMatchesItShouldApplyTheConfiguredCacheSettings() throws Throwable {
+        void givenThePatternMatchesItShouldApplyTheConfiguredCacheSettings() {
             TestEntity tentity = new TestEntity();
             tentity = repo.save(tentity);
             tentity = store.setContent(tentity, new ByteArrayInputStream("some content".getBytes()));
@@ -100,7 +100,7 @@ public class CacheControlIT {
         }
 
         @Test
-        void givenThePatternDoesnTMatchItShouldNotApplyTheConfiguredCacheSettings() throws Throwable {
+        void givenThePatternDoesnTMatchItShouldNotApplyTheConfiguredCacheSettings() {
             TestEntity tentity = new TestEntity();
             tentity = repo.save(tentity);
             tentity = store.setContent(tentity, new ByteArrayInputStream("some content".getBytes()));

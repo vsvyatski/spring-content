@@ -30,9 +30,11 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import javax.sql.DataSource;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 @ContextConfiguration(classes = PostgresBlobResourceIT.PostgresConfig.class)
@@ -60,7 +62,7 @@ public class PostgresBlobResourceIT {
             @Nested
             class WhenTheContentIsDeleted {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() throws IOException, SQLException {
                     entityId = UuidCreator.getTimeOrdered().toString();
                     template = new JdbcTemplate(ds);
 
@@ -108,7 +110,7 @@ public class PostgresBlobResourceIT {
                 }
 
                 @Test
-                void shouldDeleteTheAssociatedLobResources() throws Throwable {
+                void shouldDeleteTheAssociatedLobResources() throws SQLException {
                     DataSource ds = PostgresBlobResourceIT.this.template.getDataSource();
                     assert ds != null;
                     Connection conn = DataSourceUtils.getConnection(ds);

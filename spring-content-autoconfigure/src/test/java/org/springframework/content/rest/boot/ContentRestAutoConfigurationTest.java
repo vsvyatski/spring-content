@@ -40,7 +40,7 @@ public class ContentRestAutoConfigurationTest {
         @Nested
         class GivenADefaultConfiguration {
             @Test
-            void shouldLoadTheContext() throws Throwable {
+            void shouldLoadTheContext() {
                 AnnotationConfigServletWebApplicationContext context = new AnnotationConfigServletWebApplicationContext();
                 context.setServletContext(new MockServletContext());
                 context.register(TestConfig.class, HypermediaConfig.class);
@@ -58,7 +58,7 @@ public class ContentRestAutoConfigurationTest {
         @Nested
         class GivenAnEnvironmentSpecifyingRestProperties {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 System.setProperty("spring.content.rest.base-uri", "/contentApi");
                 System.setProperty("spring.content.rest.fully-qualified-links", "false");
                                System.setProperty("spring.content.rest.shortcut-request-mappings.disabled", "true");
@@ -68,7 +68,7 @@ public class ContentRestAutoConfigurationTest {
             }
 
             @AfterEach
-            void tearDown() throws Throwable {
+            void tearDown() {
                 System.clearProperty("spring.content.rest.base-uri");
                                System.clearProperty("spring.content.rest.fully-qualified-links");
                                System.clearProperty("spring.content.rest.shortcut-request-mappings.disabled");
@@ -78,7 +78,7 @@ public class ContentRestAutoConfigurationTest {
             }
 
             @Test
-            void shouldHaveAFilesystemPropertiesBeanWithTheCorrectPropertiesSet() throws Throwable {
+            void shouldHaveAFilesystemPropertiesBeanWithTheCorrectPropertiesSet() {
                 AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
                 context.register(TestConfig.class);
                 context.setServletContext(new MockServletContext());

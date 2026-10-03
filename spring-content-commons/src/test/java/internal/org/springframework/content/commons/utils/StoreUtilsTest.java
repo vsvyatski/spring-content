@@ -38,7 +38,7 @@ public class StoreUtilsTest {
             @Nested
             class WhenMultipleStorageModulesAreFoundOnTheClasspath {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     env = mock(Environment.class);
                     loader = new FileSystemResourceLoader();
                     ((FileSystemResourceLoader)loader).setClassLoader(this.getClass().getClassLoader());
@@ -64,7 +64,7 @@ public class StoreUtilsTest {
                 }
 
                 @Test
-                void shouldReturnTheStoreMatchingTheIdentifyingType() throws Throwable {
+                void shouldReturnTheStoreMatchingTheIdentifyingType() {
                     Set<GenericBeanDefinition> beans = StoreUtils.getStoreCandidates(scanner, env, loader, basePackages, multiStoreMode, identifyingTypes, registrarId);
                     assertThat(beans).contains(def1);
                     assertThat(beans).doesNotContain(def2);
@@ -74,7 +74,7 @@ public class StoreUtilsTest {
                 @Nested
                 class WhenTheStoreBeansCantBeMatchedAgainstSignatureTypesButTheRegistrarMatchesTheDefa {
                     @BeforeEach
-                    void setUp() throws Throwable {
+                    void setUp() {
                         env = mock(Environment.class);
                         loader = new FileSystemResourceLoader();
                         ((FileSystemResourceLoader)loader).setClassLoader(this.getClass().getClassLoader());
@@ -106,7 +106,7 @@ public class StoreUtilsTest {
                     }
 
                     @Test
-                    void shouldReturnAllStores() throws Throwable {
+                    void shouldReturnAllStores() {
                         Set<GenericBeanDefinition> beans = StoreUtils.getStoreCandidates(scanner, env, loader, basePackages, multiStoreMode, identifyingTypes, registrarId);
                         assertThat(beans).contains(def1);
                         assertThat(beans).contains(def2);
@@ -118,7 +118,7 @@ public class StoreUtilsTest {
                 @Nested
                 class WhenTheStoreBeansCantBeMatchedAgainstSignatureTypesAndTheRegistrarDoesnTMatchThe {
                     @BeforeEach
-                    void setUp() throws Throwable {
+                    void setUp() {
                         env = mock(Environment.class);
                         loader = new FileSystemResourceLoader();
                         ((FileSystemResourceLoader)loader).setClassLoader(this.getClass().getClassLoader());
@@ -151,7 +151,7 @@ public class StoreUtilsTest {
                     }
 
                     @Test
-                    void shouldnTReturnAnyStores() throws Throwable {
+                    void shouldnTReturnAnyStores() {
                         Set<GenericBeanDefinition> beans = StoreUtils.getStoreCandidates(scanner, env, loader, basePackages, multiStoreMode, identifyingTypes, registrarId);
                         assertThat(beans).doesNotContain(def1);
                         assertThat(beans).doesNotContain(def2);
@@ -165,7 +165,7 @@ public class StoreUtilsTest {
             @Nested
             class WhenMultiModeIsFalse {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     env = mock(Environment.class);
                     loader = new FileSystemResourceLoader();
                     ((FileSystemResourceLoader)loader).setClassLoader(this.getClass().getClassLoader());
@@ -191,7 +191,7 @@ public class StoreUtilsTest {
                 }
 
                 @Test
-                void shouldReturnAllStores() throws Throwable {
+                void shouldReturnAllStores() {
                     Set<GenericBeanDefinition> beans = StoreUtils.getStoreCandidates(scanner, env, loader, basePackages, multiStoreMode, identifyingTypes, "test");
                     assertThat(beans).contains(def1);
                     assertThat(beans).contains(def2);

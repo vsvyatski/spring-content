@@ -33,7 +33,7 @@ public class StoreFragmentTest {
         @Nested
         class GivenTheApplicationContext {
             @Test
-            void shouldSupportTheExtension() throws Throwable {
+            void shouldSupportTheExtension() {
                 assertThat(context.getBean(TestContentStore.class)).isNotNull();
                 					assertThat(context.getBean(CustomizationImpl.class).getBean()).isEqualTo("Spring Content");
                 					assertThat(context.getBean(CustomizationImpl.class).getDomainClass()).isEqualTo(Object.class);

@@ -20,7 +20,7 @@ public class AbstractStoreFactoryBeanTest {
         @Nested
         class GetDomainClass {
             @Test
-            void getsTheDomainClass() throws Throwable {
+            void getsTheDomainClass() {
                 TestContentStoreFactory factory = new TestContentStoreFactory(TestStore.class);
                 Class<?> domainClass = factory.getDomainClass(TestStore.class);
                 assertThat(domainClass).isEqualTo(String.class);
@@ -28,7 +28,7 @@ public class AbstractStoreFactoryBeanTest {
             }
 
             @Test
-            void whenContentStoreIsnTTheFirstExtendedInterfaceItStillGetTheDomainType() throws Throwable {
+            void whenContentStoreIsnTTheFirstExtendedInterfaceItStillGetTheDomainType() {
                 TestContentStoreFactory factory = new TestContentStoreFactory(TestStore.class);
                 Class<?> domainClass = factory.getDomainClass(
                 		ContentStoreNotFirstIntefaceStore.class);
@@ -41,7 +41,7 @@ public class AbstractStoreFactoryBeanTest {
         @Nested
         class GetContentIdClass {
             @Test
-            void getsTheDomainId() throws Throwable {
+            void getsTheDomainId() {
                 TestContentStoreFactory factory = new TestContentStoreFactory(TestStore.class);
                 Class<? extends Serializable> domainId = factory
                 		.getContentIdClass(TestStore.class);

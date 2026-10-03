@@ -61,7 +61,7 @@ public abstract class LastModifiedDate {
     @Nested
     class AGETRequestToStoreIdWithNoHeaders {
         @Test
-        void shouldReturnTheContentWithTheLastModifiedHeader() throws Throwable {
+        void shouldReturnTheContentWithTheLastModifiedHeader() throws Exception {
             MockHttpServletResponse response = mvc
                     .perform(get(url)
                             .accept("text/plain"))
@@ -79,7 +79,7 @@ public abstract class LastModifiedDate {
     @Nested
     class AGETRequestToStoreIdWithAnIfModifiedSinceDateBeforeTheEntitySModifiedDate {
         @Test
-        void shouldRespondWith200AndTheContent() throws Throwable {
+        void shouldRespondWith200AndTheContent() throws Exception {
             SimpleDateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
             format.setTimeZone(TimeZone.getTimeZone("GMT"));
             Calendar cal = Calendar.getInstance();
@@ -105,7 +105,7 @@ public abstract class LastModifiedDate {
     @Nested
     class AGETRequestToStoreIdWithAnIfModifiedSinceDateTheSameAsTheEntitySModifiedDate {
         @Test
-        void shouldRespondWith304NotModified() throws Throwable {
+        void shouldRespondWith304NotModified() throws Exception {
             mvc.perform(get(url)
                     .accept("text/plain")
                     .header("if-modified-since", toHeaderDateFormat(lastModifiedDate)))
@@ -119,7 +119,7 @@ public abstract class LastModifiedDate {
     @Nested
     class AGETRequestToStoreIdWithAnIfUnmodifiedSinceDateBeforeTheEntitySModifiedDate {
         @Test
-        void shouldRespondWith412PreconditionFailed() throws Throwable {
+        void shouldRespondWith412PreconditionFailed() throws Exception {
             mvc.perform(get(url)
                     .accept("text/plain")
                     .header("if-unmodified-since", toHeaderDateFormat(addDays(lastModifiedDate, -1))))
@@ -133,7 +133,7 @@ public abstract class LastModifiedDate {
     @Nested
     class AGETRequestToStoreIdWithAnIfUnmodifiedSinceDateTheSameAsTheEntitySModifiedDate {
         @Test
-        void shouldRespondWith200AndTheContent() throws Throwable {
+        void shouldRespondWith200AndTheContent() throws Exception {
             mvc.perform(get(url)
                     .accept("text/plain")
                     .header("if-unmodified-since", isWithinASecond(lastModifiedDate)))
@@ -147,7 +147,7 @@ public abstract class LastModifiedDate {
     @Nested
     class APUTToStoreIdWithAnIfUnmodifiedSinceDateBeforeTheEntitySModifiedDate {
         @Test
-        void shouldRespondWith412PreconditionFailed() throws Throwable {
+        void shouldRespondWith412PreconditionFailed() throws Exception {
             mvc.perform(put(url)
                     .content("Hello Modified Spring Content World!")
                     .contentType("text/plain")
@@ -161,7 +161,7 @@ public abstract class LastModifiedDate {
     @Nested
     class APUTToStoreIdWithAnIfUnmodifiedSinceDateTheSameAsTheEntitySModifiedDate {
         @Test
-        void shouldUpdateTheContent() throws Throwable {
+        void shouldUpdateTheContent() throws Exception {
             mvc.perform(put(url)
                     .content("Hello Modified Spring Content World!")
                     .contentType("text/plain")
@@ -175,7 +175,7 @@ public abstract class LastModifiedDate {
     @Nested
     class APUTToStoreIdWithAMatchingIfUnmodifiedSinceHeaderAndAMatchingIfNoneMatchHeader {
         @Test
-        void shouldRespondWithA412PreconditionFailed() throws Throwable {
+        void shouldRespondWithA412PreconditionFailed() throws Exception {
             if (etag != null) {
                 mvc.perform(put(url)
                         .content("Hello Modified Spring Content World!")
@@ -192,7 +192,7 @@ public abstract class LastModifiedDate {
     @Nested
     class ADELETEToStoreIdWithAnIfUnmodifiedSinceDateBeforeTheEntitySModifiedDate {
         @Test
-        void shouldRespondWith412PreconditionFailed() throws Throwable {
+        void shouldRespondWith412PreconditionFailed() throws Exception {
             mvc.perform(delete(url)
                     .header("if-unmodified-since", toHeaderDateFormat(addDays(lastModifiedDate, -1))))
                     .andExpect(status().isPreconditionFailed());
@@ -204,7 +204,7 @@ public abstract class LastModifiedDate {
     @Nested
     class ADELETEToStoreIdWithAnIfUnmodifiedSinceDateTheSameAsTheEntitySModifiedDate {
         @Test
-        void shouldUpdateTheContent() throws Throwable {
+        void shouldUpdateTheContent() throws Exception {
             mvc.perform(delete(url)
                     .header("if-unmodified-since", toHeaderDateFormat(lastModifiedDate)))
                     .andExpect(status().isNoContent());

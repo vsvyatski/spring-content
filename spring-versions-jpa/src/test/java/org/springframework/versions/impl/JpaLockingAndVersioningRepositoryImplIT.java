@@ -92,7 +92,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                 @Nested
                 class GivenANullPrincipal {
                     @BeforeEach
-                    void setUp() throws Throwable {
+                    void setUp() {
                         repo = context.getBean(TestRepository.class);
 
                         e1 = new TestEntity();
@@ -114,7 +114,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     }
 
                     @Test
-                    void shouldThrowASecurityException() throws Throwable {
+                    void shouldThrowASecurityException() {
                         assertThat(e).isInstanceOf(SecurityException.class);
 
                     }
@@ -124,7 +124,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                 @Nested
                 class GivenTheEntityIsNew {
                     @BeforeEach
-                    void setUp() throws Throwable {
+                    void setUp() {
                         repo = context.getBean(TestRepository.class);
 
                         e1 = new TestEntity();
@@ -144,7 +144,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     }
 
                     @Test
-                    void shouldFail() throws Throwable {
+                    void shouldFail() {
                         assertThat(e).isInstanceOf(InvalidDataAccessApiUsageException.class);
 
                     }
@@ -156,7 +156,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     @Nested
                     class WhenTheObjectIsNotLocked {
                         @BeforeEach
-                        void setUp() throws Throwable {
+                        void setUp() {
                             repo = context.getBean(TestRepository.class);
 
                             e1 = new TestEntity();
@@ -178,13 +178,13 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         }
 
                         @Test
-                        void shouldUpdateTheEntitySLockOwnerField() throws Throwable {
+                        void shouldUpdateTheEntitySLockOwnerField() {
                             assertThat(e1.getXLockOwner()).isEqualTo("some-principal");
 
                         }
 
                         @Test
-                        void shouldSaveTheEntity() throws Throwable {
+                        void shouldSaveTheEntity() {
                             assertThat(e).isNull();
                             assertThat(result.getXid()).isEqualTo(e1.getXid());
 
@@ -195,7 +195,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     @Nested
                     class WhenTheLockIsAlreadyTaken {
                         @BeforeEach
-                        void setUp() throws Throwable {
+                        void setUp() {
                             repo = context.getBean(TestRepository.class);
 
                             e1 = new TestEntity();
@@ -221,7 +221,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         }
 
                         @Test
-                        void shouldReturnNull() throws Throwable {
+                        void shouldReturnNull() {
                             assertThat(e).isInstanceOf(LockOwnerException.class);
                             assertThat(result).isNull();
 
@@ -232,7 +232,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     @Nested
                     class WhenTheLockIsAlreadyHeld {
                         @BeforeEach
-                        void setUp() throws Throwable {
+                        void setUp() {
                             repo = context.getBean(TestRepository.class);
 
                             e1 = new TestEntity();
@@ -258,7 +258,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         }
 
                         @Test
-                        void shouldSucceed() throws Throwable {
+                        void shouldSucceed() {
                             assertThat(e).isNull();
                             assertThat(result).isNotNull();
 
@@ -269,7 +269,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     @Nested
                     class WhenThePrincipalIsNotAuthenticated {
                         @BeforeEach
-                        void setUp() throws Throwable {
+                        void setUp() {
                             repo = context.getBean(TestRepository.class);
 
                             e1 = new TestEntity();
@@ -293,7 +293,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         }
 
                         @Test
-                        void shouldReturnSecurityException() throws Throwable {
+                        void shouldReturnSecurityException() {
                             assertThat(e).isInstanceOf(SecurityException.class);
 
                         }
@@ -309,7 +309,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                 @Nested
                 class GivenANullPrincipal {
                     @BeforeEach
-                    void setUp() throws Throwable {
+                    void setUp() {
                         repo = context.getBean(TestRepository.class);
 
                         e1 = new TestEntity();
@@ -331,7 +331,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     }
 
                     @Test
-                    void shouldThrowASecurityException() throws Throwable {
+                    void shouldThrowASecurityException() {
                         assertThat(e).isInstanceOf(SecurityException.class);
 
                     }
@@ -341,7 +341,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                 @Nested
                 class GivenTheEntityIsNew {
                     @BeforeEach
-                    void setUp() throws Throwable {
+                    void setUp() {
                         repo = context.getBean(TestRepository.class);
 
                         e1 = new TestEntity();
@@ -361,7 +361,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     }
 
                     @Test
-                    void shouldFail() throws Throwable {
+                    void shouldFail() {
                         assertThat(e).isInstanceOf(InvalidDataAccessApiUsageException.class);
 
                     }
@@ -373,7 +373,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     @Nested
                     class GivenThePrincipalIsTheLockOwner {
                         @BeforeEach
-                        void setUp() throws Throwable {
+                        void setUp() {
                             repo = context.getBean(TestRepository.class);
 
                             e1 = new TestEntity();
@@ -398,13 +398,13 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         }
 
                         @Test
-                        void shouldNullTheLockOwnerFieldAndSave() throws Throwable {
+                        void shouldNullTheLockOwnerFieldAndSave() {
                             assertThat(result.getXLockOwner()).isNull();
 
                         }
 
                         @Test
-                        void shouldUnlockTheEntityAndReturnIt() throws Throwable {
+                        void shouldUnlockTheEntityAndReturnIt() {
                             assertThat(e).isNull();
                             assertThat(result.getXid()).isEqualTo(e1.getXid());
 
@@ -415,7 +415,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     @Nested
                     class GivenThePrincipalIsNotTheLockOwner {
                         @BeforeEach
-                        void setUp() throws Throwable {
+                        void setUp() {
                             repo = context.getBean(TestRepository.class);
 
                             e1 = new TestEntity();
@@ -441,7 +441,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         }
 
                         @Test
-                        void shouldASecurityException() throws Throwable {
+                        void shouldASecurityException() {
                             assertThat(e).isInstanceOf(LockOwnerException.class);
                             assertThat(e.getMessage()).contains("not lock owner");
 
@@ -452,7 +452,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     @Nested
                     class GivenThePrincipalIsNotAuthenticated {
                         @BeforeEach
-                        void setUp() throws Throwable {
+                        void setUp() {
                             repo = context.getBean(TestRepository.class);
 
                             e1 = new TestEntity();
@@ -476,7 +476,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         }
 
                         @Test
-                        void shouldASecurityException() throws Throwable {
+                        void shouldASecurityException() {
                             assertThat(e).isInstanceOf(SecurityException.class);
 
                         }
@@ -496,7 +496,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         @Nested
                         class GivenThereIsNoLockOwner {
                             @BeforeEach
-                            void setUp() throws Throwable {
+                            void setUp() {
                                 repo = context.getBean(TestRepository.class);
 
                                 e1 = new TestEntity();
@@ -518,7 +518,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                             }
 
                             @Test
-                            void shouldMergeAndReturnTheEntity() throws Throwable {
+                            void shouldMergeAndReturnTheEntity() {
                                 assertThat(e).isNull();
                                 assertThat(result.getXid()).isEqualTo(e3.getXid());
 
@@ -533,7 +533,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         @Nested
                         class GivenThePrincipalIsTheLockOwner {
                             @BeforeEach
-                            void setUp() throws Throwable {
+                            void setUp() {
                                 repo = context.getBean(TestRepository.class);
 
                                 e1 = new TestEntity();
@@ -559,7 +559,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                             }
 
                             @Test
-                            void shouldReturnTheEntity() throws Throwable {
+                            void shouldReturnTheEntity() {
                                 assertThat(e).isNull();
                                 assertThat(result.getXid()).isEqualTo(e3.getXid());
 
@@ -570,7 +570,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         @Nested
                         class GivenThePrincipalIsNotTheLockOwner {
                             @BeforeEach
-                            void setUp() throws Throwable {
+                            void setUp() {
                                 repo = context.getBean(TestRepository.class);
 
                                 e1 = new TestEntity();
@@ -597,7 +597,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                             }
 
                             @Test
-                            void shouldThrowALockOwnerException() throws Throwable {
+                            void shouldThrowALockOwnerException() {
                                 assertThat(e).isInstanceOf(LockOwnerException.class);
 
                             }
@@ -607,7 +607,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         @Nested
                         class GivenThereIsNoLockOwner {
                             @BeforeEach
-                            void setUp() throws Throwable {
+                            void setUp() {
                                 repo = context.getBean(TestRepository.class);
 
                                 e1 = new TestEntity();
@@ -631,7 +631,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                             }
 
                             @Test
-                            void shouldMergeAndReturnTheEntity() throws Throwable {
+                            void shouldMergeAndReturnTheEntity() {
                                 assertThat(e).isNull();
                                 assertThat(result.getXid()).isEqualTo(e3.getXid());
 
@@ -650,7 +650,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         @Nested
                         class GivenThereIsNoLockOwner {
                             @BeforeEach
-                            void setUp() throws Throwable {
+                            void setUp() {
                                 repo = context.getBean(TestRepository.class);
 
                                 e1 = new TestEntity();
@@ -672,7 +672,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                             }
 
                             @Test
-                            void shouldMergeAndReturnTheEntity() throws Throwable {
+                            void shouldMergeAndReturnTheEntity() {
                                 assertThat(e).isNull();
                                 assertThat(result.getXid()).isEqualTo(e3.getXid());
 
@@ -687,7 +687,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         @Nested
                         class GivenThereIsNoLockOwner {
                             @BeforeEach
-                            void setUp() throws Throwable {
+                            void setUp() {
                                 repo = context.getBean(TestRepository.class);
 
                                 e1 = new TestEntity();
@@ -711,7 +711,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                             }
 
                             @Test
-                            void shouldMergeAndReturnTheEntity() throws Throwable {
+                            void shouldMergeAndReturnTheEntity() {
                                 assertThat(e).isNull();
                                 assertThat(result.getXid()).isEqualTo(e3.getXid());
 
@@ -730,7 +730,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         @Nested
                         class GivenThereIsNoLockOwner {
                             @BeforeEach
-                            void setUp() throws Throwable {
+                            void setUp() {
                                 repo = context.getBean(TestRepository.class);
 
                                 e1 = new TestEntity();
@@ -750,7 +750,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                             }
 
                             @Test
-                            void shouldSucceed() throws Throwable {
+                            void shouldSucceed() {
                                 assertThat(e).isNull();
                                 assertThat(result.getXid()).isEqualTo(e3.getXid());
 
@@ -767,7 +767,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
             @Nested
             class FindAllVersions {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     repo = context.getBean(TestRepository.class);
 
                     e1 = new TestEntity();
@@ -791,7 +791,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                 }
 
                 @Test
-                void shouldReturnTheVersionSeries() throws Throwable {
+                void shouldReturnTheVersionSeries() {
                     List<TestEntity> results = repo.findAllVersions(e1, Sort.by(Order.desc("id")));
                     assertThat(results.size()).isEqualTo(2);
                     assertThat(results).extracting("xid").contains(e1.getXid(), e1v11.getXid());
@@ -799,7 +799,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                 }
 
                 @Test
-                void shouldReturnTheOrderedVersionSeries() throws Throwable {
+                void shouldReturnTheOrderedVersionSeries() {
                     List<TestEntity> results = repo.findAllVersions(e1, Sort.by(Order.desc("id")));
                     assertThat(results.size()).isEqualTo(2);
                     assertThat(results).extracting("xid").containsExactly(e1v11.getXid(), e1.getXid());
@@ -811,7 +811,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
             @Nested
             class FindAllLatestVersions {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     repo = context.getBean(TestRepository.class);
 
                     e1 = new TestEntity();
@@ -838,7 +838,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                 }
 
                 @Test
-                void shouldReturnOnlyTheLatestVersionOfTheEntities() throws Throwable {
+                void shouldReturnOnlyTheLatestVersionOfTheEntities() {
                     List<TestEntity> results = repo.findAllVersionsLatest((Class<TestEntity>) e1.getClass());
                     assertThat(results).extracting("xid").contains(e1v11.getXid(), e2v2.getXid()).doesNotContain(e3wc.getXid());
 
@@ -854,7 +854,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                 @Nested
                 class WhenTheEntityIsNew {
                     @BeforeEach
-                    void setUp() throws Throwable {
+                    void setUp() {
                         repo = context.getBean(TestRepository.class);
 
                         e1 = new TestEntity();
@@ -874,7 +874,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     }
 
                     @Test
-                    void shouldFail() throws Throwable {
+                    void shouldFail() {
                         assertThat(e).isInstanceOf(InvalidDataAccessApiUsageException.class);
 
                     }
@@ -888,7 +888,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         @Nested
                         class WhenTheEntityIsNotYetPartOfAVersionTree {
                             @BeforeEach
-                            void setUp() throws Throwable {
+                            void setUp() {
                                 repo = context.getBean(TestRepository.class);
 
                                 e1 = new TestEntity();
@@ -913,7 +913,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                             }
 
                             @Test
-                            void shouldCreateThePwcWithANewId() throws Throwable {
+                            void shouldCreateThePwcWithANewId() {
                                 assertThat(result.getXid()).isNotNull();
                                 assertThat(result.getVersionLabel()).isEqualTo("~~PWC~~");
                                 assertThat(result.getXAncestorId()).isEqualTo(e1.getXid());
@@ -929,7 +929,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     @Nested
                     class GivenThePrincipalIsNotTheLockOwner {
                         @BeforeEach
-                        void setUp() throws Throwable {
+                        void setUp() {
                             repo = context.getBean(TestRepository.class);
 
                             e1 = new TestEntity();
@@ -955,7 +955,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         }
 
                         @Test
-                        void shouldCreateThePwcWithANewId() throws Throwable {
+                        void shouldCreateThePwcWithANewId() {
                             assertThat(e).isInstanceOf(LockOwnerException.class);
 
                         }
@@ -965,7 +965,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     @Nested
                     class GivenThePrincipalIsUnauthenticated {
                         @BeforeEach
-                        void setUp() throws Throwable {
+                        void setUp() {
                             repo = context.getBean(TestRepository.class);
 
                             e1 = new TestEntity();
@@ -989,7 +989,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         }
 
                         @Test
-                        void shouldThrowASecurityException() throws Throwable {
+                        void shouldThrowASecurityException() {
                             assertThat(e).isInstanceOf(SecurityException.class);
                             assertThat(e.getMessage()).contains("no principal");
 
@@ -1000,7 +1000,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     @Nested
                     class GivenTheEntityIsNotTheCurrentVersion {
                         @BeforeEach
-                        void setUp() throws Throwable {
+                        void setUp() {
                             repo = context.getBean(TestRepository.class);
 
                             e1 = new TestEntity();
@@ -1026,7 +1026,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         }
 
                         @Test
-                        void shouldThrowAnException() throws Throwable {
+                        void shouldThrowAnException() {
                             assertThat(e).isInstanceOf(LockingAndVersioningException.class);
                             assertThat(e.getMessage()).contains("not head");
 
@@ -1041,7 +1041,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
             @Nested
             class IsPrivateWorkingCopy {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     repo = context.getBean(TestRepository.class);
 
                     e1 = new TestEntity();
@@ -1055,13 +1055,13 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                 }
 
                 @Test
-                void shouldReturnFalse() throws Throwable {
+                void shouldReturnFalse() {
                     assertThat(repo.isPrivateWorkingCopy(e1)).isFalse();
 
                 }
 
                 @Test
-                void shouldReturnTrue() throws Throwable {
+                void shouldReturnTrue() {
                     e1 = repo.save(e1);
                     e1 = repo.lock(e1);
                     TestEntity wc = repo.workingCopy(e1);
@@ -1074,7 +1074,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
             @Nested
             class FindWorkingCopy {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     repo = context.getBean(TestRepository.class);
 
                     e1 = new TestEntity();
@@ -1088,7 +1088,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                 }
 
                 @Test
-                void shouldReturnTrue() throws Throwable {
+                void shouldReturnTrue() {
                     e1 = repo.save(e1);
                     e1 = repo.lock(e1);
                     TestEntity wc = repo.workingCopy(e1);
@@ -1103,7 +1103,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                 @Nested
                 class GivenNoPrincipal {
                     @BeforeEach
-                    void setUp() throws Throwable {
+                    void setUp() {
                         repo = context.getBean(TestRepository.class);
 
                         e1 = new TestEntity();
@@ -1124,7 +1124,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     }
 
                     @Test
-                    void shouldThrowASecurityException() throws Throwable {
+                    void shouldThrowASecurityException() {
                         assertThat(e).isInstanceOf(SecurityException.class);
 
                     }
@@ -1134,7 +1134,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                 @Nested
                 class GivenAnUnauthenticatedPrincipal {
                     @BeforeEach
-                    void setUp() throws Throwable {
+                    void setUp() {
                         repo = context.getBean(TestRepository.class);
 
                         e1 = new TestEntity();
@@ -1155,7 +1155,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     }
 
                     @Test
-                    void shouldThrowASecurityException() throws Throwable {
+                    void shouldThrowASecurityException() {
                         assertThat(e).isInstanceOf(SecurityException.class);
 
                     }
@@ -1169,7 +1169,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         @Nested
                         class GivenThePrincipalIsTheLockOwner {
                             @BeforeEach
-                            void setUp() throws Throwable {
+                            void setUp() {
                                 repo = context.getBean(TestRepository.class);
 
                                 e1 = new TestEntity();
@@ -1193,7 +1193,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                             }
 
                             @Test
-                            void shouldBeDeleted() throws Throwable {
+                            void shouldBeDeleted() {
                                 assertThat(e).isNull();
                                 assertThat(repo.findById(e1.getXid())).isEqualTo(Optional.empty());
 
@@ -1204,7 +1204,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         @Nested
                         class GivenThePrincipalIsNotTheLockOwner {
                             @BeforeEach
-                            void setUp() throws Throwable {
+                            void setUp() {
                                 repo = context.getBean(TestRepository.class);
 
                                 e1 = new TestEntity();
@@ -1229,7 +1229,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                             }
 
                             @Test
-                            void shouldFailToDeleteTheEntity() throws Throwable {
+                            void shouldFailToDeleteTheEntity() {
                                 assertThat(e).isInstanceOf(LockOwnerException.class);
                                 assertThat(e.getMessage()).contains("not lock owner");
 
@@ -1240,7 +1240,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         @Nested
                         class GivenThereIsNoLock {
                             @BeforeEach
-                            void setUp() throws Throwable {
+                            void setUp() {
                                 repo = context.getBean(TestRepository.class);
 
                                 e1 = new TestEntity();
@@ -1263,7 +1263,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                             }
 
                             @Test
-                            void shouldBeDeleted() throws Throwable {
+                            void shouldBeDeleted() {
                                 assertThat(e).isNull();
                                 assertThat(repo.findById(e1.getXid())).isEqualTo(Optional.empty());
 
@@ -1276,7 +1276,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     @Nested
                     class GivenTheEntityIsNotTheHead {
                         @BeforeEach
-                        void setUp() throws Throwable {
+                        void setUp() {
                             repo = context.getBean(TestRepository.class);
 
                             e1 = new TestEntity();
@@ -1301,7 +1301,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         }
 
                         @Test
-                        void shouldFail() throws Throwable {
+                        void shouldFail() {
                             assertThat(e).isInstanceOf(LockingAndVersioningException.class);
                             assertThat(e.getMessage()).contains("not head");
 
@@ -1312,7 +1312,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     @Nested
                     class GivenTheEntityIsTheHeadOfAVersionSeriesOf3VersionsAndTheAncestorIsNotAncestralRo {
                         @BeforeEach
-                        void setUp() throws Throwable {
+                        void setUp() {
                             repo = context.getBean(TestRepository.class);
 
                             e1 = new TestEntity();
@@ -1338,26 +1338,26 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         }
 
                         @Test
-                        void shouldDeleteTheEntity() throws Throwable {
+                        void shouldDeleteTheEntity() {
                             assertThat(repo.findById(e1v12.getXid())).isEqualTo(Optional.empty());
 
                         }
 
                         @Test
-                        void shouldReInstateTheAncestorAsTheHead() throws Throwable {
+                        void shouldReInstateTheAncestorAsTheHead() {
                             e1v11 = repo.findById(e1v11.getXid()).get();
                             assertThat(e1v11.getXSuccessorId()).isNull();
 
                         }
 
                         @Test
-                        void shouldRemoveTheLock() throws Throwable {
+                        void shouldRemoveTheLock() {
                             assertThat(lockingService.lockOwner(e1v12.getXid())).isNull();
 
                         }
 
                         @Test
-                        void shouldReInstateTheLockOnTheNewHead() throws Throwable {
+                        void shouldReInstateTheLockOnTheNewHead() {
                             assertThat(lockingService.lockOwner(e1v11.getXid())).isNotNull();
 
                         }
@@ -1367,7 +1367,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     @Nested
                     class GivenTheEntityIsTheHeadOfAVersionTreeOf2VersionsAncestorIsAncestralRoot {
                         @BeforeEach
-                        void setUp() throws Throwable {
+                        void setUp() {
                             repo = context.getBean(TestRepository.class);
 
                             e1 = new TestEntity();
@@ -1392,14 +1392,14 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         }
 
                         @Test
-                        void shouldDeleteTheEntity() throws Throwable {
+                        void shouldDeleteTheEntity() {
                             assertThat(e).isNull();
                             assertThat(repo.findById(e1v11.getXid())).isEqualTo(Optional.empty());
 
                         }
 
                         @Test
-                        void shouldReInstateTheAncestorAsTheHead() throws Throwable {
+                        void shouldReInstateTheAncestorAsTheHead() {
                             e1 = repo.findById(e1.getXid()).get();
                             assertThat(e1.getXSuccessorId()).isNull();
 
@@ -1416,7 +1416,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                 @Nested
                 class GivenNoPrincipal {
                     @BeforeEach
-                    void setUp() throws Throwable {
+                    void setUp() {
                         repo = context.getBean(TestRepository.class);
 
                         e1 = new TestEntity();
@@ -1437,7 +1437,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     }
 
                     @Test
-                    void shouldThrowASecurityException() throws Throwable {
+                    void shouldThrowASecurityException() {
                         try {
                             repo.deleteAllVersions(e1v11);
                             fail("expected security exception");
@@ -1452,7 +1452,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                 @Nested
                 class GivenAnUnauthenticatedPrincipal {
                     @BeforeEach
-                    void setUp() throws Throwable {
+                    void setUp() {
                         repo = context.getBean(TestRepository.class);
 
                         e1 = new TestEntity();
@@ -1473,7 +1473,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     }
 
                     @Test
-                    void shouldThrowASecurityException() throws Throwable {
+                    void shouldThrowASecurityException() {
                         try {
                             repo.deleteAllVersions(e1v11);
                             fail("expected security exception");
@@ -1492,7 +1492,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         @Nested
                         class GivenThePrincipalIsTheLockOwner {
                             @BeforeEach
-                            void setUp() throws Throwable {
+                            void setUp() {
                                 repo = context.getBean(TestRepository.class);
 
                                 e1 = new TestEntity();
@@ -1513,7 +1513,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                             }
 
                             @Test
-                            void shouldDeleteVersionSeries() throws Throwable {
+                            void shouldDeleteVersionSeries() {
                                 e1v11 = repo.lock(e1v11);
 
                                 List<Long> ids = new ArrayList<>();
@@ -1534,7 +1534,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         @Nested
                         class GivenThePrincipalIsNotTheLockOwner {
                             @BeforeEach
-                            void setUp() throws Throwable {
+                            void setUp() {
                                 repo = context.getBean(TestRepository.class);
 
                                 e1 = new TestEntity();
@@ -1558,7 +1558,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                             }
 
                             @Test
-                            void shouldFailToDeleteTheEntity() throws Throwable {
+                            void shouldFailToDeleteTheEntity() {
                                 try {
                                     repo.deleteAllVersions(e1v11);
                                     fail("expected lockownerexception");
@@ -1574,7 +1574,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         @Nested
                         class GivenThereIsNoLock {
                             @BeforeEach
-                            void setUp() throws Throwable {
+                            void setUp() {
                                 repo = context.getBean(TestRepository.class);
 
                                 e1 = new TestEntity();
@@ -1595,7 +1595,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                             }
 
                             @Test
-                            void shouldDeleteVersionSeries() throws Throwable {
+                            void shouldDeleteVersionSeries() {
                                 List<Long> ids = new ArrayList<>();
                                 repo.findAllVersions(e1).forEach((doc) -> {
                                     ids.add(doc.getXid());
@@ -1616,7 +1616,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     @Nested
                     class GivenTheEntityIsNotTheHead {
                         @BeforeEach
-                        void setUp() throws Throwable {
+                        void setUp() {
                             repo = context.getBean(TestRepository.class);
 
                             e1 = new TestEntity();
@@ -1637,7 +1637,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         }
 
                         @Test
-                        void shouldFail() throws Throwable {
+                        void shouldFail() {
                             try {
                                 repo.deleteAllVersions(e1);
                                 fail("expected lockingandversioningexception");
@@ -1657,7 +1657,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
             @Nested
             class Issue2039 {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     repo = context.getBean(TestRepository.class);
 
                     e1 = new TestEntity();
@@ -1675,14 +1675,14 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                 }
 
                 @Test
-                void shouldReturnTheProvidedEntity() throws Throwable {
+                void shouldReturnTheProvidedEntity() {
                     List<TestEntity> results = repo.findAllVersions(e1, Sort.by(Order.desc("id")));
                     assertThat(results.size()).isEqualTo(1);
 
                 }
 
                 @Test
-                void shouldDeleteJustTheProvidedEntity() throws Throwable {
+                void shouldDeleteJustTheProvidedEntity() {
                     repo.deleteAllVersions(e1);
 
                     Optional<TestEntity> fetched = repo.findById(e1.getXid());

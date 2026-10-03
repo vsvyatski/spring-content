@@ -40,7 +40,7 @@ public class RestConfigurationTest {
         @Nested
         class GivenAContextWithAContentRestConfiguration {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 configurer = mock(ContentRestConfigurer.class);
 
                 context = new AnnotationConfigWebApplicationContext();
@@ -54,19 +54,19 @@ public class RestConfigurationTest {
             }
 
             @Test
-            void shouldHaveAContentHandlerMappingBean() throws Throwable {
+            void shouldHaveAContentHandlerMappingBean() {
                 assertThat(context.getBean("contentHandlerMapping")).isNotNull();
 
             }
 
             @Test
-            void shouldHaveTheContentRestControllers() throws Throwable {
+            void shouldHaveTheContentRestControllers() {
                 assertThat(context.getBean("storeRestController")).isNotNull();
 
             }
 
             @Test
-            void shouldBeConfigurable() throws Throwable {
+            void shouldBeConfigurable() {
                 RestConfiguration config = context.getBean(RestConfiguration.class);
                 assertThat(config).isNotNull();
 

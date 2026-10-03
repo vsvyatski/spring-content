@@ -32,13 +32,13 @@ public class ContentFileSystemAutoConfigurationTest {
         @Nested
         class GivenADefaultConfiguration {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 contextRunner = new ApplicationContextRunner()
                                     .withConfiguration(AutoConfigurations.of(FileSystemContentAutoConfiguration.class));
             }
 
             @Test
-            void shouldLoadTheContext() throws Throwable {
+            void shouldLoadTheContext() {
                 contextRunner.withUserConfiguration(TestConfig.class).run((context) -> Assertions.assertThat(context).hasSingleBean(TestEntityContentRepository.class));
             }
 
@@ -47,7 +47,7 @@ public class ContentFileSystemAutoConfigurationTest {
         @Nested
         class GivenAnEnvironmentSpecifyingAFilesystemRootUsingSpringPrefix {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 contextRunner = new ApplicationContextRunner()
                                     .withConfiguration(AutoConfigurations.of(FileSystemContentAutoConfiguration.class));
                 System.setProperty("spring.content.fs.filesystem-root",
@@ -55,12 +55,12 @@ public class ContentFileSystemAutoConfigurationTest {
             }
 
             @AfterEach
-            void tearDown() throws Throwable {
+            void tearDown() {
                 System.clearProperty("spring.content.fs.filesystem-root");
             }
 
             @Test
-            void shouldHaveAFilesystemPropertiesBeanWithTheCorrectRootSet() throws Throwable {
+            void shouldHaveAFilesystemPropertiesBeanWithTheCorrectRootSet() {
                 contextRunner.withUserConfiguration(TestConfig.class).run((context) -> {
                                             Assertions.assertThat(context).hasSingleBean(FileSystemContentAutoConfiguration.FileSystemProperties.class);
                                             Assertions.assertThat(context).getBean(FileSystemContentAutoConfiguration.FileSystemProperties.class).extracting("fileSystemRoot").matches((val) -> val.toString().endsWith("/UPPERCASE/NOTATION/"));
@@ -72,13 +72,13 @@ public class ContentFileSystemAutoConfigurationTest {
         @Nested
         class GivenAConfigurationThatContributesALoaderBean {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 contextRunner = new ApplicationContextRunner()
                                     .withConfiguration(AutoConfigurations.of(FileSystemContentAutoConfiguration.class));
             }
 
             @Test
-            void shouldHaveThatLoaderBeanInTheContext() throws Throwable {
+            void shouldHaveThatLoaderBeanInTheContext() {
                 contextRunner.withUserConfiguration(ConfigWithLoaderBean.class).run((context) -> {
                                                 Assertions.assertThat(context).hasSingleBean(FileSystemResourceLoader.class);
                                                 Assertions.assertThat(context).getBean(FileSystemResourceLoader.class).extracting("root").matches((val) -> val.toString().contains("/some/random/path"));
@@ -90,13 +90,13 @@ public class ContentFileSystemAutoConfigurationTest {
         @Nested
         class GivenAConfigurationWithExplicitEnableFileSystemStoresAnnotation {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 contextRunner = new ApplicationContextRunner()
                                     .withConfiguration(AutoConfigurations.of(FileSystemContentAutoConfiguration.class));
             }
 
             @Test
-            void shouldLoadTheContext() throws Throwable {
+            void shouldLoadTheContext() {
                 contextRunner.withUserConfiguration(ConfigWithExplicitEnableFileSystemStores.class).run((context) -> {
                                         Assertions.assertThat(context).hasSingleBean(TestEntityContentRepository.class);
                                         Assertions.assertThat(context).getBean(FileSystemResourceLoader.class);

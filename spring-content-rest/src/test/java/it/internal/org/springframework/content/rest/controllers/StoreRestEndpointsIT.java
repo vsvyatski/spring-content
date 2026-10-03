@@ -9,6 +9,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.Date;
 import java.util.UUID;
 
@@ -64,7 +65,7 @@ public class StoreRestEndpointsIT {
             @Nested
             class GivenAGETRequestToThatPath {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                     path = "/" + UUID.randomUUID() + ".txt";
@@ -73,7 +74,7 @@ public class StoreRestEndpointsIT {
                 }
 
                 @Test
-                void shouldReturn404() throws Throwable {
+                void shouldReturn404() throws Exception {
                     mvc.perform(get(request)).andExpect(status().isNotFound());
 
                 }
@@ -83,7 +84,7 @@ public class StoreRestEndpointsIT {
             @Nested
             class GivenAPOSTToThatPathWithContent {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                     path = "/" + UUID.randomUUID() + ".txt";
@@ -92,7 +93,7 @@ public class StoreRestEndpointsIT {
                 }
 
                 @Test
-                void shouldSetTheContentAndReturn201() throws Throwable {
+                void shouldSetTheContentAndReturn201() throws Exception {
                     String content = "New multi-part content";
 
                     mvc.perform(multipart(request).file(new MockMultipartFile("file",
@@ -112,7 +113,7 @@ public class StoreRestEndpointsIT {
             @Nested
             class GivenADELETERequestToThatPath {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                     path = "/" + UUID.randomUUID() + ".txt";
@@ -121,7 +122,7 @@ public class StoreRestEndpointsIT {
                 }
 
                 @Test
-                void shouldReturnA404() throws Throwable {
+                void shouldReturnA404() throws Exception {
                     mvc.perform(delete(request)).andExpect(status().isNotFound());
 
                 }
@@ -133,7 +134,7 @@ public class StoreRestEndpointsIT {
         @Nested
         class GivenARootResource {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() throws IOException {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                 path = "/" + UUID.randomUUID() + ".txt";
@@ -152,7 +153,7 @@ public class StoreRestEndpointsIT {
             }
 
             @Test
-            void shouldReturnTheResourceSContent() throws Throwable {
+            void shouldReturnTheResourceSContent() throws Exception {
                 MockHttpServletResponse response = mvc.perform(get(request))
                 		.andExpect(status().isOk()).andReturn().getResponse();
 
@@ -162,7 +163,7 @@ public class StoreRestEndpointsIT {
             }
 
             @Test
-            void shouldReturnAByteRangeWhenRequested() throws Throwable {
+            void shouldReturnAByteRangeWhenRequested() throws Exception {
                 MockHttpServletResponse response = mvc
                 		.perform(get(request).header("range", "bytes=9-12"))
                 		.andExpect(status().isPartialContent()).andReturn()
@@ -174,7 +175,7 @@ public class StoreRestEndpointsIT {
             }
 
             @Test
-            void shouldOverwriteTheResourceSContent() throws Throwable {
+            void shouldOverwriteTheResourceSContent() throws Exception {
                 mvc.perform(put(request).content("New Existing content")
                 		.contentType("text/plain")).andExpect(status().isOk());
 
@@ -186,7 +187,7 @@ public class StoreRestEndpointsIT {
             }
 
             @Test
-            void shouldDeleteTheResource() throws Throwable {
+            void shouldDeleteTheResource() throws Exception {
                 mvc.perform(delete(request)).andExpect(status().isNoContent());
 
                 Resource r = store.getResource(path);
@@ -197,7 +198,7 @@ public class StoreRestEndpointsIT {
             @Nested
             class APOSTToStorePathWithMultiPartFormData {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() throws IOException {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                     path = "/" + UUID.randomUUID() + ".txt";
@@ -216,7 +217,7 @@ public class StoreRestEndpointsIT {
                 }
 
                 @Test
-                void shouldOverwriteTheContentAndReturn200() throws Throwable {
+                void shouldOverwriteTheContentAndReturn200() throws Exception {
                     String content = "New multi-part content";
 
                     mvc.perform(multipart(request).file(new MockMultipartFile("file",
@@ -239,7 +240,7 @@ public class StoreRestEndpointsIT {
         @Nested
         class GivenANestedResource {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() throws IOException {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                 path = "/a/b/" + UUID.randomUUID() + ".txt";
@@ -254,7 +255,7 @@ public class StoreRestEndpointsIT {
             }
 
             @Test
-            void shouldReturnTheResourceSContent() throws Throwable {
+            void shouldReturnTheResourceSContent() throws Exception {
                 MockHttpServletResponse response = mvc.perform(get(request))
                 		.andExpect(status().isOk()).andReturn().getResponse();
 
@@ -264,7 +265,7 @@ public class StoreRestEndpointsIT {
             }
 
             @Test
-            void shouldReturnAByteRangeWhenRequested() throws Throwable {
+            void shouldReturnAByteRangeWhenRequested() throws Exception {
                 MockHttpServletResponse response = mvc
                 		.perform(get(request).header("range", "bytes=9-12"))
                 		.andExpect(status().isPartialContent()).andReturn()
@@ -276,7 +277,7 @@ public class StoreRestEndpointsIT {
             }
 
             @Test
-            void shouldOverwriteTheResourceSContent() throws Throwable {
+            void shouldOverwriteTheResourceSContent() throws Exception {
                 mvc.perform(put(request).content("New Existing content")
                 		.contentType("text/plain")).andExpect(status().isOk());
 
@@ -288,7 +289,7 @@ public class StoreRestEndpointsIT {
             }
 
             @Test
-            void shouldDeleteTheResource() throws Throwable {
+            void shouldDeleteTheResource() throws Exception {
                 mvc.perform(delete(request)).andExpect(status().isNoContent());
 
                 Resource r = store.getResource(path);
@@ -299,7 +300,7 @@ public class StoreRestEndpointsIT {
             @Nested
             class GivenATypicalBrowserRequest {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() throws IOException {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                     path = "/a/b/" + UUID.randomUUID() + ".txt";
@@ -314,7 +315,7 @@ public class StoreRestEndpointsIT {
                 }
 
                 @Test
-                void shouldReturnTheResourceSContent() throws Throwable {
+                void shouldReturnTheResourceSContent() throws Exception {
                     MockHttpServletResponse response = mvc
                     		.perform(get(request).accept(new String[] { "text/html",
                     				"application/xhtml+xml", "application/xml;q=0.9",
@@ -331,7 +332,7 @@ public class StoreRestEndpointsIT {
             @Nested
             class APOSTToStorePathWithMultiPartFormData {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() throws IOException {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                     path = "/a/b/" + UUID.randomUUID() + ".txt";
@@ -346,7 +347,7 @@ public class StoreRestEndpointsIT {
                 }
 
                 @Test
-                void shouldOverwriteTheContentAndReturn200() throws Throwable {
+                void shouldOverwriteTheContentAndReturn200() throws Exception {
                     String content = "New multi-part content";
 
                     mvc.perform(multipart(request).file(new MockMultipartFile("file",

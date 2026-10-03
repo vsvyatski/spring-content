@@ -39,14 +39,14 @@ public class WordToJpegRendererTest {
         @Nested
         class Consumes {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 poi = mock(POIService.class);
                 renderer = new WordToJpegRenderer(poi);
 
             }
 
             @Test
-            void shouldReturnWordMlMimetype() throws Throwable {
+            void shouldReturnWordMlMimetype() {
                 assertThat(renderer.consumes()).isEqualTo("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
 
             }
@@ -56,14 +56,14 @@ public class WordToJpegRendererTest {
         @Nested
         class Produces {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 poi = mock(POIService.class);
                 renderer = new WordToJpegRenderer(poi);
 
             }
 
             @Test
-            void shouldReturnJpegMimetype() throws Throwable {
+            void shouldReturnJpegMimetype() {
                 assertThat(renderer.produces()).contains("image/jpg");
 
             }
@@ -75,7 +75,7 @@ public class WordToJpegRendererTest {
             @Nested
             class GivenAnInputStreamAndAMimetype {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() throws IOException {
                     poi = mock(POIService.class);
                     renderer = new WordToJpegRenderer(poi);
 
@@ -95,7 +95,7 @@ public class WordToJpegRendererTest {
                 }
 
                 @Test
-                void shouldGetTheEmbeddedThumbnailFromTheXWPFDocumentSProperties() throws Throwable {
+                void shouldGetTheEmbeddedThumbnailFromTheXWPFDocumentSProperties() throws IOException {
                     verify(props).getThumbnailImage();
 
                 }
@@ -103,7 +103,7 @@ public class WordToJpegRendererTest {
                 @Nested
                 class WhenTheInputStreamIsNotAValidWordFile {
                     @BeforeEach
-                    void setUp() throws Throwable {
+                    void setUp() throws IOException {
                         poi = mock(POIService.class);
                         renderer = new WordToJpegRenderer(poi);
 
@@ -127,7 +127,7 @@ public class WordToJpegRendererTest {
                     }
 
                     @Test
-                    void shouldThrowARenditionException() throws Throwable {
+                    void shouldThrowARenditionException() {
                         assertThat(e).isNotNull();
                         assertThat(e).isInstanceOf(RenditionException.class);
 
@@ -138,7 +138,7 @@ public class WordToJpegRendererTest {
                 @Nested
                 class WhenTheWordDocumentFailsToReturnProperties {
                     @BeforeEach
-                    void setUp() throws Throwable {
+                    void setUp() throws IOException {
                         poi = mock(POIService.class);
                         renderer = new WordToJpegRenderer(poi);
 
@@ -163,7 +163,7 @@ public class WordToJpegRendererTest {
                     }
 
                     @Test
-                    void shouldThrowARenditionException() throws Throwable {
+                    void shouldThrowARenditionException() {
                         assertThat(e).isNotNull();
                         assertThat(e).isInstanceOf(RenditionException.class);
 
@@ -174,7 +174,7 @@ public class WordToJpegRendererTest {
                 @Nested
                 class WhenTheWordDocumentFailsToReturnAThumbnail {
                     @BeforeEach
-                    void setUp() throws Throwable {
+                    void setUp() throws IOException {
                         poi = mock(POIService.class);
                         renderer = new WordToJpegRenderer(poi);
 
@@ -200,7 +200,7 @@ public class WordToJpegRendererTest {
                     }
 
                     @Test
-                    void shouldThrowARenditionException() throws Throwable {
+                    void shouldThrowARenditionException() {
                         assertThat(e).isNotNull();
                         assertThat(e).isInstanceOf(RenditionException.class);
 
@@ -213,7 +213,7 @@ public class WordToJpegRendererTest {
             @Nested
             class GivenANullInputStream {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     poi = mock(POIService.class);
                     renderer = new WordToJpegRenderer(poi);
 
@@ -226,7 +226,7 @@ public class WordToJpegRendererTest {
                 }
 
                 @Test
-                void shouldGetTheEmbeddedThumbnailFromTheXWPFDocumentSProperties() throws Throwable {
+                void shouldGetTheEmbeddedThumbnailFromTheXWPFDocumentSProperties() {
                     assertThat(e).isNotNull();
 
                 }

@@ -24,7 +24,7 @@ public class JpaCloningServiceImplTest {
             @Nested
             class GivenAnEntityWithACopyConstructor {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     entity = new TestEntity();
 
                     cloner = new JpaCloningServiceImpl();
@@ -38,7 +38,7 @@ public class JpaCloningServiceImplTest {
                 }
 
                 @Test
-                void shouldCloneTheEntity() throws Throwable {
+                void shouldCloneTheEntity() {
                     assertThat(result).isNotNull();
                     assertThat(result).isNotEqualTo(entity);
 
@@ -49,7 +49,7 @@ public class JpaCloningServiceImplTest {
             @Nested
             class GivenAnEntityWithACopyConstructor2 {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     entity = new NoCopyConstructorTestEntity();
 
                     cloner = new JpaCloningServiceImpl();
@@ -63,7 +63,7 @@ public class JpaCloningServiceImplTest {
                 }
 
                 @Test
-                void shouldCloneTheEntity() throws Throwable {
+                void shouldCloneTheEntity() {
                     assertThat(e).isInstanceOf(LockingAndVersioningException.class);
                     assertThat(e.getMessage()).contains("no copy constructor");
 
@@ -74,7 +74,7 @@ public class JpaCloningServiceImplTest {
             @Nested
             class GivenAnEntityWithAFailingCopyConstructor {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     entity = new FailingCopyConstructorTestEntity();
 
                     cloner = new JpaCloningServiceImpl();
@@ -88,7 +88,7 @@ public class JpaCloningServiceImplTest {
                 }
 
                 @Test
-                void shouldCloneTheEntity() throws Throwable {
+                void shouldCloneTheEntity() {
                     assertThat(e).isInstanceOf(LockingAndVersioningException.class);
                     assertThat(e.getMessage()).contains("copy constructor failed");
 

@@ -10,6 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static java.lang.String.format;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.time.Duration;
 import java.util.Iterator;
@@ -426,7 +427,7 @@ public class ElasticsearchIT {
     @Nested
     class PagingCases {
         @BeforeEach
-        void setUp() throws Throwable {
+        void setUp() {
             context = new AnnotationConfigApplicationContext();
                             context.register(EntityIndexingStrategy.class);
                             context.register(ElasticsearchConfig.class);
@@ -444,7 +445,7 @@ public class ElasticsearchIT {
                             }
         }
         @AfterEach
-        void tearDown() throws Throwable {
+        void tearDown() throws IOException {
             assertThat(context).isNotNull();
 
                             if (client != null) {
@@ -453,7 +454,7 @@ public class ElasticsearchIT {
                             }
         }
         @Test
-        void shouldReturnResultsInPages() throws Throwable {
+        void shouldReturnResultsInPages() {
             org.awaitility.Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
             var page = store.search("one", PageRequest.of(0, 3));
             assertThat(page.getTotalElements()).isEqualTo(10L);
@@ -492,7 +493,7 @@ public class ElasticsearchIT {
         @Nested
         class GivenAContextConfiguredToSyncAttributesAndProvideAFilterQuery {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 context = new AnnotationConfigApplicationContext();
                                     context.register(EntityIndexingStrategy.class);
                                     context.register(CustomAttributesConfig.class);
@@ -515,7 +516,7 @@ public class ElasticsearchIT {
                                     repo.save(doc2);
             }
             @AfterEach
-            void tearDown() throws Throwable {
+            void tearDown() throws IOException {
                 assertThat(context).isNotNull();
 
                                     if (client != null) {
@@ -524,7 +525,7 @@ public class ElasticsearchIT {
                                     }
             }
             @Test
-            void shouldReturnTheSpecifiedAttributes() throws Throwable {
+            void shouldReturnTheSpecifiedAttributes() {
                 org.awaitility.Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
                     assertThat(store.search("one", PageRequest.of(0, 10)))
                             .contains(doc1.getContentId())
@@ -536,7 +537,7 @@ public class ElasticsearchIT {
     @Nested
     class CustomReturnTypesCases {
         @BeforeEach
-        void setUp() throws Throwable {
+        void setUp() {
             context = new AnnotationConfigApplicationContext();
                             context.register(EntityIndexingStrategy.class);
                             context.register(CustomAttributesConfig.class);
@@ -553,7 +554,7 @@ public class ElasticsearchIT {
                             repo.save(doc1);
         }
         @AfterEach
-        void tearDown() throws Throwable {
+        void tearDown() throws IOException {
             assertThat(context).isNotNull();
 
                             if (client != null) {
@@ -562,7 +563,7 @@ public class ElasticsearchIT {
                             }
         }
         @Test
-        void shouldReturnResultsUsingTheCustomReturnType() throws Throwable {
+        void shouldReturnResultsUsingTheCustomReturnType() {
             org.awaitility.Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
             var result = searchableStore.search("one");
             assertThat(result).isNotNull();

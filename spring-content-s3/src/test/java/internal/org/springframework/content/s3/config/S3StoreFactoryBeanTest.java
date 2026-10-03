@@ -37,7 +37,7 @@ public class S3StoreFactoryBeanTest {
             @Nested
             class GivenAStore {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     client = mock(S3Client.class);
                     				placer = mock(PlacementService.class);
 
@@ -54,14 +54,14 @@ public class S3StoreFactoryBeanTest {
                     store = factory.getStore();
                 }
                 @Test
-                void shouldReturnAStoreImplementation() throws Throwable {
+                void shouldReturnAStoreImplementation() {
                     assertThat(store).isNotNull();
                 }
             }
             @Nested
             class GivenAnAssociativeStore {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     client = mock(S3Client.class);
                     				placer = mock(PlacementService.class);
 
@@ -78,7 +78,7 @@ public class S3StoreFactoryBeanTest {
                     store = factory.getStore();
                 }
                 @Test
-                void shouldReturnAStoreImplementation() throws Throwable {
+                void shouldReturnAStoreImplementation() {
                     assertThat(store).isNotNull();
                 }
             }

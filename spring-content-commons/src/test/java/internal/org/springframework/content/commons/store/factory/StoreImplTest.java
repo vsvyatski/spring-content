@@ -12,6 +12,7 @@ import org.springframework.context.ApplicationEventPublisher;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -35,7 +36,7 @@ public class StoreImplTest {
         @Nested
         class SetContentInputStream {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() throws IOException {
                 store = mock(ContentStore.class);
                                 publisher = mock(ApplicationEventPublisher.class);
 
@@ -54,7 +55,7 @@ public class StoreImplTest {
                 stores.setContent(new Object(), new ByteArrayInputStream("foo".getBytes()));
             }
             @Test
-            void shouldDeleteTheContentCopyFile() throws Throwable {
+            void shouldDeleteTheContentCopyFile() {
                 for (File f : Objects.requireNonNull(contentCopyPathRoot.toFile().listFiles())) {
                                         if (f.getName().endsWith(".tmp")) {
                                             fail("Found orphaned content copy path");
@@ -65,7 +66,7 @@ public class StoreImplTest {
         @Nested
         class GetContent {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() throws IOException {
                 store = mock(ContentStore.class);
                                 publisher = mock(ApplicationEventPublisher.class);
 
@@ -80,7 +81,7 @@ public class StoreImplTest {
                                 stores = new StoreImpl(store, publisher, contentCopyPathRoot);
             }
             @Test
-            void shouldPropagateStoreAccessException() throws Throwable {
+            void shouldPropagateStoreAccessException() throws IOException {
                 when(store.getContent(any())).thenThrow(new StoreAccessException("missing property"));
                                     try {
                                         stores.getContent(new Object());

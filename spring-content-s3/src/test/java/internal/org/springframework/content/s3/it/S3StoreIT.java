@@ -100,7 +100,7 @@ public class S3StoreIT {
                 @Nested
                 class Tests {
                     @BeforeEach
-                    void setUp() throws Throwable {
+                    void setUp() throws InterruptedException {
                         synchronized(mutex) {
                                             HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
                                                     .bucket("test-bucket")
@@ -139,19 +139,19 @@ public class S3StoreIT {
                         genericResource = store.getResource(resourceLocation);
                     }
                     @AfterEach
-                    void tearDown() throws Throwable {
+                    void tearDown() throws IOException {
                         ((DeletableResource)genericResource).delete();
                     }
                     @Test
-                    void shouldGetResource() throws Throwable {
+                    void shouldGetResource() {
                         assertThat(genericResource).isInstanceOf(Resource.class);
                     }
                     @Test
-                    void shouldNotExist() throws Throwable {
+                    void shouldNotExist() {
                         assertThat(genericResource.exists()).isFalse();
                     }
                     @Test
-                    void shouldBeARangeableResource() throws Throwable {
+                    void shouldBeARangeableResource() {
                         assertThat(genericResource).isInstanceOf(RangeableResource.class);
                     }
                 }
@@ -160,7 +160,7 @@ public class S3StoreIT {
                     @Nested
                     class Tests {
                         @BeforeEach
-                        void setUp() throws Throwable {
+                        void setUp() throws IOException, InterruptedException {
                             synchronized(mutex) {
                                                 HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
                                                         .bucket("test-bucket")
@@ -205,11 +205,11 @@ public class S3StoreIT {
                                                         }
                         }
                         @AfterEach
-                        void tearDown() throws Throwable {
+                        void tearDown() throws IOException {
                             ((DeletableResource)genericResource).delete();
                         }
                         @Test
-                        void shouldStoreThatContent() throws Throwable {
+                        void shouldStoreThatContent() throws IOException {
                             assertThat(genericResource.exists()).isTrue();
 
                                                         boolean matches = false;
@@ -224,7 +224,7 @@ public class S3StoreIT {
                     @Nested
                     class GivenThatResourceIsThenUpdated {
                         @BeforeEach
-                        void setUp() throws Throwable {
+                        void setUp() throws IOException, InterruptedException {
                             synchronized(mutex) {
                                                 HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
                                                         .bucket("test-bucket")
@@ -275,11 +275,11 @@ public class S3StoreIT {
                                                             }
                         }
                         @AfterEach
-                        void tearDown() throws Throwable {
+                        void tearDown() throws IOException {
                             ((DeletableResource)genericResource).delete();
                         }
                         @Test
-                        void shouldStoreThatUpdatedContent() throws Throwable {
+                        void shouldStoreThatUpdatedContent() throws IOException {
                             assertThat(genericResource.exists()).isTrue();
 
                                                             try (InputStream expected = new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes())) {
@@ -292,7 +292,7 @@ public class S3StoreIT {
                     @Nested
                     class GivenAByteRangeIsRequested {
                         @BeforeEach
-                        void setUp() throws Throwable {
+                        void setUp() throws IOException, InterruptedException {
                             synchronized(mutex) {
                                                 HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
                                                         .bucket("test-bucket")
@@ -337,11 +337,11 @@ public class S3StoreIT {
                                                         }
                         }
                         @AfterEach
-                        void tearDown() throws Throwable {
+                        void tearDown() throws IOException {
                             ((DeletableResource)genericResource).delete();
                         }
                         @Test
-                        void shouldReturnAPartialContentInputStreamAndThePartialContent() throws Throwable {
+                        void shouldReturnAPartialContentInputStreamAndThePartialContent() throws IOException {
                             ((RangeableResource)genericResource).setRange("bytes=6-19");
 
                                                             var expectedBytes = "Hello Spring Content World!".getBytes();
@@ -357,7 +357,7 @@ public class S3StoreIT {
                     @Nested
                     class GivenThatResourceIsThenDeleted {
                         @BeforeEach
-                        void setUp() throws Throwable {
+                        void setUp() throws IOException, InterruptedException {
                             synchronized(mutex) {
                                                 HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
                                                         .bucket("test-bucket")
@@ -408,11 +408,11 @@ public class S3StoreIT {
                                                             }
                         }
                         @AfterEach
-                        void tearDown() throws Throwable {
+                        void tearDown() throws IOException {
                             ((DeletableResource)genericResource).delete();
                         }
                         @Test
-                        void shouldNotExist() throws Throwable {
+                        void shouldNotExist() {
                             assertThat(e).isNull();
                         }
                     }
@@ -426,7 +426,7 @@ public class S3StoreIT {
                 @Nested
                 class Tests {
                     @BeforeEach
-                    void setUp() throws Throwable {
+                    void setUp() throws InterruptedException {
                         synchronized(mutex) {
                                             HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
                                                     .bucket("test-bucket")
@@ -466,7 +466,7 @@ public class S3StoreIT {
                                                 entity = repo.save(entity);
                     }
                     @Test
-                    void shouldNotHaveAnAssociatedResource() throws Throwable {
+                    void shouldNotHaveAnAssociatedResource() {
                         assertThat(entity.getContentId()).isNull();
                                                 assertThat(store.getResource(entity)).isNull();
                     }
@@ -478,7 +478,7 @@ public class S3StoreIT {
                         @Nested
                         class Tests {
                             @BeforeEach
-                            void setUp() throws Throwable {
+                            void setUp() throws InterruptedException {
                                 synchronized(mutex) {
                                                     HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
                                                             .bucket("test-bucket")
@@ -523,7 +523,7 @@ public class S3StoreIT {
                                                                 store.associate(entity, PropertyPath.from("rendition"), resourceLocation);
                             }
                             @Test
-                            void shouldBeRecordedAsSuchOnTheEntitySContentId() throws Throwable {
+                            void shouldBeRecordedAsSuchOnTheEntitySContentId() {
                                 assertThat(entity.getContentId()).isEqualTo(resourceLocation);
                                                                 assertThat(entity.getRenditionId()).isEqualTo(resourceLocation);
                             }
@@ -531,7 +531,7 @@ public class S3StoreIT {
                         @Nested
                         class WhenTheResourceIsUnassociated {
                             @BeforeEach
-                            void setUp() throws Throwable {
+                            void setUp() throws InterruptedException {
                                 synchronized(mutex) {
                                                     HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
                                                             .bucket("test-bucket")
@@ -579,7 +579,7 @@ public class S3StoreIT {
                                                                     store.unassociate(entity, PropertyPath.from("rendition"));
                             }
                             @Test
-                            void shouldResetTheEntitySContentId() throws Throwable {
+                            void shouldResetTheEntitySContentId() {
                                 assertThat(entity.getContentId()).isNull();
                                                                     assertThat(entity.getRenditionId()).isNull();
                             }
@@ -587,7 +587,7 @@ public class S3StoreIT {
                         @Nested
                         class WhenAInvalidPropertyPathIsUsedToAssociateAResource {
                             @BeforeEach
-                            void setUp() throws Throwable {
+                            void setUp() throws InterruptedException {
                                 synchronized(mutex) {
                                                     HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
                                                             .bucket("test-bucket")
@@ -632,7 +632,7 @@ public class S3StoreIT {
                                                                 store.associate(entity, PropertyPath.from("rendition"), resourceLocation);
                             }
                             @Test
-                            void shouldThrowAnError() throws Throwable {
+                            void shouldThrowAnError() {
                                 try {
                                                                         store.associate(entity, PropertyPath.from("does.not.exist"), resourceLocation);
                                                                     } catch (Exception sae) {
@@ -644,7 +644,7 @@ public class S3StoreIT {
                         @Nested
                         class WhenAInvalidPropertyPathIsUsedToLoadAResource {
                             @BeforeEach
-                            void setUp() throws Throwable {
+                            void setUp() throws InterruptedException {
                                 synchronized(mutex) {
                                                     HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
                                                             .bucket("test-bucket")
@@ -689,7 +689,7 @@ public class S3StoreIT {
                                                                 store.associate(entity, PropertyPath.from("rendition"), resourceLocation);
                             }
                             @Test
-                            void shouldThrowAnError() throws Throwable {
+                            void shouldThrowAnError() {
                                 try {
                                                                         store.getResource(entity, PropertyPath.from("does.not.exist"));
                                                                     } catch (Exception sae) {
@@ -701,7 +701,7 @@ public class S3StoreIT {
                         @Nested
                         class WhenAInvalidPropertyPathIsUsedToUnassociateAResource {
                             @BeforeEach
-                            void setUp() throws Throwable {
+                            void setUp() throws InterruptedException {
                                 synchronized(mutex) {
                                                     HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
                                                             .bucket("test-bucket")
@@ -746,7 +746,7 @@ public class S3StoreIT {
                                                                 store.associate(entity, PropertyPath.from("rendition"), resourceLocation);
                             }
                             @Test
-                            void shouldThrowAnError() throws Throwable {
+                            void shouldThrowAnError() {
                                 try {
                                                                         store.unassociate(entity, PropertyPath.from("does.not.exist"));
                                                                     } catch (Exception sae) {
@@ -764,7 +764,7 @@ public class S3StoreIT {
             @Nested
             class Tests {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() throws InterruptedException {
                     synchronized(mutex) {
                                         HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
                                                 .bucket("test-bucket")
@@ -809,7 +809,7 @@ public class S3StoreIT {
                                         store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
                 }
                 @Test
-                void shouldBeAbleToStoreNewContent() throws Throwable {
+                void shouldBeAbleToStoreNewContent() {
                     // content
                                         try (InputStream content = store.getContent(entity)) {
                                             assertThat(IOUtils.contentEquals(new ByteArrayInputStream("Hello Spring Content World!".getBytes()), content)).isTrue();
@@ -821,7 +821,7 @@ public class S3StoreIT {
                                         } catch (IOException ioe) {}
                 }
                 @Test
-                void shouldHaveContentMetadata() throws Throwable {
+                void shouldHaveContentMetadata() {
                     // content
                                         assertThat(entity.getContentId()).isNotNull();
                                         assertThat(entity.getContentId().trim().length()).isGreaterThan(0);
@@ -836,7 +836,7 @@ public class S3StoreIT {
             @Nested
             class WhenContentIsUpdated {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() throws InterruptedException {
                     synchronized(mutex) {
                                         HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
                                                 .bucket("test-bucket")
@@ -885,7 +885,7 @@ public class S3StoreIT {
                                             entity = repo.save(entity);
                 }
                 @Test
-                void shouldHaveTheUpdatedContent() throws Throwable {
+                void shouldHaveTheUpdatedContent() throws IOException {
                     //content
                                             boolean matches = false;
                                             try (InputStream content = store.getContent(entity)) {
@@ -904,7 +904,7 @@ public class S3StoreIT {
             @Nested
             class WhenContentIsUpdatedWithShorterContent {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() throws InterruptedException {
                     synchronized(mutex) {
                                         HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
                                                 .bucket("test-bucket")
@@ -953,7 +953,7 @@ public class S3StoreIT {
                                             entity = repo.save(entity);
                 }
                 @Test
-                void shouldStoreOnlyTheNewContent() throws Throwable {
+                void shouldStoreOnlyTheNewContent() throws IOException {
                     //content
                                             boolean matches = false;
                                             try (InputStream content = store.getContent(entity)) {
@@ -972,7 +972,7 @@ public class S3StoreIT {
             @Nested
             class WhenContentIsUpdatedAndNotOverwritten {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() throws InterruptedException {
                     synchronized(mutex) {
                                         HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
                                                 .bucket("test-bucket")
@@ -1017,7 +1017,7 @@ public class S3StoreIT {
                                         store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
                 }
                 @Test
-                void shouldHaveTheUpdatedContent() throws Throwable {
+                void shouldHaveTheUpdatedContent() throws IOException {
                     String contentId = entity.getContentId();
                                             client.headObject(HeadObjectRequest.builder().bucket(BUCKET).key(contentId).build());
 
@@ -1037,7 +1037,7 @@ public class S3StoreIT {
             @Nested
             class WhenContentIsUnset {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() throws InterruptedException {
                     synchronized(mutex) {
                                         HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
                                                 .bucket("test-bucket")
@@ -1087,7 +1087,7 @@ public class S3StoreIT {
                                             entity = repo.save(entity);
                 }
                 @Test
-                void shouldHaveNoContent() throws Throwable {
+                void shouldHaveNoContent() throws IOException {
                     //content
                                             try (InputStream content = store.getContent(entity)) {
                                                 assertThat(content).isNull();
@@ -1114,7 +1114,7 @@ public class S3StoreIT {
             @Nested
             class WhenContentIsUnsetButKept {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() throws InterruptedException {
                     synchronized(mutex) {
                                         HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
                                                 .bucket("test-bucket")
@@ -1163,7 +1163,7 @@ public class S3StoreIT {
                                             entity = repo.save(entity);
                 }
                 @Test
-                void shouldHaveNoContent() throws Throwable {
+                void shouldHaveNoContent() throws IOException {
                     //content
                                             try (InputStream content = store.getContent(entity)) {
                                                 assertThat(content).isNull();
@@ -1178,7 +1178,7 @@ public class S3StoreIT {
             @Nested
             class WhenAnInvalidPropertyPathIsUsedToSetContent {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() throws InterruptedException {
                     synchronized(mutex) {
                                         HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
                                                 .bucket("test-bucket")
@@ -1223,7 +1223,7 @@ public class S3StoreIT {
                                         store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
                 }
                 @Test
-                void shouldThrowAnError() throws Throwable {
+                void shouldThrowAnError() {
                     try {
                                                 store.setContent(entity, PropertyPath.from("does.not.exist"), new ByteArrayInputStream("foo".getBytes()));
                                             } catch (Exception sae) {
@@ -1235,7 +1235,7 @@ public class S3StoreIT {
             @Nested
             class WhenAnInvalidPropertyPathIsUsedToGetContent {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() throws InterruptedException {
                     synchronized(mutex) {
                                         HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
                                                 .bucket("test-bucket")
@@ -1280,7 +1280,7 @@ public class S3StoreIT {
                                         store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
                 }
                 @Test
-                void shouldThrowAnError() throws Throwable {
+                void shouldThrowAnError() {
                     try {
                                                 store.getContent(entity, PropertyPath.from("does.not.exist"));
                                             } catch (Exception sae) {
@@ -1292,7 +1292,7 @@ public class S3StoreIT {
             @Nested
             class WhenAnInvalidPropertyPathIsUsedToUnsetContent {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() throws InterruptedException {
                     synchronized(mutex) {
                                         HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
                                                 .bucket("test-bucket")
@@ -1337,7 +1337,7 @@ public class S3StoreIT {
                                         store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
                 }
                 @Test
-                void shouldThrowAnError() throws Throwable {
+                void shouldThrowAnError() {
                     try {
                                                 store.unsetContent(entity, PropertyPath.from("does.not.exist"));
                                             } catch (Exception sae) {
@@ -1349,7 +1349,7 @@ public class S3StoreIT {
             @Nested
             class WhenContentIsDeletedAndTheContentIdFieldIsSharedWithEntityId {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() throws InterruptedException {
                     synchronized(mutex) {
                                         HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
                                                 .bucket("test-bucket")
@@ -1394,7 +1394,7 @@ public class S3StoreIT {
                                         store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
                 }
                 @Test
-                void shouldNotResetTheIdField() throws Throwable {
+                void shouldNotResetTheIdField() {
                     SharedIdContentIdEntity sharedIdContentIdEntity = sharedIdRepository.save(new SharedIdContentIdEntity());
 
                                             sharedIdContentIdEntity = sharedIdStore.setContent(sharedIdContentIdEntity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
@@ -1410,7 +1410,7 @@ public class S3StoreIT {
                 @Nested
                 class GivenAEntityWithANullEmbeddedContentObject {
                     @BeforeEach
-                    void setUp() throws Throwable {
+                    void setUp() throws InterruptedException {
                         synchronized(mutex) {
                                             HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
                                                     .bucket("test-bucket")
@@ -1455,12 +1455,12 @@ public class S3StoreIT {
                                             store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
                     }
                     @Test
-                    void shouldReturnNullWhenContentIsFetched() throws Throwable {
+                    void shouldReturnNullWhenContentIsFetched() throws IOException {
                         EntityWithEmbeddedContent entity = embeddedRepo.save(new EntityWithEmbeddedContent());
                                                     assertThat(embeddedStore.getContent(entity, PropertyPath.from("content"))).isNull();
                     }
                     @Test
-                    void shouldBeSuccessfulWhenContentIsSet() throws Throwable {
+                    void shouldBeSuccessfulWhenContentIsSet() throws IOException {
                         EntityWithEmbeddedContent entity = embeddedRepo.save(new EntityWithEmbeddedContent());
                                                     embeddedStore.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
                                                     try (InputStream is = embeddedStore.getContent(entity, PropertyPath.from("content"))) {
@@ -1468,7 +1468,7 @@ public class S3StoreIT {
                                                     }
                     }
                     @Test
-                    void shouldReturnNullWhenContentIsUnset() throws Throwable {
+                    void shouldReturnNullWhenContentIsUnset() {
                         EntityWithEmbeddedContent entity = embeddedRepo.save(new EntityWithEmbeddedContent());
                                                     assertThat(embeddedStore.unsetContent(entity, PropertyPath.from("content"))).isSameAs(entity);
                     }

@@ -46,7 +46,7 @@ public abstract class AbstractRestIT {
             @Nested
             class GivenAClaim {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
 
                     // delete any existing claim forms
@@ -68,7 +68,7 @@ public abstract class AbstractRestIT {
                 }
 
                 @Test
-                void shouldBePOSTableWithNewContentWith201Created() throws Throwable {
+                void shouldBePOSTableWithNewContentWith201Created() {
                     // assert content does not exist
                     when()
                     .get("/files/" + existingClaim.getId() + "/child")
@@ -102,7 +102,7 @@ public abstract class AbstractRestIT {
                 @Nested
                 class GivenThatClaimHasExistingContent {
                     @BeforeEach
-                    void setUp() throws Throwable {
+                    void setUp() {
                         RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
 
                         // delete any existing claim forms
@@ -129,7 +129,7 @@ public abstract class AbstractRestIT {
                     }
 
                     @Test
-                    void shouldReturnTheContentWith200OK() throws Throwable {
+                    void shouldReturnTheContentWith200OK() {
                         var response2 = given()
                         .header("accept", "text/plain")
                         .get("/files/" + existingClaim.getId() + "/child")
@@ -142,7 +142,7 @@ public abstract class AbstractRestIT {
                     }
 
                     @Test
-                    void shouldBePOSTableWithNewContentWith201Created() throws Throwable {
+                    void shouldBePOSTableWithNewContentWith201Created() {
                         String newContent = "This is new content";
 
                         given()
@@ -165,7 +165,7 @@ public abstract class AbstractRestIT {
                     }
 
                     @Test
-                    void shouldBeDELETEableWith204NoContent() throws Throwable {
+                    void shouldBeDELETEableWith204NoContent() {
                         given()
                         .delete("/files/" + existingClaim.getId() + "/child")
                         .then()

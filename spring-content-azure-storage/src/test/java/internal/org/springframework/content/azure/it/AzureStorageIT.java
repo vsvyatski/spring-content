@@ -85,7 +85,7 @@ public class AzureStorageIT {
                 @Nested
                 class Tests {
                     @BeforeEach
-                    void setUp() throws Throwable {
+                    void setUp() {
                         context = new AnnotationConfigApplicationContext();
                                         context.register(TestConfig.class);
                                         context.refresh();
@@ -102,7 +102,7 @@ public class AzureStorageIT {
                         genericResource = store.getResource(resourceLocation);
                     }
                     @AfterEach
-                    void tearDown() throws Throwable {
+                    void tearDown() throws IOException {
                         if (genericResource != null) {
                                                     ((DeletableResource) genericResource).delete();
                                                 }
@@ -115,11 +115,11 @@ public class AzureStorageIT {
                         context.close();
                     }
                     @Test
-                    void shouldGetResource() throws Throwable {
+                    void shouldGetResource() {
                         assertThat(genericResource).isInstanceOf(Resource.class);
                     }
                     @Test
-                    void shouldNotExist() throws Throwable {
+                    void shouldNotExist() {
                         assertThat(genericResource.exists()).isFalse();
                     }
                 }
@@ -128,7 +128,7 @@ public class AzureStorageIT {
                     @Nested
                     class Tests {
                         @BeforeEach
-                        void setUp() throws Throwable {
+                        void setUp() throws IOException {
                             context = new AnnotationConfigApplicationContext();
                                             context.register(TestConfig.class);
                                             context.refresh();
@@ -151,7 +151,7 @@ public class AzureStorageIT {
                                                         }
                         }
                         @AfterEach
-                        void tearDown() throws Throwable {
+                        void tearDown() throws IOException {
                             if (genericResource != null) {
                                                         ((DeletableResource) genericResource).delete();
                                                     }
@@ -164,7 +164,7 @@ public class AzureStorageIT {
                             context.close();
                         }
                         @Test
-                        void shouldStoreThatContent() throws Throwable {
+                        void shouldStoreThatContent() throws IOException {
                             assertThat(genericResource.exists()).isTrue();
 
                                                         boolean matches = false;
@@ -179,7 +179,7 @@ public class AzureStorageIT {
                     @Nested
                     class GivenThatResourceIsThenUpdated {
                         @BeforeEach
-                        void setUp() throws Throwable {
+                        void setUp() throws IOException {
                             context = new AnnotationConfigApplicationContext();
                                             context.register(TestConfig.class);
                                             context.refresh();
@@ -208,7 +208,7 @@ public class AzureStorageIT {
                                                             }
                         }
                         @AfterEach
-                        void tearDown() throws Throwable {
+                        void tearDown() throws IOException {
                             if (genericResource != null) {
                                                         ((DeletableResource) genericResource).delete();
                                                     }
@@ -221,7 +221,7 @@ public class AzureStorageIT {
                             context.close();
                         }
                         @Test
-                        void shouldStoreThatUpdatedContent() throws Throwable {
+                        void shouldStoreThatUpdatedContent() throws IOException {
                             assertThat(genericResource.exists()).isTrue();
 
                                                             try (InputStream expected = new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes())) {
@@ -234,7 +234,7 @@ public class AzureStorageIT {
                     @Nested
                     class GivenThatResourceIsThenDeleted {
                         @BeforeEach
-                        void setUp() throws Throwable {
+                        void setUp() throws IOException {
                             context = new AnnotationConfigApplicationContext();
                                             context.register(TestConfig.class);
                                             context.refresh();
@@ -263,7 +263,7 @@ public class AzureStorageIT {
                                                             }
                         }
                         @AfterEach
-                        void tearDown() throws Throwable {
+                        void tearDown() throws IOException {
                             if (genericResource != null) {
                                                         ((DeletableResource) genericResource).delete();
                                                     }
@@ -276,7 +276,7 @@ public class AzureStorageIT {
                             context.close();
                         }
                         @Test
-                        void shouldNotExist() throws Throwable {
+                        void shouldNotExist() {
                             assertThat(e).isNull();
                                                             assertThat(genericResource.exists()).isFalse();
                         }
@@ -291,7 +291,7 @@ public class AzureStorageIT {
                 @Nested
                 class Tests {
                     @BeforeEach
-                    void setUp() throws Throwable {
+                    void setUp() {
                         context = new AnnotationConfigApplicationContext();
                                         context.register(TestConfig.class);
                                         context.refresh();
@@ -309,11 +309,11 @@ public class AzureStorageIT {
                                                 entity = repo.save(entity);
                     }
                     @AfterEach
-                    void tearDown() throws Throwable {
+                    void tearDown() {
                         context.close();
                     }
                     @Test
-                    void shouldNotHaveAnAssociatedResource() throws Throwable {
+                    void shouldNotHaveAnAssociatedResource() {
                         assertThat(entity.getContentId()).isNull();
                                                 assertThat(store.getResource(entity)).isNull();
                     }
@@ -325,7 +325,7 @@ public class AzureStorageIT {
                         @Nested
                         class Tests {
                             @BeforeEach
-                            void setUp() throws Throwable {
+                            void setUp() {
                                 context = new AnnotationConfigApplicationContext();
                                                 context.register(TestConfig.class);
                                                 context.refresh();
@@ -348,11 +348,11 @@ public class AzureStorageIT {
                                                                 store.associate(entity, PropertyPath.from("rendition"), resourceLocation);
                             }
                             @AfterEach
-                            void tearDown() throws Throwable {
+                            void tearDown() {
                                 context.close();
                             }
                             @Test
-                            void shouldBeRecordedAsSuchOnTheEntitySContentId() throws Throwable {
+                            void shouldBeRecordedAsSuchOnTheEntitySContentId() {
                                 assertThat(entity.getContentId()).isEqualTo(resourceLocation);
                                                                 assertThat(entity.getRenditionId()).isEqualTo(resourceLocation);
                             }
@@ -360,7 +360,7 @@ public class AzureStorageIT {
                         @Nested
                         class WhenTheResourceHasContent {
                             @BeforeEach
-                            void setUp() throws Throwable {
+                            void setUp() throws IOException {
                                 context = new AnnotationConfigApplicationContext();
                                                 context.register(TestConfig.class);
                                                 context.refresh();
@@ -387,11 +387,11 @@ public class AzureStorageIT {
                                                                     }
                             }
                             @AfterEach
-                            void tearDown() throws Throwable {
+                            void tearDown() {
                                 context.close();
                             }
                             @Test
-                            void shouldNotHonorByteRanges() throws Throwable {
+                            void shouldNotHonorByteRanges() throws IOException {
                                 // relies on REST-layer to serve byte range
                                                                     Resource r = store.getResource(entity, PropertyPath.from("content"), new GetResourceParams("5-10"));
                                                                     try (InputStream is = r.getInputStream()) {
@@ -402,7 +402,7 @@ public class AzureStorageIT {
                         @Nested
                         class WhenTheResourceIsUnassociated {
                             @BeforeEach
-                            void setUp() throws Throwable {
+                            void setUp() {
                                 context = new AnnotationConfigApplicationContext();
                                                 context.register(TestConfig.class);
                                                 context.refresh();
@@ -428,11 +428,11 @@ public class AzureStorageIT {
                                                                     store.unassociate(entity, PropertyPath.from("rendition"));
                             }
                             @AfterEach
-                            void tearDown() throws Throwable {
+                            void tearDown() {
                                 context.close();
                             }
                             @Test
-                            void shouldResetTheEntitySContentId() throws Throwable {
+                            void shouldResetTheEntitySContentId() {
                                 assertThat(entity.getContentId()).isNull();
                                                                     assertThat(entity.getRenditionId()).isNull();
                             }
@@ -440,7 +440,7 @@ public class AzureStorageIT {
                         @Nested
                         class WhenAInvalidPropertyPathIsUsedToAssociateAResource {
                             @BeforeEach
-                            void setUp() throws Throwable {
+                            void setUp() {
                                 context = new AnnotationConfigApplicationContext();
                                                 context.register(TestConfig.class);
                                                 context.refresh();
@@ -463,11 +463,11 @@ public class AzureStorageIT {
                                                                 store.associate(entity, PropertyPath.from("rendition"), resourceLocation);
                             }
                             @AfterEach
-                            void tearDown() throws Throwable {
+                            void tearDown() {
                                 context.close();
                             }
                             @Test
-                            void shouldThrowAnError() throws Throwable {
+                            void shouldThrowAnError() {
                                 try {
                                                                         store.associate(entity, PropertyPath.from("does.not.exist"), resourceLocation);
                                                                     } catch (Exception sae) {
@@ -479,7 +479,7 @@ public class AzureStorageIT {
                         @Nested
                         class WhenAInvalidPropertyPathIsUsedToLoadAResource {
                             @BeforeEach
-                            void setUp() throws Throwable {
+                            void setUp() {
                                 context = new AnnotationConfigApplicationContext();
                                                 context.register(TestConfig.class);
                                                 context.refresh();
@@ -502,11 +502,11 @@ public class AzureStorageIT {
                                                                 store.associate(entity, PropertyPath.from("rendition"), resourceLocation);
                             }
                             @AfterEach
-                            void tearDown() throws Throwable {
+                            void tearDown() {
                                 context.close();
                             }
                             @Test
-                            void shouldThrowAnError() throws Throwable {
+                            void shouldThrowAnError() {
                                 try {
                                                                         store.getResource(entity, PropertyPath.from("does.not.exist"));
                                                                     } catch (Exception sae) {
@@ -518,7 +518,7 @@ public class AzureStorageIT {
                         @Nested
                         class WhenAInvalidPropertyPathIsUsedToUnassociateAResource {
                             @BeforeEach
-                            void setUp() throws Throwable {
+                            void setUp() {
                                 context = new AnnotationConfigApplicationContext();
                                                 context.register(TestConfig.class);
                                                 context.refresh();
@@ -541,11 +541,11 @@ public class AzureStorageIT {
                                                                 store.associate(entity, PropertyPath.from("rendition"), resourceLocation);
                             }
                             @AfterEach
-                            void tearDown() throws Throwable {
+                            void tearDown() {
                                 context.close();
                             }
                             @Test
-                            void shouldThrowAnError() throws Throwable {
+                            void shouldThrowAnError() {
                                 try {
                                                                         store.unassociate(entity, PropertyPath.from("does.not.exist"));
                                                                     } catch (Exception sae) {
@@ -563,7 +563,7 @@ public class AzureStorageIT {
             @Nested
             class Tests {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     context = new AnnotationConfigApplicationContext();
                                     context.register(TestConfig.class);
                                     context.refresh();
@@ -584,11 +584,11 @@ public class AzureStorageIT {
                                         store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
                 }
                 @AfterEach
-                void tearDown() throws Throwable {
+                void tearDown() {
                     context.close();
                 }
                 @Test
-                void shouldBeAbleToStoreNewContent() throws Throwable {
+                void shouldBeAbleToStoreNewContent() {
                     // content
                                         try (InputStream content = store.getContent(entity)) {
                                             assertThat(IOUtils.contentEquals(new ByteArrayInputStream("Hello Spring Content World!".getBytes()), content)).isTrue();
@@ -602,7 +602,7 @@ public class AzureStorageIT {
                                         }
                 }
                 @Test
-                void shouldHaveContentMetadata() throws Throwable {
+                void shouldHaveContentMetadata() {
                     // content
                                         assertThat(entity.getContentId()).isNotNull();
                                         assertThat(entity.getContentId().trim().length()).isGreaterThan(0);
@@ -617,7 +617,7 @@ public class AzureStorageIT {
             @Nested
             class WhenContentIsUpdated {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     context = new AnnotationConfigApplicationContext();
                                     context.register(TestConfig.class);
                                     context.refresh();
@@ -642,11 +642,11 @@ public class AzureStorageIT {
                                             entity = repo.save(entity);
                 }
                 @AfterEach
-                void tearDown() throws Throwable {
+                void tearDown() {
                     context.close();
                 }
                 @Test
-                void shouldHaveTheUpdatedContent() throws Throwable {
+                void shouldHaveTheUpdatedContent() throws IOException {
                     //content
                                             boolean matches = false;
                                             try (InputStream content = store.getContent(entity)) {
@@ -665,7 +665,7 @@ public class AzureStorageIT {
             @Nested
             class WhenContentIsUpdatedWithShorterContent {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     context = new AnnotationConfigApplicationContext();
                                     context.register(TestConfig.class);
                                     context.refresh();
@@ -690,11 +690,11 @@ public class AzureStorageIT {
                                             entity = repo.save(entity);
                 }
                 @AfterEach
-                void tearDown() throws Throwable {
+                void tearDown() {
                     context.close();
                 }
                 @Test
-                void shouldStoreOnlyTheNewContent() throws Throwable {
+                void shouldStoreOnlyTheNewContent() throws IOException {
                     //content
                                             boolean matches = false;
                                             try (InputStream content = store.getContent(entity)) {
@@ -713,7 +713,7 @@ public class AzureStorageIT {
             @Nested
             class WhenContentIsUpdatedAndNotOverwritten {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     context = new AnnotationConfigApplicationContext();
                                     context.register(TestConfig.class);
                                     context.refresh();
@@ -734,11 +734,11 @@ public class AzureStorageIT {
                                         store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
                 }
                 @AfterEach
-                void tearDown() throws Throwable {
+                void tearDown() {
                     context.close();
                 }
                 @Test
-                void shouldHaveTheUpdatedContent() throws Throwable {
+                void shouldHaveTheUpdatedContent() throws IOException {
                     BlobContainerClient c = builder.buildClient().getBlobContainerClient("azure-test-bucket");
 
                                             String contentId = entity.getContentId();
@@ -763,7 +763,7 @@ public class AzureStorageIT {
             @Nested
             class WhenContentIsUnset {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     context = new AnnotationConfigApplicationContext();
                                     context.register(TestConfig.class);
                                     context.refresh();
@@ -789,11 +789,11 @@ public class AzureStorageIT {
                                             entity = repo.save(entity);
                 }
                 @AfterEach
-                void tearDown() throws Throwable {
+                void tearDown() {
                     context.close();
                 }
                 @Test
-                void shouldHaveNoContent() throws Throwable {
+                void shouldHaveNoContent() throws IOException {
                     //content
                                             try (InputStream content = store.getContent(entity)) {
                                                 assertThat(content).isNull();
@@ -817,7 +817,7 @@ public class AzureStorageIT {
             @Nested
             class WhenContentIsUnsetButKept {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     context = new AnnotationConfigApplicationContext();
                                     context.register(TestConfig.class);
                                     context.refresh();
@@ -842,11 +842,11 @@ public class AzureStorageIT {
                                             entity = repo.save(entity);
                 }
                 @AfterEach
-                void tearDown() throws Throwable {
+                void tearDown() {
                     context.close();
                 }
                 @Test
-                void shouldHaveNoContent() throws Throwable {
+                void shouldHaveNoContent() throws IOException {
                     //content
                                             try (InputStream content = store.getContent(entity)) {
                                                 assertThat(content).isNull();
@@ -862,7 +862,7 @@ public class AzureStorageIT {
             @Nested
             class WhenAnInvalidPropertyPathIsUsedToSetContent {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     context = new AnnotationConfigApplicationContext();
                                     context.register(TestConfig.class);
                                     context.refresh();
@@ -883,11 +883,11 @@ public class AzureStorageIT {
                                         store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
                 }
                 @AfterEach
-                void tearDown() throws Throwable {
+                void tearDown() {
                     context.close();
                 }
                 @Test
-                void shouldThrowAnError() throws Throwable {
+                void shouldThrowAnError() {
                     try {
                                                 store.setContent(entity, PropertyPath.from("does.not.exist"), new ByteArrayInputStream("foo".getBytes()));
                                             } catch (Exception sae) {
@@ -899,7 +899,7 @@ public class AzureStorageIT {
             @Nested
             class WhenAnInvalidPropertyPathIsUsedToGetContent {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     context = new AnnotationConfigApplicationContext();
                                     context.register(TestConfig.class);
                                     context.refresh();
@@ -920,11 +920,11 @@ public class AzureStorageIT {
                                         store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
                 }
                 @AfterEach
-                void tearDown() throws Throwable {
+                void tearDown() {
                     context.close();
                 }
                 @Test
-                void shouldThrowAnError() throws Throwable {
+                void shouldThrowAnError() {
                     try {
                                                 store.getContent(entity, PropertyPath.from("does.not.exist"));
                                             } catch (Exception sae) {
@@ -936,7 +936,7 @@ public class AzureStorageIT {
             @Nested
             class WhenAnInvalidPropertyPathIsUsedToUnsetContent {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     context = new AnnotationConfigApplicationContext();
                                     context.register(TestConfig.class);
                                     context.refresh();
@@ -957,11 +957,11 @@ public class AzureStorageIT {
                                         store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
                 }
                 @AfterEach
-                void tearDown() throws Throwable {
+                void tearDown() {
                     context.close();
                 }
                 @Test
-                void shouldThrowAnError() throws Throwable {
+                void shouldThrowAnError() {
                     try {
                                                 store.unsetContent(entity, PropertyPath.from("does.not.exist"));
                                             } catch (Exception sae) {
@@ -973,7 +973,7 @@ public class AzureStorageIT {
             @Nested
             class WhenContentIsDeletedAndTheContentIdFieldIsSharedWithEntityId {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     context = new AnnotationConfigApplicationContext();
                                     context.register(TestConfig.class);
                                     context.refresh();
@@ -994,11 +994,11 @@ public class AzureStorageIT {
                                         store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
                 }
                 @AfterEach
-                void tearDown() throws Throwable {
+                void tearDown() {
                     context.close();
                 }
                 @Test
-                void shouldNotResetTheIdField() throws Throwable {
+                void shouldNotResetTheIdField() {
                     SharedIdRepository sharedIdRepository = context.getBean(SharedIdRepository.class);
                                             SharedIdStore sharedIdStore = context.getBean(SharedIdStore.class);
 
@@ -1017,7 +1017,7 @@ public class AzureStorageIT {
                 @Nested
                 class GivenAEntityWithANullEmbeddedContentObject {
                     @BeforeEach
-                    void setUp() throws Throwable {
+                    void setUp() {
                         context = new AnnotationConfigApplicationContext();
                                         context.register(TestConfig.class);
                                         context.refresh();
@@ -1038,16 +1038,16 @@ public class AzureStorageIT {
                                             store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
                     }
                     @AfterEach
-                    void tearDown() throws Throwable {
+                    void tearDown() {
                         context.close();
                     }
                     @Test
-                    void shouldReturnNullWhenContentIsFetched() throws Throwable {
+                    void shouldReturnNullWhenContentIsFetched() throws IOException {
                         EntityWithEmbeddedContent entity = embeddedRepo.save(new EntityWithEmbeddedContent());
                                                     assertThat(embeddedStore.getContent(entity, PropertyPath.from("content"))).isNull();
                     }
                     @Test
-                    void shouldBeSuccessfulWhenContentIsSet() throws Throwable {
+                    void shouldBeSuccessfulWhenContentIsSet() throws IOException {
                         EntityWithEmbeddedContent entity = embeddedRepo.save(new EntityWithEmbeddedContent());
                                                     embeddedStore.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
                                                     try (InputStream is = embeddedStore.getContent(entity, PropertyPath.from("content"))) {
@@ -1055,7 +1055,7 @@ public class AzureStorageIT {
                                                     }
                     }
                     @Test
-                    void shouldReturnNullWhenContentIsUnset() throws Throwable {
+                    void shouldReturnNullWhenContentIsUnset() {
                         EntityWithEmbeddedContent entity = embeddedRepo.save(new EntityWithEmbeddedContent());
                                                     assertThat(embeddedStore.unsetContent(entity, PropertyPath.from("content"))).isSameAs(entity);
                                                     int i = 0;

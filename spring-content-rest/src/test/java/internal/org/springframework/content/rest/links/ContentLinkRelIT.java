@@ -129,7 +129,7 @@ public class ContentLinkRelIT {
             @DisplayName("given a store specifying a linkRel and an entity with a top-level uncorrelated content property")
             class GivenAStoreSpecifyingALinkRelAndAnEntityWithATopLevelUncorrelatedContentProperty extends ContentLinkTests {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
                     testEntity = new TestEntity();
                     contentRepository.setContent(testEntity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
@@ -148,7 +148,7 @@ public class ContentLinkRelIT {
             @DisplayName("given a store specifying a linkRel and an entity with top-level correlated content properties")
             class GivenAStoreSpecifyingALinkRelAndAnEntityWithTopLevelCorrelatedContentPropertiesC extends ContentLinkTests {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
                     testEntity5 = new TestEntity5();
                     store5.setContent(testEntity5, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
@@ -167,7 +167,7 @@ public class ContentLinkRelIT {
             @DisplayName("given a store specifying a linkrel and an entity a nested content property")
             class GivenAStoreSpecifyingALinkrelAndAnEntityANestedContentPropertyContentLinkTests extends ContentLinkTests {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
                     testEntity2 = new TestEntity2();
                     testEntity2.getChild().setMimeType("text/plain");
@@ -187,7 +187,7 @@ public class ContentLinkRelIT {
             @DisplayName("given a store specifying a linkrel and an entity with nested content properties")
             class GivenAStoreSpecifyingALinkrelAndAnEntityWithNestedContentPropertiesContentLinkTe extends ContentLinkTests {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
                     testEntity10 = new TestEntity10();
                     testEntity10.getChild().setContentMimeType("text/plain");

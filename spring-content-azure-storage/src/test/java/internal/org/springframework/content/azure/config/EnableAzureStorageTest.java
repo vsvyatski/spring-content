@@ -53,7 +53,7 @@ public class EnableAzureStorageTest {
         @Nested
         class GivenAContextAndAConfigurationWithAnAzureContentStore {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 context = new AnnotationConfigApplicationContext();
                 context.register(TestConfig.class);
                 context.refresh();
@@ -61,19 +61,19 @@ public class EnableAzureStorageTest {
             }
 
             @AfterEach
-            void tearDown() throws Throwable {
+            void tearDown() {
                 context.close();
 
             }
 
             @Test
-            void shouldHaveAContentStoreBean() throws Throwable {
+            void shouldHaveAContentStoreBean() {
                 assertThat(context.getBean(TestEntityContentStore.class)).isNotNull();
 
             }
 
             @Test
-            void shouldHaveAnPlacementService() throws Throwable {
+            void shouldHaveAnPlacementService() {
                 assertThat(context.getBean("azureStoragePlacementService")).isNotNull();
 
             }
@@ -83,7 +83,7 @@ public class EnableAzureStorageTest {
         @Nested
         class GivenAContextWithAConfigurer {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 configurer = mock(AzureStorageConfigurer.class);
 
                 context = new AnnotationConfigApplicationContext();
@@ -93,13 +93,13 @@ public class EnableAzureStorageTest {
             }
 
             @AfterEach
-            void tearDown() throws Throwable {
+            void tearDown() {
                 context.close();
 
             }
 
             @Test
-            void shouldCallThatConfigurerToHelpSetupTheStore() throws Throwable {
+            void shouldCallThatConfigurerToHelpSetupTheStore() {
                 verify(configurer).configureAzureStorageConverters(any());
 
             }
@@ -109,7 +109,7 @@ public class EnableAzureStorageTest {
         @Nested
         class GivenAContextWithAnEmptyConfiguration {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 context = new AnnotationConfigApplicationContext();
                 context.register(EmptyConfig.class);
                 context.refresh();
@@ -117,13 +117,13 @@ public class EnableAzureStorageTest {
             }
 
             @AfterEach
-            void tearDown() throws Throwable {
+            void tearDown() {
                 context.close();
 
             }
 
             @Test
-            void shouldNotContainsAnyAzureStorageBeans() throws Throwable {
+            void shouldNotContainsAnyAzureStorageBeans() {
                 try {
                 	context.getBean(TestEntityContentStore.class);
                 	fail("expected no such bean");

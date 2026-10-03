@@ -81,7 +81,7 @@ public class CustomKeyAccessorEncryptionIT {
             @Nested
             class Tests {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
 
                                     f = repo.save(new FsFile());
@@ -95,7 +95,7 @@ public class CustomKeyAccessorEncryptionIT {
                                                 .statusCode(HttpStatus.SC_CREATED);
                 }
                 @Test
-                void shouldBeStoredEncrypted() throws Throwable {
+                void shouldBeStoredEncrypted() throws IOException {
                     Optional<FsFile> fetched = repo.findById(f.getId());
                                         assertThat(fetched.isPresent()).isTrue();
                                         f = fetched.get();
@@ -106,7 +106,7 @@ public class CustomKeyAccessorEncryptionIT {
                                         assertThat(contentEncryptionKeyRepository.findById(f.getContentId()).isPresent()).isTrue();
                 }
                 @Test
-                void shouldBeRetrievedDecrypted() throws Throwable {
+                void shouldBeRetrievedDecrypted() {
                     MockMvcResponse response =
                                                 given()
                                                 .header("accept", "text/plain")
@@ -121,7 +121,7 @@ public class CustomKeyAccessorEncryptionIT {
             @Nested
             class WhenTheContentIsUnset {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
 
                                     f = repo.save(new FsFile());
@@ -135,7 +135,7 @@ public class CustomKeyAccessorEncryptionIT {
                                                 .statusCode(HttpStatus.SC_CREATED);
                 }
                 @Test
-                void itShouldRemoveTheContentAndClearTheContentKey() throws Throwable {
+                void itShouldRemoveTheContentAndClearTheContentKey() {
                     f = repo.findById(f.getId()).get();
                                             String contentId = f.getContentId().toString();
 

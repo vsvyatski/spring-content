@@ -70,7 +70,7 @@ public class BaseUriContentLinksIT {
         @DisplayName("given an Entity and a Store with a default store path")
         class GivenAnEntityAndAStoreWithADefaultStorePathContentLinkTests extends ContentLinkTests {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
                 testEntity3 = new TestEntity3();
                 contentRepository3.setContent(testEntity3, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));

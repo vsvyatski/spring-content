@@ -72,7 +72,7 @@ public class RevisionPropertyRestEndpointsIT {
             @Nested
             class AGETToRepositoryIdRevisions1Content {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                     testEntity = repository.save(new TEntity());
@@ -85,7 +85,7 @@ public class RevisionPropertyRestEndpointsIT {
                 }
 
                 @Test
-                void shouldReturnA404() throws Throwable {
+                void shouldReturnA404() throws Exception {
                     mvc.perform(
                         get("/tEntities/" + testEntity.getId() + "/revisions/1/content").
                             accept("text/plain")).
@@ -98,7 +98,7 @@ public class RevisionPropertyRestEndpointsIT {
             @Nested
             class AGETToRepositoryIdRevisionsLatestContent {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                     testEntity = repository.save(new TEntity());
@@ -111,7 +111,7 @@ public class RevisionPropertyRestEndpointsIT {
                 }
 
                 @Test
-                void shouldReturnTheContent() throws Throwable {
+                void shouldReturnTheContent() throws Exception {
                     Revisions<Integer, TEntity> revisions = repository.findRevisions(testEntity.getId());
                     Integer revisionId = revisions.getLatestRevision().getRequiredRevisionNumber();
 

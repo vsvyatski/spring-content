@@ -121,7 +121,7 @@ public class TransactionIT {
 	public static class DbService {
 
 		@Transactional
-		public TestEntity doSomeDbStuff(TestEntityContentRepository store, TestEntity te) throws Throwable {
+		public TestEntity doSomeDbStuff(TestEntityContentRepository store, TestEntity te) {
 			te = store.setContent(te, new ByteArrayInputStream("Spring Content World!".getBytes()));
 			throw new RuntimeException("badness");
 		}

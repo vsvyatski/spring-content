@@ -39,7 +39,7 @@ public class SpringBootContentRestConfigurerTest {
             @Nested
             class GivenABaseUriProperty {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     properties = new ContentRestProperties();
                     restConfig = mock(RestConfiguration.class);
                     exclusions = mock(RestConfiguration.Exclusions.class);
@@ -53,7 +53,7 @@ public class SpringBootContentRestConfigurerTest {
                 }
 
                 @Test
-                void shouldSetThePropertyOnTheRestConfiguration() throws Throwable {
+                void shouldSetThePropertyOnTheRestConfiguration() {
                     verify(restConfig).setBaseUri(eq(properties.getBaseUri()));
 
                 }
@@ -63,7 +63,7 @@ public class SpringBootContentRestConfigurerTest {
             @Nested
             class GivenAFullyQualifiedLinksPropertySetting {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     properties = new ContentRestProperties();
                     restConfig = mock(RestConfiguration.class);
                     exclusions = mock(RestConfiguration.Exclusions.class);
@@ -77,7 +77,7 @@ public class SpringBootContentRestConfigurerTest {
                 }
 
                 @Test
-                void shouldSetThePropertyOnTheRestConfiguration() throws Throwable {
+                void shouldSetThePropertyOnTheRestConfiguration() {
                     verify(restConfig).setFullyQualifiedLinks(eq(true));
 
                 }
@@ -87,7 +87,7 @@ public class SpringBootContentRestConfigurerTest {
             @Nested
             class GivenDisabledShortcutRequestMappings {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     properties = new ContentRestProperties();
                     restConfig = mock(RestConfiguration.class);
                     exclusions = mock(RestConfiguration.Exclusions.class);
@@ -103,7 +103,7 @@ public class SpringBootContentRestConfigurerTest {
                 }
 
                 @Test
-                void shouldDisableTheShortcutLinks() throws Throwable {
+                void shouldDisableTheShortcutLinks() {
                     verify(restConfig).setShortcutLinks(false);
 
                 }
@@ -113,7 +113,7 @@ public class SpringBootContentRestConfigurerTest {
             @Nested
             class GivenExcludedShortcutRequestMappings {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     properties = new ContentRestProperties();
                     restConfig = mock(RestConfiguration.class);
                     exclusions = mock(RestConfiguration.Exclusions.class);
@@ -129,7 +129,7 @@ public class SpringBootContentRestConfigurerTest {
                 }
 
                 @Test
-                void shouldSetTheExclusionsPropertyOnTheRestConfiguration() throws Throwable {
+                void shouldSetTheExclusionsPropertyOnTheRestConfiguration() {
                     verify(exclusions).exclude("GET", MediaType.parseMediaType("a/b"));
                     verify(exclusions).exclude("GET", MediaType.parseMediaType("c/d"));
                     verify(exclusions).exclude("PUT", MediaType.parseMediaType("*/*"));
@@ -141,7 +141,7 @@ public class SpringBootContentRestConfigurerTest {
             @Nested
             class GivenEmptyExcludedShortcutRequestMapping {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     properties = new ContentRestProperties();
                     restConfig = mock(RestConfiguration.class);
                     exclusions = mock(RestConfiguration.Exclusions.class);
@@ -157,7 +157,7 @@ public class SpringBootContentRestConfigurerTest {
                 }
 
                 @Test
-                void shouldNotSetTheExclusionsPropertyOnTheRestConfiguration() throws Throwable {
+                void shouldNotSetTheExclusionsPropertyOnTheRestConfiguration() {
                     verify(exclusions, never()).exclude(any(), any());
 
                 }
@@ -167,7 +167,7 @@ public class SpringBootContentRestConfigurerTest {
             @Nested
             class GivenEmptyExcludedShortcutGETRequestMapping {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     properties = new ContentRestProperties();
                     restConfig = mock(RestConfiguration.class);
                     exclusions = mock(RestConfiguration.Exclusions.class);
@@ -183,7 +183,7 @@ public class SpringBootContentRestConfigurerTest {
                 }
 
                 @Test
-                void shouldNotSetTheExclusionsPropertyOnTheRestConfiguration() throws Throwable {
+                void shouldNotSetTheExclusionsPropertyOnTheRestConfiguration() {
                     verify(exclusions, never()).exclude(any(), any());
 
                 }
@@ -193,7 +193,7 @@ public class SpringBootContentRestConfigurerTest {
             @Nested
             class GivenInvalidExcludedShortcutRequestMapping {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     properties = new ContentRestProperties();
                     restConfig = mock(RestConfiguration.class);
                     exclusions = mock(RestConfiguration.Exclusions.class);
@@ -209,7 +209,7 @@ public class SpringBootContentRestConfigurerTest {
                 }
 
                 @Test
-                void shouldNotSetTheExclusionsPropertyOnTheRestConfiguration() throws Throwable {
+                void shouldNotSetTheExclusionsPropertyOnTheRestConfiguration() {
                     verify(exclusions, never()).exclude(any(), any());
 
                 }
@@ -219,7 +219,7 @@ public class SpringBootContentRestConfigurerTest {
             @Nested
             class GivenANullBaseUriProperty {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     properties = new ContentRestProperties();
                     restConfig = mock(RestConfiguration.class);
                     exclusions = mock(RestConfiguration.Exclusions.class);
@@ -231,7 +231,7 @@ public class SpringBootContentRestConfigurerTest {
                 }
 
                 @Test
-                void shouldNotSetThePropertyOnTheRestConfiguration() throws Throwable {
+                void shouldNotSetThePropertyOnTheRestConfiguration() {
                     verify(restConfig, never()).setBaseUri(any());
 
                 }
@@ -241,7 +241,7 @@ public class SpringBootContentRestConfigurerTest {
             @Nested
             class GivenANullProperties {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     properties = new ContentRestProperties();
                     restConfig = mock(RestConfiguration.class);
                     exclusions = mock(RestConfiguration.Exclusions.class);
@@ -255,7 +255,7 @@ public class SpringBootContentRestConfigurerTest {
                 }
 
                 @Test
-                void shouldNotSetThePropertyOnTheRestConfiguration() throws Throwable {
+                void shouldNotSetThePropertyOnTheRestConfiguration() {
                     verify(restConfig, never()).setBaseUri(any());
                     verify(restConfig, never()).setFullyQualifiedLinks(anyBoolean());
 

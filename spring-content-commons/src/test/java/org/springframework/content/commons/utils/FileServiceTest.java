@@ -27,7 +27,7 @@ public class FileServiceTest {
         @Nested
         class WhenPassedInAFileThatExists {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() throws IOException {
                 parent = Files.createTempDirectory("commons-").toFile();
                 file = new File(parent, "something.txt");
                 FileUtils.touch(file);
@@ -44,12 +44,12 @@ public class FileServiceTest {
             }
 
             @AfterEach
-            void tearDown() throws Throwable {
+            void tearDown() {
                 file.delete();
             }
 
             @Test
-            void shouldThrowAnIOException() throws Throwable {
+            void shouldThrowAnIOException() {
                 assertThat(ex).isNotNull();
                 assertThat(ex).isInstanceOf(IOException.class);
 
@@ -60,7 +60,7 @@ public class FileServiceTest {
         @Nested
         class WhenPassedInAFileThatDoesNotExist {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() throws IOException {
                 parent = Files.createTempDirectory("commons-").toFile();
                 file = new File(parent, "something.txt");
                 assertThat(file.exists()).isFalse();
@@ -76,17 +76,17 @@ public class FileServiceTest {
             }
 
             @AfterEach
-            void tearDown() throws Throwable {
+            void tearDown() {
                 file.delete();
             }
 
             @Test
-            void shouldNotThrowAnException() throws Throwable {
+            void shouldNotThrowAnException() {
                 assertThat(ex).isNull();
             }
 
             @Test
-            void shouldCreateTheDirectory() throws Throwable {
+            void shouldCreateTheDirectory() {
                 assertThat(file.isDirectory()).isTrue();
                 assertThat(file.exists()).isTrue();
 
@@ -97,7 +97,7 @@ public class FileServiceTest {
         @Nested
         class WhenPassedInADirectoryThatExists {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() throws IOException {
                 parent = Files.createTempDirectory("commons-").toFile();
                 file = new File(parent, "something");
                 file.mkdirs();
@@ -114,12 +114,12 @@ public class FileServiceTest {
             }
 
             @AfterEach
-            void tearDown() throws Throwable {
+            void tearDown() {
                 file.delete();
             }
 
             @Test
-            void shouldSucceed() throws Throwable {
+            void shouldSucceed() {
                 assertThat(ex).isNull();
                 assertThat(file.exists()).isTrue();
                 assertThat(file.isDirectory()).isTrue();
@@ -131,7 +131,7 @@ public class FileServiceTest {
         @Nested
         class WhenPassedInADirectoryThatDoesNotExist {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() throws IOException {
                 parent = Files.createTempDirectory("commons-").toFile();
                 file = new File(parent, "something");
                 assertThat(file.exists()).isFalse();
@@ -147,12 +147,12 @@ public class FileServiceTest {
             }
 
             @AfterEach
-            void tearDown() throws Throwable {
+            void tearDown() {
                 file.delete();
             }
 
             @Test
-            void shouldSucceed() throws Throwable {
+            void shouldSucceed() {
                 assertThat(ex).isNull();
                 assertThat(file.exists()).isTrue();
                 assertThat(file.isDirectory()).isTrue();
@@ -164,7 +164,7 @@ public class FileServiceTest {
         @Nested
         class WhenPassedNull {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() throws IOException {
                 parent = Files.createTempDirectory("commons-").toFile();
                 file = null;
                 fileService = new FileServiceImpl();
@@ -178,7 +178,7 @@ public class FileServiceTest {
             }
 
             @Test
-            void shouldThrowAnIllegalArgumentException() throws Throwable {
+            void shouldThrowAnIllegalArgumentException() {
                 assertThat(ex).isNotNull();
                 assertThat(ex).isInstanceOf(IllegalArgumentException.class);
 
@@ -191,12 +191,12 @@ public class FileServiceTest {
     @Nested
     class Rmdirs {
         @BeforeEach
-        void setUp() throws Throwable {
+        void setUp() {
             fileService = new FileServiceImpl();
         }
 
         @Test
-        void shouldDeleteEmptyDirectoriesButStopAtTo() throws Throwable {
+        void shouldDeleteEmptyDirectoriesButStopAtTo() throws IOException {
             Path p0 = Files.createTempDirectory(null);
             Path p1 = Files.createTempDirectory(p0, null);
             Path p2 = Files.createTempDirectory(p1, null);
@@ -210,7 +210,7 @@ public class FileServiceTest {
         }
 
         @Test
-        void shouldRejectFiles() throws Throwable {
+        void shouldRejectFiles() throws IOException {
             Path tempFile = Files.createTempFile(null, null);
 
             try {
@@ -223,7 +223,7 @@ public class FileServiceTest {
         }
 
         @Test
-        void shouldLeaveDirectoriesThatAreNotEmpty() throws Throwable {
+        void shouldLeaveDirectoriesThatAreNotEmpty() throws IOException {
             Path p0 = Files.createTempDirectory(null);
             Path p1 = Files.createTempDirectory(p0, null);
             Path f1 = Files.createTempFile(p1, null, null);
@@ -239,7 +239,7 @@ public class FileServiceTest {
         }
 
         @Test
-        void shouldDoNothingWhenFromAndToAreTheSame() throws Throwable {
+        void shouldDoNothingWhenFromAndToAreTheSame() throws IOException {
             Path p0 = Files.createTempDirectory(null);
 
             fileService.rmdirs(p0.toFile(), p0.toFile());

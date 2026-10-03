@@ -14,6 +14,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 import static org.mockito.Mockito.mock;
@@ -40,7 +41,7 @@ public class CustomizableBlobResourceLoaderTest {
         @Nested
         class GetDatabaseName {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 loader = new CustomizableBlobResourceLoader(template, txnMgr);
 
                 result = loader.getDatabaseName();
@@ -48,7 +49,7 @@ public class CustomizableBlobResourceLoaderTest {
             }
 
             @Test
-            void shouldReturnGENERIC() throws Throwable {
+            void shouldReturnGENERIC() {
                 assertThat(result.toString()).isEqualTo("GENERIC");
 
             }
@@ -58,7 +59,7 @@ public class CustomizableBlobResourceLoaderTest {
         @Nested
         class GetResource {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() throws SQLException {
                 ds = mock(DataSource.class);
                 template = new JdbcTemplate(ds);
                 txnMgr = new DataSourceTransactionManager(ds);
@@ -75,7 +76,7 @@ public class CustomizableBlobResourceLoaderTest {
             }
 
             @Test
-            void shouldReturnAGenericBlobResource() throws Throwable {
+            void shouldReturnAGenericBlobResource() {
                 assertThat(result).isInstanceOf(GenericBlobResource.class);
 
             }
@@ -85,7 +86,7 @@ public class CustomizableBlobResourceLoaderTest {
         @Nested
         class GetClassLoader {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 loader = new CustomizableBlobResourceLoader(template, txnMgr);
 
                 result = loader.getClassLoader();
@@ -93,7 +94,7 @@ public class CustomizableBlobResourceLoaderTest {
             }
 
             @Test
-            void shouldReturnAClassLoader() throws Throwable {
+            void shouldReturnAClassLoader() {
                 assertThat(result).isInstanceOf(ClassLoader.class);
 
             }
@@ -105,7 +106,7 @@ public class CustomizableBlobResourceLoaderTest {
             @Nested
             class GetResource {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     customDBResource = mock(Resource.class);
 
                     ds = mock(DataSource.class);
@@ -121,7 +122,7 @@ public class CustomizableBlobResourceLoaderTest {
                 }
 
                 @Test
-                void shouldReturnTheResourceProvidersCustomResource() throws Throwable {
+                void shouldReturnTheResourceProvidersCustomResource() {
                     assertThat(result).isEqualTo(customDBResource);
 
                 }

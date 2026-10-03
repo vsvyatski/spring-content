@@ -1,14 +1,9 @@
 package it.events;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.AfterEach;
-import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.annotations.HandleBeforeSetContent;
@@ -20,6 +15,7 @@ import org.springframework.content.fs.io.FileSystemResourceLoader;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -28,6 +24,7 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 @ContextConfiguration(classes = {BeforeSetEventIT.TestConfig.class})
@@ -45,7 +42,7 @@ public class BeforeSetEventIT {
         @Nested
         class WhenTheContentInputStreamIsConsumedByABeforeSetEvent {
             @Test
-            void shouldStillSetTheContentInTheStore() throws Throwable {
+            void shouldStillSetTheContentInTheStore() throws IOException {
                 TestEntity te = new TestEntity();
                                     ByteArrayInputStream bais = new ByteArrayInputStream("Still here!".getBytes());
                                     te = store.setContent(te, bais);
@@ -86,12 +83,9 @@ public class BeforeSetEventIT {
         }
     }
 
-    public class TestEntity {
+    public static class TestEntity {
         @ContentId
         private String contentId;
-
-        public TestEntity() {
-        }
 
         public String getContentId() {
             return contentId;

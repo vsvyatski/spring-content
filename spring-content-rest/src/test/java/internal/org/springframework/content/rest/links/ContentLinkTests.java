@@ -71,11 +71,11 @@ public class ContentLinkTests {
         @Nested
         class AGETToApiRepositoryId {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
 
             }
             @Test
-            void shouldProvideAResponseWithAContentLink() throws Throwable {
+            void shouldProvideAResponseWithAContentLink() throws Exception {
                 MockHttpServletResponse response = mvc.perform(get(url)
                 									.accept("application/hal+json")
                 									.contextPath(contextPath))

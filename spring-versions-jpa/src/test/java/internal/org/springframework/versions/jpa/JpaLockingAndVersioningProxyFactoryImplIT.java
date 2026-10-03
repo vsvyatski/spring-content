@@ -55,7 +55,7 @@ public class JpaLockingAndVersioningProxyFactoryImplIT {
                 @Nested
                 class GivenNoExistngAdvise {
                     @BeforeEach
-                    void setUp() throws Throwable {
+                    void setUp() {
                         context = new AnnotationConfigApplicationContext();
                         context.register(TestConfig.class);
                         context.refresh();
@@ -75,7 +75,7 @@ public class JpaLockingAndVersioningProxyFactoryImplIT {
                     }
 
                     @Test
-                    void shouldApplyTheTxnAdvice() throws Throwable {
+                    void shouldApplyTheTxnAdvice() {
                         Advisor[] advices = proxyFactory.getAdvisors();
                         assertThat(advices.length).isEqualTo(3);
                         assertThat(advices[0].getAdvice()).isInstanceOf(TransactionInterceptor.class);
@@ -89,7 +89,7 @@ public class JpaLockingAndVersioningProxyFactoryImplIT {
                 @Nested
                 class GivenAnExistngTxnAdvise {
                     @BeforeEach
-                    void setUp() throws Throwable {
+                    void setUp() {
                         context = new AnnotationConfigApplicationContext();
                         context.register(TestConfig.class);
                         context.refresh();
@@ -110,7 +110,7 @@ public class JpaLockingAndVersioningProxyFactoryImplIT {
                     }
 
                     @Test
-                    void shouldNotApplyTheAdviceAgain() throws Throwable {
+                    void shouldNotApplyTheAdviceAgain() {
                         Advisor[] advices = proxyFactory.getAdvisors();
                         assertThat(advices.length).isEqualTo(3);
                         assertThat(advices[0].getAdvice()).isInstanceOf(TransactionInterceptor.class);

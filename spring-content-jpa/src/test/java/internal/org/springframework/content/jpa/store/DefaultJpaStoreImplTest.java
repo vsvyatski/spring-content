@@ -52,7 +52,7 @@ public class DefaultJpaStoreImplTest {
                 @Nested
                 class GivenAnId {
                     @BeforeEach
-                    void setUp() throws Throwable {
+                    void setUp() {
                         blobResourceLoader = mock(BlobResourceLoader.class);
                         id = "1";
                         store =
@@ -61,7 +61,7 @@ public class DefaultJpaStoreImplTest {
                     }
 
                     @Test
-                    void shouldUseTheBlobResourceLoaderToLoadABlobResource() throws Throwable {
+                    void shouldUseTheBlobResourceLoaderToLoadABlobResource() {
                         verify(blobResourceLoader).getResource(id);
                     }
 
@@ -78,7 +78,7 @@ public class DefaultJpaStoreImplTest {
                 @Nested
                 class WhenTheEntityIsNotAssociatedWithAResource {
                     @BeforeEach
-                    void setUp() throws Throwable {
+                    void setUp() {
                         blobResourceLoader = mock(BlobResourceLoader.class);
                         entity = new TestEntity();
                         store =
@@ -87,7 +87,7 @@ public class DefaultJpaStoreImplTest {
                     }
 
                     @Test
-                    void shouldReturnNull() throws Throwable {
+                    void shouldReturnNull() {
                         verify(blobResourceLoader, never()).getResource(any());
                         assertThat(resource).isNull();
 
@@ -98,7 +98,7 @@ public class DefaultJpaStoreImplTest {
                 @Nested
                 class WhenTheEntityIsAssociatedWithAResource {
                     @BeforeEach
-                    void setUp() throws Throwable {
+                    void setUp() {
                         blobResourceLoader = mock(BlobResourceLoader.class);
                         entity = new TestEntity();
                         entity.setContentId("12345");
@@ -109,7 +109,7 @@ public class DefaultJpaStoreImplTest {
                     }
 
                     @Test
-                    void shouldLoadANewResource() throws Throwable {
+                    void shouldLoadANewResource() {
                         verify(blobResourceLoader).getResource(eq("12345"));
                     }
 
@@ -120,7 +120,7 @@ public class DefaultJpaStoreImplTest {
             @Nested
             class Associate {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() throws IOException {
                     blobResourceLoader = mock(BlobResourceLoader.class);
                     id = "12345";
 
@@ -137,7 +137,7 @@ public class DefaultJpaStoreImplTest {
                 }
 
                 @Test
-                void shouldSetTheEntitySContentIDAttribute() throws Throwable {
+                void shouldSetTheEntitySContentIDAttribute() {
                     assertThat(entity.getContentId()).isEqualTo("12345");
                 }
 
@@ -146,7 +146,7 @@ public class DefaultJpaStoreImplTest {
             @Nested
             class Unassociate {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     blobResourceLoader = mock(BlobResourceLoader.class);
                     id = "12345";
 
@@ -160,7 +160,7 @@ public class DefaultJpaStoreImplTest {
                 }
 
                 @Test
-                void shouldResetTheContentId() throws Throwable {
+                void shouldResetTheContentId() {
                     assertThat(entity.getContentId()).isNull();
                 }
 
@@ -175,7 +175,7 @@ public class DefaultJpaStoreImplTest {
                 @Nested
                 class GivenContent {
                     @BeforeEach
-                    void setUp() throws Throwable {
+                    void setUp() throws IOException {
                         blobResourceLoader = mock(BlobResourceLoader.class);
                         resource = mock(GenericBlobResource.class);
 
@@ -200,12 +200,12 @@ public class DefaultJpaStoreImplTest {
                     }
 
                     @Test
-                    void shouldUseTheBlobResourceFactoryToCreateANewBlobResource() throws Throwable {
+                    void shouldUseTheBlobResourceFactoryToCreateANewBlobResource() {
                         verify(blobResourceLoader).getResource(entity.getContentId());
                     }
 
                     @Test
-                    void shouldReturnAnInputStream() throws Throwable {
+                    void shouldReturnAnInputStream() {
                         assertThat(inputStream).isNotNull();
                     }
 
@@ -214,7 +214,7 @@ public class DefaultJpaStoreImplTest {
                 @Nested
                 class GivenFetchingTheInputStreamFails {
                     @BeforeEach
-                    void setUp() throws Throwable {
+                    void setUp() throws IOException {
                         blobResourceLoader = mock(BlobResourceLoader.class);
                         resource = mock(GenericBlobResource.class);
 
@@ -236,7 +236,7 @@ public class DefaultJpaStoreImplTest {
                     }
 
                     @Test
-                    void shouldReturnNullAndThrowAStoreAccessException() throws Throwable {
+                    void shouldReturnNullAndThrowAStoreAccessException() {
                         assertThat(inputStream).isNull();
                         assertThat(e).isInstanceOf(StoreAccessException.class);
                         assertThat(e.getCause().getMessage()).isEqualTo("get-ioexception");
@@ -250,7 +250,7 @@ public class DefaultJpaStoreImplTest {
             @Nested
             class SetContent {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() throws IOException {
                     blobResourceLoader = mock(BlobResourceLoader.class);
 
                     entity = new TestEntity();
@@ -278,24 +278,24 @@ public class DefaultJpaStoreImplTest {
                 }
 
                 @Test
-                void shouldWriteTheContentsOfTheInputStreamToTheResourceSOutputStream() throws Throwable {
+                void shouldWriteTheContentsOfTheInputStreamToTheResourceSOutputStream() throws IOException {
                     verify(outputStream, atLeastOnce()).write(any(), anyInt(), anyInt());
                 }
 
                 @Test
-                void shouldUpdateTheContentIdField() throws Throwable {
+                void shouldUpdateTheContentIdField() {
                     assertThat(entity.getContentId()).isEqualTo("12345");
                 }
 
                 @Test
-                void shouldUpdateTheContentLengthField() throws Throwable {
+                void shouldUpdateTheContentLengthField() {
                     assertThat(entity.getContentLen()).isEqualTo(5000L);
                 }
 
                 @Nested
                 class WhenTheResourceOutputStreamThrowsAnIOException {
                     @BeforeEach
-                    void setUp() throws Throwable {
+                    void setUp() throws IOException {
                         blobResourceLoader = mock(BlobResourceLoader.class);
 
                         entity = new TestEntity();
@@ -325,7 +325,7 @@ public class DefaultJpaStoreImplTest {
                     }
 
                     @Test
-                    void shouldThrowAStoreAccessException() throws Throwable {
+                    void shouldThrowAStoreAccessException() {
                         assertThat(e).isInstanceOf(StoreAccessException.class);
                         assertThat(e.getCause().getMessage()).isEqualTo("set-ioexception");
 
@@ -338,7 +338,7 @@ public class DefaultJpaStoreImplTest {
             @Nested
             class SetContentFromResource {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     entity = new TestEntity();
                     stream = new ByteArrayInputStream("Hello content world!".getBytes());
                     inputResource = new InputStreamResource(stream);
@@ -354,14 +354,14 @@ public class DefaultJpaStoreImplTest {
                 }
 
                 @Test
-                void shouldDelegate() throws Throwable {
+                void shouldDelegate() {
                     verify(store).setContent(eq(entity), eq(stream));
                 }
 
                 @Nested
                 class WhenTheResourceThrowsAnIOException {
                     @BeforeEach
-                    void setUp() throws Throwable {
+                    void setUp() throws IOException {
                         entity = new TestEntity();
                         stream = new ByteArrayInputStream("Hello content world!".getBytes());
                         inputResource = new InputStreamResource(stream);
@@ -380,7 +380,7 @@ public class DefaultJpaStoreImplTest {
                     }
 
                     @Test
-                    void shouldThrowAStoreAccessException() throws Throwable {
+                    void shouldThrowAStoreAccessException() {
                         assertThat(e).isInstanceOf(StoreAccessException.class);
                         assertThat(e.getCause().getMessage()).contains("setContent badness");
 
@@ -393,7 +393,7 @@ public class DefaultJpaStoreImplTest {
             @Nested
             class UnsetContent {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     blobResourceLoader = mock(BlobResourceLoader.class);
                     blobResource = mock(GenericBlobResource.class);
 
@@ -413,14 +413,14 @@ public class DefaultJpaStoreImplTest {
                 }
 
                 @Test
-                void shouldDeleteTheContent() throws Throwable {
+                void shouldDeleteTheContent() throws IOException {
                     verify(blobResource).delete();
                 }
 
                 @Nested
                 class ResourceDeleteThrowsAnException {
                     @BeforeEach
-                    void setUp() throws Throwable {
+                    void setUp() throws IOException {
                         blobResourceLoader = mock(BlobResourceLoader.class);
                         blobResource = mock(GenericBlobResource.class);
 
@@ -441,7 +441,7 @@ public class DefaultJpaStoreImplTest {
                     }
 
                     @Test
-                    void shouldThrowAStoreAccessException() throws Throwable {
+                    void shouldThrowAStoreAccessException() {
                         assertThat(e).isInstanceOf(StoreAccessException.class);
                         assertThat(e.getCause().getMessage()).isEqualTo("unset-ioexception");
 
@@ -464,7 +464,7 @@ public class DefaultJpaStoreImplTest {
                 @Nested
                 class GivenAnId {
                     @BeforeEach
-                    void setUp() throws Throwable {
+                    void setUp() {
                         blobResourceLoader = mock(BlobResourceLoader.class);
                         id = "1";
                         store =
@@ -473,7 +473,7 @@ public class DefaultJpaStoreImplTest {
                     }
 
                     @Test
-                    void shouldUseTheBlobResourceLoaderToLoadABlobResource() throws Throwable {
+                    void shouldUseTheBlobResourceLoaderToLoadABlobResource() {
                         verify(blobResourceLoader).getResource(id);
                     }
 
@@ -488,7 +488,7 @@ public class DefaultJpaStoreImplTest {
             @Nested
             class UnassociateJakartaAnnotatedEntity {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     blobResourceLoader = mock(BlobResourceLoader.class);
                     id = "12345";
 
@@ -502,7 +502,7 @@ public class DefaultJpaStoreImplTest {
                 }
 
                 @Test
-                void shouldNOTResetTheContentId() throws Throwable {
+                void shouldNOTResetTheContentId() {
                     assertThat(jakartaAnnotatedEntity.getContentId()).isEqualTo(id);
                 }
 

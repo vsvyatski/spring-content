@@ -81,11 +81,11 @@ public class MethodNotAllowedExceptionIT {
     @Nested
     class WhenGetContentMethodIsNotExportedCases {
         @BeforeEach
-        void setUp() throws Throwable {
+        void setUp() {
             RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
         }
         @Test
-        void shouldThrowA405NotAllowed() throws Throwable {
+        void shouldThrowA405NotAllowed() {
             TEntity tentity = new TEntity();
                             tentity = store.setContent(tentity, new ByteArrayInputStream("some content".getBytes()));
                             tentity = repo.save(tentity);
@@ -101,11 +101,11 @@ public class MethodNotAllowedExceptionIT {
     @Nested
     class WhenSetContentMethodsAreNotExportedCases {
         @BeforeEach
-        void setUp() throws Throwable {
+        void setUp() {
             RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
         }
         @Test
-        void shouldThrowA405NotAllowed() throws Throwable {
+        void shouldThrowA405NotAllowed() {
             TEntity tentity = new TEntity();
                             tentity = repo.save(tentity);
 
@@ -121,11 +121,11 @@ public class MethodNotAllowedExceptionIT {
     @Nested
     class WhenUnsetContentMethodAreNotExportedCases {
         @BeforeEach
-        void setUp() throws Throwable {
+        void setUp() {
             RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
         }
         @Test
-        void shouldThrowA405NotAllowed() throws Throwable {
+        void shouldThrowA405NotAllowed() {
             TEntity tentity = new TEntity();
                             tentity = store.setContent(tentity, new ByteArrayInputStream("some content".getBytes()));
                             tentity = repo.save(tentity);
@@ -141,11 +141,11 @@ public class MethodNotAllowedExceptionIT {
     @Nested
     class WhenAContentPropertyIsNotExportedCases {
         @BeforeEach
-        void setUp() throws Throwable {
+        void setUp() {
             RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
         }
         @Test
-        void shouldThrowA405NotAllowedForAllRequests() throws Throwable {
+        void shouldThrowA405NotAllowedForAllRequests() {
             TEntity2 tentity = new TEntity2();
                             tentity = store2.setContent(tentity, new ByteArrayInputStream("some content".getBytes()));
                             tentity = repo2.save(tentity);

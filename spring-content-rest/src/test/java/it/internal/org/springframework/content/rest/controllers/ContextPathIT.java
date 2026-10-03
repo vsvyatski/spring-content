@@ -74,7 +74,7 @@ public class ContextPathIT {
             @DisplayName("given the repository and storage are exported to the same URI")
             class GivenTheRepositoryAndStorageAreExportedToTheSameURIContent extends Content {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
                     testEntity3 = repo3.save(new TestEntity3());
                     testEntity3.name = "tests";

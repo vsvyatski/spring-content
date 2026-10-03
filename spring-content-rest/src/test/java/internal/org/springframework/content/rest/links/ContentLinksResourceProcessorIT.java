@@ -75,7 +75,7 @@ public class ContentLinksResourceProcessorIT {
             @Nested
             class Tests {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                     PersistentEntity<?, ?> persistentEntity = repositories.getPersistentEntity(TestEntity4.class);
@@ -93,14 +93,14 @@ public class ContentLinksResourceProcessorIT {
                     				processor.process(resource);
                 }
                 @Test
-                void shouldAddAnEntityContentLinks() throws Throwable {
+                void shouldAddAnEntityContentLinks() {
                     assertThat(resource.getLinks("content")).extracting("href").contains("http://localhost/contentApi/testEntity4s/999/content");
                 }
             }
             @Nested
             class WhenFullyQualifiedLinksAreDisabledAndShortcutLinksAreEnabled {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                     PersistentEntity<?, ?> persistentEntity = repositories.getPersistentEntity(TestEntity4.class);
@@ -121,11 +121,11 @@ public class ContentLinksResourceProcessorIT {
                     				processor.process(resource);
                 }
                 @AfterEach
-                void tearDown() throws Throwable {
+                void tearDown() {
                     processor.getRestConfiguration().setFullyQualifiedLinks(true);
                 }
                 @Test
-                void shouldAddOriginalAndShortcutLinks() throws Throwable {
+                void shouldAddOriginalAndShortcutLinks() {
                     assertThat(resource.getLinks("testEntity4s")).extracting("href").contains("http://localhost/contentApi/testEntity4s/999");
                     						assertThat(resource.getLinks("testEntity4")).extracting("href").contains("http://localhost/contentApi/testEntity4s/999");
                 }
@@ -133,7 +133,7 @@ public class ContentLinksResourceProcessorIT {
             @Nested
             class WhenFullyQualifiedLinksAreDisabledAndShortcutLinksAreDisabled {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                     PersistentEntity<?, ?> persistentEntity = repositories.getPersistentEntity(TestEntity4.class);
@@ -154,12 +154,12 @@ public class ContentLinksResourceProcessorIT {
                     				processor.process(resource);
                 }
                 @AfterEach
-                void tearDown() throws Throwable {
+                void tearDown() {
                     processor.getRestConfiguration().setFullyQualifiedLinks(true);
                                             processor.getRestConfiguration().setShortcutLinks(true);
                 }
                 @Test
-                void shouldAddOriginalAndShortcutLinks() throws Throwable {
+                void shouldAddOriginalAndShortcutLinks() {
                     assertThat(resource.getLinks("testEntity4s")).extracting("href").doesNotContain("http://localhost/contentApi/testEntity4s/999");
                                             assertThat(resource.getLinks("testEntity4")).extracting("href").doesNotContain("http://localhost/contentApi/testEntity4s/999");
                 }
@@ -168,7 +168,7 @@ public class ContentLinksResourceProcessorIT {
         @Nested
         class GivenAnEntityWithMultipleContentIdProperties {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                 PersistentEntity<?, ?> persistentEntity = repositories.getPersistentEntity(TestEntity5.class);
@@ -188,7 +188,7 @@ public class ContentLinksResourceProcessorIT {
                 				processor.process(resource);
             }
             @Test
-            void shouldAddContentPropertyLinks() throws Throwable {
+            void shouldAddContentPropertyLinks() {
                 assertThat(resource.getLinks("content")).extracting("href").contains("http://localhost/contentApi/testEntity5s/999/content");
                 					assertThat(resource.getLinks("rendition")).extracting("href").contains("http://localhost/contentApi/testEntity5s/999/rendition");
             }
@@ -196,7 +196,7 @@ public class ContentLinksResourceProcessorIT {
         @Nested
         class GivenAnEntityWithAnEmbeddedObjectContainingContentIdProperties {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                 PersistentEntity<?, ?> persistentEntity = repositories.getPersistentEntity(TestEntity2.class);
@@ -217,14 +217,14 @@ public class ContentLinksResourceProcessorIT {
                 				processor.process(resource);
             }
             @Test
-            void shouldAddContentPropertyLinks() throws Throwable {
+            void shouldAddContentPropertyLinks() {
                 assertThat(resource.getLinks("child")).extracting("href").contains("http://localhost/contentApi/files/999/child");
             }
         }
         @Nested
         class GivenAnEntityWithEmbeddedObjectWithRestResourceCustomizationsIssue1049 {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                 PersistentEntity<?, ?> persistentEntity = persistentEntities.getRequiredPersistentEntity(TestEntity11.class);
@@ -241,7 +241,7 @@ public class ContentLinksResourceProcessorIT {
                 				processor.process(resource);
             }
             @Test
-            void shouldAddContentPropertyLinks() throws Throwable {
+            void shouldAddContentPropertyLinks() {
                 assertThat(resource.getLinks("package/content")).extracting("href").contains("http://localhost/contentApi/testEntity11s/999/package/content");
                 					assertThat(resource.getLinks("package/preview")).extracting("href").contains("http://localhost/contentApi/testEntity11s/999/package/preview");
             }
@@ -249,7 +249,7 @@ public class ContentLinksResourceProcessorIT {
         @Nested
         class GivenTheEmbeddedObjectInAnEntityContainingContentIdProperties {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                 PersistentEntity<?, ?> persistentEntity = persistentEntities.getRequiredPersistentEntity(TestEntityChild.class);
@@ -267,7 +267,7 @@ public class ContentLinksResourceProcessorIT {
                 				processor.process(resource);
             }
             @Test
-            void shouldNotTryToGenerateContentPropertyLinksForTheEmbeddedObject() throws Throwable {
+            void shouldNotTryToGenerateContentPropertyLinksForTheEmbeddedObject() {
                 assertThat(resource.getLinks().isEmpty()).isTrue();
             }
         }

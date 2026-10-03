@@ -37,13 +37,13 @@ public class SolrAutoConfigurationTest {
         @Nested
         class GivenAnApplicationContextWithASolrClientBeanAndSolrAutoConfiguration {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 contextRunner = new ApplicationContextRunner()
                                         .withConfiguration(AutoConfigurations.of(SolrAutoConfiguration.class));
             }
 
             @Test
-            void shouldIncludeTheAutoconfiguredAnnotatedEventHandlerBean() throws Throwable {
+            void shouldIncludeTheAutoconfiguredAnnotatedEventHandlerBean() {
                 contextRunner.withUserConfiguration(TestConfig.class)
                                                 .run((context) ->
                                                         Assertions.assertThat(context).getBean("solrFulltextEventListener")
@@ -55,7 +55,7 @@ public class SolrAutoConfigurationTest {
     }
 
     @Test
-    public void test() throws Throwable {
+    public void test() {
     }
 
     @Disabled("This is not a test")

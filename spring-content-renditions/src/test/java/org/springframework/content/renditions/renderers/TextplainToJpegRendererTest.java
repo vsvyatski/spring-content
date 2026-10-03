@@ -30,13 +30,13 @@ public class TextplainToJpegRendererTest {
         @Nested
         class Consumes {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 renderer = new TextplainToJpegRenderer(wrapText);
 
             }
 
             @Test
-            void shouldReturnTextPlain() throws Throwable {
+            void shouldReturnTextPlain() {
                 assertThat(renderer.consumes()).isEqualTo("text/plain");
 
             }
@@ -46,13 +46,13 @@ public class TextplainToJpegRendererTest {
         @Nested
         class Produces {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 renderer = new TextplainToJpegRenderer(wrapText);
 
             }
 
             @Test
-            void shouldReturnJpegMimetype() throws Throwable {
+            void shouldReturnJpegMimetype() {
                 assertThat(renderer.produces()).contains("image/jpg");
                 assertThat(renderer.produces()).contains("image/jpeg");
 
@@ -67,7 +67,7 @@ public class TextplainToJpegRendererTest {
                 @Nested
                 class GivenASingleLineInput {
                     @BeforeEach
-                    void setUp() throws Throwable {
+                    void setUp() {
                         input = new ByteArrayInputStream(
                         		"Hello Spring Content World!".getBytes());
 
@@ -83,7 +83,7 @@ public class TextplainToJpegRendererTest {
                     }
 
                     @Test
-                    void shouldProduceTheCorrectImage() throws Throwable {
+                    void shouldProduceTheCorrectImage() {
                         InputStream expected = this.getClass().getResourceAsStream(
                         		"/textplaintorenderer/single-line.jpeg");
                         assertThat(expected).isNotNull();
@@ -101,7 +101,7 @@ public class TextplainToJpegRendererTest {
                 @Nested
                 class GivenAMultiLineInput {
                     @BeforeEach
-                    void setUp() throws Throwable {
+                    void setUp() {
                         input = new ByteArrayInputStream(
                         		"Hello\nSpring\n\nContent\n\n\nWorld!".getBytes());
 
@@ -117,7 +117,7 @@ public class TextplainToJpegRendererTest {
                     }
 
                     @Test
-                    void shouldProduceTheCorrectImage() throws Throwable {
+                    void shouldProduceTheCorrectImage() {
                         assertThat(result).isNotNull();
                         // assertThat(IOUtils.contentEquals(this.getClass().getResourceAsStream("/textplaintorenderer/multi-line.jpeg"),
                         // result)).isTrue();
@@ -129,7 +129,7 @@ public class TextplainToJpegRendererTest {
                 @Nested
                 class GivenALongLineAndWrapping {
                     @BeforeEach
-                    void setUp() throws Throwable {
+                    void setUp() {
                         wrapText = true;
                         input = new ByteArrayInputStream(
                         		"Hello Spring Content World!  This is a really long line that we expect to wrap"
@@ -147,7 +147,7 @@ public class TextplainToJpegRendererTest {
                     }
 
                     @Test
-                    void shouldProduceTheCorrectImage() throws Throwable {
+                    void shouldProduceTheCorrectImage() {
                         assertThat(result).isNotNull();
                         // assertThat(IOUtils.contentEquals(this.getClass().getResourceAsStream("/textplaintorenderer/wrapped-line.jpeg"),
                         // result)).isTrue();
@@ -159,7 +159,7 @@ public class TextplainToJpegRendererTest {
                 @Nested
                 class GivenALongLineAndNoWrapping {
                     @BeforeEach
-                    void setUp() throws Throwable {
+                    void setUp() {
                         input = new ByteArrayInputStream(
                         		"Hello Spring Content World!  This is a really long line that we expect to wrap"
                         				.getBytes());
@@ -176,7 +176,7 @@ public class TextplainToJpegRendererTest {
                     }
 
                     @Test
-                    void shouldProduceTheCorrectImage() throws Throwable {
+                    void shouldProduceTheCorrectImage() {
                         assertThat(result).isNotNull();
                         // assertThat(IOUtils.contentEquals(this.getClass().getResourceAsStream("/textplaintorenderer/overflowed-line.jpeg"),
                         // result)).isTrue();
@@ -188,7 +188,7 @@ public class TextplainToJpegRendererTest {
                 @Nested
                 class GivenALineFileWillOverflowTheImageSize {
                     @BeforeEach
-                    void setUp() throws Throwable {
+                    void setUp() {
                         input = new ByteArrayInputStream(
                         		"Hello\n\nSpring\n\nContent\n\nWorld!\n\n\nThis\n\nis\n\na\n\nreally\n\nreally\n\nreally\n\nreally\n\nreally\n\nlong\n\nfile\n\nthat\n\nwill\n\noverflow\n\nthe\n\nimage"
                         				.getBytes());
@@ -205,7 +205,7 @@ public class TextplainToJpegRendererTest {
                     }
 
                     @Test
-                    void shouldProduceTheCorrectImage() throws Throwable {
+                    void shouldProduceTheCorrectImage() {
                         assertThat(result).isNotNull();
                         // assertThat(IOUtils.contentEquals(this.getClass().getResourceAsStream("/textplaintorenderer/overflowed-image.jpeg"),
                         // result)).isTrue();
@@ -219,7 +219,7 @@ public class TextplainToJpegRendererTest {
             @Nested
             class WhenTheInputStreamIsNotAValidWordFile {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     input = this.getClass().getResourceAsStream("/sample-docx.docx");
 
                     renderer = new TextplainToJpegRenderer(wrapText);
@@ -234,7 +234,7 @@ public class TextplainToJpegRendererTest {
                 }
 
                 @Test
-                void shouldNotError() throws Throwable {
+                void shouldNotError() {
                     assertThat(e).isNull();
 
                 }
@@ -244,7 +244,7 @@ public class TextplainToJpegRendererTest {
             @Nested
             class GivenANullInputStream {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     renderer = new TextplainToJpegRenderer(wrapText);
 
                     try {
@@ -257,7 +257,7 @@ public class TextplainToJpegRendererTest {
                 }
 
                 @Test
-                void shouldReturnAnError() throws Throwable {
+                void shouldReturnAnError() {
                     assertThat(e).isNotNull();
 
                 }

@@ -10,7 +10,7 @@ import org.springframework.content.encryption.keys.StoredDataEncryptionKey.Unenc
 
 public class UnencryptedSymmetricDataEncryptionKeyConverterTest {
     @Test
-    public void encodesAndDecodes() throws Throwable {
+    public void encodesAndDecodes() {
         var key = new UnencryptedSymmetricDataEncryptionKey(
                 "ABC",
                 new byte[5],
@@ -25,7 +25,7 @@ public class UnencryptedSymmetricDataEncryptionKeyConverterTest {
     }
 
     @Test
-    public void handlesEmptyObject() throws Throwable {
+    public void handlesEmptyObject() {
         var key = new UnencryptedSymmetricDataEncryptionKey(
                 "",
                 new byte[0],
@@ -40,7 +40,7 @@ public class UnencryptedSymmetricDataEncryptionKeyConverterTest {
     }
 
     @Test
-    public void doesNotDecodeDifferentType() throws Throwable {
+    public void doesNotDecodeDifferentType() {
         var encryptedKey = new EncryptedSymmetricDataEncryptionKey(
                 "test",
                 "123",

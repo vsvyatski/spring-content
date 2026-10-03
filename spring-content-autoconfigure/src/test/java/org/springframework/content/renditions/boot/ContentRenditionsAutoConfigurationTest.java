@@ -34,7 +34,7 @@ public class ContentRenditionsAutoConfigurationTest {
         @Nested
         class GivenADefaultConfiguration {
             @Test
-            void shouldLoadTheAllRenderers() throws Throwable {
+            void shouldLoadTheAllRenderers() {
                                     AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
                                     context.register(TestConfig.class);
                                     context.refresh();

@@ -7,6 +7,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.Observable;
 
 import static org.mockito.Mockito.mock;
@@ -27,7 +28,7 @@ public class ObservableInputStreamTest {
             @Nested
             class WhenTheInputStreamHasListeners {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     fis = mock(FileInputStream.class);
                     observer = mock(InputStreamObserver.class);
 
@@ -36,7 +37,7 @@ public class ObservableInputStreamTest {
                 }
 
                 @Test
-                void shouldReturnThem() throws Throwable {
+                void shouldReturnThem() {
                     assertThat(ois.getObservers()).contains(observer);
 
                 }
@@ -46,7 +47,7 @@ public class ObservableInputStreamTest {
             @Nested
             class WhenTheInputStreamIsRead {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() throws IOException {
                     fis = mock(FileInputStream.class);
                     observer = mock(InputStreamObserver.class);
 
@@ -57,7 +58,7 @@ public class ObservableInputStreamTest {
                 }
 
                 @Test
-                void shouldDelegateToTheUnderlyingInputStream() throws Throwable {
+                void shouldDelegateToTheUnderlyingInputStream() throws IOException {
                     verify(fis).read();
 
                 }
@@ -67,7 +68,7 @@ public class ObservableInputStreamTest {
             @Nested
             class WhenTheInputStreamIsClosed {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() throws IOException {
                     fis = mock(FileInputStream.class);
                     observer = mock(InputStreamObserver.class);
 
@@ -78,7 +79,7 @@ public class ObservableInputStreamTest {
                 }
 
                 @Test
-                void shouldCallListenersOnClosedEventHandler() throws Throwable {
+                void shouldCallListenersOnClosedEventHandler() {
                     verify(observer).closed();
 
                 }

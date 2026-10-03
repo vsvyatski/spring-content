@@ -59,28 +59,28 @@ public class EnableS3StoresTest {
         @Nested
         class GivenAContextAndAConfigurationWithAnS3ContentRepositoryBean {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 context = new AnnotationConfigApplicationContext();
                 							context.register(TestConfig.class);
                 							context.refresh();
             }
             @AfterEach
-            void tearDown() throws Throwable {
+            void tearDown() {
                 context.close();
             }
             @Test
-            void shouldHaveAContentRepositoryBean() throws Throwable {
+            void shouldHaveAContentRepositoryBean() {
                 assertThat(context.getBean(TestEntityContentRepository.class)).isNotNull();
             }
             @Test
-            void shouldHaveAnPlacementService() throws Throwable {
+            void shouldHaveAnPlacementService() {
                 assertThat(context.getBean("s3StorePlacementService")).isNotNull();
             }
         }
         @Nested
         class GivenAContextWithAConfigurer {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 configurer = mock(S3StoreConfigurer.class);
 
                 					context = new AnnotationConfigApplicationContext();
@@ -88,28 +88,28 @@ public class EnableS3StoresTest {
                 					context.refresh();
             }
             @AfterEach
-            void tearDown() throws Throwable {
+            void tearDown() {
                 context.close();
             }
             @Test
-            void shouldCallThatConfigurerToHelpSetupTheStore() throws Throwable {
+            void shouldCallThatConfigurerToHelpSetupTheStore() {
                 verify(configurer).configureS3StoreConverters(any(ConverterRegistry.class));
             }
         }
         @Nested
         class GivenAContextWithAnEmptyConfiguration {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 context = new AnnotationConfigApplicationContext();
                 					context.register(EmptyConfig.class);
                 					context.refresh();
             }
             @AfterEach
-            void tearDown() throws Throwable {
+            void tearDown() {
                 context.close();
             }
             @Test
-            void shouldNotContainsAnyS3RepositoryBeans() throws Throwable {
+            void shouldNotContainsAnyS3RepositoryBeans() {
                 try {
                 						context.getBean(TestEntityContentRepository.class);
                 						fail("expected no such bean");
@@ -122,7 +122,7 @@ public class EnableS3StoresTest {
         @Nested
         class GivenAContextWithAMultiTenantConfiguration {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 client = mock(S3Client.class);
 
                 					context = new AnnotationConfigApplicationContext();
@@ -130,11 +130,11 @@ public class EnableS3StoresTest {
                 					context.refresh();
             }
             @AfterEach
-            void tearDown() throws Throwable {
+            void tearDown() {
                 context.close();
             }
             @Test
-            void shouldUseTheCorrectClient() throws Throwable {
+            void shouldUseTheCorrectClient() {
                 TestEntityContentRepository repo = context.getBean(TestEntityContentRepository.class);
                 					TestEntity tentity = new TestEntity();
                 					tentity.setContentId("12345");

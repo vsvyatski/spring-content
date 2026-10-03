@@ -19,6 +19,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 
@@ -53,7 +54,7 @@ public class StoreResolverRestConfigurationIT {
         @Nested
         class GivenThatClaimHasExistingContent {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
 
                 tEntity = new Application.TEntity();
@@ -62,7 +63,7 @@ public class StoreResolverRestConfigurationIT {
             }
 
             @Test
-            void shouldReturnTheContentFromTheCorrectStore() throws Throwable {
+            void shouldReturnTheContentFromTheCorrectStore() throws IOException {
                 assertThat(jpaStore).isNotNull();
                 assertThat(fsStore).isNotNull();
                 assertThat(repo).isNotNull();

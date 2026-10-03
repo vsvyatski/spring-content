@@ -15,13 +15,13 @@ public class PlacementServiceImplTest {
         @Nested
         class GivenAPlacementService {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 placer = new PlacementServiceImpl();
 
             }
 
             @Test
-            void shouldHaveRemovedTheFallbackObjectToStringConverter() throws Throwable {
+            void shouldHaveRemovedTheFallbackObjectToStringConverter() {
                 assertThat(placer.canConvert(Object.class, String.class)).isFalse();
 
             }

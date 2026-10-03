@@ -155,7 +155,7 @@ public class PessimisticLockingInterceptorTest {
                         }
 
                         @Test
-                        void shouldProceed() throws Throwable {
+                        void shouldProceed() {
                             assertThat(e).isInstanceOf(LockOwnerException.class);
 
                         }

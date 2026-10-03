@@ -43,7 +43,7 @@ public class JpaLockingServiceImplTest {
             @Nested
             class GivenSelectingALockRecordFails {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     jdbcTemplate = mock(JdbcTemplate.class);
 
                     entityId = "some-id";
@@ -63,7 +63,7 @@ public class JpaLockingServiceImplTest {
                 }
 
                 @Test
-                void shouldThrowTheDataAccessExceptionClass() throws Throwable {
+                void shouldThrowTheDataAccessExceptionClass() {
                     assertThat(e).isInstanceOf(DataAccessException.class);
                     assertThat(e.getMessage()).isEqualTo("connection-error");
 
@@ -74,7 +74,7 @@ public class JpaLockingServiceImplTest {
             @Nested
             class GivenInsertingTheLockRecordFails {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     jdbcTemplate = mock(JdbcTemplate.class);
 
                     entityId = "some-id";
@@ -96,7 +96,7 @@ public class JpaLockingServiceImplTest {
                 }
 
                 @Test
-                void shouldThrowTheDataAccessExceptionClass() throws Throwable {
+                void shouldThrowTheDataAccessExceptionClass() {
                     assertThat(e).isInstanceOf(DataAccessException.class);
                     assertThat(e.getMessage()).isEqualTo("connection-error");
 
@@ -111,7 +111,7 @@ public class JpaLockingServiceImplTest {
             @Nested
             class GivenTheLockRecordDeletionFails {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     jdbcTemplate = mock(JdbcTemplate.class);
 
                     entityId = "some-id";
@@ -131,7 +131,7 @@ public class JpaLockingServiceImplTest {
                 }
 
                 @Test
-                void shouldThrowADataAccessException() throws Throwable {
+                void shouldThrowADataAccessException() {
                     assertThat(e).isInstanceOf(DataAccessException.class);
                     assertThat(e.getMessage()).isEqualTo("connection-error");
 
@@ -146,7 +146,7 @@ public class JpaLockingServiceImplTest {
             @Nested
             class GivenANullPrincipal {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     jdbcTemplate = mock(JdbcTemplate.class);
 
                     entityId = "some-id";
@@ -166,7 +166,7 @@ public class JpaLockingServiceImplTest {
                 }
 
                 @Test
-                void shouldThrowASecurityException() throws Throwable {
+                void shouldThrowASecurityException() {
                     assertThat(e).isInstanceOf(SecurityException.class);
 
                 }
@@ -176,7 +176,7 @@ public class JpaLockingServiceImplTest {
             @Nested
             class GivenTheDatabaseFails {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     jdbcTemplate = mock(JdbcTemplate.class);
 
                     entityId = "some-id";
@@ -196,7 +196,7 @@ public class JpaLockingServiceImplTest {
                 }
 
                 @Test
-                void shouldThrowTheDataAccessException() throws Throwable {
+                void shouldThrowTheDataAccessException() {
                     assertThat(e).isInstanceOf(DataAccessException.class);
 
                 }
@@ -206,7 +206,7 @@ public class JpaLockingServiceImplTest {
             @Nested
             class GivenThePrincipalIsTheLockOwner {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     jdbcTemplate = mock(JdbcTemplate.class);
 
                     entityId = "some-id";
@@ -228,7 +228,7 @@ public class JpaLockingServiceImplTest {
                 }
 
                 @Test
-                void shouldReturnTrue() throws Throwable {
+                void shouldReturnTrue() {
                     assertThat(result).isEqualTo(true);
 
                 }
@@ -238,7 +238,7 @@ public class JpaLockingServiceImplTest {
             @Nested
             class GivenThePrincipalIsNotTheLockOwner {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     jdbcTemplate = mock(JdbcTemplate.class);
 
                     entityId = "some-id";
@@ -260,7 +260,7 @@ public class JpaLockingServiceImplTest {
                 }
 
                 @Test
-                void shouldReturnFalse() throws Throwable {
+                void shouldReturnFalse() {
                     assertThat(result).isEqualTo(false);
 
                 }
@@ -274,7 +274,7 @@ public class JpaLockingServiceImplTest {
             @Nested
             class GivenTheDatabaseFails {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     jdbcTemplate = mock(JdbcTemplate.class);
 
                     entityId = "some-id";
@@ -292,7 +292,7 @@ public class JpaLockingServiceImplTest {
                 }
 
                 @Test
-                void shouldThrowTheDataAccessException() throws Throwable {
+                void shouldThrowTheDataAccessException() {
                     assertThat(e).isInstanceOf(DataAccessException.class);
 
                 }
@@ -302,7 +302,7 @@ public class JpaLockingServiceImplTest {
             @Nested
             class GivenThereIsNoLockRecord {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     jdbcTemplate = mock(JdbcTemplate.class);
 
                     entityId = "some-id";
@@ -320,7 +320,7 @@ public class JpaLockingServiceImplTest {
                 }
 
                 @Test
-                void shouldReturnNull() throws Throwable {
+                void shouldReturnNull() {
                     assertThat(result).isNull();
 
                 }
@@ -330,7 +330,7 @@ public class JpaLockingServiceImplTest {
             @Nested
             class GivenThereIsALockRecord {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     jdbcTemplate = mock(JdbcTemplate.class);
 
                     entityId = "some-id";
@@ -348,7 +348,7 @@ public class JpaLockingServiceImplTest {
                 }
 
                 @Test
-                void shouldReturnAPrincipal() throws Throwable {
+                void shouldReturnAPrincipal() {
                     assertThat(result).isInstanceOf(Principal.class);
                     assertThat(((Principal)result).getName()).isEqualTo("some-principal");
 
@@ -359,7 +359,7 @@ public class JpaLockingServiceImplTest {
             @Nested
             class GivenThereAreMulitpleLockRecords {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     jdbcTemplate = mock(JdbcTemplate.class);
 
                     entityId = "some-id";
@@ -377,7 +377,7 @@ public class JpaLockingServiceImplTest {
                 }
 
                 @Test
-                void shouldThrowAnIncorrectResultSizeException() throws Throwable {
+                void shouldThrowAnIncorrectResultSizeException() {
                     assertThat(e).isInstanceOf(IncorrectResultSizeDataAccessException.class);
 
                 }

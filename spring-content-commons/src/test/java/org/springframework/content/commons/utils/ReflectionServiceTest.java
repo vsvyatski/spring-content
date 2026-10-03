@@ -24,7 +24,7 @@ public class ReflectionServiceTest {
         @Nested
         class InvokeMethod {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 service = mock(HelloWorldService.class);
 
                 reflectionService = new ReflectionServiceImpl();
@@ -35,7 +35,7 @@ public class ReflectionServiceTest {
             }
 
             @Test
-            void shouldInvokeTheMethod() throws Throwable {
+            void shouldInvokeTheMethod() {
                 verify(service).helloWorld();
 
             }

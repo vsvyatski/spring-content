@@ -43,14 +43,14 @@ public class JpaVersionsAutoConfigurationTest {
         @Nested
         class GivenAnApplicationContextThatReliesOnAutoConfiguration {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 contextRunner = new ApplicationContextRunner()
                         .withConfiguration(AutoConfigurations.of(JpaVersionsAutoConfiguration.class));
 
             }
 
             @Test
-            void shouldIncludeTheRepositoryBean() throws Throwable {
+            void shouldIncludeTheRepositoryBean() {
                 contextRunner.withUserConfiguration(StarterConfig.class).run((context) -> {
                     Assertions.assertThat(context).hasSingleBean(JpaVersionsDatabaseInitializer.class);
                 });
@@ -62,14 +62,14 @@ public class JpaVersionsAutoConfigurationTest {
         @Nested
         class GivenAnApplicationContextWithAEnableJpaRepositoriesAnnotation {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 contextRunner = new ApplicationContextRunner()
                         .withConfiguration(AutoConfigurations.of(JpaVersionsAutoConfiguration.class));
 
             }
 
             @Test
-            void shouldIncludeTheRepositoryBean() throws Throwable {
+            void shouldIncludeTheRepositoryBean() {
                 contextRunner.withUserConfiguration(StarterWithAnnotationConfig.class).run((context) -> {
                     Assertions.assertThat(context).hasSingleBean(NestedTestEntityRepository.class);
                 });
@@ -81,7 +81,7 @@ public class JpaVersionsAutoConfigurationTest {
     }
 
     @Test
-    public void test() throws Throwable {
+    public void test() {
     }
 
     @Disabled("This is not a test")

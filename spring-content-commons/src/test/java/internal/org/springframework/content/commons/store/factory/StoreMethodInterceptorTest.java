@@ -28,6 +28,7 @@ import org.springframework.security.util.SimpleMethodInvocation;
 import org.springframework.util.ReflectionUtils;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.lang.reflect.Method;
@@ -108,7 +109,7 @@ public class StoreMethodInterceptorTest {
                                     }
                 }
                 @Test
-                void shouldProceed() throws Throwable {
+                void shouldProceed() throws IOException {
                     assertThat(e).isNull();
 
                                         ArgumentCaptor<AfterStoreEvent> captor = ArgumentCaptor.forClass(AfterStoreEvent.class);
@@ -146,7 +147,7 @@ public class StoreMethodInterceptorTest {
                                     }
                 }
                 @Test
-                void shouldProceed() throws Throwable {
+                void shouldProceed() {
                     assertThat(e).isNotNull();
                 }
             }
@@ -177,7 +178,7 @@ public class StoreMethodInterceptorTest {
                                     }
                 }
                 @Test
-                void shouldProceed() throws Throwable {
+                void shouldProceed() throws IOException {
                     assertThat(e).isNull();
 
                                         ArgumentCaptor<BeforeSetContentEvent> beforeArgCaptor = ArgumentCaptor.forClass(BeforeSetContentEvent.class);
@@ -229,7 +230,7 @@ public class StoreMethodInterceptorTest {
                                     }
                 }
                 @Test
-                void shouldStillReceiveTheInputStreamInTheSetContentInvocation() throws Throwable {
+                void shouldStillReceiveTheInputStreamInTheSetContentInvocation() throws IOException {
                     assertThat(e).isNull();
 
                                             ArgumentCaptor<InputStream> setContentArgCaptor = ArgumentCaptor.forClass(InputStream.class);
@@ -278,7 +279,7 @@ public class StoreMethodInterceptorTest {
                                     }
                 }
                 @Test
-                void shouldStillReceiveTheInputStreamInTheSetContentInvocation() throws Throwable {
+                void shouldStillReceiveTheInputStreamInTheSetContentInvocation() throws IOException {
                     assertThat(e).isNull();
 
                                             InOrder inOrder = Mockito.inOrder(publisher, store);
@@ -324,7 +325,7 @@ public class StoreMethodInterceptorTest {
                                     }
                 }
                 @Test
-                void shouldStillReceiveTheInputStreamInTheSetContentInvocation() throws Throwable {
+                void shouldStillReceiveTheInputStreamInTheSetContentInvocation() throws IOException {
                     assertThat(e).isNull();
 
                                             InOrder inOrder = Mockito.inOrder(publisher, store);
@@ -374,7 +375,7 @@ public class StoreMethodInterceptorTest {
                                     }
                 }
                 @Test
-                void shouldStillReceiveTheReplacedInputStreamInTheSetContentInvocation() throws Throwable {
+                void shouldStillReceiveTheReplacedInputStreamInTheSetContentInvocation() throws IOException {
                     assertThat(e).isNull();
 
                                             InOrder inOrder = Mockito.inOrder(publisher, store);
@@ -420,7 +421,7 @@ public class StoreMethodInterceptorTest {
                                     }
                 }
                 @Test
-                void shouldProceed() throws Throwable {
+                void shouldProceed() {
                     assertThat(e).isNotNull();
                 }
             }
@@ -449,7 +450,7 @@ public class StoreMethodInterceptorTest {
                                 }
             }
             @Test
-            void shouldProceed() throws Throwable {
+            void shouldProceed() throws IOException {
                 assertThat(e).isNull();
 
                                     ArgumentCaptor<BeforeSetContentEvent> beforeArgCaptor = ArgumentCaptor.forClass(BeforeSetContentEvent.class);
@@ -495,7 +496,7 @@ public class StoreMethodInterceptorTest {
                                     }
                 }
                 @Test
-                void shouldProceed() throws Throwable {
+                void shouldProceed() {
                     assertThat(e).isNull();
 
                                             InOrder inOrder = Mockito.inOrder(publisher, store);
@@ -533,7 +534,7 @@ public class StoreMethodInterceptorTest {
                                     }
                 }
                 @Test
-                void shouldNotPublishEvents() throws Throwable {
+                void shouldNotPublishEvents() {
                     assertThat(e).isNotNull();
                 }
             }
@@ -565,7 +566,7 @@ public class StoreMethodInterceptorTest {
                                     }
                 }
                 @Test
-                void shouldProceed() throws Throwable {
+                void shouldProceed() {
                     assertThat(e).isNull();
 
                                             ArgumentCaptor<AfterStoreEvent> captor = ArgumentCaptor.forClass(AfterStoreEvent.class);
@@ -601,7 +602,7 @@ public class StoreMethodInterceptorTest {
                                     }
                 }
                 @Test
-                void shouldProceed() throws Throwable {
+                void shouldProceed() {
                     assertThat(e).isNull();
 
 
@@ -641,7 +642,7 @@ public class StoreMethodInterceptorTest {
                                     }
                 }
                 @Test
-                void shouldProceed() throws Throwable {
+                void shouldProceed() {
                     ArgumentCaptor<AfterAssociateEvent> captor = ArgumentCaptor.forClass(AfterAssociateEvent.class);
                                         InOrder inOrder = Mockito.inOrder(publisher, store);
 
@@ -676,7 +677,7 @@ public class StoreMethodInterceptorTest {
                                     }
                 }
                 @Test
-                void shouldProceed() throws Throwable {
+                void shouldProceed() {
                     ArgumentCaptor<AfterUnassociateEvent> captor = ArgumentCaptor.forClass(AfterUnassociateEvent.class);
                                         InOrder inOrder = Mockito.inOrder(publisher, store);
 
@@ -711,7 +712,7 @@ public class StoreMethodInterceptorTest {
                                     }
                 }
                 @Test
-                void shouldProceed() throws Throwable {
+                void shouldProceed() {
                     verify(publisher, never()).publishEvent(any());
                 }
             }
@@ -720,7 +721,7 @@ public class StoreMethodInterceptorTest {
     @Nested
     class FindMethodCases {
         @Test
-        void shouldResolveTheMethodWhenNotOverridden() throws Throwable {
+        void shouldResolveTheMethodWhenNotOverridden() {
             store = mock(ContentStore.class);
                             publisher = mock(ApplicationEventPublisher.class);
                             interceptor = new StoreMethodInterceptor();
@@ -734,7 +735,7 @@ public class StoreMethodInterceptorTest {
                             }
         }
         @Test
-        void shouldResolveTheMethodWhenItIsOverriddenInTheInterface() throws Throwable {
+        void shouldResolveTheMethodWhenItIsOverriddenInTheInterface() {
             store = mock(ContentStore.class);
                             publisher = mock(ApplicationEventPublisher.class);
                             interceptor = new StoreMethodInterceptor();

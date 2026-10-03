@@ -75,11 +75,11 @@ public class EmbeddedIdTest {
     @Nested
     class EmbeddedIdCases {
         @BeforeEach
-        void setUp() throws Throwable {
+        void setUp() {
             mvc = MockMvcBuilders.webAppContextSetup(context).build();
         }
         @Test
-        void shouldHaveAContentHandlerMappingBean() throws Throwable {
+        void shouldHaveAContentHandlerMappingBean() throws Exception {
             String content = "this is some content";
 
                             TestEntity entity = repo.save(new TestEntity());

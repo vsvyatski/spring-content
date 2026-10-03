@@ -30,19 +30,19 @@ public class FileSystemAutoConfigurationTest {
         @Nested
         class GivenADefaultStorageTypeOfFs {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 contextRunner = new ApplicationContextRunner()
                                     .withConfiguration(AutoConfigurations.of(FileSystemContentAutoConfiguration.class));
                 System.setProperty("spring.content.storage.type.default", "fs");
             }
 
             @AfterEach
-            void tearDown() throws Throwable {
+            void tearDown() {
                 System.clearProperty("spring.content.storage.type.default");
             }
 
             @Test
-            void shouldCreateAnFileSystemResourceLoaderBean() throws Throwable {
+            void shouldCreateAnFileSystemResourceLoaderBean() {
                 contextRunner
                                         .withUserConfiguration(TestConfig.class).run((context) ->
                                                 Assertions.assertThat(context).hasSingleBean(FileSystemResourceLoader.class));
@@ -53,19 +53,19 @@ public class FileSystemAutoConfigurationTest {
         @Nested
         class GivenADefaultStorageTypeOtherThanFs {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 contextRunner = new ApplicationContextRunner()
                                     .withConfiguration(AutoConfigurations.of(FileSystemContentAutoConfiguration.class));
                 System.setProperty("spring.content.storage.type.default", "s3");
             }
 
             @AfterEach
-            void tearDown() throws Throwable {
+            void tearDown() {
                 System.clearProperty("spring.content.storage.type.default");
             }
 
             @Test
-            void shouldNotCreateAnFileSystemResourceLoaderBean() throws Throwable {
+            void shouldNotCreateAnFileSystemResourceLoaderBean() {
                 contextRunner.withUserConfiguration(TestConfig.class).run((context) ->
                                                 Assertions.assertThat(context).doesNotHaveBean(FileSystemResourceLoader.class));
             }
@@ -75,13 +75,13 @@ public class FileSystemAutoConfigurationTest {
         @Nested
         class GivenNoDefaultStorageType {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 contextRunner = new ApplicationContextRunner()
                                     .withConfiguration(AutoConfigurations.of(FileSystemContentAutoConfiguration.class));
             }
 
             @Test
-            void shouldCreateAnFileSystemResourceLoaderBean() throws Throwable {
+            void shouldCreateAnFileSystemResourceLoaderBean() {
                 contextRunner.withUserConfiguration(TestConfig.class)
                                                     .run((context) -> Assertions.assertThat(context).hasSingleBean(FileSystemResourceLoader.class));
             }

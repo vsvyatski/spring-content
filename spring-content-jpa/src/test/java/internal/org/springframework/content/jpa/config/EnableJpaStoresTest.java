@@ -54,35 +54,35 @@ public class EnableJpaStoresTest {
         @Nested
         class GivenAContextAndAConfigurationWithAJpaContentRepositoryBean {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 context.register(TestConfig.class);
                 						context.refresh();
             }
             @AfterEach
-            void tearDown() throws Throwable {
+            void tearDown() {
                 context.close();
             }
             @Test
-            void shouldHaveAContentRepositoryBean() throws Throwable {
+            void shouldHaveAContentRepositoryBean() {
                 assertThat(context.getBean(TestEntityContentRepository.class)).isNotNull();
             }
             @Test
-            void shouldHaveADelegatingBlobResourceLoader() throws Throwable {
+            void shouldHaveADelegatingBlobResourceLoader() {
                 assertThat(context.getBean(DelegatingBlobResourceLoader.class)).isNotNull();
             }
             @Test
-            void shouldHaveAGenericBlobResourceLoader() throws Throwable {
+            void shouldHaveAGenericBlobResourceLoader() {
                 assertThat(context.getBean("genericBlobResourceLoader")).isNotNull();
             }
             @Test
-            void shouldHaveAMySQLBlobResourceLoader() throws Throwable {
+            void shouldHaveAMySQLBlobResourceLoader() {
                 BlobResourceLoader loader = (BlobResourceLoader)context.getBean("mysqlBlobResourceLoader");
                 						assertThat(loader).isNotNull();
                 						assertThat(loader.getDatabaseName()).isEqualTo("MySQL");
                 						assertThat(loader.getResource("some-id")).isInstanceOf(MySQLBlobResource.class);
             }
             @Test
-            void shouldHaveASQLServerBlobResourceLoader() throws Throwable {
+            void shouldHaveASQLServerBlobResourceLoader() {
                 BlobResourceLoader loader = (BlobResourceLoader)context.getBean("sqlServerBlobResourceLoader");
                 						assertThat(loader).isNotNull();
                 						assertThat(loader.getDatabaseName()).isEqualTo("Microsoft SQL Server");
@@ -92,17 +92,17 @@ public class EnableJpaStoresTest {
         @Nested
         class GivenAContextWithAnEmptyConfiguration {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 context = new AnnotationConfigApplicationContext();
                 					context.register(EmptyConfig.class);
                 					context.refresh();
             }
             @AfterEach
-            void tearDown() throws Throwable {
+            void tearDown() {
                 context.close();
             }
             @Test
-            void shouldNotContainAnyJpaRepositoryBeans() throws Throwable {
+            void shouldNotContainAnyJpaRepositoryBeans() {
                 try {
                 						context.getBean(TestEntityContentRepository.class);
                 						fail("expected no such bean");

@@ -21,7 +21,7 @@ public class FileRemoverTest {
         @Nested
         class WhenAFileInputStreamObserverSClosedIsCalled {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 file = mock(File.class);
                 observer = new FileRemover(file);
 
@@ -30,7 +30,7 @@ public class FileRemoverTest {
             }
 
             @Test
-            void shouldDeleteTheUnderlyingFile() throws Throwable {
+            void shouldDeleteTheUnderlyingFile() {
                 verify(file).delete();
 
             }

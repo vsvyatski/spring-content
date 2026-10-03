@@ -40,7 +40,7 @@ public class Cors {
     @Nested
     class AnOPTIONSRequestFromAKnownHost {
         @Test
-        void shouldReturnTheRelevantCORSHeadersAndOK() throws Throwable {
+        void shouldReturnTheRelevantCORSHeadersAndOK() throws Exception {
             mvc.perform(options(url)
             						.header("Access-Control-Request-Method", "DELETE")
             						.header("Origin", "http://www.someurl.com"))
@@ -51,7 +51,7 @@ public class Cors {
     @Nested
     class AnOPTIONSRequestFromAnUnknownHost {
         @Test
-        void shouldBeForbidden() throws Throwable {
+        void shouldBeForbidden() throws Exception {
             mvc.perform(options(url)
             						.header("Access-Control-Request-Method", "DELETE")
             						.header("Origin", "http://www.someotherurl.com"))

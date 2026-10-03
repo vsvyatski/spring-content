@@ -12,6 +12,7 @@ import org.springframework.content.commons.io.DeletableResource;
 import org.springframework.core.io.Resource;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 
 public class FileSystemResourceLoaderTest {
@@ -35,7 +36,7 @@ public class FileSystemResourceLoaderTest {
             @Nested
             class GivenWellFormedPathHasATrailingSlash {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     path = getPathWithProperSeparators("/some/well-formed/path/");
                     try {
                         loader = new FileSystemResourceLoader(path);
@@ -46,7 +47,7 @@ public class FileSystemResourceLoaderTest {
                 }
 
                 @Test
-                void succeeds() throws Throwable {
+                void succeeds() throws IOException {
                     assertThat(ex).isNull();
                     final String expected = getPathWithProperSeparators("/some/well-formed/path/something");
                     assertThat(loader.getResource("/something").getFile().getPath()).isEqualTo(expected);
@@ -59,7 +60,7 @@ public class FileSystemResourceLoaderTest {
             @Nested
             class GivenMalformedPathWithoutATrailingSlash {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     path = getPathWithProperSeparators("/some/malformed/path");
                     try {
                         loader = new FileSystemResourceLoader(path);
@@ -70,7 +71,7 @@ public class FileSystemResourceLoaderTest {
                 }
 
                 @Test
-                void succeeds() throws Throwable {
+                void succeeds() throws IOException {
                     assertThat(ex).isNull();
                     final String expected = getPathWithProperSeparators("/some/malformed/path/something");
                     assertThat(loader.getResource("/something").getFile().getPath()).isEqualTo(expected);
@@ -91,7 +92,7 @@ public class FileSystemResourceLoaderTest {
             @Nested
             class GivenAFileResourceThatExists {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() throws IOException {
                     parent = Files.createTempDirectory("fs-").toFile();
                     location = "FileSystemResourceLoaderTest.tmp";
                     file = new File(parent, location);
@@ -106,7 +107,7 @@ public class FileSystemResourceLoaderTest {
                 }
 
                 @Test
-                void shouldDeleteTheUnderlyingFile() throws Throwable {
+                void shouldDeleteTheUnderlyingFile() {
                     assertThat(file.exists()).isFalse();
                 }
 

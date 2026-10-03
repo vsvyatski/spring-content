@@ -43,7 +43,7 @@ public class AnnotatedStoreEventInvokerTest {
         @Nested
         class WhenInitializedWithAStoreEventHandlerBean {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 store = mock(ContentStore.class);
                 reflectionService = mock(ReflectionService.class);
                 invoker = new AnnotatedStoreEventInvoker(reflectionService);
@@ -53,7 +53,7 @@ public class AnnotatedStoreEventInvokerTest {
             }
 
             @Test
-            void registerTheHandlers() throws Throwable {
+            void registerTheHandlers() {
                 assertThat(invoker.getHandlers().get(BeforeGetResourceEvent.class).size()).isEqualTo(2);
                 assertThat(invoker.getHandlers().get(AfterGetResourceEvent.class).size()).isEqualTo(2);
                 assertThat(invoker.getHandlers().get(BeforeAssociateEvent.class).size()).isEqualTo(2);
@@ -72,7 +72,7 @@ public class AnnotatedStoreEventInvokerTest {
             @Nested
             class WhenInitializedWithAnotherEventHandlerOfHighestPriority {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     store = mock(ContentStore.class);
                     reflectionService = mock(ReflectionService.class);
                     invoker = new AnnotatedStoreEventInvoker(reflectionService);
@@ -85,7 +85,7 @@ public class AnnotatedStoreEventInvokerTest {
                 }
 
                 @Test
-                void shouldOrderTheHandlersByPriority() throws Throwable {
+                void shouldOrderTheHandlersByPriority() {
                     assertThat(invoker.getHandlers().get(BeforeGetResourceEvent.class).size()).isEqualTo(3);
 
                     assertThat(invoker.getHandlers().get(BeforeGetResourceEvent.class).get(0).handler).isEqualTo(priorityHandler);
@@ -103,7 +103,7 @@ public class AnnotatedStoreEventInvokerTest {
         @Nested
         class GivenAnEventHandlerAndABeforeGetResourceEvent {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 reflectionService = mock(ReflectionService.class);
                 invoker = new AnnotatedStoreEventInvoker(reflectionService);
 
@@ -117,7 +117,7 @@ public class AnnotatedStoreEventInvokerTest {
             }
 
             @Test
-            void shouldCallThatCorrectHandlerMethod() throws Throwable {
+            void shouldCallThatCorrectHandlerMethod() {
                 Method handler = ReflectionUtils.findMethod(CustomEventHandler.class,
                         "beforeGetResource", Object.class);
                 assertThat(handler).isNotNull();
@@ -133,7 +133,7 @@ public class AnnotatedStoreEventInvokerTest {
         @Nested
         class GivenAnEventHandlerAcceptingTheEventAndABeforeGetResourceEvent {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 reflectionService = mock(ReflectionService.class);
                 invoker = new AnnotatedStoreEventInvoker(reflectionService);
 
@@ -147,7 +147,7 @@ public class AnnotatedStoreEventInvokerTest {
             }
 
             @Test
-            void shouldCallThatCorrectHandlerMethod() throws Throwable {
+            void shouldCallThatCorrectHandlerMethod() {
                 Method handler = ReflectionUtils.findMethod(CustomEventHandler.class,
                         "beforeGetResource", BeforeGetResourceEvent.class);
                 assertThat(handler).isNotNull();
@@ -163,7 +163,7 @@ public class AnnotatedStoreEventInvokerTest {
         @Nested
         class GivenAnEventHandlerAndAAfterGetResourceEvent {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 reflectionService = mock(ReflectionService.class);
                 invoker = new AnnotatedStoreEventInvoker(reflectionService);
 
@@ -177,7 +177,7 @@ public class AnnotatedStoreEventInvokerTest {
             }
 
             @Test
-            void shouldCallThatCorrectHandlerMethod() throws Throwable {
+            void shouldCallThatCorrectHandlerMethod() {
                 Method handler = ReflectionUtils.findMethod(CustomEventHandler.class,
                         "afterGetResource", Object.class);
                 assertThat(handler).isNotNull();
@@ -193,7 +193,7 @@ public class AnnotatedStoreEventInvokerTest {
         @Nested
         class GivenAnEventHandlerAcceptingTheEventAndAAfterGetResourceEvent {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 reflectionService = mock(ReflectionService.class);
                 invoker = new AnnotatedStoreEventInvoker(reflectionService);
 
@@ -207,7 +207,7 @@ public class AnnotatedStoreEventInvokerTest {
             }
 
             @Test
-            void shouldCallThatCorrectHandlerMethod() throws Throwable {
+            void shouldCallThatCorrectHandlerMethod() {
                 Method handler = ReflectionUtils.findMethod(CustomEventHandler.class,
                         "afterGetResource", AfterGetResourceEvent.class);
                 assertThat(handler).isNotNull();
@@ -223,7 +223,7 @@ public class AnnotatedStoreEventInvokerTest {
         @Nested
         class GivenAnEventHandlerAndABeforeAssociateEvent {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 reflectionService = mock(ReflectionService.class);
                 invoker = new AnnotatedStoreEventInvoker(reflectionService);
 
@@ -237,7 +237,7 @@ public class AnnotatedStoreEventInvokerTest {
             }
 
             @Test
-            void shouldCallThatCorrectHandlerMethod() throws Throwable {
+            void shouldCallThatCorrectHandlerMethod() {
                 Method handler = ReflectionUtils.findMethod(CustomEventHandler.class,
                         "beforeAssociate", Object.class);
                 assertThat(handler).isNotNull();
@@ -253,7 +253,7 @@ public class AnnotatedStoreEventInvokerTest {
         @Nested
         class GivenAnEventHandlerAcceptingTheEventAndABeforeAssociateEvent {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 reflectionService = mock(ReflectionService.class);
                 invoker = new AnnotatedStoreEventInvoker(reflectionService);
 
@@ -267,7 +267,7 @@ public class AnnotatedStoreEventInvokerTest {
             }
 
             @Test
-            void shouldCallThatCorrectHandlerMethod() throws Throwable {
+            void shouldCallThatCorrectHandlerMethod() {
                 Method handler = ReflectionUtils.findMethod(CustomEventHandler.class,
                         "beforeAssociate", BeforeAssociateEvent.class);
                 assertThat(handler).isNotNull();
@@ -283,7 +283,7 @@ public class AnnotatedStoreEventInvokerTest {
         @Nested
         class GivenAnEventHandlerAndAAfterAssociateEvent {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 reflectionService = mock(ReflectionService.class);
                 invoker = new AnnotatedStoreEventInvoker(reflectionService);
 
@@ -297,7 +297,7 @@ public class AnnotatedStoreEventInvokerTest {
             }
 
             @Test
-            void shouldCallThatCorrectHandlerMethod() throws Throwable {
+            void shouldCallThatCorrectHandlerMethod() {
                 Method handler = ReflectionUtils.findMethod(CustomEventHandler.class,
                         "afterAssociate", Object.class);
                 assertThat(handler).isNotNull();
@@ -313,7 +313,7 @@ public class AnnotatedStoreEventInvokerTest {
         @Nested
         class GivenAnEventHandlerAcceptingTheEventAndAAfterAssociateEvent {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 reflectionService = mock(ReflectionService.class);
                 invoker = new AnnotatedStoreEventInvoker(reflectionService);
 
@@ -327,7 +327,7 @@ public class AnnotatedStoreEventInvokerTest {
             }
 
             @Test
-            void shouldCallThatCorrectHandlerMethod() throws Throwable {
+            void shouldCallThatCorrectHandlerMethod() {
                 Method handler = ReflectionUtils.findMethod(CustomEventHandler.class,
                         "afterAssociate", AfterAssociateEvent.class);
                 assertThat(handler).isNotNull();
@@ -343,7 +343,7 @@ public class AnnotatedStoreEventInvokerTest {
         @Nested
         class GivenAnEventHandlerAndABeforeUnassociateEvent {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 reflectionService = mock(ReflectionService.class);
                 invoker = new AnnotatedStoreEventInvoker(reflectionService);
 
@@ -357,7 +357,7 @@ public class AnnotatedStoreEventInvokerTest {
             }
 
             @Test
-            void shouldCallThatCorrectHandlerMethod() throws Throwable {
+            void shouldCallThatCorrectHandlerMethod() {
                 Method handler = ReflectionUtils.findMethod(CustomEventHandler.class,
                         "beforeUnassociate", Object.class);
                 assertThat(handler).isNotNull();
@@ -373,7 +373,7 @@ public class AnnotatedStoreEventInvokerTest {
         @Nested
         class GivenAnEventHandlerAcceptingTheEventAndABeforeUnassociateEvent {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 reflectionService = mock(ReflectionService.class);
                 invoker = new AnnotatedStoreEventInvoker(reflectionService);
 
@@ -387,7 +387,7 @@ public class AnnotatedStoreEventInvokerTest {
             }
 
             @Test
-            void shouldCallThatCorrectHandlerMethod() throws Throwable {
+            void shouldCallThatCorrectHandlerMethod() {
                 Method handler = ReflectionUtils.findMethod(CustomEventHandler.class,
                         "beforeUnassociate", BeforeUnassociateEvent.class);
                 assertThat(handler).isNotNull();
@@ -403,7 +403,7 @@ public class AnnotatedStoreEventInvokerTest {
         @Nested
         class GivenAnEventHandlerAndAAfterUnassociateEvent {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 reflectionService = mock(ReflectionService.class);
                 invoker = new AnnotatedStoreEventInvoker(reflectionService);
 
@@ -417,7 +417,7 @@ public class AnnotatedStoreEventInvokerTest {
             }
 
             @Test
-            void shouldCallThatCorrectHandlerMethod() throws Throwable {
+            void shouldCallThatCorrectHandlerMethod() {
                 Method handler = ReflectionUtils.findMethod(CustomEventHandler.class,
                         "afterUnassociate", Object.class);
                 assertThat(handler).isNotNull();
@@ -433,7 +433,7 @@ public class AnnotatedStoreEventInvokerTest {
         @Nested
         class GivenAnEventHandlerAcceptingTheEventAndAAfterUnassociateEvent {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 reflectionService = mock(ReflectionService.class);
                 invoker = new AnnotatedStoreEventInvoker(reflectionService);
 
@@ -447,7 +447,7 @@ public class AnnotatedStoreEventInvokerTest {
             }
 
             @Test
-            void shouldCallThatCorrectHandlerMethod() throws Throwable {
+            void shouldCallThatCorrectHandlerMethod() {
                 Method handler = ReflectionUtils.findMethod(CustomEventHandler.class,
                         "afterUnassociate", AfterUnassociateEvent.class);
                 assertThat(handler).isNotNull();
@@ -463,7 +463,7 @@ public class AnnotatedStoreEventInvokerTest {
         @Nested
         class GivenAnEventHandlerAndABeforeGetContentEvent {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 reflectionService = mock(ReflectionService.class);
                 invoker = new AnnotatedStoreEventInvoker(reflectionService);
 
@@ -477,7 +477,7 @@ public class AnnotatedStoreEventInvokerTest {
             }
 
             @Test
-            void shouldCallThatCorrectHandlerMethod() throws Throwable {
+            void shouldCallThatCorrectHandlerMethod() {
                 Method handler = ReflectionUtils.findMethod(CustomEventHandler.class,
                         "beforeGetContent", Object.class);
                 assertThat(handler).isNotNull();
@@ -493,7 +493,7 @@ public class AnnotatedStoreEventInvokerTest {
         @Nested
         class GivenAnEventHandlerAcceptingTheEventAndABeforeGetContentEvent {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 reflectionService = mock(ReflectionService.class);
                 invoker = new AnnotatedStoreEventInvoker(reflectionService);
 
@@ -507,7 +507,7 @@ public class AnnotatedStoreEventInvokerTest {
             }
 
             @Test
-            void shouldCallThatCorrectHandlerMethod() throws Throwable {
+            void shouldCallThatCorrectHandlerMethod() {
                 Method handler = ReflectionUtils.findMethod(CustomEventHandler.class,
                         "beforeGetContent", BeforeGetContentEvent.class);
                 assertThat(handler).isNotNull();
@@ -523,7 +523,7 @@ public class AnnotatedStoreEventInvokerTest {
         @Nested
         class GivenAnEventHandlerAndAAfterGetContentEvent {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 reflectionService = mock(ReflectionService.class);
                 invoker = new AnnotatedStoreEventInvoker(reflectionService);
 
@@ -537,7 +537,7 @@ public class AnnotatedStoreEventInvokerTest {
             }
 
             @Test
-            void shouldCallThatCorrectHandlerMethod() throws Throwable {
+            void shouldCallThatCorrectHandlerMethod() {
                 Method handler = ReflectionUtils.findMethod(CustomEventHandler.class,
                         "afterGetContent", Object.class);
                 assertThat(handler).isNotNull();
@@ -553,7 +553,7 @@ public class AnnotatedStoreEventInvokerTest {
         @Nested
         class GivenAnEventHandlerAcceptingTheEventAndAAfterGetContentEvent {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 reflectionService = mock(ReflectionService.class);
                 invoker = new AnnotatedStoreEventInvoker(reflectionService);
 
@@ -567,7 +567,7 @@ public class AnnotatedStoreEventInvokerTest {
             }
 
             @Test
-            void shouldCallThatCorrectHandlerMethod() throws Throwable {
+            void shouldCallThatCorrectHandlerMethod() {
                 Method handler = ReflectionUtils.findMethod(CustomEventHandler.class,
                         "afterGetContent", AfterGetContentEvent.class);
                 assertThat(handler).isNotNull();
@@ -583,7 +583,7 @@ public class AnnotatedStoreEventInvokerTest {
         @Nested
         class GivenAnEventHandlerAndABeforeSetContentEvent {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 reflectionService = mock(ReflectionService.class);
                 invoker = new AnnotatedStoreEventInvoker(reflectionService);
 
@@ -597,7 +597,7 @@ public class AnnotatedStoreEventInvokerTest {
             }
 
             @Test
-            void shouldCallThatCorrectHandlerMethod() throws Throwable {
+            void shouldCallThatCorrectHandlerMethod() {
                 Method handler = ReflectionUtils.findMethod(CustomEventHandler.class,
                         "beforeSetContent", Object.class);
                 assertThat(handler).isNotNull();
@@ -613,7 +613,7 @@ public class AnnotatedStoreEventInvokerTest {
         @Nested
         class GivenAnEventHandlerAcceptingTheEventAndABeforeSetContentEvent {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 reflectionService = mock(ReflectionService.class);
                 invoker = new AnnotatedStoreEventInvoker(reflectionService);
 
@@ -627,7 +627,7 @@ public class AnnotatedStoreEventInvokerTest {
             }
 
             @Test
-            void shouldCallThatCorrectHandlerMethod() throws Throwable {
+            void shouldCallThatCorrectHandlerMethod() {
                 Method handler = ReflectionUtils.findMethod(CustomEventHandler.class,
                         "beforeSetContent", BeforeSetContentEvent.class);
                 assertThat(handler).isNotNull();
@@ -643,7 +643,7 @@ public class AnnotatedStoreEventInvokerTest {
         @Nested
         class GivenAnEventHandlerAndABeforeSetContentEvent2 {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 reflectionService = mock(ReflectionService.class);
                 invoker = new AnnotatedStoreEventInvoker(reflectionService);
 
@@ -657,7 +657,7 @@ public class AnnotatedStoreEventInvokerTest {
             }
 
             @Test
-            void shouldCallThatCorrectHandlerMethod() throws Throwable {
+            void shouldCallThatCorrectHandlerMethod() {
                 Method handler = ReflectionUtils.findMethod(CustomEventHandler.class,
                         "afterSetContent", Object.class);
                 assertThat(handler).isNotNull();
@@ -673,7 +673,7 @@ public class AnnotatedStoreEventInvokerTest {
         @Nested
         class GivenAnEventHandlerAcceptingTheEventAndAAfterSetContentEvent {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 reflectionService = mock(ReflectionService.class);
                 invoker = new AnnotatedStoreEventInvoker(reflectionService);
 
@@ -687,7 +687,7 @@ public class AnnotatedStoreEventInvokerTest {
             }
 
             @Test
-            void shouldCallThatCorrectHandlerMethod() throws Throwable {
+            void shouldCallThatCorrectHandlerMethod() {
                 Method handler = ReflectionUtils.findMethod(CustomEventHandler.class,
                         "afterSetContent", AfterSetContentEvent.class);
                 assertThat(handler).isNotNull();
@@ -703,7 +703,7 @@ public class AnnotatedStoreEventInvokerTest {
         @Nested
         class GivenAnEventHandlerAndABeforeUnsetContentEvent {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 reflectionService = mock(ReflectionService.class);
                 invoker = new AnnotatedStoreEventInvoker(reflectionService);
 
@@ -717,7 +717,7 @@ public class AnnotatedStoreEventInvokerTest {
             }
 
             @Test
-            void shouldCallThatCorrectHandlerMethod() throws Throwable {
+            void shouldCallThatCorrectHandlerMethod() {
                 Method handler = ReflectionUtils.findMethod(CustomEventHandler.class,
                         "beforeUnsetContent", Object.class);
                 assertThat(handler).isNotNull();
@@ -733,7 +733,7 @@ public class AnnotatedStoreEventInvokerTest {
         @Nested
         class GivenAnEventHandlerAcceptingTheEventAndABeforeUnsetContentEvent {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 reflectionService = mock(ReflectionService.class);
                 invoker = new AnnotatedStoreEventInvoker(reflectionService);
 
@@ -747,7 +747,7 @@ public class AnnotatedStoreEventInvokerTest {
             }
 
             @Test
-            void shouldCallThatCorrectHandlerMethod() throws Throwable {
+            void shouldCallThatCorrectHandlerMethod() {
                 Method handler = ReflectionUtils.findMethod(CustomEventHandler.class,
                         "beforeUnsetContent", BeforeUnsetContentEvent.class);
                 assertThat(handler).isNotNull();
@@ -763,7 +763,7 @@ public class AnnotatedStoreEventInvokerTest {
         @Nested
         class GivenAnEventHandlerAndAAfterUnsetContentEvent {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 reflectionService = mock(ReflectionService.class);
                 invoker = new AnnotatedStoreEventInvoker(reflectionService);
 
@@ -777,7 +777,7 @@ public class AnnotatedStoreEventInvokerTest {
             }
 
             @Test
-            void shouldCallThatCorrectHandlerMethod() throws Throwable {
+            void shouldCallThatCorrectHandlerMethod() {
                 Method handler = ReflectionUtils.findMethod(CustomEventHandler.class,
                         "afterUnsetContent", Object.class);
                 assertThat(handler).isNotNull();
@@ -793,7 +793,7 @@ public class AnnotatedStoreEventInvokerTest {
         @Nested
         class GivenAnEventHandlerAcceptingTheEventAndAAfterUnsetContentEvent {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 reflectionService = mock(ReflectionService.class);
                 invoker = new AnnotatedStoreEventInvoker(reflectionService);
 
@@ -807,7 +807,7 @@ public class AnnotatedStoreEventInvokerTest {
             }
 
             @Test
-            void shouldCallThatCorrectHandlerMethod() throws Throwable {
+            void shouldCallThatCorrectHandlerMethod() {
                 Method handler = ReflectionUtils.findMethod(CustomEventHandler.class,
                         "afterUnsetContent", AfterUnsetContentEvent.class);
                 assertThat(handler).isNotNull();
@@ -823,7 +823,7 @@ public class AnnotatedStoreEventInvokerTest {
         @Nested
         class GivenAnEventHandlerAndAnUnknownEvent {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 reflectionService = mock(ReflectionService.class);
                 invoker = new AnnotatedStoreEventInvoker(reflectionService);
 
@@ -837,7 +837,7 @@ public class AnnotatedStoreEventInvokerTest {
             }
 
             @Test
-            void shouldNotCallAnEventHandler() throws Throwable {
+            void shouldNotCallAnEventHandler() {
                 Method handler = ReflectionUtils.findMethod(CustomEventHandler.class,
                         "afterUnsetContent", Object.class);
                 assertThat(handler).isNotNull();

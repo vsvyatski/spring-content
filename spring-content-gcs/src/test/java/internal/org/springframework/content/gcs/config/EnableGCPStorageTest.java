@@ -38,28 +38,28 @@ public class EnableGCPStorageTest {
         @Nested
         class GivenAContextAndAConfigurationWithAnGCSContentStore {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 context = new AnnotationConfigApplicationContext();
                                             context.register(TestConfig.class);
                                             context.refresh();
             }
             @AfterEach
-            void tearDown() throws Throwable {
+            void tearDown() {
                 context.close();
             }
             @Test
-            void shouldHaveAContentStoreBean() throws Throwable {
+            void shouldHaveAContentStoreBean() {
                 assertThat(context.getBean(TestEntityContentStore.class)).isNotNull();
             }
             @Test
-            void shouldHaveAnPlacementService() throws Throwable {
+            void shouldHaveAnPlacementService() {
                 assertThat(context.getBean("gcpStoragePlacementService")).isNotNull();
             }
         }
         @Nested
         class GivenAContextWithAConfigurer {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 configurer = mock(GCPStorageConfigurer.class);
 
                                     context = new AnnotationConfigApplicationContext();
@@ -67,28 +67,28 @@ public class EnableGCPStorageTest {
                                     context.refresh();
             }
             @AfterEach
-            void tearDown() throws Throwable {
+            void tearDown() {
                 context.close();
             }
             @Test
-            void shouldCallThatConfigurerToHelpSetupTheStore() throws Throwable {
+            void shouldCallThatConfigurerToHelpSetupTheStore() {
                 verify(configurer).configureGCPStorageConverters(any());
             }
         }
         @Nested
         class GivenAContextWithAnEmptyConfiguration {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 context = new AnnotationConfigApplicationContext();
                                     context.register(EmptyConfig.class);
                                     context.refresh();
             }
             @AfterEach
-            void tearDown() throws Throwable {
+            void tearDown() {
                 context.close();
             }
             @Test
-            void shouldNotContainsAnyS3RepositoryBeans() throws Throwable {
+            void shouldNotContainsAnyS3RepositoryBeans() {
                 try {
                                         context.getBean(TestEntityContentStore.class);
                                         fail("expected no such bean");

@@ -90,7 +90,7 @@ public class LockingAndVersioningRestIT {
         @Nested
         class GivenAVersionableEntityWithContent {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
 
                 doc = new VersionedDocument();
@@ -100,7 +100,7 @@ public class LockingAndVersioningRestIT {
             }
 
             @Test
-            void shouldBeAbleToVersionAnEntityAndItsContent() throws Throwable {
+            void shouldBeAbleToVersionAnEntityAndItsContent() {
                 // assert content does not exist
                 given()
                         .auth().with(SecurityMockMvcRequestPostProcessors.user("paul123").password("password"))
@@ -278,7 +278,7 @@ public class LockingAndVersioningRestIT {
         protected static String REALM = "SPRING_CONTENT";
 
         @Autowired
-        public void configureGlobalSecurity(AuthenticationManagerBuilder auth) throws Throwable {
+        public void configureGlobalSecurity(AuthenticationManagerBuilder auth) {
             // Enable if spring-doc apps supports user accounts in the future
              auth.inMemoryAuthentication().
                      withUser(User.withDefaultPasswordEncoder().username("paul123").password("password").roles("USER")).

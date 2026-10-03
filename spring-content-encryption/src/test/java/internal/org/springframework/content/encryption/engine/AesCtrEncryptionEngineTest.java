@@ -8,6 +8,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import jakarta.xml.bind.DatatypeConverter;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
@@ -46,7 +47,7 @@ public class AesCtrEncryptionEngineTest {
         @Nested
         class Tests {
             @Test
-            void generatesAppropriateEncryptionParameters() throws Throwable {
+            void generatesAppropriateEncryptionParameters() {
                 var engine = new AesCtrEncryptionEngine(128);
                                 var parameters = engine.createNewParameters();
 
@@ -56,7 +57,7 @@ public class AesCtrEncryptionEngineTest {
                                 assertThat(parameters.initializationVector().length).isEqualTo(16);
             }
             @Test
-            void encryptsPlaintextAccordingToTheEncryptionParameters() throws Throwable {
+            void encryptsPlaintextAccordingToTheEncryptionParameters() throws IOException {
                 var engine = new AesCtrEncryptionEngine(128);
 
                                 var encrypted = engine.encrypt(new ByteArrayInputStream(PLAINTEXT), PARAMS);
@@ -66,7 +67,7 @@ public class AesCtrEncryptionEngineTest {
                                 assertThat(encryptedBytes).isEqualTo(CIPHERTEXT);
             }
             @Test
-            void decryptsCiphertextAccordingToTheEncryptionParameters() throws Throwable {
+            void decryptsCiphertextAccordingToTheEncryptionParameters() throws IOException {
                 var engine = new AesCtrEncryptionEngine(128);
 
                                 try(var decrypted = engine.decrypt(req -> new ByteArrayInputStream(CIPHERTEXT), PARAMS, InputStreamRequestParameters.full())) {
@@ -79,7 +80,7 @@ public class AesCtrEncryptionEngineTest {
         @Nested
         class DecryptionWithWeirdIVs {
             @Test
-            void handlesAnIVThatStartsWithZeroes() throws Throwable {
+            void handlesAnIVThatStartsWithZeroes() throws IOException {
                 var engine = new AesCtrEncryptionEngine(128);
                                     EncryptionParameters params = new EncryptionParameters(
                                             new SecretKeySpec(KEY, "AES"),
@@ -100,7 +101,7 @@ public class AesCtrEncryptionEngineTest {
                                     }
             }
             @Test
-            void handlesAnIVThatBehavesNormallyDuringCalculation() throws Throwable {
+            void handlesAnIVThatBehavesNormallyDuringCalculation() throws IOException {
                 var engine = new AesCtrEncryptionEngine(128);
 
                                     EncryptionParameters params = new EncryptionParameters(
@@ -121,7 +122,7 @@ public class AesCtrEncryptionEngineTest {
                                     }
             }
             @Test
-            void handlesAnIVThatWrapsAroundDuringCalculation() throws Throwable {
+            void handlesAnIVThatWrapsAroundDuringCalculation() throws IOException {
                 var engine = new AesCtrEncryptionEngine(128);
 
                                     EncryptionParameters params = new EncryptionParameters(
@@ -145,7 +146,7 @@ public class AesCtrEncryptionEngineTest {
         @Nested
         class PartialContentDecryption {
             @Test
-            void decryptsStartingFromTheThirdBlock() throws Throwable {
+            void decryptsStartingFromTheThirdBlock() throws IOException {
                 var engine = new AesCtrEncryptionEngine(128);
 
                                     var offsetStart = BLOCK_1_PLAIN.length + BLOCK_2_PLAIN.length;
@@ -164,7 +165,7 @@ public class AesCtrEncryptionEngineTest {
                                     }
             }
             @Test
-            void decryptsStartingInTheMiddleOfTheSecondBlock() throws Throwable {
+            void decryptsStartingInTheMiddleOfTheSecondBlock() throws IOException {
                 var engine = new AesCtrEncryptionEngine(128);
 
                                     var offsetStart = BLOCK_1_PLAIN.length+BLOCK_2_PLAIN.length/2;
@@ -186,7 +187,7 @@ public class AesCtrEncryptionEngineTest {
                                     }
             }
             @Test
-            void decryptsOnlyTheFirst2Blocks() throws Throwable {
+            void decryptsOnlyTheFirst2Blocks() throws IOException {
                 var engine = new AesCtrEncryptionEngine(128);
 
                                     var offsetEnd = BLOCK_1_PLAIN.length+BLOCK_2_PLAIN.length;
@@ -203,7 +204,7 @@ public class AesCtrEncryptionEngineTest {
                                     }
             }
             @Test
-            void decryptsOnlyUntilTheMiddleOfBlock3() throws Throwable {
+            void decryptsOnlyUntilTheMiddleOfBlock3() throws IOException {
                 var engine = new AesCtrEncryptionEngine(128);
 
                                     var offsetEnd = BLOCK_1_PLAIN.length+BLOCK_2_PLAIN.length + BLOCK_3_PLAIN.length/2;

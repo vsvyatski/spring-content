@@ -15,6 +15,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import org.apache.solr.client.solrj.SolrClient;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.request.QueryRequest;
 import org.apache.solr.client.solrj.request.SolrQuery;
 import org.apache.solr.client.solrj.request.UpdateRequest;
@@ -35,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
+import java.io.IOException;
 
 import static java.lang.String.format;
 
@@ -59,7 +61,7 @@ public class SolrIT {
     @Nested
     class Index {
         @BeforeEach
-        void setUp() throws Throwable {
+        void setUp() {
             solrProperties.setUser("solr");
             solrProperties.setPassword("SolrRocks");
 
@@ -73,7 +75,7 @@ public class SolrIT {
         }
 
         @AfterEach
-        void tearDown() throws Throwable {
+        void tearDown() throws IOException, SolrServerException {
             if (docContentRepo != null) {
                 docContentRepo.unsetContent(doc);
             }
@@ -91,7 +93,7 @@ public class SolrIT {
         }
 
         @Test
-        void shouldIndexTheContentOfThatDocument() throws Throwable {
+        void shouldIndexTheContentOfThatDocument() {
             org.awaitility.Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
                 SolrQuery query = new SolrQuery();
                 query.setQuery("foo");
@@ -108,7 +110,7 @@ public class SolrIT {
         @Nested
         class WhenTheContentIsSearched {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 solrProperties.setUser("solr");
                 solrProperties.setPassword("SolrRocks");
 
@@ -122,7 +124,7 @@ public class SolrIT {
             }
 
             @AfterEach
-            void tearDown() throws Throwable {
+            void tearDown() throws IOException, SolrServerException {
                 if (docContentRepo != null) {
                     docContentRepo.unsetContent(doc);
                 }
@@ -140,7 +142,7 @@ public class SolrIT {
             }
 
             @Test
-            void shouldReturnTheSearchedContent() throws Throwable {
+            void shouldReturnTheSearchedContent() {
                 Iterable<UUID> content = docContentRepo.search("one");
                 assertThat(content).contains(doc.getContentId());
 
@@ -151,7 +153,7 @@ public class SolrIT {
         @Nested
         class GivenThatDocumentsContentIsUpdated {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 solrProperties.setUser("solr");
                 solrProperties.setPassword("SolrRocks");
 
@@ -168,7 +170,7 @@ public class SolrIT {
             }
 
             @AfterEach
-            void tearDown() throws Throwable {
+            void tearDown() throws IOException, SolrServerException {
                 if (docContentRepo != null) {
                     docContentRepo.unsetContent(doc);
                 }
@@ -186,7 +188,7 @@ public class SolrIT {
             }
 
             @Test
-            void shouldIndexTheNewContent() throws Throwable {
+            void shouldIndexTheNewContent() {
                 org.awaitility.Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
                     SolrQuery query = new SolrQuery();
                     query.setQuery("bar");
@@ -205,7 +207,7 @@ public class SolrIT {
         @Nested
         class GivenThatDocumentIsDeleted {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 solrProperties.setUser("solr");
                 solrProperties.setPassword("SolrRocks");
 
@@ -223,7 +225,7 @@ public class SolrIT {
             }
 
             @AfterEach
-            void tearDown() throws Throwable {
+            void tearDown() throws IOException, SolrServerException {
                 if (docContentRepo != null) {
                     docContentRepo.unsetContent(doc);
                 }
@@ -241,7 +243,7 @@ public class SolrIT {
             }
 
             @Test
-            void shouldDeleteTheRecordOfTheContentFromTheIndex() throws Throwable {
+            void shouldDeleteTheRecordOfTheContentFromTheIndex() throws SolrServerException, IOException {
                 SolrQuery query = new SolrQuery();
                 query.setQuery("one");
                 query.addFilterQuery("id:" + "examples.models.Document\\:" + id);
@@ -266,7 +268,7 @@ public class SolrIT {
         @Nested
         class PagesOfResults {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 solrProperties.setUser(System.getenv("SOLR_USER"));
                 solrProperties.setPassword(System.getenv("SOLR_PASSWORD"));
 
@@ -281,7 +283,7 @@ public class SolrIT {
             }
 
             @AfterEach
-            void tearDown() throws Throwable {
+            void tearDown() throws IOException, SolrServerException {
                 if (docRepo != null && docContentRepo != null) {
                     for (Document doc : docRepo.findAll()) {
                         doc = docContentRepo.unsetContent(doc);
@@ -301,7 +303,7 @@ public class SolrIT {
             }
 
             @Test
-            void shouldReturnResultsInPages() throws Throwable {
+            void shouldReturnResultsInPages() {
                 org.awaitility.Awaitility.await().untilAsserted(() -> {
     var page = (docContentRepo.search("foo", PageRequest.of(0, 3)));
     assertThat(page.getNumberOfElements()).isEqualTo(3);
@@ -329,7 +331,7 @@ public class SolrIT {
             }
 
             @Test
-            void shouldReturnSpecificResultPage() throws Throwable {
+            void shouldReturnSpecificResultPage() {
                 org.awaitility.Awaitility.await().untilAsserted(() -> {
     var page = (docContentRepo.search("foo", PageRequest.of(3, 3)));
     assertThat(page.getNumberOfElements()).isEqualTo(1);
@@ -345,7 +347,7 @@ public class SolrIT {
     @Nested
     class CustomAttributes {
         @BeforeEach
-        void setUp() throws Throwable {
+        void setUp() {
             solrProperties.setUser(System.getenv("SOLR_USER"));
             solrProperties.setPassword(System.getenv("SOLR_PASSWORD"));
 
@@ -364,7 +366,7 @@ public class SolrIT {
         }
 
         @AfterEach
-        void tearDown() throws Throwable {
+        void tearDown() throws IOException, SolrServerException {
             if (docContentRepo != null) {
                 docContentRepo.unsetContent(doc);
             }
@@ -382,7 +384,7 @@ public class SolrIT {
         }
 
         @Test
-        void shouldApplyTheProvidedAttributesAndFilterQuery() throws Throwable {
+        void shouldApplyTheProvidedAttributesAndFilterQuery() {
             Iterable<UUID> tmp = docContentRepo.search("one");
             assertThat(tmp).isNotNull();
 
@@ -399,7 +401,7 @@ public class SolrIT {
     @Nested
     class CustomReturnTypes {
         @BeforeEach
-        void setUp() throws Throwable {
+        void setUp() {
             solrProperties.setUser(System.getenv("SOLR_USER"));
             solrProperties.setPassword(System.getenv("SOLR_PASSWORD"));
 
@@ -412,7 +414,7 @@ public class SolrIT {
         }
 
         @AfterEach
-        void tearDown() throws Throwable {
+        void tearDown() throws IOException, SolrServerException {
             if (docContentRepo != null) {
                 docContentRepo.unsetContent(doc);
             }
@@ -430,7 +432,7 @@ public class SolrIT {
         }
 
         @Test
-        void shouldReturnResultsUsingTheReturnType() throws Throwable {
+        void shouldReturnResultsUsingTheReturnType() {
             org.awaitility.Awaitility.await().untilAsserted(() -> {
     var result = (store.search("one"));
     Iterator<FulltextInfo> iterator = result.iterator();

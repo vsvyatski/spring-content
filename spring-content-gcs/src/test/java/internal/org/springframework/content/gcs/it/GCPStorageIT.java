@@ -77,7 +77,7 @@ public class GCPStorageIT {
                 @Nested
                 class Tests {
                     @BeforeEach
-                    void setUp() throws Throwable {
+                    void setUp() {
                         context = new AnnotationConfigApplicationContext();
                                         context.register(TestConfig.class);
                                         context.refresh();
@@ -95,7 +95,7 @@ public class GCPStorageIT {
                         genericResource = store.getResource(resourceLocation);
                     }
                     @AfterEach
-                    void tearDown() throws Throwable {
+                    void tearDown() throws IOException {
                         if (genericResource != null) {
                                                 ((DeletableResource) genericResource).delete();
                                             }
@@ -108,11 +108,11 @@ public class GCPStorageIT {
                         context.close();
                     }
                     @Test
-                    void shouldGetResource() throws Throwable {
+                    void shouldGetResource() {
                         assertThat(genericResource).isInstanceOf(Resource.class);
                     }
                     @Test
-                    void shouldNotExist() throws Throwable {
+                    void shouldNotExist() {
                         assertThat(genericResource.exists()).isFalse();
                     }
                 }
@@ -121,7 +121,7 @@ public class GCPStorageIT {
                     @Nested
                     class Tests {
                         @BeforeEach
-                        void setUp() throws Throwable {
+                        void setUp() throws IOException {
                             context = new AnnotationConfigApplicationContext();
                                             context.register(TestConfig.class);
                                             context.refresh();
@@ -145,7 +145,7 @@ public class GCPStorageIT {
                                                     }
                         }
                         @AfterEach
-                        void tearDown() throws Throwable {
+                        void tearDown() throws IOException {
                             if (genericResource != null) {
                                                     ((DeletableResource) genericResource).delete();
                                                 }
@@ -158,7 +158,7 @@ public class GCPStorageIT {
                             context.close();
                         }
                         @Test
-                        void shouldStoreThatContent() throws Throwable {
+                        void shouldStoreThatContent() throws IOException {
                             assertThat(genericResource.exists()).isTrue();
 
                                                     try (InputStream expected = new ByteArrayInputStream("Hello Spring Content World!".getBytes())) {
@@ -172,7 +172,7 @@ public class GCPStorageIT {
                     @Nested
                     class GivenThatResourceIsThenUpdated {
                         @BeforeEach
-                        void setUp() throws Throwable {
+                        void setUp() throws IOException {
                             context = new AnnotationConfigApplicationContext();
                                             context.register(TestConfig.class);
                                             context.refresh();
@@ -202,7 +202,7 @@ public class GCPStorageIT {
                                                         }
                         }
                         @AfterEach
-                        void tearDown() throws Throwable {
+                        void tearDown() throws IOException {
                             if (genericResource != null) {
                                                     ((DeletableResource) genericResource).delete();
                                                 }
@@ -215,7 +215,7 @@ public class GCPStorageIT {
                             context.close();
                         }
                         @Test
-                        void shouldStoreThatUpdatedContent() throws Throwable {
+                        void shouldStoreThatUpdatedContent() throws IOException {
                             assertThat(genericResource.exists()).isTrue();
 
                                                         try (InputStream expected = new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes())) {
@@ -228,7 +228,7 @@ public class GCPStorageIT {
                     @Nested
                     class GivenThatResourceIsThenDeleted {
                         @BeforeEach
-                        void setUp() throws Throwable {
+                        void setUp() throws IOException {
                             context = new AnnotationConfigApplicationContext();
                                             context.register(TestConfig.class);
                                             context.refresh();
@@ -258,7 +258,7 @@ public class GCPStorageIT {
                                                         }
                         }
                         @AfterEach
-                        void tearDown() throws Throwable {
+                        void tearDown() throws IOException {
                             if (genericResource != null) {
                                                     ((DeletableResource) genericResource).delete();
                                                 }
@@ -271,7 +271,7 @@ public class GCPStorageIT {
                             context.close();
                         }
                         @Test
-                        void shouldNotExist() throws Throwable {
+                        void shouldNotExist() {
                             assertThat(e).isNull();
                         }
                     }
@@ -285,7 +285,7 @@ public class GCPStorageIT {
                 @Nested
                 class Tests {
                     @BeforeEach
-                    void setUp() throws Throwable {
+                    void setUp() {
                         context = new AnnotationConfigApplicationContext();
                                         context.register(TestConfig.class);
                                         context.refresh();
@@ -304,11 +304,11 @@ public class GCPStorageIT {
                                             entity = repo.save(entity);
                     }
                     @AfterEach
-                    void tearDown() throws Throwable {
+                    void tearDown() {
                         context.close();
                     }
                     @Test
-                    void shouldNotHaveAnAssociatedResource() throws Throwable {
+                    void shouldNotHaveAnAssociatedResource() {
                         assertThat(entity.getContentId()).isNull();
                                             assertThat(store.getResource(entity)).isNull();
                     }
@@ -320,7 +320,7 @@ public class GCPStorageIT {
                         @Nested
                         class Tests {
                             @BeforeEach
-                            void setUp() throws Throwable {
+                            void setUp() {
                                 context = new AnnotationConfigApplicationContext();
                                                 context.register(TestConfig.class);
                                                 context.refresh();
@@ -344,11 +344,11 @@ public class GCPStorageIT {
                                                             store.associate(entity, PropertyPath.from("rendition"), resourceLocation);
                             }
                             @AfterEach
-                            void tearDown() throws Throwable {
+                            void tearDown() {
                                 context.close();
                             }
                             @Test
-                            void shouldBeRecordedAsSuchOnTheEntitySContentId() throws Throwable {
+                            void shouldBeRecordedAsSuchOnTheEntitySContentId() {
                                 assertThat(entity.getContentId()).isEqualTo(resourceLocation);
                                                             assertThat(entity.getRenditionId()).isEqualTo(resourceLocation);
                             }
@@ -356,7 +356,7 @@ public class GCPStorageIT {
                         @Nested
                         class WhenTheResourceHasContent {
                             @BeforeEach
-                            void setUp() throws Throwable {
+                            void setUp() throws IOException {
                                 context = new AnnotationConfigApplicationContext();
                                                 context.register(TestConfig.class);
                                                 context.refresh();
@@ -384,11 +384,11 @@ public class GCPStorageIT {
                                                                 }
                             }
                             @AfterEach
-                            void tearDown() throws Throwable {
+                            void tearDown() {
                                 context.close();
                             }
                             @Test
-                            void shouldNotHonorByteRanges() throws Throwable {
+                            void shouldNotHonorByteRanges() throws IOException {
                                 // relies on REST-layer to serve byte range
                                                                 Resource r = store.getResource(entity, PropertyPath.from("content"), new GetResourceParams("5-10"));
                                                                 try (InputStream is = r.getInputStream()) {
@@ -399,7 +399,7 @@ public class GCPStorageIT {
                         @Nested
                         class WhenTheResourceIsUnassociated {
                             @BeforeEach
-                            void setUp() throws Throwable {
+                            void setUp() {
                                 context = new AnnotationConfigApplicationContext();
                                                 context.register(TestConfig.class);
                                                 context.refresh();
@@ -426,11 +426,11 @@ public class GCPStorageIT {
                                                                 store.unassociate(entity, PropertyPath.from("rendition"));
                             }
                             @AfterEach
-                            void tearDown() throws Throwable {
+                            void tearDown() {
                                 context.close();
                             }
                             @Test
-                            void shouldResetTheEntitySContentId() throws Throwable {
+                            void shouldResetTheEntitySContentId() {
                                 assertThat(entity.getContentId()).isNull();
                                                                 assertThat(entity.getRenditionId()).isNull();
                             }
@@ -438,7 +438,7 @@ public class GCPStorageIT {
                         @Nested
                         class WhenAInvalidPropertyPathIsUsedToAssociateAResource {
                             @BeforeEach
-                            void setUp() throws Throwable {
+                            void setUp() {
                                 context = new AnnotationConfigApplicationContext();
                                                 context.register(TestConfig.class);
                                                 context.refresh();
@@ -462,11 +462,11 @@ public class GCPStorageIT {
                                                             store.associate(entity, PropertyPath.from("rendition"), resourceLocation);
                             }
                             @AfterEach
-                            void tearDown() throws Throwable {
+                            void tearDown() {
                                 context.close();
                             }
                             @Test
-                            void shouldThrowAnError() throws Throwable {
+                            void shouldThrowAnError() {
                                 try {
                                                                         store.associate(entity, PropertyPath.from("does.not.exist"), resourceLocation);
                                                                     } catch (Exception sae) {
@@ -478,7 +478,7 @@ public class GCPStorageIT {
                         @Nested
                         class WhenAInvalidPropertyPathIsUsedToLoadAResource {
                             @BeforeEach
-                            void setUp() throws Throwable {
+                            void setUp() {
                                 context = new AnnotationConfigApplicationContext();
                                                 context.register(TestConfig.class);
                                                 context.refresh();
@@ -502,11 +502,11 @@ public class GCPStorageIT {
                                                             store.associate(entity, PropertyPath.from("rendition"), resourceLocation);
                             }
                             @AfterEach
-                            void tearDown() throws Throwable {
+                            void tearDown() {
                                 context.close();
                             }
                             @Test
-                            void shouldThrowAnError() throws Throwable {
+                            void shouldThrowAnError() {
                                 try {
                                                                         store.getResource(entity, PropertyPath.from("does.not.exist"));
                                                                     } catch (Exception sae) {
@@ -518,7 +518,7 @@ public class GCPStorageIT {
                         @Nested
                         class WhenAInvalidPropertyPathIsUsedToUnassociateAResource {
                             @BeforeEach
-                            void setUp() throws Throwable {
+                            void setUp() {
                                 context = new AnnotationConfigApplicationContext();
                                                 context.register(TestConfig.class);
                                                 context.refresh();
@@ -542,11 +542,11 @@ public class GCPStorageIT {
                                                             store.associate(entity, PropertyPath.from("rendition"), resourceLocation);
                             }
                             @AfterEach
-                            void tearDown() throws Throwable {
+                            void tearDown() {
                                 context.close();
                             }
                             @Test
-                            void shouldThrowAnError() throws Throwable {
+                            void shouldThrowAnError() {
                                 try {
                                                                         store.unassociate(entity, PropertyPath.from("does.not.exist"));
                                                                     } catch (Exception sae) {
@@ -564,7 +564,7 @@ public class GCPStorageIT {
             @Nested
             class Tests {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     context = new AnnotationConfigApplicationContext();
                                     context.register(TestConfig.class);
                                     context.refresh();
@@ -587,11 +587,11 @@ public class GCPStorageIT {
                                         entity = repo.save(entity);
                 }
                 @AfterEach
-                void tearDown() throws Throwable {
+                void tearDown() {
                     context.close();
                 }
                 @Test
-                void shouldBeAbleToStoreNewContent() throws Throwable {
+                void shouldBeAbleToStoreNewContent() {
                     // content
                                         try (InputStream content = store.getContent(entity)) {
                                             assertThat(IOUtils.contentEquals(new ByteArrayInputStream("Hello Spring Content World!".getBytes()), content)).isTrue();
@@ -605,7 +605,7 @@ public class GCPStorageIT {
                                         }
                 }
                 @Test
-                void shouldHaveContentMetadata() throws Throwable {
+                void shouldHaveContentMetadata() {
                     // content
                                         assertThat(entity.getContentId()).isNotNull();
                                         assertThat(entity.getContentId().trim().length()).isGreaterThan(0);
@@ -620,7 +620,7 @@ public class GCPStorageIT {
             @Nested
             class WhenContentIsUpdated {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     context = new AnnotationConfigApplicationContext();
                                     context.register(TestConfig.class);
                                     context.refresh();
@@ -647,11 +647,11 @@ public class GCPStorageIT {
                                             entity = repo.save(entity);
                 }
                 @AfterEach
-                void tearDown() throws Throwable {
+                void tearDown() {
                     context.close();
                 }
                 @Test
-                void shouldHaveTheUpdatedContent() throws Throwable {
+                void shouldHaveTheUpdatedContent() throws IOException {
                     //content
                                             try (InputStream content = store.getContent(entity)) {
                                                 boolean matches = IOUtils.contentEquals(new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), content);
@@ -668,7 +668,7 @@ public class GCPStorageIT {
             @Nested
             class WhenContentIsUpdatedWithShorterContent {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     context = new AnnotationConfigApplicationContext();
                                     context.register(TestConfig.class);
                                     context.refresh();
@@ -695,11 +695,11 @@ public class GCPStorageIT {
                                             entity = repo.save(entity);
                 }
                 @AfterEach
-                void tearDown() throws Throwable {
+                void tearDown() {
                     context.close();
                 }
                 @Test
-                void shouldStoreOnlyTheNewContent() throws Throwable {
+                void shouldStoreOnlyTheNewContent() throws IOException {
                     //content
                                             try (InputStream content = store.getContent(entity)) {
                                                 boolean matches = IOUtils.contentEquals(new ByteArrayInputStream("Hello Spring World!".getBytes()), content);
@@ -716,7 +716,7 @@ public class GCPStorageIT {
             @Nested
             class WhenContentIsUpdatedAndNotOverwritten {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     context = new AnnotationConfigApplicationContext();
                                     context.register(TestConfig.class);
                                     context.refresh();
@@ -739,11 +739,11 @@ public class GCPStorageIT {
                                         entity = repo.save(entity);
                 }
                 @AfterEach
-                void tearDown() throws Throwable {
+                void tearDown() {
                     context.close();
                 }
                 @Test
-                void shouldHaveTheUpdatedContent() throws Throwable {
+                void shouldHaveTheUpdatedContent() throws IOException {
                     String contentId = entity.getContentId();
                                                 assertThat(contentId).isNotNull();
                                                 assertThat(storage.get(BlobId.of("test-bucket", contentId)).exists()).isTrue();
@@ -764,7 +764,7 @@ public class GCPStorageIT {
             @Nested
             class WhenContentIsUnset {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     context = new AnnotationConfigApplicationContext();
                                     context.register(TestConfig.class);
                                     context.refresh();
@@ -792,11 +792,11 @@ public class GCPStorageIT {
                                             entity = repo.save(entity);
                 }
                 @AfterEach
-                void tearDown() throws Throwable {
+                void tearDown() {
                     context.close();
                 }
                 @Test
-                void shouldHaveNoContent() throws Throwable {
+                void shouldHaveNoContent() throws IOException {
                     //content
                                             try (InputStream content = store.getContent(entity)) {
                                                 assertThat(content).isNull();
@@ -818,7 +818,7 @@ public class GCPStorageIT {
             @Nested
             class WhenContentIsUnsetButKept {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     context = new AnnotationConfigApplicationContext();
                                     context.register(TestConfig.class);
                                     context.refresh();
@@ -845,11 +845,11 @@ public class GCPStorageIT {
                                             entity = repo.save(entity);
                 }
                 @AfterEach
-                void tearDown() throws Throwable {
+                void tearDown() {
                     context.close();
                 }
                 @Test
-                void shouldHaveNoContent() throws Throwable {
+                void shouldHaveNoContent() throws IOException {
                     //content
                                             try (InputStream content = store.getContent(entity)) {
                                                 assertThat(content).isNull();
@@ -863,7 +863,7 @@ public class GCPStorageIT {
             @Nested
             class WhenAnInvalidPropertyPathIsUsedToSetContent {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     context = new AnnotationConfigApplicationContext();
                                     context.register(TestConfig.class);
                                     context.refresh();
@@ -886,11 +886,11 @@ public class GCPStorageIT {
                                         entity = repo.save(entity);
                 }
                 @AfterEach
-                void tearDown() throws Throwable {
+                void tearDown() {
                     context.close();
                 }
                 @Test
-                void shouldThrowAnError() throws Throwable {
+                void shouldThrowAnError() {
                     try {
                                                     store.setContent(entity, PropertyPath.from("does.not.exist"), new ByteArrayInputStream("foo".getBytes()));
                                                 } catch (Exception sae) {
@@ -902,7 +902,7 @@ public class GCPStorageIT {
             @Nested
             class WhenAnInvalidPropertyPathIsUsedToGetContent {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     context = new AnnotationConfigApplicationContext();
                                     context.register(TestConfig.class);
                                     context.refresh();
@@ -925,11 +925,11 @@ public class GCPStorageIT {
                                         entity = repo.save(entity);
                 }
                 @AfterEach
-                void tearDown() throws Throwable {
+                void tearDown() {
                     context.close();
                 }
                 @Test
-                void shouldThrowAnError() throws Throwable {
+                void shouldThrowAnError() {
                     try {
                                                     store.getContent(entity, PropertyPath.from("does.not.exist"));
                                                 } catch (Exception sae) {
@@ -941,7 +941,7 @@ public class GCPStorageIT {
             @Nested
             class WhenAnInvalidPropertyPathIsUsedToUnsetContent {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     context = new AnnotationConfigApplicationContext();
                                     context.register(TestConfig.class);
                                     context.refresh();
@@ -964,11 +964,11 @@ public class GCPStorageIT {
                                         entity = repo.save(entity);
                 }
                 @AfterEach
-                void tearDown() throws Throwable {
+                void tearDown() {
                     context.close();
                 }
                 @Test
-                void shouldThrowAnError() throws Throwable {
+                void shouldThrowAnError() {
                     try {
                                                     store.unsetContent(entity, PropertyPath.from("does.not.exist"));
                                                 } catch (Exception sae) {
@@ -980,7 +980,7 @@ public class GCPStorageIT {
             @Nested
             class WhenContentIsDeletedAndTheContentIdFieldIsSharedWithEntityId {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     context = new AnnotationConfigApplicationContext();
                                     context.register(TestConfig.class);
                                     context.refresh();
@@ -1003,11 +1003,11 @@ public class GCPStorageIT {
                                         entity = repo.save(entity);
                 }
                 @AfterEach
-                void tearDown() throws Throwable {
+                void tearDown() {
                     context.close();
                 }
                 @Test
-                void shouldNotResetTheIdField() throws Throwable {
+                void shouldNotResetTheIdField() {
                     SharedIdRepository sharedIdRepository = context.getBean(SharedIdRepository.class);
                                                 SharedIdStore sharedIdStore = context.getBean(SharedIdStore.class);
 
@@ -1026,7 +1026,7 @@ public class GCPStorageIT {
                 @Nested
                 class GivenAEntityWithANullEmbeddedContentObject {
                     @BeforeEach
-                    void setUp() throws Throwable {
+                    void setUp() {
                         context = new AnnotationConfigApplicationContext();
                                         context.register(TestConfig.class);
                                         context.refresh();
@@ -1049,16 +1049,16 @@ public class GCPStorageIT {
                                             entity = repo.save(entity);
                     }
                     @AfterEach
-                    void tearDown() throws Throwable {
+                    void tearDown() {
                         context.close();
                     }
                     @Test
-                    void shouldReturnNullWhenContentIsFetched() throws Throwable {
+                    void shouldReturnNullWhenContentIsFetched() throws IOException {
                         EntityWithEmbeddedContent entity = embeddedRepo.save(new EntityWithEmbeddedContent());
                                                                 assertThat(embeddedStore.getContent(entity, PropertyPath.from("content"))).isNull();
                     }
                     @Test
-                    void shouldBeSuccessfulWhenContentIsSet() throws Throwable {
+                    void shouldBeSuccessfulWhenContentIsSet() throws IOException {
                         EntityWithEmbeddedContent entity = embeddedRepo.save(new EntityWithEmbeddedContent());
                                                                 embeddedStore.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
                                                                 try (InputStream is = embeddedStore.getContent(entity, PropertyPath.from("content"))) {
@@ -1066,7 +1066,7 @@ public class GCPStorageIT {
                                                                 }
                     }
                     @Test
-                    void shouldReturnNullWhenContentIsUnset() throws Throwable {
+                    void shouldReturnNullWhenContentIsUnset() {
                         EntityWithEmbeddedContent entity = embeddedRepo.save(new EntityWithEmbeddedContent());
                                                                 assertThat(embeddedStore.unsetContent(entity, PropertyPath.from("content"))).isSameAs(entity);
                                                                 int i = 0;

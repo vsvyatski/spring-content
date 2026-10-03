@@ -14,6 +14,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,7 +43,7 @@ public class DelegatingBlobResourceLoaderTest {
             @Nested
             class GivenACustomBlobResourceLoader {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() throws SQLException {
                     ds = mock(DataSource.class);
                     Connection conn = mock(Connection.class);
                     DatabaseMetaData metadata = mock(DatabaseMetaData.class);
@@ -63,7 +64,7 @@ public class DelegatingBlobResourceLoaderTest {
                 }
 
                 @Test
-                void shouldReturnAPostgresBlobResource() throws Throwable {
+                void shouldReturnAPostgresBlobResource() {
                     verify(customLoader).getResource(any());
                 }
 
@@ -72,7 +73,7 @@ public class DelegatingBlobResourceLoaderTest {
             @Nested
             class GivenADatasourceThatDoesnTHaveAMatchingBlobResourceLoader {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() throws SQLException {
                     ds = mock(DataSource.class);
                     Connection conn = mock(Connection.class);
                     DatabaseMetaData metadata = mock(DatabaseMetaData.class);
@@ -92,7 +93,7 @@ public class DelegatingBlobResourceLoaderTest {
                 }
 
                 @Test
-                void shouldReturnAGenericBlobResource() throws Throwable {
+                void shouldReturnAGenericBlobResource() {
                     assertThat(resource).isInstanceOf(GenericBlobResource.class);
                 }
 

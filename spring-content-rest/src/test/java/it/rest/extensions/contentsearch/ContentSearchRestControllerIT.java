@@ -137,7 +137,7 @@ public class ContentSearchRestControllerIT {
             @Nested
             class GivenAnEntityHasNoContentAssociations {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                                     reflectionService = mock(ReflectionService.class);
@@ -150,7 +150,7 @@ public class ContentSearchRestControllerIT {
                                     controller.setQueryMethodsEntityLookupStrategy(queryMethodsLookupStrategy);
                 }
                 @Test
-                void shouldThrowAnException() throws Throwable {
+                void shouldThrowAnException() throws Exception {
                     MvcResult result = mvc.perform(get(
                                                     "/testEntityNoContents/searchContent?queryString=one")
                                                     .accept("application/hal+json"))
@@ -162,7 +162,7 @@ public class ContentSearchRestControllerIT {
             @Nested
             class GivenAStoreThatIsNotSearchable {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                                     reflectionService = mock(ReflectionService.class);
@@ -175,7 +175,7 @@ public class ContentSearchRestControllerIT {
                                     controller.setQueryMethodsEntityLookupStrategy(queryMethodsLookupStrategy);
                 }
                 @Test
-                void shouldThrowAResourceNotFoundException() throws Throwable {
+                void shouldThrowAResourceNotFoundException() throws Exception {
                     MvcResult result = mvc.perform(get(
                                                     "/testEntityNotSearchables/searchContent?queryString=one")
                                                     .accept("application/hal+json"))
@@ -187,7 +187,7 @@ public class ContentSearchRestControllerIT {
             @Nested
             class GivenTheSearchMethodIsInvalid {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                                     reflectionService = mock(ReflectionService.class);
@@ -200,7 +200,7 @@ public class ContentSearchRestControllerIT {
                                     controller.setQueryMethodsEntityLookupStrategy(queryMethodsLookupStrategy);
                 }
                 @Test
-                void shouldReturnAResourceNotFoundException() throws Throwable {
+                void shouldReturnAResourceNotFoundException() throws Exception {
                     MvcResult result = mvc.perform(get(
                                                     "/testEntityWithSharedIds/searchContent/invalidSearchMethod?keyword=one")
                                                     .accept("application/hal+json"))
@@ -210,7 +210,7 @@ public class ContentSearchRestControllerIT {
             @Nested
             class GivenNoKeywordsAreSpecified {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                                     reflectionService = mock(ReflectionService.class);
@@ -223,7 +223,7 @@ public class ContentSearchRestControllerIT {
                                     controller.setQueryMethodsEntityLookupStrategy(queryMethodsLookupStrategy);
                 }
                 @Test
-                void shouldReturnABadRequestException() throws Throwable {
+                void shouldReturnABadRequestException() throws Exception {
                     mvc.perform(get("/testEntityWithSharedIds/searchContent")
                                                     .accept("application/hal+json"))
                                             .andExpect(status().isBadRequest());
@@ -232,7 +232,7 @@ public class ContentSearchRestControllerIT {
             @Nested
             class GivenPagedResultsAreRequested {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                                     reflectionService = mock(ReflectionService.class);
@@ -245,7 +245,7 @@ public class ContentSearchRestControllerIT {
                                     controller.setQueryMethodsEntityLookupStrategy(queryMethodsLookupStrategy);
                 }
                 @Test
-                void shouldInvokeSearchWithThePageRequest() throws Throwable {
+                void shouldInvokeSearchWithThePageRequest() throws Exception {
                     MvcResult result = mvc.perform(get(
                                                     "/testEntityWithSeparateIds/searchContent?queryString=else&page=1&size=1")
                                                     .accept("application/hal+json"))
@@ -262,7 +262,7 @@ public class ContentSearchRestControllerIT {
                 @Nested
                 class GivenNoResultsAreFound {
                     @BeforeEach
-                    void setUp() throws Throwable {
+                    void setUp() {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                                         reflectionService = mock(ReflectionService.class);
@@ -278,7 +278,7 @@ public class ContentSearchRestControllerIT {
                                                             eq("one"), isA(Pageable.class), eq(InternalResult.class))).thenReturn(Collections.EMPTY_LIST);
                     }
                     @Test
-                    void shouldReturnAnEmptyResponseEntity() throws Throwable {
+                    void shouldReturnAnEmptyResponseEntity() throws Exception {
                         MvcResult result = mvc.perform(get(
                                                             "/testEntityWithSharedIds/searchContent?queryString=one")
                                                             .accept("application/hal+json"))
@@ -294,7 +294,7 @@ public class ContentSearchRestControllerIT {
                 @Nested
                 class GivenResultsAreFound {
                     @BeforeEach
-                    void setUp() throws Throwable {
+                    void setUp() {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                                         reflectionService = mock(ReflectionService.class);
@@ -324,7 +324,7 @@ public class ContentSearchRestControllerIT {
                                                             eq("two"))).thenReturn(internalResults);
                     }
                     @Test
-                    void shouldReturnAResponseEntityWithTheEntity() throws Throwable {
+                    void shouldReturnAResponseEntityWithTheEntity() throws Exception {
                         MvcResult result = mvc.perform(get(
                                                             "/testEntityWithSharedIds/searchContent?queryString=two")
                                                             .accept("application/hal+json"))
@@ -353,7 +353,7 @@ public class ContentSearchRestControllerIT {
                 @Nested
                 class GivenResultsContainOrphanedFulltextDocuments {
                     @BeforeEach
-                    void setUp() throws Throwable {
+                    void setUp() {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                                         reflectionService = mock(ReflectionService.class);
@@ -382,7 +382,7 @@ public class ContentSearchRestControllerIT {
                                                             eq("else"))).thenReturn(internalResults);
                     }
                     @Test
-                    void shouldFilterOutInvalidIDs() throws Throwable {
+                    void shouldFilterOutInvalidIDs() throws Exception {
                         MvcResult result = mvc.perform(get(
                                                             "/testEntityWithSharedIds/searchContent?queryString=else")
                                                             .accept("application/hal+json"))
@@ -406,7 +406,7 @@ public class ContentSearchRestControllerIT {
                 @Nested
                 class GivenNoResultsAreFound {
                     @BeforeEach
-                    void setUp() throws Throwable {
+                    void setUp() {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                                         reflectionService = mock(ReflectionService.class);
@@ -422,7 +422,7 @@ public class ContentSearchRestControllerIT {
                                                             eq("something"), isA(Pageable.class), eq(InternalResult.class))).thenReturn(Collections.EMPTY_LIST);
                     }
                     @Test
-                    void shouldReturnAnEmptyResponseEntity() throws Throwable {
+                    void shouldReturnAnEmptyResponseEntity() throws Exception {
                         MvcResult result = mvc.perform(get(
                                                             "/testEntityWithSeparateIds/searchContent?queryString=something")
                                                             .accept("application/hal+json"))
@@ -438,7 +438,7 @@ public class ContentSearchRestControllerIT {
                 @Nested
                 class GivenResultsAreFoundWithEntityIDs {
                     @BeforeEach
-                    void setUp() throws Throwable {
+                    void setUp() {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                                         reflectionService = mock(ReflectionService.class);
@@ -468,7 +468,7 @@ public class ContentSearchRestControllerIT {
                                                             eq("else"))).thenReturn(internalResults);
                     }
                     @Test
-                    void shouldReturnAResponseEntityWithTheEntity() throws Throwable {
+                    void shouldReturnAResponseEntityWithTheEntity() throws Exception {
                         MvcResult result = mvc.perform(get(
                                                             "/testEntityWithSeparateIds/searchContent?queryString=else")
                                                             .accept("application/hal+json"))
@@ -497,7 +497,7 @@ public class ContentSearchRestControllerIT {
                 @Nested
                 class GivenResultsContainOrphanedFulltextDocuments {
                     @BeforeEach
-                    void setUp() throws Throwable {
+                    void setUp() {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                                         reflectionService = mock(ReflectionService.class);
@@ -526,7 +526,7 @@ public class ContentSearchRestControllerIT {
                                                             eq("else"))).thenReturn(internalResults);
                     }
                     @Test
-                    void shouldFilterOutInvalidIDs() throws Throwable {
+                    void shouldFilterOutInvalidIDs() throws Exception {
                         MvcResult result = mvc.perform(get(
                                                             "/testEntityWithSeparateIds/searchContent?queryString=else")
                                                             .accept("application/hal+json"))
@@ -548,7 +548,7 @@ public class ContentSearchRestControllerIT {
             @Nested
             class GivenResultsAreFoundReturningACustomResultType {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                                     reflectionService = mock(ReflectionService.class);
@@ -569,7 +569,7 @@ public class ContentSearchRestControllerIT {
                                                     eq("else"))).thenReturn(results);
                 }
                 @Test
-                void shouldReturnAResponseEntityWithTheEntity() throws Throwable {
+                void shouldReturnAResponseEntityWithTheEntity() throws Exception {
                     MvcResult result = mvc.perform(get(
                                                     "/repoWithCustomSearchReturnType/searchContent?queryString=else")
                                                     .accept("application/hal+json"))
@@ -604,7 +604,7 @@ public class ContentSearchRestControllerIT {
             @Nested
             class GivenPagedResultsAreFoundReturningACustomResultType {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                                     reflectionService = mock(ReflectionService.class);
@@ -624,7 +624,7 @@ public class ContentSearchRestControllerIT {
                                                     eq("else"), isA(Pageable.class))).thenReturn(results);
                 }
                 @Test
-                void shouldReturnAResponseEntityWithTheEntity() throws Throwable {
+                void shouldReturnAResponseEntityWithTheEntity() throws Exception {
                     MvcResult result = mvc.perform(get(
                                                     "/repoWithCustomSearchReturnType/searchContent?queryString=else&page=1&size=1")
                                                     .accept("application/hal+json"))
@@ -650,7 +650,7 @@ public class ContentSearchRestControllerIT {
             @Nested
             class GivenARepositoryWithNoEntityLookupQueryMethod {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                                     reflectionService = mock(ReflectionService.class);
@@ -680,7 +680,7 @@ public class ContentSearchRestControllerIT {
                                                     eq("else"))).thenReturn(internalResults);
                 }
                 @Test
-                void shouldReturnAResponseWithTheEntity() throws Throwable {
+                void shouldReturnAResponseWithTheEntity() throws Exception {
                     MvcResult result = mvc.perform(get(
                                                     "/repoWithNoLookupStrategy/searchContent?queryString=else")
                                                     .accept("application/hal+json"))
@@ -710,7 +710,7 @@ public class ContentSearchRestControllerIT {
         @Nested
         class FetchEntitiesInBatchesCases {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                                 reflectionService = mock(ReflectionService.class);
@@ -723,7 +723,7 @@ public class ContentSearchRestControllerIT {
                                 controller.setQueryMethodsEntityLookupStrategy(queryMethodsLookupStrategy);
             }
             @Test
-            void shouldBatchQueriesAppropriately() throws Throwable {
+            void shouldBatchQueriesAppropriately() {
                 List<String> ids = new ArrayList<>();
                                     for (int i=0; i < 500; i++) {
                                         TestEntityWithSeparateId entity = new TestEntityWithSeparateId();
