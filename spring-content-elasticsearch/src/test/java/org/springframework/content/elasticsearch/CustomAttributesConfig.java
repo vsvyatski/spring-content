@@ -8,7 +8,7 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
-import org.elasticsearch.client.RestHighLevelClient;
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.content.commons.renditions.RenditionProvider;
 import org.springframework.content.elasticsearch.ElasticsearchIT.Document;
@@ -41,7 +41,7 @@ public class CustomAttributesConfig {
     }
 
     @Bean
-    public RestHighLevelClient client() {
+    public ElasticsearchClient client() {
         return ElasticsearchTestContainer.client();
     }
 

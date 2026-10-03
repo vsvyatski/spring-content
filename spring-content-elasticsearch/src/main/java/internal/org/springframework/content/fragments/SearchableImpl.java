@@ -10,26 +10,14 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.elasticsearch.ElasticsearchStatusException;
-import org.elasticsearch.action.search.SearchRequest;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.SimpleQueryStringBuilder;
-import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.SearchHits;
-import org.elasticsearch.search.builder.SearchSourceBuilder;
-import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.fulltext.Attribute;
 import org.springframework.content.commons.fulltext.Highlight;
-import org.springframework.content.commons.store.StoreAccessException;
 import org.springframework.content.commons.search.Searchable;
+import org.springframework.content.commons.store.StoreAccessException;
 import org.springframework.content.commons.utils.BeanUtils;
 import org.springframework.content.commons.utils.ContentPropertyUtils;
 import org.springframework.content.elasticsearch.FilterQueryProvider;
@@ -40,14 +28,20 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
-import internal.org.springframework.content.elasticsearch.ElasticsearchIndexer;
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch._types.ElasticsearchException;
+import co.elastic.clients.elasticsearch._types.FieldValue;
+import co.elastic.clients.elasticsearch.core.search.HighlightField;
+import co.elastic.clients.elasticsearch.core.search.Hit;
+import co.elastic.clients.elasticsearch.core.search.HitsMetadata;
+import co.elastic.clients.util.NamedValue;
 import internal.org.springframework.content.elasticsearch.IndexManager;
 
 public class SearchableImpl implements Searchable<Object> {
 
     private static final Log LOGGER = LogFactory.getLog(SearchableImpl.class);
 
-    private final RestHighLevelClient client;
+    private final ElasticsearchClient client;
     private final IndexManager manager;
     private FilterQueryProvider filterProvider;
     private ConversionService conversionService;
@@ -65,7 +59,7 @@ public class SearchableImpl implements Searchable<Object> {
     }
 
     @Autowired
-    public SearchableImpl(RestHighLevelClient client, IndexManager manager) {
+    public SearchableImpl(ElasticsearchClient client, IndexManager manager) {
         this.client = client;
         this.manager = manager;
         this.filterProvider = null;
@@ -99,12 +93,8 @@ public class SearchableImpl implements Searchable<Object> {
         return search(queryStr, pageable, genericArguments[0], Page.class);
     }
 
+    @SuppressWarnings("unchecked")
     private <R> R search(String queryString, Pageable pageable, Class<? extends Object> searchType, Class<R> returnType) {
-
-        SearchRequest searchRequest = new SearchRequest(manager.indexName(domainClass));
-        searchRequest.types(domainClass.getName());
-
-        SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
 
         List<String> attributesToFetch = new ArrayList<>();
         if (!ContentPropertyUtils.isPrimitiveContentPropertyClass(searchType)) {
@@ -113,84 +103,75 @@ public class SearchableImpl implements Searchable<Object> {
                 attributesToFetch.add(fieldAnnotation.name());
             }
         }
-        if (attributesToFetch.size() > 0) {
-            sourceBuilder.fetchSource(attributesToFetch.toArray(new String[]{}), null);
-        }
+        boolean highlight = !ContentPropertyUtils.isPrimitiveContentPropertyClass(searchType)
+                && BeanUtils.findFieldWithAnnotation(searchType, Highlight.class) != null;
 
-        SimpleQueryStringBuilder sqsb = QueryBuilders.simpleQueryStringQuery(queryString);
-        sqsb.field("attachment.content");
-
-        BoolQueryBuilder b = QueryBuilders.boolQuery();
-        b.must(sqsb);
-
-        if (filterProvider != null) {
-            Map<String,Object> filters = filterProvider.filterQueries(domainClass);
-            for (String attr : filters.keySet()) {
-                b.filter(QueryBuilders.matchQuery(attr, filters.get(attr)));
-            }
-        }
-
-        sourceBuilder.query(b);
-        if (pageable != null) {
-            sourceBuilder.from(pageable.getPageNumber() * pageable.getPageSize());
-            sourceBuilder.size(pageable.getPageSize());
-        }
-
-        if (!ContentPropertyUtils.isPrimitiveContentPropertyClass(searchType)) {
-            if (BeanUtils.findFieldWithAnnotation(searchType, Highlight.class) != null) {
-                HighlightBuilder hb = SearchSourceBuilder.highlight();
-                hb.field("attachment.content");
-                sourceBuilder.highlighter(hb);
-            }
-        }
-
-        searchRequest.source(sourceBuilder);
-
-        SearchResponse res = null;
         try {
-            res = client.search(searchRequest, RequestOptions.DEFAULT);
+            var res = client.search(s -> {
+                s.index(manager.indexName(domainClass));
+                if (attributesToFetch.size() > 0) {
+                    s.source(src -> src.filter(f -> f.includes(attributesToFetch)));
+                }
+                s.query(q -> q.bool(b -> {
+                    b.must(m -> m.simpleQueryString(sq -> sq.query(queryString).fields("attachment.content")));
+                    b.filter(f -> f.matchPhrase(mp -> mp.field("entityClass").query(domainClass.getName())));
+                    if (filterProvider != null) {
+                        Map<String, Object> filters = filterProvider.filterQueries(domainClass);
+                        for (String attr : filters.keySet()) {
+                            String value = String.valueOf(filters.get(attr));
+                            b.filter(f -> f.match(mq -> mq.field(attr).query(FieldValue.of(value))));
+                        }
+                    }
+                    return b;
+                }));
+                if (pageable != null) {
+                    s.from(pageable.getPageNumber() * pageable.getPageSize());
+                    s.size(pageable.getPageSize());
+                }
+                if (highlight) {
+                    s.highlight(h -> h.fields(NamedValue.of("attachment.content", HighlightField.of(hf -> hf))));
+                }
+                return s;
+            }, Map.class);
+            return getResults(res.hits(), pageable, searchType, returnType);
         }
-        catch (IOException | ElasticsearchStatusException e) {
+        catch (IOException | ElasticsearchException e) {
             LOGGER.error(format("Error searching indexed content for '%s'", queryString), e);
             throw new StoreAccessException(format("Error searching indexed content for '%s'", queryString), e);
         }
-
-        return getResults(res.getHits(), pageable, searchType, returnType);
     }
 
-    private <R> R getResults(SearchHits result, Pageable pageable, Class<?> resultType, Class<R> returnType) {
+    private <R> R getResults(HitsMetadata<Map> result, Pageable pageable, Class<?> resultType, Class<R> returnType) {
 
         List<Object> contents = new ArrayList<>();
+        long total = result == null || result.total() == null ? 0 : result.total().value();
 
-        if (result == null || result.getTotalHits().value == 0) {
+        if (result == null || total == 0) {
             return wrapResult(returnType, contents, pageable, 0);
         }
 
-        for (SearchHit hit : result.getHits()) {
+        for (Hit<Map> hit : result.hits()) {
 
             try {
                 if (ContentPropertyUtils.isPrimitiveContentPropertyClass(resultType)) {
-                    contents.add(conversionService.convert(hit.getId(), TypeDescriptor.valueOf(String.class), TypeDescriptor.valueOf(this.idClass)));
+                    contents.add(conversionService.convert(hit.id(), TypeDescriptor.valueOf(String.class), TypeDescriptor.valueOf(this.idClass)));
                 } else {
                     Object row = resultType.newInstance();
                     BeanWrapper wrapper = new BeanWrapperImpl(row);
 
-
-                    String id = hit.getId();
-
                     Field contentIdField = BeanUtils.findFieldWithAnnotation(resultType, ContentId.class);
                     if (contentIdField != null) {
-                        wrapper.setPropertyValue(contentIdField.getName(), id);
+                        wrapper.setPropertyValue(contentIdField.getName(), hit.id());
                     }
 
                     Field highlightField = BeanUtils.findFieldWithAnnotation(resultType, Highlight.class);
                     if (highlightField != null) {
-                        wrapper.setPropertyValue(highlightField.getName(), hit.getHighlightFields().get("attachment.content").getFragments()[0].string());
+                        wrapper.setPropertyValue(highlightField.getName(), hit.highlight().get("attachment.content").get(0));
                     }
 
                     for (java.lang.reflect.Field field : BeanUtils.findFieldsWithAnnotation(resultType, Attribute.class, new BeanWrapperImpl(resultType))) {
                         Attribute fieldAnnotation = field.getAnnotation(Attribute.class);
-                        wrapper.setPropertyValue(field.getName(), hit.getSourceAsMap().get(fieldAnnotation.name()));
+                        wrapper.setPropertyValue(field.getName(), hit.source().get(fieldAnnotation.name()));
                     }
 
                     contents.add(row);
@@ -200,7 +181,7 @@ public class SearchableImpl implements Searchable<Object> {
             }
         }
 
-        return wrapResult(returnType, contents, pageable, result.getTotalHits().value);
+        return wrapResult(returnType, contents, pageable, total);
     }
 
     @SuppressWarnings("unchecked")

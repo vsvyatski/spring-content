@@ -1,13 +1,11 @@
 package org.springframework.content.fs.io;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.jspecify.annotations.NonNull;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.springframework.content.commons.io.DeletableResource;
 import org.springframework.core.io.Resource;
 
@@ -15,15 +13,14 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 public class FileSystemResourceLoaderTest {
 
     private FileSystemResourceLoader loader = null;
 
     private String path;
 
-    private String location;
-
-    private File parent;
     private File file;
 
     private Exception ex;
@@ -51,7 +48,6 @@ public class FileSystemResourceLoaderTest {
                     assertThat(loader.getResource("/something").getFile().getPath()).isEqualTo(expected);
                     assertThat(loader.getResource("/something")).isInstanceOf(DeletableResource.class);
                 }
-
             }
 
             @Nested
@@ -73,11 +69,8 @@ public class FileSystemResourceLoaderTest {
                     assertThat(loader.getResource("/something").getFile().getPath()).isEqualTo(expected);
                     assertThat(loader.getResource("/something")).isInstanceOf(DeletableResource.class);
                 }
-
             }
-
         }
-
     }
 
     @Nested
@@ -88,8 +81,8 @@ public class FileSystemResourceLoaderTest {
             class GivenAFileResourceThatExists {
                 @BeforeEach
                 void setUp() throws IOException {
-                    parent = Files.createTempDirectory("fs-").toFile();
-                    location = "FileSystemResourceLoaderTest.tmp";
+                    File parent = Files.createTempDirectory("fs-").toFile();
+                    String location = "FileSystemResourceLoaderTest.tmp";
                     file = new File(parent, location);
                     FileUtils.touch(file);
                     assertThat(file.exists()).isTrue();
@@ -104,11 +97,8 @@ public class FileSystemResourceLoaderTest {
                 void shouldDeleteTheUnderlyingFile() {
                     assertThat(file.exists()).isFalse();
                 }
-
             }
-
         }
-
     }
 
     private String getPathWithProperSeparators(@NonNull String path) {

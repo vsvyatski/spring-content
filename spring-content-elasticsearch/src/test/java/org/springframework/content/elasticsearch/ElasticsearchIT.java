@@ -22,16 +22,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 import org.apache.commons.io.IOUtils;
-import org.elasticsearch.ElasticsearchStatusException;
-import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
-import org.elasticsearch.action.get.GetRequest;
-import org.elasticsearch.action.get.GetResponse;
-import org.elasticsearch.action.support.master.AcknowledgedResponse;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.client.indices.CloseIndexRequest;
-import org.elasticsearch.client.indices.GetIndexRequest;
-import org.elasticsearch.client.indices.GetIndexResponse;
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch._types.ElasticsearchException;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.annotations.MimeType;
 import org.springframework.content.commons.fulltext.Attribute;
@@ -52,7 +44,7 @@ public class ElasticsearchIT {
     private DocumentContentStore store;
     private DocumentStoreSearchable searchableStore;
 
-    private RestHighLevelClient client;
+    private ElasticsearchClient client;
 
     private Document doc1, doc2;
     private UUID id1, id2 = null;
@@ -78,7 +70,7 @@ public class ElasticsearchIT {
 
                                                 repo = context.getBean(DocumentRepository.class);
                                                 store = context.getBean(DocumentContentStore.class);
-                                                client = context.getBean(RestHighLevelClient.class);
+                                                client = context.getBean(ElasticsearchClient.class);
                                                 ((IndexingStrategy)context.getBean(indexStrategyContext)).setup();
                                                 indexName = ((IndexingStrategy)context.getBean(indexStrategyContext)).indexName();
 
@@ -93,13 +85,11 @@ public class ElasticsearchIT {
                                                     doc2.setAuthor("author@email.com");
                                                     store.setContent(doc2, this.getClass().getResourceAsStream("/two.rtf"));
                                                     doc2 = repo.save(doc2);
-                            GetRequest req = new GetRequest(indexName, doc1.getClass().getName(), doc1.getContentId().toString());
-                                                    GetResponse res = client.get(req, RequestOptions.DEFAULT);
-                                                    assertThat(res.isExists()).isTrue();
+                            var res = client.get(g -> g.index(indexName).id(doc1.getContentId().toString()), Void.class);
+                                                    assertThat(res.found()).isTrue();
 
-                                                    req = new GetRequest(indexName, doc1.getClass().getName(), doc2.getContentId().toString());
-                                                    res = client.get(req, RequestOptions.DEFAULT);
-                                                    assertThat(res.isExists()).isTrue();
+                                                    res = client.get(g -> g.index(indexName).id(doc2.getContentId().toString()), Void.class);
+                                                    assertThat(res.found()).isTrue();
                         } finally {
                             if (doc1 != null) {
                                                         store.unsetContent(doc1);
@@ -116,16 +106,14 @@ public class ElasticsearchIT {
                                                 try {
                                                     // assert the right index exists as a double check we are testing the correct thing!
                                                     if (client != null) {
-                                                        GetIndexRequest gir = new GetIndexRequest(indexName);
-                                                        GetIndexResponse resp = client.indices().get(gir, RequestOptions.DEFAULT);
-                                                        assertThat(resp.getIndices().length).isEqualTo(1);
+                                                        var resp = client.indices().get(g -> g.index(indexName));
+                                                        assertThat(resp.indices().size()).isEqualTo(1);
                                                     }
-                                                } catch (ElasticsearchStatusException ese) {}
+                                                } catch (ElasticsearchException ese) {}
 
                                                 try {
-                                                    DeleteIndexRequest dir = new DeleteIndexRequest("_all");
-                                                    client.indices().delete(dir, RequestOptions.DEFAULT);
-                                                } catch (ElasticsearchStatusException ese) {}
+                                                    client.indices().delete(d -> d.index("_all"));
+                                                } catch (ElasticsearchException ese) {}
                         }
                     }));
                     nodes4.add(org.junit.jupiter.api.DynamicTest.dynamicTest("should be possible to close the index", () -> {
@@ -137,7 +125,7 @@ public class ElasticsearchIT {
 
                                                 repo = context.getBean(DocumentRepository.class);
                                                 store = context.getBean(DocumentContentStore.class);
-                                                client = context.getBean(RestHighLevelClient.class);
+                                                client = context.getBean(ElasticsearchClient.class);
                                                 ((IndexingStrategy)context.getBean(indexStrategyContext)).setup();
                                                 indexName = ((IndexingStrategy)context.getBean(indexStrategyContext)).indexName();
 
@@ -155,8 +143,8 @@ public class ElasticsearchIT {
                             IndexService indexer = (context.getBean(IndexService.class));
                                                     indexer.index(doc1, new ByteArrayInputStream("customized index".getBytes()));
 
-                                                    AcknowledgedResponse resp = client.indices().close(new CloseIndexRequest(indexName), RequestOptions.DEFAULT);
-                                                    assertThat(resp.isAcknowledged()).isTrue();
+                                                    var resp = client.indices().close(c -> c.index(indexName));
+                                                    assertThat(resp.acknowledged()).isTrue();
 
                                                     String command = format("curl -X GET %s/_cat/indices/%s?h=status", ElasticsearchTestContainer.getUrl(), indexName);
                                                     Process process = Runtime.getRuntime().exec(command);
@@ -184,16 +172,14 @@ public class ElasticsearchIT {
                                                 try {
                                                     // assert the right index exists as a double check we are testing the correct thing!
                                                     if (client != null) {
-                                                        GetIndexRequest gir = new GetIndexRequest(indexName);
-                                                        GetIndexResponse resp = client.indices().get(gir, RequestOptions.DEFAULT);
-                                                        assertThat(resp.getIndices().length).isEqualTo(1);
+                                                        var resp = client.indices().get(g -> g.index(indexName));
+                                                        assertThat(resp.indices().size()).isEqualTo(1);
                                                     }
-                                                } catch (ElasticsearchStatusException ese) {}
+                                                } catch (ElasticsearchException ese) {}
 
                                                 try {
-                                                    DeleteIndexRequest dir = new DeleteIndexRequest("_all");
-                                                    client.indices().delete(dir, RequestOptions.DEFAULT);
-                                                } catch (ElasticsearchStatusException ese) {}
+                                                    client.indices().delete(d -> d.index("_all"));
+                                                } catch (ElasticsearchException ese) {}
                         }
                     }));
                     {
@@ -207,7 +193,7 @@ public class ElasticsearchIT {
 
                                                     repo = context.getBean(DocumentRepository.class);
                                                     store = context.getBean(DocumentContentStore.class);
-                                                    client = context.getBean(RestHighLevelClient.class);
+                                                    client = context.getBean(ElasticsearchClient.class);
                                                     ((IndexingStrategy)context.getBean(indexStrategyContext)).setup();
                                                     indexName = ((IndexingStrategy)context.getBean(indexStrategyContext)).indexName();
 
@@ -260,16 +246,14 @@ public class ElasticsearchIT {
                                                     try {
                                                         // assert the right index exists as a double check we are testing the correct thing!
                                                         if (client != null) {
-                                                            GetIndexRequest gir = new GetIndexRequest(indexName);
-                                                            GetIndexResponse resp = client.indices().get(gir, RequestOptions.DEFAULT);
-                                                            assertThat(resp.getIndices().length).isEqualTo(1);
+                                                            var resp = client.indices().get(g -> g.index(indexName));
+                                                            assertThat(resp.indices().size()).isEqualTo(1);
                                                         }
-                                                    } catch (ElasticsearchStatusException ese) {}
+                                                    } catch (ElasticsearchException ese) {}
 
                                                     try {
-                                                        DeleteIndexRequest dir = new DeleteIndexRequest("_all");
-                                                        client.indices().delete(dir, RequestOptions.DEFAULT);
-                                                    } catch (ElasticsearchStatusException ese) {}
+                                                        client.indices().delete(d -> d.index("_all"));
+                                                    } catch (ElasticsearchException ese) {}
                             }
                         }));
                         nodes1.add(org.junit.jupiter.api.DynamicContainer.dynamicContainer("when the content is searched", nodes1.stream()));
@@ -285,7 +269,7 @@ public class ElasticsearchIT {
 
                                                     repo = context.getBean(DocumentRepository.class);
                                                     store = context.getBean(DocumentContentStore.class);
-                                                    client = context.getBean(RestHighLevelClient.class);
+                                                    client = context.getBean(ElasticsearchClient.class);
                                                     ((IndexingStrategy)context.getBean(indexStrategyContext)).setup();
                                                     indexName = ((IndexingStrategy)context.getBean(indexStrategyContext)).indexName();
 
@@ -327,16 +311,14 @@ public class ElasticsearchIT {
                                                     try {
                                                         // assert the right index exists as a double check we are testing the correct thing!
                                                         if (client != null) {
-                                                            GetIndexRequest gir = new GetIndexRequest(indexName);
-                                                            GetIndexResponse resp = client.indices().get(gir, RequestOptions.DEFAULT);
-                                                            assertThat(resp.getIndices().length).isEqualTo(1);
+                                                            var resp = client.indices().get(g -> g.index(indexName));
+                                                            assertThat(resp.indices().size()).isEqualTo(1);
                                                         }
-                                                    } catch (ElasticsearchStatusException ese) {}
+                                                    } catch (ElasticsearchException ese) {}
 
                                                     try {
-                                                        DeleteIndexRequest dir = new DeleteIndexRequest("_all");
-                                                        client.indices().delete(dir, RequestOptions.DEFAULT);
-                                                    } catch (ElasticsearchStatusException ese) {}
+                                                        client.indices().delete(d -> d.index("_all"));
+                                                    } catch (ElasticsearchException ese) {}
                             }
                         }));
                         nodes2.add(org.junit.jupiter.api.DynamicContainer.dynamicContainer("given a text extracting renderer", nodes2.stream()));
@@ -352,7 +334,7 @@ public class ElasticsearchIT {
 
                                                     repo = context.getBean(DocumentRepository.class);
                                                     store = context.getBean(DocumentContentStore.class);
-                                                    client = context.getBean(RestHighLevelClient.class);
+                                                    client = context.getBean(ElasticsearchClient.class);
                                                     ((IndexingStrategy)context.getBean(indexStrategyContext)).setup();
                                                     indexName = ((IndexingStrategy)context.getBean(indexStrategyContext)).indexName();
 
@@ -375,13 +357,11 @@ public class ElasticsearchIT {
                                                             id2 = doc2.getContentId();
                                                             store.unsetContent(doc2);
                                                             repo.delete(doc2);
-                                GetRequest req = new GetRequest(indexName, doc1.getClass().getName(), id1.toString());
-                                                            GetResponse res = client.get(req, RequestOptions.DEFAULT);
-                                                            assertThat(res.isExists()).isFalse();
+                                var res = client.get(g -> g.index(indexName).id(id1.toString()), Void.class);
+                                                            assertThat(res.found()).isFalse();
 
-                                                            req = new GetRequest(indexName, doc1.getClass().getName(), id2.toString());
-                                                            res = client.get(req, RequestOptions.DEFAULT);
-                                                            assertThat(res.isExists()).isFalse();
+                                                            res = client.get(g -> g.index(indexName).id(id2.toString()), Void.class);
+                                                            assertThat(res.found()).isFalse();
                             } finally {
                                 doc1 = null;
                                                             doc2 = null;
@@ -401,16 +381,14 @@ public class ElasticsearchIT {
                                                     try {
                                                         // assert the right index exists as a double check we are testing the correct thing!
                                                         if (client != null) {
-                                                            GetIndexRequest gir = new GetIndexRequest(indexName);
-                                                            GetIndexResponse resp = client.indices().get(gir, RequestOptions.DEFAULT);
-                                                            assertThat(resp.getIndices().length).isEqualTo(1);
+                                                            var resp = client.indices().get(g -> g.index(indexName));
+                                                            assertThat(resp.indices().size()).isEqualTo(1);
                                                         }
-                                                    } catch (ElasticsearchStatusException ese) {}
+                                                    } catch (ElasticsearchException ese) {}
 
                                                     try {
-                                                        DeleteIndexRequest dir = new DeleteIndexRequest("_all");
-                                                        client.indices().delete(dir, RequestOptions.DEFAULT);
-                                                    } catch (ElasticsearchStatusException ese) {}
+                                                        client.indices().delete(d -> d.index("_all"));
+                                                    } catch (ElasticsearchException ese) {}
                             }
                         }));
                         nodes3.add(org.junit.jupiter.api.DynamicContainer.dynamicContainer("given that document is deleted", nodes3.stream()));
@@ -433,7 +411,7 @@ public class ElasticsearchIT {
 
                             repo = context.getBean(DocumentRepository.class);
                             store = context.getBean(DocumentContentStore.class);
-                            client = context.getBean(RestHighLevelClient.class);
+                            client = context.getBean(ElasticsearchClient.class);
 
                             for (int i=0; i < 10; i++) {
                                 Document doc = new Document();
@@ -447,8 +425,7 @@ public class ElasticsearchIT {
             assertThat(context).isNotNull();
 
                             if (client != null) {
-                                DeleteIndexRequest dir = new DeleteIndexRequest("_all");
-                                client.indices().delete(dir, RequestOptions.DEFAULT);
+                                client.indices().delete(d -> d.index("_all"));
                             }
         }
         @Test
@@ -499,7 +476,7 @@ public class ElasticsearchIT {
 
                                     repo = context.getBean(DocumentRepository.class);
                                     store = context.getBean(DocumentContentStore.class);
-                                    client = context.getBean(RestHighLevelClient.class);
+                                    client = context.getBean(ElasticsearchClient.class);
 
                                     doc1 = new Document();
                                     doc1.setTitle(format("doc 1"));
@@ -518,8 +495,7 @@ public class ElasticsearchIT {
                 assertThat(context).isNotNull();
 
                                     if (client != null) {
-                                        DeleteIndexRequest dir = new DeleteIndexRequest("_all");
-                                        client.indices().delete(dir, RequestOptions.DEFAULT);
+                                        client.indices().delete(d -> d.index("_all"));
                                     }
             }
             @Test
@@ -543,7 +519,7 @@ public class ElasticsearchIT {
 
                             repo = context.getBean(DocumentRepository.class);
                             searchableStore = context.getBean(DocumentStoreSearchable.class);
-                            client = context.getBean(RestHighLevelClient.class);
+                            client = context.getBean(ElasticsearchClient.class);
 
                             doc1 = new Document();
                             doc1.setTitle(format("A document about one"));
@@ -556,8 +532,7 @@ public class ElasticsearchIT {
             assertThat(context).isNotNull();
 
                             if (client != null) {
-                                DeleteIndexRequest dir = new DeleteIndexRequest("_all");
-                                client.indices().delete(dir, RequestOptions.DEFAULT);
+                                client.indices().delete(d -> d.index("_all"));
                             }
         }
         @Test

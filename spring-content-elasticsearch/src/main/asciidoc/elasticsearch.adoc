@@ -27,7 +27,7 @@ As it is usual to use several Spring Content libraries together importing the bo
 
 == Annotation-based Configuration
 
-Spring Content Elasticsearch requires a `RestHighLevelClient` bean that is used as the connection to your Elasticsearch
+Spring Content Elasticsearch requires an `ElasticsearchClient` bean that is used as the connection to your Elasticsearch
 cluster.
 
 Elasticsearch can be enabled with the following Java Config.
@@ -42,15 +42,16 @@ Elasticsearch can be enabled with the following Java Config.
 public static class ApplicationConfig {
 
                                             <3>
-    public RestHighLevelClient client() {
-        return new RestHighLevelClient(RestClient.builder(new HttpHost("localhost", 9200, "http")));
+    public ElasticsearchClient client() {
+        Rest5Client restClient = Rest5Client.builder(URI.create("http://localhost:9200")).build();
+        return new ElasticsearchClient(new Rest5ClientTransport(restClient, new JacksonJsonpMapper()));
     }
 
 }
 ----
 1. Specify the `@EnableElasticsearchFulltextIndexing` annotation in an `@Configuration` class
 2. Spring Content Elasticsearch works with any Spring Content Store module
-3. Ensure a `RestHighLevelClient` bean is instantiated somewhere within your `@Configuration`
+3. Ensure an `ElasticsearchClient` bean is instantiated somewhere within your `@Configuration`
 ====
 
 == Spring Boot Configuration
@@ -58,7 +59,7 @@ public static class ApplicationConfig {
 Alternatively, you can use the Spring Boot Starter `spring-content-elasticsearch-boot-starter`.
 
 When using this method of configuration the `@EnableElasticsearchFulltextIndexing` annotation can be omitted as it will
-be added for you.  As will a RestHighLevelClient client bean configured to connect to localhost.
+be added for you.  As will an ElasticsearchClient bean configured to connect to localhost, unless one is already defined.
 
 The following configuration properties (prefix spring.content.elasticsearch) are supported.
 
@@ -104,8 +105,9 @@ will then be sent to the Elasticsearch for fulltext indexing in place of the ori
 @EnableFileSystemStores
 public static class ApplicationConfig {
 
-    public RestHighLevelClient client() {
-        return new RestHighLevelClient(RestClient.builder(new HttpHost("localhost", 9200, "http")));
+    public ElasticsearchClient client() {
+        Rest5Client restClient = Rest5Client.builder(URI.create("http://localhost:9200")).build();
+        return new ElasticsearchClient(new Rest5ClientTransport(restClient, new JacksonJsonpMapper()));
     }
     
     @Bean

@@ -57,7 +57,7 @@
         <jakarta-persistence-api.version>3.2.0</jakarta-persistence-api.version>
         <hibernate-orm.version>7.4.9.Final</hibernate-orm.version>
         <solr-solrj.version>10.0.0</solr-solrj.version>
-        <elasticsearch-rest-high-level-client.version>7.17.29</elasticsearch-rest-high-level-client.version>
+        <elastic-client.version>9.5.4</elastic-client.version>
         <uuid-creator.version>6.1.1</uuid-creator.version>
 
         <!-- Test dependencies -->

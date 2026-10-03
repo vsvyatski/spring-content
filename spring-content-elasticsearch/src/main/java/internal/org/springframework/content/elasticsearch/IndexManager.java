@@ -2,21 +2,19 @@ package internal.org.springframework.content.elasticsearch;
 
 import java.io.IOException;
 
-import org.elasticsearch.ElasticsearchStatusException;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.client.indices.GetIndexRequest;
-import org.elasticsearch.rest.RestStatus;
+import org.springframework.content.commons.store.StoreAccessException;
+
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
 
 public class IndexManager {
 
     public static final String INDEX_NAME = "spring-content-fulltext-index";
 
-    private final RestHighLevelClient client;
+    private final ElasticsearchClient client;
 
     private static Boolean globalIndexing = null;
 
-    public IndexManager(RestHighLevelClient client) {
+    public IndexManager(ElasticsearchClient client) {
         this.client = client;
     }
 
@@ -24,18 +22,10 @@ public class IndexManager {
 
         if (globalIndexing == null) {
             try {
-                client.indices().get(new GetIndexRequest(INDEX_NAME), RequestOptions.DEFAULT);
-                globalIndexing = true;
-            }
-            catch (ElasticsearchStatusException ese) {
-                if (ese.status() == RestStatus.NOT_FOUND) {
-                    globalIndexing = false;
-                } else {
-                    // TODO: re-throw as StoreIndexException
-                }
+                globalIndexing = client.indices().exists(e -> e.index(INDEX_NAME)).value();
             }
             catch (IOException ioe) {
-                // TODO: re-throw as StoreIndexException
+                throw new StoreAccessException("Unable to resolve elasticsearch index", ioe);
             }
         }
 

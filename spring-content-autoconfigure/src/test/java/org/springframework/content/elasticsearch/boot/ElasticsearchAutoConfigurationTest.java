@@ -1,16 +1,14 @@
 package org.springframework.content.elasticsearch.boot;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Disabled;
-
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import internal.org.springframework.content.elasticsearch.ElasticsearchIndexServiceImpl;
 import internal.org.springframework.content.elasticsearch.ElasticsearchIndexer;
 import internal.org.springframework.content.elasticsearch.IndexManager;
 import internal.org.springframework.content.elasticsearch.boot.autoconfigure.ElasticsearchAutoConfiguration;
-import org.elasticsearch.client.RestHighLevelClient;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.content.elasticsearch.EnableElasticsearchFulltextIndexing;
@@ -22,22 +20,22 @@ import static org.mockito.Mockito.mock;
 
 public class ElasticsearchAutoConfigurationTest {
 
-    private static final RestHighLevelClient client;
+    private static final ElasticsearchClient client;
 
     static {
-        client = mock(RestHighLevelClient.class);
+        client = mock(ElasticsearchClient.class);
     }
 
     @Nested
-    class GivenAContextWithoutARestHighLevelClientConfigured {
+    class GivenAContextWithoutAElasticsearchClientConfigured {
         @Test
         void shouldCreateAClient() {
             final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
                     .withConfiguration(AutoConfigurations.of(ElasticsearchAutoConfiguration.class));
 
             contextRunner.withUserConfiguration(ContextWithoutClientBean.class).run((context) -> {
-                assertThat(context).hasSingleBean(RestHighLevelClient.class);
-                assertThat(context).getBean(RestHighLevelClient.class).isNotEqualTo(client);
+                assertThat(context).hasSingleBean(ElasticsearchClient.class);
+                assertThat(context).getBean(ElasticsearchClient.class).isNotEqualTo(client);
                 assertThat(context).hasSingleBean(ElasticsearchAutoConfiguration.ElasticsearchProperties.class);
                 assertThat(context).hasSingleBean(ElasticsearchIndexer.class);
 
@@ -45,11 +43,10 @@ public class ElasticsearchAutoConfigurationTest {
                 assertThat(context).hasSingleBean(IndexManager.class);
             });
         }
-
     }
 
     @Nested
-    class GivenAContextWithARestHighLevelClientConfigured {
+    class GivenAContextWithAElasticsearchClientConfigured {
         @Test
         void shouldUseThatClient() {
             final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
@@ -57,9 +54,8 @@ public class ElasticsearchAutoConfigurationTest {
 
             contextRunner.withUserConfiguration(ContextWithClientBean.class)
                     .run((context) ->
-                            assertThat(context).getBean(RestHighLevelClient.class).isEqualTo(client));
+                            assertThat(context).getBean(ElasticsearchClient.class).isEqualTo(client));
         }
-
     }
 
     @Nested
@@ -83,7 +79,6 @@ public class ElasticsearchAutoConfigurationTest {
                     .run((context) ->
                             assertThat(context).doesNotHaveBean(ElasticsearchIndexer.class));
         }
-
     }
 
     @Nested
@@ -107,7 +102,6 @@ public class ElasticsearchAutoConfigurationTest {
                     .run((context) ->
                             assertThat(context).hasSingleBean(ElasticsearchIndexer.class));
         }
-
     }
 
     @Nested
@@ -119,33 +113,29 @@ public class ElasticsearchAutoConfigurationTest {
 
             contextRunner.withUserConfiguration(ContextWithEnablement.class)
                     .run((context) ->
-                            assertThat(context).hasSingleBean(RestHighLevelClient.class));
+                            assertThat(context).hasSingleBean(ElasticsearchClient.class));
         }
-
     }
 
-    @Disabled("This is not a test")
     @Configuration
     public static class ContextWithoutClientBean {
     }
 
-    @Disabled("This is not a test")
     @Configuration
     public static class ContextWithClientBean {
 
         @Bean
-        public RestHighLevelClient client() {
+        public ElasticsearchClient client() {
             return client;
         }
     }
 
-    @Disabled("This is not a test")
     @Configuration
     @EnableElasticsearchFulltextIndexing
     public static class ContextWithEnablement {
 
         @Bean
-        public RestHighLevelClient client() {
+        public ElasticsearchClient client() {
             return client;
         }
     }

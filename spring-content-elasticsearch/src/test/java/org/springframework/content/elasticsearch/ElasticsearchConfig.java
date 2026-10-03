@@ -5,7 +5,7 @@ import java.io.InputStream;
 
 import javax.sql.DataSource;
 
-import org.elasticsearch.client.RestHighLevelClient;
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.content.commons.renditions.RenditionProvider;
 import org.springframework.content.jpa.config.EnableJpaStores;
@@ -37,7 +37,7 @@ public class ElasticsearchConfig {
     }
 
     @Bean
-    public RestHighLevelClient client() {
+    public ElasticsearchClient client() {
         return ElasticsearchTestContainer.client();
     }
 

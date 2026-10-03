@@ -6,7 +6,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Nested;
+
 import static org.assertj.core.api.Assertions.assertThat;
+
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.github.f4b6a3.uuid.UuidCreator;
@@ -63,11 +65,10 @@ public class FsTypeSupportTest {
                 @Test
                 void shouldStoreTheContentSuccessfully() throws IOException {
                     assertThat(IOUtils.contentEquals(
-                                                uuidStore.getContent((UUIDBasedContentEntity) entity),
-                                                IOUtils.toInputStream("uuid", Charset.defaultCharset())
-                                        )).isTrue();
+                            uuidStore.getContent((UUIDBasedContentEntity) entity),
+                            IOUtils.toInputStream("uuid", Charset.defaultCharset())
+                    )).isTrue();
                 }
-
             }
 
             @Nested
@@ -76,9 +77,9 @@ public class FsTypeSupportTest {
                 void setUp() {
                     entity = new UUIDBasedContentEntity();
                     uuidStore.setContent(
-                                                (UUIDBasedContentEntity) entity,
-                                                new ByteArrayInputStream("uuid".getBytes()
-                                                ));
+                            (UUIDBasedContentEntity) entity,
+                            new ByteArrayInputStream("uuid".getBytes()
+                            ));
                 }
 
                 @AfterEach
@@ -90,15 +91,12 @@ public class FsTypeSupportTest {
                 @Test
                 void shouldStoreTheContentSuccessfully() throws IOException {
                     assertThat(IOUtils.contentEquals(
-                                                uuidStore.getContent((UUIDBasedContentEntity) entity),
-                                                IOUtils.toInputStream("uuid", Charset.defaultCharset())
-                                        )).isTrue();
+                            uuidStore.getContent((UUIDBasedContentEntity) entity),
+                            IOUtils.toInputStream("uuid", Charset.defaultCharset())
+                    )).isTrue();
                 }
-
             }
-
         }
-
     }
 
     @Nested
@@ -125,15 +123,12 @@ public class FsTypeSupportTest {
                 @Test
                 void shouldStoreTheContentSuccessfully() throws IOException {
                     assertThat(IOUtils.contentEquals(
-                                                uriStore.getContent((URIBasedContentEntity) entity),
-                                                IOUtils.toInputStream("uri", Charset.defaultCharset())
-                                        )).isTrue();
+                            uriStore.getContent((URIBasedContentEntity) entity),
+                            IOUtils.toInputStream("uri", Charset.defaultCharset())
+                    )).isTrue();
                 }
-
             }
-
         }
-
     }
 
     @Nested
@@ -160,15 +155,12 @@ public class FsTypeSupportTest {
                 @Test
                 void shouldStoreTheContentSuccessfully() throws IOException {
                     assertThat(IOUtils.contentEquals(
-                                                longStore.getContent((LongBasedContentEntity) entity),
-                                                IOUtils.toInputStream("long", Charset.defaultCharset())
-                                        )).isTrue();
+                            longStore.getContent((LongBasedContentEntity) entity),
+                            IOUtils.toInputStream("long", Charset.defaultCharset())
+                    )).isTrue();
                 }
-
             }
-
         }
-
     }
 
     @Nested
@@ -195,15 +187,12 @@ public class FsTypeSupportTest {
                 @Test
                 void shouldStoreTheContentSuccessfully() throws IOException {
                     assertThat(IOUtils.contentEquals(
-                                                bigIntStore.getContent((BigIntegerBasedContentEntity) entity),
-                                                IOUtils.toInputStream("big-int", Charset.defaultCharset())
-                                        )).isTrue();
+                            bigIntStore.getContent((BigIntegerBasedContentEntity) entity),
+                            IOUtils.toInputStream("big-int", Charset.defaultCharset())
+                    )).isTrue();
                 }
-
             }
-
         }
-
     }
 
     @Test
