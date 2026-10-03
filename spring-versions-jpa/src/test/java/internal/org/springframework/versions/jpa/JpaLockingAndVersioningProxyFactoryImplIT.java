@@ -1,14 +1,12 @@
 package internal.org.springframework.versions.jpa;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
-import static org.assertj.core.api.Assertions.assertThat;
-
+import internal.org.springframework.versions.AuthenticationFacade;
+import internal.org.springframework.versions.LockingService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
-import javax.sql.DataSource;
-
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.springframework.aop.Advisor;
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -29,8 +27,9 @@ import org.springframework.versions.interceptors.OptimisticLockingInterceptor;
 import org.springframework.versions.interceptors.PessimisticLockingInterceptor;
 import org.springframework.versions.jpa.config.JpaLockingAndVersioningConfig;
 
-import internal.org.springframework.versions.AuthenticationFacade;
-import internal.org.springframework.versions.LockingService;
+import javax.sql.DataSource;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class JpaLockingAndVersioningProxyFactoryImplIT {
 
@@ -52,7 +51,7 @@ public class JpaLockingAndVersioningProxyFactoryImplIT {
             @Nested
             class Apply {
                 @Nested
-                class GivenNoExistngAdvise {
+                class GivenNoExistingAdvise {
                     @BeforeEach
                     void setUp() {
                         context = new AnnotationConfigApplicationContext();
@@ -80,11 +79,10 @@ public class JpaLockingAndVersioningProxyFactoryImplIT {
                         assertThat(advices[1].getAdvice()).isInstanceOf(OptimisticLockingInterceptor.class);
                         assertThat(advices[2].getAdvice()).isInstanceOf(PessimisticLockingInterceptor.class);
                     }
-
                 }
 
                 @Nested
-                class GivenAnExistngTxnAdvise {
+                class GivenAnExistingTxnAdvise {
                     @BeforeEach
                     void setUp() {
                         context = new AnnotationConfigApplicationContext();
@@ -113,13 +111,9 @@ public class JpaLockingAndVersioningProxyFactoryImplIT {
                         assertThat(advices[1].getAdvice()).isInstanceOf(OptimisticLockingInterceptor.class);
                         assertThat(advices[2].getAdvice()).isInstanceOf(PessimisticLockingInterceptor.class);
                     }
-
                 }
-
             }
-
         }
-
     }
 
 	@Configuration

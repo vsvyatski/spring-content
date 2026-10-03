@@ -3,6 +3,7 @@ package internal.org.springframework.versions.jpa;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 import static org.mockito.ArgumentMatchers.*;
@@ -151,7 +152,7 @@ public class JpaLockingServiceImplTest {
                     locker = new JpaLockingServiceImpl(jdbcTemplate);
 
                     try {
-                        result = locker.isLockOwner(entityId, principal);
+                        result = locker.isLockOwner(entityId, null);
                     } catch (Exception e) {
                         JpaLockingServiceImplTest.this.e = e;
                     }
@@ -161,7 +162,6 @@ public class JpaLockingServiceImplTest {
                 void shouldThrowASecurityException() {
                     assertThat(e).isInstanceOf(SecurityException.class);
                 }
-
             }
 
             @Nested
@@ -189,7 +189,6 @@ public class JpaLockingServiceImplTest {
                 void shouldThrowTheDataAccessException() {
                     assertThat(e).isInstanceOf(DataAccessException.class);
                 }
-
             }
 
             @Nested
@@ -219,7 +218,6 @@ public class JpaLockingServiceImplTest {
                 void shouldReturnTrue() {
                     assertThat(result).isEqualTo(true);
                 }
-
             }
 
             @Nested
@@ -249,9 +247,7 @@ public class JpaLockingServiceImplTest {
                 void shouldReturnFalse() {
                     assertThat(result).isEqualTo(false);
                 }
-
             }
-
         }
 
         @Nested
@@ -264,7 +260,7 @@ public class JpaLockingServiceImplTest {
 
                     entityId = "some-id";
 
-                    when(jdbcTemplate.query(anyString(), (RowMapper)any())).thenThrow(new CannotGetJdbcConnectionException("connection-error"));
+                    when(jdbcTemplate.query(anyString(), (RowMapper) any())).thenThrow(new CannotGetJdbcConnectionException("connection-error"));
 
                     locker = new JpaLockingServiceImpl(jdbcTemplate);
 
@@ -290,7 +286,7 @@ public class JpaLockingServiceImplTest {
 
                     entityId = "some-id";
 
-                    when(jdbcTemplate.query(anyString(), (RowMapper)any())).thenReturn(null);
+                    when(jdbcTemplate.query(anyString(), (RowMapper) any())).thenReturn(null);
 
                     locker = new JpaLockingServiceImpl(jdbcTemplate);
 
@@ -316,7 +312,7 @@ public class JpaLockingServiceImplTest {
 
                     entityId = "some-id";
 
-                    when(jdbcTemplate.query(anyString(), (RowMapper)any())).thenReturn(Collections.singletonList("some-principal"));
+                    when(jdbcTemplate.query(anyString(), (RowMapper) any())).thenReturn(Collections.singletonList("some-principal"));
 
                     locker = new JpaLockingServiceImpl(jdbcTemplate);
 
@@ -330,20 +326,20 @@ public class JpaLockingServiceImplTest {
                 @Test
                 void shouldReturnAPrincipal() {
                     assertThat(result).isInstanceOf(Principal.class);
-                    assertThat(((Principal)result).getName()).isEqualTo("some-principal");
+                    assertThat(((Principal) result).getName()).isEqualTo("some-principal");
                 }
 
             }
 
             @Nested
-            class GivenThereAreMulitpleLockRecords {
+            class GivenThereAreMultipleLockRecords {
                 @BeforeEach
                 void setUp() {
                     jdbcTemplate = mock(JdbcTemplate.class);
 
                     entityId = "some-id";
 
-                    when(jdbcTemplate.query(anyString(), (RowMapper)any())).thenReturn(Arrays.asList(new String[]{("some-principal"), "some-other-principal"}));
+                    when(jdbcTemplate.query(anyString(), (RowMapper) any())).thenReturn(Arrays.asList(new String[]{("some-principal"), "some-other-principal"}));
 
                     locker = new JpaLockingServiceImpl(jdbcTemplate);
 
@@ -358,11 +354,7 @@ public class JpaLockingServiceImplTest {
                 void shouldThrowAnIncorrectResultSizeException() {
                     assertThat(e).isInstanceOf(IncorrectResultSizeDataAccessException.class);
                 }
-
             }
-
         }
-
     }
-
 }
