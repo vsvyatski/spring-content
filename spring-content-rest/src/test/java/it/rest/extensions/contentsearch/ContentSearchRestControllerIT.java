@@ -9,7 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -275,7 +275,7 @@ public class ContentSearchRestControllerIT {
                                         controller.setQueryMethodsEntityLookupStrategy(queryMethodsLookupStrategy);
 
                         when(reflectionService.invokeMethod(any(), any(),
-                                                            eq("one"), argThat(Pageable.class::isInstance), eq(InternalResult.class))).thenReturn(Collections.EMPTY_LIST);
+                                                            eq("one"), isA(Pageable.class), eq(InternalResult.class))).thenReturn(Collections.EMPTY_LIST);
                     }
                     @Test
                     void shouldReturnAnEmptyResponseEntity() throws Throwable {
@@ -419,7 +419,7 @@ public class ContentSearchRestControllerIT {
                                         controller.setQueryMethodsEntityLookupStrategy(queryMethodsLookupStrategy);
 
                         when(reflectionService.invokeMethod(any(), any(),
-                                                            eq("something"), argThat(Pageable.class::isInstance), eq(InternalResult.class))).thenReturn(Collections.EMPTY_LIST);
+                                                            eq("something"), isA(Pageable.class), eq(InternalResult.class))).thenReturn(Collections.EMPTY_LIST);
                     }
                     @Test
                     void shouldReturnAnEmptyResponseEntity() throws Throwable {
@@ -621,7 +621,7 @@ public class ContentSearchRestControllerIT {
                                             results.add(new CustomResult("12345", "<em>something else</em>", "foo1", "bar1"));
 
                                             when(reflectionService.invokeMethod(any(), any(),
-                                                    eq("else"), argThat(Pageable.class::isInstance))).thenReturn(results);
+                                                    eq("else"), isA(Pageable.class))).thenReturn(results);
                 }
                 @Test
                 void shouldReturnAResponseEntityWithTheEntity() throws Throwable {
