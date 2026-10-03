@@ -1,13 +1,13 @@
 package internal.org.springframework.content.encryption.keys.converter;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.support.ConfigurableConversionService;
 import org.springframework.core.convert.support.DefaultConversionService;
-import static org.hamcrest.Matchers.*;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 public class ByteArrayToListConverterTest {
 
@@ -24,25 +24,25 @@ public class ByteArrayToListConverterTest {
     }
 
     @Test
-    public void encodesAndDecodes() {
+    public void encodesAndDecodes() throws Throwable {
         var data = List.of("abc", "def");
 
         var encodedList = conversionService.convert(data, STRING_LIST_TYPE, TypeDescriptor.valueOf(byte[].class));
 
         var decodedList = conversionService.convert(encodedList, STRING_LIST_TYPE);
 
-        assertThat(decodedList, is(equalTo(data)));
+        assertThat(decodedList).isEqualTo(data);
     }
 
     @Test
-    public void encodesAndDecodesEmptyList() {
+    public void encodesAndDecodesEmptyList() throws Throwable {
         var data = List.of();
 
         var encodedList = conversionService.convert(data, STRING_LIST_TYPE, TypeDescriptor.valueOf(byte[].class));
 
         var decodedList = conversionService.convert(encodedList, STRING_LIST_TYPE);
 
-        assertThat(decodedList, is(equalTo(data)));
+        assertThat(decodedList).isEqualTo(data);
     }
 
 }

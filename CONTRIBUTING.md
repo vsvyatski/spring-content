@@ -45,8 +45,10 @@ pull request but before a merge.
 * Add the ASF license header comment to all new `.java` files (copy from existing files in the project)
 * Add yourself as an `@author` to the `.java` files that you modify substantially (more than cosmetic changes).
 * Add some Javadocs.
-* A few unit tests would help a lot as well -- someone has to do it. Spring Content uses the
-  [Ginkgo4J](https://github.com/vsvyatski/ginkgo4j) BDD framework.
+* A few unit tests would help a lot as well -- someone has to do it. Tests use JUnit Jupiter
+  (`org.junit.jupiter.api.Test`, `@BeforeEach`) and AssertJ (`org.assertj.core.api.Assertions.assertThat`).
+  Do not add Ginkgo4j runners or Hamcrest matchers. MockMvc's `status()` and `jsonPath()` still take Hamcrest
+  matchers because that is the Spring API.
 * If no-one else is using your branch, please rebase it against the current master (or other target branch in the
   main project).
 * When writing a commit message, please follow

@@ -1,9 +1,11 @@
 package internal.org.springframework.content.rest.mappings;
 
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jRunner;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Disabled;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import internal.org.springframework.content.rest.mappingcontext.RestResourceMappingBuilder;
-import org.junit.Ignore;
-import org.junit.runner.RunWith;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.annotations.MimeType;
@@ -13,73 +15,70 @@ import org.springframework.content.rest.RestResource;
 
 import java.util.UUID;
 
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.Describe;
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.It;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasEntry;
-
-@RunWith(Ginkgo4jRunner.class)
 public class RestResourceMappingBuilderTest {
 
-    {
-        Describe("RestResourceMappingBuilder", () -> {
-            It("should create a map of content property paths to request mapping paths", () -> {
-                RestResourceMappingBuilder visitor = new RestResourceMappingBuilder((restResourceAnnotation) -> restResourceAnnotation.path());
-                ClassWalker walker = new ClassWalker(visitor);
-                walker.accept(TestClass.class);
+    
+    @Nested
+    class RestResourceMappingBuilderCases {
+        @Test
+        void shouldCreateAMapOfContentPropertyPathsToRequestMappingPaths() throws Throwable {
+            RestResourceMappingBuilder visitor = new RestResourceMappingBuilder((restResourceAnnotation) -> restResourceAnnotation.path());
+            ClassWalker walker = new ClassWalker(visitor);
+            walker.accept(TestClass.class);
 
-                assertThat(visitor.getMappings(), hasEntry("child/child/content", "one/two/three"));
-                assertThat(visitor.getMappings(), hasEntry("child/child/preview", "one/two/preview"));
-                assertThat(visitor.getMappings(), hasEntry("child/child/thumbnail", "one/two/thumbnail"));
-                assertThat(visitor.getMappings(), hasEntry("child/child/idcardFront", "one/two/idcard-front"));
-                assertThat(visitor.getMappings(), hasEntry("child/childWithout/content", "one/childWithout/three"));
-                assertThat(visitor.getMappings(), hasEntry("child/childWithout/preview", "one/childWithout/preview"));
-                assertThat(visitor.getMappings(), hasEntry("child/childWithout/thumbnail", "one/childWithout/thumbnail"));
-                assertThat(visitor.getMappings(), hasEntry("child/childWithout/idcardFront", "one/childWithout/idcard-front"));
-                assertThat(visitor.getMappings(), hasEntry("childWithout/child/content", "childWithout/two/three"));
-                assertThat(visitor.getMappings(), hasEntry("childWithout/child/preview", "childWithout/two/preview"));
-                assertThat(visitor.getMappings(), hasEntry("childWithout/child/thumbnail", "childWithout/two/thumbnail"));
-                assertThat(visitor.getMappings(), hasEntry("childWithout/child/idcardFront", "childWithout/two/idcard-front"));
-                assertThat(visitor.getMappings(), hasEntry("childWithout/childWithout/content", "childWithout/childWithout/three"));
-                assertThat(visitor.getMappings(), hasEntry("childWithout/childWithout/preview", "childWithout/childWithout/preview"));
-                assertThat(visitor.getMappings(), hasEntry("childWithout/childWithout/thumbnail", "childWithout/childWithout/thumbnail"));
-                assertThat(visitor.getMappings(), hasEntry("childWithout/childWithout/idcardFront", "childWithout/childWithout/idcard-front"));
+            assertThat(visitor.getMappings()).containsEntry("child/child/content", "one/two/three");
+            assertThat(visitor.getMappings()).containsEntry("child/child/preview", "one/two/preview");
+            assertThat(visitor.getMappings()).containsEntry("child/child/thumbnail", "one/two/thumbnail");
+            assertThat(visitor.getMappings()).containsEntry("child/child/idcardFront", "one/two/idcard-front");
+            assertThat(visitor.getMappings()).containsEntry("child/childWithout/content", "one/childWithout/three");
+            assertThat(visitor.getMappings()).containsEntry("child/childWithout/preview", "one/childWithout/preview");
+            assertThat(visitor.getMappings()).containsEntry("child/childWithout/thumbnail", "one/childWithout/thumbnail");
+            assertThat(visitor.getMappings()).containsEntry("child/childWithout/idcardFront", "one/childWithout/idcard-front");
+            assertThat(visitor.getMappings()).containsEntry("childWithout/child/content", "childWithout/two/three");
+            assertThat(visitor.getMappings()).containsEntry("childWithout/child/preview", "childWithout/two/preview");
+            assertThat(visitor.getMappings()).containsEntry("childWithout/child/thumbnail", "childWithout/two/thumbnail");
+            assertThat(visitor.getMappings()).containsEntry("childWithout/child/idcardFront", "childWithout/two/idcard-front");
+            assertThat(visitor.getMappings()).containsEntry("childWithout/childWithout/content", "childWithout/childWithout/three");
+            assertThat(visitor.getMappings()).containsEntry("childWithout/childWithout/preview", "childWithout/childWithout/preview");
+            assertThat(visitor.getMappings()).containsEntry("childWithout/childWithout/thumbnail", "childWithout/childWithout/thumbnail");
+            assertThat(visitor.getMappings()).containsEntry("childWithout/childWithout/idcardFront", "childWithout/childWithout/idcard-front");
 
-                assertThat(visitor.getInverseMappings(), hasEntry("one/two/three", "child/child/content"));
-                assertThat(visitor.getInverseMappings(), hasEntry("one/two/preview", "child/child/preview"));
-                assertThat(visitor.getInverseMappings(), hasEntry("one/two/thumbnail", "child/child/thumbnail"));
-                assertThat(visitor.getInverseMappings(), hasEntry("one/two/idcard-front", "child/child/idcardFront"));
-                assertThat(visitor.getInverseMappings(), hasEntry("one/childWithout/three", "child/childWithout/content"));
-                assertThat(visitor.getInverseMappings(), hasEntry("one/childWithout/preview", "child/childWithout/preview"));
-                assertThat(visitor.getInverseMappings(), hasEntry("one/childWithout/thumbnail", "child/childWithout/thumbnail"));
-                assertThat(visitor.getInverseMappings(), hasEntry("one/childWithout/idcard-front", "child/childWithout/idcardFront"));
-                assertThat(visitor.getInverseMappings(), hasEntry("childWithout/two/three", "childWithout/child/content"));
-                assertThat(visitor.getInverseMappings(), hasEntry("childWithout/two/preview", "childWithout/child/preview"));
-                assertThat(visitor.getInverseMappings(), hasEntry("childWithout/two/thumbnail", "childWithout/child/thumbnail"));
-                assertThat(visitor.getInverseMappings(), hasEntry("childWithout/two/idcard-front", "childWithout/child/idcardFront"));
-                assertThat(visitor.getInverseMappings(), hasEntry("childWithout/childWithout/three", "childWithout/childWithout/content"));
-                assertThat(visitor.getInverseMappings(), hasEntry("childWithout/childWithout/preview", "childWithout/childWithout/preview"));
-                assertThat(visitor.getInverseMappings(), hasEntry("childWithout/childWithout/thumbnail", "childWithout/childWithout/thumbnail"));
-                assertThat(visitor.getInverseMappings(), hasEntry("childWithout/childWithout/idcard-front", "childWithout/childWithout/idcardFront"));
-            });
-        });
+            assertThat(visitor.getInverseMappings()).containsEntry("one/two/three", "child/child/content");
+            assertThat(visitor.getInverseMappings()).containsEntry("one/two/preview", "child/child/preview");
+            assertThat(visitor.getInverseMappings()).containsEntry("one/two/thumbnail", "child/child/thumbnail");
+            assertThat(visitor.getInverseMappings()).containsEntry("one/two/idcard-front", "child/child/idcardFront");
+            assertThat(visitor.getInverseMappings()).containsEntry("one/childWithout/three", "child/childWithout/content");
+            assertThat(visitor.getInverseMappings()).containsEntry("one/childWithout/preview", "child/childWithout/preview");
+            assertThat(visitor.getInverseMappings()).containsEntry("one/childWithout/thumbnail", "child/childWithout/thumbnail");
+            assertThat(visitor.getInverseMappings()).containsEntry("one/childWithout/idcard-front", "child/childWithout/idcardFront");
+            assertThat(visitor.getInverseMappings()).containsEntry("childWithout/two/three", "childWithout/child/content");
+            assertThat(visitor.getInverseMappings()).containsEntry("childWithout/two/preview", "childWithout/child/preview");
+            assertThat(visitor.getInverseMappings()).containsEntry("childWithout/two/thumbnail", "childWithout/child/thumbnail");
+            assertThat(visitor.getInverseMappings()).containsEntry("childWithout/two/idcard-front", "childWithout/child/idcardFront");
+            assertThat(visitor.getInverseMappings()).containsEntry("childWithout/childWithout/three", "childWithout/childWithout/content");
+            assertThat(visitor.getInverseMappings()).containsEntry("childWithout/childWithout/preview", "childWithout/childWithout/preview");
+            assertThat(visitor.getInverseMappings()).containsEntry("childWithout/childWithout/thumbnail", "childWithout/childWithout/thumbnail");
+            assertThat(visitor.getInverseMappings()).containsEntry("childWithout/childWithout/idcard-front", "childWithout/childWithout/idcardFront");
+
+        }
+
     }
 
-    @Ignore("This is not a test and must not be treated as such.")
+    @Disabled("This is not a test and must not be treated as such.")
     public static class TestSubClass {
         @RestResource(path = "two")
         private TestSubSubClass child;
         private TestSubSubClass childWithout;
     }
 
-    @Ignore("This is not a test and must not be treated as such.")
+    @Disabled("This is not a test and must not be treated as such.")
     public static class TestClass {
         @RestResource(path = "one")
         private TestSubClass child;
         private TestSubClass childWithout;
     }
 
-    @Ignore("This is not a test and must not be treated as such.")
+    @Disabled("This is not a test and must not be treated as such.")
     public static class TestSubSubClass {
         @RestResource(path = "three")
         private @ContentId UUID contentId;

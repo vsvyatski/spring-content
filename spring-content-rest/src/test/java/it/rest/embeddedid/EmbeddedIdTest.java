@@ -1,12 +1,14 @@
 package it.rest.embeddedid;
 
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.BeforeEach;
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.Describe;
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.It;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
+import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -21,9 +23,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -51,14 +50,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jConfiguration;
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jSpringRunner;
 
-@RunWith(Ginkgo4jSpringRunner.class)
-@Ginkgo4jConfiguration(threads = 1)
 @SpringBootTest(classes = {EmbeddedIdTest.Application.class},
                 webEnvironment=WebEnvironment.RANDOM_PORT)
 @EnableAutoConfiguration(exclude = { HypermediaAutoConfiguration.class, SecurityAutoConfiguration.class })
+@ExtendWith(SpringExtension.class)
 public class EmbeddedIdTest {
 
     @LocalServerPort
@@ -75,42 +71,43 @@ public class EmbeddedIdTest {
 
     private MockMvc mvc;
 
-    {
-        Describe("EmbeddedId", () -> {
+    
+    @Nested
+    class EmbeddedIdCases {
+        @BeforeEach
+        void setUp() throws Throwable {
+            mvc = MockMvcBuilders.webAppContextSetup(context).build();
+        }
+        @Test
+        void shouldHaveAContentHandlerMappingBean() throws Throwable {
+            String content = "this is some content";
 
-            BeforeEach(() -> mvc = MockMvcBuilders.webAppContextSetup(context).build());
+                            TestEntity entity = repo.save(new TestEntity());
+                            entity = store.setContent(entity, new ByteArrayInputStream(content.getBytes()));
+                            entity = repo.save(entity);
 
-            It("should have a content handler mapping bean", () -> {
+            //                String command = "curl -H 'Accept: text/plain' http://localhost:" + serverPort + "/testEntities/" + entity.getId().toString();
+            //                Process process = Runtime.getRuntime().exec(command);
+            //                while (process.isAlive() == true) {
+            //                    Thread.sleep(1000);
+            //                }
+            //                assertThat(process.exitValue()).isEqualTo(0);
+            //                assertThat(IOUtils.toString(process.getInputStream())).isEqualTo(content);
 
-                String content = "this is some content";
+                            MockHttpServletResponse response =
+                                    mvc.perform(
+                                        get("/testEntities/" + entity.getId()).
+                                            accept("text/plain")).
+                                        andExpect(status().isOk()).
+                                        andReturn().getResponse();
 
-                TestEntity entity = repo.save(new TestEntity());
-                entity = store.setContent(entity, new ByteArrayInputStream(content.getBytes()));
-                entity = repo.save(entity);
-
-//                String command = "curl -H 'Accept: text/plain' http://localhost:" + serverPort + "/testEntities/" + entity.getId().toString();
-//                Process process = Runtime.getRuntime().exec(command);
-//                while (process.isAlive() == true) {
-//                    Thread.sleep(1000);
-//                }
-//                assertThat(process.exitValue(), is(0));
-//                assertThat(IOUtils.toString(process.getInputStream()), is(content));
-
-                MockHttpServletResponse response =
-                        mvc.perform(
-                            get("/testEntities/" + entity.getId()).
-                                accept("text/plain")).
-                            andExpect(status().isOk()).
-                            andReturn().getResponse();
-
-                    assertThat(response, is(not(nullValue())));
-                    assertThat(response.getContentAsString(), is(content));
-
-            });
-       });
+                                assertThat(response).isNotNull();
+                                assertThat(response.getContentAsString()).isEqualTo(content);
+        }
     }
 
-    @Ignore("This is not a test and must not be treated as such.")
+
+    @Disabled("This is not a test and must not be treated as such.")
     @SpringBootApplication
     @EnableJpaRepositories(considerNestedRepositories = true, basePackages={"it.rest.embeddedid"})
     @EnableFileSystemStores(basePackages = "it.rest.embeddedid")
@@ -145,7 +142,7 @@ public class EmbeddedIdTest {
        }
     }
 
-    @Ignore("This is not a test and must not be treated as such.")
+    @Disabled("This is not a test and must not be treated as such.")
     @Entity
     public static class TestEntity {
 
@@ -202,7 +199,7 @@ public class EmbeddedIdTest {
        }
     }
 
-    @Ignore("This is not a test and must not be treated as such.")
+    @Disabled("This is not a test and must not be treated as such.")
     public static class TestEntityId implements Serializable {
 
        @Serial

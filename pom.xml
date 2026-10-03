@@ -245,12 +245,6 @@
                         <configuration>
                             <argLine>${surefireArgLine}</argLine>
                             <skipTests>true</skipTests>
-                            <properties>
-                                <property>
-                                    <name>listener</name>
-                                    <value>com.github.paulcwarren.ginkgo4j.maven.JUnitRunListener</value>
-                                </property>
-                            </properties>
                         </configuration>
                         <executions>
                             <execution>

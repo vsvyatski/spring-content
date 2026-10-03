@@ -1,13 +1,10 @@
 package internal.org.springframework.content.jpa.io;
 
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.BeforeEach;
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.Context;
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.Describe;
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.It;
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.JustBeforeEach;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -19,14 +16,10 @@ import java.sql.Statement;
 
 import javax.sql.DataSource;
 
-import org.junit.runner.RunWith;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jRunner;
-
-@RunWith(Ginkgo4jRunner.class)
 public class GenericBlobResourceTest {
 
     private GenericBlobResource resource;
@@ -42,15 +35,19 @@ public class GenericBlobResourceTest {
 
     private Object result;
 
-    {
-        Describe("GenericBlobResource", () -> {
-            BeforeEach(() -> {
-                ds = mock(DataSource.class);
-                template = new JdbcTemplate(ds);
-                txnMgr = new DataSourceTransactionManager(ds);
-            });
-            Context("#exists", () -> {
-                BeforeEach(() -> {
+    
+    @Nested
+    class GenericBlobResourceCases {
+        @Nested
+        class Exists {
+            @Nested
+            class GivenTheResultsetThrowsSQLException {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    ds = mock(DataSource.class);
+                    template = new JdbcTemplate(ds);
+                    txnMgr = new DataSourceTransactionManager(ds);
+
                     conn = mock(Connection.class);
                     statement = mock(Statement.class);
                     rs = mock(ResultSet.class);
@@ -58,18 +55,32 @@ public class GenericBlobResourceTest {
                     when(ds.getConnection()).thenReturn(conn);
                     when(conn.createStatement()).thenReturn(statement);
                     when(statement.executeQuery(any())).thenReturn(rs);
-                });
-                JustBeforeEach(() -> {
+
+                    when(rs.next()).thenThrow(new SQLException("badness"));
                     resource = new GenericBlobResource(id, template, txnMgr);
                     result = resource.exists();
-                });
-                Context("given the resultset throws SQLException", () -> {
-                    BeforeEach(() -> when(rs.next()).thenThrow(new SQLException("badness")));
-                    It("should return false", () -> assertThat(result, is(false)));
-                });
-            });
-            Context("#getInputStream", () -> {
-                BeforeEach(() -> {
+
+                }
+
+                @Test
+                void shouldReturnFalse() throws Throwable {
+                    assertThat(result).isEqualTo(false);
+                }
+
+            }
+
+        }
+
+        @Nested
+        class GetInputStream {
+            @Nested
+            class GivenASQLExceptionIsThrown {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    ds = mock(DataSource.class);
+                    template = new JdbcTemplate(ds);
+                    txnMgr = new DataSourceTransactionManager(ds);
+
                     conn = mock(Connection.class);
                     statement = mock(Statement.class);
                     rs = mock(ResultSet.class);
@@ -77,16 +88,22 @@ public class GenericBlobResourceTest {
                     when(ds.getConnection()).thenReturn(conn);
                     when(conn.createStatement()).thenReturn(statement);
                     when(statement.executeQuery(any())).thenReturn(rs);
-                });
-                JustBeforeEach(() -> {
+
+                    when(rs.next()).thenThrow(new SQLException("badness"));
                     resource = new GenericBlobResource(id, template, txnMgr);
                     result = resource.getInputStream();
-                });
-                Context("given a SQLException is thrown", () -> {
-                    BeforeEach(() -> when(rs.next()).thenThrow(new SQLException("badness")));
-                    It("should return null", () -> assertThat(result, is(nullValue())));
-                });
-            });
-        });
+
+                }
+
+                @Test
+                void shouldReturnNull() throws Throwable {
+                    assertThat(result).isNull();
+                }
+
+            }
+
+        }
+
     }
+
 }

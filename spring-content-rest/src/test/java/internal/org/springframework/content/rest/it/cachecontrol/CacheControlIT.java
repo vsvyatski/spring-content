@@ -1,12 +1,15 @@
 package internal.org.springframework.content.rest.it.cachecontrol;
 
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jConfiguration;
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jSpringRunner;
+import org.junit.jupiter.api.extension.ExtendWith;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+
 import internal.org.springframework.content.rest.it.SecurityConfiguration;
 import internal.org.springframework.content.rest.support.TestEntity;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
@@ -50,11 +53,8 @@ import java.util.UUID;
 
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.*;
 
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.*;
-
-@RunWith(Ginkgo4jSpringRunner.class)
-@Ginkgo4jConfiguration(threads=1)
 @SpringBootTest(classes = CacheControlIT.Application.class, webEnvironment=WebEnvironment.RANDOM_PORT)
+@ExtendWith(SpringExtension.class)
 public class CacheControlIT {
 
     @Autowired
@@ -72,47 +72,51 @@ public class CacheControlIT {
     @Autowired
     private WebApplicationContext webApplicationContext;
 
-    {
-        Describe("CacheControl", () -> {
+    
+    @Nested
+    class CacheControlCases {
+        @BeforeEach
+        void setUp() throws Throwable {
+            RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
 
-            BeforeEach(() -> {
-                RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
-            });
+        }
 
-            It("given the pattern matches it should apply the configured cache settings", () -> {
+        @Test
+        void givenThePatternMatchesItShouldApplyTheConfiguredCacheSettings() throws Throwable {
+            TestEntity tentity = new TestEntity();
+            tentity = repo.save(tentity);
+            tentity = store.setContent(tentity, new ByteArrayInputStream("some content".getBytes()));
+            tentity.setMimeType("text/plain");
+            tentity = repo.save(tentity);
 
-                TestEntity tentity = new TestEntity();
-                tentity = repo.save(tentity);
-                tentity = store.setContent(tentity, new ByteArrayInputStream("some content".getBytes()));
-                tentity.setMimeType("text/plain");
-                tentity = repo.save(tentity);
+            given()
+                    .accept("text/plain")
+            .when()
+                .get("/testEntities/" + tentity.getId())
+            .then()
+                .statusCode(200)
+                .header("Cache-Control", "max-age=60");
 
-                given()
-                        .accept("text/plain")
-                .when()
-                    .get("/testEntities/" + tentity.getId())
-                .then()
-                    .statusCode(200)
-                    .header("Cache-Control", "max-age=60");
-            });
+        }
 
-            It("given the pattern doesn't match it should not apply the configured cache settings", () -> {
+        @Test
+        void givenThePatternDoesnTMatchItShouldNotApplyTheConfiguredCacheSettings() throws Throwable {
+            TestEntity tentity = new TestEntity();
+            tentity = repo.save(tentity);
+            tentity = store.setContent(tentity, new ByteArrayInputStream("some content".getBytes()));
+            tentity.setMimeType("text/plain");
+            tentity = repo.save(tentity);
 
-                TestEntity tentity = new TestEntity();
-                tentity = repo.save(tentity);
-                tentity = store.setContent(tentity, new ByteArrayInputStream("some content".getBytes()));
-                tentity.setMimeType("text/plain");
-                tentity = repo.save(tentity);
+            given()
+                    .accept("text/plain")
+            .when()
+                .get("/testEntities/" + tentity.getId() + "/content")
+            .then()
+                .statusCode(200)
+                .header("Cache-Control", "no-cache, no-store, max-age=0, must-revalidate");
 
-                given()
-                        .accept("text/plain")
-                .when()
-                    .get("/testEntities/" + tentity.getId() + "/content")
-                .then()
-                    .statusCode(200)
-                    .header("Cache-Control", "no-cache, no-store, max-age=0, must-revalidate");
-            });
-        });
+        }
+
     }
 
     public interface CacheControlRepository extends CrudRepository<TestEntity, Long> {
@@ -206,7 +210,4 @@ public class CacheControlIT {
        }
     }
 
-    @Test
-    public void noop() {
-    }
 }

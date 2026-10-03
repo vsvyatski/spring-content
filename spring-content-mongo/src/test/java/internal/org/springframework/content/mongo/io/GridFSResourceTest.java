@@ -1,248 +1,268 @@
-//package internal.org.springframework.content.mongo.io;
-//
-//import com.github.paulcwarren.ginkgo4j.Ginkgo4jRunner;
-//import com.mongodb.client.gridfs.model.GridFSFile;
-//import org.apache.commons.io.IOUtils;
-//import org.junit.runner.RunWith;
-//import org.powermock.core.classloader.annotations.PrepareForTest;
-//import org.powermock.modules.junit4.PowerMockRunner;
-//import org.powermock.modules.junit4.PowerMockRunnerDelegate;
-//import org.springframework.data.mongodb.gridfs.GridFsResource;
-//import org.springframework.data.mongodb.gridfs.GridFsTemplate;
-//
-//import java.io.InputStream;
-//import java.io.OutputStream;
-//import java.util.Date;
-//
-//import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.*;
-//import static org.hamcrest.CoreMatchers.*;
-//import static org.hamcrest.MatcherAssert.assertThat;
-//import static org.mockito.ArgumentMatchers.any;
-//import static org.mockito.ArgumentMatchers.*;
-//import static org.mockito.Mockito.*;
-//
-//@RunWith(PowerMockRunner.class)
-//@PowerMockRunnerDelegate(Ginkgo4jRunner.class)
-//@PrepareForTest({ GridFsTemplate.class, GridFSFile.class })
-//public class GridFSResourceTest {
-//
-//	private GridFsStoreResource r;
-//
-//	private String location;
-//	private GridFsTemplate gridfs;
-//
-//	private GridFSFile file;
-//
-//	private Object rc;
-//
-//	{
-//		Describe("GridFsStoreResource", () -> {
-//			BeforeEach(() -> {
-//				location = "some-location";
-//				gridfs = mock(GridFsTemplate.class);
-//			});
-//			JustBeforeEach(() -> {
-//				r = new GridFsStoreResource(location, gridfs);
-//			});
-//			Describe("Resource", () -> {
-//				Context("#contentLength", () -> {
-//					BeforeEach(() -> {
-//						file = mock(GridFSFile.class);
-//					});
-//					JustBeforeEach(() -> {
-//						rc = r.contentLength();
-//					});
-//					Context("given the file exists", () -> {
-//						BeforeEach(() -> {
-//							when(gridfs.findOne(anyObject())).thenReturn(file);
-//						});
-//						It("should return the file's length", () -> {
-//							verify(file).getLength();
-//						});
-//					});
-//					Context("given the file doesn't exist", () -> {
-//						It("should return null", () -> {
-//							verify(file, never()).getLength();
-//							assertThat(rc, is(0L));
-//						});
-//					});
-//				});
-//				Context("#getFilename", () -> {
-//					JustBeforeEach(() -> {
-//						rc = r.getFilename();
-//					});
-//					It("should return the location", () -> {
-//						assertThat(rc, is("some-location"));
-//					});
-//				});
-//				Context("#getId", () -> {
-//					BeforeEach(() -> {
-//						file = mock(GridFSFile.class);
-//					});
-//					JustBeforeEach(() -> {
-//						rc = r.getId();
-//					});
-//					Context("given the file exists", () -> {
-//						BeforeEach(() -> {
-//							file = mock(GridFSFile.class);
-//							when(gridfs.findOne(anyObject())).thenReturn(file);
-//						});
-//						It("should return the file's id", () -> {
-//							verify(file).getId();
-//						});
-//					});
-//					Context("given the file doesn't exist", () -> {
-//						It("should return null", () -> {
-//							verify(file, never()).getId();
-//							assertThat(rc, is(nullValue()));
-//						});
-//					});
-//				});
-//				Context("#exists", () -> {
-//					BeforeEach(() -> {
-//						file = mock(GridFSFile.class);
-//					});
-//					JustBeforeEach(() -> {
-//						rc = r.exists();
-//					});
-//					Context("given the file exists", () -> {
-//						BeforeEach(() -> {
-//							file = mock(GridFSFile.class);
-//							when(gridfs.findOne(anyObject())).thenReturn(file);
-//						});
-//						It("should return true", () -> {
-//							assertThat(rc, is(true));
-//						});
-//					});
-//					Context("given the file doesn't exist", () -> {
-//						It("should return null", () -> {
-//							assertThat(rc, is(false));
-//						});
-//					});
-//				});
-//				Context("#isOpen", () -> {
-//					JustBeforeEach(() -> {
-//						rc = r.isOpen();
-//					});
-//					It("should return true", () -> {
-//						assertThat(rc, is(true));
-//					});
-//				});
-//				Context("#getInputStream", () -> {
-//					JustBeforeEach(() -> {
-//						rc = r.getInputStream();
-//					});
-//					Context("given the file exists", () -> {
-//						BeforeEach(() -> {
-//							file = mock(GridFSFile.class);
-//							when(gridfs.findOne(anyObject())).thenReturn(file);
-//							when(gridfs.getResource(location))
-//									.thenReturn(mock(GridFsResource.class));
-//						});
-//						It("should return the file's input stream", () -> {
-//							verify(gridfs).getResource(location);
-//						});
-//					});
-//					Context("given the file doesn't exist", () -> {
-//						It("should return null", () -> {
-//							verify(gridfs, never()).getResource(location);
-//							assertThat(rc, is(nullValue()));
-//						});
-//					});
-//				});
-//				Context("#getDescription", () -> {
-//					JustBeforeEach(() -> {
-//						rc = r.getDescription();
-//					});
-//					It("should return something", () -> {
-//						assertThat(rc, is(not(nullValue())));
-//					});
-//				});
-//				Context("#isReadable", () -> {
-//					JustBeforeEach(() -> {
-//						rc = r.isReadable();
-//					});
-//					It("should return true", () -> {
-//						assertThat(rc, is(true));
-//					});
-//				});
-//				Context("#lastModified", () -> {
-//					BeforeEach(() -> {
-//						file = mock(GridFSFile.class);
-//					});
-//					JustBeforeEach(() -> {
-//						rc = r.lastModified();
-//					});
-//					Context("given the file exists", () -> {
-//						BeforeEach(() -> {
-//							file = mock(GridFSFile.class);
-//							when(gridfs.findOne(anyObject())).thenReturn(file);
-//							when(file.getUploadDate()).thenReturn(new Date());
-//						});
-//						It("should return the file's input stream", () -> {
-//							verify(file).getUploadDate();
-//						});
-//					});
-//					Context("given the file doesn't exist", () -> {
-//						It("should return null", () -> {
-//							verify(file, never()).getUploadDate();
-//							assertThat(rc, is(-1L));
-//						});
-//					});
-//				});
-//			});
-//			Describe("WritableResource", () -> {
-//				Context("#isWritable", () -> {
-//					JustBeforeEach(() -> {
-//						rc = r.isWritable();
-//					});
-//					It("should return true", () -> {
-//						assertThat(rc, is(true));
-//					});
-//				});
-//				Context("getOutputStream", () -> {
-//					JustBeforeEach(() -> {
-//						rc = r.getOutputStream();
-//					});
-//					Context("when content is written", () -> {
-//						JustBeforeEach(() -> {
-//							((OutputStream) rc).write(new byte[] { 32 }, 0, 1);
-//							IOUtils.closeQuietly((OutputStream) rc);
-//						});
-//						It("should store the content", () -> {
-//							verify(gridfs).store(any(InputStream.class), eq(location));
-//						});
-//						It("should delete existing content", () -> {
-//							verify(gridfs).delete(anyObject());
-//						});
-//					});
-//				});
-//			});
-//			Describe("DeletableResource", () -> {
-//				Context("#delete", () -> {
-//					JustBeforeEach(() -> {
-//						r.delete();
-//					});
-//					Context("given the file exists", () -> {
-//						BeforeEach(() -> {
-//							file = mock(GridFSFile.class);
-//						});
-//						Context("given the file exists", () -> {
-//							BeforeEach(() -> {
-//								when(gridfs.findOne(anyObject())).thenReturn(file);
-//							});
-//							It("should delete the file", () -> {
-//								verify(gridfs).delete(anyObject());
-//							});
-//						});
-//						Context("given the file doesn't exist", () -> {
-//							It("should return null", () -> {
-//								verify(gridfs, never()).delete(anyObject());
-//							});
-//						});
-//					});
-//				});
-//			});
-//		});
-//	}
-//}
+package internal.org.springframework.content.mongo.io;
+
+import com.mongodb.client.gridfs.model.GridFSFile;
+import org.apache.commons.io.IOUtils;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.springframework.data.mongodb.gridfs.GridFsResource;
+import org.springframework.data.mongodb.gridfs.GridFsTemplate;
+
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Date;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+public class GridFSResourceTest {
+
+    private GridFsStoreResource r;
+
+    private String location;
+    private GridFsTemplate gridfs;
+
+    private GridFSFile file;
+
+    private Object rc;
+
+    @BeforeEach
+    void createTemplate() {
+        location = "some-location";
+        gridfs = mock(GridFsTemplate.class);
+        r = new GridFsStoreResource(location, gridfs);
+    }
+
+    @Nested
+    class Resource {
+
+        @Nested
+        class ContentLength {
+            @BeforeEach
+            void mockFile() {
+                file = mock(GridFSFile.class);
+            }
+
+            @Nested
+            class GivenTheFileExists {
+                @BeforeEach
+                void fileExists() {
+                    when(gridfs.findOne(any())).thenReturn(file);
+                }
+
+                @Test
+                void shouldReturnTheFilesLength() throws Exception {
+                    r.contentLength();
+                    verify(file).getLength();
+                }
+            }
+
+            @Nested
+            class GivenTheFileDoesntExist {
+                @Test
+                void shouldReturnZero() throws Exception {
+                    rc = r.contentLength();
+                    verify(file, never()).getLength();
+                    assertThat(rc).isEqualTo(0L);
+                }
+            }
+        }
+
+        @Nested
+        class GetFilename {
+            @Test
+            void shouldReturnTheLocation() {
+                assertThat(r.getFilename()).isEqualTo("some-location");
+            }
+        }
+
+        @Nested
+        class GetId {
+            @BeforeEach
+            void mockFile() {
+                file = mock(GridFSFile.class);
+            }
+
+            @Nested
+            class GivenTheFileExists {
+                @BeforeEach
+                void fileExists() {
+                    when(gridfs.findOne(any())).thenReturn(file);
+                }
+
+                @Test
+                void shouldReturnTheFilesId() {
+                    r.getId();
+                    verify(file).getId();
+                }
+            }
+
+            @Nested
+            class GivenTheFileDoesntExist {
+                @Test
+                void shouldReturnNull() {
+                    rc = r.getId();
+                    verify(file, never()).getId();
+                    assertThat(rc).isNull();
+                }
+            }
+        }
+
+        @Nested
+        class Exists {
+            @Nested
+            class GivenTheFileExists {
+                @BeforeEach
+                void fileExists() {
+                    file = mock(GridFSFile.class);
+                    when(gridfs.findOne(any())).thenReturn(file);
+                }
+
+                @Test
+                void shouldReturnTrue() {
+                    assertThat(r.exists()).isTrue();
+                }
+            }
+
+            @Nested
+            class GivenTheFileDoesntExist {
+                @Test
+                void shouldReturnFalse() {
+                    assertThat(r.exists()).isFalse();
+                }
+            }
+        }
+
+        @Test
+        void isOpenShouldReturnTrue() {
+            assertThat(r.isOpen()).isTrue();
+        }
+
+        @Nested
+        class GetInputStream {
+            @Nested
+            class GivenTheFileExists {
+                @BeforeEach
+                void fileExists() {
+                    file = mock(GridFSFile.class);
+                    when(gridfs.findOne(any())).thenReturn(file);
+                    when(gridfs.getResource(location)).thenReturn(mock(GridFsResource.class));
+                }
+
+                @Test
+                void shouldReturnTheFilesInputStream() throws Exception {
+                    r.getInputStream();
+                    verify(gridfs).getResource(location);
+                }
+            }
+
+            @Nested
+            class GivenTheFileDoesntExist {
+                @Test
+                void shouldReturnNull() throws Exception {
+                    assertThat(r.getInputStream()).isNull();
+                    verify(gridfs, never()).getResource(location);
+                }
+            }
+        }
+
+        @Test
+        void getDescriptionShouldReturnSomething() {
+            assertThat(r.getDescription()).isNotNull();
+        }
+
+        @Test
+        void isReadableShouldReturnTrue() {
+            assertThat(r.isReadable()).isTrue();
+        }
+
+        @Nested
+        class LastModified {
+            @BeforeEach
+            void mockFile() {
+                file = mock(GridFSFile.class);
+            }
+
+            @Nested
+            class GivenTheFileExists {
+                @BeforeEach
+                void fileExists() {
+                    when(gridfs.findOne(any())).thenReturn(file);
+                    when(file.getUploadDate()).thenReturn(new Date());
+                }
+
+                @Test
+                void shouldReturnTheFilesUploadDate() throws Exception {
+                    r.lastModified();
+                    verify(file).getUploadDate();
+                }
+            }
+
+            @Nested
+            class GivenTheFileDoesntExist {
+                @Test
+                void shouldReturnMinusOne() throws Exception {
+                    rc = r.lastModified();
+                    verify(file, never()).getUploadDate();
+                    assertThat(rc).isEqualTo(-1L);
+                }
+            }
+        }
+    }
+
+    @Nested
+    class WritableResource {
+        @Test
+        void isWritableShouldReturnTrue() {
+            assertThat(r.isWritable()).isTrue();
+        }
+
+        @Nested
+        class GetOutputStream {
+            @Test
+            void shouldStoreTheContentAndDeleteExistingContent() throws Exception {
+                OutputStream out = r.getOutputStream();
+                out.write(new byte[] { 32 }, 0, 1);
+                IOUtils.closeQuietly(out);
+
+                verify(gridfs).store(any(InputStream.class), eq(location));
+                verify(gridfs).delete(any());
+            }
+        }
+    }
+
+    @Nested
+    class DeletableResource {
+        @Nested
+        class Delete {
+            @Nested
+            class GivenTheFileExists {
+                @BeforeEach
+                void fileExists() {
+                    file = mock(GridFSFile.class);
+                    when(gridfs.findOne(any())).thenReturn(file);
+                }
+
+                @Test
+                void shouldDeleteTheFile() {
+                    r.delete();
+                    verify(gridfs).delete(any());
+                }
+            }
+
+            @Nested
+            class GivenTheFileDoesntExist {
+                @Test
+                void shouldNotDelete() {
+                    r.delete();
+                    verify(gridfs, never()).delete(any());
+                }
+            }
+        }
+    }
+}

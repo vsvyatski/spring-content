@@ -1,7 +1,11 @@
 package internal.org.springframework.content.rest.it.config;
 
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jConfiguration;
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jSpringRunner;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+
 import internal.org.springframework.content.rest.it.SecurityConfiguration;
 import internal.org.springframework.content.rest.support.TestEntity;
 import internal.org.springframework.content.rest.support.TestEntity2;
@@ -9,8 +13,6 @@ import internal.org.springframework.content.rest.support.mockstore.EnableMockSto
 import internal.org.springframework.content.rest.support.mockstore.MockContentStore;
 import internal.org.springframework.content.rest.support.mockstore.MockStoreFactoryBean;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
@@ -45,15 +47,11 @@ import org.springframework.web.context.WebApplicationContext;
 import javax.sql.DataSource;
 import java.util.UUID;
 
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.*;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
-import static org.hamcrest.Matchers.isA;
 import static org.mockito.Mockito.verify;
-import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
-@RunWith(Ginkgo4jSpringRunner.class)
-@Ginkgo4jConfiguration(threads=1)
 @SpringBootTest(classes = PreferResourceForPutsAndPostsIT.Application.class, webEnvironment=WebEnvironment.RANDOM_PORT)
+@ExtendWith(SpringExtension.class)
 public class PreferResourceForPutsAndPostsIT {
 
     @Autowired
@@ -70,29 +68,32 @@ public class PreferResourceForPutsAndPostsIT {
 
     private TestEntity2 existingClaim;
 
-    {
-        Describe("PreferResourceForPutsAndPosts", () -> {
+    
+    @Nested
+    class PreferResourceForPutsAndPosts {
+        @BeforeEach
+        void setUp() throws Throwable {
+            RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
 
-            BeforeEach(() -> {
-                RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
-            });
+        }
 
-            It("should use the setContent(S, Resource) method", () -> {
+        @Test
+        void shouldUseTheSetContentSResourceMethod() throws Throwable {
+            TestEntity tentity = new TestEntity();
+            tentity = repo.save(tentity);
 
-                TestEntity tentity = new TestEntity();
-                tentity = repo.save(tentity);
+            given()
+                    .contentType("text/plain")
+                    .body("some content".getBytes())
+                    .when()
+                    .post("/testEntities/" + tentity.getId());
 
-                given()
-                        .contentType("text/plain")
-                        .body("some content".getBytes())
-                        .when()
-                        .post("/testEntities/" + tentity.getId());
+            MockStoreFactoryBean storeFactory = context.getBean(MockStoreFactoryBean.class);
 
-                MockStoreFactoryBean storeFactory = context.getBean(MockStoreFactoryBean.class);
+            verify(storeFactory.getMock()).setContent(org.mockito.ArgumentMatchers.isA(TestEntity.class), org.mockito.ArgumentMatchers.isA(PropertyPath.class), (Resource)org.mockito.ArgumentMatchers.isA(Resource.class));
 
-                verify(storeFactory.getMock()).setContent(argThat(isA(TestEntity.class)), argThat(isA(PropertyPath.class)), (Resource)argThat(isA(Resource.class)));
-            });
-        });
+        }
+
     }
 
     public interface PreferResourceForPutsAndPostsRepository extends CrudRepository<TestEntity, Long> {
@@ -178,7 +179,4 @@ public class PreferResourceForPutsAndPostsIT {
        }
     }
 
-    @Test
-    public void noop() {
-    }
 }

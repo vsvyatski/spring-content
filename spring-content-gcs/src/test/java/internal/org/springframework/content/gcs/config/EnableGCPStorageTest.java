@@ -1,11 +1,15 @@
 package internal.org.springframework.content.gcs.config;
 
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jRunner;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.contrib.nio.testing.LocalStorageHelper;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.store.AssociativeStore;
@@ -17,15 +21,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.*;
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-@RunWith(Ginkgo4jRunner.class)
 public class EnableGCPStorageTest {
 
     private AnnotationConfigApplicationContext context;
@@ -33,53 +32,73 @@ public class EnableGCPStorageTest {
     // mocks
     static GCPStorageConfigurer configurer;
 
-    {
-        Describe("EnableGCPStorage", () -> {
-            Context("given a context and a configuration with an GCS ContentStore",
-                    () -> {
-                        BeforeEach(() -> {
-                            context = new AnnotationConfigApplicationContext();
-                            context.register(TestConfig.class);
-                            context.refresh();
-                        });
-                        AfterEach(() -> context.close());
-                        It("should have a ContentStore bean", () ->
-                                assertThat(context.getBean(TestEntityContentStore.class), is(not(nullValue()))));
-                        It("should have an Placement Service", () ->
-                                assertThat(context.getBean("gcpStoragePlacementService"), is(not(nullValue()))));
-                    });
+    
+    @Nested
+    class EnableGCPStorageCases {
+        @Nested
+        class GivenAContextAndAConfigurationWithAnGCSContentStore {
+            @BeforeEach
+            void setUp() throws Throwable {
+                context = new AnnotationConfigApplicationContext();
+                                            context.register(TestConfig.class);
+                                            context.refresh();
+            }
+            @AfterEach
+            void tearDown() throws Throwable {
+                context.close();
+            }
+            @Test
+            void shouldHaveAContentStoreBean() throws Throwable {
+                assertThat(context.getBean(TestEntityContentStore.class)).isNotNull();
+            }
+            @Test
+            void shouldHaveAnPlacementService() throws Throwable {
+                assertThat(context.getBean("gcpStoragePlacementService")).isNotNull();
+            }
+        }
+        @Nested
+        class GivenAContextWithAConfigurer {
+            @BeforeEach
+            void setUp() throws Throwable {
+                configurer = mock(GCPStorageConfigurer.class);
 
-            Context("given a context with a configurer", () -> {
-                BeforeEach(() -> {
-                    configurer = mock(GCPStorageConfigurer.class);
-
-                    context = new AnnotationConfigApplicationContext();
-                    context.register(ConverterConfig.class);
-                    context.refresh();
-                });
-                AfterEach(() -> context.close());
-                It("should call that configurer to help setup the store", () ->
-                        verify(configurer).configureGCPStorageConverters(any()));
-            });
-
-            Context("given a context with an empty configuration", () -> {
-                BeforeEach(() -> {
-                    context = new AnnotationConfigApplicationContext();
-                    context.register(EmptyConfig.class);
-                    context.refresh();
-                });
-                AfterEach(() -> context.close());
-                It("should not contains any S3 repository beans", () -> {
-                    try {
-                        context.getBean(TestEntityContentStore.class);
-                        fail("expected no such bean");
-                    } catch (NoSuchBeanDefinitionException e) {
-                        assertThat(true, is(true));
-                    }
-                });
-            });
-        });
+                                    context = new AnnotationConfigApplicationContext();
+                                    context.register(ConverterConfig.class);
+                                    context.refresh();
+            }
+            @AfterEach
+            void tearDown() throws Throwable {
+                context.close();
+            }
+            @Test
+            void shouldCallThatConfigurerToHelpSetupTheStore() throws Throwable {
+                verify(configurer).configureGCPStorageConverters(any());
+            }
+        }
+        @Nested
+        class GivenAContextWithAnEmptyConfiguration {
+            @BeforeEach
+            void setUp() throws Throwable {
+                context = new AnnotationConfigApplicationContext();
+                                    context.register(EmptyConfig.class);
+                                    context.refresh();
+            }
+            @AfterEach
+            void tearDown() throws Throwable {
+                context.close();
+            }
+            @Test
+            void shouldNotContainsAnyS3RepositoryBeans() throws Throwable {
+                try {
+                                        context.getBean(TestEntityContentStore.class);
+                                        fail("expected no such bean");
+                                    } catch (NoSuchBeanDefinitionException e) {
+                                        assertThat(true).isTrue();
+                                    }
+            }
+        }
     }
+
 
     @Test
     public void noop() {

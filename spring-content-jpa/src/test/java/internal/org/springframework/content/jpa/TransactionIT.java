@@ -1,14 +1,9 @@
 package internal.org.springframework.content.jpa;
 
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.AfterEach;
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.BeforeEach;
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.Context;
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.Describe;
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.It;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.TestFactory;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -21,8 +16,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.transaction.Transactional;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.jpa.config.EnableJpaStores;
@@ -34,17 +27,12 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jConfiguration;
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jRunner;
-
 import internal.org.springframework.content.jpa.StoreIT.H2Config;
 import internal.org.springframework.content.jpa.StoreIT.HSQLConfig;
 import internal.org.springframework.content.jpa.StoreIT.MySqlConfig;
 import internal.org.springframework.content.jpa.StoreIT.PostgresConfig;
 import internal.org.springframework.content.jpa.StoreIT.SqlServerConfig;
 
-@RunWith(Ginkgo4jRunner.class)
-@Ginkgo4jConfiguration(threads = 1) // required
 public class TransactionIT {
 
     private static Class<?>[] CONFIG_CLASSES = new Class[]{
@@ -67,56 +55,52 @@ public class TransactionIT {
 
 	private TestEntity te = null;
 
+	
+    @Nested
+    class TransactionTest {
+        @TestFactory
+        java.util.stream.Stream<org.junit.jupiter.api.DynamicNode> generatedCases() {
+            java.util.List<org.junit.jupiter.api.DynamicNode> tests = new java.util.ArrayList<>();
+            for (Class<?> configClass : CONFIG_CLASSES) {
+                tests.add(org.junit.jupiter.api.DynamicTest.dynamicTest("should not commit changes to content", () -> {
+                    context = new AnnotationConfigApplicationContext();
+                    context.register(TestConfig.class);
+                    context.register(configClass);
+                    context.refresh();
 
-	{
-		Describe("TransactionTest", () -> {
+                    repo = context.getBean(TestEntityRepository.class);
+                    store = context.getBean(TestEntityContentRepository.class);
+                    dbService = context.getBean(DbService.class);
+                    ptm = context.getBean(PlatformTransactionManager.class);
 
-			for (Class<?> configClass : CONFIG_CLASSES) {
+                    te = new TestEntity();
+                    te = repo.save(te);
+                    assertThat(te.getId()).isNotNull();
+                    assertThat(te.getContentId()).isNull();
 
-				Context(getContextName(configClass), () -> {
-					Context("given a context with a repository and a store", () -> {
-						BeforeEach(() -> {
-							context = new AnnotationConfigApplicationContext();
-							context.register(TestConfig.class);
-							context.register(configClass);
-							context.refresh();
+                    try {
+                        try {
+                        	te = dbService.doSomeDbStuff(store, te);
+                        } catch (Exception e) {
+                        	ContentStoreIT.doInTransaction(ptm, () -> {
+                        		try (InputStream result = store.getContent(te)) {
+                        			assertThat(result).isNull();
+                        		} catch (IOException e1) {}
+                        		return null;
+                        	});
+                        }
 
-							repo = context.getBean(TestEntityRepository.class);
-							store = context.getBean(TestEntityContentRepository.class);
-							dbService = context.getBean(DbService.class);
-							ptm = context.getBean(PlatformTransactionManager.class);
+                    } finally {
+                        context.close();
 
-							te = new TestEntity();
-							te = repo.save(te);
-							assertThat(te.getId(), is(not(nullValue())));
-							assertThat(te.getContentId(), is(nullValue()));
-						});
-						AfterEach(() -> {
-							context.close();
-						});
-						Context("given an exception is thrown causing a rollback", () -> {
-							It("should not commit changes to content", () -> {
+                    }
+                }));
+            }
+            return tests.stream();
+        }
 
-								try {
-									te = dbService.doSomeDbStuff(store, te);
-								} catch (Exception e) {
-									ContentStoreIT.doInTransaction(ptm, () -> {
-										try (InputStream result = store.getContent(te)) {
-											assertThat(result, is(nullValue()));
-										} catch (IOException e1) {}
-										return null;
-									});
-								}
-							});
-						});
-					});
-				});
-			}
-		});
-	}
+    }
 
-	@Test
-	public void noop() {}
 
 	private static String getContextName(Class<?> configClass) {
 		return configClass.getSimpleName().replaceAll("Config", "");
@@ -133,12 +117,11 @@ public class TransactionIT {
 		}
 	}
 
-
 	@Component
 	public static class DbService {
 
 		@Transactional
-		public TestEntity doSomeDbStuff(TestEntityContentRepository store, TestEntity te) throws Exception {
+		public TestEntity doSomeDbStuff(TestEntityContentRepository store, TestEntity te) throws Throwable {
 			te = store.setContent(te, new ByteArrayInputStream("Spring Content World!".getBytes()));
 			throw new RuntimeException("badness");
 		}

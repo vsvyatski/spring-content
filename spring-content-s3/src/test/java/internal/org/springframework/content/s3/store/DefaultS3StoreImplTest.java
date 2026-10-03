@@ -1,13 +1,11 @@
 package internal.org.springframework.content.s3.store;
 
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.*;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import static java.lang.String.format;
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.endsWith;
 import static org.mockito.ArgumentMatchers.eq;
@@ -23,7 +21,6 @@ import java.io.Serializable;
 import java.util.UUID;
 import java.util.function.Supplier;
 
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.config.BeanDefinitionCustomizer;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.annotations.ContentLength;
@@ -45,8 +42,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.WritableResource;
 
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jRunner;
-
 import internal.org.springframework.content.s3.config.S3StoreConfiguration;
 import internal.org.springframework.content.s3.io.S3StoreResource;
 import internal.org.springframework.content.s3.io.SimpleStorageProtocolResolver;
@@ -54,8 +49,6 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 
-@RunWith(Ginkgo4jRunner.class)
-// @Ginkgo4jConfiguration(threads=1)
 public class DefaultS3StoreImplTest {
 
 	private DefaultS3StoreImpl<ContentProperty, String> s3StoreImpl;
@@ -83,764 +76,1847 @@ public class DefaultS3StoreImplTest {
 	private InputStream result;
 	private Exception e;
 
-	{
-		Describe("DefaultS3StoreImpl", () -> {
-			BeforeEach(() -> {
-				resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
-				loader = mock(ResourceLoader.class);
-				placementService = mock(PlacementService.class);
-				client = mock(S3Client.class);
-				defaultBucket = null;
+	
+    @Nested
+    class DefaultS3StoreImplCases {
+        @Nested
+        class Store {
+            @Nested
+            class GetResource {
+                @Nested
+                class GivenTheStoreSIDIsAnS3ObjectIdType {
+                    @BeforeEach
+                    void setUp() throws Throwable {
+                        resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
+                        loader = mock(ResourceLoader.class);
+                        placementService = mock(PlacementService.class);
+                        client = mock(S3Client.class);
+                        defaultBucket = null;
 
-				context.registerBean("s3Client", S3Client.class, new Supplier() {
-
-                   @Override
-                   public Object get() {
-                       return client;
-                   }
-				}, new BeanDefinitionCustomizer[]{});
-				context.refresh();
-			});
-			Describe("Store", () -> {
-				Context("#getResource", () -> {
-					Context("given the store's ID is an S3ObjectId type", () -> {
-						BeforeEach(() -> {
-							placementService = new PlacementServiceImpl();
-							S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
-							placementService.addConverter(new Converter<String, String>() {
-								@Override
-								public String convert(String source) {
-									return "/some/object/id";
-								}
-							});
-
-							SimpleStorageProtocolResolver s3Protocol = new SimpleStorageProtocolResolver(client);
-							s3Protocol.afterPropertiesSet();
-							loader = new DefaultResourceLoader();
-							((DefaultResourceLoader)loader).addProtocolResolver(s3Protocol);
-
-							s3ObjectIdBasedStore = new DefaultS3StoreImpl<>(context, loader, null, placementService, client, null);
-						});
-						JustBeforeEach(() -> {
-							try {
-								r = s3ObjectIdBasedStore.getResource(new S3ObjectId("some-defaultBucket", "some-object-id"));
-							} catch (Exception e) {
-								this.e = e;
-							}
-						});
-						It("should return the resource", () -> {
-							assertThat(e, is(nullValue()));
-							assertThat(r, is(instanceOf(S3StoreResource.class)));
-							assertThat(((S3StoreResource)r).getClient(), is(client));
-							assertThat(r.getDescription(), is(format("Amazon s3 resource [bucket='%s' and object='%s']","some-defaultBucket", "some/object/id")));
-						});
-					});
-					Context("given the store's ID is a custom ID type", () -> {
-						JustBeforeEach(() -> {
-							customS3ContentIdBasedStore = new DefaultS3StoreImpl<>(context, loader, null, placementService, client, null);
-
-							try {
-								r = customS3ContentIdBasedStore.getResource(customId);
-							}
-							catch (Exception e) {
-								this.e = e;
-							}
-						});
-						Context("given a default bucket is set", () -> {
-							BeforeEach(() -> {
-								defaultBucket = "default-customer";
-							});
-							Context("given the resolver is created with the static constructor function", () -> {
-								BeforeEach(() -> {
-									placementService = new PlacementServiceImpl();
-									S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
-									placementService.addConverter(new Converter<CustomContentId, S3ObjectId>() {
+                        context.registerBean("s3Client", S3Client.class, new Supplier() {
 
                                        @Override
-                                       public S3ObjectId convert(CustomContentId entity) {
-                                           return new S3ObjectId(entity.getCustomer(), entity.getObjectId());
+                                       public Object get() {
+                                           return client;
                                        }
-									});
+                        }, new BeanDefinitionCustomizer[]{});
+                        context = new GenericApplicationContext();
+                        context.refresh();
 
-									SimpleStorageProtocolResolver s3Protocol = new SimpleStorageProtocolResolver(client);
-									s3Protocol.afterPropertiesSet();
-									loader = new DefaultResourceLoader();
-									((DefaultResourceLoader)loader).addProtocolResolver(s3Protocol);
-								});
-								Context("given an ID", () -> {
-									BeforeEach(() -> {
-										customId = new CustomContentId(
-												"some-customer",
-												"some-object-id");
-									});
-									It("should fetch the resource", () -> {
-										assertThat(e, is(nullValue()));
-										assertThat(r, is(instanceOf(S3StoreResource.class)));
-										assertThat(((S3StoreResource)r).getClient(), is(client));
-										assertThat(r.getDescription(), is(format("Amazon s3 resource [bucket='%s' and object='%s']","some-customer", "some-object-id")));
-									});
-								});
-							});
-						});
-						Context("given a default bucket is not set", () -> {
-							BeforeEach(() -> {
-								defaultBucket = null;
-							});
-							Context("given a resolver that does not validate", () -> {
-								BeforeEach(() -> {
-									placementService = new PlacementServiceImpl();
-									S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
-								});
-								Context("when called with an ID that doesn't specify a bucket either", () -> {
-                                   BeforeEach(() -> {
-                                       customId = new CustomContentId(null,"some-object-id");
-                                   });
-                                   It("should throw an error", () -> {
-                                       assertThat(e, is(instanceOf(ConversionFailedException.class)));
-                                   });
-                               });
-							});
-						});
-					});
-					Context("given a multi tenant configuration", () -> {
-						JustBeforeEach(() -> {
-							placementService = new PlacementServiceImpl();
-							S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
-							s3ObjectIdBasedStore = new DefaultS3StoreImpl<>(context, loader, null, placementService, client, clientProvider);
+                        placementService = new PlacementServiceImpl();
+                        S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
+                        placementService.addConverter(new Converter<String, String>() {
+                        	@Override
+                        	public String convert(String source) {
+                        		return "/some/object/id";
+                        	}
+                        });
 
-							try {
-								r = s3ObjectIdBasedStore.getResource(new S3ObjectId("some-bucket", "some-object-id"));
-							}
-							catch (Exception e) {
-								this.e = e;
-							}
-						});
+                        SimpleStorageProtocolResolver s3Protocol = new SimpleStorageProtocolResolver(client);
+                        s3Protocol.afterPropertiesSet();
+                        loader = new DefaultResourceLoader();
+                        ((DefaultResourceLoader)loader).addProtocolResolver(s3Protocol);
 
-						BeforeEach(() -> {
-							client2 = mock(S3Client.class);
-							clientProvider = new MultiTenantS3ClientProvider() {
-								@Override
-								public S3Client getS3Client() {
-									return client2;
-								};
-							};
-						});
+                        s3ObjectIdBasedStore = new DefaultS3StoreImpl<>(context, loader, null, placementService, client, null);
 
-						It("should fetch the resource using the correct client", () -> {
-							assertThat(e, is(nullValue()));
-							assertThat(r, is(instanceOf(S3StoreResource.class)));
-							assertThat(((S3StoreResource)r).getClient(), is(client2));
-							assertThat(r.getDescription(), is(format("Amazon s3 resource [bucket='%s' and object='%s']","some-bucket", "some-object-id")));
-						});
-					});
-				});
-			});
+                        try {
+                        	r = s3ObjectIdBasedStore.getResource(new S3ObjectId("some-defaultBucket", "some-object-id"));
+                        } catch (Exception e) {
+                        	DefaultS3StoreImplTest.this.e = e;
+                        }
 
-			Describe("AssociativeStore", () -> {
-				JustBeforeEach(() -> {
-					s3StoreImpl = new DefaultS3StoreImpl<ContentProperty, String>(context,loader,null,placementService,client,null);
-				});
-				Context("#getResource", () -> {
-					JustBeforeEach(() -> {
-						try {
-							r = s3StoreImpl.getResource(entity);
-						}
-						catch (Exception e) {
-							this.e = e;
-						}
-					});
-					Context("given the default associative store id resolver", () -> {
-						Context("given a default bucket", () -> {
-							BeforeEach(() -> {
-								defaultBucket = "default-defaultBucket";
-							});
-							Context("when called with an entity that doesn't have an @Bucket value", () -> {
-								BeforeEach(() -> {
-									entity = new TestEntity("12345-67890");
+                    }
 
-									placementService = new PlacementServiceImpl();
-                                   S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
-									placementService.addConverter(new Converter<S3ObjectId, String>() {
+                    @Test
+                    void shouldReturnTheResource() throws Throwable {
+                        assertThat(e).isNull();
+                        assertThat(r).isInstanceOf(S3StoreResource.class);
+                        assertThat(((S3StoreResource)r).getClient()).isEqualTo(client);
+                        assertThat(r.getDescription()).isEqualTo(format("Amazon s3 resource [bucket='%s' and object='%s']","some-defaultBucket", "some/object/id"));
+
+                    }
+
+                }
+
+                @Nested
+                class GivenTheStoreSIDIsACustomIDType {
+                    @Nested
+                    class GivenADefaultBucketIsSet {
+                        @Nested
+                        class GivenTheResolverIsCreatedWithTheStaticConstructorFunction {
+                            @Nested
+                            class GivenAnID {
+                                @BeforeEach
+                                void setUp() throws Throwable {
+                                    resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
+                                    loader = mock(ResourceLoader.class);
+                                    placementService = mock(PlacementService.class);
+                                    client = mock(S3Client.class);
+                                    defaultBucket = null;
+
+                                    context.registerBean("s3Client", S3Client.class, new Supplier() {
+
+                                                   @Override
+                                                   public Object get() {
+                                                       return client;
+                                                   }
+                                    }, new BeanDefinitionCustomizer[]{});
+                                    context = new GenericApplicationContext();
+                                    context.refresh();
+
+                                    defaultBucket = "default-customer";
+
+                                    placementService = new PlacementServiceImpl();
+                                    S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
+                                    placementService.addConverter(new Converter<CustomContentId, S3ObjectId>() {
+
+                                                                  @Override
+                                                                  public S3ObjectId convert(CustomContentId entity) {
+                                                                      return new S3ObjectId(entity.getCustomer(), entity.getObjectId());
+                                                                  }
+                                    });
+
+                                    SimpleStorageProtocolResolver s3Protocol = new SimpleStorageProtocolResolver(client);
+                                    s3Protocol.afterPropertiesSet();
+                                    loader = new DefaultResourceLoader();
+                                    ((DefaultResourceLoader)loader).addProtocolResolver(s3Protocol);
+
+                                    customId = new CustomContentId(
+                                    		"some-customer",
+                                    		"some-object-id");
+
+                                    customS3ContentIdBasedStore = new DefaultS3StoreImpl<>(context, loader, null, placementService, client, null);
+
+                                    try {
+                                    	r = customS3ContentIdBasedStore.getResource(customId);
+                                    }
+                                    catch (Exception e) {
+                                    	DefaultS3StoreImplTest.this.e = e;
+                                    }
+
+                                }
+
+                                @Test
+                                void shouldFetchTheResource() throws Throwable {
+                                    assertThat(e).isNull();
+                                    assertThat(r).isInstanceOf(S3StoreResource.class);
+                                    assertThat(((S3StoreResource)r).getClient()).isEqualTo(client);
+                                    assertThat(r.getDescription()).isEqualTo(format("Amazon s3 resource [bucket='%s' and object='%s']","some-customer", "some-object-id"));
+
+                                }
+
+                            }
+
+                        }
+
+                    }
+
+                    @Nested
+                    class GivenADefaultBucketIsNotSet {
+                        @Nested
+                        class GivenAResolverThatDoesNotValidate {
+                            @Nested
+                            class WhenCalledWithAnIDThatDoesnTSpecifyABucketEither {
+                                @BeforeEach
+                                void setUp() throws Throwable {
+                                    resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
+                                    loader = mock(ResourceLoader.class);
+                                    placementService = mock(PlacementService.class);
+                                    client = mock(S3Client.class);
+                                    defaultBucket = null;
+
+                                    context.registerBean("s3Client", S3Client.class, new Supplier() {
+
+                                                   @Override
+                                                   public Object get() {
+                                                       return client;
+                                                   }
+                                    }, new BeanDefinitionCustomizer[]{});
+                                    context = new GenericApplicationContext();
+                                    context.refresh();
+
+                                    defaultBucket = null;
+
+                                    placementService = new PlacementServiceImpl();
+                                    S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
+
+                                    customId = new CustomContentId(null,"some-object-id");
+
+                                    customS3ContentIdBasedStore = new DefaultS3StoreImpl<>(context, loader, null, placementService, client, null);
+
+                                    try {
+                                    	r = customS3ContentIdBasedStore.getResource(customId);
+                                    }
+                                    catch (Exception e) {
+                                    	DefaultS3StoreImplTest.this.e = e;
+                                    }
+
+                                }
+
+                                @Test
+                                void shouldThrowAnError() throws Throwable {
+                                    assertThat(e).isInstanceOf(ConversionFailedException.class);
+
+                                }
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+                @Nested
+                class GivenAMultiTenantConfiguration {
+                    @BeforeEach
+                    void setUp() throws Throwable {
+                        resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
+                        loader = mock(ResourceLoader.class);
+                        placementService = mock(PlacementService.class);
+                        client = mock(S3Client.class);
+                        defaultBucket = null;
+
+                        context.registerBean("s3Client", S3Client.class, new Supplier() {
+
                                        @Override
-                                       public String convert(S3ObjectId source) {
-                                           return "/" + source.getKey().replaceAll("-", "/");
+                                       public Object get() {
+                                           return client;
                                        }
-                                   });
+                        }, new BeanDefinitionCustomizer[]{});
+                        context = new GenericApplicationContext();
+                        context.refresh();
 
-									SimpleStorageProtocolResolver s3Protocol = new SimpleStorageProtocolResolver(client);
-									s3Protocol.afterPropertiesSet();
-									loader = new DefaultResourceLoader();
-									((DefaultResourceLoader)loader).addProtocolResolver(s3Protocol);
-                               });
-								It("should fetch the resource", () -> {
-									assertThat(e, is(nullValue()));
-									assertThat(r, is(instanceOf(S3StoreResource.class)));
-									assertThat(((S3StoreResource)r).getClient(), is(client));
-									assertThat(r.getDescription(), is(format("Amazon s3 resource [bucket='%s' and object='%s']","default-defaultBucket", "12345/67890")));
-								});
-							});
-							Context("when called with an entity that has an @Bucket value", () -> {
-								BeforeEach(() -> {
-									entity = new TestEntityWithBucketAnnotation(
-											"some-other-bucket");
-									entity.setContentId("12345-67890");
+                        client2 = mock(S3Client.class);
+                        clientProvider = new MultiTenantS3ClientProvider() {
+                        	@Override
+                        	public S3Client getS3Client() {
+                        		return client2;
+                        	};
+                        };
 
-                                   placementService = new PlacementServiceImpl();
-                                   S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
+                        placementService = new PlacementServiceImpl();
+                        S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
+                        s3ObjectIdBasedStore = new DefaultS3StoreImpl<>(context, loader, null, placementService, client, clientProvider);
 
-									SimpleStorageProtocolResolver s3Protocol = new SimpleStorageProtocolResolver(client);
-									s3Protocol.afterPropertiesSet();
-									loader = new DefaultResourceLoader();
-									((DefaultResourceLoader)loader).addProtocolResolver(s3Protocol);
-								});
-								It("should fetch the correct resource", () -> {
-									assertThat(e, is(nullValue()));
-									assertThat(r, is(instanceOf(S3StoreResource.class)));
-									assertThat(((S3StoreResource)r).getClient(), is(client));
-									assertThat(r.getDescription(), is(format("Amazon s3 resource [bucket='%s' and object='%s']","some-other-bucket", "12345-67890")));
-								});
-							});
-							Context("when called with an entity that has no associated resource", () -> {
-								BeforeEach(() -> {
-									entity = new TestEntity();
-								});
-								It("should return null", () -> {
-									assertThat(r, is(nullValue()));
-									assertThat(e, is(nullValue()));
-								});
-							});
-						});
-					});
-					Context("given a custom id resolver", () -> {
-						Context("given a default bucket", () -> {
-							BeforeEach(() -> {
-								defaultBucket = "default-defaultBucket";
-							});
-							Context("when called with an entity", () -> {
-								BeforeEach(() -> {
-									entity = new TestEntity("12345-67890");
+                        try {
+                        	r = s3ObjectIdBasedStore.getResource(new S3ObjectId("some-bucket", "some-object-id"));
+                        }
+                        catch (Exception e) {
+                        	DefaultS3StoreImplTest.this.e = e;
+                        }
 
-									placementService = new PlacementServiceImpl();
-									S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
-                                   placementService.addConverter(new Converter<TestEntity, S3ObjectId>() {
+                    }
+
+                    @Test
+                    void shouldFetchTheResourceUsingTheCorrectClient() throws Throwable {
+                        assertThat(e).isNull();
+                        assertThat(r).isInstanceOf(S3StoreResource.class);
+                        assertThat(((S3StoreResource)r).getClient()).isEqualTo(client2);
+                        assertThat(r.getDescription()).isEqualTo(format("Amazon s3 resource [bucket='%s' and object='%s']","some-bucket", "some-object-id"));
+
+                    }
+
+                }
+
+            }
+
+        }
+
+        @Nested
+        class AssociativeStore {
+            @Nested
+            class GetResource {
+                @Nested
+                class GivenTheDefaultAssociativeStoreIdResolver {
+                    @Nested
+                    class GivenADefaultBucket {
+                        @Nested
+                        class WhenCalledWithAnEntityThatDoesnTHaveAnBucketValue {
+                            @BeforeEach
+                            void setUp() throws Throwable {
+                                resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
+                                loader = mock(ResourceLoader.class);
+                                placementService = mock(PlacementService.class);
+                                client = mock(S3Client.class);
+                                defaultBucket = null;
+
+                                context.registerBean("s3Client", S3Client.class, new Supplier() {
+
+                                               @Override
+                                               public Object get() {
+                                                   return client;
+                                               }
+                                }, new BeanDefinitionCustomizer[]{});
+                                context = new GenericApplicationContext();
+                                context.refresh();
+
+                                defaultBucket = "default-defaultBucket";
+
+                                entity = new TestEntity("12345-67890");
+
+                                placementService = new PlacementServiceImpl();
+                                                          S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
+                                placementService.addConverter(new Converter<S3ObjectId, String>() {
+                                                              @Override
+                                                              public String convert(S3ObjectId source) {
+                                                                  return "/" + source.getKey().replaceAll("-", "/");
+                                                              }
+                                                          });
+
+                                SimpleStorageProtocolResolver s3Protocol = new SimpleStorageProtocolResolver(client);
+                                s3Protocol.afterPropertiesSet();
+                                loader = new DefaultResourceLoader();
+                                ((DefaultResourceLoader)loader).addProtocolResolver(s3Protocol);
+
+                                s3StoreImpl = new DefaultS3StoreImpl<ContentProperty, String>(context,loader,null,placementService,client,null);
+
+                                try {
+                                	r = s3StoreImpl.getResource(entity);
+                                }
+                                catch (Exception e) {
+                                	DefaultS3StoreImplTest.this.e = e;
+                                }
+
+                            }
+
+                            @Test
+                            void shouldFetchTheResource() throws Throwable {
+                                assertThat(e).isNull();
+                                assertThat(r).isInstanceOf(S3StoreResource.class);
+                                assertThat(((S3StoreResource)r).getClient()).isEqualTo(client);
+                                assertThat(r.getDescription()).isEqualTo(format("Amazon s3 resource [bucket='%s' and object='%s']","default-defaultBucket", "12345/67890"));
+
+                            }
+
+                        }
+
+                        @Nested
+                        class WhenCalledWithAnEntityThatHasAnBucketValue {
+                            @BeforeEach
+                            void setUp() throws Throwable {
+                                resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
+                                loader = mock(ResourceLoader.class);
+                                placementService = mock(PlacementService.class);
+                                client = mock(S3Client.class);
+                                defaultBucket = null;
+
+                                context.registerBean("s3Client", S3Client.class, new Supplier() {
+
+                                               @Override
+                                               public Object get() {
+                                                   return client;
+                                               }
+                                }, new BeanDefinitionCustomizer[]{});
+                                context = new GenericApplicationContext();
+                                context.refresh();
+
+                                defaultBucket = "default-defaultBucket";
+
+                                entity = new TestEntityWithBucketAnnotation(
+                                		"some-other-bucket");
+                                entity.setContentId("12345-67890");
+
+                                                          placementService = new PlacementServiceImpl();
+                                                          S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
+
+                                SimpleStorageProtocolResolver s3Protocol = new SimpleStorageProtocolResolver(client);
+                                s3Protocol.afterPropertiesSet();
+                                loader = new DefaultResourceLoader();
+                                ((DefaultResourceLoader)loader).addProtocolResolver(s3Protocol);
+
+                                s3StoreImpl = new DefaultS3StoreImpl<ContentProperty, String>(context,loader,null,placementService,client,null);
+
+                                try {
+                                	r = s3StoreImpl.getResource(entity);
+                                }
+                                catch (Exception e) {
+                                	DefaultS3StoreImplTest.this.e = e;
+                                }
+
+                            }
+
+                            @Test
+                            void shouldFetchTheCorrectResource() throws Throwable {
+                                assertThat(e).isNull();
+                                assertThat(r).isInstanceOf(S3StoreResource.class);
+                                assertThat(((S3StoreResource)r).getClient()).isEqualTo(client);
+                                assertThat(r.getDescription()).isEqualTo(format("Amazon s3 resource [bucket='%s' and object='%s']","some-other-bucket", "12345-67890"));
+
+                            }
+
+                        }
+
+                        @Nested
+                        class WhenCalledWithAnEntityThatHasNoAssociatedResource {
+                            @BeforeEach
+                            void setUp() throws Throwable {
+                                resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
+                                loader = mock(ResourceLoader.class);
+                                placementService = mock(PlacementService.class);
+                                client = mock(S3Client.class);
+                                defaultBucket = null;
+
+                                context.registerBean("s3Client", S3Client.class, new Supplier() {
+
+                                               @Override
+                                               public Object get() {
+                                                   return client;
+                                               }
+                                }, new BeanDefinitionCustomizer[]{});
+                                context = new GenericApplicationContext();
+                                context.refresh();
+
+                                defaultBucket = "default-defaultBucket";
+
+                                entity = new TestEntity();
+
+                                s3StoreImpl = new DefaultS3StoreImpl<ContentProperty, String>(context,loader,null,placementService,client,null);
+
+                                try {
+                                	r = s3StoreImpl.getResource(entity);
+                                }
+                                catch (Exception e) {
+                                	DefaultS3StoreImplTest.this.e = e;
+                                }
+
+                            }
+
+                            @Test
+                            void shouldReturnNull() throws Throwable {
+                                assertThat(r).isNull();
+                                assertThat(e).isNull();
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+                @Nested
+                class GivenACustomIdResolver {
+                    @Nested
+                    class GivenADefaultBucket {
+                        @Nested
+                        class WhenCalledWithAnEntity {
+                            @BeforeEach
+                            void setUp() throws Throwable {
+                                resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
+                                loader = mock(ResourceLoader.class);
+                                placementService = mock(PlacementService.class);
+                                client = mock(S3Client.class);
+                                defaultBucket = null;
+
+                                context.registerBean("s3Client", S3Client.class, new Supplier() {
+
+                                               @Override
+                                               public Object get() {
+                                                   return client;
+                                               }
+                                }, new BeanDefinitionCustomizer[]{});
+                                context = new GenericApplicationContext();
+                                context.refresh();
+
+                                defaultBucket = "default-defaultBucket";
+
+                                entity = new TestEntity("12345-67890");
+
+                                placementService = new PlacementServiceImpl();
+                                S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
+                                                          placementService.addConverter(new Converter<TestEntity, S3ObjectId>() {
+                                                              @Override
+                                                              public S3ObjectId convert(TestEntity source) {
+                                                                  return new S3ObjectId( "custom-bucket", "custom-object-id");
+                                                              }
+                                                          });
+
+                                SimpleStorageProtocolResolver s3Protocol = new SimpleStorageProtocolResolver(client);
+                                s3Protocol.afterPropertiesSet();
+                                loader = new DefaultResourceLoader();
+                                ((DefaultResourceLoader)loader).addProtocolResolver(s3Protocol);
+
+                                s3StoreImpl = new DefaultS3StoreImpl<ContentProperty, String>(context,loader,null,placementService,client,null);
+
+                                try {
+                                	r = s3StoreImpl.getResource(entity);
+                                }
+                                catch (Exception e) {
+                                	DefaultS3StoreImplTest.this.e = e;
+                                }
+
+                            }
+
+                            @Test
+                            void shouldFetchTheResource() throws Throwable {
+                                assertThat(e).isNull();
+                                assertThat(r).isInstanceOf(S3StoreResource.class);
+                                assertThat(((S3StoreResource)r).getClient()).isEqualTo(client);
+                                assertThat(r.getDescription()).isEqualTo(format("Amazon s3 resource [bucket='%s' and object='%s']","custom-bucket", "custom-object-id"));
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+                @Nested
+                class GivenACustomIdResolverThatCannotResolveTheBucket {
+                    @Nested
+                    class GivenTheDefaultBucketIsNotSet {
+                        @Nested
+                        class WhenCalledWithAnEntity {
+                            @BeforeEach
+                            void setUp() throws Throwable {
+                                resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
+                                loader = mock(ResourceLoader.class);
+                                placementService = mock(PlacementService.class);
+                                client = mock(S3Client.class);
+                                defaultBucket = null;
+
+                                context.registerBean("s3Client", S3Client.class, new Supplier() {
+
+                                               @Override
+                                               public Object get() {
+                                                   return client;
+                                               }
+                                }, new BeanDefinitionCustomizer[]{});
+                                context = new GenericApplicationContext();
+                                context.refresh();
+
+                                defaultBucket = null;
+
+                                entity = new TestEntity("12345-67890");
+
+                                placementService = new PlacementServiceImpl();
+                                S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
+                                placementService.addConverter(new Converter<CustomContentId, S3ObjectId>() {
+                                    @Override
+                                    public S3ObjectId convert(CustomContentId entity) {
+                                        return new S3ObjectId(null, entity.getObjectId());
+                                    }
+                                });
+
+                                s3StoreImpl = new DefaultS3StoreImpl<ContentProperty, String>(context,loader,null,placementService,client,null);
+
+                                try {
+                                	r = s3StoreImpl.getResource(entity);
+                                }
+                                catch (Exception e) {
+                                	DefaultS3StoreImplTest.this.e = e;
+                                }
+
+                            }
+
+                            @Test
+                            void shouldThrowAnException() throws Throwable {
+                                assertThat(e).isInstanceOf(ConversionFailedException.class);
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+            @Nested
+            class GetResourceWithPropertyPath {
+                @Nested
+                class GivenTheDefaultAssociativeStoreIdResolver {
+                    @Nested
+                    class GivenADefaultBucket {
+                        @Nested
+                        class WhenCalledWithAnEntityThatDoesnTHaveAnBucketValue {
+                            @BeforeEach
+                            void setUp() throws Throwable {
+                                resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
+                                loader = mock(ResourceLoader.class);
+                                placementService = mock(PlacementService.class);
+                                client = mock(S3Client.class);
+                                defaultBucket = null;
+
+                                context.registerBean("s3Client", S3Client.class, new Supplier() {
+
+                                               @Override
+                                               public Object get() {
+                                                   return client;
+                                               }
+                                }, new BeanDefinitionCustomizer[]{});
+                                context = new GenericApplicationContext();
+                                context.refresh();
+
+                                defaultBucket = "default-defaultBucket";
+
+                                entity = new TestEntity("12345-67890");
+
+                                placementService = new PlacementServiceImpl();
+                                S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
+                                placementService.addConverter(new Converter<S3ObjectId, String>() {
+                                	@Override
+                                	public String convert(S3ObjectId source) {
+                                		return "/" + source.getKey().replaceAll("-", "/");
+                                	}
+                                });
+
+                                SimpleStorageProtocolResolver s3Protocol = new SimpleStorageProtocolResolver(client);
+                                s3Protocol.afterPropertiesSet();
+                                loader = new DefaultResourceLoader();
+                                ((DefaultResourceLoader)loader).addProtocolResolver(s3Protocol);
+
+                                s3StoreImpl = new DefaultS3StoreImpl<ContentProperty, String>(context,loader,null,placementService,client,null);
+
+                                try {
+                                	r = s3StoreImpl.getResource(entity, PropertyPath.from("content"));
+                                }
+                                catch (Exception e) {
+                                	DefaultS3StoreImplTest.this.e = e;
+                                }
+
+                            }
+
+                            @Test
+                            void shouldFetchTheResource() throws Throwable {
+                                assertThat(e).isNull();
+                                assertThat(r).isInstanceOf(S3StoreResource.class);
+                                assertThat(((S3StoreResource)r).getClient()).isEqualTo(client);
+                                assertThat(r.getDescription()).isEqualTo(format("Amazon s3 resource [bucket='%s' and object='%s']","default-defaultBucket", "12345/67890"));
+
+                            }
+
+                        }
+
+                        @Nested
+                        class WhenCalledWithAnEntityThatHasAnBucketValue {
+                            @BeforeEach
+                            void setUp() throws Throwable {
+                                resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
+                                loader = mock(ResourceLoader.class);
+                                placementService = mock(PlacementService.class);
+                                client = mock(S3Client.class);
+                                defaultBucket = null;
+
+                                context.registerBean("s3Client", S3Client.class, new Supplier() {
+
+                                               @Override
+                                               public Object get() {
+                                                   return client;
+                                               }
+                                }, new BeanDefinitionCustomizer[]{});
+                                context = new GenericApplicationContext();
+                                context.refresh();
+
+                                defaultBucket = "default-defaultBucket";
+
+                                entity = new TestEntityWithBucketAnnotation(
+                                		"some-other-bucket");
+                                entity.setContentId("12345-67890");
+
+                                placementService = new PlacementServiceImpl();
+                                S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
+
+                                SimpleStorageProtocolResolver s3Protocol = new SimpleStorageProtocolResolver(client);
+                                s3Protocol.afterPropertiesSet();
+                                loader = new DefaultResourceLoader();
+                                ((DefaultResourceLoader)loader).addProtocolResolver(s3Protocol);
+
+                                s3StoreImpl = new DefaultS3StoreImpl<ContentProperty, String>(context,loader,null,placementService,client,null);
+
+                                try {
+                                	r = s3StoreImpl.getResource(entity, PropertyPath.from("content"));
+                                }
+                                catch (Exception e) {
+                                	DefaultS3StoreImplTest.this.e = e;
+                                }
+
+                            }
+
+                            @Test
+                            void shouldFetchTheCorrectResource() throws Throwable {
+                                assertThat(e).isNull();
+                                assertThat(r).isInstanceOf(S3StoreResource.class);
+                                assertThat(((S3StoreResource)r).getClient()).isEqualTo(client);
+                                assertThat(r.getDescription()).isEqualTo(format("Amazon s3 resource [bucket='%s' and object='%s']","some-other-bucket", "12345-67890"));
+
+                            }
+
+                        }
+
+                        @Nested
+                        class WhenCalledWithAnEntityThatHasNoAssociatedResource {
+                            @BeforeEach
+                            void setUp() throws Throwable {
+                                resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
+                                loader = mock(ResourceLoader.class);
+                                placementService = mock(PlacementService.class);
+                                client = mock(S3Client.class);
+                                defaultBucket = null;
+
+                                context.registerBean("s3Client", S3Client.class, new Supplier() {
+
+                                               @Override
+                                               public Object get() {
+                                                   return client;
+                                               }
+                                }, new BeanDefinitionCustomizer[]{});
+                                context = new GenericApplicationContext();
+                                context.refresh();
+
+                                defaultBucket = "default-defaultBucket";
+
+                                entity = new TestEntity();
+
+                                s3StoreImpl = new DefaultS3StoreImpl<ContentProperty, String>(context,loader,null,placementService,client,null);
+
+                                try {
+                                	r = s3StoreImpl.getResource(entity, PropertyPath.from("content"));
+                                }
+                                catch (Exception e) {
+                                	DefaultS3StoreImplTest.this.e = e;
+                                }
+
+                            }
+
+                            @Test
+                            void shouldReturnNull() throws Throwable {
+                                assertThat(r).isNull();
+                                assertThat(e).isNull();
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+                @Nested
+                class GivenACustomIdResolver {
+                    @Nested
+                    class GivenADefaultBucket {
+                        @Nested
+                        class WhenCalledWithAnEntity {
+                            @BeforeEach
+                            void setUp() throws Throwable {
+                                resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
+                                loader = mock(ResourceLoader.class);
+                                placementService = mock(PlacementService.class);
+                                client = mock(S3Client.class);
+                                defaultBucket = null;
+
+                                context.registerBean("s3Client", S3Client.class, new Supplier() {
+
+                                               @Override
+                                               public Object get() {
+                                                   return client;
+                                               }
+                                }, new BeanDefinitionCustomizer[]{});
+                                context = new GenericApplicationContext();
+                                context.refresh();
+
+                                defaultBucket = "default-defaultBucket";
+
+                                entity = new TestEntity("12345-67890");
+
+                                placementService = new PlacementServiceImpl();
+                                S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
+
+                                // Converter that matches Entity and content Id types. Expected to be invoked.
+                                // Converter<ContentPropertyInfo<TestEntity, String>, S3ObjectId> instead of Converter<TestEntity, S3ObjectId> for #getResource
+                                placementService.addConverter(new Converter<ContentPropertyInfo<TestEntity, String>, S3ObjectId>() {
+                                	@Override
+                                	public S3ObjectId convert(ContentPropertyInfo<TestEntity, String> source) {
+                                		return new S3ObjectId( "custom-bucket", "test-entity/custom-object-id-string-based");
+                                	}
+                                });
+
+                                // Converter that does not match content Id type. Should not be invoked.
+                                placementService.addConverter(new Converter<ContentPropertyInfo<Object, UUID>, S3ObjectId>() {
+                                	@Override
+                                	public S3ObjectId convert(ContentPropertyInfo<Object, UUID> source) {
+                                		return new S3ObjectId( "custom-bucket", "object/custom-object-id-uuid-based");
+                                	}
+                                });
+                                // Converter that does not match Entity type. Should not be invoked.
+                                placementService.addConverter(new Converter<ContentPropertyInfo<TestEntityWithBucketAnnotation, String>, S3ObjectId>() {
+                                	@Override
+                                	public S3ObjectId convert(ContentPropertyInfo<TestEntityWithBucketAnnotation, String> source) {
+                                		return new S3ObjectId( "custom-bucket", "test-entity-with-bucket/custom-object-id-string-based");
+                                	}
+                                });
+
+                                SimpleStorageProtocolResolver s3Protocol = new SimpleStorageProtocolResolver(client);
+                                s3Protocol.afterPropertiesSet();
+                                loader = new DefaultResourceLoader();
+                                ((DefaultResourceLoader)loader).addProtocolResolver(s3Protocol);
+
+                                s3StoreImpl = new DefaultS3StoreImpl<ContentProperty, String>(context,loader,null,placementService,client,null);
+
+                                try {
+                                	r = s3StoreImpl.getResource(entity, PropertyPath.from("content"));
+                                }
+                                catch (Exception e) {
+                                	DefaultS3StoreImplTest.this.e = e;
+                                }
+
+                            }
+
+                            @Test
+                            void shouldFetchTheResource() throws Throwable {
+                                assertThat(e).isNull();
+                                assertThat(r).isInstanceOf(S3StoreResource.class);
+                                assertThat(((S3StoreResource)r).getClient()).isEqualTo(client);
+                                assertThat(r.getDescription()).isEqualTo(format("Amazon s3 resource [bucket='%s' and object='%s']","custom-bucket", "test-entity/custom-object-id-string-based"));
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+                @Nested
+                class GivenACustomIdResolverThatCannotResolveTheBucket {
+                    @Nested
+                    class GivenTheDefaultBucketIsNotSet {
+                        @Nested
+                        class WhenCalledWithAnEntity {
+                            @BeforeEach
+                            void setUp() throws Throwable {
+                                resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
+                                loader = mock(ResourceLoader.class);
+                                placementService = mock(PlacementService.class);
+                                client = mock(S3Client.class);
+                                defaultBucket = null;
+
+                                context.registerBean("s3Client", S3Client.class, new Supplier() {
+
+                                               @Override
+                                               public Object get() {
+                                                   return client;
+                                               }
+                                }, new BeanDefinitionCustomizer[]{});
+                                context = new GenericApplicationContext();
+                                context.refresh();
+
+                                defaultBucket = null;
+
+                                entity = new TestEntity("12345-67890");
+
+                                placementService = new PlacementServiceImpl();
+                                S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
+                                placementService.addConverter(new Converter<ContentPropertyInfo<TestEntity, String>, S3ObjectId>() {
+                                	@Override
+                                	public S3ObjectId convert(ContentPropertyInfo<TestEntity, String> source) {
+                                		return new S3ObjectId(null, "custom-object-id");
+                                	}
+                                });
+
+                                s3StoreImpl = new DefaultS3StoreImpl<ContentProperty, String>(context,loader,null,placementService,client,null);
+
+                                try {
+                                	r = s3StoreImpl.getResource(entity, PropertyPath.from("content"));
+                                }
+                                catch (Exception e) {
+                                	DefaultS3StoreImplTest.this.e = e;
+                                }
+
+                            }
+
+                            @Test
+                            void shouldThrowAnException() throws Throwable {
+                                assertThat(e).isInstanceOf(ConversionFailedException.class);
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+            @Nested
+            class Associate {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
+                    loader = mock(ResourceLoader.class);
+                    placementService = mock(PlacementService.class);
+                    client = mock(S3Client.class);
+                    defaultBucket = null;
+
+                    context.registerBean("s3Client", S3Client.class, new Supplier() {
+
+                                   @Override
+                                   public Object get() {
+                                       return client;
+                                   }
+                    }, new BeanDefinitionCustomizer[]{});
+                    context = new GenericApplicationContext();
+                    context.refresh();
+
+                    id = "12345-67890";
+                    entity = new TestEntity();
+
+                    s3StoreImpl = new DefaultS3StoreImpl<ContentProperty, String>(context,loader,null,placementService,client,null);
+
+                    s3StoreImpl.associate(entity, id);
+
+                }
+
+                @Test
+                void shouldSetTheEntitySContentIDAttribute() throws Throwable {
+                    assertThat(entity.getContentId()).isEqualTo("12345-67890");
+
+                }
+
+            }
+
+            @Nested
+            class Unassociate {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
+                    loader = mock(ResourceLoader.class);
+                    placementService = mock(PlacementService.class);
+                    client = mock(S3Client.class);
+                    defaultBucket = null;
+
+                    context.registerBean("s3Client", S3Client.class, new Supplier() {
+
+                                   @Override
+                                   public Object get() {
+                                       return client;
+                                   }
+                    }, new BeanDefinitionCustomizer[]{});
+                    context = new GenericApplicationContext();
+                    context.refresh();
+
+                    entity = new TestEntity();
+                    entity.setContentId("12345-67890");
+
+                    s3StoreImpl = new DefaultS3StoreImpl<ContentProperty, String>(context,loader,null,placementService,client,null);
+
+                    s3StoreImpl.unassociate(entity);
+
+                }
+
+                @Test
+                void shouldResetTheEntitySContentIDAttribute() throws Throwable {
+                    assertThat(entity.getContentId()).isNull();
+
+                }
+
+            }
+
+        }
+
+        @Nested
+        class ContentStore {
+            @Nested
+            class SetContent {
+                @Nested
+                class GivenTheDefaultAssociativeStoreIdResolver {
+                    @Nested
+                    class GivenADefaultBucketIsSet {
+                        @Nested
+                        class WhenTheContentAlreadyExists {
+                            @BeforeEach
+                            void setUp() throws Throwable {
+                                resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
+                                loader = mock(ResourceLoader.class);
+                                placementService = mock(PlacementService.class);
+                                client = mock(S3Client.class);
+                                defaultBucket = null;
+
+                                context.registerBean("s3Client", S3Client.class, new Supplier() {
+
+                                               @Override
+                                               public Object get() {
+                                                   return client;
+                                               }
+                                }, new BeanDefinitionCustomizer[]{});
+                                context = new GenericApplicationContext();
+                                context.refresh();
+
+                                entity = new TestEntity();
+                                content = new ByteArrayInputStream(
+                                		"Hello content world!".getBytes());
+
+                                defaultBucket = "default-defaultBucket";
+
+                                entity.setContentId("abcd-efgh");
+
+                                                          placementService = new PlacementServiceImpl();
+                                                          S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
+
+                                when(loader.getResource(endsWith("abcd-efgh"))).thenReturn(resource);
+                                output = mock(OutputStream.class);
+                                when(resource.getOutputStream()).thenReturn(output);
+
+                                when(resource.contentLength()).thenReturn(20L);
+
+                                when(resource.exists()).thenReturn(true);
+
+                                s3StoreImpl = spy(new DefaultS3StoreImpl<ContentProperty, String>(context,loader,null,placementService,client,null));
+
+                                try {
+                                	s3StoreImpl.setContent(entity, content);
+                                } catch (Exception e) {
+                                	DefaultS3StoreImplTest.this.e = e;
+                                }
+
+                            }
+
+                            @Test
+                            void shouldFetchTheResource() throws Throwable {
+                                verify(loader).getResource(eq("s3://default-defaultBucket/abcd-efgh"));
+
+                            }
+
+                            @Test
+                            void shouldChangeTheContentLength() throws Throwable {
+                                assertThat(entity.getContentLen()).isEqualTo(20L);
+
+                            }
+
+                            @Test
+                            void shouldWriteToTheResourceSOutputstream() throws Throwable {
+                                verify(resource).getOutputStream();
+                                verify(output, times(1)).write(any(byte[].class),
+                                		eq(0), eq(20));
+
+                            }
+
+                            @Nested
+                            class WhenTheResourceOutputStreamThrowsAnIOException {
+                                @BeforeEach
+                                void setUp() throws Throwable {
+                                    resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
+                                    loader = mock(ResourceLoader.class);
+                                    placementService = mock(PlacementService.class);
+                                    client = mock(S3Client.class);
+                                    defaultBucket = null;
+
+                                    context.registerBean("s3Client", S3Client.class, new Supplier() {
+
+                                                   @Override
+                                                   public Object get() {
+                                                       return client;
+                                                   }
+                                    }, new BeanDefinitionCustomizer[]{});
+                                    context = new GenericApplicationContext();
+                                    context.refresh();
+
+                                    entity = new TestEntity();
+                                    content = new ByteArrayInputStream(
+                                    		"Hello content world!".getBytes());
+
+                                    defaultBucket = "default-defaultBucket";
+
+                                    entity.setContentId("abcd-efgh");
+
+                                                              placementService = new PlacementServiceImpl();
+                                                              S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
+
+                                    when(loader.getResource(endsWith("abcd-efgh"))).thenReturn(resource);
+                                    output = mock(OutputStream.class);
+                                    when(resource.getOutputStream()).thenReturn(output);
+
+                                    when(resource.contentLength()).thenReturn(20L);
+
+                                    when(resource.exists()).thenReturn(true);
+
+                                    when(resource.getOutputStream()).thenThrow(new IOException("set-ioexception"));
+
+                                    s3StoreImpl = spy(new DefaultS3StoreImpl<ContentProperty, String>(context,loader,null,placementService,client,null));
+
+                                    try {
+                                    	s3StoreImpl.setContent(entity, content);
+                                    } catch (Exception e) {
+                                    	DefaultS3StoreImplTest.this.e = e;
+                                    }
+
+                                }
+
+                                @Test
+                                void shouldThrowAStoreAccessException() throws Throwable {
+                                    assertThat(e).isInstanceOf(StoreAccessException.class);
+                                    assertThat(e.getCause().getMessage()).isEqualTo("set-ioexception");
+
+                                }
+
+                            }
+
+                        }
+
+                        @Nested
+                        class WhenTheContentDoesNotAlreadyExist {
+                            @BeforeEach
+                            void setUp() throws Throwable {
+                                resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
+                                loader = mock(ResourceLoader.class);
+                                placementService = mock(PlacementService.class);
+                                client = mock(S3Client.class);
+                                defaultBucket = null;
+
+                                context.registerBean("s3Client", S3Client.class, new Supplier() {
+
+                                               @Override
+                                               public Object get() {
+                                                   return client;
+                                               }
+                                }, new BeanDefinitionCustomizer[]{});
+                                context = new GenericApplicationContext();
+                                context.refresh();
+
+                                entity = new TestEntity();
+                                content = new ByteArrayInputStream(
+                                		"Hello content world!".getBytes());
+
+                                defaultBucket = "default-defaultBucket";
+
+                                assertThat(entity.getContentId()).isNull();
+
+                                                          placementService = new PlacementServiceImpl();
+                                                          S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
+
+                                                          when(loader.getResource(matches("^s3://.*[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"))).thenReturn(resource);
+                                output = mock(OutputStream.class);
+                                when(resource.getOutputStream()).thenReturn(output);
+
+                                when(resource.contentLength()).thenReturn(20L);
+
+                                File resourceFile = mock(File.class);
+                                parent = mock(File.class);
+
+                                when(resource.getFile()).thenReturn(resourceFile);
+                                when(resourceFile.getParentFile()).thenReturn(parent);
+
+                                s3StoreImpl = spy(new DefaultS3StoreImpl<ContentProperty, String>(context,loader,null,placementService,client,null));
+
+                                try {
+                                	s3StoreImpl.setContent(entity, content);
+                                } catch (Exception e) {
+                                	DefaultS3StoreImplTest.this.e = e;
+                                }
+
+                            }
+
+                            @Test
+                            void shouldMakeANewUUID() throws Throwable {
+                                assertThat(entity.getContentId()).isNotNull();
+
+                            }
+
+                            @Test
+                            void shouldCreateANewResource() throws Throwable {
+                                verify(loader).getResource(matches("^s3://.*[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"));
+
+                            }
+
+                            @Test
+                            void shouldWriteToTheResourceSOutputstream() throws Throwable {
+                                verify(resource).getOutputStream();
+                                verify(output, times(1)).write(any(byte[].class),
+                                		eq(0), eq(20));
+
+                            }
+
+                        }
+
+                        @Nested
+                        class WhenS3ThrowsAnS3Exception {
+                            @BeforeEach
+                            void setUp() throws Throwable {
+                                resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
+                                loader = mock(ResourceLoader.class);
+                                placementService = mock(PlacementService.class);
+                                client = mock(S3Client.class);
+                                defaultBucket = null;
+
+                                context.registerBean("s3Client", S3Client.class, new Supplier() {
+
+                                               @Override
+                                               public Object get() {
+                                                   return client;
+                                               }
+                                }, new BeanDefinitionCustomizer[]{});
+                                context = new GenericApplicationContext();
+                                context.refresh();
+
+                                entity = new TestEntity();
+                                content = new ByteArrayInputStream(
+                                		"Hello content world!".getBytes());
+
+                                defaultBucket = "default-defaultBucket";
+
+                                assertThat(entity.getContentId()).isNull();
+
+                                placementService = new PlacementServiceImpl();
+                                S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
+
+                                when(loader.getResource(matches("^s3://.*[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"))).thenReturn(resource);
+                                output = mock(OutputStream.class);
+                                when(resource.getOutputStream()).thenReturn(output);
+
+                                doThrow(S3Exception.builder().message("no such upload").build()).when(output).close();
+
+                                s3StoreImpl = spy(new DefaultS3StoreImpl<ContentProperty, String>(context,loader,null,placementService,client,null));
+
+                                try {
+                                	s3StoreImpl.setContent(entity, content);
+                                } catch (Exception e) {
+                                	DefaultS3StoreImplTest.this.e = e;
+                                }
+
+                            }
+
+                            @Test
+                            void shouldDoSomething() throws Throwable {
+                                assertThat(e).isInstanceOf(S3Exception.class);
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+            @Nested
+            class SetContentFromResource {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
+                    loader = mock(ResourceLoader.class);
+                    placementService = mock(PlacementService.class);
+                    client = mock(S3Client.class);
+                    defaultBucket = null;
+
+                    context.registerBean("s3Client", S3Client.class, new Supplier() {
+
+                                   @Override
+                                   public Object get() {
+                                       return client;
+                                   }
+                    }, new BeanDefinitionCustomizer[]{});
+                    context = new GenericApplicationContext();
+                    context.refresh();
+
+                    entity = new TestEntity();
+                    content = new ByteArrayInputStream("Hello content world!".getBytes());
+                    r = new InputStreamResource(content);
+
+                    s3StoreImpl = spy(new DefaultS3StoreImpl<ContentProperty, String>(context,loader,null,placementService,client,null));
+
+                    try {
+                    	s3StoreImpl.setContent(entity, r);
+                    } catch (Exception e) {
+                    	DefaultS3StoreImplTest.this.e = e;
+                    }
+
+                }
+
+                @Test
+                void shouldDelegate() throws Throwable {
+                    verify(s3StoreImpl).setContent(eq(entity), eq(content));
+
+                }
+
+                @Nested
+                class WhenTheResourceThrowsAnIOException {
+                    @BeforeEach
+                    void setUp() throws Throwable {
+                        resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
+                        loader = mock(ResourceLoader.class);
+                        placementService = mock(PlacementService.class);
+                        client = mock(S3Client.class);
+                        defaultBucket = null;
+
+                        context.registerBean("s3Client", S3Client.class, new Supplier() {
+
                                        @Override
-                                       public S3ObjectId convert(TestEntity source) {
-                                           return new S3ObjectId( "custom-bucket", "custom-object-id");
+                                       public Object get() {
+                                           return client;
                                        }
-                                   });
+                        }, new BeanDefinitionCustomizer[]{});
+                        context = new GenericApplicationContext();
+                        context.refresh();
 
-									SimpleStorageProtocolResolver s3Protocol = new SimpleStorageProtocolResolver(client);
-									s3Protocol.afterPropertiesSet();
-									loader = new DefaultResourceLoader();
-									((DefaultResourceLoader)loader).addProtocolResolver(s3Protocol);
-								});
-								It("should fetch the resource", () -> {
-									assertThat(e, is(nullValue()));
-									assertThat(r, is(instanceOf(S3StoreResource.class)));
-									assertThat(((S3StoreResource)r).getClient(), is(client));
-									assertThat(r.getDescription(), is(format("Amazon s3 resource [bucket='%s' and object='%s']","custom-bucket", "custom-object-id")));
-								});
-							});
-						});
-					});
-					Context("given a custom id resolver that cannot resolve the bucket", () -> {
-                       Context("given the default bucket is not set", () -> {
-                           BeforeEach(() -> {
-                               defaultBucket = null;
-                           });
-                           Context("when called with an entity", () -> {
-                               BeforeEach(() -> {
-                                   entity = new TestEntity("12345-67890");
+                        entity = new TestEntity();
+                        content = new ByteArrayInputStream("Hello content world!".getBytes());
+                        r = new InputStreamResource(content);
 
-                                   placementService = new PlacementServiceImpl();
-                                   S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
-                                   placementService.addConverter(new Converter<CustomContentId, S3ObjectId>() {
-                                       @Override
-                                       public S3ObjectId convert(CustomContentId entity) {
-                                           return new S3ObjectId(null, entity.getObjectId());
-                                       }
-                                   });
-                               });
-                               It("should throw an exception", () -> {
-                                   assertThat(e, is(instanceOf(ConversionFailedException.class)));
-                               });
-                           });
-                       });
-                   });
-				});
-				Context("#getResource with PropertyPath", () -> {
-					JustBeforeEach(() -> {
-						try {
-							r = s3StoreImpl.getResource(entity, PropertyPath.from("content"));
-						}
-						catch (Exception e) {
-							this.e = e;
-						}
-					});
+                        r = mock(Resource.class);
+                        when(r.getInputStream()).thenThrow(new IOException("setContent badness"));
 
-					// the following context is (and should be) exactly the same as for "#getResource" above
-					Context("given the default associative store id resolver", () -> {
-						Context("given a default bucket", () -> {
-							BeforeEach(() -> {
-								defaultBucket = "default-defaultBucket";
-							});
-							Context("when called with an entity that doesn't have an @Bucket value", () -> {
-								BeforeEach(() -> {
-									entity = new TestEntity("12345-67890");
+                        s3StoreImpl = spy(new DefaultS3StoreImpl<ContentProperty, String>(context,loader,null,placementService,client,null));
 
-									placementService = new PlacementServiceImpl();
-									S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
-									placementService.addConverter(new Converter<S3ObjectId, String>() {
-										@Override
-										public String convert(S3ObjectId source) {
-											return "/" + source.getKey().replaceAll("-", "/");
-										}
-									});
+                        try {
+                        	s3StoreImpl.setContent(entity, r);
+                        } catch (Exception e) {
+                        	DefaultS3StoreImplTest.this.e = e;
+                        }
 
-									SimpleStorageProtocolResolver s3Protocol = new SimpleStorageProtocolResolver(client);
-									s3Protocol.afterPropertiesSet();
-									loader = new DefaultResourceLoader();
-									((DefaultResourceLoader)loader).addProtocolResolver(s3Protocol);
-								});
-								It("should fetch the resource", () -> {
-									assertThat(e, is(nullValue()));
-									assertThat(r, is(instanceOf(S3StoreResource.class)));
-									assertThat(((S3StoreResource)r).getClient(), is(client));
-									assertThat(r.getDescription(), is(format("Amazon s3 resource [bucket='%s' and object='%s']","default-defaultBucket", "12345/67890")));
-								});
-							});
-							Context("when called with an entity that has an @Bucket value", () -> {
-								BeforeEach(() -> {
-									entity = new TestEntityWithBucketAnnotation(
-											"some-other-bucket");
-									entity.setContentId("12345-67890");
+                    }
 
-									placementService = new PlacementServiceImpl();
-									S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
+                    @Test
+                    void shouldThrowAStoreAccessException() throws Throwable {
+                        assertThat(e).isInstanceOf(StoreAccessException.class);
+                        assertThat(e.getCause().getMessage()).contains("setContent badness");
 
-									SimpleStorageProtocolResolver s3Protocol = new SimpleStorageProtocolResolver(client);
-									s3Protocol.afterPropertiesSet();
-									loader = new DefaultResourceLoader();
-									((DefaultResourceLoader)loader).addProtocolResolver(s3Protocol);
-								});
-								It("should fetch the correct resource", () -> {
-									assertThat(e, is(nullValue()));
-									assertThat(r, is(instanceOf(S3StoreResource.class)));
-									assertThat(((S3StoreResource)r).getClient(), is(client));
-									assertThat(r.getDescription(), is(format("Amazon s3 resource [bucket='%s' and object='%s']","some-other-bucket", "12345-67890")));
-								});
-							});
-							Context("when called with an entity that has no associated resource", () -> {
-								BeforeEach(() -> {
-									entity = new TestEntity();
-								});
-								It("should return null", () -> {
-									assertThat(r, is(nullValue()));
-									assertThat(e, is(nullValue()));
-								});
-							});
-						});
-					});
+                    }
 
-					Context("given a custom id resolver", () -> {
-						Context("given a default bucket", () -> {
-							BeforeEach(() -> {
-								defaultBucket = "default-defaultBucket";
-							});
-							Context("when called with an entity", () -> {
-								BeforeEach(() -> {
-									entity = new TestEntity("12345-67890");
+                }
 
-									placementService = new PlacementServiceImpl();
-									S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
+            }
 
-									// Converter that matches Entity and content Id types. Expected to be invoked.
-									// Converter<ContentPropertyInfo<TestEntity, String>, S3ObjectId> instead of Converter<TestEntity, S3ObjectId> for #getResource
-									placementService.addConverter(new Converter<ContentPropertyInfo<TestEntity, String>, S3ObjectId>() {
-										@Override
-										public S3ObjectId convert(ContentPropertyInfo<TestEntity, String> source) {
-											return new S3ObjectId( "custom-bucket", "test-entity/custom-object-id-string-based");
-										}
-									});
+            @Nested
+            class GetContent {
+                @Nested
+                class GivenTheDefaultAssociativeStoreIdResolver {
+                    @Nested
+                    class GivenADefaultBucketIsSet {
+                        @Nested
+                        class WhenCalledWithAnEntity {
+                            @Nested
+                            class AndTheResourceAlreadyExists {
+                                @BeforeEach
+                                void setUp() throws Throwable {
+                                    resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
+                                    loader = mock(ResourceLoader.class);
+                                    placementService = mock(PlacementService.class);
+                                    client = mock(S3Client.class);
+                                    defaultBucket = null;
 
-									// Converter that does not match content Id type. Should not be invoked.
-									placementService.addConverter(new Converter<ContentPropertyInfo<Object, UUID>, S3ObjectId>() {
-										@Override
-										public S3ObjectId convert(ContentPropertyInfo<Object, UUID> source) {
-											return new S3ObjectId( "custom-bucket", "object/custom-object-id-uuid-based");
-										}
-									});
-									// Converter that does not match Entity type. Should not be invoked.
-									placementService.addConverter(new Converter<ContentPropertyInfo<TestEntityWithBucketAnnotation, String>, S3ObjectId>() {
-										@Override
-										public S3ObjectId convert(ContentPropertyInfo<TestEntityWithBucketAnnotation, String> source) {
-											return new S3ObjectId( "custom-bucket", "test-entity-with-bucket/custom-object-id-string-based");
-										}
-									});
+                                    context.registerBean("s3Client", S3Client.class, new Supplier() {
 
-									SimpleStorageProtocolResolver s3Protocol = new SimpleStorageProtocolResolver(client);
-									s3Protocol.afterPropertiesSet();
-									loader = new DefaultResourceLoader();
-									((DefaultResourceLoader)loader).addProtocolResolver(s3Protocol);
-								});
-								It("should fetch the resource", () -> {
-									assertThat(e, is(nullValue()));
-									assertThat(r, is(instanceOf(S3StoreResource.class)));
-									assertThat(((S3StoreResource)r).getClient(), is(client));
-									assertThat(r.getDescription(), is(format("Amazon s3 resource [bucket='%s' and object='%s']","custom-bucket", "test-entity/custom-object-id-string-based")));
-								});
-							});
-						});
-					});
-					Context("given a custom id resolver that cannot resolve the bucket", () -> {
-						Context("given the default bucket is not set", () -> {
-							BeforeEach(() -> {
-								defaultBucket = null;
-							});
-							Context("when called with an entity", () -> {
-								BeforeEach(() -> {
-									entity = new TestEntity("12345-67890");
+                                                   @Override
+                                                   public Object get() {
+                                                       return client;
+                                                   }
+                                    }, new BeanDefinitionCustomizer[]{});
+                                    context = new GenericApplicationContext();
+                                    context.refresh();
 
-									placementService = new PlacementServiceImpl();
-									S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
-									placementService.addConverter(new Converter<ContentPropertyInfo<TestEntity, String>, S3ObjectId>() {
-										@Override
-										public S3ObjectId convert(ContentPropertyInfo<TestEntity, String> source) {
-											return new S3ObjectId(null, "custom-object-id");
-										}
-									});
-								});
-								It("should throw an exception", () -> {
-									assertThat(e, is(instanceOf(ConversionFailedException.class)));
-								});
-							});
-						});
-					});
-				});
-				Context("#associate", () -> {
-					BeforeEach(() -> {
-						id = "12345-67890";
-						entity = new TestEntity();
-					});
-					JustBeforeEach(() -> {
-						s3StoreImpl.associate(entity, id);
-					});
-					It("should set the entity's content ID attribute", () -> {
-						assertThat(entity.getContentId(), is("12345-67890"));
-					});
-				});
-				Context("#unassociate", () -> {
-					BeforeEach(() -> {
-						entity = new TestEntity();
-						entity.setContentId("12345-67890");
-					});
-					JustBeforeEach(() -> {
-						s3StoreImpl.unassociate(entity);
-					});
-					It("should reset the entity's content ID attribute", () -> {
-						assertThat(entity.getContentId(), is(nullValue()));
-					});
-				});
-			});
+                                    defaultBucket = "default-defaultBucket";
 
-			Describe("ContentStore", () -> {
-				JustBeforeEach(() -> {
-					s3StoreImpl = spy(new DefaultS3StoreImpl<ContentProperty, String>(context,loader,null,placementService,client,null));
-				});
-				Context("#setContent", () -> {
-					BeforeEach(() -> {
-						entity = new TestEntity();
-						content = new ByteArrayInputStream(
-								"Hello content world!".getBytes());
-					});
-					JustBeforeEach(() -> {
-						try {
-							s3StoreImpl.setContent(entity, content);
-						} catch (Exception e) {
-							this.e = e;
-						}
-					});
-					Context("given the default associative store id resolver", () -> {
-						Context("given a default bucket is set", () -> {
-							BeforeEach(() -> {
-								defaultBucket = "default-defaultBucket";
-							});
-							Context("when the content already exists", () -> {
-								BeforeEach(() -> {
-									entity.setContentId("abcd-efgh");
+                                    entity = new TestEntity();
+                                    content = mock(InputStream.class);
+                                    entity.setContentId("abcd-efgh");
 
-                                   placementService = new PlacementServiceImpl();
-                                   S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
+                                                              placementService = new PlacementServiceImpl();
+                                                              S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
 
-									when(loader.getResource(endsWith("abcd-efgh"))).thenReturn(resource);
-									output = mock(OutputStream.class);
-									when(resource.getOutputStream()).thenReturn(output);
+                                                              when(loader.getResource(matches("^s3://default-defaultBucket/abcd-efgh"))).thenReturn(resource);
+                                    when(resource.getInputStream()).thenReturn(content);
 
-									when(resource.contentLength()).thenReturn(20L);
+                                    when(resource.exists()).thenReturn(true);
 
-									when(resource.exists()).thenReturn(true);
-								});
-								It("should fetch the resource", () -> {
-									verify(loader).getResource(eq("s3://default-defaultBucket/abcd-efgh"));
-								});
-								It("should change the content length", () -> {
-									assertThat(entity.getContentLen(), is(20L));
-								});
-								It("should write to the resource's outputstream", () -> {
-									verify(resource).getOutputStream();
-									verify(output, times(1)).write(any(byte[].class),
-											eq(0), eq(20));
-								});
-								Context("when the resource output stream throws an IOException", () -> {
-									BeforeEach(() -> {
-										when(resource.getOutputStream()).thenThrow(new IOException("set-ioexception"));
-									});
-									It("should throw a StoreAccessException", () -> {
-										assertThat(e, is(instanceOf(StoreAccessException.class)));
-										assertThat(e.getCause().getMessage(), is("set-ioexception"));
-									});
-								});
-							});
-							Context("when the content does not already exist", () -> {
-								BeforeEach(() -> {
-									assertThat(entity.getContentId(), is(nullValue()));
+                                    s3StoreImpl = spy(new DefaultS3StoreImpl<ContentProperty, String>(context,loader,null,placementService,client,null));
 
-                                   placementService = new PlacementServiceImpl();
-                                   S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
+                                    try {
+                                    	result = s3StoreImpl.getContent(entity);
+                                    } catch (Exception e) {
+                                    	DefaultS3StoreImplTest.this.e = e;
+                                    }
 
-                                   when(loader.getResource(matches("^s3://.*[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"))).thenReturn(resource);
-									output = mock(OutputStream.class);
-									when(resource.getOutputStream()).thenReturn(output);
+                                }
 
-									when(resource.contentLength()).thenReturn(20L);
+                                @Test
+                                void shouldFetchTheResource() throws Throwable {
+                                    verify(loader).getResource(eq("s3://default-defaultBucket/abcd-efgh"));
 
-									File resourceFile = mock(File.class);
-									parent = mock(File.class);
+                                }
 
-									when(resource.getFile()).thenReturn(resourceFile);
-									when(resourceFile.getParentFile()).thenReturn(parent);
-								});
-								It("should make a new UUID", () -> {
-									assertThat(entity.getContentId(),is(not(nullValue())));
-								});
-								It("should create a new resource", () -> {
-									verify(loader).getResource(matches("^s3://.*[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"));
-								});
-								It("should write to the resource's outputstream", () -> {
-									verify(resource).getOutputStream();
-									verify(output, times(1)).write(any(byte[].class),
-											eq(0), eq(20));
-								});
-							});
-							Context("when s3 throws an S3Exception", () -> {
-							    BeforeEach(() -> {
-                                   assertThat(entity.getContentId(), is(nullValue()));
+                                @Test
+                                void shouldGetContent() throws Throwable {
+                                    assertThat(result).isEqualTo(content);
 
-                                   placementService = new PlacementServiceImpl();
-                                   S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
+                                }
 
-                                   when(loader.getResource(matches("^s3://.*[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"))).thenReturn(resource);
-                                   output = mock(OutputStream.class);
-                                   when(resource.getOutputStream()).thenReturn(output);
+                                @Nested
+                                class WhenTheResourceInputStreamThrowsAnIOException {
+                                    @BeforeEach
+                                    void setUp() throws Throwable {
+                                        resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
+                                        loader = mock(ResourceLoader.class);
+                                        placementService = mock(PlacementService.class);
+                                        client = mock(S3Client.class);
+                                        defaultBucket = null;
 
-                                   doThrow(S3Exception.builder().message("no such upload").build()).when(output).close();
-							    });
-							    It("should do something", () -> {
-							        assertThat(e, is(instanceOf(S3Exception.class)));
-							    });
-							});
-						});
-					});
-				});
+                                        context.registerBean("s3Client", S3Client.class, new Supplier() {
 
-				Context("#setContent from Resource", () -> {
+                                                       @Override
+                                                       public Object get() {
+                                                           return client;
+                                                       }
+                                        }, new BeanDefinitionCustomizer[]{});
+                                        context = new GenericApplicationContext();
+                                        context.refresh();
 
-					BeforeEach(() -> {
-						entity = new TestEntity();
-						content = new ByteArrayInputStream("Hello content world!".getBytes());
-						r = new InputStreamResource(content);
-					});
+                                        defaultBucket = "default-defaultBucket";
 
-					JustBeforeEach(() -> {
-						try {
-							s3StoreImpl.setContent(entity, r);
-						} catch (Exception e) {
-							this.e = e;
-						}
-					});
+                                        entity = new TestEntity();
+                                        content = mock(InputStream.class);
+                                        entity.setContentId("abcd-efgh");
 
-					It("should delegate", () -> {
-						verify(s3StoreImpl).setContent(eq(entity), eq(content));
-					});
+                                                                  placementService = new PlacementServiceImpl();
+                                                                  S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
 
-					Context("when the resource throws an IOException", () -> {
-						BeforeEach(() -> {
-							r = mock(Resource.class);
-							when(r.getInputStream()).thenThrow(new IOException("setContent badness"));
-						});
-						It("should throw a StoreAccessException", () -> {
-							assertThat(e, is(instanceOf(StoreAccessException.class)));
-							assertThat(e.getCause().getMessage(), containsString("setContent badness"));
-						});
-					});
-				});
+                                                                  when(loader.getResource(matches("^s3://default-defaultBucket/abcd-efgh"))).thenReturn(resource);
+                                        when(resource.getInputStream()).thenReturn(content);
 
-				Context("#getContent", () -> {
-					JustBeforeEach(() -> {
-						try {
-							result = s3StoreImpl.getContent(entity);
-						} catch (Exception e) {
-							this.e = e;
-						}
-					});
-					Context("given the default associative store id resolver", () -> {
-						Context("given a default bucket is set", () -> {
-							BeforeEach(() -> {
-								defaultBucket = "default-defaultBucket";
-							});
-							Context("when called with an entity", () -> {
-								BeforeEach(() -> {
-									entity = new TestEntity();
-									content = mock(InputStream.class);
-									entity.setContentId("abcd-efgh");
+                                        when(resource.exists()).thenReturn(true);
 
-                                   placementService = new PlacementServiceImpl();
-                                   S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
+                                        when(resource.getInputStream()).thenThrow(new IOException("get-ioexception"));
 
-                                   when(loader.getResource(matches("^s3://default-defaultBucket/abcd-efgh"))).thenReturn(resource);
-									when(resource.getInputStream()).thenReturn(content);
-								});
-								Context("and the resource already exists", () -> {
-									BeforeEach(() -> {
-										when(resource.exists()).thenReturn(true);
-									});
-									It("should fetch the resource", () -> {
-										verify(loader).getResource(eq("s3://default-defaultBucket/abcd-efgh"));
-									});
-									It("should get content", () -> {
-										assertThat(result, is(content));
-									});
-									Context("when the resource input stream throws an IOException", () -> {
-										BeforeEach(() -> {
-											when(resource.getInputStream()).thenThrow(new IOException("get-ioexception"));
-										});
-										It("should throw a StoreAccessException", () -> {
-											assertThat(e, is(instanceOf(StoreAccessException.class)));
-											assertThat(e.getCause().getMessage(), is("get-ioexception"));
-										});
-									});
-								});
-								Context("and the resource doesn't exist", () -> {
-									BeforeEach(() -> {
-										nonExistentResource = mock(WritableResource.class);
-										when(resource.exists()).thenReturn(true);
+                                        s3StoreImpl = spy(new DefaultS3StoreImpl<ContentProperty, String>(context,loader,null,placementService,client,null));
 
-										when(loader.getResource(endsWith("abcd-efgh"))).thenReturn(nonExistentResource);
-									});
-									It("should fetch the resource", () -> {
-										verify(loader).getResource(eq("s3://default-defaultBucket/abcd-efgh"));
-									});
-									It("should not find the content", () -> {
-										assertThat(result, is(nullValue()));
-									});
-								});
-								Context("with an null @ContentId", () -> {
-									BeforeEach(() -> {
-										entity.setContentId(null);
-									});
-									It("should return null", () -> {
-										assertThat(result, is(nullValue()));
-										assertThat(e, is(nullValue()));
-									});
-								});
-							});
-						});
-					});
-				});
-				Context("#unsetContent", () -> {
-					JustBeforeEach(() -> {
-						try {
-							s3StoreImpl.unsetContent(entity);
-						} catch (Exception e) {
-							this.e = e;
-						}
-					});
-					Context("given the default associative store id resolver", () -> {
-						Context("given a default bucket is set", () -> {
-							BeforeEach(() -> {
-								defaultBucket = "default-defaultBucket";
-							});
-							Context("when called with an entity", () -> {
-								BeforeEach(() -> {
-									entity = new TestEntity();
-									entity.setContentId("abcd-efgh");
-									entity.setContentLen(100L);
-									resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
-								});
-								Context("and the content exists", () -> {
-									BeforeEach(() -> {
-										placementService = new PlacementServiceImpl();
-										S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
+                                        try {
+                                        	result = s3StoreImpl.getContent(entity);
+                                        } catch (Exception e) {
+                                        	DefaultS3StoreImplTest.this.e = e;
+                                        }
 
-										when(loader.getResource(endsWith("abcd-efgh"))).thenReturn(resource);
-										when(resource.exists()).thenReturn(true);
-									});
-									It("should fetch the resource", () -> {
-										verify(loader).getResource(eq("s3://default-defaultBucket/abcd-efgh"));
-									});
-									Context("when the property has a dedicated ContentId field", () -> {
-										It("should reset the metadata", () -> {
-											assertThat(entity.getContentId(), is(nullValue()));
-											assertThat(entity.getContentLen(), is(0L));
-										});
-									});
-									Context("when the property's ContentId field also is the Jakarta persistence Id field", () -> {
-										BeforeEach(() -> {
-											entity = new SharedIdContentIdEntity();
-											entity.setContentId("abcd-efgh");
-										});
-										It("should not reset the content id metadata", () -> {
-											assertThat(entity.getContentId(), is("abcd-efgh"));
-											assertThat(entity.getContentLen(), is(0L));
-										});
-									});
-									Context("when the property's ContentId field also is the Spring Id field", () -> {
-										BeforeEach(() -> {
-											entity = new SharedSpringIdContentIdEntity();
-											entity.setContentId("abcd-efgh");
-										});
-										It("should not reset the content id metadata",
-												() -> {
-													assertThat(entity.getContentId(), is("abcd-efgh"));
-													assertThat(entity.getContentLen(), is(0L));
-												});
-									});
-								});
-								Context("and the content doesn't exist", () -> {
-									BeforeEach(() -> {
-										placementService = new PlacementServiceImpl();
-										S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
+                                    }
 
-										nonExistentResource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
-										when(loader.getResource(endsWith("abcd-efgh"))).thenReturn(nonExistentResource);
-										when(nonExistentResource.exists()).thenReturn(false);
-									});
-									It("should fetch the resource", () -> {
-										verify(loader).getResource(eq("s3://default-defaultBucket/abcd-efgh"));
-									});
-									It("should unset the content", () -> {
-										verify(client, never()).deleteObject(any(DeleteObjectRequest.class));
-										assertThat(entity.getContentId(), is(nullValue()));
-										assertThat(entity.getContentLen(), is(0L));
-									});
-								});
-							});
-						});
-					});
-				});
-			});
-		});
-	}
+                                    @Test
+                                    void shouldThrowAStoreAccessException() throws Throwable {
+                                        assertThat(e).isInstanceOf(StoreAccessException.class);
+                                        assertThat(e.getCause().getMessage()).isEqualTo("get-ioexception");
+
+                                    }
+
+                                }
+
+                            }
+
+                            @Nested
+                            class AndTheResourceDoesnTExist {
+                                @BeforeEach
+                                void setUp() throws Throwable {
+                                    resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
+                                    loader = mock(ResourceLoader.class);
+                                    placementService = mock(PlacementService.class);
+                                    client = mock(S3Client.class);
+                                    defaultBucket = null;
+
+                                    context.registerBean("s3Client", S3Client.class, new Supplier() {
+
+                                                   @Override
+                                                   public Object get() {
+                                                       return client;
+                                                   }
+                                    }, new BeanDefinitionCustomizer[]{});
+                                    context = new GenericApplicationContext();
+                                    context.refresh();
+
+                                    defaultBucket = "default-defaultBucket";
+
+                                    entity = new TestEntity();
+                                    content = mock(InputStream.class);
+                                    entity.setContentId("abcd-efgh");
+
+                                                              placementService = new PlacementServiceImpl();
+                                                              S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
+
+                                                              when(loader.getResource(matches("^s3://default-defaultBucket/abcd-efgh"))).thenReturn(resource);
+                                    when(resource.getInputStream()).thenReturn(content);
+
+                                    nonExistentResource = mock(WritableResource.class);
+                                    when(resource.exists()).thenReturn(true);
+
+                                    when(loader.getResource(endsWith("abcd-efgh"))).thenReturn(nonExistentResource);
+
+                                    s3StoreImpl = spy(new DefaultS3StoreImpl<ContentProperty, String>(context,loader,null,placementService,client,null));
+
+                                    try {
+                                    	result = s3StoreImpl.getContent(entity);
+                                    } catch (Exception e) {
+                                    	DefaultS3StoreImplTest.this.e = e;
+                                    }
+
+                                }
+
+                                @Test
+                                void shouldFetchTheResource() throws Throwable {
+                                    verify(loader).getResource(eq("s3://default-defaultBucket/abcd-efgh"));
+
+                                }
+
+                                @Test
+                                void shouldNotFindTheContent() throws Throwable {
+                                    assertThat(result).isNull();
+
+                                }
+
+                            }
+
+                            @Nested
+                            class WithAnNullContentId {
+                                @BeforeEach
+                                void setUp() throws Throwable {
+                                    resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
+                                    loader = mock(ResourceLoader.class);
+                                    placementService = mock(PlacementService.class);
+                                    client = mock(S3Client.class);
+                                    defaultBucket = null;
+
+                                    context.registerBean("s3Client", S3Client.class, new Supplier() {
+
+                                                   @Override
+                                                   public Object get() {
+                                                       return client;
+                                                   }
+                                    }, new BeanDefinitionCustomizer[]{});
+                                    context = new GenericApplicationContext();
+                                    context.refresh();
+
+                                    defaultBucket = "default-defaultBucket";
+
+                                    entity = new TestEntity();
+                                    content = mock(InputStream.class);
+                                    entity.setContentId("abcd-efgh");
+
+                                                              placementService = new PlacementServiceImpl();
+                                                              S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
+
+                                                              when(loader.getResource(matches("^s3://default-defaultBucket/abcd-efgh"))).thenReturn(resource);
+                                    when(resource.getInputStream()).thenReturn(content);
+
+                                    entity.setContentId(null);
+
+                                    s3StoreImpl = spy(new DefaultS3StoreImpl<ContentProperty, String>(context,loader,null,placementService,client,null));
+
+                                    try {
+                                    	result = s3StoreImpl.getContent(entity);
+                                    } catch (Exception e) {
+                                    	DefaultS3StoreImplTest.this.e = e;
+                                    }
+
+                                }
+
+                                @Test
+                                void shouldReturnNull() throws Throwable {
+                                    assertThat(result).isNull();
+                                    assertThat(e).isNull();
+
+                                }
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+            @Nested
+            class UnsetContent {
+                @Nested
+                class GivenTheDefaultAssociativeStoreIdResolver {
+                    @Nested
+                    class GivenADefaultBucketIsSet {
+                        @Nested
+                        class WhenCalledWithAnEntity {
+                            @Nested
+                            class AndTheContentExists {
+                                @BeforeEach
+                                void setUp() throws Throwable {
+                                    resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
+                                    loader = mock(ResourceLoader.class);
+                                    placementService = mock(PlacementService.class);
+                                    client = mock(S3Client.class);
+                                    defaultBucket = null;
+
+                                    context.registerBean("s3Client", S3Client.class, new Supplier() {
+
+                                                   @Override
+                                                   public Object get() {
+                                                       return client;
+                                                   }
+                                    }, new BeanDefinitionCustomizer[]{});
+                                    context = new GenericApplicationContext();
+                                    context.refresh();
+
+                                    defaultBucket = "default-defaultBucket";
+
+                                    entity = new TestEntity();
+                                    entity.setContentId("abcd-efgh");
+                                    entity.setContentLen(100L);
+                                    resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
+
+                                    placementService = new PlacementServiceImpl();
+                                    S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
+
+                                    when(loader.getResource(endsWith("abcd-efgh"))).thenReturn(resource);
+                                    when(resource.exists()).thenReturn(true);
+
+                                    s3StoreImpl = spy(new DefaultS3StoreImpl<ContentProperty, String>(context,loader,null,placementService,client,null));
+
+                                    try {
+                                    	s3StoreImpl.unsetContent(entity);
+                                    } catch (Exception e) {
+                                    	DefaultS3StoreImplTest.this.e = e;
+                                    }
+
+                                }
+
+                                @Test
+                                void shouldFetchTheResource() throws Throwable {
+                                    verify(loader).getResource(eq("s3://default-defaultBucket/abcd-efgh"));
+
+                                }
+
+                                @Nested
+                                class WhenThePropertyHasADedicatedContentIdField {
+                                    @BeforeEach
+                                    void setUp() throws Throwable {
+                                        resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
+                                        loader = mock(ResourceLoader.class);
+                                        placementService = mock(PlacementService.class);
+                                        client = mock(S3Client.class);
+                                        defaultBucket = null;
+
+                                        context.registerBean("s3Client", S3Client.class, new Supplier() {
+
+                                                       @Override
+                                                       public Object get() {
+                                                           return client;
+                                                       }
+                                        }, new BeanDefinitionCustomizer[]{});
+                                        context = new GenericApplicationContext();
+                                        context.refresh();
+
+                                        defaultBucket = "default-defaultBucket";
+
+                                        entity = new TestEntity();
+                                        entity.setContentId("abcd-efgh");
+                                        entity.setContentLen(100L);
+                                        resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
+
+                                        placementService = new PlacementServiceImpl();
+                                        S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
+
+                                        when(loader.getResource(endsWith("abcd-efgh"))).thenReturn(resource);
+                                        when(resource.exists()).thenReturn(true);
+
+                                        s3StoreImpl = spy(new DefaultS3StoreImpl<ContentProperty, String>(context,loader,null,placementService,client,null));
+
+                                        try {
+                                        	s3StoreImpl.unsetContent(entity);
+                                        } catch (Exception e) {
+                                        	DefaultS3StoreImplTest.this.e = e;
+                                        }
+
+                                    }
+
+                                    @Test
+                                    void shouldResetTheMetadata() throws Throwable {
+                                        assertThat(entity.getContentId()).isNull();
+                                        assertThat(entity.getContentLen()).isEqualTo(0L);
+
+                                    }
+
+                                }
+
+                                @Nested
+                                class WhenThePropertySContentIdFieldAlsoIsTheJakartaPersistenceIdField {
+                                    @BeforeEach
+                                    void setUp() throws Throwable {
+                                        resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
+                                        loader = mock(ResourceLoader.class);
+                                        placementService = mock(PlacementService.class);
+                                        client = mock(S3Client.class);
+                                        defaultBucket = null;
+
+                                        context.registerBean("s3Client", S3Client.class, new Supplier() {
+
+                                                       @Override
+                                                       public Object get() {
+                                                           return client;
+                                                       }
+                                        }, new BeanDefinitionCustomizer[]{});
+                                        context = new GenericApplicationContext();
+                                        context.refresh();
+
+                                        defaultBucket = "default-defaultBucket";
+
+                                        entity = new TestEntity();
+                                        entity.setContentId("abcd-efgh");
+                                        entity.setContentLen(100L);
+                                        resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
+
+                                        placementService = new PlacementServiceImpl();
+                                        S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
+
+                                        when(loader.getResource(endsWith("abcd-efgh"))).thenReturn(resource);
+                                        when(resource.exists()).thenReturn(true);
+
+                                        entity = new SharedIdContentIdEntity();
+                                        entity.setContentId("abcd-efgh");
+
+                                        s3StoreImpl = spy(new DefaultS3StoreImpl<ContentProperty, String>(context,loader,null,placementService,client,null));
+
+                                        try {
+                                        	s3StoreImpl.unsetContent(entity);
+                                        } catch (Exception e) {
+                                        	DefaultS3StoreImplTest.this.e = e;
+                                        }
+
+                                    }
+
+                                    @Test
+                                    void shouldNotResetTheContentIdMetadata() throws Throwable {
+                                        assertThat(entity.getContentId()).isEqualTo("abcd-efgh");
+                                        assertThat(entity.getContentLen()).isEqualTo(0L);
+
+                                    }
+
+                                }
+
+                                @Nested
+                                class WhenThePropertySContentIdFieldAlsoIsTheSpringIdField {
+                                    @BeforeEach
+                                    void setUp() throws Throwable {
+                                        resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
+                                        loader = mock(ResourceLoader.class);
+                                        placementService = mock(PlacementService.class);
+                                        client = mock(S3Client.class);
+                                        defaultBucket = null;
+
+                                        context.registerBean("s3Client", S3Client.class, new Supplier() {
+
+                                                       @Override
+                                                       public Object get() {
+                                                           return client;
+                                                       }
+                                        }, new BeanDefinitionCustomizer[]{});
+                                        context = new GenericApplicationContext();
+                                        context.refresh();
+
+                                        defaultBucket = "default-defaultBucket";
+
+                                        entity = new TestEntity();
+                                        entity.setContentId("abcd-efgh");
+                                        entity.setContentLen(100L);
+                                        resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
+
+                                        placementService = new PlacementServiceImpl();
+                                        S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
+
+                                        when(loader.getResource(endsWith("abcd-efgh"))).thenReturn(resource);
+                                        when(resource.exists()).thenReturn(true);
+
+                                        entity = new SharedSpringIdContentIdEntity();
+                                        entity.setContentId("abcd-efgh");
+
+                                        s3StoreImpl = spy(new DefaultS3StoreImpl<ContentProperty, String>(context,loader,null,placementService,client,null));
+
+                                        try {
+                                        	s3StoreImpl.unsetContent(entity);
+                                        } catch (Exception e) {
+                                        	DefaultS3StoreImplTest.this.e = e;
+                                        }
+
+                                    }
+
+                                    @Test
+                                    void shouldNotResetTheContentIdMetadata() throws Throwable {
+                                        assertThat(entity.getContentId()).isEqualTo("abcd-efgh");
+                                        assertThat(entity.getContentLen()).isEqualTo(0L);
+
+                                    }
+
+                                }
+
+                            }
+
+                            @Nested
+                            class AndTheContentDoesnTExist {
+                                @BeforeEach
+                                void setUp() throws Throwable {
+                                    resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
+                                    loader = mock(ResourceLoader.class);
+                                    placementService = mock(PlacementService.class);
+                                    client = mock(S3Client.class);
+                                    defaultBucket = null;
+
+                                    context.registerBean("s3Client", S3Client.class, new Supplier() {
+
+                                                   @Override
+                                                   public Object get() {
+                                                       return client;
+                                                   }
+                                    }, new BeanDefinitionCustomizer[]{});
+                                    context = new GenericApplicationContext();
+                                    context.refresh();
+
+                                    defaultBucket = "default-defaultBucket";
+
+                                    entity = new TestEntity();
+                                    entity.setContentId("abcd-efgh");
+                                    entity.setContentLen(100L);
+                                    resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
+
+                                    placementService = new PlacementServiceImpl();
+                                    S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
+
+                                    nonExistentResource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
+                                    when(loader.getResource(endsWith("abcd-efgh"))).thenReturn(nonExistentResource);
+                                    when(nonExistentResource.exists()).thenReturn(false);
+
+                                    s3StoreImpl = spy(new DefaultS3StoreImpl<ContentProperty, String>(context,loader,null,placementService,client,null));
+
+                                    try {
+                                    	s3StoreImpl.unsetContent(entity);
+                                    } catch (Exception e) {
+                                    	DefaultS3StoreImplTest.this.e = e;
+                                    }
+
+                                }
+
+                                @Test
+                                void shouldFetchTheResource() throws Throwable {
+                                    verify(loader).getResource(eq("s3://default-defaultBucket/abcd-efgh"));
+
+                                }
+
+                                @Test
+                                void shouldUnsetTheContent() throws Throwable {
+                                    verify(client, never()).deleteObject(any(DeleteObjectRequest.class));
+                                    assertThat(entity.getContentId()).isNull();
+                                    assertThat(entity.getContentLen()).isEqualTo(0L);
+
+                                }
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+
+    }
 
 	public interface ContentProperty {
 		String getContentId();

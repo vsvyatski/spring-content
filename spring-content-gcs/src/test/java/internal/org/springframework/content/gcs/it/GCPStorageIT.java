@@ -1,8 +1,12 @@
 package internal.org.springframework.content.gcs.it;
 
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.github.f4b6a3.uuid.UuidCreator;
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jConfiguration;
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jRunner;
 import com.google.api.gax.paging.Page;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.BlobId;
@@ -11,10 +15,6 @@ import com.google.cloud.storage.contrib.nio.testing.LocalStorageHelper;
 import jakarta.persistence.*;
 import net.bytebuddy.utility.RandomString;
 import org.apache.commons.io.IOUtils;
-import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.io.DeletableResource;
@@ -44,13 +44,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.*;
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.greaterThan;
 
-@RunWith(Ginkgo4jRunner.class)
-@Ginkgo4jConfiguration(threads = 1)
 public class GCPStorageIT {
 
     private TestEntity entity;
@@ -73,417 +67,1015 @@ public class GCPStorageIT {
         System.setProperty("spring.content.gcp.storage.bucket", "test-bucket");
     }
 
-    {
-        Describe("DefaultGCPStorageImpl", () -> {
+    
+    @Nested
+    class DefaultGCPStorageImplCases {
+        @Nested
+        class StoreCases {
+            @Nested
+            class GetResource {
+                @Nested
+                class Tests {
+                    @BeforeEach
+                    void setUp() throws Throwable {
+                        context = new AnnotationConfigApplicationContext();
+                                        context.register(TestConfig.class);
+                                        context.refresh();
 
-            BeforeEach(() -> {
-                context = new AnnotationConfigApplicationContext();
-                context.register(TestConfig.class);
-                context.refresh();
+                                        repo = context.getBean(TestEntityRepository.class);
+                                        store = context.getBean(TestEntityStore.class);
+                                        storage = context.getBean(Storage.class);
 
-                repo = context.getBean(TestEntityRepository.class);
-                store = context.getBean(TestEntityStore.class);
-                storage = context.getBean(Storage.class);
+                                        embeddedRepo = context.getBean(EmbeddedRepository.class);
+                                        embeddedStore = context.getBean(EmbeddedStore.class);
 
-                embeddedRepo = context.getBean(EmbeddedRepository.class);
-                embeddedStore = context.getBean(EmbeddedStore.class);
+                                        RandomString random = new RandomString(5);
+                                        resourceLocation = random.nextString();
 
-                RandomString random = new RandomString(5);
-                resourceLocation = random.nextString();
-            });
-
-            AfterEach(() -> context.close());
-
-            Describe("Store", () -> Context("#getResource", () -> {
-
-                BeforeEach(() -> genericResource = store.getResource(resourceLocation));
-
-                AfterEach(() -> {
-                    if (genericResource != null) {
-                        ((DeletableResource) genericResource).delete();
+                        genericResource = store.getResource(resourceLocation);
                     }
+                    @AfterEach
+                    void tearDown() throws Throwable {
+                        if (genericResource != null) {
+                                                ((DeletableResource) genericResource).delete();
+                                            }
 
-                    Page<Blob> blobs = storage.list("delete-me-please-please", Storage.BlobListOption.currentDirectory());
-                    for (Blob blob : blobs.iterateAll()) {
-                        storage.delete(blob.getBlobId());
+                                            Page<Blob> blobs = storage.list("delete-me-please-please", Storage.BlobListOption.currentDirectory());
+                                            for (Blob blob : blobs.iterateAll()) {
+                                                storage.delete(blob.getBlobId());
+                                            }
+
+                        context.close();
                     }
-                });
+                    @Test
+                    void shouldGetResource() throws Throwable {
+                        assertThat(genericResource).isInstanceOf(Resource.class);
+                    }
+                    @Test
+                    void shouldNotExist() throws Throwable {
+                        assertThat(genericResource.exists()).isFalse();
+                    }
+                }
+                @Nested
+                class GivenContentIsAddedToThatResource {
+                    @Nested
+                    class Tests {
+                        @BeforeEach
+                        void setUp() throws Throwable {
+                            context = new AnnotationConfigApplicationContext();
+                                            context.register(TestConfig.class);
+                                            context.refresh();
 
-                It("should get Resource", () -> assertThat(genericResource, is(instanceOf(Resource.class))));
+                                            repo = context.getBean(TestEntityRepository.class);
+                                            store = context.getBean(TestEntityStore.class);
+                                            storage = context.getBean(Storage.class);
 
-                It("should not exist", () -> assertThat(genericResource.exists(), is(false)));
+                                            embeddedRepo = context.getBean(EmbeddedRepository.class);
+                                            embeddedStore = context.getBean(EmbeddedStore.class);
 
-                Context("given content is added to that resource", () -> {
+                                            RandomString random = new RandomString(5);
+                                            resourceLocation = random.nextString();
 
-                    BeforeEach(() -> {
-                        try (InputStream is = new ByteArrayInputStream("Hello Spring Content World!".getBytes())) {
-                            try (OutputStream os = ((WritableResource) genericResource).getOutputStream()) {
-                                IOUtils.copy(is, os);
-                            }
+                            genericResource = store.getResource(resourceLocation);
+
+                            try (InputStream is = new ByteArrayInputStream("Hello Spring Content World!".getBytes())) {
+                                                        try (OutputStream os = ((WritableResource) genericResource).getOutputStream()) {
+                                                            IOUtils.copy(is, os);
+                                                        }
+                                                    }
                         }
-                    });
+                        @AfterEach
+                        void tearDown() throws Throwable {
+                            if (genericResource != null) {
+                                                    ((DeletableResource) genericResource).delete();
+                                                }
 
-                    It("should store that content", () -> {
-                        assertThat(genericResource.exists(), is(true));
+                                                Page<Blob> blobs = storage.list("delete-me-please-please", Storage.BlobListOption.currentDirectory());
+                                                for (Blob blob : blobs.iterateAll()) {
+                                                    storage.delete(blob.getBlobId());
+                                                }
 
-                        try (InputStream expected = new ByteArrayInputStream("Hello Spring Content World!".getBytes())) {
-                            try (InputStream actual = genericResource.getInputStream()) {
-                                boolean matches = IOUtils.contentEquals(expected, actual);
-                                assertThat(matches, Matchers.is(true));
-                            }
+                            context.close();
                         }
-                    });
+                        @Test
+                        void shouldStoreThatContent() throws Throwable {
+                            assertThat(genericResource.exists()).isTrue();
 
-                    Context("given that resource is then updated", () -> {
+                                                    try (InputStream expected = new ByteArrayInputStream("Hello Spring Content World!".getBytes())) {
+                                                        try (InputStream actual = genericResource.getInputStream()) {
+                                                            boolean matches = IOUtils.contentEquals(expected, actual);
+                                                            assertThat(matches).isTrue();
+                                                        }
+                                                    }
+                        }
+                    }
+                    @Nested
+                    class GivenThatResourceIsThenUpdated {
+                        @BeforeEach
+                        void setUp() throws Throwable {
+                            context = new AnnotationConfigApplicationContext();
+                                            context.register(TestConfig.class);
+                                            context.refresh();
 
-                        BeforeEach(() -> {
+                                            repo = context.getBean(TestEntityRepository.class);
+                                            store = context.getBean(TestEntityStore.class);
+                                            storage = context.getBean(Storage.class);
+
+                                            embeddedRepo = context.getBean(EmbeddedRepository.class);
+                                            embeddedStore = context.getBean(EmbeddedStore.class);
+
+                                            RandomString random = new RandomString(5);
+                                            resourceLocation = random.nextString();
+
+                            genericResource = store.getResource(resourceLocation);
+
+                            try (InputStream is = new ByteArrayInputStream("Hello Spring Content World!".getBytes())) {
+                                                        try (OutputStream os = ((WritableResource) genericResource).getOutputStream()) {
+                                                            IOUtils.copy(is, os);
+                                                        }
+                                                    }
+
                             try (InputStream is = new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes())) {
-                                try (OutputStream os = ((WritableResource) genericResource).getOutputStream()) {
-                                    IOUtils.copy(is, os);
-                                }
-                            }
-                        });
+                                                            try (OutputStream os = ((WritableResource) genericResource).getOutputStream()) {
+                                                                IOUtils.copy(is, os);
+                                                            }
+                                                        }
+                        }
+                        @AfterEach
+                        void tearDown() throws Throwable {
+                            if (genericResource != null) {
+                                                    ((DeletableResource) genericResource).delete();
+                                                }
 
-                        It("should store that updated content", () -> {
-                            assertThat(genericResource.exists(), is(true));
+                                                Page<Blob> blobs = storage.list("delete-me-please-please", Storage.BlobListOption.currentDirectory());
+                                                for (Blob blob : blobs.iterateAll()) {
+                                                    storage.delete(blob.getBlobId());
+                                                }
 
-                            try (InputStream expected = new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes())) {
-                                try (InputStream actual = genericResource.getInputStream()) {
-                                    assertThat(IOUtils.contentEquals(expected, actual), is(true));
-                                }
-                            }
-                        });
-                    });
+                            context.close();
+                        }
+                        @Test
+                        void shouldStoreThatUpdatedContent() throws Throwable {
+                            assertThat(genericResource.exists()).isTrue();
 
-                    Context("given that resource is then deleted", () -> {
+                                                        try (InputStream expected = new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes())) {
+                                                            try (InputStream actual = genericResource.getInputStream()) {
+                                                                assertThat(IOUtils.contentEquals(expected, actual)).isTrue();
+                                                            }
+                                                        }
+                        }
+                    }
+                    @Nested
+                    class GivenThatResourceIsThenDeleted {
+                        @BeforeEach
+                        void setUp() throws Throwable {
+                            context = new AnnotationConfigApplicationContext();
+                                            context.register(TestConfig.class);
+                                            context.refresh();
 
-                        BeforeEach(() -> {
+                                            repo = context.getBean(TestEntityRepository.class);
+                                            store = context.getBean(TestEntityStore.class);
+                                            storage = context.getBean(Storage.class);
+
+                                            embeddedRepo = context.getBean(EmbeddedRepository.class);
+                                            embeddedStore = context.getBean(EmbeddedStore.class);
+
+                                            RandomString random = new RandomString(5);
+                                            resourceLocation = random.nextString();
+
+                            genericResource = store.getResource(resourceLocation);
+
+                            try (InputStream is = new ByteArrayInputStream("Hello Spring Content World!".getBytes())) {
+                                                        try (OutputStream os = ((WritableResource) genericResource).getOutputStream()) {
+                                                            IOUtils.copy(is, os);
+                                                        }
+                                                    }
+
                             try {
-                                ((DeletableResource) genericResource).delete();
-                            } catch (Exception e) {
-                                this.e = e;
+                                                            ((DeletableResource) genericResource).delete();
+                                                        } catch (Exception e) {
+                                                            GCPStorageIT.this.e = e;
+                                                        }
+                        }
+                        @AfterEach
+                        void tearDown() throws Throwable {
+                            if (genericResource != null) {
+                                                    ((DeletableResource) genericResource).delete();
+                                                }
+
+                                                Page<Blob> blobs = storage.list("delete-me-please-please", Storage.BlobListOption.currentDirectory());
+                                                for (Blob blob : blobs.iterateAll()) {
+                                                    storage.delete(blob.getBlobId());
+                                                }
+
+                            context.close();
+                        }
+                        @Test
+                        void shouldNotExist() throws Throwable {
+                            assertThat(e).isNull();
+                        }
+                    }
+                }
+            }
+        }
+        @Nested
+        class AssociativeStoreCases {
+            @Nested
+            class GivenANewEntity {
+                @Nested
+                class Tests {
+                    @BeforeEach
+                    void setUp() throws Throwable {
+                        context = new AnnotationConfigApplicationContext();
+                                        context.register(TestConfig.class);
+                                        context.refresh();
+
+                                        repo = context.getBean(TestEntityRepository.class);
+                                        store = context.getBean(TestEntityStore.class);
+                                        storage = context.getBean(Storage.class);
+
+                                        embeddedRepo = context.getBean(EmbeddedRepository.class);
+                                        embeddedStore = context.getBean(EmbeddedStore.class);
+
+                                        RandomString random = new RandomString(5);
+                                        resourceLocation = random.nextString();
+
+                        entity = new TestEntity();
+                                            entity = repo.save(entity);
+                    }
+                    @AfterEach
+                    void tearDown() throws Throwable {
+                        context.close();
+                    }
+                    @Test
+                    void shouldNotHaveAnAssociatedResource() throws Throwable {
+                        assertThat(entity.getContentId()).isNull();
+                                            assertThat(store.getResource(entity)).isNull();
+                    }
+                }
+                @Nested
+                class GivenAResource {
+                    @Nested
+                    class WhenTheResourceIsAssociated {
+                        @Nested
+                        class Tests {
+                            @BeforeEach
+                            void setUp() throws Throwable {
+                                context = new AnnotationConfigApplicationContext();
+                                                context.register(TestConfig.class);
+                                                context.refresh();
+
+                                                repo = context.getBean(TestEntityRepository.class);
+                                                store = context.getBean(TestEntityStore.class);
+                                                storage = context.getBean(Storage.class);
+
+                                                embeddedRepo = context.getBean(EmbeddedRepository.class);
+                                                embeddedStore = context.getBean(EmbeddedStore.class);
+
+                                                RandomString random = new RandomString(5);
+                                                resourceLocation = random.nextString();
+
+                                entity = new TestEntity();
+                                                    entity = repo.save(entity);
+
+                                genericResource = store.getResource(resourceLocation);
+
+                                store.associate(entity, resourceLocation);
+                                                            store.associate(entity, PropertyPath.from("rendition"), resourceLocation);
                             }
-                        });
+                            @AfterEach
+                            void tearDown() throws Throwable {
+                                context.close();
+                            }
+                            @Test
+                            void shouldBeRecordedAsSuchOnTheEntitySContentId() throws Throwable {
+                                assertThat(entity.getContentId()).isEqualTo(resourceLocation);
+                                                            assertThat(entity.getRenditionId()).isEqualTo(resourceLocation);
+                            }
+                        }
+                        @Nested
+                        class WhenTheResourceHasContent {
+                            @BeforeEach
+                            void setUp() throws Throwable {
+                                context = new AnnotationConfigApplicationContext();
+                                                context.register(TestConfig.class);
+                                                context.refresh();
 
-                        It("should not exist", () -> assertThat(e, is(nullValue())));
-                    });
-                });
-            }));
+                                                repo = context.getBean(TestEntityRepository.class);
+                                                store = context.getBean(TestEntityStore.class);
+                                                storage = context.getBean(Storage.class);
 
-            Describe("AssociativeStore", () -> Context("given a new entity", () -> {
+                                                embeddedRepo = context.getBean(EmbeddedRepository.class);
+                                                embeddedStore = context.getBean(EmbeddedStore.class);
 
-                BeforeEach(() -> {
-                    entity = new TestEntity();
-                    entity = repo.save(entity);
-                });
+                                                RandomString random = new RandomString(5);
+                                                resourceLocation = random.nextString();
 
-                It("should not have an associated resource", () -> {
-                    assertThat(entity.getContentId(), is(nullValue()));
-                    assertThat(store.getResource(entity), is(nullValue()));
-                });
+                                entity = new TestEntity();
+                                                    entity = repo.save(entity);
 
-                Context("given a resource", () -> {
+                                genericResource = store.getResource(resourceLocation);
 
-                    BeforeEach(() -> genericResource = store.getResource(resourceLocation));
+                                store.associate(entity, resourceLocation);
+                                                            store.associate(entity, PropertyPath.from("rendition"), resourceLocation);
 
-                    Context("when the resource is associated", () -> {
-
-                        BeforeEach(() -> {
-                            store.associate(entity, resourceLocation);
-                            store.associate(entity, PropertyPath.from("rendition"), resourceLocation);
-                        });
-
-                        It("should be recorded as such on the entity's @ContentId", () -> {
-                            assertThat(entity.getContentId(), is(resourceLocation));
-                            assertThat(entity.getRenditionId(), is(resourceLocation));
-                        });
-
-                        Context("when the resource has content", () -> {
-                            BeforeEach(() -> {
                                 try (OutputStream os = ((WritableResource) genericResource).getOutputStream()) {
-                                    os.write("Hello Client-side World!".getBytes());
-                                }
-                            });
-
-                            It("should not honor byte ranges", () -> {
+                                                                    os.write("Hello Client-side World!".getBytes());
+                                                                }
+                            }
+                            @AfterEach
+                            void tearDown() throws Throwable {
+                                context.close();
+                            }
+                            @Test
+                            void shouldNotHonorByteRanges() throws Throwable {
                                 // relies on REST-layer to serve byte range
-                                Resource r = store.getResource(entity, PropertyPath.from("content"), new GetResourceParams("5-10"));
-                                try (InputStream is = r.getInputStream()) {
-                                    assertThat(IOUtils.toString(is, Charset.defaultCharset()), is("Hello Client-side World!"));
-                                }
-                            });
-                        });
-                        Context("when the resource is unassociated", () -> {
+                                                                Resource r = store.getResource(entity, PropertyPath.from("content"), new GetResourceParams("5-10"));
+                                                                try (InputStream is = r.getInputStream()) {
+                                                                    assertThat(IOUtils.toString(is, Charset.defaultCharset())).isEqualTo("Hello Client-side World!");
+                                                                }
+                            }
+                        }
+                        @Nested
+                        class WhenTheResourceIsUnassociated {
+                            @BeforeEach
+                            void setUp() throws Throwable {
+                                context = new AnnotationConfigApplicationContext();
+                                                context.register(TestConfig.class);
+                                                context.refresh();
 
-                            BeforeEach(() -> {
+                                                repo = context.getBean(TestEntityRepository.class);
+                                                store = context.getBean(TestEntityStore.class);
+                                                storage = context.getBean(Storage.class);
+
+                                                embeddedRepo = context.getBean(EmbeddedRepository.class);
+                                                embeddedStore = context.getBean(EmbeddedStore.class);
+
+                                                RandomString random = new RandomString(5);
+                                                resourceLocation = random.nextString();
+
+                                entity = new TestEntity();
+                                                    entity = repo.save(entity);
+
+                                genericResource = store.getResource(resourceLocation);
+
+                                store.associate(entity, resourceLocation);
+                                                            store.associate(entity, PropertyPath.from("rendition"), resourceLocation);
+
                                 store.unassociate(entity);
-                                store.unassociate(entity, PropertyPath.from("rendition"));
-                            });
+                                                                store.unassociate(entity, PropertyPath.from("rendition"));
+                            }
+                            @AfterEach
+                            void tearDown() throws Throwable {
+                                context.close();
+                            }
+                            @Test
+                            void shouldResetTheEntitySContentId() throws Throwable {
+                                assertThat(entity.getContentId()).isNull();
+                                                                assertThat(entity.getRenditionId()).isNull();
+                            }
+                        }
+                        @Nested
+                        class WhenAInvalidPropertyPathIsUsedToAssociateAResource {
+                            @BeforeEach
+                            void setUp() throws Throwable {
+                                context = new AnnotationConfigApplicationContext();
+                                                context.register(TestConfig.class);
+                                                context.refresh();
 
-                            It("should reset the entity's @ContentId", () -> {
-                                assertThat(entity.getContentId(), is(nullValue()));
-                                assertThat(entity.getRenditionId(), is(nullValue()));
-                            });
-                        });
+                                                repo = context.getBean(TestEntityRepository.class);
+                                                store = context.getBean(TestEntityStore.class);
+                                                storage = context.getBean(Storage.class);
 
-                        Context("when a invalid property path is used to associate a resource", () ->
-                                It("should throw an error", () -> {
-                                    try {
-                                        store.associate(entity, PropertyPath.from("does.not.exist"), resourceLocation);
-                                    } catch (Exception sae) {
-                                        this.e = sae;
-                                    }
-                                    assertThat(e, is(instanceOf(StoreAccessException.class)));
-                                })
-                        );
+                                                embeddedRepo = context.getBean(EmbeddedRepository.class);
+                                                embeddedStore = context.getBean(EmbeddedStore.class);
 
-                        Context("when a invalid property path is used to load a resource", () ->
-                                It("should throw an error", () -> {
-                                    try {
-                                        store.getResource(entity, PropertyPath.from("does.not.exist"));
-                                    } catch (Exception sae) {
-                                        this.e = sae;
-                                    }
-                                    assertThat(e, is(instanceOf(StoreAccessException.class)));
-                                })
-                        );
+                                                RandomString random = new RandomString(5);
+                                                resourceLocation = random.nextString();
 
-                        Context("when a invalid property path is used to unassociate a resource", () ->
-                                It("should throw an error", () -> {
-                                    try {
-                                        store.unassociate(entity, PropertyPath.from("does.not.exist"));
-                                    } catch (Exception sae) {
-                                        this.e = sae;
-                                    }
-                                    assertThat(e, is(instanceOf(StoreAccessException.class)));
-                                })
-                        );
-                    });
-                });
-            }));
+                                entity = new TestEntity();
+                                                    entity = repo.save(entity);
 
-            Describe("ContentStore", () -> {
+                                genericResource = store.getResource(resourceLocation);
 
-                BeforeEach(() -> {
+                                store.associate(entity, resourceLocation);
+                                                            store.associate(entity, PropertyPath.from("rendition"), resourceLocation);
+                            }
+                            @AfterEach
+                            void tearDown() throws Throwable {
+                                context.close();
+                            }
+                            @Test
+                            void shouldThrowAnError() throws Throwable {
+                                try {
+                                                                        store.associate(entity, PropertyPath.from("does.not.exist"), resourceLocation);
+                                                                    } catch (Exception sae) {
+                                                                        GCPStorageIT.this.e = sae;
+                                                                    }
+                                                                    assertThat(e).isInstanceOf(StoreAccessException.class);
+                            }
+                        }
+                        @Nested
+                        class WhenAInvalidPropertyPathIsUsedToLoadAResource {
+                            @BeforeEach
+                            void setUp() throws Throwable {
+                                context = new AnnotationConfigApplicationContext();
+                                                context.register(TestConfig.class);
+                                                context.refresh();
+
+                                                repo = context.getBean(TestEntityRepository.class);
+                                                store = context.getBean(TestEntityStore.class);
+                                                storage = context.getBean(Storage.class);
+
+                                                embeddedRepo = context.getBean(EmbeddedRepository.class);
+                                                embeddedStore = context.getBean(EmbeddedStore.class);
+
+                                                RandomString random = new RandomString(5);
+                                                resourceLocation = random.nextString();
+
+                                entity = new TestEntity();
+                                                    entity = repo.save(entity);
+
+                                genericResource = store.getResource(resourceLocation);
+
+                                store.associate(entity, resourceLocation);
+                                                            store.associate(entity, PropertyPath.from("rendition"), resourceLocation);
+                            }
+                            @AfterEach
+                            void tearDown() throws Throwable {
+                                context.close();
+                            }
+                            @Test
+                            void shouldThrowAnError() throws Throwable {
+                                try {
+                                                                        store.getResource(entity, PropertyPath.from("does.not.exist"));
+                                                                    } catch (Exception sae) {
+                                                                        GCPStorageIT.this.e = sae;
+                                                                    }
+                                                                    assertThat(e).isInstanceOf(StoreAccessException.class);
+                            }
+                        }
+                        @Nested
+                        class WhenAInvalidPropertyPathIsUsedToUnassociateAResource {
+                            @BeforeEach
+                            void setUp() throws Throwable {
+                                context = new AnnotationConfigApplicationContext();
+                                                context.register(TestConfig.class);
+                                                context.refresh();
+
+                                                repo = context.getBean(TestEntityRepository.class);
+                                                store = context.getBean(TestEntityStore.class);
+                                                storage = context.getBean(Storage.class);
+
+                                                embeddedRepo = context.getBean(EmbeddedRepository.class);
+                                                embeddedStore = context.getBean(EmbeddedStore.class);
+
+                                                RandomString random = new RandomString(5);
+                                                resourceLocation = random.nextString();
+
+                                entity = new TestEntity();
+                                                    entity = repo.save(entity);
+
+                                genericResource = store.getResource(resourceLocation);
+
+                                store.associate(entity, resourceLocation);
+                                                            store.associate(entity, PropertyPath.from("rendition"), resourceLocation);
+                            }
+                            @AfterEach
+                            void tearDown() throws Throwable {
+                                context.close();
+                            }
+                            @Test
+                            void shouldThrowAnError() throws Throwable {
+                                try {
+                                                                        store.unassociate(entity, PropertyPath.from("does.not.exist"));
+                                                                    } catch (Exception sae) {
+                                                                        GCPStorageIT.this.e = sae;
+                                                                    }
+                                                                    assertThat(e).isInstanceOf(StoreAccessException.class);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        @Nested
+        class ContentStoreCases {
+            @Nested
+            class Tests {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    context = new AnnotationConfigApplicationContext();
+                                    context.register(TestConfig.class);
+                                    context.refresh();
+
+                                    repo = context.getBean(TestEntityRepository.class);
+                                    store = context.getBean(TestEntityStore.class);
+                                    storage = context.getBean(Storage.class);
+
+                                    embeddedRepo = context.getBean(EmbeddedRepository.class);
+                                    embeddedStore = context.getBean(EmbeddedStore.class);
+
+                                    RandomString random = new RandomString(5);
+                                    resourceLocation = random.nextString();
+
                     entity = new TestEntity();
-                    entity = repo.save(entity);
+                                        entity = repo.save(entity);
 
-                    store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-                    store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
-                    entity = repo.save(entity);
-                });
-
-                It("should be able to store new content", () -> {
+                                        store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                                        store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
+                                        entity = repo.save(entity);
+                }
+                @AfterEach
+                void tearDown() throws Throwable {
+                    context.close();
+                }
+                @Test
+                void shouldBeAbleToStoreNewContent() throws Throwable {
                     // content
-                    try (InputStream content = store.getContent(entity)) {
-                        assertThat(IOUtils.contentEquals(new ByteArrayInputStream("Hello Spring Content World!".getBytes()), content), is(true));
-                    } catch (IOException ignored) {
-                    }
-
-                    //rendition
-                    try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
-                        assertThat(IOUtils.contentEquals(new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()), content), is(true));
-                    } catch (IOException ignored) {
-                    }
-                });
-
-                It("should have content metadata", () -> {
-                    // content
-                    assertThat(entity.getContentId(), is(notNullValue()));
-                    assertThat(entity.getContentId().trim().length(), greaterThan(0));
-                    Assert.assertEquals(27L, (long) entity.getContentLen());
-
-                    //rendition
-                    assertThat(entity.getRenditionId(), is(notNullValue()));
-                    assertThat(entity.getRenditionId().trim().length(), greaterThan(0));
-                    Assert.assertEquals(40L, (long) entity.getRenditionLen());
-                });
-
-                Context("when content is updated", () -> {
-                    BeforeEach(() -> {
-                        store.setContent(entity, new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()));
-                        store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Updated Spring Content World!</html>".getBytes()));
-                        entity = repo.save(entity);
-                    });
-
-                    It("should have the updated content", () -> {
-                        //content
-                        try (InputStream content = store.getContent(entity)) {
-                            boolean matches = IOUtils.contentEquals(new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), content);
-                            assertThat(matches, is(true));
-                        }
-
-                        //rendition
-                        try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
-                            boolean matches = IOUtils.contentEquals(new ByteArrayInputStream("<html>Hello Updated Spring Content World!</html>".getBytes()), content);
-                            assertThat(matches, is(true));
-                        }
-                    });
-                });
-
-                Context("when content is updated with shorter content", () -> {
-                    BeforeEach(() -> {
-                        store.setContent(entity, new ByteArrayInputStream("Hello Spring World!".getBytes()));
-                        store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring World!</html>".getBytes()));
-                        entity = repo.save(entity);
-                    });
-                    It("should store only the new content", () -> {
-                        //content
-                        try (InputStream content = store.getContent(entity)) {
-                            boolean matches = IOUtils.contentEquals(new ByteArrayInputStream("Hello Spring World!".getBytes()), content);
-                            assertThat(matches, is(true));
-                        }
-
-                        //rendition
-                        try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
-                            boolean matches = IOUtils.contentEquals(new ByteArrayInputStream("<html>Hello Spring World!</html>".getBytes()), content);
-                            assertThat(matches, is(true));
-                        }
-                    });
-                });
-
-                Context("when content is updated and not overwritten", () ->
-                        It("should have the updated content", () -> {
-                            String contentId = entity.getContentId();
-                            assertThat(contentId, is(not(nullValue())));
-                            assertThat(storage.get(BlobId.of("test-bucket", contentId)).exists(), is(true));
-
-                            store.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), new SetContentParams(-1, true, SetContentParams.ContentDisposition.CreateNew));
-                            entity = repo.save(entity);
-
-                            try (InputStream content = store.getContent(entity)) {
-                                boolean matches = IOUtils.contentEquals(new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), content);
-                                assertThat(matches, is(true));
-                            }
-
-                            assertThat(entity.getContentId(), is(not(contentId)));
-
-                            assertThat(storage.get(BlobId.of("test-bucket", entity.getContentId())).exists(), is(true));
-                        })
-                );
-
-                Context("when content is unset", () -> {
-                    BeforeEach(() -> {
-                        resourceLocation = entity.getContentId().toString();
-                        entity = store.unsetContent(entity);
-                        entity = store.unsetContent(entity, PropertyPath.from("rendition"));
-                        entity = repo.save(entity);
-                    });
-
-                    It("should have no content", () -> {
-                        //content
-                        try (InputStream content = store.getContent(entity)) {
-                            assertThat(content, is(Matchers.nullValue()));
-                        }
-
-                        assertThat(entity.getContentId(), is(Matchers.nullValue()));
-                        assertThat(entity.getContentLen(), is(nullValue()));
-                        assertThat(storage.get(BlobId.of("test-bucket", resourceLocation)), is(nullValue()));
-
-                        //rendition
-                        try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
-                            assertThat(content, is(Matchers.nullValue()));
-                        }
-
-                        assertThat(entity.getRenditionId(), is(Matchers.nullValue()));
-                        assertThat(entity.getRenditionLen(), is(0L));
-                    });
-                });
-
-                Context("when content is unset but kept", () -> {
-                    BeforeEach(() -> {
-                        resourceLocation = entity.getContentId().toString();
-                        entity = store.unsetContent(entity, PropertyPath.from("content"), new UnsetContentParams(UnsetContentParams.Disposition.Keep));
-                        entity = repo.save(entity);
-                    });
-
-                    It("should have no content", () -> {
-                        //content
-                        try (InputStream content = store.getContent(entity)) {
-                            assertThat(content, is(Matchers.nullValue()));
-                        }
-
-                        assertThat(entity.getContentId(), is(Matchers.nullValue()));
-                        assertThat(entity.getContentLen(), is(nullValue()));
-                        assertThat(storage.get(BlobId.of("test-bucket", resourceLocation)).exists(), is(true));
-                    });
-                });
-
-                Context("when an invalid property path is used to setContent", () ->
-                        It("should throw an error", () -> {
-                            try {
-                                store.setContent(entity, PropertyPath.from("does.not.exist"), new ByteArrayInputStream("foo".getBytes()));
-                            } catch (Exception sae) {
-                                this.e = sae;
-                            }
-                            assertThat(e, is(instanceOf(StoreAccessException.class)));
-                        })
-                );
-
-                Context("when an invalid property path is used to getContent", () ->
-                        It("should throw an error", () -> {
-                            try {
-                                store.getContent(entity, PropertyPath.from("does.not.exist"));
-                            } catch (Exception sae) {
-                                this.e = sae;
-                            }
-                            assertThat(e, is(instanceOf(StoreAccessException.class)));
-                        })
-                );
-
-                Context("when an invalid property path is used to unsetContent", () ->
-                        It("should throw an error", () -> {
-                            try {
-                                store.unsetContent(entity, PropertyPath.from("does.not.exist"));
-                            } catch (Exception sae) {
-                                this.e = sae;
-                            }
-                            assertThat(e, is(instanceOf(StoreAccessException.class)));
-                        })
-                );
-
-                Context("when content is deleted and the content id field is shared with entity id", () ->
-                        It("should not reset the id field", () -> {
-                            SharedIdRepository sharedIdRepository = context.getBean(SharedIdRepository.class);
-                            SharedIdStore sharedIdStore = context.getBean(SharedIdStore.class);
-
-                            SharedIdContentIdEntity sharedIdContentIdEntity = sharedIdRepository.save(new SharedIdContentIdEntity());
-
-                            sharedIdContentIdEntity = sharedIdStore.setContent(sharedIdContentIdEntity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-                            sharedIdContentIdEntity = sharedIdRepository.save(sharedIdContentIdEntity);
-                            String id = sharedIdContentIdEntity.getContentId();
-                            sharedIdContentIdEntity = sharedIdStore.unsetContent(sharedIdContentIdEntity);
-                            assertThat(sharedIdContentIdEntity.getContentId(), is(id));
-                            assertThat(sharedIdContentIdEntity.getContentLen(), is(0L));
-                        })
-                );
-
-                Context("@Embedded content", () ->
-                        Context("given a entity with a null embedded content object", () -> {
-                                    It("should return null when content is fetched", () -> {
-                                        EntityWithEmbeddedContent entity = embeddedRepo.save(new EntityWithEmbeddedContent());
-                                        assertThat(embeddedStore.getContent(entity, PropertyPath.from("content")), is(nullValue()));
-                                    });
-
-                                    It("should be successful when content is set", () -> {
-                                        EntityWithEmbeddedContent entity = embeddedRepo.save(new EntityWithEmbeddedContent());
-                                        embeddedStore.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-                                        try (InputStream is = embeddedStore.getContent(entity, PropertyPath.from("content"))) {
-                                            assertThat(IOUtils.contentEquals(is, new ByteArrayInputStream("Hello Spring Content World!".getBytes())), is(true));
+                                        try (InputStream content = store.getContent(entity)) {
+                                            assertThat(IOUtils.contentEquals(new ByteArrayInputStream("Hello Spring Content World!".getBytes()), content)).isTrue();
+                                        } catch (IOException ignored) {
                                         }
-                                    });
 
-                                    It("should return null when content is unset", () -> {
-                                        EntityWithEmbeddedContent entity = embeddedRepo.save(new EntityWithEmbeddedContent());
-                                        assertThat(embeddedStore.unsetContent(entity, PropertyPath.from("content")), is(sameInstance(entity)));
-                                        int i = 0;
-                                    });
-                                }
-                        )
-                );
-            });
-        });
+                                        //rendition
+                                        try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
+                                            assertThat(IOUtils.contentEquals(new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()), content)).isTrue();
+                                        } catch (IOException ignored) {
+                                        }
+                }
+                @Test
+                void shouldHaveContentMetadata() throws Throwable {
+                    // content
+                                        assertThat(entity.getContentId()).isNotNull();
+                                        assertThat(entity.getContentId().trim().length()).isGreaterThan(0);
+                                        assertThat(27L).isEqualTo((long) entity.getContentLen());
+
+                                        //rendition
+                                        assertThat(entity.getRenditionId()).isNotNull();
+                                        assertThat(entity.getRenditionId().trim().length()).isGreaterThan(0);
+                                        assertThat(40L).isEqualTo((long) entity.getRenditionLen());
+                }
+            }
+            @Nested
+            class WhenContentIsUpdated {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    context = new AnnotationConfigApplicationContext();
+                                    context.register(TestConfig.class);
+                                    context.refresh();
+
+                                    repo = context.getBean(TestEntityRepository.class);
+                                    store = context.getBean(TestEntityStore.class);
+                                    storage = context.getBean(Storage.class);
+
+                                    embeddedRepo = context.getBean(EmbeddedRepository.class);
+                                    embeddedStore = context.getBean(EmbeddedStore.class);
+
+                                    RandomString random = new RandomString(5);
+                                    resourceLocation = random.nextString();
+
+                    entity = new TestEntity();
+                                        entity = repo.save(entity);
+
+                                        store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                                        store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
+                                        entity = repo.save(entity);
+
+                    store.setContent(entity, new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()));
+                                            store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Updated Spring Content World!</html>".getBytes()));
+                                            entity = repo.save(entity);
+                }
+                @AfterEach
+                void tearDown() throws Throwable {
+                    context.close();
+                }
+                @Test
+                void shouldHaveTheUpdatedContent() throws Throwable {
+                    //content
+                                            try (InputStream content = store.getContent(entity)) {
+                                                boolean matches = IOUtils.contentEquals(new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), content);
+                                                assertThat(matches).isTrue();
+                                            }
+
+                                            //rendition
+                                            try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
+                                                boolean matches = IOUtils.contentEquals(new ByteArrayInputStream("<html>Hello Updated Spring Content World!</html>".getBytes()), content);
+                                                assertThat(matches).isTrue();
+                                            }
+                }
+            }
+            @Nested
+            class WhenContentIsUpdatedWithShorterContent {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    context = new AnnotationConfigApplicationContext();
+                                    context.register(TestConfig.class);
+                                    context.refresh();
+
+                                    repo = context.getBean(TestEntityRepository.class);
+                                    store = context.getBean(TestEntityStore.class);
+                                    storage = context.getBean(Storage.class);
+
+                                    embeddedRepo = context.getBean(EmbeddedRepository.class);
+                                    embeddedStore = context.getBean(EmbeddedStore.class);
+
+                                    RandomString random = new RandomString(5);
+                                    resourceLocation = random.nextString();
+
+                    entity = new TestEntity();
+                                        entity = repo.save(entity);
+
+                                        store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                                        store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
+                                        entity = repo.save(entity);
+
+                    store.setContent(entity, new ByteArrayInputStream("Hello Spring World!".getBytes()));
+                                            store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring World!</html>".getBytes()));
+                                            entity = repo.save(entity);
+                }
+                @AfterEach
+                void tearDown() throws Throwable {
+                    context.close();
+                }
+                @Test
+                void shouldStoreOnlyTheNewContent() throws Throwable {
+                    //content
+                                            try (InputStream content = store.getContent(entity)) {
+                                                boolean matches = IOUtils.contentEquals(new ByteArrayInputStream("Hello Spring World!".getBytes()), content);
+                                                assertThat(matches).isTrue();
+                                            }
+
+                                            //rendition
+                                            try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
+                                                boolean matches = IOUtils.contentEquals(new ByteArrayInputStream("<html>Hello Spring World!</html>".getBytes()), content);
+                                                assertThat(matches).isTrue();
+                                            }
+                }
+            }
+            @Nested
+            class WhenContentIsUpdatedAndNotOverwritten {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    context = new AnnotationConfigApplicationContext();
+                                    context.register(TestConfig.class);
+                                    context.refresh();
+
+                                    repo = context.getBean(TestEntityRepository.class);
+                                    store = context.getBean(TestEntityStore.class);
+                                    storage = context.getBean(Storage.class);
+
+                                    embeddedRepo = context.getBean(EmbeddedRepository.class);
+                                    embeddedStore = context.getBean(EmbeddedStore.class);
+
+                                    RandomString random = new RandomString(5);
+                                    resourceLocation = random.nextString();
+
+                    entity = new TestEntity();
+                                        entity = repo.save(entity);
+
+                                        store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                                        store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
+                                        entity = repo.save(entity);
+                }
+                @AfterEach
+                void tearDown() throws Throwable {
+                    context.close();
+                }
+                @Test
+                void shouldHaveTheUpdatedContent() throws Throwable {
+                    String contentId = entity.getContentId();
+                                                assertThat(contentId).isNotNull();
+                                                assertThat(storage.get(BlobId.of("test-bucket", contentId)).exists()).isTrue();
+
+                                                store.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), new SetContentParams(-1, true, SetContentParams.ContentDisposition.CreateNew));
+                                                entity = repo.save(entity);
+
+                                                try (InputStream content = store.getContent(entity)) {
+                                                    boolean matches = IOUtils.contentEquals(new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), content);
+                                                    assertThat(matches).isTrue();
+                                                }
+
+                                                assertThat(entity.getContentId()).isNotEqualTo(contentId);
+
+                                                assertThat(storage.get(BlobId.of("test-bucket", entity.getContentId())).exists()).isTrue();
+                }
+            }
+            @Nested
+            class WhenContentIsUnset {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    context = new AnnotationConfigApplicationContext();
+                                    context.register(TestConfig.class);
+                                    context.refresh();
+
+                                    repo = context.getBean(TestEntityRepository.class);
+                                    store = context.getBean(TestEntityStore.class);
+                                    storage = context.getBean(Storage.class);
+
+                                    embeddedRepo = context.getBean(EmbeddedRepository.class);
+                                    embeddedStore = context.getBean(EmbeddedStore.class);
+
+                                    RandomString random = new RandomString(5);
+                                    resourceLocation = random.nextString();
+
+                    entity = new TestEntity();
+                                        entity = repo.save(entity);
+
+                                        store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                                        store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
+                                        entity = repo.save(entity);
+
+                    resourceLocation = entity.getContentId().toString();
+                                            entity = store.unsetContent(entity);
+                                            entity = store.unsetContent(entity, PropertyPath.from("rendition"));
+                                            entity = repo.save(entity);
+                }
+                @AfterEach
+                void tearDown() throws Throwable {
+                    context.close();
+                }
+                @Test
+                void shouldHaveNoContent() throws Throwable {
+                    //content
+                                            try (InputStream content = store.getContent(entity)) {
+                                                assertThat(content).isNull();
+                                            }
+
+                                            assertThat(entity.getContentId()).isNull();
+                                            assertThat(entity.getContentLen()).isNull();
+                                            assertThat(storage.get(BlobId.of("test-bucket", resourceLocation))).isNull();
+
+                                            //rendition
+                                            try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
+                                                assertThat(content).isNull();
+                                            }
+
+                                            assertThat(entity.getRenditionId()).isNull();
+                                            assertThat(entity.getRenditionLen()).isEqualTo(0L);
+                }
+            }
+            @Nested
+            class WhenContentIsUnsetButKept {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    context = new AnnotationConfigApplicationContext();
+                                    context.register(TestConfig.class);
+                                    context.refresh();
+
+                                    repo = context.getBean(TestEntityRepository.class);
+                                    store = context.getBean(TestEntityStore.class);
+                                    storage = context.getBean(Storage.class);
+
+                                    embeddedRepo = context.getBean(EmbeddedRepository.class);
+                                    embeddedStore = context.getBean(EmbeddedStore.class);
+
+                                    RandomString random = new RandomString(5);
+                                    resourceLocation = random.nextString();
+
+                    entity = new TestEntity();
+                                        entity = repo.save(entity);
+
+                                        store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                                        store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
+                                        entity = repo.save(entity);
+
+                    resourceLocation = entity.getContentId().toString();
+                                            entity = store.unsetContent(entity, PropertyPath.from("content"), new UnsetContentParams(UnsetContentParams.Disposition.Keep));
+                                            entity = repo.save(entity);
+                }
+                @AfterEach
+                void tearDown() throws Throwable {
+                    context.close();
+                }
+                @Test
+                void shouldHaveNoContent() throws Throwable {
+                    //content
+                                            try (InputStream content = store.getContent(entity)) {
+                                                assertThat(content).isNull();
+                                            }
+
+                                            assertThat(entity.getContentId()).isNull();
+                                            assertThat(entity.getContentLen()).isNull();
+                                            assertThat(storage.get(BlobId.of("test-bucket", resourceLocation)).exists()).isTrue();
+                }
+            }
+            @Nested
+            class WhenAnInvalidPropertyPathIsUsedToSetContent {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    context = new AnnotationConfigApplicationContext();
+                                    context.register(TestConfig.class);
+                                    context.refresh();
+
+                                    repo = context.getBean(TestEntityRepository.class);
+                                    store = context.getBean(TestEntityStore.class);
+                                    storage = context.getBean(Storage.class);
+
+                                    embeddedRepo = context.getBean(EmbeddedRepository.class);
+                                    embeddedStore = context.getBean(EmbeddedStore.class);
+
+                                    RandomString random = new RandomString(5);
+                                    resourceLocation = random.nextString();
+
+                    entity = new TestEntity();
+                                        entity = repo.save(entity);
+
+                                        store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                                        store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
+                                        entity = repo.save(entity);
+                }
+                @AfterEach
+                void tearDown() throws Throwable {
+                    context.close();
+                }
+                @Test
+                void shouldThrowAnError() throws Throwable {
+                    try {
+                                                    store.setContent(entity, PropertyPath.from("does.not.exist"), new ByteArrayInputStream("foo".getBytes()));
+                                                } catch (Exception sae) {
+                                                    GCPStorageIT.this.e = sae;
+                                                }
+                                                assertThat(e).isInstanceOf(StoreAccessException.class);
+                }
+            }
+            @Nested
+            class WhenAnInvalidPropertyPathIsUsedToGetContent {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    context = new AnnotationConfigApplicationContext();
+                                    context.register(TestConfig.class);
+                                    context.refresh();
+
+                                    repo = context.getBean(TestEntityRepository.class);
+                                    store = context.getBean(TestEntityStore.class);
+                                    storage = context.getBean(Storage.class);
+
+                                    embeddedRepo = context.getBean(EmbeddedRepository.class);
+                                    embeddedStore = context.getBean(EmbeddedStore.class);
+
+                                    RandomString random = new RandomString(5);
+                                    resourceLocation = random.nextString();
+
+                    entity = new TestEntity();
+                                        entity = repo.save(entity);
+
+                                        store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                                        store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
+                                        entity = repo.save(entity);
+                }
+                @AfterEach
+                void tearDown() throws Throwable {
+                    context.close();
+                }
+                @Test
+                void shouldThrowAnError() throws Throwable {
+                    try {
+                                                    store.getContent(entity, PropertyPath.from("does.not.exist"));
+                                                } catch (Exception sae) {
+                                                    GCPStorageIT.this.e = sae;
+                                                }
+                                                assertThat(e).isInstanceOf(StoreAccessException.class);
+                }
+            }
+            @Nested
+            class WhenAnInvalidPropertyPathIsUsedToUnsetContent {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    context = new AnnotationConfigApplicationContext();
+                                    context.register(TestConfig.class);
+                                    context.refresh();
+
+                                    repo = context.getBean(TestEntityRepository.class);
+                                    store = context.getBean(TestEntityStore.class);
+                                    storage = context.getBean(Storage.class);
+
+                                    embeddedRepo = context.getBean(EmbeddedRepository.class);
+                                    embeddedStore = context.getBean(EmbeddedStore.class);
+
+                                    RandomString random = new RandomString(5);
+                                    resourceLocation = random.nextString();
+
+                    entity = new TestEntity();
+                                        entity = repo.save(entity);
+
+                                        store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                                        store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
+                                        entity = repo.save(entity);
+                }
+                @AfterEach
+                void tearDown() throws Throwable {
+                    context.close();
+                }
+                @Test
+                void shouldThrowAnError() throws Throwable {
+                    try {
+                                                    store.unsetContent(entity, PropertyPath.from("does.not.exist"));
+                                                } catch (Exception sae) {
+                                                    GCPStorageIT.this.e = sae;
+                                                }
+                                                assertThat(e).isInstanceOf(StoreAccessException.class);
+                }
+            }
+            @Nested
+            class WhenContentIsDeletedAndTheContentIdFieldIsSharedWithEntityId {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    context = new AnnotationConfigApplicationContext();
+                                    context.register(TestConfig.class);
+                                    context.refresh();
+
+                                    repo = context.getBean(TestEntityRepository.class);
+                                    store = context.getBean(TestEntityStore.class);
+                                    storage = context.getBean(Storage.class);
+
+                                    embeddedRepo = context.getBean(EmbeddedRepository.class);
+                                    embeddedStore = context.getBean(EmbeddedStore.class);
+
+                                    RandomString random = new RandomString(5);
+                                    resourceLocation = random.nextString();
+
+                    entity = new TestEntity();
+                                        entity = repo.save(entity);
+
+                                        store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                                        store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
+                                        entity = repo.save(entity);
+                }
+                @AfterEach
+                void tearDown() throws Throwable {
+                    context.close();
+                }
+                @Test
+                void shouldNotResetTheIdField() throws Throwable {
+                    SharedIdRepository sharedIdRepository = context.getBean(SharedIdRepository.class);
+                                                SharedIdStore sharedIdStore = context.getBean(SharedIdStore.class);
+
+                                                SharedIdContentIdEntity sharedIdContentIdEntity = sharedIdRepository.save(new SharedIdContentIdEntity());
+
+                                                sharedIdContentIdEntity = sharedIdStore.setContent(sharedIdContentIdEntity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                                                sharedIdContentIdEntity = sharedIdRepository.save(sharedIdContentIdEntity);
+                                                String id = sharedIdContentIdEntity.getContentId();
+                                                sharedIdContentIdEntity = sharedIdStore.unsetContent(sharedIdContentIdEntity);
+                                                assertThat(sharedIdContentIdEntity.getContentId()).isEqualTo(id);
+                                                assertThat(sharedIdContentIdEntity.getContentLen()).isEqualTo(0L);
+                }
+            }
+            @Nested
+            class EmbeddedContent {
+                @Nested
+                class GivenAEntityWithANullEmbeddedContentObject {
+                    @BeforeEach
+                    void setUp() throws Throwable {
+                        context = new AnnotationConfigApplicationContext();
+                                        context.register(TestConfig.class);
+                                        context.refresh();
+
+                                        repo = context.getBean(TestEntityRepository.class);
+                                        store = context.getBean(TestEntityStore.class);
+                                        storage = context.getBean(Storage.class);
+
+                                        embeddedRepo = context.getBean(EmbeddedRepository.class);
+                                        embeddedStore = context.getBean(EmbeddedStore.class);
+
+                                        RandomString random = new RandomString(5);
+                                        resourceLocation = random.nextString();
+
+                        entity = new TestEntity();
+                                            entity = repo.save(entity);
+
+                                            store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                                            store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
+                                            entity = repo.save(entity);
+                    }
+                    @AfterEach
+                    void tearDown() throws Throwable {
+                        context.close();
+                    }
+                    @Test
+                    void shouldReturnNullWhenContentIsFetched() throws Throwable {
+                        EntityWithEmbeddedContent entity = embeddedRepo.save(new EntityWithEmbeddedContent());
+                                                                assertThat(embeddedStore.getContent(entity, PropertyPath.from("content"))).isNull();
+                    }
+                    @Test
+                    void shouldBeSuccessfulWhenContentIsSet() throws Throwable {
+                        EntityWithEmbeddedContent entity = embeddedRepo.save(new EntityWithEmbeddedContent());
+                                                                embeddedStore.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                                                                try (InputStream is = embeddedStore.getContent(entity, PropertyPath.from("content"))) {
+                                                                    assertThat(IOUtils.contentEquals(is, new ByteArrayInputStream("Hello Spring Content World!".getBytes()))).isTrue();
+                                                                }
+                    }
+                    @Test
+                    void shouldReturnNullWhenContentIsUnset() throws Throwable {
+                        EntityWithEmbeddedContent entity = embeddedRepo.save(new EntityWithEmbeddedContent());
+                                                                assertThat(embeddedStore.unsetContent(entity, PropertyPath.from("content"))).isSameAs(entity);
+                                                                int i = 0;
+                    }
+                }
+            }
+        }
     }
+
 
     @Test
     public void test() {

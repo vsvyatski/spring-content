@@ -1,16 +1,18 @@
 package internal.org.springframework.content.s3.it;
 
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jConfiguration;
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jSpringRunner;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+
 import jakarta.persistence.*;
 import java.util.Arrays;
 import net.bytebuddy.utility.RandomString;
 import org.apache.commons.io.IOUtils;
-import org.hamcrest.CoreMatchers;
-import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -42,16 +44,9 @@ import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.util.UUID;
 
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.*;
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.fail;
 
-@RunWith(Ginkgo4jSpringRunner.class)
 @SpringBootTest()
-@Ginkgo4jConfiguration(threads=1)
+@ExtendWith(SpringExtension.class)
 public class S3StoreIT {
 
     private static final String BUCKET = "test-bucket";
@@ -95,484 +90,1393 @@ public class S3StoreIT {
         System.setProperty("spring.content.s3.bucket", "test-bucket");
     }
 
-    {
-        Describe("S3 Storage", () -> {
-            BeforeEach(() -> {
-                synchronized(mutex) {
-                    HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                            .bucket("test-bucket")
-                            .build();
+    
+    @Nested
+    class S3StorageCases {
+        @Nested
+        class StoreCases {
+            @Nested
+            class GetResource {
+                @Nested
+                class Tests {
+                    @BeforeEach
+                    void setUp() throws Throwable {
+                        synchronized(mutex) {
+                                            HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
+                                                    .bucket("test-bucket")
+                                                    .build();
 
-                    try {
-                        client.headBucket(headBucketRequest);
-                    } catch (NoSuchBucketException e) {
+                                            try {
+                                                client.headBucket(headBucketRequest);
+                                            } catch (NoSuchBucketException e) {
 
-                        CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                .bucket("test-bucket")
-                                .build();
-                        client.createBucket(bucketRequest);
+                                                CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
+                                                        .bucket("test-bucket")
+                                                        .build();
+                                                client.createBucket(bucketRequest);
 
-                        // wait for bucket to be created before continuing
-                        boolean found = false;
-                        while (!found) {
-                            headBucketRequest = HeadBucketRequest.builder()
-                                    .bucket(BUCKET)
-                                    .build();
+                                                // wait for bucket to be created before continuing
+                                                boolean found = false;
+                                                while (!found) {
+                                                    headBucketRequest = HeadBucketRequest.builder()
+                                                            .bucket(BUCKET)
+                                                            .build();
+                                                    try {
+                                                        client.headBucket(headBucketRequest);
+                                                        found = true;
+                                                    } catch (NoSuchBucketException e2) {
+                                                    }
+
+                                                    System.out.println("sleeping...");
+                                                    Thread.sleep(100);
+                                                }
+                                            }
+                                        }
+
+                                        RandomString random  = new RandomString(5);
+                                        resourceLocation = random.nextString();
+
+                        genericResource = store.getResource(resourceLocation);
+                    }
+                    @AfterEach
+                    void tearDown() throws Throwable {
+                        ((DeletableResource)genericResource).delete();
+                    }
+                    @Test
+                    void shouldGetResource() throws Throwable {
+                        assertThat(genericResource).isInstanceOf(Resource.class);
+                    }
+                    @Test
+                    void shouldNotExist() throws Throwable {
+                        assertThat(genericResource.exists()).isFalse();
+                    }
+                    @Test
+                    void shouldBeARangeableResource() throws Throwable {
+                        assertThat(genericResource).isInstanceOf(RangeableResource.class);
+                    }
+                }
+                @Nested
+                class GivenContentIsAddedToThatResource {
+                    @Nested
+                    class Tests {
+                        @BeforeEach
+                        void setUp() throws Throwable {
+                            synchronized(mutex) {
+                                                HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
+                                                        .bucket("test-bucket")
+                                                        .build();
+
+                                                try {
+                                                    client.headBucket(headBucketRequest);
+                                                } catch (NoSuchBucketException e) {
+
+                                                    CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
+                                                            .bucket("test-bucket")
+                                                            .build();
+                                                    client.createBucket(bucketRequest);
+
+                                                    // wait for bucket to be created before continuing
+                                                    boolean found = false;
+                                                    while (!found) {
+                                                        headBucketRequest = HeadBucketRequest.builder()
+                                                                .bucket(BUCKET)
+                                                                .build();
+                                                        try {
+                                                            client.headBucket(headBucketRequest);
+                                                            found = true;
+                                                        } catch (NoSuchBucketException e2) {
+                                                        }
+
+                                                        System.out.println("sleeping...");
+                                                        Thread.sleep(100);
+                                                    }
+                                                }
+                                            }
+
+                                            RandomString random  = new RandomString(5);
+                                            resourceLocation = random.nextString();
+
+                            genericResource = store.getResource(resourceLocation);
+
+                            try (InputStream is = new ByteArrayInputStream("Hello Spring Content World!".getBytes())) {
+                                                            try (OutputStream os = ((WritableResource)genericResource).getOutputStream()) {
+                                                                IOUtils.copy(is, os);
+                                                            }
+                                                        }
+                        }
+                        @AfterEach
+                        void tearDown() throws Throwable {
+                            ((DeletableResource)genericResource).delete();
+                        }
+                        @Test
+                        void shouldStoreThatContent() throws Throwable {
+                            assertThat(genericResource.exists()).isTrue();
+
+                                                        boolean matches = false;
+                                                        try (InputStream expected = new ByteArrayInputStream("Hello Spring Content World!".getBytes())) {
+                                                            try (InputStream actual = genericResource.getInputStream()) {
+                                                                matches = IOUtils.contentEquals(expected, actual);
+                                                                assertThat(matches).isTrue();
+                                                            }
+                                                        }
+                        }
+                    }
+                    @Nested
+                    class GivenThatResourceIsThenUpdated {
+                        @BeforeEach
+                        void setUp() throws Throwable {
+                            synchronized(mutex) {
+                                                HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
+                                                        .bucket("test-bucket")
+                                                        .build();
+
+                                                try {
+                                                    client.headBucket(headBucketRequest);
+                                                } catch (NoSuchBucketException e) {
+
+                                                    CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
+                                                            .bucket("test-bucket")
+                                                            .build();
+                                                    client.createBucket(bucketRequest);
+
+                                                    // wait for bucket to be created before continuing
+                                                    boolean found = false;
+                                                    while (!found) {
+                                                        headBucketRequest = HeadBucketRequest.builder()
+                                                                .bucket(BUCKET)
+                                                                .build();
+                                                        try {
+                                                            client.headBucket(headBucketRequest);
+                                                            found = true;
+                                                        } catch (NoSuchBucketException e2) {
+                                                        }
+
+                                                        System.out.println("sleeping...");
+                                                        Thread.sleep(100);
+                                                    }
+                                                }
+                                            }
+
+                                            RandomString random  = new RandomString(5);
+                                            resourceLocation = random.nextString();
+
+                            genericResource = store.getResource(resourceLocation);
+
+                            try (InputStream is = new ByteArrayInputStream("Hello Spring Content World!".getBytes())) {
+                                                            try (OutputStream os = ((WritableResource)genericResource).getOutputStream()) {
+                                                                IOUtils.copy(is, os);
+                                                            }
+                                                        }
+
+                            try (InputStream is = new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes())) {
+                                                                try (OutputStream os = ((WritableResource)genericResource).getOutputStream()) {
+                                                                    IOUtils.copy(is, os);
+                                                                }
+                                                            }
+                        }
+                        @AfterEach
+                        void tearDown() throws Throwable {
+                            ((DeletableResource)genericResource).delete();
+                        }
+                        @Test
+                        void shouldStoreThatUpdatedContent() throws Throwable {
+                            assertThat(genericResource.exists()).isTrue();
+
+                                                            try (InputStream expected = new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes())) {
+                                                                try (InputStream actual = genericResource.getInputStream()) {
+                                                                    assertThat(IOUtils.contentEquals(expected, actual)).isTrue();
+                                                                }
+                                                            }
+                        }
+                    }
+                    @Nested
+                    class GivenAByteRangeIsRequested {
+                        @BeforeEach
+                        void setUp() throws Throwable {
+                            synchronized(mutex) {
+                                                HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
+                                                        .bucket("test-bucket")
+                                                        .build();
+
+                                                try {
+                                                    client.headBucket(headBucketRequest);
+                                                } catch (NoSuchBucketException e) {
+
+                                                    CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
+                                                            .bucket("test-bucket")
+                                                            .build();
+                                                    client.createBucket(bucketRequest);
+
+                                                    // wait for bucket to be created before continuing
+                                                    boolean found = false;
+                                                    while (!found) {
+                                                        headBucketRequest = HeadBucketRequest.builder()
+                                                                .bucket(BUCKET)
+                                                                .build();
+                                                        try {
+                                                            client.headBucket(headBucketRequest);
+                                                            found = true;
+                                                        } catch (NoSuchBucketException e2) {
+                                                        }
+
+                                                        System.out.println("sleeping...");
+                                                        Thread.sleep(100);
+                                                    }
+                                                }
+                                            }
+
+                                            RandomString random  = new RandomString(5);
+                                            resourceLocation = random.nextString();
+
+                            genericResource = store.getResource(resourceLocation);
+
+                            try (InputStream is = new ByteArrayInputStream("Hello Spring Content World!".getBytes())) {
+                                                            try (OutputStream os = ((WritableResource)genericResource).getOutputStream()) {
+                                                                IOUtils.copy(is, os);
+                                                            }
+                                                        }
+                        }
+                        @AfterEach
+                        void tearDown() throws Throwable {
+                            ((DeletableResource)genericResource).delete();
+                        }
+                        @Test
+                        void shouldReturnAPartialContentInputStreamAndThePartialContent() throws Throwable {
+                            ((RangeableResource)genericResource).setRange("bytes=6-19");
+
+                                                            var expectedBytes = "Hello Spring Content World!".getBytes();
+                                                            Arrays.fill(expectedBytes, 0, 6, (byte) 0); // First 5 bytes are absent
+                                                            Arrays.fill(expectedBytes, 20, expectedBytes.length, (byte) 0); // Bytes after position 19 are absent
+
+                                                            try(InputStream actual = genericResource.getInputStream()) {
+                                                                var actualBytes = actual.readAllBytes();
+                                                                assertThat(actualBytes).isEqualTo(expectedBytes);
+                                                            }
+                        }
+                    }
+                    @Nested
+                    class GivenThatResourceIsThenDeleted {
+                        @BeforeEach
+                        void setUp() throws Throwable {
+                            synchronized(mutex) {
+                                                HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
+                                                        .bucket("test-bucket")
+                                                        .build();
+
+                                                try {
+                                                    client.headBucket(headBucketRequest);
+                                                } catch (NoSuchBucketException e) {
+
+                                                    CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
+                                                            .bucket("test-bucket")
+                                                            .build();
+                                                    client.createBucket(bucketRequest);
+
+                                                    // wait for bucket to be created before continuing
+                                                    boolean found = false;
+                                                    while (!found) {
+                                                        headBucketRequest = HeadBucketRequest.builder()
+                                                                .bucket(BUCKET)
+                                                                .build();
+                                                        try {
+                                                            client.headBucket(headBucketRequest);
+                                                            found = true;
+                                                        } catch (NoSuchBucketException e2) {
+                                                        }
+
+                                                        System.out.println("sleeping...");
+                                                        Thread.sleep(100);
+                                                    }
+                                                }
+                                            }
+
+                                            RandomString random  = new RandomString(5);
+                                            resourceLocation = random.nextString();
+
+                            genericResource = store.getResource(resourceLocation);
+
+                            try (InputStream is = new ByteArrayInputStream("Hello Spring Content World!".getBytes())) {
+                                                            try (OutputStream os = ((WritableResource)genericResource).getOutputStream()) {
+                                                                IOUtils.copy(is, os);
+                                                            }
+                                                        }
+
                             try {
-                                client.headBucket(headBucketRequest);
-                                found = true;
-                            } catch (NoSuchBucketException e2) {
-                            }
-
-                            System.out.println("sleeping...");
-                            Thread.sleep(100);
+                                                                ((DeletableResource) genericResource).delete();
+                                                            } catch (Exception e) {
+                                                                S3StoreIT.this.e = e;
+                                                            }
+                        }
+                        @AfterEach
+                        void tearDown() throws Throwable {
+                            ((DeletableResource)genericResource).delete();
+                        }
+                        @Test
+                        void shouldNotExist() throws Throwable {
+                            assertThat(e).isNull();
                         }
                     }
                 }
+            }
+        }
+        @Nested
+        class AssociativeStoreCases {
+            @Nested
+            class GivenANewEntity {
+                @Nested
+                class Tests {
+                    @BeforeEach
+                    void setUp() throws Throwable {
+                        synchronized(mutex) {
+                                            HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
+                                                    .bucket("test-bucket")
+                                                    .build();
 
-                RandomString random  = new RandomString(5);
-                resourceLocation = random.nextString();
-            });
+                                            try {
+                                                client.headBucket(headBucketRequest);
+                                            } catch (NoSuchBucketException e) {
 
-            Describe("Store", () -> {
+                                                CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
+                                                        .bucket("test-bucket")
+                                                        .build();
+                                                client.createBucket(bucketRequest);
 
-                Context("#getResource", () -> {
+                                                // wait for bucket to be created before continuing
+                                                boolean found = false;
+                                                while (!found) {
+                                                    headBucketRequest = HeadBucketRequest.builder()
+                                                            .bucket(BUCKET)
+                                                            .build();
+                                                    try {
+                                                        client.headBucket(headBucketRequest);
+                                                        found = true;
+                                                    } catch (NoSuchBucketException e2) {
+                                                    }
 
-                    BeforeEach(() -> {
-                        genericResource = store.getResource(resourceLocation);
-                    });
+                                                    System.out.println("sleeping...");
+                                                    Thread.sleep(100);
+                                                }
+                                            }
+                                        }
 
-                    AfterEach(() -> {
-                        ((DeletableResource)genericResource).delete();
-                    });
+                                        RandomString random  = new RandomString(5);
+                                        resourceLocation = random.nextString();
 
-                    It("should get Resource", () -> {
-                        assertThat(genericResource, is(instanceOf(Resource.class)));
-                    });
-
-                    It("should not exist", () -> {
-                        assertThat(genericResource.exists(), is(false));
-                    });
-
-                    It("should be a RangeableResource", () -> {
-                        assertThat(genericResource, is(instanceOf(RangeableResource.class)));
-                    });
-
-                    Context("given content is added to that resource", () -> {
-
-                        BeforeEach(() -> {
-                            try (InputStream is = new ByteArrayInputStream("Hello Spring Content World!".getBytes())) {
-                                try (OutputStream os = ((WritableResource)genericResource).getOutputStream()) {
-                                    IOUtils.copy(is, os);
-                                }
-                            }
-                        });
-
-                        It("should store that content", () -> {
-                            assertThat(genericResource.exists(), is(true));
-
-                            boolean matches = false;
-                            try (InputStream expected = new ByteArrayInputStream("Hello Spring Content World!".getBytes())) {
-                                try (InputStream actual = genericResource.getInputStream()) {
-                                    matches = IOUtils.contentEquals(expected, actual);
-                                    assertThat(matches, Matchers.is(true));
-                                }
-                            }
-                        });
-
-                        Context("given that resource is then updated", () -> {
-
-                            BeforeEach(() -> {
-                                try (InputStream is = new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes())) {
-                                    try (OutputStream os = ((WritableResource)genericResource).getOutputStream()) {
-                                        IOUtils.copy(is, os);
-                                    }
-                                }
-                            });
-
-                            It("should store that updated content", () -> {
-                                assertThat(genericResource.exists(), is(true));
-
-                                try (InputStream expected = new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes())) {
-                                    try (InputStream actual = genericResource.getInputStream()) {
-                                        assertThat(IOUtils.contentEquals(expected, actual), is(true));
-                                    }
-                                }
-                            });
-                        });
-
-                        Context("given a byte range is requested", () -> {
-
-                            It("should return a partial content input stream and the partial content", () -> {
-
-                                ((RangeableResource)genericResource).setRange("bytes=6-19");
-
-                                var expectedBytes = "Hello Spring Content World!".getBytes();
-                                Arrays.fill(expectedBytes, 0, 6, (byte) 0); // First 5 bytes are absent
-                                Arrays.fill(expectedBytes, 20, expectedBytes.length, (byte) 0); // Bytes after position 19 are absent
-
-                                try(InputStream actual = genericResource.getInputStream()) {
-                                    var actualBytes = actual.readAllBytes();
-                                    assertArrayEquals(expectedBytes, actualBytes);
-                                }
-                            });
-                        });
-
-                        Context("given that resource is then deleted", () -> {
-
-                            BeforeEach(() -> {
-                                try {
-                                    ((DeletableResource) genericResource).delete();
-                                } catch (Exception e) {
-                                    this.e = e;
-                                }
-                            });
-
-                            It("should not exist", () -> {
-                                assertThat(e, is(nullValue()));
-                            });
-                        });
-                    });
-                });
-            });
-
-            Describe("AssociativeStore", () -> {
-
-                Context("given a new entity", () -> {
-
-                    BeforeEach(() -> {
                         entity = new TestEntity();
-                        entity = repo.save(entity);
-                    });
+                                                entity = repo.save(entity);
+                    }
+                    @Test
+                    void shouldNotHaveAnAssociatedResource() throws Throwable {
+                        assertThat(entity.getContentId()).isNull();
+                                                assertThat(store.getResource(entity)).isNull();
+                    }
+                }
+                @Nested
+                class GivenAResource {
+                    @Nested
+                    class WhenTheResourceIsAssociated {
+                        @Nested
+                        class Tests {
+                            @BeforeEach
+                            void setUp() throws Throwable {
+                                synchronized(mutex) {
+                                                    HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
+                                                            .bucket("test-bucket")
+                                                            .build();
 
-                    It("should not have an associated resource", () -> {
-                        assertThat(entity.getContentId(), is(nullValue()));
-                        assertThat(store.getResource(entity), is(nullValue()));
-                    });
+                                                    try {
+                                                        client.headBucket(headBucketRequest);
+                                                    } catch (NoSuchBucketException e) {
 
-                    Context("given a resource", () -> {
+                                                        CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
+                                                                .bucket("test-bucket")
+                                                                .build();
+                                                        client.createBucket(bucketRequest);
 
-                        BeforeEach(() -> {
-                            genericResource = store.getResource(resourceLocation);
-                        });
+                                                        // wait for bucket to be created before continuing
+                                                        boolean found = false;
+                                                        while (!found) {
+                                                            headBucketRequest = HeadBucketRequest.builder()
+                                                                    .bucket(BUCKET)
+                                                                    .build();
+                                                            try {
+                                                                client.headBucket(headBucketRequest);
+                                                                found = true;
+                                                            } catch (NoSuchBucketException e2) {
+                                                            }
 
-                        Context("when the resource is associated", () -> {
+                                                            System.out.println("sleeping...");
+                                                            Thread.sleep(100);
+                                                        }
+                                                    }
+                                                }
 
-                            BeforeEach(() -> {
+                                                RandomString random  = new RandomString(5);
+                                                resourceLocation = random.nextString();
+
+                                entity = new TestEntity();
+                                                        entity = repo.save(entity);
+
+                                genericResource = store.getResource(resourceLocation);
+
                                 store.associate(entity, resourceLocation);
-                                store.associate(entity, PropertyPath.from("rendition"), resourceLocation);
-                            });
-
-                            It("should be recorded as such on the entity's @ContentId", () -> {
-                                assertThat(entity.getContentId(), is(resourceLocation));
-                                assertThat(entity.getRenditionId(), is(resourceLocation));
-                            });
-
-                            Context("when the resource is unassociated", () -> {
-
-                                BeforeEach(() -> {
-                                    store.unassociate(entity);
-                                    store.unassociate(entity, PropertyPath.from("rendition"));
-                                });
-
-                                It("should reset the entity's @ContentId", () -> {
-                                    assertThat(entity.getContentId(), is(nullValue()));
-                                    assertThat(entity.getRenditionId(), is(nullValue()));
-                                });
-                            });
-
-                            Context("when a invalid property path is used to associate a resource", () -> {
-                                It("should throw an error", () -> {
-                                    try {
-                                        store.associate(entity, PropertyPath.from("does.not.exist"), resourceLocation);
-                                    } catch (Exception sae) {
-                                        this.e = sae;
-                                    }
-                                    assertThat(e, is(instanceOf(StoreAccessException.class)));
-                                });
-                            });
-
-                            Context("when a invalid property path is used to load a resource", () -> {
-                                It("should throw an error", () -> {
-                                    try {
-                                        store.getResource(entity, PropertyPath.from("does.not.exist"));
-                                    } catch (Exception sae) {
-                                        this.e = sae;
-                                    }
-                                    assertThat(e, is(instanceOf(StoreAccessException.class)));
-                                });
-                            });
-
-                            Context("when a invalid property path is used to unassociate a resource", () -> {
-                                It("should throw an error", () -> {
-                                    try {
-                                        store.unassociate(entity, PropertyPath.from("does.not.exist"));
-                                    } catch (Exception sae) {
-                                        this.e = sae;
-                                    }
-                                    assertThat(e, is(instanceOf(StoreAccessException.class)));
-                                });
-                            });
-                        });
-                    });
-                });
-            });
-
-            Describe("ContentStore", () -> {
-
-                BeforeEach(() -> {
-                    entity = new TestEntity();
-//                    entity.setContentType("text/plain");
-//                    entity.setContentType("text/html");
-                    entity = repo.save(entity);
-
-                    store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-                    store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
-                });
-
-                It("should be able to store new content", () -> {
-                    // content
-                    try (InputStream content = store.getContent(entity)) {
-                        assertThat(IOUtils.contentEquals(new ByteArrayInputStream("Hello Spring Content World!".getBytes()), content), is(true));
-                    } catch (IOException ioe) {}
-
-                    //rendition
-                    try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
-                        assertThat(IOUtils.contentEquals(new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()), content), is(true));
-                    } catch (IOException ioe) {}
-                });
-
-                It("should have content metadata", () -> {
-                    // content
-                    assertThat(entity.getContentId(), is(CoreMatchers.notNullValue()));
-                    assertThat(entity.getContentId().trim().length(), greaterThan(0));
-                    Assert.assertEquals(entity.getContentLen(), Long.valueOf(27L));
-
-                    //rendition
-                    assertThat(entity.getRenditionId(), is(CoreMatchers.notNullValue()));
-                    assertThat(entity.getRenditionId().trim().length(), greaterThan(0));
-                    Assert.assertEquals(entity.getRenditionLen(), 40L);
-                });
-
-//                It("should set Content-Type of stored content to value from field annotated with @MimeType", () -> {
-//                    // content
-//                    S3StoreResource resource = (S3StoreResource) store.getResource(entity);
-//                    assertThat(resource.contentType(), is(notNullValue()));
-//                    assertThat(resource.contentType(), is(entity.getContentType()));
-//
-//                    //rendition
-//                    S3StoreResource renditionResource = (S3StoreResource) store.getResource(entity, PropertyPath.from("rendition"));
-//                    assertThat(renditionResource.contentType(), is(notNullValue()));
-//                    assertThat(renditionResource.contentType(), is(entity.getRenditionType()));
-//                });
-
-                Context("when content is updated", () -> {
-                    BeforeEach(() ->{
-                        store.setContent(entity, new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()));
-                        store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Updated Spring Content World!</html>".getBytes()));
-                        entity = repo.save(entity);
-                    });
-
-                    It("should have the updated content", () -> {
-                        //content
-                        boolean matches = false;
-                        try (InputStream content = store.getContent(entity)) {
-                            matches = IOUtils.contentEquals(new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), content);
-                            assertThat(matches, is(true));
-                        }
-
-                        //rendition
-                        matches = false;
-                        try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
-                            matches = IOUtils.contentEquals(new ByteArrayInputStream("<html>Hello Updated Spring Content World!</html>".getBytes()), content);
-                            assertThat(matches, is(true));
-                        }
-                    });
-                });
-
-                Context("when content is updated with shorter content", () -> {
-                    BeforeEach(() -> {
-                        store.setContent(entity, new ByteArrayInputStream("Hello Spring World!".getBytes()));
-                        store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring World!</html>".getBytes()));
-                        entity = repo.save(entity);
-                    });
-                    It("should store only the new content", () -> {
-                        //content
-                        boolean matches = false;
-                        try (InputStream content = store.getContent(entity)) {
-                            matches = IOUtils.contentEquals(new ByteArrayInputStream("Hello Spring World!".getBytes()), content);
-                            assertThat(matches, is(true));
-                        }
-
-                        //rendition
-                        matches = false;
-                        try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
-                            matches = IOUtils.contentEquals(new ByteArrayInputStream("<html>Hello Spring World!</html>".getBytes()), content);
-                            assertThat(matches, is(true));
-                        }
-                    });
-                });
-
-                Context("when content is updated and not overwritten", () -> {
-                    It("should have the updated content", () -> {
-                        String contentId = entity.getContentId();
-                        client.headObject(HeadObjectRequest.builder().bucket(BUCKET).key(contentId).build());
-
-                        store.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), new SetContentParams(-1, true, SetContentParams.ContentDisposition.CreateNew));
-                        entity = repo.save(entity);
-
-                        boolean matches = false;
-                        try (InputStream content = store.getContent(entity)) {
-                            matches = IOUtils.contentEquals(new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), content);
-                            assertThat(matches, is(true));
-                        }
-
-                        assertThat(entity.getContentId(), is(not(contentId)));
-                        client.headObject(HeadObjectRequest.builder().bucket(BUCKET).key(entity.getContentId()).build());
-                    });
-                });
-
-                Context("when content is unset", () -> {
-                    BeforeEach(() -> {
-                        resourceLocation = entity.getContentId().toString();
-                        entity = store.unsetContent(entity);
-                        entity = store.unsetContent(entity, PropertyPath.from("rendition"));
-                        entity = repo.save(entity);
-                    });
-
-                    It("should have no content", () -> {
-                        //content
-                        try (InputStream content = store.getContent(entity)) {
-                            assertThat(content, is(Matchers.nullValue()));
-                        }
-
-                        assertThat(entity.getContentId(), is(Matchers.nullValue()));
-                        assertThat(entity.getContentLen(), is(nullValue()));
-
-                        try {
-                            client.headObject(HeadObjectRequest.builder().bucket(BUCKET).key(resourceLocation).build());
-                            fail("expected content to be removed but is still exists");
-                        } catch (NoSuchKeyException nske) {
-                        }
-
-                        //rendition
-                        try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
-                            assertThat(content, is(Matchers.nullValue()));
-                        }
-
-                        assertThat(entity.getRenditionId(), is(Matchers.nullValue()));
-                        assertThat(entity.getRenditionLen(), is(0L));
-                    });
-                });
-
-                Context("when content is unset but kept", () -> {
-                    BeforeEach(() -> {
-                        resourceLocation = entity.getContentId().toString();
-                        entity = store.unsetContent(entity, PropertyPath.from("content"), new UnsetContentParams(UnsetContentParams.Disposition.Keep));
-                        entity = repo.save(entity);
-                    });
-
-                    It("should have no content", () -> {
-                        //content
-                        try (InputStream content = store.getContent(entity)) {
-                            assertThat(content, is(Matchers.nullValue()));
-                        }
-
-                        assertThat(entity.getContentId(), is(Matchers.nullValue()));
-                        assertThat(entity.getContentLen(), is(nullValue()));
-
-                        client.headObject(HeadObjectRequest.builder().bucket(BUCKET).key(resourceLocation).build());
-                    });
-                });
-
-                Context("when an invalid property path is used to setContent", () -> {
-                    It("should throw an error", () -> {
-                        try {
-                            store.setContent(entity, PropertyPath.from("does.not.exist"), new ByteArrayInputStream("foo".getBytes()));
-                        } catch (Exception sae) {
-                            this.e = sae;
-                        }
-                        assertThat(e, is(instanceOf(StoreAccessException.class)));
-                    });
-                });
-
-                Context("when an invalid property path is used to getContent", () -> {
-                    It("should throw an error", () -> {
-                        try {
-                            store.getContent(entity, PropertyPath.from("does.not.exist"));
-                        } catch (Exception sae) {
-                            this.e = sae;
-                        }
-                        assertThat(e, is(instanceOf(StoreAccessException.class)));
-                    });
-                });
-
-                Context("when an invalid property path is used to unsetContent", () -> {
-                    It("should throw an error", () -> {
-                        try {
-                            store.unsetContent(entity, PropertyPath.from("does.not.exist"));
-                        } catch (Exception sae) {
-                            this.e = sae;
-                        }
-                        assertThat(e, is(instanceOf(StoreAccessException.class)));
-                    });
-                });
-
-                Context("when content is deleted and the content id field is shared with entity id", () -> {
-
-                    It("should not reset the id field", () -> {
-                        SharedIdContentIdEntity sharedIdContentIdEntity = sharedIdRepository.save(new SharedIdContentIdEntity());
-
-                        sharedIdContentIdEntity = sharedIdStore.setContent(sharedIdContentIdEntity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-                        sharedIdContentIdEntity = sharedIdRepository.save(sharedIdContentIdEntity);
-                        String id = sharedIdContentIdEntity.getContentId();
-                        sharedIdContentIdEntity = sharedIdStore.unsetContent(sharedIdContentIdEntity);
-                        assertThat(sharedIdContentIdEntity.getContentId(), is(id));
-                        assertThat(sharedIdContentIdEntity.getContentLen(), is(0L));
-                    });
-                });
-
-//                Context("when content is deleted and the id field is shared with spring id", () -> {
-//
-//                    It("should not reset the id field", () -> {
-//                        SharedSpringIdRepository SharedSpringIdRepository = context.getBean(SharedSpringIdRepository.class);
-//                        SharedSpringIdStore SharedSpringIdStore = context.getBean(SharedSpringIdStore.class);
-//
-//                        SharedSpringIdContentIdEntity SharedSpringIdContentIdEntity = SharedSpringIdRepository.save(new SharedSpringIdContentIdEntity());
-//
-//                        SharedSpringIdContentIdEntity = SharedSpringIdStore.setContent(SharedSpringIdContentIdEntity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-//                        SharedSpringIdContentIdEntity = SharedSpringIdRepository.save(SharedSpringIdContentIdEntity);
-//                        String id = SharedSpringIdContentIdEntity.getContentId();
-//                        SharedSpringIdContentIdEntity = SharedSpringIdStore.unsetContent(SharedSpringIdContentIdEntity);
-//                        assertThat(SharedSpringIdContentIdEntity.getContentId(), is(id));
-//                        assertThat(SharedSpringIdContentIdEntity.getContentLen(), is(0L));
-//                    });
-//                });
-
-                Context("@Embedded content", () -> {
-                    Context("given a entity with a null embedded content object", () -> {
-                        It("should return null when content is fetched", () -> {
-                            EntityWithEmbeddedContent entity = embeddedRepo.save(new EntityWithEmbeddedContent());
-                            assertThat(embeddedStore.getContent(entity, PropertyPath.from("content")), is(nullValue()));
-                        });
-
-                        It("should be successful when content is set", () -> {
-                            EntityWithEmbeddedContent entity = embeddedRepo.save(new EntityWithEmbeddedContent());
-                            embeddedStore.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-                            try (InputStream is = embeddedStore.getContent(entity, PropertyPath.from("content"))) {
-                                assertThat(IOUtils.contentEquals(is, new ByteArrayInputStream("Hello Spring Content World!".getBytes())), is(true));
+                                                                store.associate(entity, PropertyPath.from("rendition"), resourceLocation);
                             }
-                        });
+                            @Test
+                            void shouldBeRecordedAsSuchOnTheEntitySContentId() throws Throwable {
+                                assertThat(entity.getContentId()).isEqualTo(resourceLocation);
+                                                                assertThat(entity.getRenditionId()).isEqualTo(resourceLocation);
+                            }
+                        }
+                        @Nested
+                        class WhenTheResourceIsUnassociated {
+                            @BeforeEach
+                            void setUp() throws Throwable {
+                                synchronized(mutex) {
+                                                    HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
+                                                            .bucket("test-bucket")
+                                                            .build();
 
-                        It("should return null when content is unset", () -> {
-                            EntityWithEmbeddedContent entity = embeddedRepo.save(new EntityWithEmbeddedContent());
-                            assertThat(embeddedStore.unsetContent(entity, PropertyPath.from("content")), is(sameInstance(entity)));
-                        });
-                    });
-                });
-            });
-        });
+                                                    try {
+                                                        client.headBucket(headBucketRequest);
+                                                    } catch (NoSuchBucketException e) {
+
+                                                        CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
+                                                                .bucket("test-bucket")
+                                                                .build();
+                                                        client.createBucket(bucketRequest);
+
+                                                        // wait for bucket to be created before continuing
+                                                        boolean found = false;
+                                                        while (!found) {
+                                                            headBucketRequest = HeadBucketRequest.builder()
+                                                                    .bucket(BUCKET)
+                                                                    .build();
+                                                            try {
+                                                                client.headBucket(headBucketRequest);
+                                                                found = true;
+                                                            } catch (NoSuchBucketException e2) {
+                                                            }
+
+                                                            System.out.println("sleeping...");
+                                                            Thread.sleep(100);
+                                                        }
+                                                    }
+                                                }
+
+                                                RandomString random  = new RandomString(5);
+                                                resourceLocation = random.nextString();
+
+                                entity = new TestEntity();
+                                                        entity = repo.save(entity);
+
+                                genericResource = store.getResource(resourceLocation);
+
+                                store.associate(entity, resourceLocation);
+                                                                store.associate(entity, PropertyPath.from("rendition"), resourceLocation);
+
+                                store.unassociate(entity);
+                                                                    store.unassociate(entity, PropertyPath.from("rendition"));
+                            }
+                            @Test
+                            void shouldResetTheEntitySContentId() throws Throwable {
+                                assertThat(entity.getContentId()).isNull();
+                                                                    assertThat(entity.getRenditionId()).isNull();
+                            }
+                        }
+                        @Nested
+                        class WhenAInvalidPropertyPathIsUsedToAssociateAResource {
+                            @BeforeEach
+                            void setUp() throws Throwable {
+                                synchronized(mutex) {
+                                                    HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
+                                                            .bucket("test-bucket")
+                                                            .build();
+
+                                                    try {
+                                                        client.headBucket(headBucketRequest);
+                                                    } catch (NoSuchBucketException e) {
+
+                                                        CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
+                                                                .bucket("test-bucket")
+                                                                .build();
+                                                        client.createBucket(bucketRequest);
+
+                                                        // wait for bucket to be created before continuing
+                                                        boolean found = false;
+                                                        while (!found) {
+                                                            headBucketRequest = HeadBucketRequest.builder()
+                                                                    .bucket(BUCKET)
+                                                                    .build();
+                                                            try {
+                                                                client.headBucket(headBucketRequest);
+                                                                found = true;
+                                                            } catch (NoSuchBucketException e2) {
+                                                            }
+
+                                                            System.out.println("sleeping...");
+                                                            Thread.sleep(100);
+                                                        }
+                                                    }
+                                                }
+
+                                                RandomString random  = new RandomString(5);
+                                                resourceLocation = random.nextString();
+
+                                entity = new TestEntity();
+                                                        entity = repo.save(entity);
+
+                                genericResource = store.getResource(resourceLocation);
+
+                                store.associate(entity, resourceLocation);
+                                                                store.associate(entity, PropertyPath.from("rendition"), resourceLocation);
+                            }
+                            @Test
+                            void shouldThrowAnError() throws Throwable {
+                                try {
+                                                                        store.associate(entity, PropertyPath.from("does.not.exist"), resourceLocation);
+                                                                    } catch (Exception sae) {
+                                                                        S3StoreIT.this.e = sae;
+                                                                    }
+                                                                    assertThat(e).isInstanceOf(StoreAccessException.class);
+                            }
+                        }
+                        @Nested
+                        class WhenAInvalidPropertyPathIsUsedToLoadAResource {
+                            @BeforeEach
+                            void setUp() throws Throwable {
+                                synchronized(mutex) {
+                                                    HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
+                                                            .bucket("test-bucket")
+                                                            .build();
+
+                                                    try {
+                                                        client.headBucket(headBucketRequest);
+                                                    } catch (NoSuchBucketException e) {
+
+                                                        CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
+                                                                .bucket("test-bucket")
+                                                                .build();
+                                                        client.createBucket(bucketRequest);
+
+                                                        // wait for bucket to be created before continuing
+                                                        boolean found = false;
+                                                        while (!found) {
+                                                            headBucketRequest = HeadBucketRequest.builder()
+                                                                    .bucket(BUCKET)
+                                                                    .build();
+                                                            try {
+                                                                client.headBucket(headBucketRequest);
+                                                                found = true;
+                                                            } catch (NoSuchBucketException e2) {
+                                                            }
+
+                                                            System.out.println("sleeping...");
+                                                            Thread.sleep(100);
+                                                        }
+                                                    }
+                                                }
+
+                                                RandomString random  = new RandomString(5);
+                                                resourceLocation = random.nextString();
+
+                                entity = new TestEntity();
+                                                        entity = repo.save(entity);
+
+                                genericResource = store.getResource(resourceLocation);
+
+                                store.associate(entity, resourceLocation);
+                                                                store.associate(entity, PropertyPath.from("rendition"), resourceLocation);
+                            }
+                            @Test
+                            void shouldThrowAnError() throws Throwable {
+                                try {
+                                                                        store.getResource(entity, PropertyPath.from("does.not.exist"));
+                                                                    } catch (Exception sae) {
+                                                                        S3StoreIT.this.e = sae;
+                                                                    }
+                                                                    assertThat(e).isInstanceOf(StoreAccessException.class);
+                            }
+                        }
+                        @Nested
+                        class WhenAInvalidPropertyPathIsUsedToUnassociateAResource {
+                            @BeforeEach
+                            void setUp() throws Throwable {
+                                synchronized(mutex) {
+                                                    HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
+                                                            .bucket("test-bucket")
+                                                            .build();
+
+                                                    try {
+                                                        client.headBucket(headBucketRequest);
+                                                    } catch (NoSuchBucketException e) {
+
+                                                        CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
+                                                                .bucket("test-bucket")
+                                                                .build();
+                                                        client.createBucket(bucketRequest);
+
+                                                        // wait for bucket to be created before continuing
+                                                        boolean found = false;
+                                                        while (!found) {
+                                                            headBucketRequest = HeadBucketRequest.builder()
+                                                                    .bucket(BUCKET)
+                                                                    .build();
+                                                            try {
+                                                                client.headBucket(headBucketRequest);
+                                                                found = true;
+                                                            } catch (NoSuchBucketException e2) {
+                                                            }
+
+                                                            System.out.println("sleeping...");
+                                                            Thread.sleep(100);
+                                                        }
+                                                    }
+                                                }
+
+                                                RandomString random  = new RandomString(5);
+                                                resourceLocation = random.nextString();
+
+                                entity = new TestEntity();
+                                                        entity = repo.save(entity);
+
+                                genericResource = store.getResource(resourceLocation);
+
+                                store.associate(entity, resourceLocation);
+                                                                store.associate(entity, PropertyPath.from("rendition"), resourceLocation);
+                            }
+                            @Test
+                            void shouldThrowAnError() throws Throwable {
+                                try {
+                                                                        store.unassociate(entity, PropertyPath.from("does.not.exist"));
+                                                                    } catch (Exception sae) {
+                                                                        S3StoreIT.this.e = sae;
+                                                                    }
+                                                                    assertThat(e).isInstanceOf(StoreAccessException.class);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        @Nested
+        class ContentStoreCases {
+            @Nested
+            class Tests {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    synchronized(mutex) {
+                                        HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
+                                                .bucket("test-bucket")
+                                                .build();
+
+                                        try {
+                                            client.headBucket(headBucketRequest);
+                                        } catch (NoSuchBucketException e) {
+
+                                            CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
+                                                    .bucket("test-bucket")
+                                                    .build();
+                                            client.createBucket(bucketRequest);
+
+                                            // wait for bucket to be created before continuing
+                                            boolean found = false;
+                                            while (!found) {
+                                                headBucketRequest = HeadBucketRequest.builder()
+                                                        .bucket(BUCKET)
+                                                        .build();
+                                                try {
+                                                    client.headBucket(headBucketRequest);
+                                                    found = true;
+                                                } catch (NoSuchBucketException e2) {
+                                                }
+
+                                                System.out.println("sleeping...");
+                                                Thread.sleep(100);
+                                            }
+                                        }
+                                    }
+
+                                    RandomString random  = new RandomString(5);
+                                    resourceLocation = random.nextString();
+
+                    entity = new TestEntity();
+                    //                    entity.setContentType("text/plain");
+                    //                    entity.setContentType("text/html");
+                                        entity = repo.save(entity);
+
+                                        store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                                        store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
+                }
+                @Test
+                void shouldBeAbleToStoreNewContent() throws Throwable {
+                    // content
+                                        try (InputStream content = store.getContent(entity)) {
+                                            assertThat(IOUtils.contentEquals(new ByteArrayInputStream("Hello Spring Content World!".getBytes()), content)).isTrue();
+                                        } catch (IOException ioe) {}
+
+                                        //rendition
+                                        try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
+                                            assertThat(IOUtils.contentEquals(new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()), content)).isTrue();
+                                        } catch (IOException ioe) {}
+                }
+                @Test
+                void shouldHaveContentMetadata() throws Throwable {
+                    // content
+                                        assertThat(entity.getContentId()).isNotNull();
+                                        assertThat(entity.getContentId().trim().length()).isGreaterThan(0);
+                                        assertThat(entity.getContentLen()).isEqualTo(Long.valueOf(27L));
+
+                                        //rendition
+                                        assertThat(entity.getRenditionId()).isNotNull();
+                                        assertThat(entity.getRenditionId().trim().length()).isGreaterThan(0);
+                                        assertThat(entity.getRenditionLen()).isEqualTo(40L);
+                }
+            }
+            @Nested
+            class WhenContentIsUpdated {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    synchronized(mutex) {
+                                        HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
+                                                .bucket("test-bucket")
+                                                .build();
+
+                                        try {
+                                            client.headBucket(headBucketRequest);
+                                        } catch (NoSuchBucketException e) {
+
+                                            CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
+                                                    .bucket("test-bucket")
+                                                    .build();
+                                            client.createBucket(bucketRequest);
+
+                                            // wait for bucket to be created before continuing
+                                            boolean found = false;
+                                            while (!found) {
+                                                headBucketRequest = HeadBucketRequest.builder()
+                                                        .bucket(BUCKET)
+                                                        .build();
+                                                try {
+                                                    client.headBucket(headBucketRequest);
+                                                    found = true;
+                                                } catch (NoSuchBucketException e2) {
+                                                }
+
+                                                System.out.println("sleeping...");
+                                                Thread.sleep(100);
+                                            }
+                                        }
+                                    }
+
+                                    RandomString random  = new RandomString(5);
+                                    resourceLocation = random.nextString();
+
+                    entity = new TestEntity();
+                    //                    entity.setContentType("text/plain");
+                    //                    entity.setContentType("text/html");
+                                        entity = repo.save(entity);
+
+                                        store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                                        store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
+
+                    store.setContent(entity, new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()));
+                                            store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Updated Spring Content World!</html>".getBytes()));
+                                            entity = repo.save(entity);
+                }
+                @Test
+                void shouldHaveTheUpdatedContent() throws Throwable {
+                    //content
+                                            boolean matches = false;
+                                            try (InputStream content = store.getContent(entity)) {
+                                                matches = IOUtils.contentEquals(new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), content);
+                                                assertThat(matches).isTrue();
+                                            }
+
+                                            //rendition
+                                            matches = false;
+                                            try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
+                                                matches = IOUtils.contentEquals(new ByteArrayInputStream("<html>Hello Updated Spring Content World!</html>".getBytes()), content);
+                                                assertThat(matches).isTrue();
+                                            }
+                }
+            }
+            @Nested
+            class WhenContentIsUpdatedWithShorterContent {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    synchronized(mutex) {
+                                        HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
+                                                .bucket("test-bucket")
+                                                .build();
+
+                                        try {
+                                            client.headBucket(headBucketRequest);
+                                        } catch (NoSuchBucketException e) {
+
+                                            CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
+                                                    .bucket("test-bucket")
+                                                    .build();
+                                            client.createBucket(bucketRequest);
+
+                                            // wait for bucket to be created before continuing
+                                            boolean found = false;
+                                            while (!found) {
+                                                headBucketRequest = HeadBucketRequest.builder()
+                                                        .bucket(BUCKET)
+                                                        .build();
+                                                try {
+                                                    client.headBucket(headBucketRequest);
+                                                    found = true;
+                                                } catch (NoSuchBucketException e2) {
+                                                }
+
+                                                System.out.println("sleeping...");
+                                                Thread.sleep(100);
+                                            }
+                                        }
+                                    }
+
+                                    RandomString random  = new RandomString(5);
+                                    resourceLocation = random.nextString();
+
+                    entity = new TestEntity();
+                    //                    entity.setContentType("text/plain");
+                    //                    entity.setContentType("text/html");
+                                        entity = repo.save(entity);
+
+                                        store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                                        store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
+
+                    store.setContent(entity, new ByteArrayInputStream("Hello Spring World!".getBytes()));
+                                            store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring World!</html>".getBytes()));
+                                            entity = repo.save(entity);
+                }
+                @Test
+                void shouldStoreOnlyTheNewContent() throws Throwable {
+                    //content
+                                            boolean matches = false;
+                                            try (InputStream content = store.getContent(entity)) {
+                                                matches = IOUtils.contentEquals(new ByteArrayInputStream("Hello Spring World!".getBytes()), content);
+                                                assertThat(matches).isTrue();
+                                            }
+
+                                            //rendition
+                                            matches = false;
+                                            try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
+                                                matches = IOUtils.contentEquals(new ByteArrayInputStream("<html>Hello Spring World!</html>".getBytes()), content);
+                                                assertThat(matches).isTrue();
+                                            }
+                }
+            }
+            @Nested
+            class WhenContentIsUpdatedAndNotOverwritten {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    synchronized(mutex) {
+                                        HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
+                                                .bucket("test-bucket")
+                                                .build();
+
+                                        try {
+                                            client.headBucket(headBucketRequest);
+                                        } catch (NoSuchBucketException e) {
+
+                                            CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
+                                                    .bucket("test-bucket")
+                                                    .build();
+                                            client.createBucket(bucketRequest);
+
+                                            // wait for bucket to be created before continuing
+                                            boolean found = false;
+                                            while (!found) {
+                                                headBucketRequest = HeadBucketRequest.builder()
+                                                        .bucket(BUCKET)
+                                                        .build();
+                                                try {
+                                                    client.headBucket(headBucketRequest);
+                                                    found = true;
+                                                } catch (NoSuchBucketException e2) {
+                                                }
+
+                                                System.out.println("sleeping...");
+                                                Thread.sleep(100);
+                                            }
+                                        }
+                                    }
+
+                                    RandomString random  = new RandomString(5);
+                                    resourceLocation = random.nextString();
+
+                    entity = new TestEntity();
+                    //                    entity.setContentType("text/plain");
+                    //                    entity.setContentType("text/html");
+                                        entity = repo.save(entity);
+
+                                        store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                                        store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
+                }
+                @Test
+                void shouldHaveTheUpdatedContent() throws Throwable {
+                    String contentId = entity.getContentId();
+                                            client.headObject(HeadObjectRequest.builder().bucket(BUCKET).key(contentId).build());
+
+                                            store.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), new SetContentParams(-1, true, SetContentParams.ContentDisposition.CreateNew));
+                                            entity = repo.save(entity);
+
+                                            boolean matches = false;
+                                            try (InputStream content = store.getContent(entity)) {
+                                                matches = IOUtils.contentEquals(new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), content);
+                                                assertThat(matches).isTrue();
+                                            }
+
+                                            assertThat(entity.getContentId()).isNotEqualTo(contentId);
+                                            client.headObject(HeadObjectRequest.builder().bucket(BUCKET).key(entity.getContentId()).build());
+                }
+            }
+            @Nested
+            class WhenContentIsUnset {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    synchronized(mutex) {
+                                        HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
+                                                .bucket("test-bucket")
+                                                .build();
+
+                                        try {
+                                            client.headBucket(headBucketRequest);
+                                        } catch (NoSuchBucketException e) {
+
+                                            CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
+                                                    .bucket("test-bucket")
+                                                    .build();
+                                            client.createBucket(bucketRequest);
+
+                                            // wait for bucket to be created before continuing
+                                            boolean found = false;
+                                            while (!found) {
+                                                headBucketRequest = HeadBucketRequest.builder()
+                                                        .bucket(BUCKET)
+                                                        .build();
+                                                try {
+                                                    client.headBucket(headBucketRequest);
+                                                    found = true;
+                                                } catch (NoSuchBucketException e2) {
+                                                }
+
+                                                System.out.println("sleeping...");
+                                                Thread.sleep(100);
+                                            }
+                                        }
+                                    }
+
+                                    RandomString random  = new RandomString(5);
+                                    resourceLocation = random.nextString();
+
+                    entity = new TestEntity();
+                    //                    entity.setContentType("text/plain");
+                    //                    entity.setContentType("text/html");
+                                        entity = repo.save(entity);
+
+                                        store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                                        store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
+
+                    resourceLocation = entity.getContentId().toString();
+                                            entity = store.unsetContent(entity);
+                                            entity = store.unsetContent(entity, PropertyPath.from("rendition"));
+                                            entity = repo.save(entity);
+                }
+                @Test
+                void shouldHaveNoContent() throws Throwable {
+                    //content
+                                            try (InputStream content = store.getContent(entity)) {
+                                                assertThat(content).isNull();
+                                            }
+
+                                            assertThat(entity.getContentId()).isNull();
+                                            assertThat(entity.getContentLen()).isNull();
+
+                                            try {
+                                                client.headObject(HeadObjectRequest.builder().bucket(BUCKET).key(resourceLocation).build());
+                                                fail("expected content to be removed but is still exists");
+                                            } catch (NoSuchKeyException nske) {
+                                            }
+
+                                            //rendition
+                                            try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
+                                                assertThat(content).isNull();
+                                            }
+
+                                            assertThat(entity.getRenditionId()).isNull();
+                                            assertThat(entity.getRenditionLen()).isEqualTo(0L);
+                }
+            }
+            @Nested
+            class WhenContentIsUnsetButKept {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    synchronized(mutex) {
+                                        HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
+                                                .bucket("test-bucket")
+                                                .build();
+
+                                        try {
+                                            client.headBucket(headBucketRequest);
+                                        } catch (NoSuchBucketException e) {
+
+                                            CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
+                                                    .bucket("test-bucket")
+                                                    .build();
+                                            client.createBucket(bucketRequest);
+
+                                            // wait for bucket to be created before continuing
+                                            boolean found = false;
+                                            while (!found) {
+                                                headBucketRequest = HeadBucketRequest.builder()
+                                                        .bucket(BUCKET)
+                                                        .build();
+                                                try {
+                                                    client.headBucket(headBucketRequest);
+                                                    found = true;
+                                                } catch (NoSuchBucketException e2) {
+                                                }
+
+                                                System.out.println("sleeping...");
+                                                Thread.sleep(100);
+                                            }
+                                        }
+                                    }
+
+                                    RandomString random  = new RandomString(5);
+                                    resourceLocation = random.nextString();
+
+                    entity = new TestEntity();
+                    //                    entity.setContentType("text/plain");
+                    //                    entity.setContentType("text/html");
+                                        entity = repo.save(entity);
+
+                                        store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                                        store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
+
+                    resourceLocation = entity.getContentId().toString();
+                                            entity = store.unsetContent(entity, PropertyPath.from("content"), new UnsetContentParams(UnsetContentParams.Disposition.Keep));
+                                            entity = repo.save(entity);
+                }
+                @Test
+                void shouldHaveNoContent() throws Throwable {
+                    //content
+                                            try (InputStream content = store.getContent(entity)) {
+                                                assertThat(content).isNull();
+                                            }
+
+                                            assertThat(entity.getContentId()).isNull();
+                                            assertThat(entity.getContentLen()).isNull();
+
+                                            client.headObject(HeadObjectRequest.builder().bucket(BUCKET).key(resourceLocation).build());
+                }
+            }
+            @Nested
+            class WhenAnInvalidPropertyPathIsUsedToSetContent {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    synchronized(mutex) {
+                                        HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
+                                                .bucket("test-bucket")
+                                                .build();
+
+                                        try {
+                                            client.headBucket(headBucketRequest);
+                                        } catch (NoSuchBucketException e) {
+
+                                            CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
+                                                    .bucket("test-bucket")
+                                                    .build();
+                                            client.createBucket(bucketRequest);
+
+                                            // wait for bucket to be created before continuing
+                                            boolean found = false;
+                                            while (!found) {
+                                                headBucketRequest = HeadBucketRequest.builder()
+                                                        .bucket(BUCKET)
+                                                        .build();
+                                                try {
+                                                    client.headBucket(headBucketRequest);
+                                                    found = true;
+                                                } catch (NoSuchBucketException e2) {
+                                                }
+
+                                                System.out.println("sleeping...");
+                                                Thread.sleep(100);
+                                            }
+                                        }
+                                    }
+
+                                    RandomString random  = new RandomString(5);
+                                    resourceLocation = random.nextString();
+
+                    entity = new TestEntity();
+                    //                    entity.setContentType("text/plain");
+                    //                    entity.setContentType("text/html");
+                                        entity = repo.save(entity);
+
+                                        store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                                        store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
+                }
+                @Test
+                void shouldThrowAnError() throws Throwable {
+                    try {
+                                                store.setContent(entity, PropertyPath.from("does.not.exist"), new ByteArrayInputStream("foo".getBytes()));
+                                            } catch (Exception sae) {
+                                                S3StoreIT.this.e = sae;
+                                            }
+                                            assertThat(e).isInstanceOf(StoreAccessException.class);
+                }
+            }
+            @Nested
+            class WhenAnInvalidPropertyPathIsUsedToGetContent {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    synchronized(mutex) {
+                                        HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
+                                                .bucket("test-bucket")
+                                                .build();
+
+                                        try {
+                                            client.headBucket(headBucketRequest);
+                                        } catch (NoSuchBucketException e) {
+
+                                            CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
+                                                    .bucket("test-bucket")
+                                                    .build();
+                                            client.createBucket(bucketRequest);
+
+                                            // wait for bucket to be created before continuing
+                                            boolean found = false;
+                                            while (!found) {
+                                                headBucketRequest = HeadBucketRequest.builder()
+                                                        .bucket(BUCKET)
+                                                        .build();
+                                                try {
+                                                    client.headBucket(headBucketRequest);
+                                                    found = true;
+                                                } catch (NoSuchBucketException e2) {
+                                                }
+
+                                                System.out.println("sleeping...");
+                                                Thread.sleep(100);
+                                            }
+                                        }
+                                    }
+
+                                    RandomString random  = new RandomString(5);
+                                    resourceLocation = random.nextString();
+
+                    entity = new TestEntity();
+                    //                    entity.setContentType("text/plain");
+                    //                    entity.setContentType("text/html");
+                                        entity = repo.save(entity);
+
+                                        store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                                        store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
+                }
+                @Test
+                void shouldThrowAnError() throws Throwable {
+                    try {
+                                                store.getContent(entity, PropertyPath.from("does.not.exist"));
+                                            } catch (Exception sae) {
+                                                S3StoreIT.this.e = sae;
+                                            }
+                                            assertThat(e).isInstanceOf(StoreAccessException.class);
+                }
+            }
+            @Nested
+            class WhenAnInvalidPropertyPathIsUsedToUnsetContent {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    synchronized(mutex) {
+                                        HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
+                                                .bucket("test-bucket")
+                                                .build();
+
+                                        try {
+                                            client.headBucket(headBucketRequest);
+                                        } catch (NoSuchBucketException e) {
+
+                                            CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
+                                                    .bucket("test-bucket")
+                                                    .build();
+                                            client.createBucket(bucketRequest);
+
+                                            // wait for bucket to be created before continuing
+                                            boolean found = false;
+                                            while (!found) {
+                                                headBucketRequest = HeadBucketRequest.builder()
+                                                        .bucket(BUCKET)
+                                                        .build();
+                                                try {
+                                                    client.headBucket(headBucketRequest);
+                                                    found = true;
+                                                } catch (NoSuchBucketException e2) {
+                                                }
+
+                                                System.out.println("sleeping...");
+                                                Thread.sleep(100);
+                                            }
+                                        }
+                                    }
+
+                                    RandomString random  = new RandomString(5);
+                                    resourceLocation = random.nextString();
+
+                    entity = new TestEntity();
+                    //                    entity.setContentType("text/plain");
+                    //                    entity.setContentType("text/html");
+                                        entity = repo.save(entity);
+
+                                        store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                                        store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
+                }
+                @Test
+                void shouldThrowAnError() throws Throwable {
+                    try {
+                                                store.unsetContent(entity, PropertyPath.from("does.not.exist"));
+                                            } catch (Exception sae) {
+                                                S3StoreIT.this.e = sae;
+                                            }
+                                            assertThat(e).isInstanceOf(StoreAccessException.class);
+                }
+            }
+            @Nested
+            class WhenContentIsDeletedAndTheContentIdFieldIsSharedWithEntityId {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    synchronized(mutex) {
+                                        HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
+                                                .bucket("test-bucket")
+                                                .build();
+
+                                        try {
+                                            client.headBucket(headBucketRequest);
+                                        } catch (NoSuchBucketException e) {
+
+                                            CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
+                                                    .bucket("test-bucket")
+                                                    .build();
+                                            client.createBucket(bucketRequest);
+
+                                            // wait for bucket to be created before continuing
+                                            boolean found = false;
+                                            while (!found) {
+                                                headBucketRequest = HeadBucketRequest.builder()
+                                                        .bucket(BUCKET)
+                                                        .build();
+                                                try {
+                                                    client.headBucket(headBucketRequest);
+                                                    found = true;
+                                                } catch (NoSuchBucketException e2) {
+                                                }
+
+                                                System.out.println("sleeping...");
+                                                Thread.sleep(100);
+                                            }
+                                        }
+                                    }
+
+                                    RandomString random  = new RandomString(5);
+                                    resourceLocation = random.nextString();
+
+                    entity = new TestEntity();
+                    //                    entity.setContentType("text/plain");
+                    //                    entity.setContentType("text/html");
+                                        entity = repo.save(entity);
+
+                                        store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                                        store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
+                }
+                @Test
+                void shouldNotResetTheIdField() throws Throwable {
+                    SharedIdContentIdEntity sharedIdContentIdEntity = sharedIdRepository.save(new SharedIdContentIdEntity());
+
+                                            sharedIdContentIdEntity = sharedIdStore.setContent(sharedIdContentIdEntity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                                            sharedIdContentIdEntity = sharedIdRepository.save(sharedIdContentIdEntity);
+                                            String id = sharedIdContentIdEntity.getContentId();
+                                            sharedIdContentIdEntity = sharedIdStore.unsetContent(sharedIdContentIdEntity);
+                                            assertThat(sharedIdContentIdEntity.getContentId()).isEqualTo(id);
+                                            assertThat(sharedIdContentIdEntity.getContentLen()).isEqualTo(0L);
+                }
+            }
+            @Nested
+            class EmbeddedContent {
+                @Nested
+                class GivenAEntityWithANullEmbeddedContentObject {
+                    @BeforeEach
+                    void setUp() throws Throwable {
+                        synchronized(mutex) {
+                                            HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
+                                                    .bucket("test-bucket")
+                                                    .build();
+
+                                            try {
+                                                client.headBucket(headBucketRequest);
+                                            } catch (NoSuchBucketException e) {
+
+                                                CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
+                                                        .bucket("test-bucket")
+                                                        .build();
+                                                client.createBucket(bucketRequest);
+
+                                                // wait for bucket to be created before continuing
+                                                boolean found = false;
+                                                while (!found) {
+                                                    headBucketRequest = HeadBucketRequest.builder()
+                                                            .bucket(BUCKET)
+                                                            .build();
+                                                    try {
+                                                        client.headBucket(headBucketRequest);
+                                                        found = true;
+                                                    } catch (NoSuchBucketException e2) {
+                                                    }
+
+                                                    System.out.println("sleeping...");
+                                                    Thread.sleep(100);
+                                                }
+                                            }
+                                        }
+
+                                        RandomString random  = new RandomString(5);
+                                        resourceLocation = random.nextString();
+
+                        entity = new TestEntity();
+                        //                    entity.setContentType("text/plain");
+                        //                    entity.setContentType("text/html");
+                                            entity = repo.save(entity);
+
+                                            store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                                            store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
+                    }
+                    @Test
+                    void shouldReturnNullWhenContentIsFetched() throws Throwable {
+                        EntityWithEmbeddedContent entity = embeddedRepo.save(new EntityWithEmbeddedContent());
+                                                    assertThat(embeddedStore.getContent(entity, PropertyPath.from("content"))).isNull();
+                    }
+                    @Test
+                    void shouldBeSuccessfulWhenContentIsSet() throws Throwable {
+                        EntityWithEmbeddedContent entity = embeddedRepo.save(new EntityWithEmbeddedContent());
+                                                    embeddedStore.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                                                    try (InputStream is = embeddedStore.getContent(entity, PropertyPath.from("content"))) {
+                                                        assertThat(IOUtils.contentEquals(is, new ByteArrayInputStream("Hello Spring Content World!".getBytes()))).isTrue();
+                                                    }
+                    }
+                    @Test
+                    void shouldReturnNullWhenContentIsUnset() throws Throwable {
+                        EntityWithEmbeddedContent entity = embeddedRepo.save(new EntityWithEmbeddedContent());
+                                                    assertThat(embeddedStore.unsetContent(entity, PropertyPath.from("content"))).isSameAs(entity);
+                    }
+                }
+            }
+        }
     }
+
 
     @Test
     public void noop() {}

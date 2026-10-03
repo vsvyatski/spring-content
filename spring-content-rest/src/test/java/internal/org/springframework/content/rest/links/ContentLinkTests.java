@@ -1,9 +1,14 @@
 package internal.org.springframework.content.rest.links;
 
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.theoryinpractise.halbuilder.api.ReadableRepresentation;
 import com.theoryinpractise.halbuilder.api.RepresentationFactory;
 import com.theoryinpractise.halbuilder.standard.StandardRepresentationFactory;
-import org.hamcrest.beans.HasPropertyWithValue;
 import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.commons.store.Store;
 import org.springframework.data.repository.CrudRepository;
@@ -12,10 +17,6 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.io.StringReader;
 
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.*;
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.text.MatchesPattern.matchesPattern;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -64,28 +65,33 @@ public class ContentLinkTests {
 		this.expectedLinkRegex = expectedLinkRegex;
 	}
 
-	{
-		Context("given content is associated", () -> {
-			BeforeEach(() -> {
-			});
-			Context("a GET to /{api}?/{repository}/{id}", () -> {
-				It("should provide a response with a content link", () -> {
-					MockHttpServletResponse response = mvc.perform(get(url)
-									.accept("application/hal+json")
-									.contextPath(contextPath))
-							.andExpect(status().isOk()).andReturn().getResponse();
-					assertThat(response, is(not(nullValue())));
+	
+    @Nested
+    class GivenContentIsAssociated {
+        @Nested
+        class AGETToApiRepositoryId {
+            @BeforeEach
+            void setUp() throws Throwable {
 
-					RepresentationFactory representationFactory = new StandardRepresentationFactory();
-					ReadableRepresentation halResponse = representationFactory
-							.readRepresentation("application/hal+json",
-									new StringReader(response.getContentAsString()));
+            }
+            @Test
+            void shouldProvideAResponseWithAContentLink() throws Throwable {
+                MockHttpServletResponse response = mvc.perform(get(url)
+                									.accept("application/hal+json")
+                									.contextPath(contextPath))
+                							.andExpect(status().isOk()).andReturn().getResponse();
+                					assertThat(response).isNotNull();
 
-					assertThat(halResponse, is(not(nullValue())));
-					assertThat(halResponse.getLinksByRel(linkRel), is(not(nullValue())));
-					assertThat(halResponse.getLinksByRel(linkRel), hasItems(new HasPropertyWithValue("href", matchesPattern(expectedLinkRegex))));
-				});
-			});
-		});
-	}
+                					RepresentationFactory representationFactory = new StandardRepresentationFactory();
+                					ReadableRepresentation halResponse = representationFactory
+                							.readRepresentation("application/hal+json",
+                									new StringReader(response.getContentAsString()));
+
+                					assertThat(halResponse).isNotNull();
+                					assertThat(halResponse.getLinksByRel(linkRel)).isNotNull();
+                					assertThat(halResponse.getLinksByRel(linkRel)).extracting("href").anySatisfy(href -> assertThat(href.toString()).matches(expectedLinkRegex));
+            }
+        }
+    }
+
 }

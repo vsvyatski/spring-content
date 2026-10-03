@@ -1,8 +1,12 @@
 package internal.org.springframework.content.rest.links;
 
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.BeforeEach;
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.Context;
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.Describe;
+import org.junit.jupiter.api.extension.ExtendWith;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.DisplayName;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -10,8 +14,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.content.commons.renditions.RenditionProvider;
 import org.springframework.content.fs.config.EnableFileSystemStores;
@@ -33,16 +35,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfiguration;
 
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jConfiguration;
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jSpringRunner;
-
 import internal.org.springframework.content.rest.support.TestEntity3;
 import internal.org.springframework.content.rest.support.TestEntity3ContentRepository;
 import internal.org.springframework.content.rest.support.TestEntity3Repository;
 import internal.org.springframework.content.rest.support.config.JpaInfrastructureConfig;
 
-@RunWith(Ginkgo4jSpringRunner.class)
-@Ginkgo4jConfiguration(threads = 1)
 @WebAppConfiguration
 @ContextConfiguration(classes = {
 		ContextPathContentLinksIT.ContextPathConfig.class,
@@ -52,6 +49,7 @@ import internal.org.springframework.content.rest.support.config.JpaInfrastructur
 		HypermediaConfiguration.class })
 @Transactional
 @ActiveProfiles("store")
+@ExtendWith(SpringExtension.class)
 public class ContextPathContentLinksIT {
 
 	@Autowired
@@ -68,31 +66,31 @@ public class ContextPathContentLinksIT {
 
 	private ContentLinkTests contentLinkTests;
 
-	{
-		Describe("given the spring content baseUri property is set to contentApi", () -> {
-			BeforeEach(() -> {
-				mvc = MockMvcBuilders.webAppContextSetup(context).build();
-			});
+	
+    @Nested
+    class GivenTheSpringContentBaseUriPropertyIsSetToContentApi {
+        @Nested
+        @DisplayName("given an Entity and a Store with a default store path")
+        class GivenAnEntityAndAStoreWithADefaultStorePathContentLinkTests extends ContentLinkTests {
+            @BeforeEach
+            void setUp() throws Throwable {
+                mvc = MockMvcBuilders.webAppContextSetup(context).build();
+                testEntity3 = new TestEntity3();
+                contentRepository3.setContent(testEntity3, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                testEntity3 = repository3.save(testEntity3);
+                this.setMvc(mvc);
+                this.setRepository(repository3);
+                this.setStore(contentRepository3);
+                this.setTestEntity(testEntity3);
+                this.setUrl("/contextPath/testEntity3s/" + testEntity3.getId());
+                this.setContextPath("/contextPath");
+                this.setLinkRel("testEntity3");
+                this.setExpectedLinkRegex("http://localhost/contextPath/testEntity3s/" + testEntity3.getId() );
+            }
+        }
 
-			Context("given an Entity and a Store with a default store path", () -> {
-				BeforeEach(() -> {
-					testEntity3 = new TestEntity3();
-					contentRepository3.setContent(testEntity3, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-					testEntity3 = repository3.save(testEntity3);
+    }
 
-					contentLinkTests.setMvc(mvc);
-					contentLinkTests.setRepository(repository3);
-					contentLinkTests.setStore(contentRepository3);
-					contentLinkTests.setTestEntity(testEntity3);
-					contentLinkTests.setUrl("/contextPath/testEntity3s/" + testEntity3.getId());
-					contentLinkTests.setContextPath("/contextPath");
-					contentLinkTests.setLinkRel("testEntity3");
-					contentLinkTests.setExpectedLinkRegex("http://localhost/contextPath/testEntity3s/" + testEntity3.getId() );
-				});
-				contentLinkTests = new ContentLinkTests();
-			});
-		});
-	}
 	
 	@Configuration
 	@EnableJpaRepositories(basePackages = "internal.org.springframework.content.rest.support")
@@ -143,6 +141,4 @@ public class ContextPathContentLinksIT {
 		}
 	}
 	
-	@Test
-	public void noop() {}
 }

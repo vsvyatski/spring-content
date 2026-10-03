@@ -1,8 +1,10 @@
 package org.springframework.content.commons.mappingcontext;
 
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jRunner;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Nested;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import jakarta.persistence.*;
-import org.junit.runner.RunWith;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.annotations.MimeType;
@@ -14,12 +16,6 @@ import org.springframework.util.ReflectionUtils;
 import java.lang.reflect.Field;
 import java.util.UUID;
 
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.*;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.collection.IsMapContaining.hasEntry;
-
-@RunWith(Ginkgo4jRunner.class)
 public class ClassWalkerTest {
 
     private static Field strField = ReflectionUtils.findField(TestClass.class, "str");
@@ -31,230 +27,265 @@ public class ClassWalkerTest {
     private static Field subSubContentIdField = ReflectionUtils.findField(TestSubSubClass.class, "contentId");
     private static Field subSubContentLengthField = ReflectionUtils.findField(TestSubSubClass.class, "contentLength");
 
-    {
-        Describe("ClassWalker", () -> {
-            It("should visit all fields", () -> {
-                ContentPropertyMappingContextVisitor visitor = new ContentPropertyMappingContextVisitor("/", ".");
-                ClassWalker walker = new ClassWalker(visitor);
-                walker.accept(TestClass.class);
+    
+    @Nested
+    class ClassWalkerCases {
+        @Test
+        void shouldVisitAllFields() throws Throwable {
+            ContentPropertyMappingContextVisitor visitor = new ContentPropertyMappingContextVisitor("/", ".");
+            ClassWalker walker = new ClassWalker(visitor);
+            walker.accept(TestClass.class);
 
-                ContentProperty expectedProperty = new ContentProperty();
-                expectedProperty.setContentPropertyPath("content");
-                expectedProperty.setContentIdPropertyPath("contentId");
-                expectedProperty.setContentIdType(TypeDescriptor.valueOf(String.class));
-                expectedProperty.setContentLengthPropertyPath("contentLength");
-                expectedProperty.setContentLengthType(TypeDescriptor.valueOf(Long.class));
-                expectedProperty.setMimeTypePropertyPath("contentMimeType");
-                expectedProperty.setOriginalFileNamePropertyPath("contentOriginalFileName");
-                assertThat(visitor.getProperties(), hasEntry("content", expectedProperty));
+            ContentProperty expectedProperty = new ContentProperty();
+            expectedProperty.setContentPropertyPath("content");
+            expectedProperty.setContentIdPropertyPath("contentId");
+            expectedProperty.setContentIdType(TypeDescriptor.valueOf(String.class));
+            expectedProperty.setContentLengthPropertyPath("contentLength");
+            expectedProperty.setContentLengthType(TypeDescriptor.valueOf(Long.class));
+            expectedProperty.setMimeTypePropertyPath("contentMimeType");
+            expectedProperty.setOriginalFileNamePropertyPath("contentOriginalFileName");
+            assertThat(visitor.getProperties()).containsEntry("content", expectedProperty);
 
-                ContentProperty expectedSubClassProperty = new ContentProperty();
-                expectedSubClassProperty.setContentPropertyPath("child.content");
-                expectedSubClassProperty.setContentIdPropertyPath("child.contentId");
-                expectedSubClassProperty.setContentIdType(TypeDescriptor.valueOf(String.class));
-                expectedSubClassProperty.setContentLengthPropertyPath("child.contentLength");
-                expectedSubClassProperty.setContentLengthType(TypeDescriptor.valueOf(long.class));
-                expectedSubClassProperty.setMimeTypePropertyPath("child.contentMimeType");
-                expectedSubClassProperty.setOriginalFileNamePropertyPath("child.contentOriginalFileName");
-                assertThat(visitor.getProperties(), hasEntry("child", expectedSubClassProperty));
+            ContentProperty expectedSubClassProperty = new ContentProperty();
+            expectedSubClassProperty.setContentPropertyPath("child.content");
+            expectedSubClassProperty.setContentIdPropertyPath("child.contentId");
+            expectedSubClassProperty.setContentIdType(TypeDescriptor.valueOf(String.class));
+            expectedSubClassProperty.setContentLengthPropertyPath("child.contentLength");
+            expectedSubClassProperty.setContentLengthType(TypeDescriptor.valueOf(long.class));
+            expectedSubClassProperty.setMimeTypePropertyPath("child.contentMimeType");
+            expectedSubClassProperty.setOriginalFileNamePropertyPath("child.contentOriginalFileName");
+            assertThat(visitor.getProperties()).containsEntry("child", expectedSubClassProperty);
 
-                ContentProperty expectedSubSubClassProperty = new ContentProperty();
-                expectedSubSubClassProperty.setContentPropertyPath("child.subChild.content");
-                expectedSubSubClassProperty.setContentIdPropertyPath("child.subChild.contentId");
-                expectedSubSubClassProperty.setContentIdType(TypeDescriptor.valueOf(String.class));
-                expectedSubSubClassProperty.setContentLengthPropertyPath("child.subChild.contentLength");
-                expectedSubSubClassProperty.setContentLengthType(TypeDescriptor.valueOf(int.class));
-                expectedSubSubClassProperty.setMimeTypePropertyPath("child.subChild.contentMimeType");
-                expectedSubSubClassProperty.setOriginalFileNamePropertyPath("child.subChild.contentOriginalFileName");
-                assertThat(visitor.getProperties(), hasEntry("child/subChild", expectedSubSubClassProperty));
+            ContentProperty expectedSubSubClassProperty = new ContentProperty();
+            expectedSubSubClassProperty.setContentPropertyPath("child.subChild.content");
+            expectedSubSubClassProperty.setContentIdPropertyPath("child.subChild.contentId");
+            expectedSubSubClassProperty.setContentIdType(TypeDescriptor.valueOf(String.class));
+            expectedSubSubClassProperty.setContentLengthPropertyPath("child.subChild.contentLength");
+            expectedSubSubClassProperty.setContentLengthType(TypeDescriptor.valueOf(int.class));
+            expectedSubSubClassProperty.setMimeTypePropertyPath("child.subChild.contentMimeType");
+            expectedSubSubClassProperty.setOriginalFileNamePropertyPath("child.subChild.contentOriginalFileName");
+            assertThat(visitor.getProperties()).containsEntry("child/subChild", expectedSubSubClassProperty);
 
-                ContentProperty expectedCamelCaseProperty = new ContentProperty();
-                expectedCamelCaseProperty.setContentPropertyPath("camelCaseProperty.camelCaseProperty");
-                expectedCamelCaseProperty.setContentIdPropertyPath("camelCaseProperty.camelCasePropertyId");
-                expectedCamelCaseProperty.setContentIdType(TypeDescriptor.valueOf(UUID.class));
-                expectedCamelCaseProperty.setContentLengthPropertyPath("camelCaseProperty.camelCasePropertyLen");
-                expectedCamelCaseProperty.setContentLengthType(TypeDescriptor.valueOf(Long.class));
-                expectedCamelCaseProperty.setMimeTypePropertyPath("camelCaseProperty.camelCasePropertyMimeType");
-                expectedCamelCaseProperty.setOriginalFileNamePropertyPath("camelCaseProperty.camelCasePropertyOriginalFileName");
-                assertThat(visitor.getProperties(), hasEntry("camelCaseProperty", expectedCamelCaseProperty));
+            ContentProperty expectedCamelCaseProperty = new ContentProperty();
+            expectedCamelCaseProperty.setContentPropertyPath("camelCaseProperty.camelCaseProperty");
+            expectedCamelCaseProperty.setContentIdPropertyPath("camelCaseProperty.camelCasePropertyId");
+            expectedCamelCaseProperty.setContentIdType(TypeDescriptor.valueOf(UUID.class));
+            expectedCamelCaseProperty.setContentLengthPropertyPath("camelCaseProperty.camelCasePropertyLen");
+            expectedCamelCaseProperty.setContentLengthType(TypeDescriptor.valueOf(Long.class));
+            expectedCamelCaseProperty.setMimeTypePropertyPath("camelCaseProperty.camelCasePropertyMimeType");
+            expectedCamelCaseProperty.setOriginalFileNamePropertyPath("camelCaseProperty.camelCasePropertyOriginalFileName");
+            assertThat(visitor.getProperties()).containsEntry("camelCaseProperty", expectedCamelCaseProperty);
 
-                ContentProperty expectedOtherCamelCaseProperty = new ContentProperty();
-                expectedOtherCamelCaseProperty.setContentPropertyPath("otherCamelCaseProperty.camelCaseProperty");
-                expectedOtherCamelCaseProperty.setContentIdPropertyPath("otherCamelCaseProperty.camelCasePropertyIds");
-                expectedOtherCamelCaseProperty.setContentIdType(TypeDescriptor.valueOf(UUID.class));
-                expectedOtherCamelCaseProperty.setContentLengthPropertyPath("otherCamelCaseProperty.camelCasePropertyLens");
-                expectedOtherCamelCaseProperty.setContentLengthType(TypeDescriptor.valueOf(Long.class));
-                expectedOtherCamelCaseProperty.setMimeTypePropertyPath("otherCamelCaseProperty.camelCasePropertyMimetypes");
-                expectedOtherCamelCaseProperty.setOriginalFileNamePropertyPath("otherCamelCaseProperty.camelCasePropertyFilenames");
-                assertThat(visitor.getProperties(), hasEntry("otherCamelCaseProperty", expectedOtherCamelCaseProperty));
-            });
-        });
+            ContentProperty expectedOtherCamelCaseProperty = new ContentProperty();
+            expectedOtherCamelCaseProperty.setContentPropertyPath("otherCamelCaseProperty.camelCaseProperty");
+            expectedOtherCamelCaseProperty.setContentIdPropertyPath("otherCamelCaseProperty.camelCasePropertyIds");
+            expectedOtherCamelCaseProperty.setContentIdType(TypeDescriptor.valueOf(UUID.class));
+            expectedOtherCamelCaseProperty.setContentLengthPropertyPath("otherCamelCaseProperty.camelCasePropertyLens");
+            expectedOtherCamelCaseProperty.setContentLengthType(TypeDescriptor.valueOf(Long.class));
+            expectedOtherCamelCaseProperty.setMimeTypePropertyPath("otherCamelCaseProperty.camelCasePropertyMimetypes");
+            expectedOtherCamelCaseProperty.setOriginalFileNamePropertyPath("otherCamelCaseProperty.camelCasePropertyFilenames");
+            assertThat(visitor.getProperties()).containsEntry("otherCamelCaseProperty", expectedOtherCamelCaseProperty);
 
-        Context("given a class with uncorrelated attributes", () -> {
-            It("should return two content properties", () -> {
-                ContentPropertyMappingContextVisitor visitor = new ContentPropertyMappingContextVisitor("/", ".");
-                ClassWalker walker = new ClassWalker(visitor);
-                walker.accept(UncorrelatedAttrClass.class);
+        }
 
-                ContentProperty expectedProperty2 = new ContentProperty();
-                expectedProperty2.setContentPropertyPath("content");
-                expectedProperty2.setContentIdPropertyPath("contentId");
-                expectedProperty2.setContentIdType(TypeDescriptor.valueOf(UUID.class));
-                expectedProperty2.setContentLengthPropertyPath("len");
-                expectedProperty2.setContentLengthType(TypeDescriptor.valueOf(Long.class));
-                expectedProperty2.setMimeTypePropertyPath("mimeType");
-                expectedProperty2.setOriginalFileNamePropertyPath("originalFileName");
-                assertThat(visitor.getProperties(), hasEntry("content", expectedProperty2));
-            });
-        });
+    }
 
-        Context("given a class with correlated attributes", () -> {
-            It("should return two content properties", () -> {
-                ContentPropertyMappingContextVisitor visitor = new ContentPropertyMappingContextVisitor("/", ".");
-                ClassWalker walker = new ClassWalker(visitor);
-                walker.accept(CorrelatedAttrClass.class);
+    @Nested
+    class GivenAClassWithUncorrelatedAttributes {
+        @Test
+        void shouldReturnTwoContentProperties() throws Throwable {
+            ContentPropertyMappingContextVisitor visitor = new ContentPropertyMappingContextVisitor("/", ".");
+            ClassWalker walker = new ClassWalker(visitor);
+            walker.accept(UncorrelatedAttrClass.class);
 
-                ContentProperty expectedProperty2 = new ContentProperty();
-                expectedProperty2.setContentPropertyPath("content");
-                expectedProperty2.setContentIdPropertyPath("contentId");
-                expectedProperty2.setContentIdType(TypeDescriptor.valueOf(UUID.class));
-                expectedProperty2.setContentLengthPropertyPath("contentLen");
-                expectedProperty2.setContentLengthType(TypeDescriptor.valueOf(Long.class));
-                expectedProperty2.setMimeTypePropertyPath("contentMimeType");
-                expectedProperty2.setOriginalFileNamePropertyPath("contentOriginalFileName");
-                assertThat(visitor.getProperties(), hasEntry("content", expectedProperty2));
-            });
-        });
+            ContentProperty expectedProperty2 = new ContentProperty();
+            expectedProperty2.setContentPropertyPath("content");
+            expectedProperty2.setContentIdPropertyPath("contentId");
+            expectedProperty2.setContentIdType(TypeDescriptor.valueOf(UUID.class));
+            expectedProperty2.setContentLengthPropertyPath("len");
+            expectedProperty2.setContentLengthType(TypeDescriptor.valueOf(Long.class));
+            expectedProperty2.setMimeTypePropertyPath("mimeType");
+            expectedProperty2.setOriginalFileNamePropertyPath("originalFileName");
+            assertThat(visitor.getProperties()).containsEntry("content", expectedProperty2);
 
-        Context("given a class with a child with uncorrelated attributes", () -> {
-            It("should return two content properties", () -> {
-                ContentPropertyMappingContextVisitor visitor = new ContentPropertyMappingContextVisitor("/", ".");
-                ClassWalker walker = new ClassWalker(visitor);
-                walker.accept(TestClass2.class);
+        }
 
-                ContentProperty expectedProperty = new ContentProperty();
-                expectedProperty.setContentPropertyPath("child.content");
-                expectedProperty.setContentIdPropertyPath("child.contentId");
-                expectedProperty.setContentIdType(TypeDescriptor.valueOf(UUID.class));
-                expectedProperty.setContentLengthPropertyPath("child.len");
-                expectedProperty.setContentLengthType(TypeDescriptor.valueOf(Long.class));
-                expectedProperty.setMimeTypePropertyPath("child.mimeType");
-                expectedProperty.setOriginalFileNamePropertyPath("child.originalFileName");
-                assertThat(visitor.getProperties(), hasEntry("child", expectedProperty));
-            });
-        });
+    }
 
-        Context("given a class with relation attributes", () -> {
-            It("should not traverse them", () -> {
-                ContentPropertyMappingContextVisitor visitor = new ContentPropertyMappingContextVisitor("/", ".");
-                ClassWalker walker = new ClassWalker(visitor);
-                walker.accept(TestClass3.class);
+    @Nested
+    class GivenAClassWithCorrelatedAttributes {
+        @Test
+        void shouldReturnTwoContentProperties() throws Throwable {
+            ContentPropertyMappingContextVisitor visitor = new ContentPropertyMappingContextVisitor("/", ".");
+            ClassWalker walker = new ClassWalker(visitor);
+            walker.accept(CorrelatedAttrClass.class);
 
-                assertThat(visitor.getProperties().size(), is(0));
-            });
-        });
+            ContentProperty expectedProperty2 = new ContentProperty();
+            expectedProperty2.setContentPropertyPath("content");
+            expectedProperty2.setContentIdPropertyPath("contentId");
+            expectedProperty2.setContentIdType(TypeDescriptor.valueOf(UUID.class));
+            expectedProperty2.setContentLengthPropertyPath("contentLen");
+            expectedProperty2.setContentLengthType(TypeDescriptor.valueOf(Long.class));
+            expectedProperty2.setMimeTypePropertyPath("contentMimeType");
+            expectedProperty2.setOriginalFileNamePropertyPath("contentOriginalFileName");
+            assertThat(visitor.getProperties()).containsEntry("content", expectedProperty2);
 
-        Context("given a class with content properties in its super class", () -> {
-            It("should visit them", () -> {
-                ContentPropertyMappingContextVisitor visitor = new ContentPropertyMappingContextVisitor("/", ".");
-                ClassWalker walker = new ClassWalker(visitor);
-                walker.accept(TestClass4.class);
+        }
 
-                ContentProperty expectedProperty = new ContentProperty();
-                expectedProperty.setContentPropertyPath("content");
-                expectedProperty.setContentIdPropertyPath("contentId");
-                expectedProperty.setContentIdType(TypeDescriptor.valueOf(String.class));
-                expectedProperty.setContentLengthPropertyPath("contentLength");
-                expectedProperty.setContentLengthType(TypeDescriptor.valueOf(int.class));
-                expectedProperty.setMimeTypePropertyPath("contentMimeType");
-                expectedProperty.setOriginalFileNamePropertyPath("contentOriginalFileName");
-                assertThat(visitor.getProperties(), hasEntry("content", expectedProperty));
-            });
-        });
+    }
 
-        Context("given a class with multiple child content property objects", () -> {
-            It("should return two content properties", () -> {
-                ContentPropertyMappingContextVisitor visitor = new ContentPropertyMappingContextVisitor("/", ".");
-                ClassWalker walker = new ClassWalker(visitor);
-                walker.accept(TestClass5.class);
+    @Nested
+    class GivenAClassWithAChildWithUncorrelatedAttributes {
+        @Test
+        void shouldReturnTwoContentProperties() throws Throwable {
+            ContentPropertyMappingContextVisitor visitor = new ContentPropertyMappingContextVisitor("/", ".");
+            ClassWalker walker = new ClassWalker(visitor);
+            walker.accept(TestClass2.class);
 
-                ContentProperty expectedProperty = new ContentProperty();
-                expectedProperty.setContentPropertyPath("child1.content");
-                expectedProperty.setContentIdPropertyPath("child1.contentId");
-                expectedProperty.setContentIdType(TypeDescriptor.valueOf(UUID.class));
-                expectedProperty.setContentLengthPropertyPath("child1.len");
-                expectedProperty.setContentLengthType(TypeDescriptor.valueOf(Long.class));
-                expectedProperty.setMimeTypePropertyPath("child1.mimeType");
-                expectedProperty.setOriginalFileNamePropertyPath("child1.originalFileName");
-                assertThat(visitor.getProperties(), hasEntry("child1", expectedProperty));
+            ContentProperty expectedProperty = new ContentProperty();
+            expectedProperty.setContentPropertyPath("child.content");
+            expectedProperty.setContentIdPropertyPath("child.contentId");
+            expectedProperty.setContentIdType(TypeDescriptor.valueOf(UUID.class));
+            expectedProperty.setContentLengthPropertyPath("child.len");
+            expectedProperty.setContentLengthType(TypeDescriptor.valueOf(Long.class));
+            expectedProperty.setMimeTypePropertyPath("child.mimeType");
+            expectedProperty.setOriginalFileNamePropertyPath("child.originalFileName");
+            assertThat(visitor.getProperties()).containsEntry("child", expectedProperty);
 
-                ContentProperty expectedProperty3 = new ContentProperty();
-                expectedProperty3.setContentPropertyPath("child2.content");
-                expectedProperty3.setContentIdPropertyPath("child2.contentId");
-                expectedProperty3.setContentIdType(TypeDescriptor.valueOf(UUID.class));
-                expectedProperty3.setContentLengthPropertyPath("child2.len");
-                expectedProperty3.setContentLengthType(TypeDescriptor.valueOf(Long.class));
-                expectedProperty3.setMimeTypePropertyPath("child2.mimeType");
-                expectedProperty3.setOriginalFileNamePropertyPath("child2.originalFileName");
-                assertThat(visitor.getProperties(), hasEntry("child2", expectedProperty3));
-            });
-        });
+        }
 
-        Context("given a class with a child with multiple content property objects", () -> {
-            It("should return two content properties", () -> {
-                ContentPropertyMappingContextVisitor visitor = new ContentPropertyMappingContextVisitor("/", ".");
-                ClassWalker walker = new ClassWalker(visitor);
-                walker.accept(TestClass6.class);
+    }
 
-                ContentProperty expectedProperty = new ContentProperty();
-                expectedProperty.setContentPropertyPath("child.content");
-                expectedProperty.setContentIdPropertyPath("child.contentId");
-                expectedProperty.setContentIdType(TypeDescriptor.valueOf(UUID.class));
-                expectedProperty.setContentLengthPropertyPath("child.contentLen");
-                expectedProperty.setContentLengthType(TypeDescriptor.valueOf(Long.class));
-                expectedProperty.setMimeTypePropertyPath("child.contentMimeType");
-                expectedProperty.setOriginalFileNamePropertyPath("child.contentOriginalFileName");
-                assertThat(visitor.getProperties(), hasEntry("child/content", expectedProperty));
+    @Nested
+    class GivenAClassWithRelationAttributes {
+        @Test
+        void shouldNotTraverseThem() throws Throwable {
+            ContentPropertyMappingContextVisitor visitor = new ContentPropertyMappingContextVisitor("/", ".");
+            ClassWalker walker = new ClassWalker(visitor);
+            walker.accept(TestClass3.class);
 
-                ContentProperty expectedProperty3 = new ContentProperty();
-                expectedProperty3.setContentPropertyPath("child.preview");
-                expectedProperty3.setContentIdPropertyPath("child.previewId");
-                expectedProperty3.setContentIdType(TypeDescriptor.valueOf(UUID.class));
-                expectedProperty3.setContentLengthPropertyPath("child.previewLen");
-                expectedProperty3.setContentLengthType(TypeDescriptor.valueOf(Integer.class));
-                expectedProperty3.setMimeTypePropertyPath("child.previewMimeType");
-                expectedProperty3.setOriginalFileNamePropertyPath("child.previewOriginalFileName");
-                assertThat(visitor.getProperties(), hasEntry("child/preview", expectedProperty3));
-            });
-        });
+            assertThat(visitor.getProperties().size()).isEqualTo(0);
 
-        Context("given a class with a child with a child with multiple content property objects", () -> {
-            It("should return two content properties", () -> {
-                ContentPropertyMappingContextVisitor visitor = new ContentPropertyMappingContextVisitor("/", ".");
-                ClassWalker walker = new ClassWalker(visitor);
-                walker.accept(TestClass7.class);
+        }
 
-                ContentProperty expectedProperty = new ContentProperty();
-                expectedProperty.setContentPropertyPath("child.child.content");
-                expectedProperty.setContentIdPropertyPath("child.child.contentId");
-                expectedProperty.setContentIdType(TypeDescriptor.valueOf(UUID.class));
-                expectedProperty.setContentLengthPropertyPath("child.child.contentLen");
-                expectedProperty.setContentLengthType(TypeDescriptor.valueOf(Long.class));
-                expectedProperty.setMimeTypePropertyPath("child.child.contentMimeType");
-                expectedProperty.setOriginalFileNamePropertyPath("child.child.contentOriginalFileName");
-                assertThat(visitor.getProperties(), hasEntry("child/child/content", expectedProperty));
+    }
 
-                ContentProperty expectedProperty2 = new ContentProperty();
-                expectedProperty2.setContentPropertyPath("child.child.preview");
-                expectedProperty2.setContentIdPropertyPath("child.child.previewId");
-                expectedProperty2.setContentIdType(TypeDescriptor.valueOf(UUID.class));
-                expectedProperty2.setContentLengthPropertyPath("child.child.previewLen");
-                expectedProperty2.setContentLengthType(TypeDescriptor.valueOf(Integer.class));
-                expectedProperty2.setMimeTypePropertyPath("child.child.previewMimeType");
-                expectedProperty2.setOriginalFileNamePropertyPath("child.child.previewOriginalFileName");
-                assertThat(visitor.getProperties(), hasEntry("child/child/preview", expectedProperty2));
-            });
-        });
+    @Nested
+    class GivenAClassWithContentPropertiesInItsSuperClass {
+        @Test
+        void shouldVisitThem() throws Throwable {
+            ContentPropertyMappingContextVisitor visitor = new ContentPropertyMappingContextVisitor("/", ".");
+            ClassWalker walker = new ClassWalker(visitor);
+            walker.accept(TestClass4.class);
+
+            ContentProperty expectedProperty = new ContentProperty();
+            expectedProperty.setContentPropertyPath("content");
+            expectedProperty.setContentIdPropertyPath("contentId");
+            expectedProperty.setContentIdType(TypeDescriptor.valueOf(String.class));
+            expectedProperty.setContentLengthPropertyPath("contentLength");
+            expectedProperty.setContentLengthType(TypeDescriptor.valueOf(int.class));
+            expectedProperty.setMimeTypePropertyPath("contentMimeType");
+            expectedProperty.setOriginalFileNamePropertyPath("contentOriginalFileName");
+            assertThat(visitor.getProperties()).containsEntry("content", expectedProperty);
+
+        }
+
+    }
+
+    @Nested
+    class GivenAClassWithMultipleChildContentPropertyObjects {
+        @Test
+        void shouldReturnTwoContentProperties() throws Throwable {
+            ContentPropertyMappingContextVisitor visitor = new ContentPropertyMappingContextVisitor("/", ".");
+            ClassWalker walker = new ClassWalker(visitor);
+            walker.accept(TestClass5.class);
+
+            ContentProperty expectedProperty = new ContentProperty();
+            expectedProperty.setContentPropertyPath("child1.content");
+            expectedProperty.setContentIdPropertyPath("child1.contentId");
+            expectedProperty.setContentIdType(TypeDescriptor.valueOf(UUID.class));
+            expectedProperty.setContentLengthPropertyPath("child1.len");
+            expectedProperty.setContentLengthType(TypeDescriptor.valueOf(Long.class));
+            expectedProperty.setMimeTypePropertyPath("child1.mimeType");
+            expectedProperty.setOriginalFileNamePropertyPath("child1.originalFileName");
+            assertThat(visitor.getProperties()).containsEntry("child1", expectedProperty);
+
+            ContentProperty expectedProperty3 = new ContentProperty();
+            expectedProperty3.setContentPropertyPath("child2.content");
+            expectedProperty3.setContentIdPropertyPath("child2.contentId");
+            expectedProperty3.setContentIdType(TypeDescriptor.valueOf(UUID.class));
+            expectedProperty3.setContentLengthPropertyPath("child2.len");
+            expectedProperty3.setContentLengthType(TypeDescriptor.valueOf(Long.class));
+            expectedProperty3.setMimeTypePropertyPath("child2.mimeType");
+            expectedProperty3.setOriginalFileNamePropertyPath("child2.originalFileName");
+            assertThat(visitor.getProperties()).containsEntry("child2", expectedProperty3);
+
+        }
+
+    }
+
+    @Nested
+    class GivenAClassWithAChildWithMultipleContentPropertyObjects {
+        @Test
+        void shouldReturnTwoContentProperties() throws Throwable {
+            ContentPropertyMappingContextVisitor visitor = new ContentPropertyMappingContextVisitor("/", ".");
+            ClassWalker walker = new ClassWalker(visitor);
+            walker.accept(TestClass6.class);
+
+            ContentProperty expectedProperty = new ContentProperty();
+            expectedProperty.setContentPropertyPath("child.content");
+            expectedProperty.setContentIdPropertyPath("child.contentId");
+            expectedProperty.setContentIdType(TypeDescriptor.valueOf(UUID.class));
+            expectedProperty.setContentLengthPropertyPath("child.contentLen");
+            expectedProperty.setContentLengthType(TypeDescriptor.valueOf(Long.class));
+            expectedProperty.setMimeTypePropertyPath("child.contentMimeType");
+            expectedProperty.setOriginalFileNamePropertyPath("child.contentOriginalFileName");
+            assertThat(visitor.getProperties()).containsEntry("child/content", expectedProperty);
+
+            ContentProperty expectedProperty3 = new ContentProperty();
+            expectedProperty3.setContentPropertyPath("child.preview");
+            expectedProperty3.setContentIdPropertyPath("child.previewId");
+            expectedProperty3.setContentIdType(TypeDescriptor.valueOf(UUID.class));
+            expectedProperty3.setContentLengthPropertyPath("child.previewLen");
+            expectedProperty3.setContentLengthType(TypeDescriptor.valueOf(Integer.class));
+            expectedProperty3.setMimeTypePropertyPath("child.previewMimeType");
+            expectedProperty3.setOriginalFileNamePropertyPath("child.previewOriginalFileName");
+            assertThat(visitor.getProperties()).containsEntry("child/preview", expectedProperty3);
+
+        }
+
+    }
+
+    @Nested
+    class GivenAClassWithAChildWithAChildWithMultipleContentPropertyObjects {
+        @Test
+        void shouldReturnTwoContentProperties() throws Throwable {
+            ContentPropertyMappingContextVisitor visitor = new ContentPropertyMappingContextVisitor("/", ".");
+            ClassWalker walker = new ClassWalker(visitor);
+            walker.accept(TestClass7.class);
+
+            ContentProperty expectedProperty = new ContentProperty();
+            expectedProperty.setContentPropertyPath("child.child.content");
+            expectedProperty.setContentIdPropertyPath("child.child.contentId");
+            expectedProperty.setContentIdType(TypeDescriptor.valueOf(UUID.class));
+            expectedProperty.setContentLengthPropertyPath("child.child.contentLen");
+            expectedProperty.setContentLengthType(TypeDescriptor.valueOf(Long.class));
+            expectedProperty.setMimeTypePropertyPath("child.child.contentMimeType");
+            expectedProperty.setOriginalFileNamePropertyPath("child.child.contentOriginalFileName");
+            assertThat(visitor.getProperties()).containsEntry("child/child/content", expectedProperty);
+
+            ContentProperty expectedProperty2 = new ContentProperty();
+            expectedProperty2.setContentPropertyPath("child.child.preview");
+            expectedProperty2.setContentIdPropertyPath("child.child.previewId");
+            expectedProperty2.setContentIdType(TypeDescriptor.valueOf(UUID.class));
+            expectedProperty2.setContentLengthPropertyPath("child.child.previewLen");
+            expectedProperty2.setContentLengthType(TypeDescriptor.valueOf(Integer.class));
+            expectedProperty2.setMimeTypePropertyPath("child.child.previewMimeType");
+            expectedProperty2.setOriginalFileNamePropertyPath("child.child.previewOriginalFileName");
+            assertThat(visitor.getProperties()).containsEntry("child/child/preview", expectedProperty2);
+
+        }
+
     }
 
     public static class TestClass {

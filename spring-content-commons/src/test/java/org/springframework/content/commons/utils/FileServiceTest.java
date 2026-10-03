@@ -1,22 +1,19 @@
 package org.springframework.content.commons.utils;
 
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jConfiguration;
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jRunner;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Nested;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+
 import org.apache.commons.io.FileUtils;
-import org.junit.runner.RunWith;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.*;
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.fail;
-
-@RunWith(Ginkgo4jRunner.class)
-@Ginkgo4jConfiguration(threads = 1)
 public class FileServiceTest {
 
 	private FileService fileService;
@@ -24,132 +21,233 @@ public class FileServiceTest {
 	private File parent;
 	private Exception ex;
 
-	{
-		Describe("mkdirs", () -> {
-			BeforeEach(() -> parent = Files.createTempDirectory("commons-").toFile());
+	
+    @Nested
+    class Mkdirs {
+        @Nested
+        class WhenPassedInAFileThatExists {
+            @BeforeEach
+            void setUp() throws Throwable {
+                parent = Files.createTempDirectory("commons-").toFile();
+                file = new File(parent, "something.txt");
+                FileUtils.touch(file);
+                assertThat(file.exists()).isTrue();
 
-			JustBeforeEach(() -> {
-				fileService = new FileServiceImpl();
-				try {
-					fileService.mkdirs(file);
-				}
-				catch (Exception e) {
-					ex = e;
-				}
-			});
+                fileService = new FileServiceImpl();
+                try {
+                	fileService.mkdirs(file);
+                }
+                catch (Exception e) {
+                	ex = e;
+                }
 
-			Context("when passed in a file that exists", () -> {
-				BeforeEach(() -> {
-					file = new File(parent, "something.txt");
-					FileUtils.touch(file);
-					assertThat(file.exists(), is(true));
-				});
-				AfterEach(() -> file.delete());
-				It("should throw an IOException", () -> {
-					assertThat(ex, is(not(nullValue())));
-					assertThat(ex, instanceOf(IOException.class));
-				});
-			});
+            }
 
-			Context("when passed in a file that does not exist", () -> {
-				BeforeEach(() -> {
-					file = new File(parent, "something.txt");
-					assertThat(file.exists(), is(false));
-				});
-				AfterEach(() -> file.delete());
+            @AfterEach
+            void tearDown() throws Throwable {
+                file.delete();
+            }
 
-				It("should not throw an exception", () -> assertThat(ex, is(nullValue())));
+            @Test
+            void shouldThrowAnIOException() throws Throwable {
+                assertThat(ex).isNotNull();
+                assertThat(ex).isInstanceOf(IOException.class);
 
-				It("should create the directory", () -> {
-					assertThat(file.isDirectory(), is(true));
-					assertThat(file.exists(), is(true));
-				});
-			});
+            }
 
-			Context("when passed in a directory that exists", () -> {
-				BeforeEach(() -> {
-					file = new File(parent, "something");
-					file.mkdirs();
-					assertThat(file.exists(), is(true));
-				});
-				AfterEach(() -> file.delete());
-				It("should succeed", () -> {
-					assertThat(ex, is(nullValue()));
-					assertThat(file.exists(), is(true));
-					assertThat(file.isDirectory(), is(true));
-				});
-			});
+        }
 
-			Context("when passed in a directory that does not exist", () -> {
-				BeforeEach(() -> {
-					file = new File(parent, "something");
-					assertThat(file.exists(), is(false));
-				});
-				AfterEach(() -> file.delete());
-				It("should succeed", () -> {
-					assertThat(ex, is(nullValue()));
-					assertThat(file.exists(), is(true));
-					assertThat(file.isDirectory(), is(true));
-				});
+        @Nested
+        class WhenPassedInAFileThatDoesNotExist {
+            @BeforeEach
+            void setUp() throws Throwable {
+                parent = Files.createTempDirectory("commons-").toFile();
+                file = new File(parent, "something.txt");
+                assertThat(file.exists()).isFalse();
 
-			});
+                fileService = new FileServiceImpl();
+                try {
+                	fileService.mkdirs(file);
+                }
+                catch (Exception e) {
+                	ex = e;
+                }
 
-			Context("when passed null", () -> {
-				BeforeEach(() -> file = null);
-				It("should throw an IllegalArgumentException", () -> {
-					assertThat(ex, is(not(nullValue())));
-					assertThat(ex, instanceOf(IllegalArgumentException.class));
-				});
-			});
-		});
+            }
 
-		Describe("rmdirs", () -> {
-			JustBeforeEach(() -> fileService = new FileServiceImpl());
+            @AfterEach
+            void tearDown() throws Throwable {
+                file.delete();
+            }
 
-			It("should delete empty directories but stop at 'to'", () -> {
-				Path p0 = Files.createTempDirectory(null);
-				Path p1 = Files.createTempDirectory(p0, null);
-				Path p2 = Files.createTempDirectory(p1, null);
+            @Test
+            void shouldNotThrowAnException() throws Throwable {
+                assertThat(ex).isNull();
+            }
 
-				fileService.rmdirs(p2.toFile(), p0.toFile());
+            @Test
+            void shouldCreateTheDirectory() throws Throwable {
+                assertThat(file.isDirectory()).isTrue();
+                assertThat(file.exists()).isTrue();
 
-				assertThat(p2.toFile().exists(), is(false));
-				assertThat(p1.toFile().exists(), is(false));
-				assertThat(p0.toFile().exists(), is(true));
-			});
+            }
 
-			It("should reject files", () -> {
-				Path tempFile = Files.createTempFile(null, null);
+        }
 
-				try {
-					fileService.rmdirs(tempFile.toFile(), null);
-					fail("unexpected");
-				} catch (IOException e) {
-					assertThat(e, is(not(nullValue())));
-				}
-			});
+        @Nested
+        class WhenPassedInADirectoryThatExists {
+            @BeforeEach
+            void setUp() throws Throwable {
+                parent = Files.createTempDirectory("commons-").toFile();
+                file = new File(parent, "something");
+                file.mkdirs();
+                assertThat(file.exists()).isTrue();
 
-			It("should leave directories that are not empty", () -> {
-				Path p0 = Files.createTempDirectory(null);
-				Path p1 = Files.createTempDirectory(p0, null);
-				Path f1 = Files.createTempFile(p1, null, null);
-				Path p2 = Files.createTempDirectory(p1, null);
+                fileService = new FileServiceImpl();
+                try {
+                	fileService.mkdirs(file);
+                }
+                catch (Exception e) {
+                	ex = e;
+                }
 
-				fileService.rmdirs(p2.toFile(), p0.toFile());
+            }
 
-				assertThat(p2.toFile().exists(), is(false));
-				assertThat(p1.toFile().exists(), is(true));
-				assertThat(f1.toFile().exists(), is(true));
-				assertThat(p0.toFile().exists(), is(true));
-			});
+            @AfterEach
+            void tearDown() throws Throwable {
+                file.delete();
+            }
 
-			It("should do nothing when 'from' and 'to' are the same", () -> {
-				Path p0 = Files.createTempDirectory(null);
+            @Test
+            void shouldSucceed() throws Throwable {
+                assertThat(ex).isNull();
+                assertThat(file.exists()).isTrue();
+                assertThat(file.isDirectory()).isTrue();
 
-				fileService.rmdirs(p0.toFile(), p0.toFile());
+            }
 
-				assertThat(p0.toFile().exists(), is(true));
-			});
-		});
-	}
+        }
+
+        @Nested
+        class WhenPassedInADirectoryThatDoesNotExist {
+            @BeforeEach
+            void setUp() throws Throwable {
+                parent = Files.createTempDirectory("commons-").toFile();
+                file = new File(parent, "something");
+                assertThat(file.exists()).isFalse();
+
+                fileService = new FileServiceImpl();
+                try {
+                	fileService.mkdirs(file);
+                }
+                catch (Exception e) {
+                	ex = e;
+                }
+
+            }
+
+            @AfterEach
+            void tearDown() throws Throwable {
+                file.delete();
+            }
+
+            @Test
+            void shouldSucceed() throws Throwable {
+                assertThat(ex).isNull();
+                assertThat(file.exists()).isTrue();
+                assertThat(file.isDirectory()).isTrue();
+
+            }
+
+        }
+
+        @Nested
+        class WhenPassedNull {
+            @BeforeEach
+            void setUp() throws Throwable {
+                parent = Files.createTempDirectory("commons-").toFile();
+                file = null;
+                fileService = new FileServiceImpl();
+                try {
+                	fileService.mkdirs(file);
+                }
+                catch (Exception e) {
+                	ex = e;
+                }
+
+            }
+
+            @Test
+            void shouldThrowAnIllegalArgumentException() throws Throwable {
+                assertThat(ex).isNotNull();
+                assertThat(ex).isInstanceOf(IllegalArgumentException.class);
+
+            }
+
+        }
+
+    }
+
+    @Nested
+    class Rmdirs {
+        @BeforeEach
+        void setUp() throws Throwable {
+            fileService = new FileServiceImpl();
+        }
+
+        @Test
+        void shouldDeleteEmptyDirectoriesButStopAtTo() throws Throwable {
+            Path p0 = Files.createTempDirectory(null);
+            Path p1 = Files.createTempDirectory(p0, null);
+            Path p2 = Files.createTempDirectory(p1, null);
+
+            fileService.rmdirs(p2.toFile(), p0.toFile());
+
+            assertThat(p2.toFile().exists()).isFalse();
+            assertThat(p1.toFile().exists()).isFalse();
+            assertThat(p0.toFile().exists()).isTrue();
+
+        }
+
+        @Test
+        void shouldRejectFiles() throws Throwable {
+            Path tempFile = Files.createTempFile(null, null);
+
+            try {
+            	fileService.rmdirs(tempFile.toFile(), null);
+            	fail("unexpected");
+            } catch (IOException e) {
+            	assertThat(e).isNotNull();
+            }
+
+        }
+
+        @Test
+        void shouldLeaveDirectoriesThatAreNotEmpty() throws Throwable {
+            Path p0 = Files.createTempDirectory(null);
+            Path p1 = Files.createTempDirectory(p0, null);
+            Path f1 = Files.createTempFile(p1, null, null);
+            Path p2 = Files.createTempDirectory(p1, null);
+
+            fileService.rmdirs(p2.toFile(), p0.toFile());
+
+            assertThat(p2.toFile().exists()).isFalse();
+            assertThat(p1.toFile().exists()).isTrue();
+            assertThat(f1.toFile().exists()).isTrue();
+            assertThat(p0.toFile().exists()).isTrue();
+
+        }
+
+        @Test
+        void shouldDoNothingWhenFromAndToAreTheSame() throws Throwable {
+            Path p0 = Files.createTempDirectory(null);
+
+            fileService.rmdirs(p0.toFile(), p0.toFile());
+
+            assertThat(p0.toFile().exists()).isTrue();
+
+        }
+
+    }
+
 }

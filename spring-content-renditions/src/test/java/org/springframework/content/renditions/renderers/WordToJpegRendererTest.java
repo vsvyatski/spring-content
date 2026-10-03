@@ -1,12 +1,14 @@
 package org.springframework.content.renditions.renderers;
 
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jConfiguration;
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jRunner;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.apache.poi.ooxml.POIXMLException;
 import org.apache.poi.ooxml.POIXMLProperties;
 import org.apache.poi.openxml4j.exceptions.NotOfficeXmlFileException;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
-import org.junit.runner.RunWith;
 import org.springframework.content.commons.renditions.RenditionProvider;
 import org.springframework.content.renditions.RenditionException;
 import org.springframework.renditions.poi.POIService;
@@ -15,16 +17,9 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.*;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-@RunWith(Ginkgo4jRunner.class)
-@Ginkgo4jConfiguration(threads = 1)
 public class WordToJpegRendererTest {
 
     private POIService poi;
@@ -38,88 +33,208 @@ public class WordToJpegRendererTest {
 
     private Exception e;
 
-    {
-        Describe("WordToJpegRenderer", () -> {
-            BeforeEach(() -> {
+    
+    @Nested
+    class WordToJpegRendererCases {
+        @Nested
+        class Consumes {
+            @BeforeEach
+            void setUp() throws Throwable {
                 poi = mock(POIService.class);
                 renderer = new WordToJpegRenderer(poi);
-            });
-            Context("#consumes", () -> {
-                It("should return word ml mimetype", () -> {
-                    assertThat(renderer.consumes(), is(
-                            "application/vnd.openxmlformats-officedocument.wordprocessingml.document"));
-                });
-            });
-            Context("#produces", () -> {
-                It("should return jpeg mimetype", () -> {
-                    assertThat(renderer.produces(), hasItemInArray("image/jpg"));
-                });
-            });
-            Context("#convert", () -> {
-                JustBeforeEach(() -> {
+
+            }
+
+            @Test
+            void shouldReturnWordMlMimetype() throws Throwable {
+                assertThat(renderer.consumes()).isEqualTo("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+
+            }
+
+        }
+
+        @Nested
+        class Produces {
+            @BeforeEach
+            void setUp() throws Throwable {
+                poi = mock(POIService.class);
+                renderer = new WordToJpegRenderer(poi);
+
+            }
+
+            @Test
+            void shouldReturnJpegMimetype() throws Throwable {
+                assertThat(renderer.produces()).contains("image/jpg");
+
+            }
+
+        }
+
+        @Nested
+        class Convert {
+            @Nested
+            class GivenAnInputStreamAndAMimetype {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    poi = mock(POIService.class);
+                    renderer = new WordToJpegRenderer(poi);
+
+                    doc = mock(XWPFDocument.class);
+                    when(poi.xwpfDocument(any())).thenReturn(doc);
+                    props = mock(POIXMLProperties.class);
+                    when(doc.getProperties()).thenReturn(props);
+
+                    input = new ByteArrayInputStream("".getBytes());
+
                     try {
                         renderer.convert(input, mimeType);
                     } catch (Exception e) {
-                        this.e = e;
+                        WordToJpegRendererTest.this.e = e;
                     }
-                });
-                Context("given an input stream and a mimetype", () -> {
-                    BeforeEach(() -> {
+
+                }
+
+                @Test
+                void shouldGetTheEmbeddedThumbnailFromTheXWPFDocumentSProperties() throws Throwable {
+                    verify(props).getThumbnailImage();
+
+                }
+
+                @Nested
+                class WhenTheInputStreamIsNotAValidWordFile {
+                    @BeforeEach
+                    void setUp() throws Throwable {
+                        poi = mock(POIService.class);
+                        renderer = new WordToJpegRenderer(poi);
+
                         doc = mock(XWPFDocument.class);
                         when(poi.xwpfDocument(any())).thenReturn(doc);
                         props = mock(POIXMLProperties.class);
                         when(doc.getProperties()).thenReturn(props);
 
                         input = new ByteArrayInputStream("".getBytes());
-                    });
-                    It("should get the embedded thumbnail from the XWPFDocument's properties",
-                            () -> {
-                                verify(props).getThumbnailImage();
-                            });
-                    Context("when the input stream is not a valid word file", () -> {
-                        BeforeEach(() -> {
-                            doc = mock(XWPFDocument.class);
-                            doThrow(NotOfficeXmlFileException.class).when(poi)
-                                    .xwpfDocument(any());
-                        });
-                        It("should throw a RenditionException", () -> {
-                            assertThat(e, is(not(nullValue())));
-                            assertThat(e, is(instanceOf(RenditionException.class)));
-                        });
-                    });
-                    Context("when the word document fails to return properties", () -> {
-                        BeforeEach(() -> {
-                            doc = mock(XWPFDocument.class);
-                            when(poi.xwpfDocument(any())).thenReturn(doc);
-                            props = mock(POIXMLProperties.class);
-                            doThrow(POIXMLException.class).when(doc).getProperties();
-                        });
-                        It("should throw a RenditionException", () -> {
-                            assertThat(e, is(not(nullValue())));
-                            assertThat(e, is(instanceOf(RenditionException.class)));
-                        });
-                    });
-                    Context("when the word document fails to return a thumbnail", () -> {
-                        BeforeEach(() -> {
-                            doc = mock(XWPFDocument.class);
-                            when(poi.xwpfDocument(any())).thenReturn(doc);
-                            props = mock(POIXMLProperties.class);
-                            when(doc.getProperties()).thenReturn(props);
-                            doThrow(IOException.class).when(props).getThumbnailImage();
-                        });
-                        It("should throw a RenditionException", () -> {
-                            assertThat(e, is(not(nullValue())));
-                            assertThat(e, is(instanceOf(RenditionException.class)));
-                        });
-                    });
-                });
-                Context("given a null input stream", () -> {
-                    It("should get the embedded thumbnail from the XWPFDocument's properties",
-                            () -> {
-                                assertThat(e, is(not(nullValue())));
-                            });
-                });
-            });
-        });
+
+                        doc = mock(XWPFDocument.class);
+                        doThrow(NotOfficeXmlFileException.class).when(poi)
+                                .xwpfDocument(any());
+
+                        try {
+                            renderer.convert(input, mimeType);
+                        } catch (Exception e) {
+                            WordToJpegRendererTest.this.e = e;
+                        }
+
+                    }
+
+                    @Test
+                    void shouldThrowARenditionException() throws Throwable {
+                        assertThat(e).isNotNull();
+                        assertThat(e).isInstanceOf(RenditionException.class);
+
+                    }
+
+                }
+
+                @Nested
+                class WhenTheWordDocumentFailsToReturnProperties {
+                    @BeforeEach
+                    void setUp() throws Throwable {
+                        poi = mock(POIService.class);
+                        renderer = new WordToJpegRenderer(poi);
+
+                        doc = mock(XWPFDocument.class);
+                        when(poi.xwpfDocument(any())).thenReturn(doc);
+                        props = mock(POIXMLProperties.class);
+                        when(doc.getProperties()).thenReturn(props);
+
+                        input = new ByteArrayInputStream("".getBytes());
+
+                        doc = mock(XWPFDocument.class);
+                        when(poi.xwpfDocument(any())).thenReturn(doc);
+                        props = mock(POIXMLProperties.class);
+                        doThrow(POIXMLException.class).when(doc).getProperties();
+
+                        try {
+                            renderer.convert(input, mimeType);
+                        } catch (Exception e) {
+                            WordToJpegRendererTest.this.e = e;
+                        }
+
+                    }
+
+                    @Test
+                    void shouldThrowARenditionException() throws Throwable {
+                        assertThat(e).isNotNull();
+                        assertThat(e).isInstanceOf(RenditionException.class);
+
+                    }
+
+                }
+
+                @Nested
+                class WhenTheWordDocumentFailsToReturnAThumbnail {
+                    @BeforeEach
+                    void setUp() throws Throwable {
+                        poi = mock(POIService.class);
+                        renderer = new WordToJpegRenderer(poi);
+
+                        doc = mock(XWPFDocument.class);
+                        when(poi.xwpfDocument(any())).thenReturn(doc);
+                        props = mock(POIXMLProperties.class);
+                        when(doc.getProperties()).thenReturn(props);
+
+                        input = new ByteArrayInputStream("".getBytes());
+
+                        doc = mock(XWPFDocument.class);
+                        when(poi.xwpfDocument(any())).thenReturn(doc);
+                        props = mock(POIXMLProperties.class);
+                        when(doc.getProperties()).thenReturn(props);
+                        doThrow(IOException.class).when(props).getThumbnailImage();
+
+                        try {
+                            renderer.convert(input, mimeType);
+                        } catch (Exception e) {
+                            WordToJpegRendererTest.this.e = e;
+                        }
+
+                    }
+
+                    @Test
+                    void shouldThrowARenditionException() throws Throwable {
+                        assertThat(e).isNotNull();
+                        assertThat(e).isInstanceOf(RenditionException.class);
+
+                    }
+
+                }
+
+            }
+
+            @Nested
+            class GivenANullInputStream {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    poi = mock(POIService.class);
+                    renderer = new WordToJpegRenderer(poi);
+
+                    try {
+                        renderer.convert(input, mimeType);
+                    } catch (Exception e) {
+                        WordToJpegRendererTest.this.e = e;
+                    }
+
+                }
+
+                @Test
+                void shouldGetTheEmbeddedThumbnailFromTheXWPFDocumentSProperties() throws Throwable {
+                    assertThat(e).isNotNull();
+
+                }
+
+            }
+
+        }
+
     }
+
 }

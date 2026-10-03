@@ -1,16 +1,19 @@
 package it.rest.versioning;
 
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jConfiguration;
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jSpringRunner;
+import org.junit.jupiter.api.extension.ExtendWith;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import static org.assertj.core.api.Assertions.assertThat;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import io.restassured.path.json.JsonPath;
 import jakarta.persistence.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.http.HttpStatus;
-import org.hamcrest.Matchers;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
@@ -64,14 +67,10 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.util.UUID;
 
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.*;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.MatcherAssert.assertThat;
 
-@RunWith(Ginkgo4jSpringRunner.class)
-@Ginkgo4jConfiguration(threads=1)
 @SpringBootTest(classes = {LockingAndVersioningRestIT.Application.class}, webEnvironment=WebEnvironment.RANDOM_PORT)
+@ExtendWith(SpringExtension.class)
 public class LockingAndVersioningRestIT {
 
     @Autowired
@@ -85,102 +84,109 @@ public class LockingAndVersioningRestIT {
 
     private VersionedDocument doc;
 
-    {
-        Describe("Spring Content REST Versioning", () -> {
-            BeforeEach(() -> {
+    
+    @Nested
+    class SpringContentRESTVersioning {
+        @Nested
+        class GivenAVersionableEntityWithContent {
+            @BeforeEach
+            void setUp() throws Throwable {
                 RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
-            });
-            Context("given a versionable entity with content", () -> {
-                BeforeEach(() -> {
-                    doc = new VersionedDocument();
-                    doc.setData("John");
-                    doc = repo.save(doc);
-                });
-                It("should be able to version an entity and its content", () -> {
-                    // assert content does not exist
-                    given()
-                            .auth().with(SecurityMockMvcRequestPostProcessors.user("paul123").password("password"))
-                            .when()
-                            .get("/versionedDocumentsContent/" + doc.getId())
-                            .then()
-                            .assertThat()
-                            .statusCode(HttpStatus.SC_NOT_FOUND);
 
-                    String newContent = "This is some new content";
+                doc = new VersionedDocument();
+                doc.setData("John");
+                doc = repo.save(doc);
 
-                    // POST the new content
-                    given()
-                            .contentType("plain/text")
-                            .body(newContent.getBytes())
-                            .auth().with(SecurityMockMvcRequestPostProcessors.user("paul123").password("password"))
-                            .when()
-                            .put("/versionedDocumentsContent/" + doc.getId())
-                            .then()
-                            .statusCode(HttpStatus.SC_CREATED);
+            }
 
-                    // assert that it now exists
-                    given()
-                            .auth().with(SecurityMockMvcRequestPostProcessors.user("paul123").password("password"))
-                            .header("accept", "plain/text")
-                            .get("/versionedDocumentsContent/" + doc.getId())
-                            .then()
-                            .statusCode(HttpStatus.SC_OK)
-                            .assertThat()
-                            .contentType(Matchers.startsWith("plain/text"))
-                            .body(Matchers.equalTo(newContent));
+            @Test
+            void shouldBeAbleToVersionAnEntityAndItsContent() throws Throwable {
+                // assert content does not exist
+                given()
+                        .auth().with(SecurityMockMvcRequestPostProcessors.user("paul123").password("password"))
+                        .when()
+                        .get("/versionedDocumentsContent/" + doc.getId())
+                        .then()
+                        .assertThat()
+                        .statusCode(HttpStatus.SC_NOT_FOUND);
 
-                    given()
-                            .auth().with(SecurityMockMvcRequestPostProcessors.user("paul123").password("password"))
-                            .header("accept", "application/json")
-                            .put("/versionedDocuments/" + doc.getId() + "/lock")
-                            .then()
-                            .statusCode(HttpStatus.SC_OK);
+                String newContent = "This is some new content";
 
-                    // POST the new content as john
-                    given()
-                            .auth().with(SecurityMockMvcRequestPostProcessors.user("john123").password("password"))
-                            .contentType("plain/text")
-                            .body("john's content".getBytes())
-                            .when()
-                            .put("/versionedDocumentsContent/" + doc.getId())
-                            .then()
-                            .statusCode(is(409));
+                // POST the new content
+                given()
+                        .contentType("plain/text")
+                        .body(newContent.getBytes())
+                        .auth().with(SecurityMockMvcRequestPostProcessors.user("paul123").password("password"))
+                        .when()
+                        .put("/versionedDocumentsContent/" + doc.getId())
+                        .then()
+                        .statusCode(HttpStatus.SC_CREATED);
 
-                    JsonPath response =
-                            given()
-                                    .auth().with(SecurityMockMvcRequestPostProcessors.user("paul123").password("password"))
-                                    .contentType("application/json")
-                                    .body("{\"number\":\"1.1\",\"label\":\"some minor changes\"}".getBytes())
-                                    .put("/versionedDocuments/" + doc.getId() + "/version")
-                                    .then()
-                                    .statusCode(HttpStatus.SC_OK)
-                                    .extract().jsonPath();
-                    assertThat(response.get("_links.self.href"), endsWith("versionedDocuments/" + (doc.getId() + 1)));
+                // assert that it now exists
+                var response1 = given()
+                        .auth().with(SecurityMockMvcRequestPostProcessors.user("paul123").password("password"))
+                        .header("accept", "plain/text")
+                        .get("/versionedDocumentsContent/" + doc.getId())
+                        .then()
+                        .statusCode(HttpStatus.SC_OK)
+                        .extract().response();
+                assertThat(response1.getContentType()).startsWith("plain/text");
+                assertThat(response1.asString()).isEqualTo(newContent);
 
-                    response =
-                            given()
-                                    .auth().with(SecurityMockMvcRequestPostProcessors.user("paul123").password("password"))
-                                    .get("/versionedDocuments/findAllVersionsLatest")
-                                    .then()
-                                    .statusCode(HttpStatus.SC_OK)
-                                    .extract().jsonPath();
-                    assertThat(response.get("_embedded.versionedDocuments[0].version"), is("1.1"));
-                    assertThat(response.get("_embedded.versionedDocuments[0].successorId"), is(nullValue()));
+                given()
+                        .auth().with(SecurityMockMvcRequestPostProcessors.user("paul123").password("password"))
+                        .header("accept", "application/json")
+                        .put("/versionedDocuments/" + doc.getId() + "/lock")
+                        .then()
+                        .statusCode(HttpStatus.SC_OK);
 
-                    response =
-                            given()
-                                    .auth().with(SecurityMockMvcRequestPostProcessors.user("paul123").password("password"))
-                                    .get("/versionedDocuments/" + (doc.getId() + 1) + "/findAllVersions")
-                                    .then()
-                                    .statusCode(HttpStatus.SC_OK)
-                                    .extract().jsonPath();
-                    assertThat(response.get("_embedded.versionedDocuments[0].version"), is("1.0"));
-                    assertThat(response.get("_embedded.versionedDocuments[0].successorId"), is((int)(doc.getId() + 1)));
-                    assertThat(response.get("_embedded.versionedDocuments[1].version"), is("1.1"));
-                    assertThat(response.get("_embedded.versionedDocuments[1].successorId"), is(nullValue()));
-                });
-            });
-        });
+                // POST the new content as john
+                given()
+                        .auth().with(SecurityMockMvcRequestPostProcessors.user("john123").password("password"))
+                        .contentType("plain/text")
+                        .body("john's content".getBytes())
+                        .when()
+                        .put("/versionedDocumentsContent/" + doc.getId())
+                        .then()
+                        .statusCode(409);
+
+                JsonPath response =
+                        given()
+                                .auth().with(SecurityMockMvcRequestPostProcessors.user("paul123").password("password"))
+                                .contentType("application/json")
+                                .body("{\"number\":\"1.1\",\"label\":\"some minor changes\"}".getBytes())
+                                .put("/versionedDocuments/" + doc.getId() + "/version")
+                                .then()
+                                .statusCode(HttpStatus.SC_OK)
+                                .extract().jsonPath();
+                assertThat((String) response.get("_links.self.href")).endsWith("versionedDocuments/" + (doc.getId() + 1));
+
+                response =
+                        given()
+                                .auth().with(SecurityMockMvcRequestPostProcessors.user("paul123").password("password"))
+                                .get("/versionedDocuments/findAllVersionsLatest")
+                                .then()
+                                .statusCode(HttpStatus.SC_OK)
+                                .extract().jsonPath();
+                assertThat((Object) response.get("_embedded.versionedDocuments[0].version")).isEqualTo("1.1");
+                assertThat((Object) response.get("_embedded.versionedDocuments[0].successorId")).isNull();
+
+                response =
+                        given()
+                                .auth().with(SecurityMockMvcRequestPostProcessors.user("paul123").password("password"))
+                                .get("/versionedDocuments/" + (doc.getId() + 1) + "/findAllVersions")
+                                .then()
+                                .statusCode(HttpStatus.SC_OK)
+                                .extract().jsonPath();
+                assertThat((Object) response.get("_embedded.versionedDocuments[0].version")).isEqualTo("1.0");
+                assertThat((Object) response.get("_embedded.versionedDocuments[0].successorId")).isEqualTo((int)(doc.getId() + 1));
+                assertThat((Object) response.get("_embedded.versionedDocuments[1].version")).isEqualTo("1.1");
+                assertThat((Object) response.get("_embedded.versionedDocuments[1].successorId")).isNull();
+
+            }
+
+        }
+
     }
 
     @SpringBootApplication
@@ -272,7 +278,7 @@ public class LockingAndVersioningRestIT {
         protected static String REALM = "SPRING_CONTENT";
 
         @Autowired
-        public void configureGlobalSecurity(AuthenticationManagerBuilder auth) throws Exception {
+        public void configureGlobalSecurity(AuthenticationManagerBuilder auth) throws Throwable {
             // Enable if spring-doc apps supports user accounts in the future
              auth.inMemoryAuthentication().
                      withUser(User.withDefaultPasswordEncoder().username("paul123").password("password").roles("USER")).
@@ -453,6 +459,4 @@ public class LockingAndVersioningRestIT {
     public interface VersionedDocumentStore extends FileSystemContentStore<VersionedDocument, UUID> {
     }
 
-    @Test
-    public void noop() {}
 }
