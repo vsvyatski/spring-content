@@ -31,11 +31,10 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 
 import java.util.UUID;
 
-
 public class EnableMongoStoresTest {
 
 	private AnnotationConfigApplicationContext context;
-	
+
     @Nested
     class EnableMongoStoresCases {
         @Nested
@@ -106,7 +105,6 @@ public class EnableMongoStoresTest {
             }
         }
     }
-
 
 	@Test
 	public void noop() {

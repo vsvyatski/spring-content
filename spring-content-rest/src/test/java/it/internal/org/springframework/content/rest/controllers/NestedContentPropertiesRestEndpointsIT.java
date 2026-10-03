@@ -71,7 +71,6 @@ public class NestedContentPropertiesRestEndpointsIT {
 
    private MockMvc mvc;
 
-   
     @Nested
     class NestedContentPropertiesRESTEndpoints {
         @Nested

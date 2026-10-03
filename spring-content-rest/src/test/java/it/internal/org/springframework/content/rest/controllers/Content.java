@@ -87,7 +87,6 @@ public class Content {
         this.store = store;
     }
 
-    
     @Nested
     class AGETToStoreIdAccepting {
         @Test

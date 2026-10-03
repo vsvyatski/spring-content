@@ -28,7 +28,6 @@ public class StoreTest {
 	@Autowired
 	private ApplicationContext context;
 
-	
     @Nested
     class GivenAStoreDefinition {
         @Nested

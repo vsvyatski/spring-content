@@ -94,7 +94,6 @@ public class ContentLinksIT {
 
 	private ContentLinkTests contentLinkTests;
 
-	
     @Nested
     class NoLinkrel {
         @Nested

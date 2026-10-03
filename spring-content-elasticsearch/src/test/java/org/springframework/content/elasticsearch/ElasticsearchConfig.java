@@ -62,7 +62,6 @@ public class ElasticsearchConfig {
         };
     }
 
-
     @Bean
     public DataSource dataSource() {
         EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();

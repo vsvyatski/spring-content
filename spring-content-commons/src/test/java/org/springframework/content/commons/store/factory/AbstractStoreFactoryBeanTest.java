@@ -14,7 +14,6 @@ import org.springframework.core.io.Resource;
 
 public class AbstractStoreFactoryBeanTest {
 
-	
     @Nested
     class AbstractContentStoreFactoryBean {
         @Nested

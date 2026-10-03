@@ -13,7 +13,6 @@ public class FileSystemPropertiesTest {
     private FileSystemContentAutoConfiguration.FileSystemProperties props;
     private String someRandomPath;
 
-    
     @Nested
     class FileSystemPropertiesCases {
         @Nested

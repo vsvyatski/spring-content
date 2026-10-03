@@ -2,8 +2,6 @@ package internal.org.springframework.content.encryption.keys.converter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
-
 import org.junit.jupiter.api.Test;
 import org.springframework.content.encryption.keys.StoredDataEncryptionKey;
 import org.springframework.content.encryption.keys.StoredDataEncryptionKey.EncryptedSymmetricDataEncryptionKey;

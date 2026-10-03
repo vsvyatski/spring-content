@@ -26,7 +26,6 @@ public class StoresImplTest {
 	private ApplicationContext context;
 	private StoreFactory mockFactory;
 
-	
     @Nested
     class StoresImplCases {
         @Nested

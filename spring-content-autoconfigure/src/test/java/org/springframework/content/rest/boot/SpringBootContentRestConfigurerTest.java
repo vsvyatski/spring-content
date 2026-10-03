@@ -31,7 +31,6 @@ public class SpringBootContentRestConfigurerTest {
     private RestConfiguration restConfig;
     private RestConfiguration.Exclusions exclusions;
 
-    
     @Nested
     class SpringBootContentRestConfigurerCases {
         @Nested

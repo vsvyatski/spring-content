@@ -15,7 +15,6 @@ public class FileRemoverTest {
 
     private FileRemover observer;
 
-    
     @Nested
     class FileRemoverCases {
         @Nested

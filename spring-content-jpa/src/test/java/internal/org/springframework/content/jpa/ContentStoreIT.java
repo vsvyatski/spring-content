@@ -58,7 +58,6 @@ public class ContentStoreIT {
     protected Claim claim;
     protected Object id;
 
-    
     @Nested
     class ContentStoreCases {
         @TestFactory
@@ -560,7 +559,6 @@ public class ContentStoreIT {
             return tests.stream();
         }
     }
-
 
     public static <T> T doInTransaction(PlatformTransactionManager ptm, ThrowingSupplier<T> block) {
         TransactionStatus status = ptm.getTransaction(new DefaultTransactionDefinition());

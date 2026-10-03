@@ -83,7 +83,6 @@ public class ContentLinksWithProjectionsIT {
 
 	private TEntity testEntity;
 
-	
     @Nested
     class ContentLinksWithEntityProjectionCases {
         @Nested
@@ -118,7 +117,6 @@ public class ContentLinksWithProjectionsIT {
             }
         }
     }
-
 
 	@Entity
 	public static class TEntity {
@@ -320,7 +318,6 @@ public class ContentLinksWithProjectionsIT {
 //            };
 //        }
     }
-
 
 	@Test
 	public void noop() {

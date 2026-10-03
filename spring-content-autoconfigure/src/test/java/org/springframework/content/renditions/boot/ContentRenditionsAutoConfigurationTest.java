@@ -28,7 +28,6 @@ import internal.org.springframework.content.s3.boot.autoconfigure.S3ContentAutoC
 
 public class ContentRenditionsAutoConfigurationTest {
 
-    
     @Nested
     class ContentRenditionsAutoConfiguration {
         @Nested

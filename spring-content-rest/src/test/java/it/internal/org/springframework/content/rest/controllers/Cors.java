@@ -36,7 +36,6 @@ public class Cors {
 		this.url = url;
 	}
 
-	
     @Nested
     class AnOPTIONSRequestFromAKnownHost {
         @Test

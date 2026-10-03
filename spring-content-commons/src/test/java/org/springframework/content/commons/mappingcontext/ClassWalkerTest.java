@@ -27,7 +27,6 @@ public class ClassWalkerTest {
     private static Field subSubContentIdField = ReflectionUtils.findField(TestSubSubClass.class, "contentId");
     private static Field subSubContentLengthField = ReflectionUtils.findField(TestSubSubClass.class, "contentLength");
 
-    
     @Nested
     class ClassWalkerCases {
         @Test

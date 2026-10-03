@@ -102,7 +102,6 @@ public class LockingAndVersioningRestIT {
 
     private VersionedDocument doc;
 
-    
     @Nested
     class SpringContentRESTVersioningWithMongoStorage {
         @Nested

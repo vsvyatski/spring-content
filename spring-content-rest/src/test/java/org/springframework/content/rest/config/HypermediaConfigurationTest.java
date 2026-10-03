@@ -27,7 +27,6 @@ public class HypermediaConfigurationTest {
 
     private AnnotationConfigWebApplicationContext context;
 
-    
     @Nested
     class HypermediaConfigurationCases {
         @Nested

@@ -88,7 +88,6 @@ public class BaseUriIT {
 	private Content contentTests;
 	private Cors corsTests;
 
-	
     @Nested
     class BaseUriContentTests {
         @Nested

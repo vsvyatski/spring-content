@@ -34,7 +34,6 @@ public class ContentMongoAutoConfigurationTest {
 
     private ApplicationContextRunner contextRunner;
 
-    
     @Nested
     class ContentMongoAutoConfiguration {
         @BeforeEach

@@ -64,7 +64,6 @@ public class EntityContentLinksIT {
 
 	private ContentLinkTests contentLinkTests;
 
-	
     @Nested
     class EntityLinks {
         @Nested

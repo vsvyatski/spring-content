@@ -68,7 +68,6 @@ public class PreferResourceForPutsAndPostsIT {
 
     private TestEntity2 existingClaim;
 
-    
     @Nested
     class PreferResourceForPutsAndPosts {
         @BeforeEach

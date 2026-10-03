@@ -13,8 +13,6 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.cors.CorsConfiguration;
 
-
-
 public class CorsConfigurationBuilderTest {
 
 	private CorsConfigurationBuilder builder;
@@ -24,7 +22,6 @@ public class CorsConfigurationBuilderTest {
 
 	private Exception e;
 
-	
     @Nested
     class CorsConfigurationBuilderCases {
         @Nested
@@ -335,7 +332,6 @@ public class CorsConfigurationBuilderTest {
             }
         }
     }
-
 
 	public interface StoreWithNoCrossOrigin extends Store<UUID> {
 	}

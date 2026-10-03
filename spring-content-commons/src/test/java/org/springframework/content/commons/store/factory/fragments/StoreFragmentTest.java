@@ -10,7 +10,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.Serializable;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.commons.store.factory.testsupport.EnableTestStores;
@@ -19,7 +18,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
 
-
 @ContextConfiguration(classes = StoreFragmentTest.StoreTestConfiguration.class)
 @ExtendWith(SpringExtension.class)
 public class StoreFragmentTest {
@@ -27,7 +25,6 @@ public class StoreFragmentTest {
 	@Autowired
 	private ApplicationContext context;
 
-	
     @Nested
     class GivenAStoreDefinitionCases {
         @Nested
@@ -42,7 +39,6 @@ public class StoreFragmentTest {
             }
         }
     }
-
 
 	@Configuration
 	@EnableTestStores

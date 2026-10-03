@@ -6,7 +6,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
 import static org.assertj.core.api.Assertions.assertThat;
 
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -63,8 +62,6 @@ public class MongoStoreIT {
 
 	private String resourceLocation;
 
-
-	
     @Nested
     class DefaultMongoStoreImplCases {
         @Nested
@@ -988,7 +985,6 @@ public class MongoStoreIT {
             }
         }
     }
-
 
 	@Test
 	public void test() {

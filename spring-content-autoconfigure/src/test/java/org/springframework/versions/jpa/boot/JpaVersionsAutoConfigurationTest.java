@@ -37,7 +37,6 @@ public class JpaVersionsAutoConfigurationTest {
     private AnnotationConfigApplicationContext context;
     private ApplicationContextRunner contextRunner;
 
-    
     @Nested
     class JpaVersionsAutoConfigurationCases {
         @Nested

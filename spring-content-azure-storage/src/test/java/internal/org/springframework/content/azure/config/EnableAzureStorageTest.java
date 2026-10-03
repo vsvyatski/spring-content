@@ -47,7 +47,6 @@ public class EnableAzureStorageTest {
 	// mocks
 	static AzureStorageConfigurer configurer;
 
-	
     @Nested
     class EnableAzureStorageCases {
         @Nested
@@ -127,7 +126,6 @@ public class EnableAzureStorageTest {
         }
 
     }
-
 
 	@Configuration
 	@EnableAzureStorage(basePackages = "contains.no.fs.repositores")

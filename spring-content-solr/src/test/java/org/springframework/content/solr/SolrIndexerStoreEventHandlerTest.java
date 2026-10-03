@@ -44,7 +44,6 @@ public class SolrIndexerStoreEventHandlerTest {
     private StoreAccessException sae;
     private Throwable e;
 
-    
     @Nested
     class SolrIndexerStoreEventHandlerCases {
         @Nested

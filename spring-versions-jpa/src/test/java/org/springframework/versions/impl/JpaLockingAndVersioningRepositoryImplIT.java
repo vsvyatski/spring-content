@@ -82,7 +82,6 @@ public class JpaLockingAndVersioningRepositoryImplIT {
     @Autowired
     private OtherTestRepository otherRepo;
 
-    
     @Nested
     class GivenALockingAndVersioningRepositoryAndASecurityContext {
         @Nested

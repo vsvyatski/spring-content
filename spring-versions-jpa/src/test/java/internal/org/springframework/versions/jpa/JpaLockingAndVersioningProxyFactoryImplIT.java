@@ -37,7 +37,7 @@ public class JpaLockingAndVersioningProxyFactoryImplIT {
     private JpaLockingAndVersioningProxyFactoryImpl factory;
 
 	private AnnotationConfigApplicationContext context;
-	
+
     private PlatformTransactionManager txn;
     private EntityManager em;
     private LockingService locker;
@@ -45,7 +45,6 @@ public class JpaLockingAndVersioningProxyFactoryImplIT {
 
     private ProxyFactory proxyFactory;
 
-    
     @Nested
     class JpaLockingAndVersioningProxyFactoryImplCases {
         @Nested
@@ -123,7 +122,6 @@ public class JpaLockingAndVersioningProxyFactoryImplIT {
 
     }
 
-    
 	@Configuration
 	@EnableJpaRepositories
 	@Import({H2Config.class, JpaLockingAndVersioningConfig.class})
@@ -133,7 +131,7 @@ public class JpaLockingAndVersioningProxyFactoryImplIT {
 	@Configuration
 	@EnableTransactionManagement
 	public static class H2Config {
-		
+
 		@Bean
 		public DataSource dataSource() {
 			EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();

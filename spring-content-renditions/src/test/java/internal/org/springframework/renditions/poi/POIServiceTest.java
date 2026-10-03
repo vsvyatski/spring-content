@@ -21,7 +21,6 @@ public class POIServiceTest {
 
 	private InputStream stream;
 
-	
     @Nested
     class POIServiceCases {
         @Nested

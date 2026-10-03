@@ -77,7 +77,6 @@ public class MethodNotAllowedExceptionIT {
     @Autowired
     private WebApplicationContext webApplicationContext;
 
-    
     @Nested
     class WhenGetContentMethodIsNotExportedCases {
         @BeforeEach
@@ -173,7 +172,6 @@ public class MethodNotAllowedExceptionIT {
                                 .statusCode(405);
         }
     }
-
 
     public interface PreferResourceForPutsAndPostsRepository extends CrudRepository<TEntity, Long> {
     }

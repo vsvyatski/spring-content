@@ -48,7 +48,6 @@ public class StoreResolverRestConfigurationIT {
 
     private TestEntity2 existingClaim;
 
-    
     @Nested
     class JpaRest {
         @Nested

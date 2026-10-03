@@ -34,7 +34,6 @@ import java.net.URI;
 
 public class ContentRestAutoConfigurationTest {
 
-	
     @Nested
     class ContentRestAutoConfigurationCases {
         @Nested

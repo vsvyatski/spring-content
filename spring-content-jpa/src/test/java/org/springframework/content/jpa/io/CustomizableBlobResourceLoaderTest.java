@@ -35,7 +35,6 @@ public class CustomizableBlobResourceLoaderTest {
 
 	private Object result;
 
-	
     @Nested
     class CustomizableBlobResourceLoaderCases {
         @Nested

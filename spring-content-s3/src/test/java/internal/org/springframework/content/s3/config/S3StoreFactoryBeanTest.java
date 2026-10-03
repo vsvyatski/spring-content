@@ -16,7 +16,6 @@ import org.springframework.content.commons.store.Store;
 import org.springframework.content.commons.utils.PlacementService;
 import org.springframework.context.support.GenericApplicationContext;
 
-
 import software.amazon.awssdk.services.s3.S3Client;
 
 public class S3StoreFactoryBeanTest {
@@ -29,7 +28,6 @@ public class S3StoreFactoryBeanTest {
 
 	private Store store;
 
-	
     @Nested
     class S3StoreFactoryBeanCases {
         @Nested
@@ -84,7 +82,6 @@ public class S3StoreFactoryBeanTest {
             }
         }
     }
-
 
 	public interface TestStore extends Store<Serializable> {
 	}

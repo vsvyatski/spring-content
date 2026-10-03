@@ -8,7 +8,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-
 import java.util.Collection;
 
 import org.springframework.content.commons.mappingcontext.ContentProperty;
@@ -73,7 +72,6 @@ public class CustomKeyAccessorEncryptionIT {
 
     private FsFile f;
 
-    
     @Nested
     class ClientSideEncryptionWithCustomKeyStorageCases {
         @Nested
@@ -151,7 +149,6 @@ public class CustomKeyAccessorEncryptionIT {
             }
         }
     }
-
 
     @Test
     public void noop() {
@@ -335,7 +332,6 @@ public class CustomKeyAccessorEncryptionIT {
             }
 
             var dataEncryptionKey = maybeDataEncryptionKey.get();
-
 
             var encryptionKeyEntity = contentEncryptionKeyRepository.findById(contentId)
                     .orElseGet(() -> {

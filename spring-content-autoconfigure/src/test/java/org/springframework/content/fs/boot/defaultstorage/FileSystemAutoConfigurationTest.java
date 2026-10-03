@@ -24,7 +24,6 @@ public class FileSystemAutoConfigurationTest {
 
     private ApplicationContextRunner contextRunner;
 
-    
     @Nested
     class FileSystemContentAutoConfigurationCases {
         @Nested

@@ -36,7 +36,6 @@ public class GenericBlobResourceTest {
 
     private Object result;
 
-    
     @Nested
     class GenericBlobResourceCases {
         @Nested

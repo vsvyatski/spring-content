@@ -35,7 +35,6 @@ public class SolrFulltextIndexServiceImplTest {
     private SolrClient solr;
     private SolrProperties props;
 
-    
     @Nested
     class IndexCases {
         @TestFactory
@@ -102,7 +101,6 @@ public class SolrFulltextIndexServiceImplTest {
         }
     }
 
-
     private static class TEntity {
 
         @ContentId
@@ -121,5 +119,4 @@ public class SolrFulltextIndexServiceImplTest {
         }
     }
 }
-
 

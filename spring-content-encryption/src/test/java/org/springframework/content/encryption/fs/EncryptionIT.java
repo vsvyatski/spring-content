@@ -65,7 +65,6 @@ public class EncryptionIT {
 
     private FsFile f;
 
-    
     @Nested
     class ClientSideEncryptionWithFsStorageCases {
         @Nested
@@ -155,7 +154,6 @@ public class EncryptionIT {
             }
         }
     }
-
 
     @Test
     public void noop() {

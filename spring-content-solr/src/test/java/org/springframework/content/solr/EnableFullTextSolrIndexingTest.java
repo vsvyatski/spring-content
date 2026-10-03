@@ -36,7 +36,6 @@ public class EnableFullTextSolrIndexingTest {
     @Autowired
     private ApplicationContext context;
 
-    
     @Nested
     class EnableFullTextSolrIndexingCases {
         @Test

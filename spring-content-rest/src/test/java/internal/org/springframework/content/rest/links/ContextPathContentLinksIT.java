@@ -66,7 +66,6 @@ public class ContextPathContentLinksIT {
 
 	private ContentLinkTests contentLinkTests;
 
-	
     @Nested
     class GivenTheSpringContentBaseUriPropertyIsSetToContentApi {
         @Nested
@@ -91,7 +90,6 @@ public class ContextPathContentLinksIT {
 
     }
 
-	
 	@Configuration
 	@EnableJpaRepositories(basePackages = "internal.org.springframework.content.rest.support")
 	@EnableTransactionManagement
@@ -111,7 +109,7 @@ public class ContextPathContentLinksIT {
 			filesystemRoot.mkdirs();
 			return filesystemRoot;
 		}
-		
+
 		@Bean
 		public RenditionProvider textToHtml() {
 			return new RenditionProvider() {
@@ -140,5 +138,5 @@ public class ContextPathContentLinksIT {
 			};
 		}
 	}
-	
+
 }

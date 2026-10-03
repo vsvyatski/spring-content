@@ -33,7 +33,6 @@ public class WordToJpegRendererTest {
 
     private Exception e;
 
-    
     @Nested
     class WordToJpegRendererCases {
         @Nested

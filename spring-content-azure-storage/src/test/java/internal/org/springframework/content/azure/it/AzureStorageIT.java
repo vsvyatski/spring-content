@@ -46,7 +46,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.UUID;
 
-
 public class AzureStorageIT {
 
     private static final BlobServiceClientBuilder builder = Azurite.getBlobServiceClientBuilder();
@@ -75,7 +74,6 @@ public class AzureStorageIT {
 
     private String resourceLocation;
 
-    
     @Nested
     class DefaultAzureStorageImplCases {
         @Nested
@@ -1064,7 +1062,6 @@ public class AzureStorageIT {
             }
         }
     }
-
 
     @Test
     public void test() {

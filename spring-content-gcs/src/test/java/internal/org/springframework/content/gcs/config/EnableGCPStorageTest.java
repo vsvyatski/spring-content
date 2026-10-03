@@ -32,7 +32,6 @@ public class EnableGCPStorageTest {
     // mocks
     static GCPStorageConfigurer configurer;
 
-    
     @Nested
     class EnableGCPStorageCases {
         @Nested
@@ -98,7 +97,6 @@ public class EnableGCPStorageTest {
             }
         }
     }
-
 
     @Test
     public void noop() {

@@ -16,7 +16,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.Id;
 import jakarta.persistence.Version;
 
-
 public class JpaVersioningServiceImplTest {
 
     private VersioningService versioner;
@@ -28,7 +27,6 @@ public class JpaVersioningServiceImplTest {
     private TestEntity entity, successor, ancestralRoot, ancestor;
     private String versionNo, versionLabel;
 
-    
     @Nested
     class JpaVersioningServiceImplCases {
         @Nested
@@ -117,7 +115,6 @@ public class JpaVersioningServiceImplTest {
             }
         }
     }
-
 
     private class TestEntity {
         @Id private Long id;

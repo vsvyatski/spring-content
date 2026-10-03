@@ -28,7 +28,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import internal.org.springframework.content.rest.it.SecurityConfiguration;
 
-
 @SpringBootApplication(exclude = {
         MongoAutoConfiguration.class,
         DataMongoAutoConfiguration.class,

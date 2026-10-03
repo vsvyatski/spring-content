@@ -31,7 +31,6 @@ import org.springframework.core.convert.converter.ConverterRegistry;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
 
-
 import internal.org.springframework.content.s3.io.S3StoreResource;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentials;
@@ -53,7 +52,6 @@ public class EnableS3StoresTest {
 	static S3StoreConfigurer configurer;
 	static S3Client client;
 
-	
     @Nested
     class EnableS3StoresCases {
         @Nested
@@ -143,7 +141,6 @@ public class EnableS3StoresTest {
             }
         }
     }
-
 
 	@Test
 	public void noop() {

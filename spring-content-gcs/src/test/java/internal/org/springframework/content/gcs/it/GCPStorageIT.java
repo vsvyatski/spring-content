@@ -44,7 +44,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 
-
 public class GCPStorageIT {
 
     private TestEntity entity;
@@ -67,7 +66,6 @@ public class GCPStorageIT {
         System.setProperty("spring.content.gcp.storage.bucket", "test-bucket");
     }
 
-    
     @Nested
     class DefaultGCPStorageImplCases {
         @Nested
@@ -1075,7 +1073,6 @@ public class GCPStorageIT {
             }
         }
     }
-
 
     @Test
     public void test() {

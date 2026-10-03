@@ -24,7 +24,6 @@ public class PartialContentInputStreamTest {
 
     private InputStream inputStream;
 
-    
     @Nested
     class PartialContentInputStreamCases {
         @Nested

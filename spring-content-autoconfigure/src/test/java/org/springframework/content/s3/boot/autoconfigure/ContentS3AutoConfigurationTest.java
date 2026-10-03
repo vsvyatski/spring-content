@@ -35,7 +35,6 @@ public class ContentS3AutoConfigurationTest {
 
 	private ApplicationContextRunner contextRunner;
 
-	
     @Nested
     class S3ContentAutoConfigurationCases {
         @Nested

@@ -120,7 +120,6 @@ public class ContentLinkRelIT {
 
 	private ContentLinkTests contentLinkTests;
 
-	
     @Nested
     class GivenAnExportingStoreSpecifyingALinkRelOfFoo {
         @Nested

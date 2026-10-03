@@ -64,7 +64,6 @@ public class RevisionPropertyRestEndpointsIT {
 
     private TEntity testEntity;
 
-    
     @Nested
     class RevisionPropertyRESTEndpoints {
         @Nested
@@ -128,7 +127,6 @@ public class RevisionPropertyRestEndpointsIT {
         }
 
     }
-
 
     @Configuration
     @EnableJpaRepositories(basePackages = "it.rest.revisions", considerNestedRepositories = true, repositoryFactoryBeanClass = EnversRevisionRepositoryFactoryBean.class)

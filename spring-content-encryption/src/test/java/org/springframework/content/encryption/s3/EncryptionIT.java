@@ -97,7 +97,6 @@ public class EncryptionIT {
         System.setProperty("spring.content.s3.bucket", "test-bucket");
     }
 
-    
     @Nested
     class ClientSideEncryptionWithS3StorageCases {
         @Nested
@@ -300,7 +299,6 @@ public class EncryptionIT {
             }
         }
     }
-
 
     @Test
     public void noop() {

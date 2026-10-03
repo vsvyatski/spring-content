@@ -71,7 +71,6 @@ public class RestResourceMappedRestEndpointsIT {
 
    private MockMvc mvc;
 
-   
     @Nested
     class RestResourceMappedRESTEndpoints {
         @Nested

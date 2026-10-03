@@ -44,8 +44,7 @@ public class FullyQualifiedLinksIT {
 	private TestEntity testEntity3;
 
 	private Content contentTests;
-	
-	
+
     @Nested
     class ContextPathContentTests {
         @Nested

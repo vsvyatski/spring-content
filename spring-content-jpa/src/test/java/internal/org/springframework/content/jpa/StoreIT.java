@@ -64,7 +64,6 @@ public class StoreIT {
 
     private TransactionStatus status;
 
-    
     @Nested
     class Store {
         @TestFactory

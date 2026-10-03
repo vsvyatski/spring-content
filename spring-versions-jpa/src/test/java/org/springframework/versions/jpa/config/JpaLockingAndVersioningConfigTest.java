@@ -26,7 +26,6 @@ public class JpaLockingAndVersioningConfigTest {
 
     private AnnotationConfigApplicationContext context;
 
-    
     @Nested
     class JpaLockingAndVersioningConfigCases {
         @BeforeEach
@@ -67,7 +66,6 @@ public class JpaLockingAndVersioningConfigTest {
         }
 
     }
-
 
     @Configuration
     @Import(JpaLockingAndVersioningConfig.class)

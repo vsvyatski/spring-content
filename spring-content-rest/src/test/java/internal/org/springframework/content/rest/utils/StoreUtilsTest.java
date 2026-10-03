@@ -24,7 +24,6 @@ public class StoreUtilsTest {
 	private StoreInfo info;
 	private String storePath;
 
-	
     @Nested
     class StorePath {
         @Nested
@@ -113,7 +112,6 @@ public class StoreUtilsTest {
             }
         }
     }
-
 
 	public interface TestStore extends Store<String> {}
 

@@ -57,7 +57,6 @@ public class SolrIT {
     private Document doc, doc2, doc3;
     private UUID id = null;
 
-    
     @Nested
     class Index {
         @BeforeEach
@@ -423,7 +422,6 @@ public class SolrIT {
         }
 
     }
-
 
     @Entity
     public static class Document {

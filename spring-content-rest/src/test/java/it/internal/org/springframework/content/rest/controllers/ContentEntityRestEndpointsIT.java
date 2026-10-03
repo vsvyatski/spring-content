@@ -116,7 +116,6 @@ public class ContentEntityRestEndpointsIT {
 	private Content contentTests;
 	private Cors corsTests;
 
-	
     @Nested
     class ContentEntityRESTEndpoints {
         @Nested

@@ -62,7 +62,6 @@ public class ShortcutExclusionsIT {
 
 	private TestEntity3 testEntity;
 
-	
     @Nested
     class ExcludedShortcutLinkTests {
         @Nested
@@ -94,7 +93,6 @@ public class ShortcutExclusionsIT {
         }
 
     }
-
 
 	@Configuration
 	@EnableJpaRepositories(basePackages = "internal.org.springframework.content.rest.support")

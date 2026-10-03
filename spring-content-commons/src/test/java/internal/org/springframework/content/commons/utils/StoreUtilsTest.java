@@ -30,7 +30,6 @@ public class StoreUtilsTest {
     private GenericBeanDefinition def1;
     private GenericBeanDefinition def2;
 
-    
     @Nested
     class GetStoreCandidates {
         @Nested

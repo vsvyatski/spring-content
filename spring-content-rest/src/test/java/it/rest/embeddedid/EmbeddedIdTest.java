@@ -50,7 +50,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-
 @SpringBootTest(classes = {EmbeddedIdTest.Application.class},
                 webEnvironment=WebEnvironment.RANDOM_PORT)
 @EnableAutoConfiguration(exclude = { HypermediaAutoConfiguration.class, SecurityAutoConfiguration.class })
@@ -71,7 +70,6 @@ public class EmbeddedIdTest {
 
     private MockMvc mvc;
 
-    
     @Nested
     class EmbeddedIdCases {
         @BeforeEach
@@ -105,7 +103,6 @@ public class EmbeddedIdTest {
                                 assertThat(response.getContentAsString()).isEqualTo(content);
         }
     }
-
 
     @Disabled("This is not a test and must not be treated as such.")
     @SpringBootApplication

@@ -32,7 +32,6 @@ public class EnableFileSystemStoresTest {
     // mocks
     static FileSystemStoreConfigurer configurer;
 
-
     @Nested
     class EnableFileSystemStoresCases {
         @Nested
@@ -112,7 +111,6 @@ public class EnableFileSystemStoresTest {
             }
         }
     }
-
 
     @Test
     public void noop() {

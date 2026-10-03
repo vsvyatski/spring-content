@@ -29,7 +29,6 @@ public class S3AutoConfigurationTest {
 
     private ApplicationContextRunner contextRunner;
 
-    
     @Nested
     class S3AutoConfigurationWithDefaultStorage {
         @Nested

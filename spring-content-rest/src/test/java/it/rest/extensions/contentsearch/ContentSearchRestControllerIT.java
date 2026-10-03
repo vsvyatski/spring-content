@@ -129,7 +129,6 @@ public class ContentSearchRestControllerIT {
     private static DefaultEntityLookupStrategy defaultLookupStrategy;
     private static QueryMethodsEntityLookupStrategy queryMethodsLookupStrategy;
 
-    
     @Nested
     class ContentSearchRestControllerCases {
         @Nested
@@ -743,7 +742,6 @@ public class ContentSearchRestControllerIT {
             }
         }
     }
-
 
     @Test
     public void noop() {

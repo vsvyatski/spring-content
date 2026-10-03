@@ -17,7 +17,6 @@ public class BeanUtilsTest {
 
 	private TestEntity testEntity;
 
-	
     @Nested
     class BeanUtilsCases {
         @Nested

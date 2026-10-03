@@ -44,7 +44,6 @@ import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.util.UUID;
 
-
 @SpringBootTest()
 @ExtendWith(SpringExtension.class)
 public class S3StoreIT {
@@ -90,7 +89,6 @@ public class S3StoreIT {
         System.setProperty("spring.content.s3.bucket", "test-bucket");
     }
 
-    
     @Nested
     class S3StorageCases {
         @Nested
@@ -1476,7 +1474,6 @@ public class S3StoreIT {
             }
         }
     }
-
 
     @Test
     public void noop() {}

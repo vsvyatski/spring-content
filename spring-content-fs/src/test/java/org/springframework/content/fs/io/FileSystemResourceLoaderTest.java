@@ -28,7 +28,6 @@ public class FileSystemResourceLoaderTest {
 
     private Exception ex;
 
-    
     @Nested
     class FileSystemResourceLoaderCases {
         @Nested

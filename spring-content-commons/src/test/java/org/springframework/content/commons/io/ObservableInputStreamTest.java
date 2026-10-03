@@ -20,7 +20,6 @@ public class ObservableInputStreamTest {
     private FileInputStream fis;
     private InputStreamObserver observer;
 
-    
     @Nested
     class ObservableInputStreamCases {
         @Nested

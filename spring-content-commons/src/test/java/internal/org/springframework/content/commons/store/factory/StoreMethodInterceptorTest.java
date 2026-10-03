@@ -80,7 +80,6 @@ public class StoreMethodInterceptorTest {
 
     private ByteArrayInputStream modifiedStream = null;
 
-    
     @Nested
     class InvokeCases {
         @Nested
@@ -605,7 +604,6 @@ public class StoreMethodInterceptorTest {
                 void shouldProceed() {
                     assertThat(e).isNull();
 
-
                                             InOrder inOrder = Mockito.inOrder(publisher, store);
 
                                             inOrder.verify(publisher).publishEvent(isA(BeforeGetResourceEvent.class));
@@ -749,7 +747,6 @@ public class StoreMethodInterceptorTest {
                             }
         }
     }
-
 
     private void onBeforeSetContentPublishEvent(PublishEventAction action) {
         doAnswer(action::doAction).when(publisher).publishEvent(isA(BeforeSetContentEvent.class));

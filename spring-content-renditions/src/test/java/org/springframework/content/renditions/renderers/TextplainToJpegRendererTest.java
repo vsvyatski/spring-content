@@ -13,7 +13,6 @@ import org.springframework.content.commons.renditions.RenditionProvider;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
-
 public class TextplainToJpegRendererTest {
 
 	private boolean wrapText = false;
@@ -24,7 +23,6 @@ public class TextplainToJpegRendererTest {
 
 	private Exception e;
 
-	
     @Nested
     class TextplainToJpegRendererCases {
         @Nested

@@ -23,7 +23,6 @@ public class ObservableOutputStreamTest {
 
     private Exception exception;
 
-    
     @Nested
     class ObservableOutputStreamCases {
         @Nested

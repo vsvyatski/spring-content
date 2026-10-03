@@ -26,7 +26,6 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.ReflectionUtils;
 
-
 public class OptimisticLockingInterceptorTest {
 
     private OptimisticLockingInterceptor interceptor;
@@ -38,7 +37,6 @@ public class OptimisticLockingInterceptorTest {
     private ProxyMethodInvocation mi;
     private Object entity;
 
-    
     @Nested
     class OptimisticLockInterceptorCases {
         @Nested
@@ -423,7 +421,6 @@ public class OptimisticLockingInterceptorTest {
             }
         }
     }
-
 
     private static class TestEntity {
         @Version

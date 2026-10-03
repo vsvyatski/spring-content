@@ -72,7 +72,6 @@ public class CacheControlIT {
     @Autowired
     private WebApplicationContext webApplicationContext;
 
-    
     @Nested
     class CacheControlCases {
         @BeforeEach

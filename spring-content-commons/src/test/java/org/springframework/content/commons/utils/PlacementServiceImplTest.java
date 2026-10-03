@@ -9,7 +9,6 @@ public class PlacementServiceImplTest {
 
 	private PlacementServiceImpl placer = null;
 
-	
     @Nested
     class PlacementServiceImplCases {
         @Nested

@@ -2,7 +2,6 @@ package internal.org.springframework.content.encryption.keys.converter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
 import jakarta.xml.bind.DatatypeConverter;
 import org.junit.jupiter.api.Test;
 import org.springframework.content.encryption.keys.StoredDataEncryptionKey.EncryptedSymmetricDataEncryptionKey;

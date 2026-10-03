@@ -34,7 +34,6 @@ public class StoreCandidateComponentProviderEnvironmentTest {
 	@Autowired(required=false)
 	private TestContentStore contentStore;
 
-	
     @Nested
     class GivenTwoStoresWithProfiles {
         @Test

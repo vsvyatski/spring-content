@@ -46,7 +46,6 @@ public class ContentJpaAutoConfigurationTest {
 
 	private ApplicationContextRunner contextRunner;
 
-	
     @Nested
     class ContentJpaAutoConfiguration {
         @BeforeEach

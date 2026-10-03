@@ -35,7 +35,6 @@ public class DelegatingBlobResourceLoaderTest {
 
     private Resource resource;
 
-    
     @Nested
     class DelegatingBlobResourceLoaderCases {
         @Nested

@@ -28,7 +28,6 @@ public class ElasticsearchAutoConfigurationTest {
         client = mock(RestHighLevelClient.class);
     }
 
-    
     @Nested
     class GivenAContextWithoutARestHighLevelClientConfigured {
         @Test

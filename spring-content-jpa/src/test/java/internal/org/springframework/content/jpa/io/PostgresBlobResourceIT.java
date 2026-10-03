@@ -54,7 +54,6 @@ public class PostgresBlobResourceIT {
 
     private PostgresBlobResource r = null;
 
-    
     @Nested
     class PostgresBlobResourceCases {
         @Nested

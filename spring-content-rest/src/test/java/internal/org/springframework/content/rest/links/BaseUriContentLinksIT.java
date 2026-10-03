@@ -63,7 +63,6 @@ public class BaseUriContentLinksIT {
 
 	private ContentLinkTests contentLinkTests;
 
-	
     @Nested
     class GivenTheSpringContentBaseUriPropertyIsSetToContentApi {
         @Nested

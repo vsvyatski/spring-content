@@ -77,7 +77,6 @@ public class Version {
         this.entity = entity;
     }
 
-    
     @Nested
     class Issue1975 {
         @Test

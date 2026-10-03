@@ -7,7 +7,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.TestFactory;
 import static org.assertj.core.api.Assertions.assertThat;
 
-
 import java.io.ByteArrayInputStream;
 import java.io.Serializable;
 
@@ -108,7 +107,6 @@ public class AzureStorageWithEntityConverterIT {
 
     private String resourceLocation;
 
-    
     @TestFactory
     java.util.stream.Stream<org.junit.jupiter.api.DynamicNode> generatedCases() {
         java.util.List<org.junit.jupiter.api.DynamicNode> tests = new java.util.ArrayList<>();
@@ -195,7 +193,6 @@ public class AzureStorageWithEntityConverterIT {
         return tests.stream();
     }
 
-
     @Test
     public void test() {
         // noop
@@ -228,7 +225,6 @@ public class AzureStorageWithEntityConverterIT {
                           return new BlobId(OTHER_OTHER_BUCKET, info.contentId().toString());
                       }
                   });
-
 
                   registry.addConverter(new Converter<ContentPropertyInfo<FakeEntity, Serializable>, BlobId>() {
                       @Override

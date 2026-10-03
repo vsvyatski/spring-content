@@ -8,7 +8,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-
 import java.util.UUID;
 
 import internal.org.springframework.content.rest.support.*;
@@ -35,7 +34,6 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfiguration;
-
 
 import jakarta.persistence.*;
 
@@ -67,7 +65,6 @@ public class ContentLinksResourceProcessorIT {
 
 	private PersistentEntityResource resource;
 
-	
     @Nested
     class GivenTheSpringContentBaseUriPropertyIsSetToContentApiCases {
         @Nested
@@ -272,7 +269,6 @@ public class ContentLinksResourceProcessorIT {
             }
         }
     }
-
 
 	@Test
 	public void noop() {

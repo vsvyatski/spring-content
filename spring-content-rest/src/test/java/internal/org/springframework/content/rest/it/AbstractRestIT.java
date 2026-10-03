@@ -38,7 +38,6 @@ public abstract class AbstractRestIT {
 
     private TestEntity2 existingClaim;
 
-    
     @Nested
     class JpaRest {
         @Nested

@@ -29,7 +29,6 @@ public class JpaVersionsDatabaseInitializerTest {
     // mocks
     private Statement stmt;
 
-    
     @Nested
     class ContentJpaDatabaseInitializer {
         @Nested

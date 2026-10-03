@@ -65,7 +65,6 @@ public class ContentLinkTests {
 		this.expectedLinkRegex = expectedLinkRegex;
 	}
 
-	
     @Nested
     class GivenContentIsAssociated {
         @Nested

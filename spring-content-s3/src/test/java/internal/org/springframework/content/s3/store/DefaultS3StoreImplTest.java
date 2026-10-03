@@ -76,7 +76,6 @@ public class DefaultS3StoreImplTest {
 	private InputStream result;
 	private Exception e;
 
-	
     @Nested
     class DefaultS3StoreImplCases {
         @Nested

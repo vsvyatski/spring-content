@@ -7,7 +7,6 @@ import org.junit.jupiter.api.AfterEach;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
-
 import java.io.InputStream;
 
 import jakarta.persistence.EntityManager;
@@ -39,7 +38,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-
 import internal.org.springframework.content.jpa.io.DelegatingBlobResourceLoader;
 import internal.org.springframework.content.jpa.io.MySQLBlobResource;
 import internal.org.springframework.content.jpa.io.SQLServerBlobResource;
@@ -48,7 +46,6 @@ public class EnableJpaStoresTest {
 
 	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
-	
     @Nested
     class EnableJpaStoresCases {
         @Nested
@@ -113,9 +110,6 @@ public class EnableJpaStoresTest {
             }
         }
     }
-
-
-	
 
 	@Test
 	public void noop() {

@@ -44,7 +44,6 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.repository.CrudRepository;
 
-
 public class ElasticsearchIT {
 
     private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
@@ -62,7 +61,6 @@ public class ElasticsearchIT {
 
     private static Class<?>[] indexStrategyContexts = new Class<?>[]{GlobalIndexingStrategy.class/*, EntityIndexingStrategy.class*/};
 
-    
     @TestFactory
     java.util.stream.Stream<org.junit.jupiter.api.DynamicNode> generatedCases() {
         java.util.List<org.junit.jupiter.api.DynamicNode> tests = new java.util.ArrayList<>();
@@ -578,7 +576,6 @@ public class ElasticsearchIT {
         }
     }
 
-
     private String strategyName(Class<?> indexStrategyContext) {
         return indexStrategyContext.getSimpleName();
     }
@@ -653,7 +650,6 @@ public class ElasticsearchIT {
             this.author = author;
         }
     }
-
 
     public static class FulltextInfo {
 

@@ -41,7 +41,6 @@ public class PessimisticLockingInterceptorTest {
 
     private Authentication principal, lockOwner;
 
-    
     @Nested
     class PessimisticLockingInterceptorCases {
         @Nested

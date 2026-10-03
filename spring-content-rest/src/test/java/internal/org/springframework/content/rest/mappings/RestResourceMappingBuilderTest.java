@@ -17,7 +17,6 @@ import java.util.UUID;
 
 public class RestResourceMappingBuilderTest {
 
-    
     @Nested
     class RestResourceMappingBuilderCases {
         @Test

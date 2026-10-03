@@ -74,7 +74,6 @@ public class StoredRenditionsRestIT {
 
     private MockMvc mvc;
 
-    
     @Nested
     class StoredRenditions {
         @Nested
@@ -187,7 +186,6 @@ public class StoredRenditionsRestIT {
         }
 
     }
-
 
     @Configuration
     public static class StoredRenditionsConfig {

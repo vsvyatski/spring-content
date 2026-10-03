@@ -84,7 +84,6 @@ public class LockingAndVersioningRestIT {
 
     private VersionedDocument doc;
 
-    
     @Nested
     class SpringContentRESTVersioning {
         @Nested

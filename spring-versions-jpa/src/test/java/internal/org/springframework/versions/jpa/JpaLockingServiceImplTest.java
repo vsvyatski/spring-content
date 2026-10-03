@@ -35,7 +35,6 @@ public class JpaLockingServiceImplTest {
     private Object result;
     private Exception e;
 
-    
     @Nested
     class JpaLockingServiceImplCases {
         @Nested

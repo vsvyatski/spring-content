@@ -42,7 +42,6 @@ public class DefaultJpaStoreImplTest {
     private String id;
     private Exception e;
 
-    
     @Nested
     class DefaultJpaStoreImplCases {
         @Nested

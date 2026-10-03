@@ -64,8 +64,7 @@ public class ContextPathIT {
 	private TestEntity3 testEntity3;
 
 	private Content contentTests;
-	
-	
+
     @Nested
     class ContextPathContentTests {
         @Nested
@@ -92,7 +91,6 @@ public class ContextPathIT {
 
     }
 
-	
 	@Configuration
 	@EnableJpaRepositories(basePackages = "internal.org.springframework.content.rest.support")
 	@EnableTransactionManagement
@@ -112,7 +110,7 @@ public class ContextPathIT {
 			filesystemRoot.mkdirs();
 			return filesystemRoot;
 		}
-		
+
 		@Bean
 		public RenditionProvider textToHtml() {
 			return new RenditionProvider() {
@@ -169,5 +167,5 @@ public class ContextPathIT {
 			};
 		}
 	}
-	
+
 }

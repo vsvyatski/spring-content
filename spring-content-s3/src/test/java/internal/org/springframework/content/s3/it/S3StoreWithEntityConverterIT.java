@@ -109,7 +109,6 @@ public class S3StoreWithEntityConverterIT {
 
     private String resourceLocation;
 
-    
     @TestFactory
     java.util.stream.Stream<org.junit.jupiter.api.DynamicNode> generatedCases() {
         java.util.List<org.junit.jupiter.api.DynamicNode> tests = new java.util.ArrayList<>();
@@ -269,7 +268,6 @@ public class S3StoreWithEntityConverterIT {
         return tests.stream();
     }
 
-
     @Test
     public void test() {
         // noop
@@ -304,7 +302,6 @@ public class S3StoreWithEntityConverterIT {
                           return new S3ObjectId(OTHER_OTHER_BUCKET, info.contentId().toString());
                       }
                   });
-
 
                   registry.addConverter(new Converter<ContentPropertyInfo<FakeEntity, Serializable>, S3ObjectId>() {
                       @Override

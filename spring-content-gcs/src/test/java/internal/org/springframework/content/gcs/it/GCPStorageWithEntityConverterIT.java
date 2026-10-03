@@ -7,7 +7,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.TestFactory;
 import static org.assertj.core.api.Assertions.assertThat;
 
-
 import java.io.ByteArrayInputStream;
 import java.io.Serializable;
 
@@ -102,7 +101,6 @@ public class GCPStorageWithEntityConverterIT {
 
     private String resourceLocation;
 
-    
     @TestFactory
     java.util.stream.Stream<org.junit.jupiter.api.DynamicNode> generatedCases() {
         java.util.List<org.junit.jupiter.api.DynamicNode> tests = new java.util.ArrayList<>();
@@ -193,7 +191,6 @@ public class GCPStorageWithEntityConverterIT {
         return tests.stream();
     }
 
-
     @Test
     public void test() {
         // noop
@@ -227,7 +224,6 @@ public class GCPStorageWithEntityConverterIT {
                           return BlobId.of(OTHER_OTHER_BUCKET, info.contentId().toString());
                       }
                   });
-
 
                   registry.addConverter(new Converter<ContentPropertyInfo<FakeEntity, Serializable>, BlobId>() {
                       @Override

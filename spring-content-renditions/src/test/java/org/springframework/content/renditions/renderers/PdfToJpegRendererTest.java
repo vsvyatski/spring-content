@@ -35,7 +35,6 @@ public class PdfToJpegRendererTest {
 
     private Exception e;
 
-    
     @Nested
     class WordToJpegRenderer {
         @Nested

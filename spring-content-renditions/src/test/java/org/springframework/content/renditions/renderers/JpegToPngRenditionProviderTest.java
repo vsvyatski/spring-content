@@ -2,7 +2,6 @@ package org.springframework.content.renditions.renderers;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.IOException;

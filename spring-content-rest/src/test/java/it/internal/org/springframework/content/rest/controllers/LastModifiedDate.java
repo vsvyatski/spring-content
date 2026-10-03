@@ -57,7 +57,6 @@ public abstract class LastModifiedDate {
         this.content = content;
     }
 
-    
     @Nested
     class AGETRequestToStoreIdWithNoHeaders {
         @Test

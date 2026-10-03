@@ -57,7 +57,6 @@ public class StoreRestEndpointsIT {
 
 	private final LastModifiedDate lastModifiedDate = new LastModifiedDate() {};
 
-	
     @Nested
     class StoreRestEndpoints {
         @Nested

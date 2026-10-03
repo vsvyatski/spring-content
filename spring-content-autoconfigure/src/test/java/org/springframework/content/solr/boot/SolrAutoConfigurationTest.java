@@ -31,7 +31,6 @@ public class SolrAutoConfigurationTest {
 
     private ApplicationContextRunner contextRunner;
 
-    
     @Nested
     class Solr {
         @Nested

@@ -55,7 +55,6 @@ public class TransactionIT {
 
 	private TestEntity te = null;
 
-	
     @Nested
     class TransactionTest {
         @TestFactory
@@ -100,7 +99,6 @@ public class TransactionIT {
         }
 
     }
-
 
 	private static String getContextName(Class<?> configClass) {
 		return configClass.getSimpleName().replaceAll("Config", "");

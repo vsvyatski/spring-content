@@ -9,7 +9,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.IOException;
 import java.nio.file.Files;
 
-
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.fs.config.EnableFileSystemStores;
 import org.springframework.content.fs.io.FileSystemResourceLoader;
@@ -34,7 +33,6 @@ public class RestConfigurationTest {
    // mocks
    private static ContentRestConfigurer configurer;
 
-   
     @Nested
     class RestConfigurationCases {
         @Nested

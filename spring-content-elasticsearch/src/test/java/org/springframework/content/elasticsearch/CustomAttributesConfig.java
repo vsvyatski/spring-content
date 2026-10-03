@@ -92,7 +92,6 @@ public class CustomAttributesConfig {
         };
     }
 
-
     @Bean
     public DataSource dataSource() {
         EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();

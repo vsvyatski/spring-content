@@ -16,7 +16,6 @@ public class JpaCloningServiceImplTest {
 
     private Exception e;
 
-    
     @Nested
     class JpaCloningServiceImplCases {
         @Nested

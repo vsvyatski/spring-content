@@ -36,7 +36,6 @@ public class BeforeSetEventIT {
     @Autowired
     private TestEntityContentStore store;
 
-    
     @Nested
     class BeforeSetEventInputStreamAccessCases {
         @Nested
@@ -55,7 +54,6 @@ public class BeforeSetEventIT {
             }
         }
     }
-
 
     @Configuration
     @EnableFileSystemStores

@@ -7,7 +7,6 @@ import org.junit.jupiter.api.AfterEach;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
-
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -26,7 +25,6 @@ import org.springframework.content.commons.storeservice.StoreInfo;
 import org.springframework.content.commons.storeservice.StoreResolver;
 import org.springframework.context.support.GenericApplicationContext;
 
-
 import internal.org.springframework.content.commons.storeservice.StoresImpl;
 
 public class StoresIT {
@@ -37,7 +35,6 @@ public class StoresIT {
     private List<StoreFactory> factories = new ArrayList<>();
     private StoreResolver resolver;
 
-    
     @Nested
     class GetStoreCases {
         @Nested
@@ -212,7 +209,6 @@ public class StoresIT {
             }
         }
     }
-
 
     public interface RightStore extends TestContentStore<Object, Serializable>{};
     public interface WrongStore extends TestContentStore<Object, Serializable>{};

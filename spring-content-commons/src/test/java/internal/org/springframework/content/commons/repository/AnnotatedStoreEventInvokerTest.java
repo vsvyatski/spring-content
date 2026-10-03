@@ -37,7 +37,6 @@ public class AnnotatedStoreEventInvokerTest {
     // event handlers
     private final HighestPriorityCustomEventHandler priorityHandler = new HighestPriorityCustomEventHandler();
 
-    
     @Nested
     class PostProcessAfterInitialization {
         @Nested

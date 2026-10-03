@@ -54,7 +54,6 @@ public class AssociativeStoreIT {
 
     private Exception e;
 
-    
     @Nested
     class AssociativeStoreCases {
         @TestFactory

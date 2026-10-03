@@ -41,7 +41,6 @@ import javax.sql.DataSource;
 import java.io.IOException;
 import java.nio.file.Files;
 
-
 @SpringBootApplication(exclude = {
         MongoAutoConfiguration.class,
         DataMongoAutoConfiguration.class,

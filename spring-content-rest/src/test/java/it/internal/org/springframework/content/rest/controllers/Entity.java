@@ -79,7 +79,6 @@ public class Entity {
 		this.repository = repository;
 	}
 
-	
     @Nested
     class AGETToStoreIdAcceptingHalJson {
         @Test

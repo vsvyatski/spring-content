@@ -17,7 +17,6 @@ import org.springframework.content.encryption.engine.ContentEncryptionEngine.Enc
 import org.springframework.content.encryption.engine.ContentEncryptionEngine.InputStreamRequestParameters;
 import org.springframework.util.StreamUtils;
 
-
 public class AesCtrEncryptionEngineTest {
 
     // See test vectors of NIST SP 800-38A (https://doi.org/10.6028/NIST.SP.800-38A)
@@ -40,8 +39,6 @@ public class AesCtrEncryptionEngineTest {
     private static final byte[] PLAINTEXT = concat(BLOCK_1_PLAIN, BLOCK_2_PLAIN, BLOCK_3_PLAIN, BLOCK_4_PLAIN);
     private static final byte[] CIPHERTEXT = concat(BLOCK_1_CIPHER, BLOCK_2_CIPHER, BLOCK_3_CIPHER, BLOCK_4_CIPHER);
 
-
-    
     @Nested
     class AESCTREncryptionCases {
         @Nested
@@ -86,7 +83,6 @@ public class AesCtrEncryptionEngineTest {
                                             new SecretKeySpec(KEY, "AES"),
                                             DatatypeConverter.parseHexBinary("000000f3f4f5f6f7f8f9fafbfcfdfeff")
                                     );
-
 
                                     var encrypted = engine.encrypt(new ByteArrayInputStream(PLAINTEXT), params);
                                     var offsetStart = BLOCK_1_PLAIN.length + BLOCK_2_PLAIN.length;
@@ -226,7 +222,6 @@ public class AesCtrEncryptionEngineTest {
             }
         }
     }
-
 
     @Test
     void noop() {}

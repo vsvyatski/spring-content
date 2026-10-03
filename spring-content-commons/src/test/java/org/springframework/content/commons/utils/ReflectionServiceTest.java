@@ -18,7 +18,6 @@ public class ReflectionServiceTest {
 	// mocks
 	private HelloWorldService service;
 
-	
     @Nested
     class ReflectionServiceCases {
         @Nested

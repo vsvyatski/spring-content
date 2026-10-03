@@ -30,7 +30,6 @@ public class StoreImplTest {
     private ApplicationEventPublisher publisher;
     private Path contentCopyPathRoot;
 
-    
     @Nested
     class StoreImplCases {
         @Nested
