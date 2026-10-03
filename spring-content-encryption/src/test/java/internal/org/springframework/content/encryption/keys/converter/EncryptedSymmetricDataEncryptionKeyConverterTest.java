@@ -1,18 +1,16 @@
 package internal.org.springframework.content.encryption.keys.converter;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
+import static org.assertj.core.api.Assertions.assertThat;
+
 
 import jakarta.xml.bind.DatatypeConverter;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.content.encryption.keys.StoredDataEncryptionKey.EncryptedSymmetricDataEncryptionKey;
 import org.springframework.content.encryption.keys.StoredDataEncryptionKey.UnencryptedSymmetricDataEncryptionKey;
 
 public class EncryptedSymmetricDataEncryptionKeyConverterTest {
     @Test
-    public void encodesAndDecodes() {
+    public void encodesAndDecodes() throws Throwable {
         var encryptedKey = new EncryptedSymmetricDataEncryptionKey(
                 "test",
                 "123",
@@ -26,11 +24,11 @@ public class EncryptedSymmetricDataEncryptionKeyConverterTest {
 
         var decoded = EncryptedSymmetricDataEncryptionKeyConverter.convert(encoded);
 
-        assertThat(decoded, is(equalTo(encryptedKey)));
+        assertThat(decoded).isEqualTo(encryptedKey);
     }
 
     @Test
-    public void doesNotDecodeDifferentType() {
+    public void doesNotDecodeDifferentType() throws Throwable {
         var key = new UnencryptedSymmetricDataEncryptionKey(
                 "ABC",
                 new byte[5],
@@ -41,7 +39,7 @@ public class EncryptedSymmetricDataEncryptionKeyConverterTest {
 
         var decoded = EncryptedSymmetricDataEncryptionKeyConverter.convert(encoded);
 
-        assertThat(decoded, is(nullValue()));
+        assertThat(decoded).isNull();
     }
 
 }

@@ -1,14 +1,17 @@
 package it.internal.org.springframework.content.rest.controllers;
 
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.BeforeEach;
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.Context;
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.Describe;
+import org.junit.jupiter.api.extension.ExtendWith;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.DisplayName;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+
 import static java.lang.String.format;
 
 import java.io.ByteArrayInputStream;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.content.rest.config.HypermediaConfiguration;
 import org.springframework.content.rest.config.RestConfiguration;
@@ -21,8 +24,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfiguration;
-
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jSpringRunner;
 
 import internal.org.springframework.content.rest.support.BaseUriConfig;
 import internal.org.springframework.content.rest.support.EntityConfig;
@@ -37,8 +38,6 @@ import internal.org.springframework.content.rest.support.TestEntityContentReposi
 import internal.org.springframework.content.rest.support.TestEntityRepository;
 import internal.org.springframework.content.rest.support.TestStore;
 
-@RunWith(Ginkgo4jSpringRunner.class)
-// @Ginkgo4jConfiguration(threads=1)
 @WebAppConfiguration
 @ContextConfiguration(classes = {
 		BaseUriConfig.class,
@@ -49,6 +48,7 @@ import internal.org.springframework.content.rest.support.TestStore;
 		HypermediaConfiguration.class })
 @Transactional
 @ActiveProfiles("store")
+@ExtendWith(SpringExtension.class)
 public class BaseUriIT {
 
 	// different exported URI
@@ -88,94 +88,116 @@ public class BaseUriIT {
 	private Content contentTests;
 	private Cors corsTests;
 
-	{
-		Describe("BaseUri Content Tests", () -> {
-			BeforeEach(() -> {
-				mvc = MockMvcBuilders.webAppContextSetup(context).build();
-			});
-			Context("given an entity is the subject of a repository and storage", () -> {
-				Context("given the repository and storage are exported to the same URI", () -> {
-					BeforeEach(() -> {
-						testEntity3 = repo3.save(new TestEntity3());
-						testEntity3.name = "tests";
-						testEntity3 = repo3.save(testEntity3);
+	
+    @Nested
+    class BaseUriContentTests {
+        @Nested
+        class GivenAnEntityIsTheSubjectOfARepositoryAndStorage {
+            @Nested
+            @DisplayName("given the repository and storage are exported to the same URI")
+            class GivenTheRepositoryAndStorageAreExportedToTheSameURIEntity extends Entity {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    mvc = MockMvcBuilders.webAppContextSetup(context).build();
+                    testEntity3 = repo3.save(new TestEntity3());
+                    testEntity3.name = "tests";
+                    testEntity3 = repo3.save(testEntity3);
+                    this.setMvc(mvc);
+                    this.setUrl("/api/testEntity3s/" + testEntity3.id);
+                    this.setEntity(testEntity3);
+                    this.setRepository(repo3);
+                    this.setLinkRel("testEntity3");
+                }
+            }
 
-						entityTests.setMvc(mvc);
-						entityTests.setUrl("/api/testEntity3s/" + testEntity3.id);
-						entityTests.setEntity(testEntity3);
-						entityTests.setRepository(repo3);
-						entityTests.setLinkRel("testEntity3");
+            @Nested
+            @DisplayName("given the repository and storage are exported to the same URI")
+            class GivenTheRepositoryAndStorageAreExportedToTheSameURIContent extends Content {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    mvc = MockMvcBuilders.webAppContextSetup(context).build();
+                    testEntity3 = repo3.save(new TestEntity3());
+                    testEntity3.name = "tests";
+                    testEntity3 = repo3.save(testEntity3);
+                    this.setMvc(mvc);
+                    this.setUrl("/contentApi/testEntity3s/" + testEntity3.getId());
+                    this.setEntity(testEntity3);
+                    this.setRepository(repo3);
+                    this.setStore(store3);
+                }
+            }
 
-						contentTests.setMvc(mvc);
-						contentTests.setUrl("/contentApi/testEntity3s/" + testEntity3.getId());
-						contentTests.setEntity(testEntity3);
-						contentTests.setRepository(repo3);
-						contentTests.setStore(store3);
+            @Nested
+            @DisplayName("given the repository and storage are exported to different URIs")
+            class GivenTheRepositoryAndStorageAreExportedToDifferentURIsContent extends Content {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    mvc = MockMvcBuilders.webAppContextSetup(context).build();
+                    testEntity = repository.save(new TestEntity());
+                    this.setMvc(mvc);
+                    this.setUrl("/contentApi/testEntitiesContent/" + testEntity.getId());
+                    this.setEntity(testEntity);
+                    this.setRepository(repository);
+                    this.setStore(contentRepository);
+                }
+            }
 
-					});
-					entityTests = Entity.tests();
-					contentTests = Content.tests();
-				});
-				Context("given the repository and storage are exported to different URIs", () -> {
-					BeforeEach(() -> {
-						testEntity = repository.save(new TestEntity());
+            @Nested
+            @DisplayName("given the repository and storage are exported to different URIs")
+            class GivenTheRepositoryAndStorageAreExportedToDifferentURIsCors extends Cors {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    mvc = MockMvcBuilders.webAppContextSetup(context).build();
+                    testEntity = repository.save(new TestEntity());
+                    this.setMvc(mvc);
+                    this.setUrl("/contentApi/testEntitiesContent/" + testEntity.getId());
+                }
+            }
 
-						contentTests.setMvc(mvc);
-						contentTests.setUrl("/contentApi/testEntitiesContent/" + testEntity.getId());
-						contentTests.setEntity(testEntity);
-						contentTests.setRepository(repository);
-						contentTests.setStore(contentRepository);
+            @Nested
+            @DisplayName("given an entity with @Version")
+            class GivenAnEntityWithVersionVersion extends Version {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    mvc = MockMvcBuilders.webAppContextSetup(context).build();
+                    testEntity4 = new TestEntity4();
+                    testEntity4 = store4.setContent(testEntity4, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                    testEntity4.mimeType = "text/plain";
+                    testEntity4 = repo4.save(testEntity4);
+                    String url = "/contentApi/testEntity4s/" + testEntity4.getId();
+                    this.setEntity(testEntity4);
+                    this.setMvc(mvc);
+                    this.setUrl(url);
+                    this.setCollectionUrl("/api/testEntity4s");
+                    this.setContentLinkRel("content");
+                    this.setRepo(repo4);
+                    this.setStore(store4);
+                    this.setEtag(format("\"%s\"", testEntity4.getVersion()));
+                }
+            }
 
-						corsTests.setMvc(mvc);
-						corsTests.setUrl("/contentApi/testEntitiesContent/" + testEntity.getId());
-					});
-					contentTests = Content.tests();
-					corsTests = Cors.tests();
-				});
+            @Nested
+            @DisplayName("given an entity with @LastModifiedDate")
+            class GivenAnEntityWithLastModifiedDateLastModifiedDate extends LastModifiedDate {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    mvc = MockMvcBuilders.webAppContextSetup(context).build();
+                    String content = "Hello Spring Content LastModifiedDate World!";
+                    testEntity4 = new TestEntity4();
+                    testEntity4 = store4.setContent(testEntity4, new ByteArrayInputStream(content.getBytes()));
+                    testEntity4.mimeType = "text/plain";
+                    testEntity4 = repo4.save(testEntity4);
+                    String url = "/contentApi/testEntity4s/" + testEntity4.getId();
+                    this.setMvc(mvc);
+                    this.setUrl(url);
+                    this.setLastModifiedDate(testEntity4.getModifiedDate());
+                    this.setEtag(testEntity4.getVersion().toString());
+                    this.setContent(content);
+                }
+            }
 
-				Context("given an entity with @Version", () -> {
-					BeforeEach(() -> {
-						testEntity4 = new TestEntity4();
-						testEntity4 = store4.setContent(testEntity4, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-						testEntity4.mimeType = "text/plain";
-						testEntity4 = repo4.save(testEntity4);
-						String url = "/contentApi/testEntity4s/" + testEntity4.getId();
+        }
 
-						version.setEntity(testEntity4);
-						version.setMvc(mvc);
-						version.setUrl(url);
-						version.setCollectionUrl("/api/testEntity4s");
-						version.setContentLinkRel("content");
-						version.setRepo(repo4);
-						version.setStore(store4);
-						version.setEtag(format("\"%s\"", testEntity4.getVersion()));
-					});
-					version = Version.tests();
-				});
+    }
 
-				Context("given an entity with @LastModifiedDate", () -> {
-					BeforeEach(() -> {
-						String content = "Hello Spring Content LastModifiedDate World!";
-
-						testEntity4 = new TestEntity4();
-						testEntity4 = store4.setContent(testEntity4, new ByteArrayInputStream(content.getBytes()));
-						testEntity4.mimeType = "text/plain";
-						testEntity4 = repo4.save(testEntity4);
-						String url = "/contentApi/testEntity4s/" + testEntity4.getId();
-
-						lastModifiedDate.setMvc(mvc);
-						lastModifiedDate.setUrl(url);
-						lastModifiedDate.setLastModifiedDate(testEntity4.getModifiedDate());
-						lastModifiedDate.setEtag(testEntity4.getVersion().toString());
-						lastModifiedDate.setContent(content);
-					});
-					lastModifiedDate = LastModifiedDate.tests();
-				});
-			});
-		});
-	}
-
-	@Test
-	public void noop() {
-	}
 }

@@ -1,18 +1,17 @@
 package internal.org.springframework.content.rest.links;
 
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.*;
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.CoreMatchers.hasItems;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.beans.HasPropertyWithValue.hasProperty;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
+import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+
 
 import java.util.UUID;
 
 import internal.org.springframework.content.rest.support.*;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.annotations.ContentLength;
@@ -37,13 +36,9 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfiguration;
 
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jConfiguration;
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jSpringRunner;
 
 import jakarta.persistence.*;
 
-@RunWith(Ginkgo4jSpringRunner.class)
-@Ginkgo4jConfiguration(threads = 1)
 @WebAppConfiguration
 @ContextConfiguration(classes = {
 		BaseUriConfig.class,
@@ -53,6 +48,7 @@ import jakarta.persistence.*;
 		HypermediaConfiguration.class })
 @Transactional
 @ActiveProfiles("store")
+@ExtendWith(SpringExtension.class)
 public class ContentLinksResourceProcessorIT {
 
 	@Autowired
@@ -71,146 +67,212 @@ public class ContentLinksResourceProcessorIT {
 
 	private PersistentEntityResource resource;
 
-	{
-		Describe("given the spring content baseUri property is set to contentApi", () -> {
-			BeforeEach(() -> {
-				mvc = MockMvcBuilders.webAppContextSetup(context).build();
-			});
+	
+    @Nested
+    class GivenTheSpringContentBaseUriPropertyIsSetToContentApiCases {
+        @Nested
+        class GivenAnEntityWithASingleContentIdProperty {
+            @Nested
+            class Tests {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
-			JustBeforeEach(() -> {
-				MockHttpServletRequest request = new MockHttpServletRequest();
-				RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
+                    PersistentEntity<?, ?> persistentEntity = repositories.getPersistentEntity(TestEntity4.class);
 
-				processor.process(resource);
-			});
+                    					TestEntity4 obj = new TestEntity4();
+                    					obj.setId(999L);
+                    					obj.setContentId(UUID.randomUUID());
 
-			Context("given an entity with a single @ContentId property", () -> {
+                    					PersistentEntityResource.Builder build = PersistentEntityResource.build(obj, persistentEntity);
+                    					resource = build.build();
 
-				BeforeEach(() -> {
-					PersistentEntity<?, ?> persistentEntity = repositories.getPersistentEntity(TestEntity4.class);
+                    MockHttpServletRequest request = new MockHttpServletRequest();
+                    				RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
 
-					TestEntity4 obj = new TestEntity4();
-					obj.setId(999L);
-					obj.setContentId(UUID.randomUUID());
+                    				processor.process(resource);
+                }
+                @Test
+                void shouldAddAnEntityContentLinks() throws Throwable {
+                    assertThat(resource.getLinks("content")).extracting("href").contains("http://localhost/contentApi/testEntity4s/999/content");
+                }
+            }
+            @Nested
+            class WhenFullyQualifiedLinksAreDisabledAndShortcutLinksAreEnabled {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
-					PersistentEntityResource.Builder build = PersistentEntityResource.build(obj, persistentEntity);
-					resource = build.build();
-				});
+                    PersistentEntity<?, ?> persistentEntity = repositories.getPersistentEntity(TestEntity4.class);
 
-				It("should add an entity content links", () -> {
-					assertThat(resource.getLinks("content"), hasItem(hasProperty("href", is("http://localhost/contentApi/testEntity4s/999/content"))));
-				});
+                    					TestEntity4 obj = new TestEntity4();
+                    					obj.setId(999L);
+                    					obj.setContentId(UUID.randomUUID());
 
-				Context("when fully qualified links are disabled and shortcut links are enabled", () -> {
-					BeforeEach(() -> {
-						processor.getRestConfiguration().setFullyQualifiedLinks(false);
-                        processor.getRestConfiguration().setShortcutLinks(true);
-					});
+                    					PersistentEntityResource.Builder build = PersistentEntityResource.build(obj, persistentEntity);
+                    					resource = build.build();
 
-					AfterEach(() -> {
-						processor.getRestConfiguration().setFullyQualifiedLinks(true);
-					});
+                    processor.getRestConfiguration().setFullyQualifiedLinks(false);
+                                            processor.getRestConfiguration().setShortcutLinks(true);
 
-					It("should add original and shortcut links", () -> {
-						assertThat(resource.getLinks("testEntity4s"), hasItem(hasProperty("href", is("http://localhost/contentApi/testEntity4s/999"))));
-						assertThat(resource.getLinks("testEntity4"), hasItem(hasProperty("href", is("http://localhost/contentApi/testEntity4s/999"))));
-					});
-				});
+                    MockHttpServletRequest request = new MockHttpServletRequest();
+                    				RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
 
-                Context("when fully qualified links are disabled and shortcut links are disabled", () -> {
-                    BeforeEach(() -> {
-                        processor.getRestConfiguration().setFullyQualifiedLinks(false);
-                        processor.getRestConfiguration().setShortcutLinks(false);
-                    });
+                    				processor.process(resource);
+                }
+                @AfterEach
+                void tearDown() throws Throwable {
+                    processor.getRestConfiguration().setFullyQualifiedLinks(true);
+                }
+                @Test
+                void shouldAddOriginalAndShortcutLinks() throws Throwable {
+                    assertThat(resource.getLinks("testEntity4s")).extracting("href").contains("http://localhost/contentApi/testEntity4s/999");
+                    						assertThat(resource.getLinks("testEntity4")).extracting("href").contains("http://localhost/contentApi/testEntity4s/999");
+                }
+            }
+            @Nested
+            class WhenFullyQualifiedLinksAreDisabledAndShortcutLinksAreDisabled {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
-                    AfterEach(() -> {
-                        processor.getRestConfiguration().setFullyQualifiedLinks(true);
-                        processor.getRestConfiguration().setShortcutLinks(true);
-                    });
+                    PersistentEntity<?, ?> persistentEntity = repositories.getPersistentEntity(TestEntity4.class);
 
-                    It("should add original and shortcut links", () -> {
-                        assertThat(resource.getLinks("testEntity4s"), not(hasItem(hasProperty("href", is("http://localhost/contentApi/testEntity4s/999")))));
-                        assertThat(resource.getLinks("testEntity4"), not(hasItem(hasProperty("href", is("http://localhost/contentApi/testEntity4s/999")))));
-                    });
-                });
-			});
+                    					TestEntity4 obj = new TestEntity4();
+                    					obj.setId(999L);
+                    					obj.setContentId(UUID.randomUUID());
 
-			Context("given an entity with multiple @ContentId properties", () -> {
+                    					PersistentEntityResource.Builder build = PersistentEntityResource.build(obj, persistentEntity);
+                    					resource = build.build();
 
-				BeforeEach(() -> {
-					PersistentEntity<?, ?> persistentEntity = repositories.getPersistentEntity(TestEntity5.class);
+                    processor.getRestConfiguration().setFullyQualifiedLinks(false);
+                                            processor.getRestConfiguration().setShortcutLinks(false);
 
-					TestEntity5 obj = new TestEntity5();
-					obj.setId(999L);
-					UUID contentId = UUID.randomUUID();
-					obj.setContentId(contentId);
-					obj.setRenditionId(UUID.randomUUID());
+                    MockHttpServletRequest request = new MockHttpServletRequest();
+                    				RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
 
-					PersistentEntityResource.Builder build = PersistentEntityResource.build(obj, persistentEntity);
-					resource = build.build();
-				});
+                    				processor.process(resource);
+                }
+                @AfterEach
+                void tearDown() throws Throwable {
+                    processor.getRestConfiguration().setFullyQualifiedLinks(true);
+                                            processor.getRestConfiguration().setShortcutLinks(true);
+                }
+                @Test
+                void shouldAddOriginalAndShortcutLinks() throws Throwable {
+                    assertThat(resource.getLinks("testEntity4s")).extracting("href").doesNotContain("http://localhost/contentApi/testEntity4s/999");
+                                            assertThat(resource.getLinks("testEntity4")).extracting("href").doesNotContain("http://localhost/contentApi/testEntity4s/999");
+                }
+            }
+        }
+        @Nested
+        class GivenAnEntityWithMultipleContentIdProperties {
+            @BeforeEach
+            void setUp() throws Throwable {
+                mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
-				It("should add content property links", () -> {
-					assertThat(resource.getLinks("content"), hasItems(hasProperty("href", is("http://localhost/contentApi/testEntity5s/999/content"))));
-					assertThat(resource.getLinks("rendition"), hasItems(hasProperty("href", is("http://localhost/contentApi/testEntity5s/999/rendition"))));
-				});
-			});
+                PersistentEntity<?, ?> persistentEntity = repositories.getPersistentEntity(TestEntity5.class);
 
-			Context("given an entity with an embedded object containing @ContentId properties", () -> {
-				BeforeEach(() -> {
-					PersistentEntity<?, ?> persistentEntity = repositories.getPersistentEntity(TestEntity2.class);
+                					TestEntity5 obj = new TestEntity5();
+                					obj.setId(999L);
+                					UUID contentId = UUID.randomUUID();
+                					obj.setContentId(contentId);
+                					obj.setRenditionId(UUID.randomUUID());
 
-					TestEntity2 obj = new TestEntity2();
-					obj.setId(999L);
-					UUID contentId = UUID.randomUUID();
-					TestEntityChild child = new TestEntityChild();
-					child.setContentId(contentId);
-					obj.setChild(child);
+                					PersistentEntityResource.Builder build = PersistentEntityResource.build(obj, persistentEntity);
+                					resource = build.build();
 
-					PersistentEntityResource.Builder build = PersistentEntityResource.build(obj, persistentEntity);
-					resource = build.build();
-				});
+                MockHttpServletRequest request = new MockHttpServletRequest();
+                				RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
 
-				It("should add content property links", () -> {
-					assertThat(resource.getLinks("child"), hasItems(hasProperty("href", is("http://localhost/contentApi/files/999/child"))));
-				});
-			});
+                				processor.process(resource);
+            }
+            @Test
+            void shouldAddContentPropertyLinks() throws Throwable {
+                assertThat(resource.getLinks("content")).extracting("href").contains("http://localhost/contentApi/testEntity5s/999/content");
+                					assertThat(resource.getLinks("rendition")).extracting("href").contains("http://localhost/contentApi/testEntity5s/999/rendition");
+            }
+        }
+        @Nested
+        class GivenAnEntityWithAnEmbeddedObjectContainingContentIdProperties {
+            @BeforeEach
+            void setUp() throws Throwable {
+                mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
-			Context("given an entity with embedded object with @RestResource customizations [Issue #1049]", () -> {
-				BeforeEach(() -> {
-					PersistentEntity<?, ?> persistentEntity = persistentEntities.getRequiredPersistentEntity(TestEntity11.class);
+                PersistentEntity<?, ?> persistentEntity = repositories.getPersistentEntity(TestEntity2.class);
 
-					TestEntity11 testEntity11 = new TestEntity11();
-					testEntity11.setId(999L);
+                					TestEntity2 obj = new TestEntity2();
+                					obj.setId(999L);
+                					UUID contentId = UUID.randomUUID();
+                					TestEntityChild child = new TestEntityChild();
+                					child.setContentId(contentId);
+                					obj.setChild(child);
 
-					PersistentEntityResource.Builder build = PersistentEntityResource.build(testEntity11, persistentEntity);
-					resource = build.buildNested();
-				});
+                					PersistentEntityResource.Builder build = PersistentEntityResource.build(obj, persistentEntity);
+                					resource = build.build();
 
-				It("should add content property links", () -> {
-					assertThat(resource.getLinks("package/content"), hasItems(hasProperty("href", is("http://localhost/contentApi/testEntity11s/999/package/content"))));
-					assertThat(resource.getLinks("package/preview"), hasItems(hasProperty("href", is("http://localhost/contentApi/testEntity11s/999/package/preview"))));
-				});
-			});
+                MockHttpServletRequest request = new MockHttpServletRequest();
+                				RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
 
-			Context("given the embedded object in an entity containing @ContentId properties", () -> {
-				BeforeEach(() -> {
-					PersistentEntity<?, ?> persistentEntity = persistentEntities.getRequiredPersistentEntity(TestEntityChild.class);
+                				processor.process(resource);
+            }
+            @Test
+            void shouldAddContentPropertyLinks() throws Throwable {
+                assertThat(resource.getLinks("child")).extracting("href").contains("http://localhost/contentApi/files/999/child");
+            }
+        }
+        @Nested
+        class GivenAnEntityWithEmbeddedObjectWithRestResourceCustomizationsIssue1049 {
+            @BeforeEach
+            void setUp() throws Throwable {
+                mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
-					UUID contentId = UUID.randomUUID();
-					TestEntityChild child = new TestEntityChild();
-					child.setContentId(contentId);
+                PersistentEntity<?, ?> persistentEntity = persistentEntities.getRequiredPersistentEntity(TestEntity11.class);
 
-					PersistentEntityResource.Builder build = PersistentEntityResource.build(child, persistentEntity);
-					resource = build.buildNested();
-				});
+                					TestEntity11 testEntity11 = new TestEntity11();
+                					testEntity11.setId(999L);
 
-				It("should not try to generate content property links for the embedded object", () -> {
-					assertThat(resource.getLinks().isEmpty(), is(true));
-				});
-			});
-		});
-	}
+                					PersistentEntityResource.Builder build = PersistentEntityResource.build(testEntity11, persistentEntity);
+                					resource = build.buildNested();
+
+                MockHttpServletRequest request = new MockHttpServletRequest();
+                				RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
+
+                				processor.process(resource);
+            }
+            @Test
+            void shouldAddContentPropertyLinks() throws Throwable {
+                assertThat(resource.getLinks("package/content")).extracting("href").contains("http://localhost/contentApi/testEntity11s/999/package/content");
+                					assertThat(resource.getLinks("package/preview")).extracting("href").contains("http://localhost/contentApi/testEntity11s/999/package/preview");
+            }
+        }
+        @Nested
+        class GivenTheEmbeddedObjectInAnEntityContainingContentIdProperties {
+            @BeforeEach
+            void setUp() throws Throwable {
+                mvc = MockMvcBuilders.webAppContextSetup(context).build();
+
+                PersistentEntity<?, ?> persistentEntity = persistentEntities.getRequiredPersistentEntity(TestEntityChild.class);
+
+                					UUID contentId = UUID.randomUUID();
+                					TestEntityChild child = new TestEntityChild();
+                					child.setContentId(contentId);
+
+                					PersistentEntityResource.Builder build = PersistentEntityResource.build(child, persistentEntity);
+                					resource = build.buildNested();
+
+                MockHttpServletRequest request = new MockHttpServletRequest();
+                				RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
+
+                				processor.process(resource);
+            }
+            @Test
+            void shouldNotTryToGenerateContentPropertyLinksForTheEmbeddedObject() throws Throwable {
+                assertThat(resource.getLinks().isEmpty()).isTrue();
+            }
+        }
+    }
+
 
 	@Test
 	public void noop() {

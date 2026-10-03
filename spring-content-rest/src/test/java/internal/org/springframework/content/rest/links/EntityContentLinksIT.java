@@ -1,7 +1,13 @@
 package internal.org.springframework.content.rest.links;
 
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jConfiguration;
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jSpringRunner;
+import org.junit.jupiter.api.extension.ExtendWith;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.DisplayName;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+
 import internal.org.springframework.content.rest.support.StoreConfig;
 import internal.org.springframework.content.rest.support.TestEntity;
 import internal.org.springframework.content.rest.support.TestEntity3;
@@ -9,8 +15,6 @@ import internal.org.springframework.content.rest.support.TestEntity3ContentRepos
 import internal.org.springframework.content.rest.support.TestEntity3Repository;
 import internal.org.springframework.content.rest.support.TestEntityContentRepository;
 import internal.org.springframework.content.rest.support.TestEntityRepository;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,12 +33,6 @@ import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfigu
 
 import java.io.ByteArrayInputStream;
 
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.BeforeEach;
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.Context;
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.Describe;
-
-@RunWith(Ginkgo4jSpringRunner.class)
-@Ginkgo4jConfiguration(threads = 1)
 @WebAppConfiguration
 @ContextConfiguration(classes = {
 		StoreConfig.class,
@@ -44,6 +42,7 @@ import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.Describe;
 		HypermediaConfiguration.class })
 @Transactional
 @ActiveProfiles("store")
+@ExtendWith(SpringExtension.class)
 public class EntityContentLinksIT {
 
 	@Autowired
@@ -65,34 +64,28 @@ public class EntityContentLinksIT {
 
 	private ContentLinkTests contentLinkTests;
 
-	{
-		Describe("EntityLinks", () -> {
+	
+    @Nested
+    class EntityLinks {
+        @Nested
+        @DisplayName("when entity links are enabled")
+        class WhenEntityLinksAreEnabledContentLinkTests extends ContentLinkTests {
+            @BeforeEach
+            void setUp() throws Throwable {
+                mvc = MockMvcBuilders.webAppContextSetup(context).build();
+                testEntity3 = new TestEntity3();
+                contentRepository3.setContent(testEntity3, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                testEntity3 = repository3.save(testEntity3);
+                this.setMvc(mvc);
+                this.setRepository(repository3);
+                this.setStore(contentRepository3);
+                this.setTestEntity(testEntity3);
+                this.setUrl("/testEntity3s/" + testEntity3.getId());
+                this.setLinkRel("content");
+                this.setExpectedLinkRegex(String.format("http://localhost/testEntity3s/%s/content", testEntity3.getId()));
+            }
+        }
 
-			BeforeEach(() -> {
-				mvc = MockMvcBuilders.webAppContextSetup(context).build();
-			});
+    }
 
-			Context("when entity links are enabled", () -> {
-
-				BeforeEach(() -> {
-					testEntity3 = new TestEntity3();
-					contentRepository3.setContent(testEntity3, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-					testEntity3 = repository3.save(testEntity3);
-
-					contentLinkTests.setMvc(mvc);
-					contentLinkTests.setRepository(repository3);
-					contentLinkTests.setStore(contentRepository3);
-					contentLinkTests.setTestEntity(testEntity3);
-					contentLinkTests.setUrl("/testEntity3s/" + testEntity3.getId());
-					contentLinkTests.setLinkRel("content");
-					contentLinkTests.setExpectedLinkRegex(String.format("http://localhost/testEntity3s/%s/content", testEntity3.getId()));
-				});
-				contentLinkTests = new ContentLinkTests();
-			});
-		});
-	}
-
-	@Test
-	public void noop() {
-	}
 }

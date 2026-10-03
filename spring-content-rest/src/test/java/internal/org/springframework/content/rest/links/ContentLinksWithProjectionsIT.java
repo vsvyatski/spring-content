@@ -1,15 +1,13 @@
 package internal.org.springframework.content.rest.links;
 
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.BeforeEach;
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.Context;
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.Describe;
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.It;
-import static org.hamcrest.CoreMatchers.hasItems;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.text.MatchesPattern.matchesPattern;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
+import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -23,9 +21,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import javax.sql.DataSource;
 
-import org.hamcrest.beans.HasPropertyWithValue;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.annotations.ContentLength;
@@ -59,14 +54,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfiguration;
 
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jConfiguration;
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jSpringRunner;
 import com.theoryinpractise.halbuilder.api.ReadableRepresentation;
 import com.theoryinpractise.halbuilder.api.RepresentationFactory;
 import com.theoryinpractise.halbuilder.standard.StandardRepresentationFactory;
 
-@RunWith(Ginkgo4jSpringRunner.class)
-@Ginkgo4jConfiguration(threads = 1)
 @WebAppConfiguration
 @ContextConfiguration(classes = {
         ContentLinksWithProjectionsIT.StoreConfig.class,
@@ -76,6 +67,7 @@ import com.theoryinpractise.halbuilder.standard.StandardRepresentationFactory;
 		HypermediaConfiguration.class })
 @Transactional
 @ActiveProfiles("store")
+@ExtendWith(SpringExtension.class)
 public class ContentLinksWithProjectionsIT {
 
 	@Autowired
@@ -91,39 +83,42 @@ public class ContentLinksWithProjectionsIT {
 
 	private TEntity testEntity;
 
-	{
-		Describe("Content Links with Entity Projection", () -> {
-			BeforeEach(() -> {
-				mvc = MockMvcBuilders.webAppContextSetup(context).build();
-			});
+	
+    @Nested
+    class ContentLinksWithEntityProjectionCases {
+        @Nested
+        class GivenContentIsAssociated {
+            @Nested
+            class AGETToApiRepositoryIdProjectionId {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
-	        Context("given content is associated", () -> {
-	            BeforeEach(() -> {
-	                testEntity = new TEntity();
-	                testEntity.setName("foo");
-	                testEntity = store.setContent(testEntity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-	                testEntity = repository.save(testEntity);
-	            });
-	            Context("a GET to /{api}?/{repository}/{id}?projection=id", () -> {
-	                It("should provide a response with a content link", () -> {
-	                    MockHttpServletResponse response = mvc.perform(get("/tEntities/" + testEntity.getId() + "?projection=customTEntity")
-	                                    .accept("application/hal+json"))
-	                            .andExpect(status().isOk()).andReturn().getResponse();
-	                    assertThat(response, is(not(nullValue())));
+                    testEntity = new TEntity();
+                    	                testEntity.setName("foo");
+                    	                testEntity = store.setContent(testEntity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                    	                testEntity = repository.save(testEntity);
+                }
+                @Test
+                void shouldProvideAResponseWithAContentLink() throws Throwable {
+                    MockHttpServletResponse response = mvc.perform(get("/tEntities/" + testEntity.getId() + "?projection=customTEntity")
+                    	                                    .accept("application/hal+json"))
+                    	                            .andExpect(status().isOk()).andReturn().getResponse();
+                    	                    assertThat(response).isNotNull();
 
-	                    RepresentationFactory representationFactory = new StandardRepresentationFactory();
-	                    ReadableRepresentation halResponse = representationFactory
-	                            .readRepresentation("application/hal+json",
-	                                    new StringReader(response.getContentAsString()));
+                    	                    RepresentationFactory representationFactory = new StandardRepresentationFactory();
+                    	                    ReadableRepresentation halResponse = representationFactory
+                    	                            .readRepresentation("application/hal+json",
+                    	                                    new StringReader(response.getContentAsString()));
 
-	                    assertThat(halResponse, is(not(nullValue())));
-	                    assertThat(halResponse.getLinksByRel("content"), is(not(nullValue())));
-	                    assertThat(halResponse.getLinksByRel("content"), hasItems(new HasPropertyWithValue("href", matchesPattern("http://localhost/tEntities/" + testEntity.getId() + "/content"))));
-	                });
-	            });
-	        });
-		});
-	}
+                    	                    assertThat(halResponse).isNotNull();
+                    	                    assertThat(halResponse.getLinksByRel("content")).isNotNull();
+                    	                    assertThat(halResponse.getLinksByRel("content")).extracting("href").contains("http://localhost/tEntities/" + testEntity.getId() + "/content");
+                }
+            }
+        }
+    }
+
 
 	@Entity
 	public static class TEntity {

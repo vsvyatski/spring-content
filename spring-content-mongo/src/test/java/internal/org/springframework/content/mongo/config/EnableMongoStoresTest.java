@@ -1,10 +1,14 @@
 package internal.org.springframework.content.mongo.config;
 
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jRunner;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.store.ContentStore;
@@ -27,82 +31,82 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 
 import java.util.UUID;
 
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.*;
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.fail;
 
-@RunWith(Ginkgo4jRunner.class)
 public class EnableMongoStoresTest {
 
 	private AnnotationConfigApplicationContext context;
-	{
-		Describe("EnableMongoStores", () -> {
-			Context("given an enabled configuration with a mongo content repository bean",
-					() -> {
-						BeforeEach(() -> {
-							context = new AnnotationConfigApplicationContext();
-							context.register(TestConfig.class);
-							context.refresh();
-						});
-						AfterEach(() -> {
-							context.close();
-						});
-						It("should have a mongo content repository bean", () -> {
-							assertThat(context.getBean(TestEntityContentRepository.class),
-									is(not(nullValue())));
-						});
-						It("should have a mongo store converter", () -> {
-							assertThat(context.getBean("mongoStorePlacementService"),
-									is(not(nullValue())));
-						});
-					});
+	
+    @Nested
+    class EnableMongoStoresCases {
+        @Nested
+        class GivenAnEnabledConfigurationWithAMongoContentRepositoryBean {
+            @BeforeEach
+            void setUp() throws Throwable {
+                context = new AnnotationConfigApplicationContext();
+                							context.register(TestConfig.class);
+                							context.refresh();
+            }
+            @AfterEach
+            void tearDown() throws Throwable {
+                context.close();
+            }
+            @Test
+            void shouldHaveAMongoContentRepositoryBean() throws Throwable {
+                assertThat(context.getBean(TestEntityContentRepository.class)).isNotNull();
+            }
+            @Test
+            void shouldHaveAMongoStoreConverter() throws Throwable {
+                assertThat(context.getBean("mongoStorePlacementService")).isNotNull();
+            }
+        }
+        @Nested
+        class GivenAContextWithACustomConverter {
+            @BeforeEach
+            void setUp() throws Throwable {
+                context = new AnnotationConfigApplicationContext();
+                					context.register(ConverterConfig.class);
+                					context.refresh();
+            }
+            @AfterEach
+            void tearDown() throws Throwable {
+                context.close();
+            }
+            @Test
+            void shouldUseThatConverter() throws Throwable {
+                ConversionService converters = (ConversionService) context
+                							.getBean("mongoStorePlacementService");
+                					assertThat(converters.convert(
+                									UUID.fromString(
+                											"e49d5464-26ce-11e7-93ae-92361f002671"),
+                									String.class)).isEqualTo("/e49d5464/26ce/11e7/93ae/92361f002671");
+            }
+        }
+        @Nested
+        class GivenAnEnabledConfigurationWithNoMongoContentRepositoryBeans {
+            @BeforeEach
+            void setUp() throws Throwable {
+                context = new AnnotationConfigApplicationContext();
+                							context.register(EmptyConfig.class);
+                							context.refresh();
+            }
+            @AfterEach
+            void tearDown() throws Throwable {
+                context.close();
+            }
+            @Test
+            void shouldLoadTheContextButHaveNoMongoRepositoryBeans() throws Throwable {
+                try {
+                										context.getBean(
+                												TestEntityContentRepository.class);
+                										fail("expected no such bean");
+                									}
+                									catch (NoSuchBeanDefinitionException e) {
+                										assertThat(true).isTrue();
+                									}
+            }
+        }
+    }
 
-			Context("given a context with a custom converter", () -> {
-				BeforeEach(() -> {
-					context = new AnnotationConfigApplicationContext();
-					context.register(ConverterConfig.class);
-					context.refresh();
-				});
-				AfterEach(() -> {
-					context.close();
-				});
-				It("should use that converter", () -> {
-					ConversionService converters = (ConversionService) context
-							.getBean("mongoStorePlacementService");
-					assertThat(
-							converters.convert(
-									UUID.fromString(
-											"e49d5464-26ce-11e7-93ae-92361f002671"),
-									String.class),
-							is("/e49d5464/26ce/11e7/93ae/92361f002671"));
-				});
-			});
-
-			Context("given an enabled configuration with no mongo content repository beans",
-					() -> {
-						BeforeEach(() -> {
-							context = new AnnotationConfigApplicationContext();
-							context.register(EmptyConfig.class);
-							context.refresh();
-						});
-						AfterEach(() -> {
-							context.close();
-						});
-						It("should load the context but have no mongo repository beans",
-								() -> {
-									try {
-										context.getBean(
-												TestEntityContentRepository.class);
-										fail("expected no such bean");
-									}
-									catch (NoSuchBeanDefinitionException e) {
-										assertThat(true, is(true));
-									}
-								});
-					});
-		});
-	}
 
 	@Test
 	public void noop() {

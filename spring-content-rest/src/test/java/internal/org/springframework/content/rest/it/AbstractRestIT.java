@@ -1,5 +1,10 @@
 package internal.org.springframework.content.rest.it;
 
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import internal.org.springframework.content.rest.support.TestEntity2;
 import internal.org.springframework.content.rest.support.TestEntity2JpaStore;
 import internal.org.springframework.content.rest.support.TestEntity2Repository;
@@ -7,8 +12,6 @@ import internal.org.springframework.content.rest.support.TestEntityChild;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import net.bytebuddy.utility.RandomString;
 import org.apache.http.HttpStatus;
-import org.hamcrest.Matchers;
-import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.content.commons.property.PropertyPath;
@@ -16,13 +19,8 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.io.ByteArrayInputStream;
 
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.*;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.when;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 public abstract class AbstractRestIT {
 
@@ -40,11 +38,15 @@ public abstract class AbstractRestIT {
 
     private TestEntity2 existingClaim;
 
-    {
-        Describe("JpaRest", () -> {
-
-            Context("Spring Content REST", () -> {
-                BeforeEach(() -> {
+    
+    @Nested
+    class JpaRest {
+        @Nested
+        class SpringContentREST {
+            @Nested
+            class GivenAClaim {
+                @BeforeEach
+                void setUp() throws Throwable {
                     RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
 
                     // delete any existing claim forms
@@ -59,96 +61,132 @@ public abstract class AbstractRestIT {
                     for (TestEntity2 existingClaim : existingClaims) {
                         claimRepo.delete(existingClaim);
                     }
-                });
-                Context("given a claim", () -> {
-                    BeforeEach(() -> {
+
+                    existingClaim = new TestEntity2();
+                    claimRepo.save(existingClaim);
+
+                }
+
+                @Test
+                void shouldBePOSTableWithNewContentWith201Created() throws Throwable {
+                    // assert content does not exist
+                    when()
+                    .get("/files/" + existingClaim.getId() + "/child")
+                    .then()
+                    .assertThat()
+                    .statusCode(HttpStatus.SC_NOT_FOUND);
+
+                    String newContent = "This is some new content";
+
+                    // POST the new content
+                    given()
+                    .contentType("text/plain")
+                    .body(newContent.getBytes())
+                    .when()
+                    .post("/files/" + existingClaim.getId() + "/child")
+                    .then()
+                    .statusCode(HttpStatus.SC_CREATED);
+
+                    // assert that it now exists
+                    var response1 = given()
+                    .header("accept", "text/plain")
+                    .get("/files/" + existingClaim.getId() + "/child")
+                    .then()
+                    .statusCode(HttpStatus.SC_OK)
+                    .extract().response();
+                    assertThat(response1.getContentType()).startsWith("text/plain");
+                    assertThat(response1.asString()).isEqualTo(newContent);
+
+                }
+
+                @Nested
+                class GivenThatClaimHasExistingContent {
+                    @BeforeEach
+                    void setUp() throws Throwable {
+                        RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
+
+                        // delete any existing claim forms
+                        Iterable<TestEntity2> existingClaims = claimRepo.findAll();
+                        for (TestEntity2 existingClaim : existingClaims) {
+                            if (existingClaim.getChild() != null) {
+                                claimFormStore.unsetContent(existingClaim, PropertyPath.from("child"));
+                            }
+                        }
+
+                        // and claims
+                        for (TestEntity2 existingClaim : existingClaims) {
+                            claimRepo.delete(existingClaim);
+                        }
+
                         existingClaim = new TestEntity2();
                         claimRepo.save(existingClaim);
-                    });
-                    It("should be POSTable with new content with 201 Created", () -> {
-                        // assert content does not exist
-                        when()
+
+                        existingClaim.setChild(new TestEntityChild());
+                        existingClaim.getChild().setMimeType("text/plain");
+                        claimFormStore.setContent(existingClaim, PropertyPath.from("child"), new ByteArrayInputStream("This is plain text content!".getBytes()));
+                        claimRepo.save(existingClaim);
+
+                    }
+
+                    @Test
+                    void shouldReturnTheContentWith200OK() throws Throwable {
+                        var response2 = given()
+                        .header("accept", "text/plain")
                         .get("/files/" + existingClaim.getId() + "/child")
                         .then()
-                        .assertThat()
-                        .statusCode(HttpStatus.SC_NOT_FOUND);
+                        .statusCode(HttpStatus.SC_OK)
+                        .extract().response();
+                        assertThat(response2.getContentType()).startsWith("text/plain");
+                        assertThat(response2.asString()).isEqualTo("This is plain text content!");
 
-                        String newContent = "This is some new content";
+                    }
 
-                        // POST the new content
+                    @Test
+                    void shouldBePOSTableWithNewContentWith201Created() throws Throwable {
+                        String newContent = "This is new content";
+
                         given()
                         .contentType("text/plain")
                         .body(newContent.getBytes())
                         .when()
                         .post("/files/" + existingClaim.getId() + "/child")
                         .then()
-                        .statusCode(HttpStatus.SC_CREATED);
+                        .statusCode(HttpStatus.SC_OK);
 
-                        // assert that it now exists
-                        given()
+                        var response3 = given()
                         .header("accept", "text/plain")
                         .get("/files/" + existingClaim.getId() + "/child")
                         .then()
                         .statusCode(HttpStatus.SC_OK)
+                        .extract().response();
+                        assertThat(response3.getContentType()).startsWith("text/plain");
+                        assertThat(response3.asString()).isEqualTo(newContent);
+
+                    }
+
+                    @Test
+                    void shouldBeDELETEableWith204NoContent() throws Throwable {
+                        given()
+                        .delete("/files/" + existingClaim.getId() + "/child")
+                        .then()
                         .assertThat()
-                        .contentType(Matchers.startsWith("text/plain"))
-                        .body(Matchers.equalTo(newContent));
-                    });
-                    Context("given that claim has existing content", () -> {
-                        BeforeEach(() -> {
-                            existingClaim.setChild(new TestEntityChild());
-                            existingClaim.getChild().setMimeType("text/plain");
-                            claimFormStore.setContent(existingClaim, PropertyPath.from("child"), new ByteArrayInputStream("This is plain text content!".getBytes()));
-                            claimRepo.save(existingClaim);
-                        });
-                        It("should return the content with 200 OK", () -> {
-                            given()
-                            .header("accept", "text/plain")
-                            .get("/files/" + existingClaim.getId() + "/child")
-                            .then()
-                            .statusCode(HttpStatus.SC_OK)
-                            .assertThat()
-                            .contentType(Matchers.startsWith("text/plain"))
-                            .body(Matchers.equalTo("This is plain text content!"));
-                        });
-                        It("should be POSTable with new content with 201 Created", () -> {
-                            String newContent = "This is new content";
+                        .statusCode(HttpStatus.SC_NO_CONTENT);
 
-                            given()
-                            .contentType("text/plain")
-                            .body(newContent.getBytes())
-                            .when()
-                            .post("/files/" + existingClaim.getId() + "/child")
-                            .then()
-                            .statusCode(HttpStatus.SC_OK);
+                        // and make sure that it is really gone
+                        when()
+                        .get("/files/" + existingClaim.getId() + "/child")
+                        .then()
+                        .assertThat()
+                        .statusCode(HttpStatus.SC_NOT_FOUND);
 
-                            given()
-                            .header("accept", "text/plain")
-                            .get("/files/" + existingClaim.getId() + "/child")
-                            .then()
-                            .statusCode(HttpStatus.SC_OK)
-                            .assertThat()
-                            .contentType(Matchers.startsWith("text/plain"))
-                            .body(Matchers.equalTo(newContent));
-                        });
-                        It("should be DELETEable with 204 No Content", () -> {
-                            given()
-                            .delete("/files/" + existingClaim.getId() + "/child")
-                            .then()
-                            .assertThat()
-                            .statusCode(HttpStatus.SC_NO_CONTENT);
+                    }
 
-                            // and make sure that it is really gone
-                            when()
-                            .get("/files/" + existingClaim.getId() + "/child")
-                            .then()
-                            .assertThat()
-                            .statusCode(HttpStatus.SC_NOT_FOUND);
-                        });
-                    });
-                });
-            });
-        });
+                }
+
+            }
+
+        }
+
     }
 
     protected String getId() {
@@ -160,6 +198,4 @@ public abstract class AbstractRestIT {
         return configClass.getSimpleName().replaceAll("Config", "");
     }
 
-    @Test
-    public void noop() {}
 }

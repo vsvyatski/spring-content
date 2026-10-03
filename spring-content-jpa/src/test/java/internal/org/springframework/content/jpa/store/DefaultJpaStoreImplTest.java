@@ -1,10 +1,12 @@
 package internal.org.springframework.content.jpa.store;
 
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jRunner;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import internal.org.springframework.content.jpa.io.GenericBlobResource;
 import jakarta.persistence.Id;
-import org.hamcrest.CoreMatchers;
-import org.junit.runner.RunWith;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.store.StoreAccessException;
@@ -19,15 +21,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Random;
 
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.*;
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-@RunWith(Ginkgo4jRunner.class)
 public class DefaultJpaStoreImplTest {
 
     private DefaultJpaStoreImpl<Object, String> store;
@@ -45,73 +42,140 @@ public class DefaultJpaStoreImplTest {
     private String id;
     private Exception e;
 
-    {
-        Describe("DefaultJpaStoreImpl", () -> {
-            JustBeforeEach(() -> store =
-                    spy(new DefaultJpaStoreImpl(blobResourceLoader, null, 8096))
-            );
+    
+    @Nested
+    class DefaultJpaStoreImplCases {
+        @Nested
+        class Store {
+            @Nested
+            class GetResource {
+                @Nested
+                class GivenAnId {
+                    @BeforeEach
+                    void setUp() throws Throwable {
+                        blobResourceLoader = mock(BlobResourceLoader.class);
+                        id = "1";
+                        store =
+                                            spy(new DefaultJpaStoreImpl(blobResourceLoader, null, 8096));
+                        resource = store.getResource(id);
+                    }
 
-            Describe("Store", () -> {
-                BeforeEach(() -> blobResourceLoader = mock(BlobResourceLoader.class));
-                Context("#getResource", () -> Context("given an id", () -> {
-                    BeforeEach(() -> id = "1");
-                    JustBeforeEach(() -> resource = store.getResource(id));
-                    It("should use the blob resource loader to load a blob resource", () ->
-                            verify(blobResourceLoader).getResource(id));
-                }));
-            });
-            Describe("AssociativeStore", () -> {
-                BeforeEach(() -> blobResourceLoader = mock(BlobResourceLoader.class));
-                Context("#getResource", () -> {
-                    JustBeforeEach(() -> resource = store.getResource(entity));
-                    Context("when the entity is not associated with a resource",
-                            () -> {
-                                BeforeEach(() -> entity = new TestEntity());
-                                It("should return null", () -> {
-                                    verify(blobResourceLoader, never()).getResource(any());
-                                    assertThat(resource, is(nullValue()));
-                                });
-                            });
-                    Context("when the entity is associated with a resource", () -> {
-                        BeforeEach(() -> {
-                            entity = new TestEntity();
-                            entity.setContentId("12345");
-                        });
-                        It("should load a new resource", () ->
-                                verify(blobResourceLoader).getResource(eq("12345")));
-                    });
-                });
-                Context("#associate", () -> {
-                    BeforeEach(() -> {
-                        id = "12345";
+                    @Test
+                    void shouldUseTheBlobResourceLoaderToLoadABlobResource() throws Throwable {
+                        verify(blobResourceLoader).getResource(id);
+                    }
 
+                }
+
+            }
+
+        }
+
+        @Nested
+        class AssociativeStore {
+            @Nested
+            class GetResource {
+                @Nested
+                class WhenTheEntityIsNotAssociatedWithAResource {
+                    @BeforeEach
+                    void setUp() throws Throwable {
+                        blobResourceLoader = mock(BlobResourceLoader.class);
                         entity = new TestEntity();
+                        store =
+                                            spy(new DefaultJpaStoreImpl(blobResourceLoader, null, 8096));
+                        resource = store.getResource(entity);
+                    }
 
-                        resource = mock(BlobResource.class);
-                        when(blobResourceLoader.getResource(eq("12345")))
-                                .thenReturn(resource);
-                        when(resource.contentLength()).thenReturn(20L);
-                    });
-                    JustBeforeEach(() -> store.associate(entity, id));
-                    It("should set the entity's content ID attribute", () ->
-                            assertThat(entity.getContentId(), CoreMatchers.is("12345")));
-                });
-                Context("#unassociate", () -> {
-                    BeforeEach(() -> {
-                        id = "12345";
+                    @Test
+                    void shouldReturnNull() throws Throwable {
+                        verify(blobResourceLoader, never()).getResource(any());
+                        assertThat(resource).isNull();
 
+                    }
+
+                }
+
+                @Nested
+                class WhenTheEntityIsAssociatedWithAResource {
+                    @BeforeEach
+                    void setUp() throws Throwable {
+                        blobResourceLoader = mock(BlobResourceLoader.class);
                         entity = new TestEntity();
-                        entity.setContentId(id);
-                        entity.setContentLen(20L);
-                    });
-                    JustBeforeEach(() -> store.unassociate(entity));
-                    It("should reset the @ContentId", () ->
-                            assertThat(entity.getContentId(), is(nullValue())));
-                });
-            });
-            Describe("ContentStore", () -> {
-                Context("#getContent", () -> {
-                    BeforeEach(() -> {
+                        entity.setContentId("12345");
+
+                        store =
+                                            spy(new DefaultJpaStoreImpl(blobResourceLoader, null, 8096));
+                        resource = store.getResource(entity);
+                    }
+
+                    @Test
+                    void shouldLoadANewResource() throws Throwable {
+                        verify(blobResourceLoader).getResource(eq("12345"));
+                    }
+
+                }
+
+            }
+
+            @Nested
+            class Associate {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    blobResourceLoader = mock(BlobResourceLoader.class);
+                    id = "12345";
+
+                    entity = new TestEntity();
+
+                    resource = mock(BlobResource.class);
+                    when(blobResourceLoader.getResource(eq("12345")))
+                            .thenReturn(resource);
+                    when(resource.contentLength()).thenReturn(20L);
+
+                    store =
+                                        spy(new DefaultJpaStoreImpl(blobResourceLoader, null, 8096));
+                    store.associate(entity, id);
+                }
+
+                @Test
+                void shouldSetTheEntitySContentIDAttribute() throws Throwable {
+                    assertThat(entity.getContentId()).isEqualTo("12345");
+                }
+
+            }
+
+            @Nested
+            class Unassociate {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    blobResourceLoader = mock(BlobResourceLoader.class);
+                    id = "12345";
+
+                    entity = new TestEntity();
+                    entity.setContentId(id);
+                    entity.setContentLen(20L);
+
+                    store =
+                                        spy(new DefaultJpaStoreImpl(blobResourceLoader, null, 8096));
+                    store.unassociate(entity);
+                }
+
+                @Test
+                void shouldResetTheContentId() throws Throwable {
+                    assertThat(entity.getContentId()).isNull();
+                }
+
+            }
+
+        }
+
+        @Nested
+        class ContentStore {
+            @Nested
+            class GetContent {
+                @Nested
+                class GivenContent {
+                    @BeforeEach
+                    void setUp() throws Throwable {
                         blobResourceLoader = mock(BlobResourceLoader.class);
                         resource = mock(GenericBlobResource.class);
 
@@ -119,46 +183,119 @@ public class DefaultJpaStoreImplTest {
 
                         when(blobResourceLoader.getResource(entity.getContentId()))
                                 .thenReturn(resource);
-                    });
-                    JustBeforeEach(() -> {
+
+                        stream = new ByteArrayInputStream(
+                                "hello content world!".getBytes());
+
+                        when(resource.getInputStream()).thenReturn(stream);
+
+                        store =
+                                            spy(new DefaultJpaStoreImpl(blobResourceLoader, null, 8096));
                         try {
                             inputStream = store.getContent(entity);
                         } catch (Exception e) {
-                            this.e = e;
+                            DefaultJpaStoreImplTest.this.e = e;
                         }
-                    });
-                    Context("given content", () -> {
-                        BeforeEach(() -> {
-                            stream = new ByteArrayInputStream(
-                                    "hello content world!".getBytes());
 
-                            when(resource.getInputStream()).thenReturn(stream);
-                        });
+                    }
 
-                        It("should use the blob resource factory to create a new blob resource", () ->
-                                verify(blobResourceLoader).getResource(entity.getContentId()));
+                    @Test
+                    void shouldUseTheBlobResourceFactoryToCreateANewBlobResource() throws Throwable {
+                        verify(blobResourceLoader).getResource(entity.getContentId());
+                    }
 
-                        It("should return an inputStream", () -> assertThat(inputStream, is(not(nullValue()))));
-                    });
-                    Context("given fetching the input stream fails", () -> {
-                        BeforeEach(() -> when(resource.getInputStream())
-                                .thenThrow(new IOException("get-ioexception")));
-                        It("should return null and throw a StoreAccessException", () -> {
-                            assertThat(inputStream, is(nullValue()));
-                            assertThat(e, is(instanceOf(StoreAccessException.class)));
-                            assertThat(e.getCause().getMessage(), is("get-ioexception"));
-                        });
-                    });
-                });
-                Context("#setContent", () -> {
-                    JustBeforeEach(() -> {
+                    @Test
+                    void shouldReturnAnInputStream() throws Throwable {
+                        assertThat(inputStream).isNotNull();
+                    }
+
+                }
+
+                @Nested
+                class GivenFetchingTheInputStreamFails {
+                    @BeforeEach
+                    void setUp() throws Throwable {
+                        blobResourceLoader = mock(BlobResourceLoader.class);
+                        resource = mock(GenericBlobResource.class);
+
+                        entity = new TestEntity("12345");
+
+                        when(blobResourceLoader.getResource(entity.getContentId()))
+                                .thenReturn(resource);
+
+                        when(resource.getInputStream())
+                                                        .thenThrow(new IOException("get-ioexception"));
+                        store =
+                                            spy(new DefaultJpaStoreImpl(blobResourceLoader, null, 8096));
                         try {
-                            store.setContent(entity, inputStream);
+                            inputStream = store.getContent(entity);
                         } catch (Exception e) {
-                            this.e = e;
+                            DefaultJpaStoreImplTest.this.e = e;
                         }
-                    });
-                    BeforeEach(() -> {
+
+                    }
+
+                    @Test
+                    void shouldReturnNullAndThrowAStoreAccessException() throws Throwable {
+                        assertThat(inputStream).isNull();
+                        assertThat(e).isInstanceOf(StoreAccessException.class);
+                        assertThat(e.getCause().getMessage()).isEqualTo("get-ioexception");
+
+                    }
+
+                }
+
+            }
+
+            @Nested
+            class SetContent {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    blobResourceLoader = mock(BlobResourceLoader.class);
+
+                    entity = new TestEntity();
+                    byte[] content = new byte[5000];
+                    new Random().nextBytes(content);
+                    inputStream = new ByteArrayInputStream(content);
+
+                    resource = mock(BlobResource.class);
+                    when(blobResourceLoader.getResource(matches(
+                            "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}")))
+                            .thenReturn(resource);
+                    outputStream = mock(OutputStream.class);
+                    when(((BlobResource) resource).getOutputStream())
+                            .thenReturn(outputStream);
+                    when(((BlobResource) resource).getId()).thenReturn(12345);
+
+                    store =
+                                        spy(new DefaultJpaStoreImpl(blobResourceLoader, null, 8096));
+                    try {
+                        store.setContent(entity, inputStream);
+                    } catch (Exception e) {
+                        DefaultJpaStoreImplTest.this.e = e;
+                    }
+
+                }
+
+                @Test
+                void shouldWriteTheContentsOfTheInputStreamToTheResourceSOutputStream() throws Throwable {
+                    verify(outputStream, atLeastOnce()).write(any(), anyInt(), anyInt());
+                }
+
+                @Test
+                void shouldUpdateTheContentIdField() throws Throwable {
+                    assertThat(entity.getContentId()).isEqualTo("12345");
+                }
+
+                @Test
+                void shouldUpdateTheContentLengthField() throws Throwable {
+                    assertThat(entity.getContentLen()).isEqualTo(5000L);
+                }
+
+                @Nested
+                class WhenTheResourceOutputStreamThrowsAnIOException {
+                    @BeforeEach
+                    void setUp() throws Throwable {
                         blobResourceLoader = mock(BlobResourceLoader.class);
 
                         entity = new TestEntity();
@@ -174,62 +311,116 @@ public class DefaultJpaStoreImplTest {
                         when(((BlobResource) resource).getOutputStream())
                                 .thenReturn(outputStream);
                         when(((BlobResource) resource).getId()).thenReturn(12345);
-                    });
-                    It("should write the contents of the inputStream to the resource's outputStream", () ->
-                            verify(outputStream, atLeastOnce()).write(any(), anyInt(), anyInt()));
-                    It("should update the @ContentId field", () ->
-                            assertThat(entity.getContentId(), is("12345")));
-                    It("should update the @ContentLength field", () ->
-                            assertThat(entity.getContentLen(), is(5000L)));
-                    Context("when the resource output stream throws an IOException", () -> {
-                        BeforeEach(() -> when(((BlobResource) resource).getOutputStream())
-                                .thenThrow(new IOException("set-ioexception")));
-                        It("should throw a StoreAccessException", () -> {
-                            assertThat(e, is(instanceOf(StoreAccessException.class)));
-                            assertThat(e.getCause().getMessage(), is("set-ioexception"));
-                        });
-                    });
-                });
 
-                Context("#setContent from Resource", () -> {
+                        when(((BlobResource) resource).getOutputStream())
+                                                        .thenThrow(new IOException("set-ioexception"));
+                        store =
+                                            spy(new DefaultJpaStoreImpl(blobResourceLoader, null, 8096));
+                        try {
+                            store.setContent(entity, inputStream);
+                        } catch (Exception e) {
+                            DefaultJpaStoreImplTest.this.e = e;
+                        }
 
-                    BeforeEach(() -> {
+                    }
+
+                    @Test
+                    void shouldThrowAStoreAccessException() throws Throwable {
+                        assertThat(e).isInstanceOf(StoreAccessException.class);
+                        assertThat(e.getCause().getMessage()).isEqualTo("set-ioexception");
+
+                    }
+
+                }
+
+            }
+
+            @Nested
+            class SetContentFromResource {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    entity = new TestEntity();
+                    stream = new ByteArrayInputStream("Hello content world!".getBytes());
+                    inputResource = new InputStreamResource(stream);
+
+                    store =
+                                        spy(new DefaultJpaStoreImpl(blobResourceLoader, null, 8096));
+                    try {
+                        store.setContent(entity, inputResource);
+                    } catch (Exception e) {
+                        DefaultJpaStoreImplTest.this.e = e;
+                    }
+
+                }
+
+                @Test
+                void shouldDelegate() throws Throwable {
+                    verify(store).setContent(eq(entity), eq(stream));
+                }
+
+                @Nested
+                class WhenTheResourceThrowsAnIOException {
+                    @BeforeEach
+                    void setUp() throws Throwable {
                         entity = new TestEntity();
                         stream = new ByteArrayInputStream("Hello content world!".getBytes());
                         inputResource = new InputStreamResource(stream);
-                    });
 
-                    JustBeforeEach(() -> {
+                        inputResource = mock(Resource.class);
+                        when(inputResource.getInputStream()).thenThrow(new IOException("setContent badness"));
+
+                        store =
+                                            spy(new DefaultJpaStoreImpl(blobResourceLoader, null, 8096));
                         try {
                             store.setContent(entity, inputResource);
                         } catch (Exception e) {
-                            this.e = e;
+                            DefaultJpaStoreImplTest.this.e = e;
                         }
-                    });
 
-                    It("should delegate", () -> verify(store).setContent(eq(entity), eq(stream)));
+                    }
 
-                    Context("when the resource throws an IOException", () -> {
-                        BeforeEach(() -> {
-                            inputResource = mock(Resource.class);
-                            when(inputResource.getInputStream()).thenThrow(new IOException("setContent badness"));
-                        });
-                        It("should throw a StoreAccessException", () -> {
-                            assertThat(e, CoreMatchers.is(instanceOf(StoreAccessException.class)));
-                            assertThat(e.getCause().getMessage(), containsString("setContent badness"));
-                        });
-                    });
-                });
+                    @Test
+                    void shouldThrowAStoreAccessException() throws Throwable {
+                        assertThat(e).isInstanceOf(StoreAccessException.class);
+                        assertThat(e.getCause().getMessage()).contains("setContent badness");
 
-                Context("#unsetContent", () -> {
-                    JustBeforeEach(() -> {
-                        try {
-                            store.unsetContent(entity);
-                        } catch (Exception e) {
-                            this.e = e;
-                        }
-                    });
-                    BeforeEach(() -> {
+                    }
+
+                }
+
+            }
+
+            @Nested
+            class UnsetContent {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    blobResourceLoader = mock(BlobResourceLoader.class);
+                    blobResource = mock(GenericBlobResource.class);
+
+                    entity = new TestEntity("12345");
+
+                    when(blobResourceLoader.getResource(entity.getContentId()))
+                            .thenReturn(blobResource);
+
+                    store =
+                                        spy(new DefaultJpaStoreImpl(blobResourceLoader, null, 8096));
+                    try {
+                        store.unsetContent(entity);
+                    } catch (Exception e) {
+                        DefaultJpaStoreImplTest.this.e = e;
+                    }
+
+                }
+
+                @Test
+                void shouldDeleteTheContent() throws Throwable {
+                    verify(blobResource).delete();
+                }
+
+                @Nested
+                class ResourceDeleteThrowsAnException {
+                    @BeforeEach
+                    void setUp() throws Throwable {
                         blobResourceLoader = mock(BlobResourceLoader.class);
                         blobResource = mock(GenericBlobResource.class);
 
@@ -237,49 +428,88 @@ public class DefaultJpaStoreImplTest {
 
                         when(blobResourceLoader.getResource(entity.getContentId()))
                                 .thenReturn(blobResource);
-                    });
-                    It("should delete the content", () -> verify(blobResource).delete());
-                    Context("resource delete throws an Exception", () -> {
-                        BeforeEach(() -> doThrow(new IOException("unset-ioexception")).when(blobResource).delete());
-                        It("should throw a StoreAccessException", () -> {
-                            assertThat(e, is(instanceOf(StoreAccessException.class)));
-                            assertThat(e.getCause().getMessage(), is("unset-ioexception"));
-                        });
-                    });
-                });
-            });
-        });
 
-        Describe("DefaultJpaStoreImpl jakartaAnnotatedEntity", () -> {
-            JustBeforeEach(() -> store =
-                    spy(new DefaultJpaStoreImpl(blobResourceLoader, null, 8096))
-            );
+                        doThrow(new IOException("unset-ioexception")).when(blobResource).delete();
+                        store =
+                                            spy(new DefaultJpaStoreImpl(blobResourceLoader, null, 8096));
+                        try {
+                            store.unsetContent(entity);
+                        } catch (Exception e) {
+                            DefaultJpaStoreImplTest.this.e = e;
+                        }
 
-            Describe("Store", () -> {
-                BeforeEach(() -> blobResourceLoader = mock(BlobResourceLoader.class));
-                Context("#getResource", () -> Context("given an id", () -> {
-                    BeforeEach(() -> id = "1");
-                    JustBeforeEach(() -> resource = store.getResource(id));
-                    It("should use the blob resource loader to load a blob resource", () ->
-                            verify(blobResourceLoader).getResource(id));
-                }));
-            });
-            Describe("AssociativeStore", () -> {
-                BeforeEach(() -> blobResourceLoader = mock(BlobResourceLoader.class));
-                Context("#unassociate Jakarta annotated entity", () -> {
-                    BeforeEach(() -> {
-                        id = "12345";
+                    }
 
-                        jakartaAnnotatedEntity = new JakartaTestEntity();
-                        jakartaAnnotatedEntity.setContentId(id);
-                        jakartaAnnotatedEntity.setContentLen(20L);
-                    });
-                    JustBeforeEach(() -> store.unassociate(jakartaAnnotatedEntity));
-                    It("should NOT reset the @ContentId", () ->
-                            assertThat(jakartaAnnotatedEntity.getContentId(), CoreMatchers.is(id)));
-                });
-            });
-        });
+                    @Test
+                    void shouldThrowAStoreAccessException() throws Throwable {
+                        assertThat(e).isInstanceOf(StoreAccessException.class);
+                        assertThat(e.getCause().getMessage()).isEqualTo("unset-ioexception");
+
+                    }
+
+                }
+
+            }
+
+        }
+
+    }
+
+    @Nested
+    class DefaultJpaStoreImplJakartaAnnotatedEntity {
+        @Nested
+        class Store {
+            @Nested
+            class GetResource {
+                @Nested
+                class GivenAnId {
+                    @BeforeEach
+                    void setUp() throws Throwable {
+                        blobResourceLoader = mock(BlobResourceLoader.class);
+                        id = "1";
+                        store =
+                                            spy(new DefaultJpaStoreImpl(blobResourceLoader, null, 8096));
+                        resource = store.getResource(id);
+                    }
+
+                    @Test
+                    void shouldUseTheBlobResourceLoaderToLoadABlobResource() throws Throwable {
+                        verify(blobResourceLoader).getResource(id);
+                    }
+
+                }
+
+            }
+
+        }
+
+        @Nested
+        class AssociativeStore {
+            @Nested
+            class UnassociateJakartaAnnotatedEntity {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    blobResourceLoader = mock(BlobResourceLoader.class);
+                    id = "12345";
+
+                    jakartaAnnotatedEntity = new JakartaTestEntity();
+                    jakartaAnnotatedEntity.setContentId(id);
+                    jakartaAnnotatedEntity.setContentLen(20L);
+
+                    store =
+                                        spy(new DefaultJpaStoreImpl(blobResourceLoader, null, 8096));
+                    store.unassociate(jakartaAnnotatedEntity);
+                }
+
+                @Test
+                void shouldNOTResetTheContentId() throws Throwable {
+                    assertThat(jakartaAnnotatedEntity.getContentId()).isEqualTo(id);
+                }
+
+            }
+
+        }
+
     }
 
     public static class TestEntity {

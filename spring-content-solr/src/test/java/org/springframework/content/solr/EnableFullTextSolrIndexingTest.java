@@ -1,12 +1,16 @@
 package org.springframework.content.solr;
 
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jSpringRunner;
+import org.junit.jupiter.api.extension.ExtendWith;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Nested;
+import static org.assertj.core.api.Assertions.assertThat;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+
 import internal.org.springframework.content.fragments.SearchableImpl;
 import internal.org.springframework.content.solr.SolrFulltextIndexServiceImpl;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.impl.HttpJdkSolrClient;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.commons.search.IndexService;
@@ -23,30 +27,38 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.nio.file.Files;
 
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.Describe;
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.It;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
-@RunWith(Ginkgo4jSpringRunner.class)
 @ContextConfiguration(classes = EnableFullTextSolrIndexingTest.TestConfiguration.class)
+@ExtendWith(SpringExtension.class)
 public class EnableFullTextSolrIndexingTest {
 
     @Autowired
     private ApplicationContext context;
 
-    {
-        Describe("EnableFullTextSolrIndexing", () -> {
-            It("should have a SolrProperties bean", () ->
-                    assertNotNull(context.getBean(SolrProperties.class)));
-            It("should have a Solr indexing store event handler bean", () ->
-                    assertNotNull(context.getBean(SolrIndexerStoreEventHandler.class)));
-            It("should have a Searchable implementation bean", () ->
-                    assertNotNull(context.getBeansOfType(SearchableImpl.class)));
-            It("should have a solr-based fulltext index service bean", () ->
-                    assertTrue(context.getBean(IndexService.class) instanceof SolrFulltextIndexServiceImpl));
-        });
+    
+    @Nested
+    class EnableFullTextSolrIndexingCases {
+        @Test
+        void shouldHaveASolrPropertiesBean() throws Throwable {
+            assertThat(context.getBean(SolrProperties.class)).isNotNull();
+        }
+
+        @Test
+        void shouldHaveASolrIndexingStoreEventHandlerBean() throws Throwable {
+            assertThat(context.getBean(SolrIndexerStoreEventHandler.class)).isNotNull();
+        }
+
+        @Test
+        void shouldHaveASearchableImplementationBean() throws Throwable {
+            assertThat(context.getBeansOfType(SearchableImpl.class)).isNotNull();
+        }
+
+        @Test
+        void shouldHaveASolrBasedFulltextIndexServiceBean() throws Throwable {
+            assertThat(context.getBean(IndexService.class)).isInstanceOf(SolrFulltextIndexServiceImpl.class);
+        }
+
     }
 
     @Configuration
@@ -74,7 +86,4 @@ public class EnableFullTextSolrIndexingTest {
     public interface TContentStore extends ContentStore<Object, Serializable>, Searchable<Serializable> {
     }
 
-    @Test
-    public void noop() {
-    }
 }

@@ -1,21 +1,16 @@
 package internal.org.springframework.content.azure.config;
 
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.AfterEach;
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.BeforeEach;
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.Context;
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.Describe;
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.It;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.fail;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Nested;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.content.azure.config.AzureStorageConfigurer;
 import org.springframework.content.azure.config.BlobId;
@@ -31,11 +26,9 @@ import org.springframework.core.convert.converter.ConverterRegistry;
 
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.BlobServiceClientBuilder;
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jRunner;
 
 import internal.org.springframework.content.azure.it.Azurite;
 
-@RunWith(Ginkgo4jRunner.class)
 public class EnableAzureStorageTest {
 
     private static final BlobServiceClientBuilder builder = Azurite.getBlobServiceClientBuilder();
@@ -54,77 +47,97 @@ public class EnableAzureStorageTest {
 	// mocks
 	static AzureStorageConfigurer configurer;
 
-	{
-		Describe("EnableAzureStorage", () -> {
+	
+    @Nested
+    class EnableAzureStorageCases {
+        @Nested
+        class GivenAContextAndAConfigurationWithAnAzureContentStore {
+            @BeforeEach
+            void setUp() throws Throwable {
+                context = new AnnotationConfigApplicationContext();
+                context.register(TestConfig.class);
+                context.refresh();
 
-			Context("given a context and a configuration with an Azure ContentStore",
-					() -> {
-						BeforeEach(() -> {
-							context = new AnnotationConfigApplicationContext();
-							context.register(TestConfig.class);
-							context.refresh();
-						});
+            }
 
-						AfterEach(() -> {
-							context.close();
-						});
+            @AfterEach
+            void tearDown() throws Throwable {
+                context.close();
 
-						It("should have a ContentStore bean", () -> {
-							assertThat(context.getBean(TestEntityContentStore.class), is(not(nullValue())));
-						});
+            }
 
-						It("should have an Placement Service", () -> {
-							assertThat(context.getBean("azureStoragePlacementService"), is(not(nullValue())));
-						});
-					});
+            @Test
+            void shouldHaveAContentStoreBean() throws Throwable {
+                assertThat(context.getBean(TestEntityContentStore.class)).isNotNull();
 
-			Context("given a context with a configurer", () -> {
+            }
 
-				BeforeEach(() -> {
-					configurer = mock(AzureStorageConfigurer.class);
+            @Test
+            void shouldHaveAnPlacementService() throws Throwable {
+                assertThat(context.getBean("azureStoragePlacementService")).isNotNull();
 
-					context = new AnnotationConfigApplicationContext();
-					context.register(ConverterConfig.class);
-					context.refresh();
-				});
+            }
 
-				AfterEach(() -> {
-					context.close();
-				});
+        }
 
-				It("should call that configurer to help setup the store", () -> {
-					verify(configurer).configureAzureStorageConverters(any());
-				});
-			});
+        @Nested
+        class GivenAContextWithAConfigurer {
+            @BeforeEach
+            void setUp() throws Throwable {
+                configurer = mock(AzureStorageConfigurer.class);
 
-			Context("given a context with an empty configuration", () -> {
+                context = new AnnotationConfigApplicationContext();
+                context.register(ConverterConfig.class);
+                context.refresh();
 
-				BeforeEach(() -> {
-					context = new AnnotationConfigApplicationContext();
-					context.register(EmptyConfig.class);
-					context.refresh();
-				});
+            }
 
-				AfterEach(() -> {
-					context.close();
-				});
+            @AfterEach
+            void tearDown() throws Throwable {
+                context.close();
 
-				It("should not contains any Azure Storage beans", () -> {
-					try {
-						context.getBean(TestEntityContentStore.class);
-						fail("expected no such bean");
-					}
-					catch (NoSuchBeanDefinitionException e) {
-						assertThat(true, is(true));
-					}
-				});
-			});
-		});
-	}
+            }
 
-	@Test
-	public void noop() {
-	}
+            @Test
+            void shouldCallThatConfigurerToHelpSetupTheStore() throws Throwable {
+                verify(configurer).configureAzureStorageConverters(any());
+
+            }
+
+        }
+
+        @Nested
+        class GivenAContextWithAnEmptyConfiguration {
+            @BeforeEach
+            void setUp() throws Throwable {
+                context = new AnnotationConfigApplicationContext();
+                context.register(EmptyConfig.class);
+                context.refresh();
+
+            }
+
+            @AfterEach
+            void tearDown() throws Throwable {
+                context.close();
+
+            }
+
+            @Test
+            void shouldNotContainsAnyAzureStorageBeans() throws Throwable {
+                try {
+                	context.getBean(TestEntityContentStore.class);
+                	fail("expected no such bean");
+                }
+                catch (NoSuchBeanDefinitionException e) {
+                	assertThat(true).isTrue();
+                }
+
+            }
+
+        }
+
+    }
+
 
 	@Configuration
 	@EnableAzureStorage(basePackages = "contains.no.fs.repositores")

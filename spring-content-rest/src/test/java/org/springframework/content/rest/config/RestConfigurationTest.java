@@ -1,12 +1,14 @@
 package org.springframework.content.rest.config;
 
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Disabled;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.IOException;
 import java.nio.file.Files;
 
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jConfiguration;
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jRunner;
-import org.junit.Ignore;
-import org.junit.runner.RunWith;
 
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.fs.config.EnableFileSystemStores;
@@ -22,19 +24,9 @@ import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfiguration;
 
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.BeforeEach;
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.Context;
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.Describe;
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.It;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-@RunWith(Ginkgo4jRunner.class)
-@Ginkgo4jConfiguration(threads = 1)
 public class RestConfigurationTest {
 
    private AnnotationConfigWebApplicationContext context;
@@ -42,43 +34,51 @@ public class RestConfigurationTest {
    // mocks
    private static ContentRestConfigurer configurer;
 
-   {
-      Describe("RestConfiguration", () -> {
-         BeforeEach(() -> {
-            configurer = mock(ContentRestConfigurer.class);
-         });
-         Context("given a context with a ContentRestConfiguration", () -> {
-            BeforeEach(() -> {
-               context = new AnnotationConfigWebApplicationContext();
-               context.setServletContext(new MockServletContext());
-               context.register(TestConfig.class,
-                     DelegatingWebMvcConfiguration.class,
-                     RepositoryRestMvcConfiguration.class,
-                     RestConfiguration.class);
-               context.refresh();
-            });
+   
+    @Nested
+    class RestConfigurationCases {
+        @Nested
+        class GivenAContextWithAContentRestConfiguration {
+            @BeforeEach
+            void setUp() throws Throwable {
+                configurer = mock(ContentRestConfigurer.class);
 
-            It("should have a content handler mapping bean", () -> {
-               assertThat(context.getBean("contentHandlerMapping"),
-                     is(not(nullValue())));
-            });
+                context = new AnnotationConfigWebApplicationContext();
+                context.setServletContext(new MockServletContext());
+                context.register(TestConfig.class,
+                      DelegatingWebMvcConfiguration.class,
+                      RepositoryRestMvcConfiguration.class,
+                      RestConfiguration.class);
+                context.refresh();
 
-            It("should have the content rest controllers", () -> {
-               assertThat(
-                     context.getBean("storeRestController"), is(not(nullValue())));
-            });
+            }
 
-            It("should be configurable", () -> {
-               RestConfiguration config = context.getBean(RestConfiguration.class);
-               assertThat(config, is(not(nullValue())));
+            @Test
+            void shouldHaveAContentHandlerMappingBean() throws Throwable {
+                assertThat(context.getBean("contentHandlerMapping")).isNotNull();
 
-               verify(configurer).configure(config);
-            });
-         });
-      });
-   }
+            }
 
-   @Ignore("This is not a test and must not be treated as such.")
+            @Test
+            void shouldHaveTheContentRestControllers() throws Throwable {
+                assertThat(context.getBean("storeRestController")).isNotNull();
+
+            }
+
+            @Test
+            void shouldBeConfigurable() throws Throwable {
+                RestConfiguration config = context.getBean(RestConfiguration.class);
+                assertThat(config).isNotNull();
+
+                verify(configurer).configure(config);
+
+            }
+
+        }
+
+    }
+
+   @Disabled("This is not a test and must not be treated as such.")
    @Configuration
    @EnableFileSystemStores
    public static class TestConfig {
@@ -94,7 +94,7 @@ public class RestConfigurationTest {
       }
    }
 
-   @Ignore("This is not a test and must not be treated as such.")
+   @Disabled("This is not a test and must not be treated as such.")
    @Document
    public class TestEntity {
       @Id

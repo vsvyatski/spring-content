@@ -1,10 +1,14 @@
 package internal.org.springframework.content.jpa.io;
 
+import org.junit.jupiter.api.extension.ExtendWith;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import static org.assertj.core.api.Assertions.assertThat;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+
 import com.github.f4b6a3.uuid.UuidCreator;
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jConfiguration;
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jSpringRunner;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -31,13 +35,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.*;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-@RunWith(Ginkgo4jSpringRunner.class)
 @ContextConfiguration(classes = PostgresBlobResourceIT.PostgresConfig.class)
-@Ginkgo4jConfiguration(threads = 1)
+@ExtendWith(SpringExtension.class)
 public class PostgresBlobResourceIT {
 
     @Autowired
@@ -53,22 +52,21 @@ public class PostgresBlobResourceIT {
 
     private PostgresBlobResource r = null;
 
-    {
-        Describe("PostgresBlobResource", () -> {
+    
+    @Nested
+    class PostgresBlobResourceCases {
+        @Nested
+        class GivenThereIsContent {
+            @Nested
+            class WhenTheContentIsDeleted {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    entityId = UuidCreator.getTimeOrdered().toString();
+                    template = new JdbcTemplate(ds);
 
-            BeforeEach(() -> {
+                    r = new PostgresBlobResource(entityId, template, txn);
 
-                entityId = UuidCreator.getTimeOrdered().toString();
-                template = new JdbcTemplate(ds);
-
-                r = new PostgresBlobResource(entityId, template, txn);
-            });
-
-            Context("given there is content", () -> {
-
-                BeforeEach(() -> {
-
-                    DataSource ds = this.template.getDataSource();
+                    DataSource ds = PostgresBlobResourceIT.this.template.getDataSource();
                     assert ds != null;
                     Connection conn = DataSourceUtils.getConnection(ds);
 
@@ -86,7 +84,7 @@ public class PostgresBlobResourceIT {
 
                         Statement stmt = conn.createStatement();
                         ResultSet rs = stmt.executeQuery(sql);
-                        assertThat(rs.next(), is(true));
+                        assertThat(rs.next()).isTrue();
                         lobId = rs.getLong(2);
                         rs.close();
                         stmt.close();
@@ -94,47 +92,47 @@ public class PostgresBlobResourceIT {
                         sql = "SELECT * from pg_largeobject where loid = " + lobId;
                         stmt = conn.createStatement();
                         rs = stmt.executeQuery(sql);
-                        assertThat(rs.next(), is(true));
+                        assertThat(rs.next()).isTrue();
                         rs.close();
                         stmt.close();
 
                         sql = "SELECT * from pg_largeobject_metadata where oid = " + lobId;
                         stmt = conn.createStatement();
                         rs = stmt.executeQuery(sql);
-                        assertThat(rs.next(), is(true));
+                        assertThat(rs.next()).isTrue();
                         rs.close();
                         stmt.close();
                     }
 
-                });
+                    r.delete();
+                }
 
-                Context("when the content is deleted", () -> {
+                @Test
+                void shouldDeleteTheAssociatedLobResources() throws Throwable {
+                    DataSource ds = PostgresBlobResourceIT.this.template.getDataSource();
+                    assert ds != null;
+                    Connection conn = DataSourceUtils.getConnection(ds);
 
-                    BeforeEach(() -> r.delete());
+                    String sql = "SELECT * from pg_largeobject where loid = " + lobId;
+                    Statement stmt = conn.createStatement();
+                    ResultSet rs = stmt.executeQuery(sql);
+                    assertThat(rs.next()).isFalse();
+                    rs.close();
+                    stmt.close();
 
-                    It("should delete the associated lob resources", () -> {
+                    sql = "SELECT * from pg_largeobject_metadata where oid = " + lobId;
+                    stmt = conn.createStatement();
+                    rs = stmt.executeQuery(sql);
+                    assertThat(rs.next()).isFalse();
+                    rs.close();
+                    stmt.close();
 
-                        DataSource ds = this.template.getDataSource();
-                        assert ds != null;
-                        Connection conn = DataSourceUtils.getConnection(ds);
+                }
 
-                        String sql = "SELECT * from pg_largeobject where loid = " + lobId;
-                        Statement stmt = conn.createStatement();
-                        ResultSet rs = stmt.executeQuery(sql);
-                        assertThat(rs.next(), is(false));
-                        rs.close();
-                        stmt.close();
+            }
 
-                        sql = "SELECT * from pg_largeobject_metadata where oid = " + lobId;
-                        stmt = conn.createStatement();
-                        rs = stmt.executeQuery(sql);
-                        assertThat(rs.next(), is(false));
-                        rs.close();
-                        stmt.close();
-                    });
-                });
-            });
-        });
+        }
+
     }
 
     @Configuration
@@ -193,7 +191,4 @@ public class PostgresBlobResourceIT {
         }
     }
 
-    @Test
-    public void noop() {
-    }
 }

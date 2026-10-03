@@ -1,9 +1,14 @@
 package internal.org.springframework.content.solr;
 
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jRunner;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.TestFactory;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrServerException;
-import org.junit.runner.RunWith;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.store.StoreAccessException;
 import org.springframework.content.solr.SolrProperties;
@@ -12,15 +17,11 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.*;
 import static java.lang.String.format;
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(Ginkgo4jRunner.class)
 public class SolrFulltextIndexServiceImplTest {
 
     private SolrFulltextIndexServiceImpl indexer;
@@ -34,78 +35,73 @@ public class SolrFulltextIndexServiceImplTest {
     private SolrClient solr;
     private SolrProperties props;
 
-    {
-        Describe("#index", () -> {
-
-            BeforeEach(() -> {
-                solr = mock(SolrClient.class);
-                props = new SolrProperties();
-
-                entity = new TEntity("12345");
-                content = new ByteArrayInputStream("foo".getBytes());
-            });
-
-            JustBeforeEach(() -> {
-                indexer = new SolrFulltextIndexServiceImpl(solr, props);
-
-                try {
-                    indexer.index(entity, content);
-                } catch (Exception e) {
-                    this.e = e;
-                }
-            });
-
+    
+    @Nested
+    class IndexCases {
+        @TestFactory
+        java.util.stream.Stream<org.junit.jupiter.api.DynamicNode> generatedCases() {
+            java.util.List<org.junit.jupiter.api.DynamicNode> tests = new java.util.ArrayList<>();
             for (Exception ex : new Exception[]{new SolrServerException("badness"), new IOException("badness")}) {
+                {
+                    java.util.List<org.junit.jupiter.api.DynamicNode> nodes1 = new java.util.ArrayList<>();
+                    nodes1.add(org.junit.jupiter.api.DynamicTest.dynamicTest("should throw a StoreAccessException", () -> {
+                        solr = mock(SolrClient.class);
+                                        props = new SolrProperties();
 
-                Context(format("when solr throws a %s", ex.getClass().getSimpleName()), () -> {
+                                        entity = new TEntity("12345");
+                                        content = new ByteArrayInputStream("foo".getBytes());
 
-                    BeforeEach(() -> {
                         when(solr.request(any(), any())).thenThrow(ex);
-                    });
 
-                    It("should throw a StoreAccessException", () -> {
-                        assertThat(e, is(instanceOf(StoreAccessException.class)));
-                        assertThat(e.getCause().getMessage(), containsString("badness"));
-                    });
-                });
-            }
-        });
+                        indexer = new SolrFulltextIndexServiceImpl(solr, props);
 
-        Describe("#unindex", () -> {
-
-            BeforeEach(() -> {
-                solr = mock(SolrClient.class);
-                props = new SolrProperties();
-
-                entity = new TEntity("12345");
-            });
-
-            JustBeforeEach(() -> {
-                indexer = new SolrFulltextIndexServiceImpl(solr, props);
-
-                try {
-                    indexer.unindex(entity);
-                } catch (Exception e) {
-                    this.e = e;
+                                        try {
+                                            indexer.index(entity, content);
+                                        } catch (Exception e) {
+                                            SolrFulltextIndexServiceImplTest.this.e = e;
+                                        }
+                        assertThat(e).isInstanceOf(StoreAccessException.class);
+                                                assertThat(e.getCause().getMessage()).contains("badness");
+                    }));
+                    tests.add(org.junit.jupiter.api.DynamicContainer.dynamicContainer(format("when solr throws a %s", ex.getClass().getSimpleName()), nodes1.stream()));
                 }
-            });
-
-            for (Exception ex : new Exception[]{new SolrServerException("badness"), new IOException("badness")}) {
-
-                Context(format("when solr throws a %s", ex.getClass().getSimpleName()), () -> {
-
-                    BeforeEach(() -> {
-                        when(solr.request(any(), any())).thenThrow(ex);
-                    });
-
-                    It("should throw a StoreAccessException", () -> {
-                        assertThat(e, is(instanceOf(StoreAccessException.class)));
-                        assertThat(e.getCause().getMessage(), containsString("badness"));
-                    });
-                });
             }
-        });
+            return tests.stream();
+        }
     }
+    @Nested
+    class UnindexCases {
+        @TestFactory
+        java.util.stream.Stream<org.junit.jupiter.api.DynamicNode> generatedCases() {
+            java.util.List<org.junit.jupiter.api.DynamicNode> tests = new java.util.ArrayList<>();
+            for (Exception ex : new Exception[]{new SolrServerException("badness"), new IOException("badness")}) {
+                {
+                    java.util.List<org.junit.jupiter.api.DynamicNode> nodes2 = new java.util.ArrayList<>();
+                    nodes2.add(org.junit.jupiter.api.DynamicTest.dynamicTest("should throw a StoreAccessException", () -> {
+                        solr = mock(SolrClient.class);
+                                        props = new SolrProperties();
+
+                                        entity = new TEntity("12345");
+
+                        when(solr.request(any(), any())).thenThrow(ex);
+
+                        indexer = new SolrFulltextIndexServiceImpl(solr, props);
+
+                                        try {
+                                            indexer.unindex(entity);
+                                        } catch (Exception e) {
+                                            SolrFulltextIndexServiceImplTest.this.e = e;
+                                        }
+                        assertThat(e).isInstanceOf(StoreAccessException.class);
+                                                assertThat(e.getCause().getMessage()).contains("badness");
+                    }));
+                    tests.add(org.junit.jupiter.api.DynamicContainer.dynamicContainer(format("when solr throws a %s", ex.getClass().getSimpleName()), nodes2.stream()));
+                }
+            }
+            return tests.stream();
+        }
+    }
+
 
     private static class TEntity {
 

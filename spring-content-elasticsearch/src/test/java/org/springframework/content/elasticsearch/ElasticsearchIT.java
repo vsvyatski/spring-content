@@ -1,22 +1,13 @@
 package org.springframework.content.elasticsearch;
 
-import static com.github.grantwest.eventually.EventuallyLambdaMatcher.eventuallyEval;
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.AfterEach;
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.BeforeEach;
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.Context;
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.Describe;
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.It;
-import static com.github.paulcwarren.ginkgo4j.matchers.Ginkgo4jMatchers.eventually;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.TestFactory;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import static java.lang.String.format;
-import static org.hamcrest.CoreMatchers.allOf;
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.CoreMatchers.hasItems;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.beans.HasPropertyWithValue.hasProperty;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -40,7 +31,6 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.indices.CloseIndexRequest;
 import org.elasticsearch.client.indices.GetIndexRequest;
 import org.elasticsearch.client.indices.GetIndexResponse;
-import org.junit.runner.RunWith;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.annotations.MimeType;
 import org.springframework.content.commons.fulltext.Attribute;
@@ -53,11 +43,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.repository.CrudRepository;
 
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jConfiguration;
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jRunner;
 
-@RunWith(Ginkgo4jRunner.class)
-@Ginkgo4jConfiguration(threads=1)
 public class ElasticsearchIT {
 
     private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
@@ -75,365 +61,522 @@ public class ElasticsearchIT {
 
     private static Class<?>[] indexStrategyContexts = new Class<?>[]{GlobalIndexingStrategy.class/*, EntityIndexingStrategy.class*/};
 
-    {
+    
+    @TestFactory
+    java.util.stream.Stream<org.junit.jupiter.api.DynamicNode> generatedCases() {
+        java.util.List<org.junit.jupiter.api.DynamicNode> tests = new java.util.ArrayList<>();
         for (Class<?> indexStrategyContext : indexStrategyContexts) {
+            {
+                java.util.List<org.junit.jupiter.api.DynamicNode> nodes5 = new java.util.ArrayList<>();
+                {
+                    java.util.List<org.junit.jupiter.api.DynamicNode> nodes4 = new java.util.ArrayList<>();
+                    nodes4.add(org.junit.jupiter.api.DynamicTest.dynamicTest("should index the documents", () -> {
+                        try {
+                            context = new AnnotationConfigApplicationContext();
+                                                context.register(indexStrategyContext);
+                                                context.register(ElasticsearchConfig.class);
+                                                context.refresh();
 
-            Describe(format("Index Strategy %s", strategyName(indexStrategyContext)), () -> {
+                                                repo = context.getBean(DocumentRepository.class);
+                                                store = context.getBean(DocumentContentStore.class);
+                                                client = context.getBean(RestHighLevelClient.class);
+                                                ((IndexingStrategy)context.getBean(indexStrategyContext)).setup();
+                                                indexName = ((IndexingStrategy)context.getBean(indexStrategyContext)).indexName();
 
-                BeforeEach(() -> {
-                    context = new AnnotationConfigApplicationContext();
-                    context.register(indexStrategyContext);
-                    context.register(ElasticsearchConfig.class);
-                    context.refresh();
-
-                    repo = context.getBean(DocumentRepository.class);
-                    store = context.getBean(DocumentContentStore.class);
-                    client = context.getBean(RestHighLevelClient.class);
-                    ((IndexingStrategy)context.getBean(indexStrategyContext)).setup();
-                    indexName = ((IndexingStrategy)context.getBean(indexStrategyContext)).indexName();
-                });
-
-                AfterEach(() -> {
-                    assertThat(context, is(not(nullValue())));
-
-                    try {
-                        // assert the right index exists as a double check we are testing the correct thing!
-                        if (client != null) {
-                            GetIndexRequest gir = new GetIndexRequest(indexName);
-                            GetIndexResponse resp = client.indices().get(gir, RequestOptions.DEFAULT);
-                            assertThat(resp.getIndices().length, is(1));
-                        }
-                    } catch (ElasticsearchStatusException ese) {}
-
-                    try {
-                        DeleteIndexRequest dir = new DeleteIndexRequest("_all");
-                        client.indices().delete(dir, RequestOptions.DEFAULT);
-                    } catch (ElasticsearchStatusException ese) {}
-                });
-
-                Context("given some documents", () -> {
-
-                    BeforeEach(() -> {
-                        doc1 = new Document();
-                        doc1.setTitle("doc 1");
-                        doc1.setAuthor("author@email.com");
-                        store.setContent(doc1, this.getClass().getResourceAsStream("/one.docx"));
-                        doc1 = repo.save(doc1);
-
-                        doc2 = new Document();
-                        doc2.setTitle("doc 2");
-                        doc2.setAuthor("author@email.com");
-                        store.setContent(doc2, this.getClass().getResourceAsStream("/two.rtf"));
-                        doc2 = repo.save(doc2);
-                    });
-
-                    AfterEach(() -> {
-                        if (doc1 != null) {
-                            store.unsetContent(doc1);
-                            repo.delete(doc1);
-                        }
-
-                        if (doc2 != null) {
-                            store.unsetContent(doc2);
-                            repo.delete(doc2);
-                        }
-                    });
-
-                    It("should index the documents", () -> {
-                        GetRequest req = new GetRequest(indexName, doc1.getClass().getName(), doc1.getContentId().toString());
-                        GetResponse res = client.get(req, RequestOptions.DEFAULT);
-                        assertThat(res.isExists(), is(true));
-
-                        req = new GetRequest(indexName, doc1.getClass().getName(), doc2.getContentId().toString());
-                        res = client.get(req, RequestOptions.DEFAULT);
-                        assertThat(res.isExists(), is(true));
-                    });
-
-                    It("should be possible to close the index", () -> {
-                        IndexService indexer = (context.getBean(IndexService.class));
-                        indexer.index(doc1, new ByteArrayInputStream("customized index".getBytes()));
-
-                        AcknowledgedResponse resp = client.indices().close(new CloseIndexRequest(indexName), RequestOptions.DEFAULT);
-                        assertThat(resp.isAcknowledged(), is(true));
-
-                        String command = format("curl -X GET %s/_cat/indices/%s?h=status", ElasticsearchTestContainer.getUrl(), indexName);
-                        Process process = Runtime.getRuntime().exec(command);
-
-                        InputStream inputStream = process.getInputStream();
-                        process.waitFor();
-
-                        int exitCode = process.exitValue();
-                        assertThat(exitCode, is(0));
-
-                        assertThat(IOUtils.toString(inputStream), containsString("close"));
-                    });
-
-                    Context("when the content is searched", () -> {
-
-                        It("should return the matches", () -> {
-
-                            eventually(
-                                    () -> {
-                                        return store.search("one"); },
-                                    (result) -> {
-                                        assertThat(result,allOf(
-                                                hasItem(doc1.getContentId()),
-                                                not(hasItem(doc2.getContentId()))
-                                                ));
-                                        }
-                            );
-
-                            eventually(
-                                    () -> {
-                                        return store.search("two"); },
-                                    (result) -> {
-                                        assertThat(result, allOf(
-                                                not(hasItem(doc1.getContentId())),
-                                                hasItem(doc2.getContentId())
-                                                ));
-                                        }
-                            );
-
-                            eventually(
-                                    () -> {
-                                        return store.search("one two"); },
-                                    (result) -> {
-                                        assertThat(result, hasItems(doc1.getContentId(), doc2.getContentId()));
-                                        }
-                            );
-
-                            eventually(
-                                    () -> {
-                                        return store.search("+document +one -two"); },
-                                    (result) -> {
-                                        assertThat(result, allOf(
-                                                hasItem(doc1.getContentId()),
-                                                hasItem(not(doc2.getContentId()))
-                                                ));
-                                        }
-                            );
-
-                        });
-                    });
-
-                    Context("given a text extracting renderer", () -> {
-
-                        BeforeEach(() -> {
                             doc1 = new Document();
-                            doc1.setTitle("doc 1");
-                            doc1.setAuthor("author@email.com");
-                            doc1.setMimeType("image/png");
-                            doc1 = store.setContent(doc1, this.getClass().getResourceAsStream("/image.png"));
-                            doc1 = repo.save(doc1);
-                        });
+                                                    doc1.setTitle("doc 1");
+                                                    doc1.setAuthor("author@email.com");
+                                                    store.setContent(doc1, this.getClass().getResourceAsStream("/one.docx"));
+                                                    doc1 = repo.save(doc1);
 
-                        It("should index the documents", () -> {
+                                                    doc2 = new Document();
+                                                    doc2.setTitle("doc 2");
+                                                    doc2.setAuthor("author@email.com");
+                                                    store.setContent(doc2, this.getClass().getResourceAsStream("/two.rtf"));
+                                                    doc2 = repo.save(doc2);
+                            GetRequest req = new GetRequest(indexName, doc1.getClass().getName(), doc1.getContentId().toString());
+                                                    GetResponse res = client.get(req, RequestOptions.DEFAULT);
+                                                    assertThat(res.isExists()).isTrue();
 
-                            eventually(
-                                    () -> {
-                                        return store.search("wisdom"); },
-                                    (result) -> {
-                                        assertThat(result, hasItem(doc1.getContentId()));
-                                        }
-                            );
-                        });
-                    });
+                                                    req = new GetRequest(indexName, doc1.getClass().getName(), doc2.getContentId().toString());
+                                                    res = client.get(req, RequestOptions.DEFAULT);
+                                                    assertThat(res.isExists()).isTrue();
+                        } finally {
+                            if (doc1 != null) {
+                                                        store.unsetContent(doc1);
+                                                        repo.delete(doc1);
+                                                    }
 
-                    Context("given that document is deleted", () -> {
+                                                    if (doc2 != null) {
+                                                        store.unsetContent(doc2);
+                                                        repo.delete(doc2);
+                                                    }
 
-                        BeforeEach(() -> {
-                            id1 = doc1.getContentId();
-                            store.unsetContent(doc1);
-                            repo.delete(doc1);
+                            assertThat(context).isNotNull();
 
-                            id2 = doc2.getContentId();
-                            store.unsetContent(doc2);
-                            repo.delete(doc2);
-                        });
+                                                try {
+                                                    // assert the right index exists as a double check we are testing the correct thing!
+                                                    if (client != null) {
+                                                        GetIndexRequest gir = new GetIndexRequest(indexName);
+                                                        GetIndexResponse resp = client.indices().get(gir, RequestOptions.DEFAULT);
+                                                        assertThat(resp.getIndices().length).isEqualTo(1);
+                                                    }
+                                                } catch (ElasticsearchStatusException ese) {}
 
-                        AfterEach(() -> {
-                            doc1 = null;
-                            doc2 = null;
-                        });
+                                                try {
+                                                    DeleteIndexRequest dir = new DeleteIndexRequest("_all");
+                                                    client.indices().delete(dir, RequestOptions.DEFAULT);
+                                                } catch (ElasticsearchStatusException ese) {}
+                        }
+                    }));
+                    nodes4.add(org.junit.jupiter.api.DynamicTest.dynamicTest("should be possible to close the index", () -> {
+                        try {
+                            context = new AnnotationConfigApplicationContext();
+                                                context.register(indexStrategyContext);
+                                                context.register(ElasticsearchConfig.class);
+                                                context.refresh();
 
-                        It("should delete the record of the content from the index", () -> {
-                            GetRequest req = new GetRequest(indexName, doc1.getClass().getName(), id1.toString());
-                            GetResponse res = client.get(req, RequestOptions.DEFAULT);
-                            assertThat(res.isExists(), is(false));
+                                                repo = context.getBean(DocumentRepository.class);
+                                                store = context.getBean(DocumentContentStore.class);
+                                                client = context.getBean(RestHighLevelClient.class);
+                                                ((IndexingStrategy)context.getBean(indexStrategyContext)).setup();
+                                                indexName = ((IndexingStrategy)context.getBean(indexStrategyContext)).indexName();
 
-                            req = new GetRequest(indexName, doc1.getClass().getName(), id2.toString());
-                            res = client.get(req, RequestOptions.DEFAULT);
-                            assertThat(res.isExists(), is(false));
-                        });
-                    });
-                });
+                            doc1 = new Document();
+                                                    doc1.setTitle("doc 1");
+                                                    doc1.setAuthor("author@email.com");
+                                                    store.setContent(doc1, this.getClass().getResourceAsStream("/one.docx"));
+                                                    doc1 = repo.save(doc1);
+
+                                                    doc2 = new Document();
+                                                    doc2.setTitle("doc 2");
+                                                    doc2.setAuthor("author@email.com");
+                                                    store.setContent(doc2, this.getClass().getResourceAsStream("/two.rtf"));
+                                                    doc2 = repo.save(doc2);
+                            IndexService indexer = (context.getBean(IndexService.class));
+                                                    indexer.index(doc1, new ByteArrayInputStream("customized index".getBytes()));
+
+                                                    AcknowledgedResponse resp = client.indices().close(new CloseIndexRequest(indexName), RequestOptions.DEFAULT);
+                                                    assertThat(resp.isAcknowledged()).isTrue();
+
+                                                    String command = format("curl -X GET %s/_cat/indices/%s?h=status", ElasticsearchTestContainer.getUrl(), indexName);
+                                                    Process process = Runtime.getRuntime().exec(command);
+
+                                                    InputStream inputStream = process.getInputStream();
+                                                    process.waitFor();
+
+                                                    int exitCode = process.exitValue();
+                                                    assertThat(exitCode).isEqualTo(0);
+
+                                                    assertThat(IOUtils.toString(inputStream)).contains("close");
+                        } finally {
+                            if (doc1 != null) {
+                                                        store.unsetContent(doc1);
+                                                        repo.delete(doc1);
+                                                    }
+
+                                                    if (doc2 != null) {
+                                                        store.unsetContent(doc2);
+                                                        repo.delete(doc2);
+                                                    }
+
+                            assertThat(context).isNotNull();
+
+                                                try {
+                                                    // assert the right index exists as a double check we are testing the correct thing!
+                                                    if (client != null) {
+                                                        GetIndexRequest gir = new GetIndexRequest(indexName);
+                                                        GetIndexResponse resp = client.indices().get(gir, RequestOptions.DEFAULT);
+                                                        assertThat(resp.getIndices().length).isEqualTo(1);
+                                                    }
+                                                } catch (ElasticsearchStatusException ese) {}
+
+                                                try {
+                                                    DeleteIndexRequest dir = new DeleteIndexRequest("_all");
+                                                    client.indices().delete(dir, RequestOptions.DEFAULT);
+                                                } catch (ElasticsearchStatusException ese) {}
+                        }
+                    }));
+                    {
+                        java.util.List<org.junit.jupiter.api.DynamicNode> nodes1 = new java.util.ArrayList<>();
+                        nodes1.add(org.junit.jupiter.api.DynamicTest.dynamicTest("should return the matches", () -> {
+                            try {
+                                context = new AnnotationConfigApplicationContext();
+                                                    context.register(indexStrategyContext);
+                                                    context.register(ElasticsearchConfig.class);
+                                                    context.refresh();
+
+                                                    repo = context.getBean(DocumentRepository.class);
+                                                    store = context.getBean(DocumentContentStore.class);
+                                                    client = context.getBean(RestHighLevelClient.class);
+                                                    ((IndexingStrategy)context.getBean(indexStrategyContext)).setup();
+                                                    indexName = ((IndexingStrategy)context.getBean(indexStrategyContext)).indexName();
+
+                                doc1 = new Document();
+                                                        doc1.setTitle("doc 1");
+                                                        doc1.setAuthor("author@email.com");
+                                                        store.setContent(doc1, this.getClass().getResourceAsStream("/one.docx"));
+                                                        doc1 = repo.save(doc1);
+
+                                                        doc2 = new Document();
+                                                        doc2.setTitle("doc 2");
+                                                        doc2.setAuthor("author@email.com");
+                                                        store.setContent(doc2, this.getClass().getResourceAsStream("/two.rtf"));
+                                                        doc2 = repo.save(doc2);
+                                org.awaitility.Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
+                                var result = store.search("one");
+                                assertThat(result).contains(doc1.getContentId());
+                                assertThat(result).doesNotContain(doc2.getContentId());
+                                });
+
+                                                            org.awaitility.Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
+                                var result = store.search("two");
+                                assertThat(result).doesNotContain(doc1.getContentId());
+                                assertThat(result).contains(doc2.getContentId());
+                                });
+
+                                                            org.awaitility.Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
+                                var result = store.search("one two");
+                                assertThat(result).contains(doc1.getContentId(), doc2.getContentId());
+                                });
+
+                                                            org.awaitility.Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
+                                var result = store.search("+document +one -two");
+                                assertThat(result).contains(doc1.getContentId());
+                                assertThat(result).doesNotContain(doc2.getContentId());
+                                });
+                            } finally {
+                                if (doc1 != null) {
+                                                            store.unsetContent(doc1);
+                                                            repo.delete(doc1);
+                                                        }
+
+                                                        if (doc2 != null) {
+                                                            store.unsetContent(doc2);
+                                                            repo.delete(doc2);
+                                                        }
+
+                                assertThat(context).isNotNull();
+
+                                                    try {
+                                                        // assert the right index exists as a double check we are testing the correct thing!
+                                                        if (client != null) {
+                                                            GetIndexRequest gir = new GetIndexRequest(indexName);
+                                                            GetIndexResponse resp = client.indices().get(gir, RequestOptions.DEFAULT);
+                                                            assertThat(resp.getIndices().length).isEqualTo(1);
+                                                        }
+                                                    } catch (ElasticsearchStatusException ese) {}
+
+                                                    try {
+                                                        DeleteIndexRequest dir = new DeleteIndexRequest("_all");
+                                                        client.indices().delete(dir, RequestOptions.DEFAULT);
+                                                    } catch (ElasticsearchStatusException ese) {}
+                            }
+                        }));
+                        nodes1.add(org.junit.jupiter.api.DynamicContainer.dynamicContainer("when the content is searched", nodes1.stream()));
+                    }
+                    {
+                        java.util.List<org.junit.jupiter.api.DynamicNode> nodes2 = new java.util.ArrayList<>();
+                        nodes2.add(org.junit.jupiter.api.DynamicTest.dynamicTest("should index the documents", () -> {
+                            try {
+                                context = new AnnotationConfigApplicationContext();
+                                                    context.register(indexStrategyContext);
+                                                    context.register(ElasticsearchConfig.class);
+                                                    context.refresh();
+
+                                                    repo = context.getBean(DocumentRepository.class);
+                                                    store = context.getBean(DocumentContentStore.class);
+                                                    client = context.getBean(RestHighLevelClient.class);
+                                                    ((IndexingStrategy)context.getBean(indexStrategyContext)).setup();
+                                                    indexName = ((IndexingStrategy)context.getBean(indexStrategyContext)).indexName();
+
+                                doc1 = new Document();
+                                                        doc1.setTitle("doc 1");
+                                                        doc1.setAuthor("author@email.com");
+                                                        store.setContent(doc1, this.getClass().getResourceAsStream("/one.docx"));
+                                                        doc1 = repo.save(doc1);
+
+                                                        doc2 = new Document();
+                                                        doc2.setTitle("doc 2");
+                                                        doc2.setAuthor("author@email.com");
+                                                        store.setContent(doc2, this.getClass().getResourceAsStream("/two.rtf"));
+                                                        doc2 = repo.save(doc2);
+
+                                doc1 = new Document();
+                                                            doc1.setTitle("doc 1");
+                                                            doc1.setAuthor("author@email.com");
+                                                            doc1.setMimeType("image/png");
+                                                            doc1 = store.setContent(doc1, this.getClass().getResourceAsStream("/image.png"));
+                                                            doc1 = repo.save(doc1);
+                                org.awaitility.Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
+                                var result = store.search("wisdom");
+                                assertThat(result).contains(doc1.getContentId());
+                                });
+                            } finally {
+                                if (doc1 != null) {
+                                                            store.unsetContent(doc1);
+                                                            repo.delete(doc1);
+                                                        }
+
+                                                        if (doc2 != null) {
+                                                            store.unsetContent(doc2);
+                                                            repo.delete(doc2);
+                                                        }
+
+                                assertThat(context).isNotNull();
+
+                                                    try {
+                                                        // assert the right index exists as a double check we are testing the correct thing!
+                                                        if (client != null) {
+                                                            GetIndexRequest gir = new GetIndexRequest(indexName);
+                                                            GetIndexResponse resp = client.indices().get(gir, RequestOptions.DEFAULT);
+                                                            assertThat(resp.getIndices().length).isEqualTo(1);
+                                                        }
+                                                    } catch (ElasticsearchStatusException ese) {}
+
+                                                    try {
+                                                        DeleteIndexRequest dir = new DeleteIndexRequest("_all");
+                                                        client.indices().delete(dir, RequestOptions.DEFAULT);
+                                                    } catch (ElasticsearchStatusException ese) {}
+                            }
+                        }));
+                        nodes2.add(org.junit.jupiter.api.DynamicContainer.dynamicContainer("given a text extracting renderer", nodes2.stream()));
+                    }
+                    {
+                        java.util.List<org.junit.jupiter.api.DynamicNode> nodes3 = new java.util.ArrayList<>();
+                        nodes3.add(org.junit.jupiter.api.DynamicTest.dynamicTest("should delete the record of the content from the index", () -> {
+                            try {
+                                context = new AnnotationConfigApplicationContext();
+                                                    context.register(indexStrategyContext);
+                                                    context.register(ElasticsearchConfig.class);
+                                                    context.refresh();
+
+                                                    repo = context.getBean(DocumentRepository.class);
+                                                    store = context.getBean(DocumentContentStore.class);
+                                                    client = context.getBean(RestHighLevelClient.class);
+                                                    ((IndexingStrategy)context.getBean(indexStrategyContext)).setup();
+                                                    indexName = ((IndexingStrategy)context.getBean(indexStrategyContext)).indexName();
+
+                                doc1 = new Document();
+                                                        doc1.setTitle("doc 1");
+                                                        doc1.setAuthor("author@email.com");
+                                                        store.setContent(doc1, this.getClass().getResourceAsStream("/one.docx"));
+                                                        doc1 = repo.save(doc1);
+
+                                                        doc2 = new Document();
+                                                        doc2.setTitle("doc 2");
+                                                        doc2.setAuthor("author@email.com");
+                                                        store.setContent(doc2, this.getClass().getResourceAsStream("/two.rtf"));
+                                                        doc2 = repo.save(doc2);
+
+                                id1 = doc1.getContentId();
+                                                            store.unsetContent(doc1);
+                                                            repo.delete(doc1);
+
+                                                            id2 = doc2.getContentId();
+                                                            store.unsetContent(doc2);
+                                                            repo.delete(doc2);
+                                GetRequest req = new GetRequest(indexName, doc1.getClass().getName(), id1.toString());
+                                                            GetResponse res = client.get(req, RequestOptions.DEFAULT);
+                                                            assertThat(res.isExists()).isFalse();
+
+                                                            req = new GetRequest(indexName, doc1.getClass().getName(), id2.toString());
+                                                            res = client.get(req, RequestOptions.DEFAULT);
+                                                            assertThat(res.isExists()).isFalse();
+                            } finally {
+                                doc1 = null;
+                                                            doc2 = null;
+
+                                if (doc1 != null) {
+                                                            store.unsetContent(doc1);
+                                                            repo.delete(doc1);
+                                                        }
+
+                                                        if (doc2 != null) {
+                                                            store.unsetContent(doc2);
+                                                            repo.delete(doc2);
+                                                        }
+
+                                assertThat(context).isNotNull();
+
+                                                    try {
+                                                        // assert the right index exists as a double check we are testing the correct thing!
+                                                        if (client != null) {
+                                                            GetIndexRequest gir = new GetIndexRequest(indexName);
+                                                            GetIndexResponse resp = client.indices().get(gir, RequestOptions.DEFAULT);
+                                                            assertThat(resp.getIndices().length).isEqualTo(1);
+                                                        }
+                                                    } catch (ElasticsearchStatusException ese) {}
+
+                                                    try {
+                                                        DeleteIndexRequest dir = new DeleteIndexRequest("_all");
+                                                        client.indices().delete(dir, RequestOptions.DEFAULT);
+                                                    } catch (ElasticsearchStatusException ese) {}
+                            }
+                        }));
+                        nodes3.add(org.junit.jupiter.api.DynamicContainer.dynamicContainer("given that document is deleted", nodes3.stream()));
+                    }
+                    nodes4.add(org.junit.jupiter.api.DynamicContainer.dynamicContainer("given some documents", nodes4.stream()));
+                }
+                tests.add(org.junit.jupiter.api.DynamicContainer.dynamicContainer(format("Index Strategy %s", strategyName(indexStrategyContext)), nodes5.stream()));
+            }
+        }
+        return tests.stream();
+    }
+    @Nested
+    class PagingCases {
+        @BeforeEach
+        void setUp() throws Throwable {
+            context = new AnnotationConfigApplicationContext();
+                            context.register(EntityIndexingStrategy.class);
+                            context.register(ElasticsearchConfig.class);
+                            context.refresh();
+
+                            repo = context.getBean(DocumentRepository.class);
+                            store = context.getBean(DocumentContentStore.class);
+                            client = context.getBean(RestHighLevelClient.class);
+
+                            for (int i=0; i < 10; i++) {
+                                Document doc = new Document();
+                                doc.setTitle(format("doc %s", i));
+                                doc = store.setContent(doc, this.getClass().getResourceAsStream("/one.docx"));
+                                repo.save(doc);
+                            }
+        }
+        @AfterEach
+        void tearDown() throws Throwable {
+            assertThat(context).isNotNull();
+
+                            if (client != null) {
+                                DeleteIndexRequest dir = new DeleteIndexRequest("_all");
+                                client.indices().delete(dir, RequestOptions.DEFAULT);
+                            }
+        }
+        @Test
+        void shouldReturnResultsInPages() throws Throwable {
+            org.awaitility.Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
+            var page = store.search("one", PageRequest.of(0, 3));
+            assertThat(page.getTotalElements()).isEqualTo(10L);
+                                        assertThat(page.getTotalPages()).isEqualTo(4);
+                                        assertThat(page.getNumberOfElements()).isEqualTo(3);
+                                        assertThat(page.getContent().size()).isEqualTo(3);
+            });
+
+                            org.awaitility.Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
+            var page = store.search("one", PageRequest.of(1, 3));
+            assertThat(page.getTotalElements()).isEqualTo(10L);
+                                        assertThat(page.getTotalPages()).isEqualTo(4);
+                                        assertThat(page.getNumberOfElements()).isEqualTo(3);
+                                        assertThat(page.getContent().size()).isEqualTo(3);
+            });
+
+                            org.awaitility.Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
+            var page = store.search("one", PageRequest.of(2, 3));
+            assertThat(page.getTotalElements()).isEqualTo(10L);
+                                        assertThat(page.getTotalPages()).isEqualTo(4);
+                                        assertThat(page.getNumberOfElements()).isEqualTo(3);
+                                        assertThat(page.getContent().size()).isEqualTo(3);
+            });
+
+                            org.awaitility.Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
+            var page = store.search("one", PageRequest.of(3, 3));
+            assertThat(page.getTotalElements()).isEqualTo(10L);
+                                        assertThat(page.getTotalPages()).isEqualTo(4);
+                                        assertThat(page.getNumberOfElements()).isEqualTo(1);
+                                        assertThat(page.getContent().size()).isEqualTo(1);
             });
         }
-
-        Describe("Paging", () -> {
-
-            BeforeEach(() -> {
-                context = new AnnotationConfigApplicationContext();
-                context.register(EntityIndexingStrategy.class);
-                context.register(ElasticsearchConfig.class);
-                context.refresh();
-
-                repo = context.getBean(DocumentRepository.class);
-                store = context.getBean(DocumentContentStore.class);
-                client = context.getBean(RestHighLevelClient.class);
-
-                for (int i=0; i < 10; i++) {
-                    Document doc = new Document();
-                    doc.setTitle(format("doc %s", i));
-                    doc = store.setContent(doc, this.getClass().getResourceAsStream("/one.docx"));
-                    repo.save(doc);
-                }
-            });
-
-            AfterEach(() -> {
-                assertThat(context, is(not(nullValue())));
-
-                if (client != null) {
-                    DeleteIndexRequest dir = new DeleteIndexRequest("_all");
-                    client.indices().delete(dir, RequestOptions.DEFAULT);
-                }
-            });
-
-            It("should return results in pages", () -> {
-
-                eventually(
-                        () -> {return store.search("one", PageRequest.of(0, 3));},
-                        (page) -> {
-                            assertThat(page.getTotalElements(), is(10L));
-                            assertThat(page.getTotalPages(), is(4));
-                            assertThat(page.getNumberOfElements(), is(3));
-                            assertThat(page.getContent().size(), is(3));
-                        });
-
-                eventually(
-                        () -> {return store.search("one", PageRequest.of(1, 3));},
-                        (page) -> {
-                            assertThat(page.getTotalElements(), is(10L));
-                            assertThat(page.getTotalPages(), is(4));
-                            assertThat(page.getNumberOfElements(), is(3));
-                            assertThat(page.getContent().size(), is(3));
-                        });
-
-                eventually(
-                        () -> {return store.search("one", PageRequest.of(2, 3));},
-                        (page) -> {
-                            assertThat(page.getTotalElements(), is(10L));
-                            assertThat(page.getTotalPages(), is(4));
-                            assertThat(page.getNumberOfElements(), is(3));
-                            assertThat(page.getContent().size(), is(3));
-                        });
-
-                eventually(
-                        () -> {return store.search("one", PageRequest.of(3, 3));},
-                        (page) -> {
-                            assertThat(page.getTotalElements(), is(10L));
-                            assertThat(page.getTotalPages(), is(4));
-                            assertThat(page.getNumberOfElements(), is(1));
-                            assertThat(page.getContent().size(), is(1));
-                        });
-            });
-        });
-
-        Describe("Custom Attributes", () -> {
-
-            Context("given a context configured to sync attributes and provide a filter query", () -> {
-
-                BeforeEach(() -> {
-                    context = new AnnotationConfigApplicationContext();
-                    context.register(EntityIndexingStrategy.class);
-                    context.register(CustomAttributesConfig.class);
-                    context.refresh();
-
-                    repo = context.getBean(DocumentRepository.class);
-                    store = context.getBean(DocumentContentStore.class);
-                    client = context.getBean(RestHighLevelClient.class);
-
-                    doc1 = new Document();
-                    doc1.setTitle(format("doc 1"));
-                    doc1.setAuthor("Buck Rogers");
-                    doc1 = store.setContent(doc1, this.getClass().getResourceAsStream("/one.docx"));
-                    repo.save(doc1);
-
-                    doc2 = new Document();
-                    doc2.setTitle(format("doc 2"));
-                    doc1.setAuthor("Wilma Deering");
-                    doc2 = store.setContent(doc2, this.getClass().getResourceAsStream("/one.docx"));
-                    repo.save(doc2);
-                });
-
-                AfterEach(() -> {
-                    assertThat(context, is(not(nullValue())));
-
-                    if (client != null) {
-                        DeleteIndexRequest dir = new DeleteIndexRequest("_all");
-                        client.indices().delete(dir, RequestOptions.DEFAULT);
-                    }
-                });
-
-                It("should return the specified attributes", () -> {
-                    assertThat(() -> store.search("one", PageRequest.of(0, 10)),
-                            eventuallyEval(
-                                    allOf(
-                                            hasItem(doc1.getContentId()),
-                                            not(hasItem(doc2.getContentId()))),
-                                    Duration.ofSeconds(10)));
-                });
-            });
-        });
-
-        Describe("Custom Return Types", () -> {
-
-            BeforeEach(() -> {
-                context = new AnnotationConfigApplicationContext();
-                context.register(EntityIndexingStrategy.class);
-                context.register(CustomAttributesConfig.class);
-                context.refresh();
-
-                repo = context.getBean(DocumentRepository.class);
-                searchableStore = context.getBean(DocumentStoreSearchable.class);
-                client = context.getBean(RestHighLevelClient.class);
-
-                doc1 = new Document();
-                doc1.setTitle(format("A document about one"));
-                doc1.setAuthor("Buck Rogers");
-                doc1 = searchableStore.setContent(doc1, this.getClass().getResourceAsStream("/one.docx"));
-                repo.save(doc1);
-            });
-
-            AfterEach(() -> {
-                assertThat(context, is(not(nullValue())));
-
-                if (client != null) {
-                    DeleteIndexRequest dir = new DeleteIndexRequest("_all");
-                    client.indices().delete(dir, RequestOptions.DEFAULT);
-                }
-            });
-
-            It("should return results using the custom return type", () -> {
-
-                eventually(
-                        () -> {
-                        return searchableStore.search("one");},
-                    (result) -> {
-                        assertThat(result, is(not(nullValue())));
-                        Iterator<FulltextInfo> iterator = result.iterator();
-                        assertThat(iterator.hasNext(), is(true));
-                        assertThat(iterator.next(), allOf(
-                                hasProperty("contentId", is(doc1.getContentId())),
-                                hasProperty("highlight", containsString("<em>one</em>")),
-                                hasProperty("author", containsString("Buck Rogers"))
-                            ));
-                        assertThat(iterator.hasNext(), is(false));
-                    }
-                );
-            });
-        });
     }
+    @Nested
+    class CustomAttributesCases {
+        @Nested
+        class GivenAContextConfiguredToSyncAttributesAndProvideAFilterQuery {
+            @BeforeEach
+            void setUp() throws Throwable {
+                context = new AnnotationConfigApplicationContext();
+                                    context.register(EntityIndexingStrategy.class);
+                                    context.register(CustomAttributesConfig.class);
+                                    context.refresh();
+
+                                    repo = context.getBean(DocumentRepository.class);
+                                    store = context.getBean(DocumentContentStore.class);
+                                    client = context.getBean(RestHighLevelClient.class);
+
+                                    doc1 = new Document();
+                                    doc1.setTitle(format("doc 1"));
+                                    doc1.setAuthor("Buck Rogers");
+                                    doc1 = store.setContent(doc1, this.getClass().getResourceAsStream("/one.docx"));
+                                    repo.save(doc1);
+
+                                    doc2 = new Document();
+                                    doc2.setTitle(format("doc 2"));
+                                    doc1.setAuthor("Wilma Deering");
+                                    doc2 = store.setContent(doc2, this.getClass().getResourceAsStream("/one.docx"));
+                                    repo.save(doc2);
+            }
+            @AfterEach
+            void tearDown() throws Throwable {
+                assertThat(context).isNotNull();
+
+                                    if (client != null) {
+                                        DeleteIndexRequest dir = new DeleteIndexRequest("_all");
+                                        client.indices().delete(dir, RequestOptions.DEFAULT);
+                                    }
+            }
+            @Test
+            void shouldReturnTheSpecifiedAttributes() throws Throwable {
+                org.awaitility.Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
+                    assertThat(store.search("one", PageRequest.of(0, 10)))
+                            .contains(doc1.getContentId())
+                            .doesNotContain(doc2.getContentId());
+                });
+            }
+        }
+    }
+    @Nested
+    class CustomReturnTypesCases {
+        @BeforeEach
+        void setUp() throws Throwable {
+            context = new AnnotationConfigApplicationContext();
+                            context.register(EntityIndexingStrategy.class);
+                            context.register(CustomAttributesConfig.class);
+                            context.refresh();
+
+                            repo = context.getBean(DocumentRepository.class);
+                            searchableStore = context.getBean(DocumentStoreSearchable.class);
+                            client = context.getBean(RestHighLevelClient.class);
+
+                            doc1 = new Document();
+                            doc1.setTitle(format("A document about one"));
+                            doc1.setAuthor("Buck Rogers");
+                            doc1 = searchableStore.setContent(doc1, this.getClass().getResourceAsStream("/one.docx"));
+                            repo.save(doc1);
+        }
+        @AfterEach
+        void tearDown() throws Throwable {
+            assertThat(context).isNotNull();
+
+                            if (client != null) {
+                                DeleteIndexRequest dir = new DeleteIndexRequest("_all");
+                                client.indices().delete(dir, RequestOptions.DEFAULT);
+                            }
+        }
+        @Test
+        void shouldReturnResultsUsingTheCustomReturnType() throws Throwable {
+            org.awaitility.Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
+            var result = searchableStore.search("one");
+            assertThat(result).isNotNull();
+                                    Iterator<FulltextInfo> iterator = result.iterator();
+                                    assertThat(iterator.hasNext()).isTrue();
+                                    FulltextInfo info = iterator.next();
+                                    assertThat(info).extracting("contentId").isEqualTo(doc1.getContentId());
+                                    assertThat(info).extracting("highlight").asString().contains("<em>one</em>");
+                                    assertThat(info).extracting("author").asString().contains("Buck Rogers");
+                                    assertThat(iterator.hasNext()).isFalse();
+            });
+        }
+    }
+
 
     private String strategyName(Class<?> indexStrategyContext) {
         return indexStrategyContext.getSimpleName();

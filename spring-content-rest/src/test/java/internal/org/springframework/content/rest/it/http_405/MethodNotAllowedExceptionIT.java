@@ -1,14 +1,17 @@
 package internal.org.springframework.content.rest.it.http_405;
 
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jConfiguration;
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jSpringRunner;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+
 import internal.org.springframework.content.rest.it.SecurityConfiguration;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
@@ -53,12 +56,10 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.UUID;
 
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.*;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 
-@RunWith(Ginkgo4jSpringRunner.class)
-@Ginkgo4jConfiguration(threads=1)
 @SpringBootTest(classes = MethodNotAllowedExceptionIT.Application.class, webEnvironment=WebEnvironment.RANDOM_PORT)
+@ExtendWith(SpringExtension.class)
 public class MethodNotAllowedExceptionIT {
 
     @Autowired
@@ -76,103 +77,103 @@ public class MethodNotAllowedExceptionIT {
     @Autowired
     private WebApplicationContext webApplicationContext;
 
-    {
-        Describe("when getContent method is not exported", () -> {
+    
+    @Nested
+    class WhenGetContentMethodIsNotExportedCases {
+        @BeforeEach
+        void setUp() throws Throwable {
+            RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
+        }
+        @Test
+        void shouldThrowA405NotAllowed() throws Throwable {
+            TEntity tentity = new TEntity();
+                            tentity = store.setContent(tentity, new ByteArrayInputStream("some content".getBytes()));
+                            tentity = repo.save(tentity);
 
-            BeforeEach(() -> {
-                RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
-            });
-
-            It("should throw a 405 Not Allowed", () -> {
-
-                TEntity tentity = new TEntity();
-                tentity = store.setContent(tentity, new ByteArrayInputStream("some content".getBytes()));
-                tentity = repo.save(tentity);
-
-                given()
-                    .accept("text/plain")
-                .when()
-                    .get("/tEntities/" + tentity.getId())
-                .then()
-                    .statusCode(405);
-            });
-        });
-
-        Describe("when setContent methods are not exported", () -> {
-
-            BeforeEach(() -> {
-                RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
-            });
-
-            It("should throw a 405 Not Allowed", () -> {
-
-                TEntity tentity = new TEntity();
-                tentity = repo.save(tentity);
-
-                given()
-                    .contentType("text/plain")
-                    .body("some content".getBytes())
-                .when()
-                    .post("/tEntities/" + tentity.getId())
-                .then()
-                    .statusCode(405);
-            });
-        });
-
-        Describe("when unsetContent method are not exported", () -> {
-
-            BeforeEach(() -> {
-                RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
-            });
-
-            It("should throw a 405 Not Allowed", () -> {
-
-                TEntity tentity = new TEntity();
-                tentity = store.setContent(tentity, new ByteArrayInputStream("some content".getBytes()));
-                tentity = repo.save(tentity);
-
-                given()
-                    .accept("text/plain")
-                .when()
-                    .delete("/tEntities/" + tentity.getId())
-                .then()
-                    .statusCode(405);
-            });
-        });
-
-        Describe("when a content property is not exported", () -> {
-            BeforeEach(() -> {
-                RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
-            });
-            It("should throw a 405 Not Allowed for all requests", () -> {
-                TEntity2 tentity = new TEntity2();
-                tentity = store2.setContent(tentity, new ByteArrayInputStream("some content".getBytes()));
-                tentity = repo2.save(tentity);
-
-                given()
-                    .accept("text/plain")
-                .when()
-                    .get("/tEntity2s/" + tentity.getId() + "/content")
-                .then()
-                    .statusCode(405);
-
-                given()
-                    .contentType("text/plain")
-                    .body("some content".getBytes())
-                .when()
-                    .post("/tEntity2s/" + tentity.getId() + "/content")
-                .then()
-                    .statusCode(405);
-
-                given()
-                    .accept("text/plain")
-                .when()
-                    .delete("/tEntity2s/" + tentity.getId() + "/content")
-                .then()
-                    .statusCode(405);
-            });
-        });
+                            given()
+                                .accept("text/plain")
+                            .when()
+                                .get("/tEntities/" + tentity.getId())
+                            .then()
+                                .statusCode(405);
+        }
     }
+    @Nested
+    class WhenSetContentMethodsAreNotExportedCases {
+        @BeforeEach
+        void setUp() throws Throwable {
+            RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
+        }
+        @Test
+        void shouldThrowA405NotAllowed() throws Throwable {
+            TEntity tentity = new TEntity();
+                            tentity = repo.save(tentity);
+
+                            given()
+                                .contentType("text/plain")
+                                .body("some content".getBytes())
+                            .when()
+                                .post("/tEntities/" + tentity.getId())
+                            .then()
+                                .statusCode(405);
+        }
+    }
+    @Nested
+    class WhenUnsetContentMethodAreNotExportedCases {
+        @BeforeEach
+        void setUp() throws Throwable {
+            RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
+        }
+        @Test
+        void shouldThrowA405NotAllowed() throws Throwable {
+            TEntity tentity = new TEntity();
+                            tentity = store.setContent(tentity, new ByteArrayInputStream("some content".getBytes()));
+                            tentity = repo.save(tentity);
+
+                            given()
+                                .accept("text/plain")
+                            .when()
+                                .delete("/tEntities/" + tentity.getId())
+                            .then()
+                                .statusCode(405);
+        }
+    }
+    @Nested
+    class WhenAContentPropertyIsNotExportedCases {
+        @BeforeEach
+        void setUp() throws Throwable {
+            RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
+        }
+        @Test
+        void shouldThrowA405NotAllowedForAllRequests() throws Throwable {
+            TEntity2 tentity = new TEntity2();
+                            tentity = store2.setContent(tentity, new ByteArrayInputStream("some content".getBytes()));
+                            tentity = repo2.save(tentity);
+
+                            given()
+                                .accept("text/plain")
+                            .when()
+                                .get("/tEntity2s/" + tentity.getId() + "/content")
+                            .then()
+                                .statusCode(405);
+
+                            given()
+                                .contentType("text/plain")
+                                .body("some content".getBytes())
+                            .when()
+                                .post("/tEntity2s/" + tentity.getId() + "/content")
+                            .then()
+                                .statusCode(405);
+
+                            given()
+                                .accept("text/plain")
+                            .when()
+                                .delete("/tEntity2s/" + tentity.getId() + "/content")
+                            .then()
+                                .statusCode(405);
+        }
+    }
+
 
     public interface PreferResourceForPutsAndPostsRepository extends CrudRepository<TEntity, Long> {
     }

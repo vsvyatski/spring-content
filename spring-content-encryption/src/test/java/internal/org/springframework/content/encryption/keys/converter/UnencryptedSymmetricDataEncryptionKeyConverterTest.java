@@ -1,16 +1,16 @@
 package internal.org.springframework.content.encryption.keys.converter;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 
 import jakarta.xml.bind.DatatypeConverter;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.content.encryption.keys.StoredDataEncryptionKey.EncryptedSymmetricDataEncryptionKey;
 import org.springframework.content.encryption.keys.StoredDataEncryptionKey.UnencryptedSymmetricDataEncryptionKey;
-import static org.hamcrest.Matchers.*;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 public class UnencryptedSymmetricDataEncryptionKeyConverterTest {
     @Test
-    public void encodesAndDecodes() {
+    public void encodesAndDecodes() throws Throwable {
         var key = new UnencryptedSymmetricDataEncryptionKey(
                 "ABC",
                 new byte[5],
@@ -21,11 +21,11 @@ public class UnencryptedSymmetricDataEncryptionKeyConverterTest {
 
         var decoded = UnencryptedSymmetricDataEncryptionKeyConverter.convert(encoded);
 
-        assertThat(decoded, is(equalTo(key)));
+        assertThat(decoded).isEqualTo(key);
     }
 
     @Test
-    public void handlesEmptyObject() {
+    public void handlesEmptyObject() throws Throwable {
         var key = new UnencryptedSymmetricDataEncryptionKey(
                 "",
                 new byte[0],
@@ -36,11 +36,11 @@ public class UnencryptedSymmetricDataEncryptionKeyConverterTest {
 
         var decoded = UnencryptedSymmetricDataEncryptionKeyConverter.convert(encoded);
 
-        assertThat(decoded, is(equalTo(key)));
+        assertThat(decoded).isEqualTo(key);
     }
 
     @Test
-    public void doesNotDecodeDifferentType() {
+    public void doesNotDecodeDifferentType() throws Throwable {
         var encryptedKey = new EncryptedSymmetricDataEncryptionKey(
                 "test",
                 "123",
@@ -54,7 +54,7 @@ public class UnencryptedSymmetricDataEncryptionKeyConverterTest {
 
         var decoded = UnencryptedSymmetricDataEncryptionKeyConverter.convert(encoded);
 
-        assertThat(decoded, is(nullValue()));
+        assertThat(decoded).isNull();
     }
 
 }

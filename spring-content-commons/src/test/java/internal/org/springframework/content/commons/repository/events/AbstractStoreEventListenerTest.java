@@ -1,17 +1,16 @@
 package internal.org.springframework.content.commons.repository.events;
 
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.*;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
 import java.io.InputStream;
 import java.io.Serializable;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.commons.store.events.StoreEvent;
@@ -29,12 +28,7 @@ import org.springframework.content.commons.store.events.BeforeSetContentEvent;
 import org.springframework.content.commons.store.events.BeforeUnassociateEvent;
 import org.springframework.content.commons.store.events.BeforeUnsetContentEvent;
 
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jConfiguration;
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jRunner;
-
 @SuppressWarnings("unchecked")
-@RunWith(Ginkgo4jRunner.class)
-@Ginkgo4jConfiguration(threads = 1)
 public class AbstractStoreEventListenerTest {
 
 	private AbstractStoreEventListener<Object> listener;
@@ -43,241 +37,434 @@ public class AbstractStoreEventListenerTest {
 	// mocks
 	private TestContentEventConsumer consumer;
 	private ContentStore<Object, Serializable> store;
-	{
-		Describe("#onApplicationEvent", () -> {
-			Context("given a content event listener", () -> {
-				BeforeEach(() -> {
-					consumer = mock(TestContentEventConsumer.class);
-					store = (ContentStore<Object, Serializable>) mock(ContentStore.class);
+	
+    @Nested
+    class OnApplicationEvent {
+        @Nested
+        class GivenAContentEventListener {
+            @Nested
+            class GivenABeforeGetResourceEvent {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    consumer = mock(TestContentEventConsumer.class);
+                    store = (ContentStore<Object, Serializable>) mock(ContentStore.class);
 
-					listener = new TestContentEventListener(consumer);
-				});
-				JustBeforeEach(() -> {
-					listener.onApplicationEvent(event);
-				});
-				Context("given a before get resource event", () -> {
-					BeforeEach(() -> {
-						event = new BeforeGetResourceEvent(new EventSource(), store);
-					});
-					It("should call the event consumer", () -> {
-						ArgumentCaptor<BeforeGetResourceEvent> argumentCaptor = ArgumentCaptor
-								.forClass(BeforeGetResourceEvent.class);
-						verify(consumer).onBeforeGetResource(argumentCaptor.capture());
-						assertThat(argumentCaptor.getValue(), is(event));
-						assertThat(argumentCaptor.getValue().getSource(),
-								is(event.getSource()));
-						assertThat(argumentCaptor.getValue().getStore(), is(store));
-					});
-					It("should call the event source consumer", () -> {
-						verify(consumer)
-								.onBeforeGetResource(argThat(is(event.getSource())));
-					});
-				});
-				Context("given an after get resource event", () -> {
-					BeforeEach(() -> {
-						event = new AfterGetResourceEvent(new EventSource(), store);
-					});
-					It("should call the event consumer", () -> {
-						ArgumentCaptor<AfterGetResourceEvent> argumentCaptor = ArgumentCaptor
-								.forClass(AfterGetResourceEvent.class);
-						verify(consumer).onAfterGetResource(argumentCaptor.capture());
-						assertThat(argumentCaptor.getValue(), is(event));
-						assertThat(argumentCaptor.getValue().getSource(),
-								is(event.getSource()));
-						assertThat(argumentCaptor.getValue().getStore(), is(store));
-					});
-					It("should call the event source consumer", () -> {
-						verify(consumer)
-								.onAfterGetResource(argThat(is(event.getSource())));
-					});
-				});
-				Context("given a before associate event", () -> {
-					BeforeEach(() -> {
-						event = new BeforeAssociateEvent(new EventSource(), store);
-					});
-					It("should call the event consumer", () -> {
-						ArgumentCaptor<BeforeAssociateEvent> argumentCaptor = ArgumentCaptor
-								.forClass(BeforeAssociateEvent.class);
-						verify(consumer).onBeforeAssociate(argumentCaptor.capture());
-						assertThat(argumentCaptor.getValue(), is(event));
-						assertThat(argumentCaptor.getValue().getSource(),
-								is(event.getSource()));
-						assertThat(argumentCaptor.getValue().getStore(), is(store));
-					});
-					It("should call the event source consumer", () -> {
-						verify(consumer)
-								.onBeforeAssociate(argThat(is(event.getSource())));
-					});
-				});
-				Context("given an after associate event", () -> {
-					BeforeEach(() -> {
-						event = new AfterAssociateEvent(new EventSource(), store);
-					});
-					It("should call the event consumer", () -> {
-						ArgumentCaptor<AfterAssociateEvent> argumentCaptor = ArgumentCaptor
-								.forClass(AfterAssociateEvent.class);
-						verify(consumer).onAfterAssociate(argumentCaptor.capture());
-						assertThat(argumentCaptor.getValue(), is(event));
-						assertThat(argumentCaptor.getValue().getSource(),
-								is(event.getSource()));
-						assertThat(argumentCaptor.getValue().getStore(), is(store));
-					});
-					It("should call the event source consumer", () -> {
-						verify(consumer)
-								.onAfterAssociate(argThat(is(event.getSource())));
-					});
-				});
-				Context("given a before unassociate event", () -> {
-					BeforeEach(() -> {
-						event = new BeforeUnassociateEvent(new EventSource(), store);
-					});
-					It("should call the event consumer", () -> {
-						ArgumentCaptor<BeforeUnassociateEvent> argumentCaptor = ArgumentCaptor
-								.forClass(BeforeUnassociateEvent.class);
-						verify(consumer).onBeforeUnassociate(argumentCaptor.capture());
-						assertThat(argumentCaptor.getValue(), is(event));
-						assertThat(argumentCaptor.getValue().getSource(),
-								is(event.getSource()));
-						assertThat(argumentCaptor.getValue().getStore(), is(store));
-					});
-					It("should call the event source consumer", () -> {
-						verify(consumer)
-								.onBeforeUnassociate(argThat(is(event.getSource())));
-					});
-				});
-				Context("given an after unassociate event", () -> {
-					BeforeEach(() -> {
-						event = new AfterUnassociateEvent(new EventSource(), store);
-					});
-					It("should call the event consumer", () -> {
-						ArgumentCaptor<AfterUnassociateEvent> argumentCaptor = ArgumentCaptor
-								.forClass(AfterUnassociateEvent.class);
-						verify(consumer).onAfterUnassociate(argumentCaptor.capture());
-						assertThat(argumentCaptor.getValue(), is(event));
-						assertThat(argumentCaptor.getValue().getSource(),
-								is(event.getSource()));
-						assertThat(argumentCaptor.getValue().getStore(), is(store));
-					});
-					It("should call the event source consumer", () -> {
-						verify(consumer)
-								.onAfterUnassociate(argThat(is(event.getSource())));
-					});
-				});
-				Context("given a before get content event", () -> {
-					BeforeEach(() -> {
-						event = new BeforeGetContentEvent(new EventSource(), store);
-					});
-					It("should call the event consumer", () -> {
-						ArgumentCaptor<BeforeGetContentEvent> argumentCaptor = ArgumentCaptor
-								.forClass(BeforeGetContentEvent.class);
-						verify(consumer).onBeforeGetContent(argumentCaptor.capture());
-						assertThat(argumentCaptor.getValue(), is(event));
-						assertThat(argumentCaptor.getValue().getSource(),
-								is(event.getSource()));
-						assertThat(argumentCaptor.getValue().getStore(), is(store));
-					});
-					It("should call the event source consumer", () -> {
-						verify(consumer)
-								.onBeforeGetContent(argThat(is(event.getSource())));
-					});
-				});
-				Context("given an after get content event", () -> {
-					BeforeEach(() -> {
-						event = new AfterGetContentEvent(new EventSource(), store);
-					});
-					It("should call the event consumer", () -> {
-						ArgumentCaptor<AfterGetContentEvent> argumentCaptor = ArgumentCaptor
-								.forClass(AfterGetContentEvent.class);
-						verify(consumer).onAfterGetContent(argumentCaptor.capture());
-						assertThat(argumentCaptor.getValue(), is(event));
-						assertThat(argumentCaptor.getValue().getSource(),
-								is(event.getSource()));
-						assertThat(argumentCaptor.getValue().getStore(), is(store));
-					});
-					It("should call the event source consumer", () -> {
-						verify(consumer)
-								.onAfterGetContent(argThat(is(event.getSource())));
-					});
-				});
-				Context("given a before set content event", () -> {
-					BeforeEach(() -> {
-						event = new BeforeSetContentEvent(new EventSource(), store, (InputStream)null);
-					});
-					It("should call the event consumer", () -> {
-						ArgumentCaptor<BeforeSetContentEvent> argumentCaptor = ArgumentCaptor
-								.forClass(BeforeSetContentEvent.class);
-						verify(consumer).onBeforeSetContent(argumentCaptor.capture());
-						assertThat(argumentCaptor.getValue(), is(event));
-						assertThat(argumentCaptor.getValue().getSource(),
-								is(event.getSource()));
-						assertThat(argumentCaptor.getValue().getStore(), is(store));
-					});
-					It("should call the event source consumer", () -> {
-						verify(consumer)
-								.onBeforeSetContent(argThat(is(event.getSource())));
-					});
-				});
-				Context("given a after set content event", () -> {
-					BeforeEach(() -> {
-						event = new AfterSetContentEvent(new EventSource(), store);
-					});
-					It("should call the event consumer", () -> {
-						ArgumentCaptor<AfterSetContentEvent> argumentCaptor = ArgumentCaptor
-								.forClass(AfterSetContentEvent.class);
-						verify(consumer).onAfterSetContent(argumentCaptor.capture());
-						assertThat(argumentCaptor.getValue(), is(event));
-						assertThat(argumentCaptor.getValue().getSource(),
-								is(event.getSource()));
-						assertThat(argumentCaptor.getValue().getStore(), is(store));
-					});
-					It("should call the event source consumer", () -> {
-						verify(consumer)
-								.onAfterSetContent(argThat(is(event.getSource())));
-					});
-				});
-				Context("given a before unset content event", () -> {
-					BeforeEach(() -> {
-						event = new BeforeUnsetContentEvent(new EventSource(), store);
-					});
-					It("should call the event consumer", () -> {
-						ArgumentCaptor<BeforeUnsetContentEvent> argumentCaptor = ArgumentCaptor
-								.forClass(BeforeUnsetContentEvent.class);
-						verify(consumer).onBeforeUnsetContent(argumentCaptor.capture());
-						assertThat(argumentCaptor.getValue(), is(event));
-						assertThat(argumentCaptor.getValue().getSource(),
-								is(event.getSource()));
-						assertThat(argumentCaptor.getValue().getStore(), is(store));
-					});
-					It("should call the event source consumer", () -> {
-						verify(consumer)
-								.onBeforeUnsetContent(argThat(is(event.getSource())));
-					});
-				});
-				Context("given a after unset content event", () -> {
-					BeforeEach(() -> {
-						event = new AfterUnsetContentEvent(new EventSource(), store);
-					});
-					It("should call the event consumer", () -> {
-						ArgumentCaptor<AfterUnsetContentEvent> argumentCaptor = ArgumentCaptor
-								.forClass(AfterUnsetContentEvent.class);
-						verify(consumer).onAfterUnsetContent(argumentCaptor.capture());
-						assertThat(argumentCaptor.getValue(), is(event));
-						assertThat(argumentCaptor.getValue().getSource(),
-								is(event.getSource()));
-						assertThat(argumentCaptor.getValue().getStore(), is(store));
-					});
-					It("should call the event source consumer", () -> {
-						verify(consumer)
-								.onAfterUnsetContent(argThat(is(event.getSource())));
-					});
-				});
-			});
-		});
-	}
+                    listener = new TestContentEventListener(consumer);
 
-	@Test
-	public void noop() {
-	}
+                    event = new BeforeGetResourceEvent(new EventSource(), store);
+
+                    listener.onApplicationEvent(event);
+
+                }
+
+                @Test
+                void shouldCallTheEventConsumer() throws Throwable {
+                    ArgumentCaptor<BeforeGetResourceEvent> argumentCaptor = ArgumentCaptor
+                    		.forClass(BeforeGetResourceEvent.class);
+                    verify(consumer).onBeforeGetResource(argumentCaptor.capture());
+                    assertThat(argumentCaptor.getValue()).isEqualTo(event);
+                    assertThat(argumentCaptor.getValue().getSource()).isEqualTo(event.getSource());
+                    assertThat(argumentCaptor.getValue().getStore()).isEqualTo(store);
+
+                }
+
+                @Test
+                void shouldCallTheEventSourceConsumer() throws Throwable {
+                    verify(consumer)
+                    		.onBeforeGetResource(org.mockito.ArgumentMatchers.eq(event.getSource()));
+
+                }
+
+            }
+
+            @Nested
+            class GivenAnAfterGetResourceEvent {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    consumer = mock(TestContentEventConsumer.class);
+                    store = (ContentStore<Object, Serializable>) mock(ContentStore.class);
+
+                    listener = new TestContentEventListener(consumer);
+
+                    event = new AfterGetResourceEvent(new EventSource(), store);
+
+                    listener.onApplicationEvent(event);
+
+                }
+
+                @Test
+                void shouldCallTheEventConsumer() throws Throwable {
+                    ArgumentCaptor<AfterGetResourceEvent> argumentCaptor = ArgumentCaptor
+                    		.forClass(AfterGetResourceEvent.class);
+                    verify(consumer).onAfterGetResource(argumentCaptor.capture());
+                    assertThat(argumentCaptor.getValue()).isEqualTo(event);
+                    assertThat(argumentCaptor.getValue().getSource()).isEqualTo(event.getSource());
+                    assertThat(argumentCaptor.getValue().getStore()).isEqualTo(store);
+
+                }
+
+                @Test
+                void shouldCallTheEventSourceConsumer() throws Throwable {
+                    verify(consumer)
+                    		.onAfterGetResource(org.mockito.ArgumentMatchers.eq(event.getSource()));
+
+                }
+
+            }
+
+            @Nested
+            class GivenABeforeAssociateEvent {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    consumer = mock(TestContentEventConsumer.class);
+                    store = (ContentStore<Object, Serializable>) mock(ContentStore.class);
+
+                    listener = new TestContentEventListener(consumer);
+
+                    event = new BeforeAssociateEvent(new EventSource(), store);
+
+                    listener.onApplicationEvent(event);
+
+                }
+
+                @Test
+                void shouldCallTheEventConsumer() throws Throwable {
+                    ArgumentCaptor<BeforeAssociateEvent> argumentCaptor = ArgumentCaptor
+                    		.forClass(BeforeAssociateEvent.class);
+                    verify(consumer).onBeforeAssociate(argumentCaptor.capture());
+                    assertThat(argumentCaptor.getValue()).isEqualTo(event);
+                    assertThat(argumentCaptor.getValue().getSource()).isEqualTo(event.getSource());
+                    assertThat(argumentCaptor.getValue().getStore()).isEqualTo(store);
+
+                }
+
+                @Test
+                void shouldCallTheEventSourceConsumer() throws Throwable {
+                    verify(consumer)
+                    		.onBeforeAssociate(org.mockito.ArgumentMatchers.eq(event.getSource()));
+
+                }
+
+            }
+
+            @Nested
+            class GivenAnAfterAssociateEvent {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    consumer = mock(TestContentEventConsumer.class);
+                    store = (ContentStore<Object, Serializable>) mock(ContentStore.class);
+
+                    listener = new TestContentEventListener(consumer);
+
+                    event = new AfterAssociateEvent(new EventSource(), store);
+
+                    listener.onApplicationEvent(event);
+
+                }
+
+                @Test
+                void shouldCallTheEventConsumer() throws Throwable {
+                    ArgumentCaptor<AfterAssociateEvent> argumentCaptor = ArgumentCaptor
+                    		.forClass(AfterAssociateEvent.class);
+                    verify(consumer).onAfterAssociate(argumentCaptor.capture());
+                    assertThat(argumentCaptor.getValue()).isEqualTo(event);
+                    assertThat(argumentCaptor.getValue().getSource()).isEqualTo(event.getSource());
+                    assertThat(argumentCaptor.getValue().getStore()).isEqualTo(store);
+
+                }
+
+                @Test
+                void shouldCallTheEventSourceConsumer() throws Throwable {
+                    verify(consumer)
+                    		.onAfterAssociate(org.mockito.ArgumentMatchers.eq(event.getSource()));
+
+                }
+
+            }
+
+            @Nested
+            class GivenABeforeUnassociateEvent {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    consumer = mock(TestContentEventConsumer.class);
+                    store = (ContentStore<Object, Serializable>) mock(ContentStore.class);
+
+                    listener = new TestContentEventListener(consumer);
+
+                    event = new BeforeUnassociateEvent(new EventSource(), store);
+
+                    listener.onApplicationEvent(event);
+
+                }
+
+                @Test
+                void shouldCallTheEventConsumer() throws Throwable {
+                    ArgumentCaptor<BeforeUnassociateEvent> argumentCaptor = ArgumentCaptor
+                    		.forClass(BeforeUnassociateEvent.class);
+                    verify(consumer).onBeforeUnassociate(argumentCaptor.capture());
+                    assertThat(argumentCaptor.getValue()).isEqualTo(event);
+                    assertThat(argumentCaptor.getValue().getSource()).isEqualTo(event.getSource());
+                    assertThat(argumentCaptor.getValue().getStore()).isEqualTo(store);
+
+                }
+
+                @Test
+                void shouldCallTheEventSourceConsumer() throws Throwable {
+                    verify(consumer)
+                    		.onBeforeUnassociate(org.mockito.ArgumentMatchers.eq(event.getSource()));
+
+                }
+
+            }
+
+            @Nested
+            class GivenAnAfterUnassociateEvent {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    consumer = mock(TestContentEventConsumer.class);
+                    store = (ContentStore<Object, Serializable>) mock(ContentStore.class);
+
+                    listener = new TestContentEventListener(consumer);
+
+                    event = new AfterUnassociateEvent(new EventSource(), store);
+
+                    listener.onApplicationEvent(event);
+
+                }
+
+                @Test
+                void shouldCallTheEventConsumer() throws Throwable {
+                    ArgumentCaptor<AfterUnassociateEvent> argumentCaptor = ArgumentCaptor
+                    		.forClass(AfterUnassociateEvent.class);
+                    verify(consumer).onAfterUnassociate(argumentCaptor.capture());
+                    assertThat(argumentCaptor.getValue()).isEqualTo(event);
+                    assertThat(argumentCaptor.getValue().getSource()).isEqualTo(event.getSource());
+                    assertThat(argumentCaptor.getValue().getStore()).isEqualTo(store);
+
+                }
+
+                @Test
+                void shouldCallTheEventSourceConsumer() throws Throwable {
+                    verify(consumer)
+                    		.onAfterUnassociate(org.mockito.ArgumentMatchers.eq(event.getSource()));
+
+                }
+
+            }
+
+            @Nested
+            class GivenABeforeGetContentEvent {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    consumer = mock(TestContentEventConsumer.class);
+                    store = (ContentStore<Object, Serializable>) mock(ContentStore.class);
+
+                    listener = new TestContentEventListener(consumer);
+
+                    event = new BeforeGetContentEvent(new EventSource(), store);
+
+                    listener.onApplicationEvent(event);
+
+                }
+
+                @Test
+                void shouldCallTheEventConsumer() throws Throwable {
+                    ArgumentCaptor<BeforeGetContentEvent> argumentCaptor = ArgumentCaptor
+                    		.forClass(BeforeGetContentEvent.class);
+                    verify(consumer).onBeforeGetContent(argumentCaptor.capture());
+                    assertThat(argumentCaptor.getValue()).isEqualTo(event);
+                    assertThat(argumentCaptor.getValue().getSource()).isEqualTo(event.getSource());
+                    assertThat(argumentCaptor.getValue().getStore()).isEqualTo(store);
+
+                }
+
+                @Test
+                void shouldCallTheEventSourceConsumer() throws Throwable {
+                    verify(consumer)
+                    		.onBeforeGetContent(org.mockito.ArgumentMatchers.eq(event.getSource()));
+
+                }
+
+            }
+
+            @Nested
+            class GivenAnAfterGetContentEvent {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    consumer = mock(TestContentEventConsumer.class);
+                    store = (ContentStore<Object, Serializable>) mock(ContentStore.class);
+
+                    listener = new TestContentEventListener(consumer);
+
+                    event = new AfterGetContentEvent(new EventSource(), store);
+
+                    listener.onApplicationEvent(event);
+
+                }
+
+                @Test
+                void shouldCallTheEventConsumer() throws Throwable {
+                    ArgumentCaptor<AfterGetContentEvent> argumentCaptor = ArgumentCaptor
+                    		.forClass(AfterGetContentEvent.class);
+                    verify(consumer).onAfterGetContent(argumentCaptor.capture());
+                    assertThat(argumentCaptor.getValue()).isEqualTo(event);
+                    assertThat(argumentCaptor.getValue().getSource()).isEqualTo(event.getSource());
+                    assertThat(argumentCaptor.getValue().getStore()).isEqualTo(store);
+
+                }
+
+                @Test
+                void shouldCallTheEventSourceConsumer() throws Throwable {
+                    verify(consumer)
+                    		.onAfterGetContent(org.mockito.ArgumentMatchers.eq(event.getSource()));
+
+                }
+
+            }
+
+            @Nested
+            class GivenABeforeSetContentEvent {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    consumer = mock(TestContentEventConsumer.class);
+                    store = (ContentStore<Object, Serializable>) mock(ContentStore.class);
+
+                    listener = new TestContentEventListener(consumer);
+
+                    event = new BeforeSetContentEvent(new EventSource(), store, (InputStream)null);
+
+                    listener.onApplicationEvent(event);
+
+                }
+
+                @Test
+                void shouldCallTheEventConsumer() throws Throwable {
+                    ArgumentCaptor<BeforeSetContentEvent> argumentCaptor = ArgumentCaptor
+                    		.forClass(BeforeSetContentEvent.class);
+                    verify(consumer).onBeforeSetContent(argumentCaptor.capture());
+                    assertThat(argumentCaptor.getValue()).isEqualTo(event);
+                    assertThat(argumentCaptor.getValue().getSource()).isEqualTo(event.getSource());
+                    assertThat(argumentCaptor.getValue().getStore()).isEqualTo(store);
+
+                }
+
+                @Test
+                void shouldCallTheEventSourceConsumer() throws Throwable {
+                    verify(consumer)
+                    		.onBeforeSetContent(org.mockito.ArgumentMatchers.eq(event.getSource()));
+
+                }
+
+            }
+
+            @Nested
+            class GivenAAfterSetContentEvent {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    consumer = mock(TestContentEventConsumer.class);
+                    store = (ContentStore<Object, Serializable>) mock(ContentStore.class);
+
+                    listener = new TestContentEventListener(consumer);
+
+                    event = new AfterSetContentEvent(new EventSource(), store);
+
+                    listener.onApplicationEvent(event);
+
+                }
+
+                @Test
+                void shouldCallTheEventConsumer() throws Throwable {
+                    ArgumentCaptor<AfterSetContentEvent> argumentCaptor = ArgumentCaptor
+                    		.forClass(AfterSetContentEvent.class);
+                    verify(consumer).onAfterSetContent(argumentCaptor.capture());
+                    assertThat(argumentCaptor.getValue()).isEqualTo(event);
+                    assertThat(argumentCaptor.getValue().getSource()).isEqualTo(event.getSource());
+                    assertThat(argumentCaptor.getValue().getStore()).isEqualTo(store);
+
+                }
+
+                @Test
+                void shouldCallTheEventSourceConsumer() throws Throwable {
+                    verify(consumer)
+                    		.onAfterSetContent(org.mockito.ArgumentMatchers.eq(event.getSource()));
+
+                }
+
+            }
+
+            @Nested
+            class GivenABeforeUnsetContentEvent {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    consumer = mock(TestContentEventConsumer.class);
+                    store = (ContentStore<Object, Serializable>) mock(ContentStore.class);
+
+                    listener = new TestContentEventListener(consumer);
+
+                    event = new BeforeUnsetContentEvent(new EventSource(), store);
+
+                    listener.onApplicationEvent(event);
+
+                }
+
+                @Test
+                void shouldCallTheEventConsumer() throws Throwable {
+                    ArgumentCaptor<BeforeUnsetContentEvent> argumentCaptor = ArgumentCaptor
+                    		.forClass(BeforeUnsetContentEvent.class);
+                    verify(consumer).onBeforeUnsetContent(argumentCaptor.capture());
+                    assertThat(argumentCaptor.getValue()).isEqualTo(event);
+                    assertThat(argumentCaptor.getValue().getSource()).isEqualTo(event.getSource());
+                    assertThat(argumentCaptor.getValue().getStore()).isEqualTo(store);
+
+                }
+
+                @Test
+                void shouldCallTheEventSourceConsumer() throws Throwable {
+                    verify(consumer)
+                    		.onBeforeUnsetContent(org.mockito.ArgumentMatchers.eq(event.getSource()));
+
+                }
+
+            }
+
+            @Nested
+            class GivenAAfterUnsetContentEvent {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    consumer = mock(TestContentEventConsumer.class);
+                    store = (ContentStore<Object, Serializable>) mock(ContentStore.class);
+
+                    listener = new TestContentEventListener(consumer);
+
+                    event = new AfterUnsetContentEvent(new EventSource(), store);
+
+                    listener.onApplicationEvent(event);
+
+                }
+
+                @Test
+                void shouldCallTheEventConsumer() throws Throwable {
+                    ArgumentCaptor<AfterUnsetContentEvent> argumentCaptor = ArgumentCaptor
+                    		.forClass(AfterUnsetContentEvent.class);
+                    verify(consumer).onAfterUnsetContent(argumentCaptor.capture());
+                    assertThat(argumentCaptor.getValue()).isEqualTo(event);
+                    assertThat(argumentCaptor.getValue().getSource()).isEqualTo(event.getSource());
+                    assertThat(argumentCaptor.getValue().getStore()).isEqualTo(store);
+
+                }
+
+                @Test
+                void shouldCallTheEventSourceConsumer() throws Throwable {
+                    verify(consumer)
+                    		.onAfterUnsetContent(org.mockito.ArgumentMatchers.eq(event.getSource()));
+
+                }
+
+            }
+
+        }
+
+    }
 
 	public static class TestContentEventListener
 			extends AbstractStoreEventListener<Object> {

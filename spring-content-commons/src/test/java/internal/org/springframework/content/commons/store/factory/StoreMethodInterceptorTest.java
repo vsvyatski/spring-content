@@ -1,12 +1,15 @@
 package internal.org.springframework.content.commons.store.factory;
 
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jConfiguration;
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jRunner;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import internal.org.springframework.content.commons.config.StoreFragment;
 import internal.org.springframework.content.commons.config.StoreFragments;
 import org.aopalliance.intercept.MethodInvocation;
 import org.apache.commons.io.IOUtils;
-import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
@@ -33,20 +36,13 @@ import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.UUID;
 
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.*;
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.CoreMatchers.isA;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
-import static org.mockito.hamcrest.MockitoHamcrest.argThat;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 @SuppressWarnings("unchecked")
-@RunWith(Ginkgo4jRunner.class)
-@Ginkgo4jConfiguration(threads = 1)
 public class StoreMethodInterceptorTest {
 
     private static final Method getResourceMethod;
@@ -83,422 +79,679 @@ public class StoreMethodInterceptorTest {
 
     private ByteArrayInputStream modifiedStream = null;
 
-    {
-        Describe("#invoke", () -> {
-
-            BeforeEach(() -> {
-                store = mock(ContentStore.class);
-                publisher = mock(ApplicationEventPublisher.class);
-            });
-
-            JustBeforeEach(() -> {
-                interceptor = new StoreMethodInterceptor();
-                StoreFragments fragments = new StoreFragments(Collections.singletonList(new StoreFragment(TestContentStore.class, new StoreImpl(store, publisher, Paths.get(System.getProperty("java.io.tmpdir"))))));
-                interceptor.setStoreFragments(fragments);
-                try {
-                    interceptor.invoke(invocation);
-                } catch (Exception invokeException) {
-                    e = invokeException;
-                }
-            });
-
-            Describe("#getContent", () -> {
-
-                BeforeEach(() -> {
+    
+    @Nested
+    class InvokeCases {
+        @Nested
+        class GetContentCases {
+            @Nested
+            class Tests {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    store = mock(ContentStore.class);
+                                    publisher = mock(ApplicationEventPublisher.class);
 
                     result = new ByteArrayInputStream(new byte[]{});
 
+                                        store = mock(ContentStore.class);
+                                        when(store.getContent(any())).thenReturn((InputStream) result);
+
+                                        invocation = new TestMethodInvocation(store, getContentMethod, new Object());
+
+                    interceptor = new StoreMethodInterceptor();
+                                    StoreFragments fragments = new StoreFragments(Collections.singletonList(new StoreFragment(TestContentStore.class, new StoreImpl(store, publisher, Paths.get(System.getProperty("java.io.tmpdir"))))));
+                                    interceptor.setStoreFragments(fragments);
+                                    try {
+                                        interceptor.invoke(invocation);
+                                    } catch (Exception invokeException) {
+                                        e = invokeException;
+                                    }
+                }
+                @Test
+                void shouldProceed() throws Throwable {
+                    assertThat(e).isNull();
+
+                                        ArgumentCaptor<AfterStoreEvent> captor = ArgumentCaptor.forClass(AfterStoreEvent.class);
+                                        InOrder inOrder = Mockito.inOrder(publisher, store);
+
+                                        inOrder.verify(publisher, times(1)).publishEvent(argThat(StoreEvent.class::isInstance));
+                                        inOrder.verify(store).getContent(any());
+                                        inOrder.verify(publisher, times(1)).publishEvent(captor.capture());
+                                        assertThat(captor.getValue().getResult()).isEqualTo(result);
+                }
+            }
+            @Nested
+            class WhenGetContentIsInvokedWithIllegalArguments {
+                @BeforeEach
+                void setUp() throws Throwable {
                     store = mock(ContentStore.class);
-                    when(store.getContent(any())).thenReturn((InputStream) result);
+                                    publisher = mock(ApplicationEventPublisher.class);
 
-                    invocation = new TestMethodInvocation(store, getContentMethod, new Object());
-                });
+                    result = new ByteArrayInputStream(new byte[]{});
 
-                It("should proceed", () -> {
-                    assertThat(e, is(nullValue()));
+                                        store = mock(ContentStore.class);
+                                        when(store.getContent(any())).thenReturn((InputStream) result);
 
-                    ArgumentCaptor<AfterStoreEvent> captor = ArgumentCaptor.forClass(AfterStoreEvent.class);
-                    InOrder inOrder = Mockito.inOrder(publisher, store);
+                                        invocation = new TestMethodInvocation(store, getContentMethod, new Object());
 
-                    inOrder.verify(publisher, times(1)).publishEvent(argThat(isA(StoreEvent.class)));
-                    inOrder.verify(store).getContent(any());
-                    inOrder.verify(publisher, times(1)).publishEvent(captor.capture());
-                    assertThat(captor.getValue().getResult(), is(result));
-                });
+                    invocation = new TestMethodInvocation(store, getContentMethod);
 
-                Context("when getContent is invoked with illegal arguments", () -> {
-
-                    BeforeEach(() -> invocation = new TestMethodInvocation(store, getContentMethod));
-
-                    It("should proceed", () -> assertThat(e, is(not(nullValue()))));
-                });
-            });
-
-            Describe("#setContent", () -> {
-
-                BeforeEach(() -> {
+                    interceptor = new StoreMethodInterceptor();
+                                    StoreFragments fragments = new StoreFragments(Collections.singletonList(new StoreFragment(TestContentStore.class, new StoreImpl(store, publisher, Paths.get(System.getProperty("java.io.tmpdir"))))));
+                                    interceptor.setStoreFragments(fragments);
+                                    try {
+                                        interceptor.invoke(invocation);
+                                    } catch (Exception invokeException) {
+                                        e = invokeException;
+                                    }
+                }
+                @Test
+                void shouldProceed() throws Throwable {
+                    assertThat(e).isNotNull();
+                }
+            }
+        }
+        @Nested
+        class SetContentCases {
+            @Nested
+            class Tests {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    store = mock(ContentStore.class);
+                                    publisher = mock(ApplicationEventPublisher.class);
 
                     result = new Object();
 
+                                        store = mock(ContentStore.class);
+                                        when(store.setContent(any(), any(InputStream.class))).thenReturn(result);
+
+                                        invocation = new TestMethodInvocation(store, setContentMethod, new Object(), new ByteArrayInputStream("test".getBytes()));
+
+                    interceptor = new StoreMethodInterceptor();
+                                    StoreFragments fragments = new StoreFragments(Collections.singletonList(new StoreFragment(TestContentStore.class, new StoreImpl(store, publisher, Paths.get(System.getProperty("java.io.tmpdir"))))));
+                                    interceptor.setStoreFragments(fragments);
+                                    try {
+                                        interceptor.invoke(invocation);
+                                    } catch (Exception invokeException) {
+                                        e = invokeException;
+                                    }
+                }
+                @Test
+                void shouldProceed() throws Throwable {
+                    assertThat(e).isNull();
+
+                                        ArgumentCaptor<BeforeSetContentEvent> beforeArgCaptor = ArgumentCaptor.forClass(BeforeSetContentEvent.class);
+                                        ArgumentCaptor<InputStream> setContentArgCaptor = ArgumentCaptor.forClass(InputStream.class);
+                                        ArgumentCaptor<AfterStoreEvent> afterArgCaptor = ArgumentCaptor.forClass(AfterStoreEvent.class);
+                                        InOrder inOrder = Mockito.inOrder(publisher, store);
+
+                                        inOrder.verify(publisher, times(1)).publishEvent(beforeArgCaptor.capture());
+                                        assertThat(beforeArgCaptor.getValue().getResource()).isNull();
+                                        assertThat(beforeArgCaptor.getValue().getInputStream()).isNotNull();
+
+                                        inOrder.verify(store).setContent(any(), setContentArgCaptor.capture());
+                                        try (InputStream setContentInputStream = setContentArgCaptor.getValue()) {
+                                            assertThat(IOUtils.toString(setContentInputStream)).isEqualTo("test");
+                                        }
+
+                                        inOrder.verify(publisher, times(1)).publishEvent(afterArgCaptor.capture());
+                                        assertThat(afterArgCaptor.getValue().getResult()).isEqualTo(result);
+                }
+            }
+            @Nested
+            class WhenTheBeforeSetContentEventConsumesTheEntireInputStream {
+                @BeforeEach
+                void setUp() throws Throwable {
                     store = mock(ContentStore.class);
-                    when(store.setContent(any(), any(InputStream.class))).thenReturn(result);
-
-                    invocation = new TestMethodInvocation(store, setContentMethod, new Object(), new ByteArrayInputStream("test".getBytes()));
-                });
-
-                It("should proceed", () -> {
-                    assertThat(e, is(nullValue()));
-
-                    ArgumentCaptor<BeforeSetContentEvent> beforeArgCaptor = ArgumentCaptor.forClass(BeforeSetContentEvent.class);
-                    ArgumentCaptor<InputStream> setContentArgCaptor = ArgumentCaptor.forClass(InputStream.class);
-                    ArgumentCaptor<AfterStoreEvent> afterArgCaptor = ArgumentCaptor.forClass(AfterStoreEvent.class);
-                    InOrder inOrder = Mockito.inOrder(publisher, store);
-
-                    inOrder.verify(publisher, times(1)).publishEvent(beforeArgCaptor.capture());
-                    assertThat(beforeArgCaptor.getValue().getResource(), is(nullValue()));
-                    assertThat(beforeArgCaptor.getValue().getInputStream(), is(not(nullValue())));
-
-                    inOrder.verify(store).setContent(any(), setContentArgCaptor.capture());
-                    try (InputStream setContentInputStream = setContentArgCaptor.getValue()) {
-                        assertThat(IOUtils.toString(setContentInputStream), is("test"));
-                    }
-
-                    inOrder.verify(publisher, times(1)).publishEvent(afterArgCaptor.capture());
-                    assertThat(afterArgCaptor.getValue().getResult(), is(result));
-                });
-
-                Context("when the BeforeSetContentEvent consumes the entire inputStream", () -> {
-
-                    BeforeEach(() -> onBeforeSetContentPublishEvent((invocationOnMock) -> {
-                        try (InputStream is = ((BeforeSetContentEvent) invocationOnMock.getArgument(0)).getInputStream()) {
-                            assertThat(IOUtils.toString(is, Charset.defaultCharset()), is("test"));
-                        }
-                        return null;
-                    }));
-
-                    It("should still receive the inputStream in the setContent invocation", () -> {
-                        assertThat(e, is(nullValue()));
-
-                        ArgumentCaptor<InputStream> setContentArgCaptor = ArgumentCaptor.forClass(InputStream.class);
-                        ArgumentCaptor<AfterStoreEvent> afterArgCaptor = ArgumentCaptor.forClass(AfterStoreEvent.class);
-                        InOrder inOrder = Mockito.inOrder(publisher, store);
-
-                        inOrder.verify(publisher).publishEvent(argThat(isA(BeforeSetContentEvent.class)));
-
-                        inOrder.verify(store).setContent(any(), setContentArgCaptor.capture());
-                        try (InputStream setContentInputStream = setContentArgCaptor.getValue()) {
-                            assertThat(IOUtils.toString(setContentInputStream, Charset.defaultCharset()), is("test"));
-                        }
-
-                        inOrder.verify(publisher, times(1)).publishEvent(afterArgCaptor.capture());
-                        assertThat(afterArgCaptor.getValue().getResult(), is(result));
-                    });
-                });
-
-                Context("when the BeforeSetContentEvent consumes partial inputStream", () -> {
-
-                    BeforeEach(() -> onBeforeSetContentPublishEvent((invocationOnMock) -> {
-                        InputStream is = ((BeforeSetContentEvent) invocationOnMock.getArgument(0)).getInputStream();
-                        assertThat((char) is.read(), is('t'));
-                        assertThat((char) is.read(), is('e'));
-                        return null;
-                    }));
-
-                    It("should still receive the inputStream in the setContent invocation", () -> {
-                        assertThat(e, is(nullValue()));
-
-                        InOrder inOrder = Mockito.inOrder(publisher, store);
-
-                        ArgumentCaptor<InputStream> setContentArgCaptor = ArgumentCaptor.forClass(InputStream.class);
-                        ArgumentCaptor<AfterStoreEvent> afterArgCaptor = ArgumentCaptor.forClass(AfterStoreEvent.class);
-
-                        inOrder.verify(publisher).publishEvent(argThat(isA(BeforeSetContentEvent.class)));
-
-                        inOrder.verify(store).setContent(any(), setContentArgCaptor.capture());
-
-                        try (InputStream setContentInputStream = setContentArgCaptor.getValue()) {
-                            assertThat(IOUtils.toString(setContentInputStream, Charset.defaultCharset()), is("test"));
-                        }
-
-                        inOrder.verify(publisher, times(1)).publishEvent(afterArgCaptor.capture());
-                        assertThat(afterArgCaptor.getValue().getResult(), is(result));
-                    });
-                });
-
-                Context("when the BeforeSetContentEvent does not consume any of the inputStream", () -> {
-
-                    BeforeEach(() -> onBeforeSetContentPublishEvent((invocationOnMock) -> null));
-
-                    It("should still receive the inputStream in the setContent invocation", () -> {
-                        assertThat(e, is(nullValue()));
-
-                        InOrder inOrder = Mockito.inOrder(publisher, store);
-
-                        ArgumentCaptor<InputStream> setContentArgCaptor = ArgumentCaptor.forClass(InputStream.class);
-                        ArgumentCaptor<AfterStoreEvent> afterArgCaptor = ArgumentCaptor.forClass(AfterStoreEvent.class);
-
-                        inOrder.verify(publisher).publishEvent(argThat(isA(BeforeSetContentEvent.class)));
-
-                        inOrder.verify(store).setContent(any(), setContentArgCaptor.capture());
-
-                        try (InputStream setContentInputStream = setContentArgCaptor.getValue()) {
-                            assertThat(IOUtils.toString(setContentInputStream, Charset.defaultCharset()), is("test"));
-                        }
-
-                        inOrder.verify(publisher, times(1)).publishEvent(afterArgCaptor.capture());
-                        assertThat(afterArgCaptor.getValue().getResult(), is(result));
-                    });
-                });
-
-                Context("when the BeforeSetContentEvent replaces the inputStream", () -> {
-
-                    BeforeEach(() -> onBeforeSetContentPublishEvent((invocationOnMock) -> {
-                        modifiedStream = new ByteArrayInputStream("encrypted".getBytes());
-                        ((BeforeSetContentEvent) invocationOnMock.getArgument(0)).setInputStream(modifiedStream);
-                        return null;
-                    }));
-
-                    It("should still receive the replaced inputStream in the setContent invocation", () -> {
-                        assertThat(e, is(nullValue()));
-
-                        InOrder inOrder = Mockito.inOrder(publisher, store);
-
-                        ArgumentCaptor<InputStream> setContentArgCaptor = ArgumentCaptor.forClass(InputStream.class);
-                        ArgumentCaptor<AfterStoreEvent> afterArgCaptor = ArgumentCaptor.forClass(AfterStoreEvent.class);
-
-                        inOrder.verify(publisher).publishEvent(argThat(isA(BeforeSetContentEvent.class)));
-
-                        inOrder.verify(store).setContent(any(), setContentArgCaptor.capture());
-
-                        try (InputStream setContentInputStream = setContentArgCaptor.getValue()) {
-                            assertThat(setContentInputStream, is(modifiedStream));
-                        }
-
-                        inOrder.verify(publisher, times(1)).publishEvent(afterArgCaptor.capture());
-                        assertThat(afterArgCaptor.getValue().getResult(), is(result));
-                    });
-                });
-
-                Context("when setContent is invoked with illegal arguments", () -> {
-
-                    BeforeEach(() -> invocation = new TestMethodInvocation(store, setContentMethod));
-
-                    It("should proceed", () -> assertThat(e, is(not(nullValue()))));
-                });
-            });
-
-            Describe("#setContent from Resource", () -> {
-
-                BeforeEach(() -> {
+                                    publisher = mock(ApplicationEventPublisher.class);
 
                     result = new Object();
 
+                                        store = mock(ContentStore.class);
+                                        when(store.setContent(any(), any(InputStream.class))).thenReturn(result);
+
+                                        invocation = new TestMethodInvocation(store, setContentMethod, new Object(), new ByteArrayInputStream("test".getBytes()));
+
+                    onBeforeSetContentPublishEvent((invocationOnMock) -> {
+                                            try (InputStream is = ((BeforeSetContentEvent) invocationOnMock.getArgument(0)).getInputStream()) {
+                                                assertThat(IOUtils.toString(is, Charset.defaultCharset())).isEqualTo("test");
+                                            }
+                                            return null;
+                                        });
+
+                    interceptor = new StoreMethodInterceptor();
+                                    StoreFragments fragments = new StoreFragments(Collections.singletonList(new StoreFragment(TestContentStore.class, new StoreImpl(store, publisher, Paths.get(System.getProperty("java.io.tmpdir"))))));
+                                    interceptor.setStoreFragments(fragments);
+                                    try {
+                                        interceptor.invoke(invocation);
+                                    } catch (Exception invokeException) {
+                                        e = invokeException;
+                                    }
+                }
+                @Test
+                void shouldStillReceiveTheInputStreamInTheSetContentInvocation() throws Throwable {
+                    assertThat(e).isNull();
+
+                                            ArgumentCaptor<InputStream> setContentArgCaptor = ArgumentCaptor.forClass(InputStream.class);
+                                            ArgumentCaptor<AfterStoreEvent> afterArgCaptor = ArgumentCaptor.forClass(AfterStoreEvent.class);
+                                            InOrder inOrder = Mockito.inOrder(publisher, store);
+
+                                            inOrder.verify(publisher).publishEvent(argThat(BeforeSetContentEvent.class::isInstance));
+
+                                            inOrder.verify(store).setContent(any(), setContentArgCaptor.capture());
+                                            try (InputStream setContentInputStream = setContentArgCaptor.getValue()) {
+                                                assertThat(IOUtils.toString(setContentInputStream, Charset.defaultCharset())).isEqualTo("test");
+                                            }
+
+                                            inOrder.verify(publisher, times(1)).publishEvent(afterArgCaptor.capture());
+                                            assertThat(afterArgCaptor.getValue().getResult()).isEqualTo(result);
+                }
+            }
+            @Nested
+            class WhenTheBeforeSetContentEventConsumesPartialInputStream {
+                @BeforeEach
+                void setUp() throws Throwable {
                     store = mock(ContentStore.class);
-                    when(store.setContent(any(), any(Resource.class))).thenReturn(result);
-
-                    invocation = new TestMethodInvocation(store, setContentFromResourceMethod, new Object(), new InputStreamResource(new ByteArrayInputStream("test".getBytes())));
-                });
-
-                It("should proceed", () -> {
-                    assertThat(e, is(nullValue()));
-
-                    ArgumentCaptor<BeforeSetContentEvent> beforeArgCaptor = ArgumentCaptor.forClass(BeforeSetContentEvent.class);
-                    ArgumentCaptor<Resource> setContentArgCaptor = ArgumentCaptor.forClass(Resource.class);
-                    ArgumentCaptor<AfterStoreEvent> afterArgCaptor = ArgumentCaptor.forClass(AfterStoreEvent.class);
-                    InOrder inOrder = Mockito.inOrder(publisher, store);
-
-                    inOrder.verify(publisher, times(1)).publishEvent(beforeArgCaptor.capture());
-                    assertThat(beforeArgCaptor.getValue().getResource(), is(not(nullValue())));
-                    assertThat(beforeArgCaptor.getValue().getInputStream(), is(nullValue()));
-
-                    inOrder.verify(store).setContent(any(), setContentArgCaptor.capture());
-                    try (InputStream setContentInputStream = setContentArgCaptor.getValue().getInputStream()) {
-                        assertThat(IOUtils.toString(setContentInputStream), is("test"));
-                    }
-
-                    inOrder.verify(publisher, times(1)).publishEvent(afterArgCaptor.capture());
-                    assertThat(afterArgCaptor.getValue().getResult(), is(result));
-                });
-            });
-
-            Describe("#unsetContent", () -> {
-
-                BeforeEach(() -> {
+                                    publisher = mock(ApplicationEventPublisher.class);
 
                     result = new Object();
+
+                                        store = mock(ContentStore.class);
+                                        when(store.setContent(any(), any(InputStream.class))).thenReturn(result);
+
+                                        invocation = new TestMethodInvocation(store, setContentMethod, new Object(), new ByteArrayInputStream("test".getBytes()));
+
+                    onBeforeSetContentPublishEvent((invocationOnMock) -> {
+                                            InputStream is = ((BeforeSetContentEvent) invocationOnMock.getArgument(0)).getInputStream();
+                                            assertThat((char) is.read()).isEqualTo('t');
+                                            assertThat((char) is.read()).isEqualTo('e');
+                                            return null;
+                                        });
+
+                    interceptor = new StoreMethodInterceptor();
+                                    StoreFragments fragments = new StoreFragments(Collections.singletonList(new StoreFragment(TestContentStore.class, new StoreImpl(store, publisher, Paths.get(System.getProperty("java.io.tmpdir"))))));
+                                    interceptor.setStoreFragments(fragments);
+                                    try {
+                                        interceptor.invoke(invocation);
+                                    } catch (Exception invokeException) {
+                                        e = invokeException;
+                                    }
+                }
+                @Test
+                void shouldStillReceiveTheInputStreamInTheSetContentInvocation() throws Throwable {
+                    assertThat(e).isNull();
+
+                                            InOrder inOrder = Mockito.inOrder(publisher, store);
+
+                                            ArgumentCaptor<InputStream> setContentArgCaptor = ArgumentCaptor.forClass(InputStream.class);
+                                            ArgumentCaptor<AfterStoreEvent> afterArgCaptor = ArgumentCaptor.forClass(AfterStoreEvent.class);
+
+                                            inOrder.verify(publisher).publishEvent(argThat(BeforeSetContentEvent.class::isInstance));
+
+                                            inOrder.verify(store).setContent(any(), setContentArgCaptor.capture());
+
+                                            try (InputStream setContentInputStream = setContentArgCaptor.getValue()) {
+                                                assertThat(IOUtils.toString(setContentInputStream, Charset.defaultCharset())).isEqualTo("test");
+                                            }
+
+                                            inOrder.verify(publisher, times(1)).publishEvent(afterArgCaptor.capture());
+                                            assertThat(afterArgCaptor.getValue().getResult()).isEqualTo(result);
+                }
+            }
+            @Nested
+            class WhenTheBeforeSetContentEventDoesNotConsumeAnyOfTheInputStream {
+                @BeforeEach
+                void setUp() throws Throwable {
                     store = mock(ContentStore.class);
-                    when(store.unsetContent(any())).thenReturn(result);
+                                    publisher = mock(ApplicationEventPublisher.class);
 
-                    invocation = new TestMethodInvocation(store, unsetContentMethod, new Object());
-                });
+                    result = new Object();
 
-                Context("when unsetContent is invoked", () -> {
+                                        store = mock(ContentStore.class);
+                                        when(store.setContent(any(), any(InputStream.class))).thenReturn(result);
 
-                    It("should proceed", () -> {
-                        assertThat(e, is(nullValue()));
+                                        invocation = new TestMethodInvocation(store, setContentMethod, new Object(), new ByteArrayInputStream("test".getBytes()));
 
-                        InOrder inOrder = Mockito.inOrder(publisher, store);
+                    onBeforeSetContentPublishEvent((invocationOnMock) -> null);
 
-                        inOrder.verify(publisher).publishEvent(argThat(isA(BeforeUnsetContentEvent.class)));
-                        inOrder.verify(store).unsetContent(any());
+                    interceptor = new StoreMethodInterceptor();
+                                    StoreFragments fragments = new StoreFragments(Collections.singletonList(new StoreFragment(TestContentStore.class, new StoreImpl(store, publisher, Paths.get(System.getProperty("java.io.tmpdir"))))));
+                                    interceptor.setStoreFragments(fragments);
+                                    try {
+                                        interceptor.invoke(invocation);
+                                    } catch (Exception invokeException) {
+                                        e = invokeException;
+                                    }
+                }
+                @Test
+                void shouldStillReceiveTheInputStreamInTheSetContentInvocation() throws Throwable {
+                    assertThat(e).isNull();
 
-                        ArgumentCaptor<AfterStoreEvent> captor = ArgumentCaptor.forClass(AfterStoreEvent.class);
-                        inOrder.verify(publisher, times(1)).publishEvent(captor.capture());
-                        assertThat(captor.getValue().getResult(), is(result));
-                    });
-                });
+                                            InOrder inOrder = Mockito.inOrder(publisher, store);
 
-                Context("when unsetContent is invoked with illegal arguments", () -> {
+                                            ArgumentCaptor<InputStream> setContentArgCaptor = ArgumentCaptor.forClass(InputStream.class);
+                                            ArgumentCaptor<AfterStoreEvent> afterArgCaptor = ArgumentCaptor.forClass(AfterStoreEvent.class);
 
-                    BeforeEach(() -> invocation = new TestMethodInvocation(store, unsetContentMethod));
+                                            inOrder.verify(publisher).publishEvent(argThat(BeforeSetContentEvent.class::isInstance));
 
-                    It("should not publish events", () -> assertThat(e, is(not(nullValue()))));
-                });
-            });
+                                            inOrder.verify(store).setContent(any(), setContentArgCaptor.capture());
 
-            Describe("#getResource", () -> {
+                                            try (InputStream setContentInputStream = setContentArgCaptor.getValue()) {
+                                                assertThat(IOUtils.toString(setContentInputStream, Charset.defaultCharset())).isEqualTo("test");
+                                            }
 
-                Context("when getResource is invoked", () -> {
+                                            inOrder.verify(publisher, times(1)).publishEvent(afterArgCaptor.capture());
+                                            assertThat(afterArgCaptor.getValue().getResult()).isEqualTo(result);
+                }
+            }
+            @Nested
+            class WhenTheBeforeSetContentEventReplacesTheInputStream {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    store = mock(ContentStore.class);
+                                    publisher = mock(ApplicationEventPublisher.class);
 
-                    BeforeEach(() -> {
-                        result = mock(Resource.class);
+                    result = new Object();
 
-                        store = mock(ContentStore.class);
-                        when(store.getResource(any(Serializable.class))).thenReturn((Resource) result);
+                                        store = mock(ContentStore.class);
+                                        when(store.setContent(any(), any(InputStream.class))).thenReturn(result);
 
-                        invocation = new TestMethodInvocation(store, getResourceMethod, new Serializable() {
-                        });
-                    });
+                                        invocation = new TestMethodInvocation(store, setContentMethod, new Object(), new ByteArrayInputStream("test".getBytes()));
 
-                    It("should proceed", () -> {
-                        assertThat(e, is(nullValue()));
+                    onBeforeSetContentPublishEvent((invocationOnMock) -> {
+                                            modifiedStream = new ByteArrayInputStream("encrypted".getBytes());
+                                            ((BeforeSetContentEvent) invocationOnMock.getArgument(0)).setInputStream(modifiedStream);
+                                            return null;
+                                        });
 
-                        ArgumentCaptor<AfterStoreEvent> captor = ArgumentCaptor.forClass(AfterStoreEvent.class);
-                        InOrder inOrder = Mockito.inOrder(publisher, store);
+                    interceptor = new StoreMethodInterceptor();
+                                    StoreFragments fragments = new StoreFragments(Collections.singletonList(new StoreFragment(TestContentStore.class, new StoreImpl(store, publisher, Paths.get(System.getProperty("java.io.tmpdir"))))));
+                                    interceptor.setStoreFragments(fragments);
+                                    try {
+                                        interceptor.invoke(invocation);
+                                    } catch (Exception invokeException) {
+                                        e = invokeException;
+                                    }
+                }
+                @Test
+                void shouldStillReceiveTheReplacedInputStreamInTheSetContentInvocation() throws Throwable {
+                    assertThat(e).isNull();
 
-                        inOrder.verify(publisher, times(1)).publishEvent(argThat(instanceOf(StoreEvent.class)));
-                        verify(store).getResource(any(Serializable.class));
-                        inOrder.verify(publisher, times(1)).publishEvent(captor.capture());
-                        assertThat(captor.getValue().getResult(), is(result));
-                    });
-                });
+                                            InOrder inOrder = Mockito.inOrder(publisher, store);
 
-                Context("when getResource(entity) is invoked", () -> {
+                                            ArgumentCaptor<InputStream> setContentArgCaptor = ArgumentCaptor.forClass(InputStream.class);
+                                            ArgumentCaptor<AfterStoreEvent> afterArgCaptor = ArgumentCaptor.forClass(AfterStoreEvent.class);
 
-                    BeforeEach(() -> {
-                        result = mock(Resource.class);
+                                            inOrder.verify(publisher).publishEvent(argThat(BeforeSetContentEvent.class::isInstance));
 
-                        store = mock(ContentStore.class);
-                        when(store.getResource(argThat(isA(ContentObject.class)))).thenReturn((Resource) result);
+                                            inOrder.verify(store).setContent(any(), setContentArgCaptor.capture());
 
-                        invocation = new TestMethodInvocation(store, getResourceEntityMethod, new ContentObject("text/plain"));
-                    });
+                                            try (InputStream setContentInputStream = setContentArgCaptor.getValue()) {
+                                                assertThat(setContentInputStream).isEqualTo(modifiedStream);
+                                            }
 
-                    It("should proceed", () -> {
-                        assertThat(e, is(nullValue()));
+                                            inOrder.verify(publisher, times(1)).publishEvent(afterArgCaptor.capture());
+                                            assertThat(afterArgCaptor.getValue().getResult()).isEqualTo(result);
+                }
+            }
+            @Nested
+            class WhenSetContentIsInvokedWithIllegalArguments {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    store = mock(ContentStore.class);
+                                    publisher = mock(ApplicationEventPublisher.class);
 
+                    result = new Object();
 
-                        InOrder inOrder = Mockito.inOrder(publisher, store);
+                                        store = mock(ContentStore.class);
+                                        when(store.setContent(any(), any(InputStream.class))).thenReturn(result);
 
-                        inOrder.verify(publisher).publishEvent(argThat(instanceOf(BeforeGetResourceEvent.class)));
-                        inOrder.verify(store).getResource(argThat(isA(ContentObject.class)));
+                                        invocation = new TestMethodInvocation(store, setContentMethod, new Object(), new ByteArrayInputStream("test".getBytes()));
 
-                        ArgumentCaptor<AfterStoreEvent> captor = ArgumentCaptor.forClass(AfterStoreEvent.class);
-                        inOrder.verify(publisher, times(1)).publishEvent(captor.capture());
-                        assertThat(captor.getValue().getResult(), is(result));
-                    });
-                });
-            });
+                    invocation = new TestMethodInvocation(store, setContentMethod);
 
-            Describe("#associate", () -> {
+                    interceptor = new StoreMethodInterceptor();
+                                    StoreFragments fragments = new StoreFragments(Collections.singletonList(new StoreFragment(TestContentStore.class, new StoreImpl(store, publisher, Paths.get(System.getProperty("java.io.tmpdir"))))));
+                                    interceptor.setStoreFragments(fragments);
+                                    try {
+                                        interceptor.invoke(invocation);
+                                    } catch (Exception invokeException) {
+                                        e = invokeException;
+                                    }
+                }
+                @Test
+                void shouldProceed() throws Throwable {
+                    assertThat(e).isNotNull();
+                }
+            }
+        }
+        @Nested
+        class SetContentFromResourceCases {
+            @BeforeEach
+            void setUp() throws Throwable {
+                store = mock(ContentStore.class);
+                                publisher = mock(ApplicationEventPublisher.class);
 
-                BeforeEach(() -> {
+                result = new Object();
+
+                                    store = mock(ContentStore.class);
+                                    when(store.setContent(any(), any(Resource.class))).thenReturn(result);
+
+                                    invocation = new TestMethodInvocation(store, setContentFromResourceMethod, new Object(), new InputStreamResource(new ByteArrayInputStream("test".getBytes())));
+
+                interceptor = new StoreMethodInterceptor();
+                                StoreFragments fragments = new StoreFragments(Collections.singletonList(new StoreFragment(TestContentStore.class, new StoreImpl(store, publisher, Paths.get(System.getProperty("java.io.tmpdir"))))));
+                                interceptor.setStoreFragments(fragments);
+                                try {
+                                    interceptor.invoke(invocation);
+                                } catch (Exception invokeException) {
+                                    e = invokeException;
+                                }
+            }
+            @Test
+            void shouldProceed() throws Throwable {
+                assertThat(e).isNull();
+
+                                    ArgumentCaptor<BeforeSetContentEvent> beforeArgCaptor = ArgumentCaptor.forClass(BeforeSetContentEvent.class);
+                                    ArgumentCaptor<Resource> setContentArgCaptor = ArgumentCaptor.forClass(Resource.class);
+                                    ArgumentCaptor<AfterStoreEvent> afterArgCaptor = ArgumentCaptor.forClass(AfterStoreEvent.class);
+                                    InOrder inOrder = Mockito.inOrder(publisher, store);
+
+                                    inOrder.verify(publisher, times(1)).publishEvent(beforeArgCaptor.capture());
+                                    assertThat(beforeArgCaptor.getValue().getResource()).isNotNull();
+                                    assertThat(beforeArgCaptor.getValue().getInputStream()).isNull();
+
+                                    inOrder.verify(store).setContent(any(), setContentArgCaptor.capture());
+                                    try (InputStream setContentInputStream = setContentArgCaptor.getValue().getInputStream()) {
+                                        assertThat(IOUtils.toString(setContentInputStream)).isEqualTo("test");
+                                    }
+
+                                    inOrder.verify(publisher, times(1)).publishEvent(afterArgCaptor.capture());
+                                    assertThat(afterArgCaptor.getValue().getResult()).isEqualTo(result);
+            }
+        }
+        @Nested
+        class UnsetContentCases {
+            @Nested
+            class WhenUnsetContentIsInvoked {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    store = mock(ContentStore.class);
+                                    publisher = mock(ApplicationEventPublisher.class);
+
+                    result = new Object();
+                                        store = mock(ContentStore.class);
+                                        when(store.unsetContent(any())).thenReturn(result);
+
+                                        invocation = new TestMethodInvocation(store, unsetContentMethod, new Object());
+
+                    interceptor = new StoreMethodInterceptor();
+                                    StoreFragments fragments = new StoreFragments(Collections.singletonList(new StoreFragment(TestContentStore.class, new StoreImpl(store, publisher, Paths.get(System.getProperty("java.io.tmpdir"))))));
+                                    interceptor.setStoreFragments(fragments);
+                                    try {
+                                        interceptor.invoke(invocation);
+                                    } catch (Exception invokeException) {
+                                        e = invokeException;
+                                    }
+                }
+                @Test
+                void shouldProceed() throws Throwable {
+                    assertThat(e).isNull();
+
+                                            InOrder inOrder = Mockito.inOrder(publisher, store);
+
+                                            inOrder.verify(publisher).publishEvent(argThat(BeforeUnsetContentEvent.class::isInstance));
+                                            inOrder.verify(store).unsetContent(any());
+
+                                            ArgumentCaptor<AfterStoreEvent> captor = ArgumentCaptor.forClass(AfterStoreEvent.class);
+                                            inOrder.verify(publisher, times(1)).publishEvent(captor.capture());
+                                            assertThat(captor.getValue().getResult()).isEqualTo(result);
+                }
+            }
+            @Nested
+            class WhenUnsetContentIsInvokedWithIllegalArguments {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    store = mock(ContentStore.class);
+                                    publisher = mock(ApplicationEventPublisher.class);
+
+                    result = new Object();
+                                        store = mock(ContentStore.class);
+                                        when(store.unsetContent(any())).thenReturn(result);
+
+                                        invocation = new TestMethodInvocation(store, unsetContentMethod, new Object());
+
+                    invocation = new TestMethodInvocation(store, unsetContentMethod);
+
+                    interceptor = new StoreMethodInterceptor();
+                                    StoreFragments fragments = new StoreFragments(Collections.singletonList(new StoreFragment(TestContentStore.class, new StoreImpl(store, publisher, Paths.get(System.getProperty("java.io.tmpdir"))))));
+                                    interceptor.setStoreFragments(fragments);
+                                    try {
+                                        interceptor.invoke(invocation);
+                                    } catch (Exception invokeException) {
+                                        e = invokeException;
+                                    }
+                }
+                @Test
+                void shouldNotPublishEvents() throws Throwable {
+                    assertThat(e).isNotNull();
+                }
+            }
+        }
+        @Nested
+        class GetResourceCases {
+            @Nested
+            class WhenGetResourceIsInvoked {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    store = mock(ContentStore.class);
+                                    publisher = mock(ApplicationEventPublisher.class);
+
                     result = mock(Resource.class);
 
+                                            store = mock(ContentStore.class);
+                                            when(store.getResource(any(Serializable.class))).thenReturn((Resource) result);
+
+                                            invocation = new TestMethodInvocation(store, getResourceMethod, new Serializable() {
+                                            });
+
+                    interceptor = new StoreMethodInterceptor();
+                                    StoreFragments fragments = new StoreFragments(Collections.singletonList(new StoreFragment(TestContentStore.class, new StoreImpl(store, publisher, Paths.get(System.getProperty("java.io.tmpdir"))))));
+                                    interceptor.setStoreFragments(fragments);
+                                    try {
+                                        interceptor.invoke(invocation);
+                                    } catch (Exception invokeException) {
+                                        e = invokeException;
+                                    }
+                }
+                @Test
+                void shouldProceed() throws Throwable {
+                    assertThat(e).isNull();
+
+                                            ArgumentCaptor<AfterStoreEvent> captor = ArgumentCaptor.forClass(AfterStoreEvent.class);
+                                            InOrder inOrder = Mockito.inOrder(publisher, store);
+
+                                            inOrder.verify(publisher, times(1)).publishEvent(argThat(StoreEvent.class::isInstance));
+                                            verify(store).getResource(any(Serializable.class));
+                                            inOrder.verify(publisher, times(1)).publishEvent(captor.capture());
+                                            assertThat(captor.getValue().getResult()).isEqualTo(result);
+                }
+            }
+            @Nested
+            class WhenGetResourceEntityIsInvoked {
+                @BeforeEach
+                void setUp() throws Throwable {
                     store = mock(ContentStore.class);
+                                    publisher = mock(ApplicationEventPublisher.class);
 
-                    invocation = new TestMethodInvocation(store, associateMethod, "", 123);
-                });
+                    result = mock(Resource.class);
 
-                Context("when associate is invoked", () -> It("should proceed", () -> {
+                                            store = mock(ContentStore.class);
+                                            when(store.getResource(argThat(ContentObject.class::isInstance))).thenReturn((Resource) result);
+
+                                            invocation = new TestMethodInvocation(store, getResourceEntityMethod, new ContentObject("text/plain"));
+
+                    interceptor = new StoreMethodInterceptor();
+                                    StoreFragments fragments = new StoreFragments(Collections.singletonList(new StoreFragment(TestContentStore.class, new StoreImpl(store, publisher, Paths.get(System.getProperty("java.io.tmpdir"))))));
+                                    interceptor.setStoreFragments(fragments);
+                                    try {
+                                        interceptor.invoke(invocation);
+                                    } catch (Exception invokeException) {
+                                        e = invokeException;
+                                    }
+                }
+                @Test
+                void shouldProceed() throws Throwable {
+                    assertThat(e).isNull();
+
+
+                                            InOrder inOrder = Mockito.inOrder(publisher, store);
+
+                                            inOrder.verify(publisher).publishEvent(argThat(BeforeGetResourceEvent.class::isInstance));
+                                            inOrder.verify(store).getResource(argThat(ContentObject.class::isInstance));
+
+                                            ArgumentCaptor<AfterStoreEvent> captor = ArgumentCaptor.forClass(AfterStoreEvent.class);
+                                            inOrder.verify(publisher, times(1)).publishEvent(captor.capture());
+                                            assertThat(captor.getValue().getResult()).isEqualTo(result);
+                }
+            }
+        }
+        @Nested
+        class AssociateCases {
+            @Nested
+            class WhenAssociateIsInvoked {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    store = mock(ContentStore.class);
+                                    publisher = mock(ApplicationEventPublisher.class);
+
+                    result = mock(Resource.class);
+
+                                        store = mock(ContentStore.class);
+
+                                        invocation = new TestMethodInvocation(store, associateMethod, "", 123);
+
+                    interceptor = new StoreMethodInterceptor();
+                                    StoreFragments fragments = new StoreFragments(Collections.singletonList(new StoreFragment(TestContentStore.class, new StoreImpl(store, publisher, Paths.get(System.getProperty("java.io.tmpdir"))))));
+                                    interceptor.setStoreFragments(fragments);
+                                    try {
+                                        interceptor.invoke(invocation);
+                                    } catch (Exception invokeException) {
+                                        e = invokeException;
+                                    }
+                }
+                @Test
+                void shouldProceed() throws Throwable {
                     ArgumentCaptor<AfterAssociateEvent> captor = ArgumentCaptor.forClass(AfterAssociateEvent.class);
-                    InOrder inOrder = Mockito.inOrder(publisher, store);
+                                        InOrder inOrder = Mockito.inOrder(publisher, store);
 
-                    inOrder.verify(publisher).publishEvent(argThat(instanceOf(BeforeAssociateEvent.class)));
-                    inOrder.verify(store).associate(eq(""), eq(123));
-                    inOrder.verify(publisher).publishEvent(argThat(instanceOf(AfterAssociateEvent.class)));
-                }));
-            });
+                                        inOrder.verify(publisher).publishEvent(argThat(BeforeAssociateEvent.class::isInstance));
+                                        inOrder.verify(store).associate(eq(""), eq(123));
+                                        inOrder.verify(publisher).publishEvent(argThat(AfterAssociateEvent.class::isInstance));
+                }
+            }
+        }
+        @Nested
+        class UnassociateCases {
+            @Nested
+            class WhenUnassociateIsInvoked {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    store = mock(ContentStore.class);
+                                    publisher = mock(ApplicationEventPublisher.class);
 
-            Describe("#unassociate", () -> {
-
-                BeforeEach(() -> {
                     result = mock(Resource.class);
 
-                    store = mock(ContentStore.class);
+                                        store = mock(ContentStore.class);
 
-                    invocation = new TestMethodInvocation(store, unassociateMethod, "foo");
-                });
+                                        invocation = new TestMethodInvocation(store, unassociateMethod, "foo");
 
-                Context("when unassociate is invoked", () -> It("should proceed", () -> {
+                    interceptor = new StoreMethodInterceptor();
+                                    StoreFragments fragments = new StoreFragments(Collections.singletonList(new StoreFragment(TestContentStore.class, new StoreImpl(store, publisher, Paths.get(System.getProperty("java.io.tmpdir"))))));
+                                    interceptor.setStoreFragments(fragments);
+                                    try {
+                                        interceptor.invoke(invocation);
+                                    } catch (Exception invokeException) {
+                                        e = invokeException;
+                                    }
+                }
+                @Test
+                void shouldProceed() throws Throwable {
                     ArgumentCaptor<AfterUnassociateEvent> captor = ArgumentCaptor.forClass(AfterUnassociateEvent.class);
-                    InOrder inOrder = Mockito.inOrder(publisher, store);
+                                        InOrder inOrder = Mockito.inOrder(publisher, store);
 
-                    inOrder.verify(publisher).publishEvent(argThat(instanceOf(BeforeUnassociateEvent.class)));
-                    verify(store).unassociate("foo");
-                    inOrder.verify(publisher).publishEvent(argThat(instanceOf(AfterUnassociateEvent.class)));
-                }));
-            });
+                                        inOrder.verify(publisher).publishEvent(argThat(BeforeUnassociateEvent.class::isInstance));
+                                        verify(store).unassociate("foo");
+                                        inOrder.verify(publisher).publishEvent(argThat(AfterUnassociateEvent.class::isInstance));
+                }
+            }
+        }
+        @Nested
+        class ToStringCases {
+            @Nested
+            class WhenToStringIsInvoked {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    store = mock(ContentStore.class);
+                                    publisher = mock(ApplicationEventPublisher.class);
 
-            Describe("#toString", () -> {
-
-                BeforeEach(() -> {
                     result = mock(Resource.class);
 
-                    store = mock(ContentStore.class);
+                                        store = mock(ContentStore.class);
 
-                    invocation = new TestMethodInvocation(store, toStringMethod);
-                });
+                                        invocation = new TestMethodInvocation(store, toStringMethod);
 
-                Context("when toString is invoked", () ->
-                        It("should proceed", () -> verify(publisher, never()).publishEvent(any())));
-            });
-        });
-
-        Describe("#findMethod", () -> {
-
-            It("should resolve the method when not overridden", () -> {
-                store = mock(ContentStore.class);
-                publisher = mock(ApplicationEventPublisher.class);
-                interceptor = new StoreMethodInterceptor();
-                try {
-                    Method m = ReflectionUtils.findMethod(TestContentStore.class, "unsetContent", Object.class);
-                    assertThat(m, is(not(nullValue())));
-                    Method actual = interceptor.getMethod(m, new StoreFragment(TestContentStore.class, new StoreImpl(store, publisher, Paths.get(System.getProperty("java.io.tmpdir")))));
-                    assertThat(actual, is(ReflectionUtils.findMethod(StoreImpl.class, "unsetContent", Object.class)));
-                } catch (Exception invokeException) {
-                    e = invokeException;
+                    interceptor = new StoreMethodInterceptor();
+                                    StoreFragments fragments = new StoreFragments(Collections.singletonList(new StoreFragment(TestContentStore.class, new StoreImpl(store, publisher, Paths.get(System.getProperty("java.io.tmpdir"))))));
+                                    interceptor.setStoreFragments(fragments);
+                                    try {
+                                        interceptor.invoke(invocation);
+                                    } catch (Exception invokeException) {
+                                        e = invokeException;
+                                    }
                 }
-            });
-
-            It("should resolve the method when it is overridden in the interface", () -> {
-                store = mock(ContentStore.class);
-                publisher = mock(ApplicationEventPublisher.class);
-                interceptor = new StoreMethodInterceptor();
-                try {
-                    Method m = ReflectionUtils.findMethod(TestContentStore.class, "setContent", TEntity.class, InputStream.class);
-                    assertThat(m, is(not(nullValue())));
-                    Method actual = interceptor.getMethod(m, new StoreFragment(TestContentStore.class, new StoreImpl(store, publisher, Paths.get(System.getProperty("java.io.tmpdir")))));
-                    assertThat(actual, is(ReflectionUtils.findMethod(StoreImpl.class, "setContent", Object.class, InputStream.class)));
-                } catch (Exception invokeException) {
-                    e = invokeException;
+                @Test
+                void shouldProceed() throws Throwable {
+                    verify(publisher, never()).publishEvent(any());
                 }
-            });
-        });
+            }
+        }
+    }
+    @Nested
+    class FindMethodCases {
+        @Test
+        void shouldResolveTheMethodWhenNotOverridden() throws Throwable {
+            store = mock(ContentStore.class);
+                            publisher = mock(ApplicationEventPublisher.class);
+                            interceptor = new StoreMethodInterceptor();
+                            try {
+                                Method m = ReflectionUtils.findMethod(TestContentStore.class, "unsetContent", Object.class);
+                                assertThat(m).isNotNull();
+                                Method actual = interceptor.getMethod(m, new StoreFragment(TestContentStore.class, new StoreImpl(store, publisher, Paths.get(System.getProperty("java.io.tmpdir")))));
+                                assertThat(actual).isEqualTo(ReflectionUtils.findMethod(StoreImpl.class, "unsetContent", Object.class));
+                            } catch (Exception invokeException) {
+                                e = invokeException;
+                            }
+        }
+        @Test
+        void shouldResolveTheMethodWhenItIsOverriddenInTheInterface() throws Throwable {
+            store = mock(ContentStore.class);
+                            publisher = mock(ApplicationEventPublisher.class);
+                            interceptor = new StoreMethodInterceptor();
+                            try {
+                                Method m = ReflectionUtils.findMethod(TestContentStore.class, "setContent", TEntity.class, InputStream.class);
+                                assertThat(m).isNotNull();
+                                Method actual = interceptor.getMethod(m, new StoreFragment(TestContentStore.class, new StoreImpl(store, publisher, Paths.get(System.getProperty("java.io.tmpdir")))));
+                                assertThat(actual).isEqualTo(ReflectionUtils.findMethod(StoreImpl.class, "setContent", Object.class, InputStream.class));
+                            } catch (Exception invokeException) {
+                                e = invokeException;
+                            }
+        }
     }
 
+
     private void onBeforeSetContentPublishEvent(PublishEventAction action) {
-        doAnswer(action::doAction).when(publisher).publishEvent(argThat(isA(BeforeSetContentEvent.class)));
+        doAnswer(action::doAction).when(publisher).publishEvent(argThat(BeforeSetContentEvent.class::isInstance));
     }
 
     public interface PublishEventAction {

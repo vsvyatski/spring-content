@@ -1,8 +1,12 @@
 package it.internal.org.springframework.content.rest.controllers;
 
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.BeforeEach;
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.Context;
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.Describe;
+import org.junit.jupiter.api.extension.ExtendWith;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.DisplayName;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -10,8 +14,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.content.commons.renditions.RenditionProvider;
 import org.springframework.content.fs.config.EnableFileSystemStores;
@@ -32,15 +34,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfiguration;
 
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jSpringRunner;
-
 import internal.org.springframework.content.rest.support.TestEntity3;
 import internal.org.springframework.content.rest.support.TestEntity3ContentRepository;
 import internal.org.springframework.content.rest.support.TestEntity3Repository;
 import internal.org.springframework.content.rest.support.config.JpaInfrastructureConfig;
 
-@RunWith(Ginkgo4jSpringRunner.class)
-//@Ginkgo4jConfiguration(threads=1)
 @WebAppConfiguration
 @ContextConfiguration(classes = {
 		ContextPathIT.ContextPathConfig.class,
@@ -49,6 +47,7 @@ import internal.org.springframework.content.rest.support.config.JpaInfrastructur
 		RestConfiguration.class })
 @Transactional
 @ActiveProfiles("store")
+@ExtendWith(SpringExtension.class)
 public class ContextPathIT {
 
 	@Autowired
@@ -66,31 +65,33 @@ public class ContextPathIT {
 
 	private Content contentTests;
 	
-	{
-		Describe("ContextPath Content Tests", () -> {
-			BeforeEach(() -> {
-				mvc = MockMvcBuilders.webAppContextSetup(context).build();
-			});
-			Context("given an entity is the subject of a repository and storage", () -> {
-				Context("given the repository and storage are exported to the same URI", () -> {
-					BeforeEach(() -> {
-						testEntity3 = repo3.save(new TestEntity3());
-						testEntity3.name = "tests";
-						testEntity3 = repo3.save(testEntity3);
+	
+    @Nested
+    class ContextPathContentTests {
+        @Nested
+        class GivenAnEntityIsTheSubjectOfARepositoryAndStorage {
+            @Nested
+            @DisplayName("given the repository and storage are exported to the same URI")
+            class GivenTheRepositoryAndStorageAreExportedToTheSameURIContent extends Content {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    mvc = MockMvcBuilders.webAppContextSetup(context).build();
+                    testEntity3 = repo3.save(new TestEntity3());
+                    testEntity3.name = "tests";
+                    testEntity3 = repo3.save(testEntity3);
+                    this.setMvc(mvc);
+                    this.setUrl("/contextPath/testEntity3s/" + testEntity3.getId());
+                    this.setEntity(testEntity3);
+                    this.setRepository(repo3);
+                    this.setStore(store3);
+                    this.setContextPath("/contextPath");
+                }
+            }
 
-						contentTests.setMvc(mvc);
-						contentTests.setUrl("/contextPath/testEntity3s/" + testEntity3.getId());
-						contentTests.setEntity(testEntity3);
-						contentTests.setRepository(repo3);
-						contentTests.setStore(store3);
-						contentTests.setContextPath("/contextPath");
+        }
 
-					});
-					contentTests = Content.tests();
-				});
-			});
-		});
-	}
+    }
+
 	
 	@Configuration
 	@EnableJpaRepositories(basePackages = "internal.org.springframework.content.rest.support")
@@ -169,6 +170,4 @@ public class ContextPathIT {
 		}
 	}
 	
-	@Test
-	public void noop() {}
 }

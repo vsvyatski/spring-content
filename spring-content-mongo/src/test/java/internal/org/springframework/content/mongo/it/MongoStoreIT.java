@@ -1,10 +1,11 @@
 package internal.org.springframework.content.mongo.it;
 
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.*;
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.notNullValue;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
+import static org.assertj.core.api.Assertions.assertThat;
+
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -13,10 +14,6 @@ import java.io.OutputStream;
 
 import org.apache.commons.io.IOUtils;
 import org.bson.types.ObjectId;
-import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.io.DeletableResource;
@@ -39,14 +36,12 @@ import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jRunner;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.gridfs.model.GridFSFile;
 
 import internal.org.springframework.content.mongo.store.DefaultMongoStoreImpl;
 import net.bytebuddy.utility.RandomString;
 
-@RunWith(Ginkgo4jRunner.class)
 public class MongoStoreIT {
 	private DefaultMongoStoreImpl<Object, String> mongoContentRepoImpl;
 	private GridFsTemplate gridFsTemplate;
@@ -69,428 +64,931 @@ public class MongoStoreIT {
 	private String resourceLocation;
 
 
-	{
-		Describe("DefaultMongoStoreImpl", () -> {
+	
+    @Nested
+    class DefaultMongoStoreImplCases {
+        @Nested
+        class StoreCases {
+            @Nested
+            class GetResource {
+                @Nested
+                class Tests {
+                    @BeforeEach
+                    void setUp() throws Throwable {
+                        context = new AnnotationConfigApplicationContext();
+                        				context.register(TestConfig.class);
+                        				context.refresh();
 
-			BeforeEach(() -> {
-				context = new AnnotationConfigApplicationContext();
-				context.register(TestConfig.class);
-				context.refresh();
+                        				gridFsTemplate = context.getBean(GridFsTemplate.class);
 
-				gridFsTemplate = context.getBean(GridFsTemplate.class);
+                        				repo = context.getBean(TestEntityRepository.class);
+                        				store = context.getBean(TestEntityStore.class);
 
-				repo = context.getBean(TestEntityRepository.class);
-				store = context.getBean(TestEntityStore.class);
+                        				RandomString random  = new RandomString(5);
+                        				resourceLocation = random.nextString();
 
-				RandomString random  = new RandomString(5);
-				resourceLocation = random.nextString();
-			});
+                        genericResource = store.getResource(resourceLocation);
+                    }
+                    @AfterEach
+                    void tearDown() throws Throwable {
+                        ((DeletableResource)genericResource).delete();
 
-			AfterEach(() -> {
-				context.close();
-			});
+                        context.close();
+                    }
+                    @Test
+                    void shouldGetResource() throws Throwable {
+                        assertThat(genericResource).isInstanceOf(Resource.class);
+                    }
+                    @Test
+                    void shouldNotExist() throws Throwable {
+                        assertThat(genericResource.exists()).isFalse();
+                    }
+                }
+                @Nested
+                class GivenContentIsAddedToThatResource {
+                    @Nested
+                    class Tests {
+                        @BeforeEach
+                        void setUp() throws Throwable {
+                            context = new AnnotationConfigApplicationContext();
+                            				context.register(TestConfig.class);
+                            				context.refresh();
 
-			Describe("Store", () -> {
+                            				gridFsTemplate = context.getBean(GridFsTemplate.class);
 
-				Context("#getResource", () -> {
+                            				repo = context.getBean(TestEntityRepository.class);
+                            				store = context.getBean(TestEntityStore.class);
 
-					BeforeEach(() -> {
-						genericResource = store.getResource(resourceLocation);
-					});
+                            				RandomString random  = new RandomString(5);
+                            				resourceLocation = random.nextString();
 
-					AfterEach(() -> {
-						((DeletableResource)genericResource).delete();
-					});
-
-					It("should get Resource", () -> {
-						assertThat(genericResource, is(instanceOf(Resource.class)));
-					});
-
-					It("should not exist", () -> {
-						assertThat(genericResource.exists(), is(false));
-					});
-
-					Context("given content is added to that resource", () -> {
-
-						BeforeEach(() -> {
-							try (InputStream is = new ByteArrayInputStream("Hello Spring Content World!".getBytes())) {
-								try (OutputStream os = ((WritableResource)genericResource).getOutputStream()) {
-									IOUtils.copy(is, os);
-								}
-							}
-						});
-
-						It("should store that content", () -> {
-							assertThat(genericResource.exists(), is(true));
-
-							boolean matches = false;
-							try (InputStream expected = new ByteArrayInputStream("Hello Spring Content World!".getBytes())) {
-								try (InputStream actual = genericResource.getInputStream()) {
-									matches = IOUtils.contentEquals(expected, actual);
-									assertThat(matches, is(true));
-								}
-							}
-						});
-
-						Context("given that resource is then updated", () -> {
-
-							BeforeEach(() -> {
-								try (InputStream is = new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes())) {
-									try (OutputStream os = ((WritableResource)genericResource).getOutputStream()) {
-										IOUtils.copy(is, os);
-									}
-								}
-							});
-
-							It("should store that updated content", () -> {
-								assertThat(genericResource.exists(), is(true));
-
-								try (InputStream expected = new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes())) {
-									try (InputStream actual = genericResource.getInputStream()) {
-										assertThat(IOUtils.contentEquals(expected, actual), is(true));
-									}
-								}
-							});
-						});
-
-						Context("given that resource is then deleted", () -> {
-
-							BeforeEach(() -> {
-								try {
-									((DeletableResource) genericResource).delete();
-								} catch (Exception e) {
-									this.e = e;
-								}
-							});
-
-							It("should not exist", () -> {
-								assertThat(e, is(nullValue()));
-							});
-						});
-					});
-				});
-			});
-
-			Describe("AssociativeStore", () -> {
-
-                Context("given a new entity", () -> {
-
-                    BeforeEach(() -> {
-                        entity = new TestEntity();
-                        entity = repo.save(entity);
-                    });
-
-                    It("should not have an associated resource", () -> {
-                        assertThat(entity.getContentId(), is(nullValue()));
-                        assertThat(store.getResource(entity), is(nullValue()));
-                    });
-
-                    Context("given a resource", () -> {
-
-                        BeforeEach(() -> {
                             genericResource = store.getResource(resourceLocation);
-                        });
 
-                        Context("when the resource is associated", () -> {
+                            try (InputStream is = new ByteArrayInputStream("Hello Spring Content World!".getBytes())) {
+                            								try (OutputStream os = ((WritableResource)genericResource).getOutputStream()) {
+                            									IOUtils.copy(is, os);
+                            								}
+                            							}
+                        }
+                        @AfterEach
+                        void tearDown() throws Throwable {
+                            ((DeletableResource)genericResource).delete();
 
-                            BeforeEach(() -> {
+                            context.close();
+                        }
+                        @Test
+                        void shouldStoreThatContent() throws Throwable {
+                            assertThat(genericResource.exists()).isTrue();
+
+                            							boolean matches = false;
+                            							try (InputStream expected = new ByteArrayInputStream("Hello Spring Content World!".getBytes())) {
+                            								try (InputStream actual = genericResource.getInputStream()) {
+                            									matches = IOUtils.contentEquals(expected, actual);
+                            									assertThat(matches).isTrue();
+                            								}
+                            							}
+                        }
+                    }
+                    @Nested
+                    class GivenThatResourceIsThenUpdated {
+                        @BeforeEach
+                        void setUp() throws Throwable {
+                            context = new AnnotationConfigApplicationContext();
+                            				context.register(TestConfig.class);
+                            				context.refresh();
+
+                            				gridFsTemplate = context.getBean(GridFsTemplate.class);
+
+                            				repo = context.getBean(TestEntityRepository.class);
+                            				store = context.getBean(TestEntityStore.class);
+
+                            				RandomString random  = new RandomString(5);
+                            				resourceLocation = random.nextString();
+
+                            genericResource = store.getResource(resourceLocation);
+
+                            try (InputStream is = new ByteArrayInputStream("Hello Spring Content World!".getBytes())) {
+                            								try (OutputStream os = ((WritableResource)genericResource).getOutputStream()) {
+                            									IOUtils.copy(is, os);
+                            								}
+                            							}
+
+                            try (InputStream is = new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes())) {
+                            									try (OutputStream os = ((WritableResource)genericResource).getOutputStream()) {
+                            										IOUtils.copy(is, os);
+                            									}
+                            								}
+                        }
+                        @AfterEach
+                        void tearDown() throws Throwable {
+                            ((DeletableResource)genericResource).delete();
+
+                            context.close();
+                        }
+                        @Test
+                        void shouldStoreThatUpdatedContent() throws Throwable {
+                            assertThat(genericResource.exists()).isTrue();
+
+                            								try (InputStream expected = new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes())) {
+                            									try (InputStream actual = genericResource.getInputStream()) {
+                            										assertThat(IOUtils.contentEquals(expected, actual)).isTrue();
+                            									}
+                            								}
+                        }
+                    }
+                    @Nested
+                    class GivenThatResourceIsThenDeleted {
+                        @BeforeEach
+                        void setUp() throws Throwable {
+                            context = new AnnotationConfigApplicationContext();
+                            				context.register(TestConfig.class);
+                            				context.refresh();
+
+                            				gridFsTemplate = context.getBean(GridFsTemplate.class);
+
+                            				repo = context.getBean(TestEntityRepository.class);
+                            				store = context.getBean(TestEntityStore.class);
+
+                            				RandomString random  = new RandomString(5);
+                            				resourceLocation = random.nextString();
+
+                            genericResource = store.getResource(resourceLocation);
+
+                            try (InputStream is = new ByteArrayInputStream("Hello Spring Content World!".getBytes())) {
+                            								try (OutputStream os = ((WritableResource)genericResource).getOutputStream()) {
+                            									IOUtils.copy(is, os);
+                            								}
+                            							}
+
+                            try {
+                            									((DeletableResource) genericResource).delete();
+                            								} catch (Exception e) {
+                            									MongoStoreIT.this.e = e;
+                            								}
+                        }
+                        @AfterEach
+                        void tearDown() throws Throwable {
+                            ((DeletableResource)genericResource).delete();
+
+                            context.close();
+                        }
+                        @Test
+                        void shouldNotExist() throws Throwable {
+                            assertThat(e).isNull();
+                        }
+                    }
+                }
+            }
+        }
+        @Nested
+        class AssociativeStoreCases {
+            @Nested
+            class GivenANewEntity {
+                @Nested
+                class Tests {
+                    @BeforeEach
+                    void setUp() throws Throwable {
+                        context = new AnnotationConfigApplicationContext();
+                        				context.register(TestConfig.class);
+                        				context.refresh();
+
+                        				gridFsTemplate = context.getBean(GridFsTemplate.class);
+
+                        				repo = context.getBean(TestEntityRepository.class);
+                        				store = context.getBean(TestEntityStore.class);
+
+                        				RandomString random  = new RandomString(5);
+                        				resourceLocation = random.nextString();
+
+                        entity = new TestEntity();
+                                                entity = repo.save(entity);
+                    }
+                    @AfterEach
+                    void tearDown() throws Throwable {
+                        context.close();
+                    }
+                    @Test
+                    void shouldNotHaveAnAssociatedResource() throws Throwable {
+                        assertThat(entity.getContentId()).isNull();
+                                                assertThat(store.getResource(entity)).isNull();
+                    }
+                }
+                @Nested
+                class GivenAResource {
+                    @Nested
+                    class WhenTheResourceIsAssociated {
+                        @Nested
+                        class Tests {
+                            @BeforeEach
+                            void setUp() throws Throwable {
+                                context = new AnnotationConfigApplicationContext();
+                                				context.register(TestConfig.class);
+                                				context.refresh();
+
+                                				gridFsTemplate = context.getBean(GridFsTemplate.class);
+
+                                				repo = context.getBean(TestEntityRepository.class);
+                                				store = context.getBean(TestEntityStore.class);
+
+                                				RandomString random  = new RandomString(5);
+                                				resourceLocation = random.nextString();
+
+                                entity = new TestEntity();
+                                                        entity = repo.save(entity);
+
+                                genericResource = store.getResource(resourceLocation);
+
                                 store.associate(entity, resourceLocation);
-                                store.associate(entity, PropertyPath.from("rendition"), resourceLocation);
-                            });
+                                                                store.associate(entity, PropertyPath.from("rendition"), resourceLocation);
+                            }
+                            @AfterEach
+                            void tearDown() throws Throwable {
+                                context.close();
+                            }
+                            @Test
+                            void shouldBeRecordedAsSuchOnTheEntitySContentId() throws Throwable {
+                                assertThat(entity.getContentId()).isEqualTo(resourceLocation);
+                                                                assertThat(entity.getRenditionId()).isEqualTo(resourceLocation);
+                            }
+                        }
+                        @Nested
+                        class WhenTheResourceHasContent {
+                            @BeforeEach
+                            void setUp() throws Throwable {
+                                context = new AnnotationConfigApplicationContext();
+                                				context.register(TestConfig.class);
+                                				context.refresh();
 
-                            It("should be recorded as such on the entity's @ContentId", () -> {
-                                assertThat(entity.getContentId(), is(resourceLocation));
-                                assertThat(entity.getRenditionId(), is(resourceLocation));
-                            });
+                                				gridFsTemplate = context.getBean(GridFsTemplate.class);
 
+                                				repo = context.getBean(TestEntityRepository.class);
+                                				store = context.getBean(TestEntityStore.class);
 
-							Context("when the resource has content", () -> {
-								BeforeEach(() -> {
-									try (OutputStream os = ((WritableResource)genericResource).getOutputStream()) {
-										os.write("Hello Client-side World!".getBytes());
-									}
-								});
+                                				RandomString random  = new RandomString(5);
+                                				resourceLocation = random.nextString();
 
-								It("should not honor byte ranges", () -> {
-									// relies on REST-layer to serve byte range
-									Resource r = store.getResource(entity, PropertyPath.from("content"), new GetResourceParams("5-10"));
-									try (InputStream is = r.getInputStream()) {
-										assertThat(IOUtils.toString(is), is("Hello Client-side World!"));
-									}
-								});
-							});
+                                entity = new TestEntity();
+                                                        entity = repo.save(entity);
 
-                            Context("when the resource is unassociated", () -> {
+                                genericResource = store.getResource(resourceLocation);
 
-                                BeforeEach(() -> {
-                                    store.unassociate(entity);
-                                    store.unassociate(entity, PropertyPath.from("rendition"));
-                                });
+                                store.associate(entity, resourceLocation);
+                                                                store.associate(entity, PropertyPath.from("rendition"), resourceLocation);
 
-                                It("should reset the entity's @ContentId", () -> {
-                                    assertThat(entity.getContentId(), is(nullValue()));
-                                    assertThat(entity.getRenditionId(), is(nullValue()));
-                                });
-                            });
+                                try (OutputStream os = ((WritableResource)genericResource).getOutputStream()) {
+                                										os.write("Hello Client-side World!".getBytes());
+                                									}
+                            }
+                            @AfterEach
+                            void tearDown() throws Throwable {
+                                context.close();
+                            }
+                            @Test
+                            void shouldNotHonorByteRanges() throws Throwable {
+                                // relies on REST-layer to serve byte range
+                                									Resource r = store.getResource(entity, PropertyPath.from("content"), new GetResourceParams("5-10"));
+                                									try (InputStream is = r.getInputStream()) {
+                                										assertThat(IOUtils.toString(is)).isEqualTo("Hello Client-side World!");
+                                									}
+                            }
+                        }
+                        @Nested
+                        class WhenTheResourceIsUnassociated {
+                            @BeforeEach
+                            void setUp() throws Throwable {
+                                context = new AnnotationConfigApplicationContext();
+                                				context.register(TestConfig.class);
+                                				context.refresh();
 
-                            Context("when a invalid property path is used to associate a resource", () -> {
-                                It("should throw an error", () -> {
-                                    try {
-                                        store.associate(entity, PropertyPath.from("does.not.exist"), resourceLocation);
-                                    } catch (Exception sae) {
-                                        this.e = sae;
-                                    }
-                                    assertThat(e, is(instanceOf(StoreAccessException.class)));
-                                });
-                            });
+                                				gridFsTemplate = context.getBean(GridFsTemplate.class);
 
-                            Context("when a invalid property path is used to load a resource", () -> {
-                                It("should throw an error", () -> {
-                                    try {
-                                        store.getResource(entity, PropertyPath.from("does.not.exist"));
-                                    } catch (Exception sae) {
-                                        this.e = sae;
-                                    }
-                                    assertThat(e, is(instanceOf(StoreAccessException.class)));
-                                });
-                            });
+                                				repo = context.getBean(TestEntityRepository.class);
+                                				store = context.getBean(TestEntityStore.class);
 
-                            Context("when a invalid property path is used to unassociate a resource", () -> {
-                                It("should throw an error", () -> {
-                                    try {
-                                        store.unassociate(entity, PropertyPath.from("does.not.exist"));
-                                    } catch (Exception sae) {
-                                        this.e = sae;
-                                    }
-                                    assertThat(e, is(instanceOf(StoreAccessException.class)));
-                                });
-                            });
-                        });
-                    });
-                });
-			});
+                                				RandomString random  = new RandomString(5);
+                                				resourceLocation = random.nextString();
 
-			Describe("ContentStore", () -> {
+                                entity = new TestEntity();
+                                                        entity = repo.save(entity);
 
-                BeforeEach(() -> {
+                                genericResource = store.getResource(resourceLocation);
+
+                                store.associate(entity, resourceLocation);
+                                                                store.associate(entity, PropertyPath.from("rendition"), resourceLocation);
+
+                                store.unassociate(entity);
+                                                                    store.unassociate(entity, PropertyPath.from("rendition"));
+                            }
+                            @AfterEach
+                            void tearDown() throws Throwable {
+                                context.close();
+                            }
+                            @Test
+                            void shouldResetTheEntitySContentId() throws Throwable {
+                                assertThat(entity.getContentId()).isNull();
+                                                                    assertThat(entity.getRenditionId()).isNull();
+                            }
+                        }
+                        @Nested
+                        class WhenAInvalidPropertyPathIsUsedToAssociateAResource {
+                            @BeforeEach
+                            void setUp() throws Throwable {
+                                context = new AnnotationConfigApplicationContext();
+                                				context.register(TestConfig.class);
+                                				context.refresh();
+
+                                				gridFsTemplate = context.getBean(GridFsTemplate.class);
+
+                                				repo = context.getBean(TestEntityRepository.class);
+                                				store = context.getBean(TestEntityStore.class);
+
+                                				RandomString random  = new RandomString(5);
+                                				resourceLocation = random.nextString();
+
+                                entity = new TestEntity();
+                                                        entity = repo.save(entity);
+
+                                genericResource = store.getResource(resourceLocation);
+
+                                store.associate(entity, resourceLocation);
+                                                                store.associate(entity, PropertyPath.from("rendition"), resourceLocation);
+                            }
+                            @AfterEach
+                            void tearDown() throws Throwable {
+                                context.close();
+                            }
+                            @Test
+                            void shouldThrowAnError() throws Throwable {
+                                try {
+                                                                        store.associate(entity, PropertyPath.from("does.not.exist"), resourceLocation);
+                                                                    } catch (Exception sae) {
+                                                                        MongoStoreIT.this.e = sae;
+                                                                    }
+                                                                    assertThat(e).isInstanceOf(StoreAccessException.class);
+                            }
+                        }
+                        @Nested
+                        class WhenAInvalidPropertyPathIsUsedToLoadAResource {
+                            @BeforeEach
+                            void setUp() throws Throwable {
+                                context = new AnnotationConfigApplicationContext();
+                                				context.register(TestConfig.class);
+                                				context.refresh();
+
+                                				gridFsTemplate = context.getBean(GridFsTemplate.class);
+
+                                				repo = context.getBean(TestEntityRepository.class);
+                                				store = context.getBean(TestEntityStore.class);
+
+                                				RandomString random  = new RandomString(5);
+                                				resourceLocation = random.nextString();
+
+                                entity = new TestEntity();
+                                                        entity = repo.save(entity);
+
+                                genericResource = store.getResource(resourceLocation);
+
+                                store.associate(entity, resourceLocation);
+                                                                store.associate(entity, PropertyPath.from("rendition"), resourceLocation);
+                            }
+                            @AfterEach
+                            void tearDown() throws Throwable {
+                                context.close();
+                            }
+                            @Test
+                            void shouldThrowAnError() throws Throwable {
+                                try {
+                                                                        store.getResource(entity, PropertyPath.from("does.not.exist"));
+                                                                    } catch (Exception sae) {
+                                                                        MongoStoreIT.this.e = sae;
+                                                                    }
+                                                                    assertThat(e).isInstanceOf(StoreAccessException.class);
+                            }
+                        }
+                        @Nested
+                        class WhenAInvalidPropertyPathIsUsedToUnassociateAResource {
+                            @BeforeEach
+                            void setUp() throws Throwable {
+                                context = new AnnotationConfigApplicationContext();
+                                				context.register(TestConfig.class);
+                                				context.refresh();
+
+                                				gridFsTemplate = context.getBean(GridFsTemplate.class);
+
+                                				repo = context.getBean(TestEntityRepository.class);
+                                				store = context.getBean(TestEntityStore.class);
+
+                                				RandomString random  = new RandomString(5);
+                                				resourceLocation = random.nextString();
+
+                                entity = new TestEntity();
+                                                        entity = repo.save(entity);
+
+                                genericResource = store.getResource(resourceLocation);
+
+                                store.associate(entity, resourceLocation);
+                                                                store.associate(entity, PropertyPath.from("rendition"), resourceLocation);
+                            }
+                            @AfterEach
+                            void tearDown() throws Throwable {
+                                context.close();
+                            }
+                            @Test
+                            void shouldThrowAnError() throws Throwable {
+                                try {
+                                                                        store.unassociate(entity, PropertyPath.from("does.not.exist"));
+                                                                    } catch (Exception sae) {
+                                                                        MongoStoreIT.this.e = sae;
+                                                                    }
+                                                                    assertThat(e).isInstanceOf(StoreAccessException.class);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        @Nested
+        class ContentStoreCases {
+            @Nested
+            class Tests {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    context = new AnnotationConfigApplicationContext();
+                    				context.register(TestConfig.class);
+                    				context.refresh();
+
+                    				gridFsTemplate = context.getBean(GridFsTemplate.class);
+
+                    				repo = context.getBean(TestEntityRepository.class);
+                    				store = context.getBean(TestEntityStore.class);
+
+                    				RandomString random  = new RandomString(5);
+                    				resourceLocation = random.nextString();
+
                     entity = new TestEntity();
-                    entity = repo.save(entity);
+                                        entity = repo.save(entity);
 
-                    store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-                    store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-                });
-
-                It("should be able to store new content", () -> {
+                                        store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                                        store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                }
+                @AfterEach
+                void tearDown() throws Throwable {
+                    context.close();
+                }
+                @Test
+                void shouldBeAbleToStoreNewContent() throws Throwable {
                     // content
-                    try (InputStream content = store.getContent(entity)) {
-                        assertThat(IOUtils.contentEquals(new ByteArrayInputStream("Hello Spring Content World!".getBytes()), content), is(true));
-                    } catch (IOException ioe) {}
+                                        try (InputStream content = store.getContent(entity)) {
+                                            assertThat(IOUtils.contentEquals(new ByteArrayInputStream("Hello Spring Content World!".getBytes()), content)).isTrue();
+                                        } catch (IOException ioe) {}
 
-                    //rendition
-                    try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
-                        assertThat(IOUtils.contentEquals(new ByteArrayInputStream("Hello Spring Content World!".getBytes()), content), is(true));
-                    } catch (IOException ioe) {}
-                });
-
-                It("should have content metadata", () -> {
+                                        //rendition
+                                        try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
+                                            assertThat(IOUtils.contentEquals(new ByteArrayInputStream("Hello Spring Content World!".getBytes()), content)).isTrue();
+                                        } catch (IOException ioe) {}
+                }
+                @Test
+                void shouldHaveContentMetadata() throws Throwable {
                     // content
-                    assertThat(entity.getContentId(), is(notNullValue()));
-                    assertThat(entity.getContentId().trim().length(), greaterThan(0));
-					assertThat(entity.getContentLen(), is(27L));
+                                        assertThat(entity.getContentId()).isNotNull();
+                                        assertThat(entity.getContentId().trim().length()).isGreaterThan(0);
+                    					assertThat(entity.getContentLen()).isEqualTo(27L);
 
-                    //rendition
-                    assertThat(entity.getRenditionId(), is(notNullValue()));
-                    assertThat(entity.getRenditionId().trim().length(), greaterThan(0));
-                    Assert.assertEquals(entity.getRenditionLen(), 27L);
-                });
+                                        //rendition
+                                        assertThat(entity.getRenditionId()).isNotNull();
+                                        assertThat(entity.getRenditionId().trim().length()).isGreaterThan(0);
+                                        assertThat(entity.getRenditionLen()).isEqualTo(27L);
+                }
+            }
+            @Nested
+            class WhenContentIsUpdated {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    context = new AnnotationConfigApplicationContext();
+                    				context.register(TestConfig.class);
+                    				context.refresh();
 
-                Context("when content is updated", () -> {
-                    BeforeEach(() ->{
-                        store.setContent(entity, new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()));
-                        store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()));
-                        entity = repo.save(entity);
-                    });
+                    				gridFsTemplate = context.getBean(GridFsTemplate.class);
 
-                    It("should have the updated content", () -> {
-                        //content
-                        boolean matches = false;
-                        try (InputStream content = store.getContent(entity)) {
-                            matches = IOUtils.contentEquals(new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), content);
-                            assertThat(matches, is(true));
-                        }
+                    				repo = context.getBean(TestEntityRepository.class);
+                    				store = context.getBean(TestEntityStore.class);
 
-                        //rendition
-                        matches = false;
-                        try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
-                            matches = IOUtils.contentEquals(new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), content);
-                            assertThat(matches, is(true));
-                        }
-                    });
-                });
+                    				RandomString random  = new RandomString(5);
+                    				resourceLocation = random.nextString();
 
-                Context("when content is updated with shorter content", () -> {
-                    BeforeEach(() -> {
-                        store.setContent(entity, new ByteArrayInputStream("Hello Spring World!".getBytes()));
-                        store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("Hello Spring World!".getBytes()));
-                        entity = repo.save(entity);
-                    });
-                    It("should store only the new content", () -> {
-                        //content
-                        boolean matches = false;
-                        try (InputStream content = store.getContent(entity)) {
-                            matches = IOUtils.contentEquals(new ByteArrayInputStream("Hello Spring World!".getBytes()), content);
-                            assertThat(matches, is(true));
-                        }
+                    entity = new TestEntity();
+                                        entity = repo.save(entity);
 
-                        //rendition
-                        matches = false;
-                        try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
-                            matches = IOUtils.contentEquals(new ByteArrayInputStream("Hello Spring World!".getBytes()), content);
-                            assertThat(matches, is(true));
-                        }
-                    });
-                });
+                                        store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                                        store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
 
-				Context("when content is updated and not overwritten", () -> {
-					It("should have the updated content", () -> {
-						String contentId = entity.getContentId();
-						assertThat(gridFsTemplate.getResource(contentId).exists(), is(true));
+                    store.setContent(entity, new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()));
+                                            store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()));
+                                            entity = repo.save(entity);
+                }
+                @AfterEach
+                void tearDown() throws Throwable {
+                    context.close();
+                }
+                @Test
+                void shouldHaveTheUpdatedContent() throws Throwable {
+                    //content
+                                            boolean matches = false;
+                                            try (InputStream content = store.getContent(entity)) {
+                                                matches = IOUtils.contentEquals(new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), content);
+                                                assertThat(matches).isTrue();
+                                            }
 
-						store.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), new SetContentParams(-1, true, SetContentParams.ContentDisposition.CreateNew));
-						entity = repo.save(entity);
+                                            //rendition
+                                            matches = false;
+                                            try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
+                                                matches = IOUtils.contentEquals(new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), content);
+                                                assertThat(matches).isTrue();
+                                            }
+                }
+            }
+            @Nested
+            class WhenContentIsUpdatedWithShorterContent {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    context = new AnnotationConfigApplicationContext();
+                    				context.register(TestConfig.class);
+                    				context.refresh();
 
-						boolean matches = false;
-						try (InputStream content = store.getContent(entity)) {
-							matches = IOUtils.contentEquals(new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), content);
-							assertThat(matches, is(true));
-						}
+                    				gridFsTemplate = context.getBean(GridFsTemplate.class);
 
-						assertThat(gridFsTemplate.getResource(contentId).exists(), is(true));
+                    				repo = context.getBean(TestEntityRepository.class);
+                    				store = context.getBean(TestEntityStore.class);
 
-						assertThat(entity.getContentId(), is(not(contentId)));
+                    				RandomString random  = new RandomString(5);
+                    				resourceLocation = random.nextString();
 
-						assertThat(gridFsTemplate.getResource(entity.getContentId()).exists(), is(true));
-					});
-				});
+                    entity = new TestEntity();
+                                        entity = repo.save(entity);
 
-				Context("when content is unset", () -> {
-                    BeforeEach(() -> {
-                        resourceLocation = entity.getContentId().toString();
-                        entity = store.unsetContent(entity);
-                        entity = store.unsetContent(entity, PropertyPath.from("rendition"));
-                        entity = repo.save(entity);
-                    });
+                                        store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                                        store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
 
-                    It("should have no content", () -> {
-                        //content
-                        try (InputStream content = store.getContent(entity)) {
-                            assertThat(content, is(nullValue()));
-                        }
+                    store.setContent(entity, new ByteArrayInputStream("Hello Spring World!".getBytes()));
+                                            store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("Hello Spring World!".getBytes()));
+                                            entity = repo.save(entity);
+                }
+                @AfterEach
+                void tearDown() throws Throwable {
+                    context.close();
+                }
+                @Test
+                void shouldStoreOnlyTheNewContent() throws Throwable {
+                    //content
+                                            boolean matches = false;
+                                            try (InputStream content = store.getContent(entity)) {
+                                                matches = IOUtils.contentEquals(new ByteArrayInputStream("Hello Spring World!".getBytes()), content);
+                                                assertThat(matches).isTrue();
+                                            }
 
-                        assertThat(entity.getContentId(), is(nullValue()));
-						assertThat(entity.getContentLen(), is(nullValue()));
+                                            //rendition
+                                            matches = false;
+                                            try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
+                                                matches = IOUtils.contentEquals(new ByteArrayInputStream("Hello Spring World!".getBytes()), content);
+                                                assertThat(matches).isTrue();
+                                            }
+                }
+            }
+            @Nested
+            class WhenContentIsUpdatedAndNotOverwritten {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    context = new AnnotationConfigApplicationContext();
+                    				context.register(TestConfig.class);
+                    				context.refresh();
 
-						assertThat(gridFsTemplate.getResource(resourceLocation).exists(), is(false));
+                    				gridFsTemplate = context.getBean(GridFsTemplate.class);
 
-						//rendition
-                        try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
-                            assertThat(content, is(nullValue()));
-                        }
+                    				repo = context.getBean(TestEntityRepository.class);
+                    				store = context.getBean(TestEntityStore.class);
 
-                        assertThat(entity.getRenditionId(), is(nullValue()));
-						assertThat(entity.getRenditionLen(), is(0L));
-                    });
-                });
+                    				RandomString random  = new RandomString(5);
+                    				resourceLocation = random.nextString();
 
-				Context("when content is unset but kept", () -> {
-					BeforeEach(() -> {
-						resourceLocation = entity.getContentId().toString();
-						entity = store.unsetContent(entity, PropertyPath.from("content"), new UnsetContentParams(UnsetContentParams.Disposition.Keep));
-						entity = repo.save(entity);
-					});
+                    entity = new TestEntity();
+                                        entity = repo.save(entity);
 
-					It("should have no content", () -> {
-						//content
-						try (InputStream content = store.getContent(entity)) {
-							assertThat(content, is(nullValue()));
-						}
+                                        store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                                        store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                }
+                @AfterEach
+                void tearDown() throws Throwable {
+                    context.close();
+                }
+                @Test
+                void shouldHaveTheUpdatedContent() throws Throwable {
+                    String contentId = entity.getContentId();
+                    						assertThat(gridFsTemplate.getResource(contentId).exists()).isTrue();
 
-						assertThat(entity.getContentId(), is(nullValue()));
-						assertThat(entity.getContentLen(), is(nullValue()));
+                    						store.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), new SetContentParams(-1, true, SetContentParams.ContentDisposition.CreateNew));
+                    						entity = repo.save(entity);
 
-						assertThat(gridFsTemplate.getResource(resourceLocation).exists(), is(true));
-					});
-				});
+                    						boolean matches = false;
+                    						try (InputStream content = store.getContent(entity)) {
+                    							matches = IOUtils.contentEquals(new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), content);
+                    							assertThat(matches).isTrue();
+                    						}
 
-                Context("when an invalid property path is used to setContent", () -> {
-                    It("should throw an error", () -> {
-                        try {
-                            store.setContent(entity, PropertyPath.from("does.not.exist"), new ByteArrayInputStream("foo".getBytes()));
-                        } catch (Exception sae) {
-                            this.e = sae;
-                        }
-                        assertThat(e, is(instanceOf(StoreAccessException.class)));
-                    });
-                });
+                    						assertThat(gridFsTemplate.getResource(contentId).exists()).isTrue();
 
-                Context("when an invalid property path is used to getContent", () -> {
-                    It("should throw an error", () -> {
-                        try {
-                            store.getContent(entity, PropertyPath.from("does.not.exist"));
-                        } catch (Exception sae) {
-                            this.e = sae;
-                        }
-                        assertThat(e, is(instanceOf(StoreAccessException.class)));
-                    });
-                });
+                    						assertThat(entity.getContentId()).isNotEqualTo(contentId);
 
-                Context("when an invalid property path is used to unsetContent", () -> {
-                    It("should throw an error", () -> {
-                        try {
-                            store.unsetContent(entity, PropertyPath.from("does.not.exist"));
-                        } catch (Exception sae) {
-                            this.e = sae;
-                        }
-                        assertThat(e, is(instanceOf(StoreAccessException.class)));
-                    });
-                });
+                    						assertThat(gridFsTemplate.getResource(entity.getContentId()).exists()).isTrue();
+                }
+            }
+            @Nested
+            class WhenContentIsUnset {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    context = new AnnotationConfigApplicationContext();
+                    				context.register(TestConfig.class);
+                    				context.refresh();
 
-				Context("when content is deleted and the id field is shared with Jakarta id", () -> {
+                    				gridFsTemplate = context.getBean(GridFsTemplate.class);
 
-					It("should not reset the id field", () -> {
-						SharedIdRepository sharedIdRepository = context.getBean(SharedIdRepository.class);
-						SharedIdStore sharedIdStore = context.getBean(SharedIdStore.class);
+                    				repo = context.getBean(TestEntityRepository.class);
+                    				store = context.getBean(TestEntityStore.class);
 
-						SharedIdContentIdEntity sharedIdContentIdEntity = sharedIdRepository.save(new SharedIdContentIdEntity());
+                    				RandomString random  = new RandomString(5);
+                    				resourceLocation = random.nextString();
 
-						sharedIdContentIdEntity = sharedIdStore.setContent(sharedIdContentIdEntity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-						sharedIdContentIdEntity = sharedIdRepository.save(sharedIdContentIdEntity);
-						String id = sharedIdContentIdEntity.getContentId();
-						sharedIdContentIdEntity = sharedIdStore.unsetContent(sharedIdContentIdEntity);
-						assertThat(sharedIdContentIdEntity.getContentId(), is(id));
-						assertThat(sharedIdContentIdEntity.getContentLen(), is(nullValue()));
-					});
-				});
+                    entity = new TestEntity();
+                                        entity = repo.save(entity);
 
-				Context("when content is deleted and the id field is shared with spring id", () -> {
+                                        store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                                        store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
 
-					It("should not reset the id field", () -> {
-						SharedSpringIdRepository SharedSpringIdRepository = context.getBean(SharedSpringIdRepository.class);
-						SharedSpringIdStore SharedSpringIdStore = context.getBean(SharedSpringIdStore.class);
+                    resourceLocation = entity.getContentId().toString();
+                                            entity = store.unsetContent(entity);
+                                            entity = store.unsetContent(entity, PropertyPath.from("rendition"));
+                                            entity = repo.save(entity);
+                }
+                @AfterEach
+                void tearDown() throws Throwable {
+                    context.close();
+                }
+                @Test
+                void shouldHaveNoContent() throws Throwable {
+                    //content
+                                            try (InputStream content = store.getContent(entity)) {
+                                                assertThat(content).isNull();
+                                            }
 
-						SharedSpringIdContentIdEntity SharedSpringIdContentIdEntity = SharedSpringIdRepository.save(new SharedSpringIdContentIdEntity());
+                                            assertThat(entity.getContentId()).isNull();
+                    						assertThat(entity.getContentLen()).isNull();
 
-						SharedSpringIdContentIdEntity = SharedSpringIdStore.setContent(SharedSpringIdContentIdEntity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-						SharedSpringIdContentIdEntity = SharedSpringIdRepository.save(SharedSpringIdContentIdEntity);
-						String id = SharedSpringIdContentIdEntity.getContentId();
-						SharedSpringIdContentIdEntity = SharedSpringIdStore.unsetContent(SharedSpringIdContentIdEntity);
-						assertThat(SharedSpringIdContentIdEntity.getContentId(), is(id));
-						assertThat(SharedSpringIdContentIdEntity.getContentLen(), is(nullValue()));
-					});
-				});
-			});
-		});
-	}
+                    						assertThat(gridFsTemplate.getResource(resourceLocation).exists()).isFalse();
+
+                    						//rendition
+                                            try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
+                                                assertThat(content).isNull();
+                                            }
+
+                                            assertThat(entity.getRenditionId()).isNull();
+                    						assertThat(entity.getRenditionLen()).isEqualTo(0L);
+                }
+            }
+            @Nested
+            class WhenContentIsUnsetButKept {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    context = new AnnotationConfigApplicationContext();
+                    				context.register(TestConfig.class);
+                    				context.refresh();
+
+                    				gridFsTemplate = context.getBean(GridFsTemplate.class);
+
+                    				repo = context.getBean(TestEntityRepository.class);
+                    				store = context.getBean(TestEntityStore.class);
+
+                    				RandomString random  = new RandomString(5);
+                    				resourceLocation = random.nextString();
+
+                    entity = new TestEntity();
+                                        entity = repo.save(entity);
+
+                                        store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                                        store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+
+                    resourceLocation = entity.getContentId().toString();
+                    						entity = store.unsetContent(entity, PropertyPath.from("content"), new UnsetContentParams(UnsetContentParams.Disposition.Keep));
+                    						entity = repo.save(entity);
+                }
+                @AfterEach
+                void tearDown() throws Throwable {
+                    context.close();
+                }
+                @Test
+                void shouldHaveNoContent() throws Throwable {
+                    //content
+                    						try (InputStream content = store.getContent(entity)) {
+                    							assertThat(content).isNull();
+                    						}
+
+                    						assertThat(entity.getContentId()).isNull();
+                    						assertThat(entity.getContentLen()).isNull();
+
+                    						assertThat(gridFsTemplate.getResource(resourceLocation).exists()).isTrue();
+                }
+            }
+            @Nested
+            class WhenAnInvalidPropertyPathIsUsedToSetContent {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    context = new AnnotationConfigApplicationContext();
+                    				context.register(TestConfig.class);
+                    				context.refresh();
+
+                    				gridFsTemplate = context.getBean(GridFsTemplate.class);
+
+                    				repo = context.getBean(TestEntityRepository.class);
+                    				store = context.getBean(TestEntityStore.class);
+
+                    				RandomString random  = new RandomString(5);
+                    				resourceLocation = random.nextString();
+
+                    entity = new TestEntity();
+                                        entity = repo.save(entity);
+
+                                        store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                                        store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                }
+                @AfterEach
+                void tearDown() throws Throwable {
+                    context.close();
+                }
+                @Test
+                void shouldThrowAnError() throws Throwable {
+                    try {
+                                                store.setContent(entity, PropertyPath.from("does.not.exist"), new ByteArrayInputStream("foo".getBytes()));
+                                            } catch (Exception sae) {
+                                                MongoStoreIT.this.e = sae;
+                                            }
+                                            assertThat(e).isInstanceOf(StoreAccessException.class);
+                }
+            }
+            @Nested
+            class WhenAnInvalidPropertyPathIsUsedToGetContent {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    context = new AnnotationConfigApplicationContext();
+                    				context.register(TestConfig.class);
+                    				context.refresh();
+
+                    				gridFsTemplate = context.getBean(GridFsTemplate.class);
+
+                    				repo = context.getBean(TestEntityRepository.class);
+                    				store = context.getBean(TestEntityStore.class);
+
+                    				RandomString random  = new RandomString(5);
+                    				resourceLocation = random.nextString();
+
+                    entity = new TestEntity();
+                                        entity = repo.save(entity);
+
+                                        store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                                        store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                }
+                @AfterEach
+                void tearDown() throws Throwable {
+                    context.close();
+                }
+                @Test
+                void shouldThrowAnError() throws Throwable {
+                    try {
+                                                store.getContent(entity, PropertyPath.from("does.not.exist"));
+                                            } catch (Exception sae) {
+                                                MongoStoreIT.this.e = sae;
+                                            }
+                                            assertThat(e).isInstanceOf(StoreAccessException.class);
+                }
+            }
+            @Nested
+            class WhenAnInvalidPropertyPathIsUsedToUnsetContent {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    context = new AnnotationConfigApplicationContext();
+                    				context.register(TestConfig.class);
+                    				context.refresh();
+
+                    				gridFsTemplate = context.getBean(GridFsTemplate.class);
+
+                    				repo = context.getBean(TestEntityRepository.class);
+                    				store = context.getBean(TestEntityStore.class);
+
+                    				RandomString random  = new RandomString(5);
+                    				resourceLocation = random.nextString();
+
+                    entity = new TestEntity();
+                                        entity = repo.save(entity);
+
+                                        store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                                        store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                }
+                @AfterEach
+                void tearDown() throws Throwable {
+                    context.close();
+                }
+                @Test
+                void shouldThrowAnError() throws Throwable {
+                    try {
+                                                store.unsetContent(entity, PropertyPath.from("does.not.exist"));
+                                            } catch (Exception sae) {
+                                                MongoStoreIT.this.e = sae;
+                                            }
+                                            assertThat(e).isInstanceOf(StoreAccessException.class);
+                }
+            }
+            @Nested
+            class WhenContentIsDeletedAndTheIdFieldIsSharedWithJakartaId {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    context = new AnnotationConfigApplicationContext();
+                    				context.register(TestConfig.class);
+                    				context.refresh();
+
+                    				gridFsTemplate = context.getBean(GridFsTemplate.class);
+
+                    				repo = context.getBean(TestEntityRepository.class);
+                    				store = context.getBean(TestEntityStore.class);
+
+                    				RandomString random  = new RandomString(5);
+                    				resourceLocation = random.nextString();
+
+                    entity = new TestEntity();
+                                        entity = repo.save(entity);
+
+                                        store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                                        store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                }
+                @AfterEach
+                void tearDown() throws Throwable {
+                    context.close();
+                }
+                @Test
+                void shouldNotResetTheIdField() throws Throwable {
+                    SharedIdRepository sharedIdRepository = context.getBean(SharedIdRepository.class);
+                    						SharedIdStore sharedIdStore = context.getBean(SharedIdStore.class);
+
+                    						SharedIdContentIdEntity sharedIdContentIdEntity = sharedIdRepository.save(new SharedIdContentIdEntity());
+
+                    						sharedIdContentIdEntity = sharedIdStore.setContent(sharedIdContentIdEntity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                    						sharedIdContentIdEntity = sharedIdRepository.save(sharedIdContentIdEntity);
+                    						String id = sharedIdContentIdEntity.getContentId();
+                    						sharedIdContentIdEntity = sharedIdStore.unsetContent(sharedIdContentIdEntity);
+                    						assertThat(sharedIdContentIdEntity.getContentId()).isEqualTo(id);
+                    						assertThat(sharedIdContentIdEntity.getContentLen()).isNull();
+                }
+            }
+            @Nested
+            class WhenContentIsDeletedAndTheIdFieldIsSharedWithSpringId {
+                @BeforeEach
+                void setUp() throws Throwable {
+                    context = new AnnotationConfigApplicationContext();
+                    				context.register(TestConfig.class);
+                    				context.refresh();
+
+                    				gridFsTemplate = context.getBean(GridFsTemplate.class);
+
+                    				repo = context.getBean(TestEntityRepository.class);
+                    				store = context.getBean(TestEntityStore.class);
+
+                    				RandomString random  = new RandomString(5);
+                    				resourceLocation = random.nextString();
+
+                    entity = new TestEntity();
+                                        entity = repo.save(entity);
+
+                                        store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                                        store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                }
+                @AfterEach
+                void tearDown() throws Throwable {
+                    context.close();
+                }
+                @Test
+                void shouldNotResetTheIdField() throws Throwable {
+                    SharedSpringIdRepository SharedSpringIdRepository = context.getBean(SharedSpringIdRepository.class);
+                    						SharedSpringIdStore SharedSpringIdStore = context.getBean(SharedSpringIdStore.class);
+
+                    						SharedSpringIdContentIdEntity SharedSpringIdContentIdEntity = SharedSpringIdRepository.save(new SharedSpringIdContentIdEntity());
+
+                    						SharedSpringIdContentIdEntity = SharedSpringIdStore.setContent(SharedSpringIdContentIdEntity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                    						SharedSpringIdContentIdEntity = SharedSpringIdRepository.save(SharedSpringIdContentIdEntity);
+                    						String id = SharedSpringIdContentIdEntity.getContentId();
+                    						SharedSpringIdContentIdEntity = SharedSpringIdStore.unsetContent(SharedSpringIdContentIdEntity);
+                    						assertThat(SharedSpringIdContentIdEntity.getContentId()).isEqualTo(id);
+                    						assertThat(SharedSpringIdContentIdEntity.getContentLen()).isNull();
+                }
+            }
+        }
+    }
+
 
 	@Test
 	public void test() {

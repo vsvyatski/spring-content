@@ -1,11 +1,7 @@
 package org.springframework.content.renditions.renderers;
 
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.CoreMatchers.hasItems;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.greaterThan;
+import static org.assertj.core.api.Assertions.assertThat;
+
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
@@ -14,8 +10,8 @@ import java.util.Arrays;
 
 import javax.imageio.ImageIO;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.content.commons.io.FileRemover;
 import org.springframework.content.commons.io.ObservableInputStream;
 import org.springframework.content.commons.renditions.RenditionProvider;
@@ -24,23 +20,23 @@ public class JpegToPngRenditionProviderTest {
 
 	private RenditionProvider service;
 
-	@Before
-	public void setUp() {
+	@BeforeEach
+	public void setUp() throws Throwable {
 		service = new JpegToPngRenditionProvider();
 	}
 
 	@Test
-	public void testCanConvert() {
-		assertThat(service.consumes(), is("image/jpeg"));
-		assertThat(Arrays.asList(service.produces()), hasItems("image/png"));
+	public void testCanConvert() throws Throwable {
+		assertThat(service.consumes()).isEqualTo("image/jpeg");
+		assertThat(Arrays.asList(service.produces())).contains("image/png");
 	}
 
 	@Test
-	public void testConvert() throws Exception {
+	public void testConvert() throws Throwable {
 		InputStream converted = service.convert(this.getClass().getResourceAsStream("/sample.jpeg"), "image/png");
 
-		assertThat(converted.available(), is(greaterThan(0)));
-		assertThat(((ObservableInputStream)converted).getObservers(), hasItem(is(instanceOf(FileRemover.class))));
+		assertThat(converted.available()).isGreaterThan(0);
+		assertThat(((ObservableInputStream)converted).getObservers()).anySatisfy(item -> { assertThat(item).isInstanceOf(FileRemover.class); });
 
 		BufferedImage expectedImage = ImageIO.read(this.getClass().getResourceAsStream("/sample.png"));
 		byte[] expectedRastaData = ((DataBufferByte) expectedImage.getData().getDataBuffer()).getData();
@@ -48,6 +44,6 @@ public class JpegToPngRenditionProviderTest {
 		BufferedImage actualImage = ImageIO.read(converted);
 		byte[] actualRastaData = ((DataBufferByte) actualImage.getData().getDataBuffer()).getData();
 
-        assertThat(expectedRastaData, is(actualRastaData));
+        assertThat(expectedRastaData).isEqualTo(actualRastaData);
 	}
 }

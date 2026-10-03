@@ -1,15 +1,18 @@
 package org.springframework.content.rest.boot;
 
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jConfiguration;
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jRunner;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Disabled;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import internal.org.springframework.content.rest.boot.autoconfigure.ContentRestAutoConfiguration;
 import internal.org.springframework.content.rest.boot.autoconfigure.HypermediaAutoConfiguration;
 import internal.org.springframework.content.rest.boot.autoconfigure.SpringBootContentRestConfigurer;
 import internal.org.springframework.content.s3.boot.autoconfigure.S3ContentAutoConfiguration;
 import internal.org.springframework.content.solr.boot.autoconfigure.SolrAutoConfiguration;
 import internal.org.springframework.content.solr.boot.autoconfigure.SolrExtensionAutoConfiguration;
-import org.junit.Ignore;
-import org.junit.runner.RunWith;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
@@ -29,66 +32,75 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
 
 import java.net.URI;
 
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.*;
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-@RunWith(Ginkgo4jRunner.class)
-@Ginkgo4jConfiguration(threads = 1)
 public class ContentRestAutoConfigurationTest {
 
-	{
-		Describe("ContentRestAutoConfiguration", () -> {
-			Context("given a default configuration", () -> {
-				It("should load the context", () -> {
-					AnnotationConfigServletWebApplicationContext context = new AnnotationConfigServletWebApplicationContext();
-					context.setServletContext(new MockServletContext());
-					context.register(TestConfig.class, HypermediaConfig.class);
-					context.refresh();
+	
+    @Nested
+    class ContentRestAutoConfigurationCases {
+        @Nested
+        class GivenADefaultConfiguration {
+            @Test
+            void shouldLoadTheContext() throws Throwable {
+                AnnotationConfigServletWebApplicationContext context = new AnnotationConfigServletWebApplicationContext();
+                context.setServletContext(new MockServletContext());
+                context.register(TestConfig.class, HypermediaConfig.class);
+                context.refresh();
 
-					assertThat(context.getBean("contentHandlerMapping"), is(not(nullValue())));
-					assertThat(context.getBean("contentLinksProcessor"), is(not(nullValue())));
+                assertThat(context.getBean("contentHandlerMapping")).isNotNull();
+                assertThat(context.getBean("contentLinksProcessor")).isNotNull();
 
-					context.close();
-				});
-			});
+                context.close();
 
-			Context("given an environment specifying rest properties", () -> {
-				BeforeEach(() -> {
-					System.setProperty("spring.content.rest.base-uri", "/contentApi");
-					System.setProperty("spring.content.rest.fully-qualified-links", "false");
-                    System.setProperty("spring.content.rest.shortcut-request-mappings.disabled", "true");
-					System.setProperty("spring.content.rest.shortcut-request-mappings.excludes", "GET=a/b,c/d:PUT=*/*");
-					System.setProperty("spring.content.rest.overwrite-existing-content", "false");
-				});
-				AfterEach(() -> {
-					System.clearProperty("spring.content.rest.base-uri");
-                    System.clearProperty("spring.content.rest.fully-qualified-links");
-                    System.clearProperty("spring.content.rest.shortcut-request-mappings.disabled");
-                    System.clearProperty("spring.content.rest.shortcut-request-mappings.excludes");
-					System.clearProperty("spring.content.rest.overwrite-existing-content");
-				});
-				It("should have a filesystem properties bean with the correct properties set", () -> {
-					AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
-					context.register(TestConfig.class);
-					context.setServletContext(new MockServletContext());
-					context.refresh();
+            }
 
-					assertThat(context.getBean(ContentRestAutoConfiguration.ContentRestProperties.class).getBaseUri(), is(URI.create("/contentApi")));
-					assertThat(context.getBean(ContentRestAutoConfiguration.ContentRestProperties.class).fullyQualifiedLinks(), is(false));
-                    assertThat(context.getBean(ContentRestAutoConfiguration.ContentRestProperties.class).shortcutRequestMappings().disabled(), is(true));
-                    assertThat(context.getBean(ContentRestAutoConfiguration.ContentRestProperties.class).shortcutRequestMappings().excludes(), is("GET=a/b,c/d:PUT=*/*"));
-					assertThat(context.getBean(ContentRestAutoConfiguration.ContentRestProperties.class).getOverwriteExistingContent(), is(false));
+        }
 
-					assertThat(context.getBean(SpringBootContentRestConfigurer.class), is(not(nullValue())));
+        @Nested
+        class GivenAnEnvironmentSpecifyingRestProperties {
+            @BeforeEach
+            void setUp() throws Throwable {
+                System.setProperty("spring.content.rest.base-uri", "/contentApi");
+                System.setProperty("spring.content.rest.fully-qualified-links", "false");
+                               System.setProperty("spring.content.rest.shortcut-request-mappings.disabled", "true");
+                System.setProperty("spring.content.rest.shortcut-request-mappings.excludes", "GET=a/b,c/d:PUT=*/*");
+                System.setProperty("spring.content.rest.overwrite-existing-content", "false");
 
-					context.close();
-				});
-			});
-		});
-	}
+            }
 
-	@Ignore("This is not a test")
+            @AfterEach
+            void tearDown() throws Throwable {
+                System.clearProperty("spring.content.rest.base-uri");
+                               System.clearProperty("spring.content.rest.fully-qualified-links");
+                               System.clearProperty("spring.content.rest.shortcut-request-mappings.disabled");
+                               System.clearProperty("spring.content.rest.shortcut-request-mappings.excludes");
+                System.clearProperty("spring.content.rest.overwrite-existing-content");
+
+            }
+
+            @Test
+            void shouldHaveAFilesystemPropertiesBeanWithTheCorrectPropertiesSet() throws Throwable {
+                AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
+                context.register(TestConfig.class);
+                context.setServletContext(new MockServletContext());
+                context.refresh();
+
+                assertThat(context.getBean(ContentRestAutoConfiguration.ContentRestProperties.class).getBaseUri()).isEqualTo(URI.create("/contentApi"));
+                assertThat(context.getBean(ContentRestAutoConfiguration.ContentRestProperties.class).fullyQualifiedLinks()).isFalse();
+                               assertThat(context.getBean(ContentRestAutoConfiguration.ContentRestProperties.class).shortcutRequestMappings().disabled()).isTrue();
+                               assertThat(context.getBean(ContentRestAutoConfiguration.ContentRestProperties.class).shortcutRequestMappings().excludes()).isEqualTo("GET=a/b,c/d:PUT=*/*");
+                assertThat(context.getBean(ContentRestAutoConfiguration.ContentRestProperties.class).getOverwriteExistingContent()).isFalse();
+
+                assertThat(context.getBean(SpringBootContentRestConfigurer.class)).isNotNull();
+
+                context.close();
+
+            }
+
+        }
+
+    }
+
+	@Disabled("This is not a test")
 	@SpringBootApplication(exclude={SolrAutoConfiguration.class, SolrExtensionAutoConfiguration.class, S3ContentAutoConfiguration.class})
 	@ImportAutoConfiguration({ HibernateJpaAutoConfiguration.class, DataJpaRepositoriesAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class, DataRestAutoConfiguration.class,
@@ -96,12 +108,12 @@ public class ContentRestAutoConfigurationTest {
 	public static class TestConfig {
 	}
 
-	@Ignore("This is not a test")
+	@Disabled("This is not a test")
 	@Configuration
 	@ImportAutoConfiguration({HypermediaAutoConfiguration.class})
 	public static class HypermediaConfig {}
 
-	@Ignore("This is not a test")
+	@Disabled("This is not a test")
 	@Document
 	public class TestEntity {
 		@Id

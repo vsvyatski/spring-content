@@ -1,13 +1,10 @@
 package org.springframework.versions.interceptors;
 
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.BeforeEach;
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.Context;
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.Describe;
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.It;
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.JustBeforeEach;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -19,19 +16,15 @@ import java.io.InputStream;
 
 import jakarta.persistence.Id;
 
-import org.junit.runner.RunWith;
 import org.springframework.aop.ProxyMethodInvocation;
 import org.springframework.content.commons.store.ContentStore;
 import org.springframework.security.core.Authentication;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.versions.LockOwnerException;
 
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jRunner;
-
 import internal.org.springframework.versions.AuthenticationFacade;
 import internal.org.springframework.versions.LockingService;
 
-@RunWith(Ginkgo4jRunner.class)
 public class PessimisticLockingInterceptorTest {
 
     private PessimisticLockingInterceptor interceptor;
@@ -48,81 +41,167 @@ public class PessimisticLockingInterceptorTest {
 
     private Authentication principal, lockOwner;
 
-    {
-        Describe("PessimisticLockingInterceptor", () -> {
-            BeforeEach(() -> {
-                locker = mock(LockingService.class);
-                auth = mock(AuthenticationFacade.class);
-            });
-            JustBeforeEach(() -> {
-                interceptor = new PessimisticLockingInterceptor(locker, auth);
-            });
-            Context("#invoke", () -> {
-                BeforeEach(() -> {
-                    mi = mock(ProxyMethodInvocation.class);
-                });
-                JustBeforeEach(() -> {
-                    try {
-                        result = interceptor.invoke(mi);
-                    } catch (Exception e) {
-                        this.e = e;
-                    }
-                });
-                Context("given a method invocation", () -> {
-                    BeforeEach(() -> {
-                        mi = mock(ProxyMethodInvocation.class);
-                    });
-                    Context("given the method is setContent", () -> {
-                        BeforeEach(() -> {
+    
+    @Nested
+    class PessimisticLockingInterceptorCases {
+        @Nested
+        class Invoke {
+            @Nested
+            class GivenAMethodInvocation {
+                @Nested
+                class GivenTheMethodIsSetContent {
+                    @Nested
+                    class WhenThereIsNoLockOwner {
+                        @BeforeEach
+                        void setUp() throws Throwable {
+                            locker = mock(LockingService.class);
+                            auth = mock(AuthenticationFacade.class);
+
+                            mi = mock(ProxyMethodInvocation.class);
+
+                            mi = mock(ProxyMethodInvocation.class);
+
                             when(mi.getMethod()).thenReturn(ReflectionUtils.findMethod(ContentStore.class, "setContent", Object.class, InputStream.class));
                             when(mi.getArguments()).thenReturn(new Object[]{new TestEntity(), new ByteArrayInputStream("".getBytes())});
-                        });
-                        Context("when there is no lock owner", () -> {
-                            BeforeEach(() -> {
-                                when(locker.lockOwner(0L)).thenReturn(null);
-                            });
-                            It("should proceed", () -> {
-                                verify(locker).lockOwner(0L);
-                                verify(mi).proceed();
-                            });
-                        });
-                        Context("when the principal is the lock owner", () -> {
-                            BeforeEach(() -> {
-                                principal = mock(Authentication.class);
-                                when(auth.getAuthentication()).thenReturn(principal);
-                                when(locker.lockOwner(0L)).thenReturn(principal);
-                                when(locker.isLockOwner(eq(0L), any())).thenReturn(true);
-                            });
-                            It("should proceed", () -> {
-                                verify(locker).lockOwner(0L);
-                                verify(locker).isLockOwner(0L,  principal);
-                                verify(mi).proceed();
-                            });
-                        });
-                        Context("when the principal is not the lock owner", () -> {
-                            BeforeEach(() -> {
-                                lockOwner = mock(Authentication.class);
-                                principal = mock(Authentication.class);
-                                when(auth.getAuthentication()).thenReturn(principal);
-                                when(locker.lockOwner(0L)).thenReturn(lockOwner);
-                                when(locker.isLockOwner(eq(0L), any())).thenReturn(false);
-                            });
-                            It("should proceed", () -> {
-                                assertThat(e, is(instanceOf(LockOwnerException.class)));
-                            });
-                        });
-                        Context("when the entity doesn't have an ID", () -> {
-                            BeforeEach(() -> {
-                                when(mi.getArguments()).thenReturn(new Object[]{new Object(), new ByteArrayInputStream("".getBytes())});
-                            });
-                            It("should proceed", () -> {
-                                verify(mi).proceed();
-                            });
-                        });
-                    });
-                });
-            });
-        });
+
+                            when(locker.lockOwner(0L)).thenReturn(null);
+
+                            interceptor = new PessimisticLockingInterceptor(locker, auth);
+
+                            try {
+                                result = interceptor.invoke(mi);
+                            } catch (Exception e) {
+                                PessimisticLockingInterceptorTest.this.e = e;
+                            }
+
+                        }
+
+                        @Test
+                        void shouldProceed() throws Throwable {
+                            verify(locker).lockOwner(0L);
+                            verify(mi).proceed();
+
+                        }
+
+                    }
+
+                    @Nested
+                    class WhenThePrincipalIsTheLockOwner {
+                        @BeforeEach
+                        void setUp() throws Throwable {
+                            locker = mock(LockingService.class);
+                            auth = mock(AuthenticationFacade.class);
+
+                            mi = mock(ProxyMethodInvocation.class);
+
+                            mi = mock(ProxyMethodInvocation.class);
+
+                            when(mi.getMethod()).thenReturn(ReflectionUtils.findMethod(ContentStore.class, "setContent", Object.class, InputStream.class));
+                            when(mi.getArguments()).thenReturn(new Object[]{new TestEntity(), new ByteArrayInputStream("".getBytes())});
+
+                            principal = mock(Authentication.class);
+                            when(auth.getAuthentication()).thenReturn(principal);
+                            when(locker.lockOwner(0L)).thenReturn(principal);
+                            when(locker.isLockOwner(eq(0L), any())).thenReturn(true);
+
+                            interceptor = new PessimisticLockingInterceptor(locker, auth);
+
+                            try {
+                                result = interceptor.invoke(mi);
+                            } catch (Exception e) {
+                                PessimisticLockingInterceptorTest.this.e = e;
+                            }
+
+                        }
+
+                        @Test
+                        void shouldProceed() throws Throwable {
+                            verify(locker).lockOwner(0L);
+                            verify(locker).isLockOwner(0L,  principal);
+                            verify(mi).proceed();
+
+                        }
+
+                    }
+
+                    @Nested
+                    class WhenThePrincipalIsNotTheLockOwner {
+                        @BeforeEach
+                        void setUp() throws Throwable {
+                            locker = mock(LockingService.class);
+                            auth = mock(AuthenticationFacade.class);
+
+                            mi = mock(ProxyMethodInvocation.class);
+
+                            mi = mock(ProxyMethodInvocation.class);
+
+                            when(mi.getMethod()).thenReturn(ReflectionUtils.findMethod(ContentStore.class, "setContent", Object.class, InputStream.class));
+                            when(mi.getArguments()).thenReturn(new Object[]{new TestEntity(), new ByteArrayInputStream("".getBytes())});
+
+                            lockOwner = mock(Authentication.class);
+                            principal = mock(Authentication.class);
+                            when(auth.getAuthentication()).thenReturn(principal);
+                            when(locker.lockOwner(0L)).thenReturn(lockOwner);
+                            when(locker.isLockOwner(eq(0L), any())).thenReturn(false);
+
+                            interceptor = new PessimisticLockingInterceptor(locker, auth);
+
+                            try {
+                                result = interceptor.invoke(mi);
+                            } catch (Exception e) {
+                                PessimisticLockingInterceptorTest.this.e = e;
+                            }
+
+                        }
+
+                        @Test
+                        void shouldProceed() throws Throwable {
+                            assertThat(e).isInstanceOf(LockOwnerException.class);
+
+                        }
+
+                    }
+
+                    @Nested
+                    class WhenTheEntityDoesnTHaveAnID {
+                        @BeforeEach
+                        void setUp() throws Throwable {
+                            locker = mock(LockingService.class);
+                            auth = mock(AuthenticationFacade.class);
+
+                            mi = mock(ProxyMethodInvocation.class);
+
+                            mi = mock(ProxyMethodInvocation.class);
+
+                            when(mi.getMethod()).thenReturn(ReflectionUtils.findMethod(ContentStore.class, "setContent", Object.class, InputStream.class));
+                            when(mi.getArguments()).thenReturn(new Object[]{new TestEntity(), new ByteArrayInputStream("".getBytes())});
+
+                            when(mi.getArguments()).thenReturn(new Object[]{new Object(), new ByteArrayInputStream("".getBytes())});
+
+                            interceptor = new PessimisticLockingInterceptor(locker, auth);
+
+                            try {
+                                result = interceptor.invoke(mi);
+                            } catch (Exception e) {
+                                PessimisticLockingInterceptorTest.this.e = e;
+                            }
+
+                        }
+
+                        @Test
+                        void shouldProceed() throws Throwable {
+                            verify(mi).proceed();
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+
     }
 
     public static class TestEntity {

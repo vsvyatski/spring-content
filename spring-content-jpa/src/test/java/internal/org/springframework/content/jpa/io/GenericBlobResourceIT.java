@@ -86,7 +86,7 @@
 //						when(rs.getInt(1)).thenReturn(1);
 //					});
 //					It("should return true", () -> {
-//						assertThat(result, is(true));
+//						assertThat(result).isTrue();
 //					});
 //				});
 //				Context("given the blob does not exist in the database", () -> {
@@ -95,7 +95,7 @@
 //						when(rs.getInt(1)).thenReturn(0);
 //					});
 //					It("should return false", () -> {
-//						assertThat(result, is(false));
+//						assertThat(result).isFalse();
 //					});
 //				});
 //				Context("given no blobs exist in the database", () -> {
@@ -103,7 +103,7 @@
 //						when(rs.next()).thenReturn(false);
 //					});
 //					It("should return false", () -> {
-//						assertThat(result, is(false));
+//						assertThat(result).isFalse();
 //					});
 //				});
 //			});
@@ -131,7 +131,7 @@
 //										.getBytes()));
 //					});
 //					It("should be an ObservableInputStream with a file remover", () -> {
-//						assertThat(result, instanceOf(AbstractBlobResource.ClosingInputStream.class));
+//						assertThat(result).isInstanceOf(AbstractBlobResource.ClosingInputStream.class);
 //					});
 //					It("should return the correct content", () -> {
 //						InputStream expected = null;
@@ -154,7 +154,7 @@
 //						when(rs.next()).thenReturn(false);
 //					});
 //					It("should return null", () -> {
-//						assertThat(result, is(nullValue()));
+//						assertThat(result).isNull();
 //
 //						verify(rs).close();
 //						verify(statement).close();
@@ -239,14 +239,14 @@
 //						verify(preparedStatement, timeout(100)).setBlob(eq(2),(InputStream)argThat(is(instanceOf(InputStream.class))));
 //						verify(preparedStatement, timeout(100)).executeUpdate();
 //
-//						assertThat(resource.getId(), is("999"));
+//						assertThat(resource.getId()).isEqualTo("999");
 //					});
 //					It("should update the ID of the resource from the ID returned by the database",
 //							() -> {
 //								while (resource.getId().equals("999") == false) {
 //									Thread.sleep(100);
 //								}
-//								assertThat(resource.getId(), is("999"));
+//								assertThat(resource.getId()).isEqualTo("999");
 //							});
 //				});
 //			});

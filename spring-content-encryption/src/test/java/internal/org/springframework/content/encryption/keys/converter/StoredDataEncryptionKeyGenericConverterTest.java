@@ -1,10 +1,10 @@
 package internal.org.springframework.content.encryption.keys.converter;
 
+import static org.assertj.core.api.Assertions.assertThat;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
 
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 import org.springframework.content.encryption.keys.StoredDataEncryptionKey;
 import org.springframework.content.encryption.keys.StoredDataEncryptionKey.EncryptedSymmetricDataEncryptionKey;
 import org.springframework.content.encryption.keys.StoredDataEncryptionKey.UnencryptedSymmetricDataEncryptionKey;
@@ -26,34 +26,34 @@ public class StoredDataEncryptionKeyGenericConverterTest {
     }
 
     @Test
-    public void convertsBasedOnSourceType() {
+    public void convertsBasedOnSourceType() throws Throwable {
         var key = new UnencryptedSymmetricDataEncryptionKey("Test", new byte[0], new byte[0]);
 
         var conversionResult = conversionService.convert(key, TypeDescriptor.valueOf(StoredDataEncryptionKey.class), TypeDescriptor.valueOf(byte[].class));
 
         var expectedResult = UnencryptedSymmetricDataEncryptionKeyConverter.convert(key);
 
-        assertThat(conversionResult, is(equalTo(expectedResult)));
+        assertThat(conversionResult).isEqualTo(expectedResult);
     }
 
     @Test
-    public void convertsBasedOnTargetType_unencryptedKey() {
+    public void convertsBasedOnTargetType_unencryptedKey() throws Throwable {
         var key = new UnencryptedSymmetricDataEncryptionKey("Test", new byte[0], new byte[0]);
         var encoded = UnencryptedSymmetricDataEncryptionKeyConverter.convert(key);
 
         var conversionResult = conversionService.convert(encoded, StoredDataEncryptionKey.class);
 
-        assertThat(conversionResult, is(equalTo(key)));
+        assertThat(conversionResult).isEqualTo(key);
     }
 
     @Test
-    public void convertsBasedOnTargetType_encryptedKey() {
+    public void convertsBasedOnTargetType_encryptedKey() throws Throwable {
         var key = new EncryptedSymmetricDataEncryptionKey("test", "1", "1", "Test", new byte[0], new byte[0]);
         var encoded = EncryptedSymmetricDataEncryptionKeyConverter.convert(key);
 
         var conversionResult = conversionService.convert(encoded, StoredDataEncryptionKey.class);
 
-        assertThat(conversionResult, is(equalTo(key)));
+        assertThat(conversionResult).isEqualTo(key);
     }
 
 }

@@ -1,7 +1,11 @@
 package org.springframework.content.mongo.boot;
 
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jConfiguration;
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jRunner;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Disabled;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.mongodb.client.MongoClient;
 import internal.org.springframework.content.mongo.boot.autoconfigure.MongoContentAutoConfiguration;
 import internal.org.springframework.content.s3.boot.autoconfigure.S3ContentAutoConfiguration;
@@ -9,8 +13,6 @@ import internal.org.springframework.content.solr.boot.autoconfigure.SolrAutoConf
 import internal.org.springframework.content.solr.boot.autoconfigure.SolrExtensionAutoConfiguration;
 import org.assertj.core.api.Assertions;
 import org.jspecify.annotations.NonNull;
-import org.junit.Ignore;
-import org.junit.runner.RunWith;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -28,25 +30,29 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.*;
-
-@RunWith(Ginkgo4jRunner.class)
-@Ginkgo4jConfiguration(threads = 1)
 public class ContentMongoAutoConfigurationTest {
 
     private ApplicationContextRunner contextRunner;
 
-    {
-        Describe("ContentMongoAutoConfiguration", () -> {
-            BeforeEach(() -> contextRunner = new ApplicationContextRunner()
-                    .withConfiguration(AutoConfigurations.of(MongoContentAutoConfiguration.class)));
-            It("should load the context", () -> contextRunner.withUserConfiguration(TestConfig.class)
-                    .run((context) ->
-                            Assertions.assertThat(context).hasSingleBean(TestEntityContentRepository.class)));
-        });
+    
+    @Nested
+    class ContentMongoAutoConfiguration {
+        @BeforeEach
+        void setUp() throws Throwable {
+            contextRunner = new ApplicationContextRunner()
+                                .withConfiguration(AutoConfigurations.of(MongoContentAutoConfiguration.class));
+        }
+
+        @Test
+        void shouldLoadTheContext() throws Throwable {
+            contextRunner.withUserConfiguration(TestConfig.class)
+                                .run((context) ->
+                                        Assertions.assertThat(context).hasSingleBean(TestEntityContentRepository.class));
+        }
+
     }
 
-    @Ignore("This is not a test")
+    @Disabled("This is not a test")
     @Configuration
     public static class InfrastructureConfig extends AbstractMongoClientConfiguration {
         @Override
@@ -72,13 +78,13 @@ public class ContentMongoAutoConfigurationTest {
         }
     }
 
-    @Ignore("This is not a test")
+    @Disabled("This is not a test")
     @SpringBootApplication(exclude = {SolrAutoConfiguration.class, SolrExtensionAutoConfiguration.class, S3ContentAutoConfiguration.class})
     @Import(InfrastructureConfig.class)
     public static class TestConfig {
     }
 
-    @Ignore("This is not a test")
+    @Disabled("This is not a test")
     @Document
     public static class TestEntity {
         @Id

@@ -1,12 +1,13 @@
 package internal.org.springframework.content.jpa;
 
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jConfiguration;
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jRunner;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.TestFactory;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import internal.org.springframework.content.jpa.testsupport.stores.DocumentStore;
 import net.bytebuddy.utility.RandomString;
 import org.apache.commons.io.IOUtils;
-import org.hamcrest.Matchers;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.content.commons.io.DeletableResource;
 import org.springframework.content.jpa.config.EnableJpaStores;
@@ -38,14 +39,8 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.TimeZone;
 
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.*;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
-@RunWith(Ginkgo4jRunner.class)
-@Ginkgo4jConfiguration(threads = 1)
 public class StoreIT {
 
     private static final Class<?>[] CONFIG_CLASSES = new Class[]{
@@ -69,116 +64,174 @@ public class StoreIT {
 
     private TransactionStatus status;
 
-    {
-        Describe("Store", () -> {
-
+    
+    @Nested
+    class Store {
+        @TestFactory
+        java.util.stream.Stream<org.junit.jupiter.api.DynamicNode> generatedCases() {
+            java.util.List<org.junit.jupiter.api.DynamicNode> tests = new java.util.ArrayList<>();
             for (Class<?> configClass : CONFIG_CLASSES) {
+                tests.add(org.junit.jupiter.api.DynamicTest.dynamicTest("\"should not exist\"", () -> {
+                    context = new AnnotationConfigApplicationContext();
+                    context.register(TestConfig.class);
+                    context.register(configClass);
+                    context.refresh();
 
-                Context(getContextName(configClass), () -> {
+                    ptm = context.getBean(PlatformTransactionManager.class);
+                    store = context.getBean(DocumentStore.class);
 
-                    BeforeEach(() -> {
-                        context = new AnnotationConfigApplicationContext();
-                        context.register(TestConfig.class);
-                        context.register(configClass);
-                        context.refresh();
+                    if (ptm == null) {
+                        ptm = mock(PlatformTransactionManager.class);
+                    }
 
-                        ptm = context.getBean(PlatformTransactionManager.class);
-                        store = context.getBean(DocumentStore.class);
+                    if (ptm == null) {
+                        ptm = mock(PlatformTransactionManager.class);
+                    }
 
-                        if (ptm == null) {
-                            ptm = mock(PlatformTransactionManager.class);
+                    status = ptm.getTransaction(new DefaultTransactionDefinition());
+
+                    try {
+                        assertThat(r.exists()).isFalse();
+                    } finally {
+                        ptm.commit(status);
+                    }
+                }));
+                tests.add(org.junit.jupiter.api.DynamicTest.dynamicTest("\"should store that content\"", () -> {
+                    context = new AnnotationConfigApplicationContext();
+                    context.register(TestConfig.class);
+                    context.register(configClass);
+                    context.refresh();
+
+                    ptm = context.getBean(PlatformTransactionManager.class);
+                    store = context.getBean(DocumentStore.class);
+
+                    if (ptm == null) {
+                        ptm = mock(PlatformTransactionManager.class);
+                    }
+
+                    if (ptm == null) {
+                        ptm = mock(PlatformTransactionManager.class);
+                    }
+
+                    status = ptm.getTransaction(new DefaultTransactionDefinition());
+
+                    r = store.getResource(getId());
+                    try {
+                        try {
+                            assertThat(r.exists()).isTrue();
+                        } catch (Throwable t) {
+                            t.printStackTrace(System.err);
+
+                            throw t;
                         }
-                    });
 
-                    Context("within a transaction", () -> {
-                        BeforeEach(() -> {
-                            if (ptm == null) {
-                                ptm = mock(PlatformTransactionManager.class);
-                            }
+                        boolean matches = false;
+                        InputStream expected = new ByteArrayInputStream("Hello Spring Content World!".getBytes());
+                        InputStream actual = null;
+                        try {
+                            actual = r.getInputStream();
+                            matches = IOUtils.contentEquals(expected, actual);
+                        } catch (IOException ignored) {
+                        } finally {
+                            IOUtils.closeQuietly(expected);
+                            IOUtils.closeQuietly(actual);
+                        }
+                        assertThat(matches).isTrue();
 
-                            status = ptm.getTransaction(new DefaultTransactionDefinition());
-                        });
-                        AfterEach(() -> ptm.commit(status));
-                        Context("given a new resource", () -> {
-                            BeforeEach(() -> r = store.getResource(getId()));
-                            It("should not exist", () -> assertThat(r.exists(), is(false)));
-                            Context("given content is added to that resource", () -> {
-                                BeforeEach(() -> {
-                                    InputStream is = new ByteArrayInputStream("Hello Spring Content World!".getBytes());
-                                    try (OutputStream os = ((WritableResource) r).getOutputStream()) {
-                                        IOUtils.copy(is, os);
-                                    }
-                                });
-                                AfterEach(() -> {
-                                    try {
-                                        ((DeletableResource) r).delete();
-                                    } catch (Exception ignored) {
-                                    }
-                                });
-                                It("should store that content", () -> {
-                                    try {
-                                        assertThat(r.exists(), is(true));
-                                    } catch (Throwable t) {
-                                        t.printStackTrace(System.err);
+                    } finally {
+                        ptm.commit(status);
+                    }
+                }));
+                tests.add(org.junit.jupiter.api.DynamicTest.dynamicTest("\"should store that updated content\"", () -> {
+                    context = new AnnotationConfigApplicationContext();
+                    context.register(TestConfig.class);
+                    context.register(configClass);
+                    context.refresh();
 
-                                        throw t;
-                                    }
+                    ptm = context.getBean(PlatformTransactionManager.class);
+                    store = context.getBean(DocumentStore.class);
 
-                                    boolean matches = false;
-                                    InputStream expected = new ByteArrayInputStream("Hello Spring Content World!".getBytes());
-                                    InputStream actual = null;
-                                    try {
-                                        actual = r.getInputStream();
-                                        matches = IOUtils.contentEquals(expected, actual);
-                                    } catch (IOException ignored) {
-                                    } finally {
-                                        IOUtils.closeQuietly(expected);
-                                        IOUtils.closeQuietly(actual);
-                                    }
-                                    assertThat(matches, Matchers.is(true));
+                    if (ptm == null) {
+                        ptm = mock(PlatformTransactionManager.class);
+                    }
 
-                                });
-                                Context("given that resource is then updated", () -> {
-                                    BeforeEach(() -> {
-                                        InputStream is = new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes());
-                                        OutputStream os = ((WritableResource) r).getOutputStream();
-                                        IOUtils.copy(is, os);
-                                        is.close();
-                                        os.close();
-                                    });
-                                    It("should store that updated content", () -> {
-                                        assertThat(r.exists(), is(true));
+                    if (ptm == null) {
+                        ptm = mock(PlatformTransactionManager.class);
+                    }
 
-                                        boolean matches = false;
-                                        InputStream expected = new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes());
-                                        InputStream actual = null;
-                                        try {
-                                            actual = r.getInputStream();
-                                            matches = IOUtils.contentEquals(expected, actual);
-                                        } catch (IOException ignored) {
-                                        } finally {
-                                            IOUtils.closeQuietly(expected);
-                                            IOUtils.closeQuietly(actual);
-                                        }
-                                        assertThat(matches, Matchers.is(true));
-                                    });
-                                });
-                                Context("given that resource is then deleted", () -> {
-                                    BeforeEach(() -> {
-                                        try {
-                                            ((DeletableResource) r).delete();
-                                        } catch (Exception e) {
-                                            this.e = e;
-                                        }
-                                    });
-                                    It("should not exist", () -> assertThat(e, is(nullValue())));
-                                });
-                            });
-                        });
-                    });
-                });
+                    status = ptm.getTransaction(new DefaultTransactionDefinition());
+
+                    r = store.getResource(getId());
+                    InputStream is = new ByteArrayInputStream("Hello Spring Content World!".getBytes());
+                    try (OutputStream os = ((WritableResource) r).getOutputStream()) {
+                        IOUtils.copy(is, os);
+                    }
+
+                    try {
+                        assertThat(r.exists()).isTrue();
+
+                        boolean matches = false;
+                        InputStream expected = new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes());
+                        InputStream actual = null;
+                        try {
+                            actual = r.getInputStream();
+                            matches = IOUtils.contentEquals(expected, actual);
+                        } catch (IOException ignored) {
+                        } finally {
+                            IOUtils.closeQuietly(expected);
+                            IOUtils.closeQuietly(actual);
+                        }
+                        assertThat(matches).isTrue();
+
+                    } finally {
+                        try {
+                            ((DeletableResource) r).delete();
+                        } catch (Exception ignored) {
+                        }
+
+                        ptm.commit(status);
+                    }
+                }));
+                tests.add(org.junit.jupiter.api.DynamicTest.dynamicTest("\"should not exist\"", () -> {
+                    context = new AnnotationConfigApplicationContext();
+                    context.register(TestConfig.class);
+                    context.register(configClass);
+                    context.refresh();
+
+                    ptm = context.getBean(PlatformTransactionManager.class);
+                    store = context.getBean(DocumentStore.class);
+
+                    if (ptm == null) {
+                        ptm = mock(PlatformTransactionManager.class);
+                    }
+
+                    if (ptm == null) {
+                        ptm = mock(PlatformTransactionManager.class);
+                    }
+
+                    status = ptm.getTransaction(new DefaultTransactionDefinition());
+
+                    r = store.getResource(getId());
+                    InputStream is = new ByteArrayInputStream("Hello Spring Content World!".getBytes());
+                    try (OutputStream os = ((WritableResource) r).getOutputStream()) {
+                        IOUtils.copy(is, os);
+                    }
+
+                    try {
+                        assertThat(e).isNull();
+                    } finally {
+                        try {
+                            ((DeletableResource) r).delete();
+                        } catch (Exception ignored) {
+                        }
+
+                        ptm.commit(status);
+                    }
+                }));
             }
-        });
+            return tests.stream();
+        }
+
     }
 
     public static String getContextName(Class<?> configClass) {
