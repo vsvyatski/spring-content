@@ -48,7 +48,6 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <spring-content.version>${project.version}</spring-content.version>
-        <ginkgo4j.version>2.2.0</ginkgo4j.version>
         <springboot.version>4.1.1</springboot.version>
         <commons-io.version>2.22.0</commons-io.version>
         <commons-lang.version>3.20.0</commons-lang.version>

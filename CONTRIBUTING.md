@@ -47,7 +47,7 @@ pull request but before a merge.
 * Add some Javadocs.
 * A few unit tests would help a lot as well -- someone has to do it. Tests use JUnit Jupiter
   (`org.junit.jupiter.api.Test`, `@BeforeEach`) and AssertJ (`org.assertj.core.api.Assertions.assertThat`).
-  Do not add Ginkgo4j runners or Hamcrest matchers. MockMvc's `status()` and `jsonPath()` still take Hamcrest
+  Do not add Hamcrest matchers. MockMvc's `status()` and `jsonPath()` still take Hamcrest
   matchers because that is the Spring API.
 * If no-one else is using your branch, please rebase it against the current master (or other target branch in the
   main project).
