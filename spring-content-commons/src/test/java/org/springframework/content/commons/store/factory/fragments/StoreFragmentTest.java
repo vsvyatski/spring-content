@@ -1,11 +1,14 @@
 package org.springframework.content.commons.store.factory.fragments;
 
-import java.io.Serializable;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
+import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jConfiguration;
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jSpringRunner;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import java.io.Serializable;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.content.commons.store.ContentStore;
@@ -15,38 +18,27 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
 
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.Context;
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.Describe;
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.It;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-@RunWith(Ginkgo4jSpringRunner.class)
-@Ginkgo4jConfiguration(threads = 1)
 @ContextConfiguration(classes = StoreFragmentTest.StoreTestConfiguration.class)
+@ExtendWith(SpringExtension.class)
 public class StoreFragmentTest {
 
 	@Autowired
 	private ApplicationContext context;
 
-	{
-		Describe("given a store definition", () -> {
-
-			Context("given the application context", () -> {
-
-				It("should support the extension", () -> {
-
-					assertThat(context.getBean(TestContentStore.class), is(not(nullValue())));
-					assertThat(context.getBean(CustomizationImpl.class).getBean(), is("Spring Content"));
-					assertThat(context.getBean(CustomizationImpl.class).getDomainClass(), is(Object.class));
-					assertThat(context.getBean(CustomizationImpl.class).getIdClass(), is(Serializable.class));
-					assertThat(context.getBean(TestContentStore.class).greet("World"), is("Hello Spring Content World"));
-				});
-			});
-		});
-	}
+    @Nested
+    class GivenAStoreDefinitionCases {
+        @Nested
+        class GivenTheApplicationContext {
+            @Test
+            void shouldSupportTheExtension() {
+                assertThat(context.getBean(TestContentStore.class)).isNotNull();
+                					assertThat(context.getBean(CustomizationImpl.class).getBean()).isEqualTo("Spring Content");
+                					assertThat(context.getBean(CustomizationImpl.class).getDomainClass()).isEqualTo(Object.class);
+                					assertThat(context.getBean(CustomizationImpl.class).getIdClass()).isEqualTo(Serializable.class);
+                					assertThat(context.getBean(TestContentStore.class).greet("World")).isEqualTo("Hello Spring Content World");
+            }
+        }
+    }
 
 	@Configuration
 	@EnableTestStores

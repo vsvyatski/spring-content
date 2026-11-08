@@ -56,8 +56,8 @@ PostgreSQL, SQL Server, Oracle).
 | `spring-content-encryption`                            | Encrypting store mixin (`EncryptingContentStore`)                   |
 | `spring-versions-commons` / `spring-versions-jpa`      | Locking and versioning (`@LockParticipant`, ancestor/successor IDs) |
 
-`spring-content-docx4j` exists on disk but is **commented out** of the reactor. Do not re-enable it unless that is the
-task.
+`spring-content-docx4j` converts Word documents to text, HTML, and PDF. Renditions auto-configuration imports it
+when `Docx4jConfiguration` is on the classpath.
 
 ### Boot starters
 
@@ -144,19 +144,11 @@ Change version for the whole reactor with:
 
 ### Tests
 
-- Framework: **Ginkgo4j** (JUnit 4 runner), Hamcrest, Mockito, Testcontainers where needed
-- `@RunWith(Ginkgo4jRunner.class)` for plain unit tests
-- `@RunWith(Ginkgo4jSpringRunner.class)` when a Spring context is required
-- `@Ginkgo4jConfiguration(threads = 1)` when tests share mutable context or embedded DBs
-- DSL: `Describe` / `Context` / `BeforeEach` / `JustBeforeEach` / `It` from
-  `com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL`
-- Maven artifact is `io.github.vsvyatski:ginkgo4j`; **keep the `com.github.paulcwarren.ginkgo4j` Java package** unless
-  the library itself is migrated
-- Put the spec in an instance initializer `{ Describe(...); }`, not in `@Test` methods (except rare ignored JUnit
-  leftovers)
+- Framework: JUnit Jupiter, AssertJ, Mockito, Testcontainers where needed
+- `@Test`, `@BeforeEach`, `@AfterEach`, `@Nested` from `org.junit.jupiter.api`
 - Naming: `*Test.java` = unit (always); `*IT.java` = integration (`-P tests` only)
 - Follow existing IT style: inner entity/store/repo types, `@Enable*Stores` + `@EnableJpaRepositories` test configs,
-  assert streams with Commons IO + Hamcrest
+  assert streams with Commons IO + AssertJ
 
 When changing a store implementation, run that module’s `*Test` and, if behavior or IO/SQL is involved, the matching
 `*IT`.
@@ -199,7 +191,6 @@ Do:
 
 Don’t:
 
-- Enable `spring-content-docx4j` or rewrite Boot 2 `spring.factories` as the primary auto-config path
-- Replace Ginkgo4j tests with JUnit 5 Jupiter unless the task is a test-framework migration
+- Rewrite Boot 2 `spring.factories` as the primary auto-config path
 - Change `groupId` / public package names as a drive-by
 - Skip `-P tests` when the change affects storage, REST mapping, or SQL dialects

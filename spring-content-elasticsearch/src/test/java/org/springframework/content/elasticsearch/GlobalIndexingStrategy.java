@@ -1,13 +1,10 @@
 package org.springframework.content.elasticsearch;
 
-import internal.org.springframework.content.elasticsearch.IndexManager;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.client.indices.CreateIndexRequest;
-
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import internal.org.springframework.content.elasticsearch.IndexManager;
 
 @Configuration
 public class GlobalIndexingStrategy implements IndexingStrategy {
@@ -15,14 +12,13 @@ public class GlobalIndexingStrategy implements IndexingStrategy {
     private static final String INDEX_NAME = IndexManager.INDEX_NAME;
 
     @Autowired
-    private RestHighLevelClient client;
+    private ElasticsearchClient client;
 
     public String indexName() {
         return INDEX_NAME;
     }
 
     public void setup() throws Exception {
-        CreateIndexRequest cir = new CreateIndexRequest(INDEX_NAME);
-        client.indices().create(cir, RequestOptions.DEFAULT);
+        client.indices().create(c -> c.index(INDEX_NAME));
     }
 }

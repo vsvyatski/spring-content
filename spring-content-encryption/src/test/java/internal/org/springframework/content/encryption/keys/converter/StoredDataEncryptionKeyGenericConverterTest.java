@@ -1,10 +1,8 @@
 package internal.org.springframework.content.encryption.keys.converter;
 
+import static org.assertj.core.api.Assertions.assertThat;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.content.encryption.keys.StoredDataEncryptionKey;
 import org.springframework.content.encryption.keys.StoredDataEncryptionKey.EncryptedSymmetricDataEncryptionKey;
 import org.springframework.content.encryption.keys.StoredDataEncryptionKey.UnencryptedSymmetricDataEncryptionKey;
@@ -33,7 +31,7 @@ public class StoredDataEncryptionKeyGenericConverterTest {
 
         var expectedResult = UnencryptedSymmetricDataEncryptionKeyConverter.convert(key);
 
-        assertThat(conversionResult, is(equalTo(expectedResult)));
+        assertThat(conversionResult).isEqualTo(expectedResult);
     }
 
     @Test
@@ -43,7 +41,7 @@ public class StoredDataEncryptionKeyGenericConverterTest {
 
         var conversionResult = conversionService.convert(encoded, StoredDataEncryptionKey.class);
 
-        assertThat(conversionResult, is(equalTo(key)));
+        assertThat(conversionResult).isEqualTo(key);
     }
 
     @Test
@@ -53,7 +51,7 @@ public class StoredDataEncryptionKeyGenericConverterTest {
 
         var conversionResult = conversionService.convert(encoded, StoredDataEncryptionKey.class);
 
-        assertThat(conversionResult, is(equalTo(key)));
+        assertThat(conversionResult).isEqualTo(key);
     }
 
 }

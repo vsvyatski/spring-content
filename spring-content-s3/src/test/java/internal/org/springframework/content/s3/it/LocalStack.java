@@ -73,7 +73,6 @@ public class LocalStack extends LocalStackContainer implements Serializable {
         return INSTANCE;
     }
 
-
     private record CrossAwsCredentialsProvider(AWSCredentials credentials) implements AwsCredentialsProvider {
         private CrossAwsCredentialsProvider(AWSCredentialsProvider credentials) {
             this(credentials.getCredentials());

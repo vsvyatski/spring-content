@@ -1,16 +1,11 @@
 package internal.org.springframework.content.jpa.config;
 
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.AfterEach;
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.BeforeEach;
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.Context;
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.Describe;
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.It;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.fail;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 import java.io.InputStream;
 
@@ -18,8 +13,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import javax.sql.DataSource;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.property.PropertyPath;
@@ -45,84 +38,78 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jConfiguration;
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jRunner;
-
 import internal.org.springframework.content.jpa.io.DelegatingBlobResourceLoader;
 import internal.org.springframework.content.jpa.io.MySQLBlobResource;
 import internal.org.springframework.content.jpa.io.SQLServerBlobResource;
 
-@RunWith(Ginkgo4jRunner.class)
-@Ginkgo4jConfiguration(threads = 1) // required
 public class EnableJpaStoresTest {
 
 	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
-	{
-		Describe("EnableJpaStores", () -> {
-
-			basicConfigurationTests(context, TestConfig.class);
-
-			Context("given a context with an empty configuration", () -> {
-				BeforeEach(() -> {
-					context = new AnnotationConfigApplicationContext();
-					context.register(EmptyConfig.class);
-					context.refresh();
-				});
-				AfterEach(() -> {
-					context.close();
-				});
-				It("should not contain any jpa repository beans", () -> {
-					try {
-						context.getBean(TestEntityContentRepository.class);
-						fail("expected no such bean");
-					}
-					catch (NoSuchBeanDefinitionException e) {
-						assertThat(true, is(true));
-					}
-				});
-			});
-		});
-	}
-
-	private static void basicConfigurationTests(AnnotationConfigApplicationContext context, Class configClass) {
-		Context("given a context and a configuration with a jpa content repository bean",
-				() -> {
-					BeforeEach(() -> {
-						context.register(configClass);
-						context.refresh();
-					});
-					AfterEach(() -> {
-						context.close();
-					});
-					It("should have a content repository bean", () -> {
-						assertThat(context.getBean(TestEntityContentRepository.class),
-								is(not(nullValue())));
-					});
-					It("should have a delegating blob resource loader", () -> {
-						assertThat(
-								context.getBean(DelegatingBlobResourceLoader.class),
-								is(not(nullValue())));
-					});
-					It("should have a generic blob resource loader", () -> {
-						assertThat(context.getBean("genericBlobResourceLoader"),
-								is(not(nullValue())));
-					});
-					It("should have a MySQL blob resource loader", () -> {
-						BlobResourceLoader loader = (BlobResourceLoader)context.getBean("mysqlBlobResourceLoader");
-						assertThat(loader, is(not(nullValue())));
-						assertThat(loader.getDatabaseName(), is("MySQL"));
-						assertThat(loader.getResource("some-id"), is(instanceOf(MySQLBlobResource.class)));
-					});
-					It("should have a SQL Server blob resource loader", () -> {
-						BlobResourceLoader loader = (BlobResourceLoader)context.getBean("sqlServerBlobResourceLoader");
-						assertThat(loader, is(not(nullValue())));
-						assertThat(loader.getDatabaseName(), is("Microsoft SQL Server"));
-						assertThat(loader.getResource("some-id"), is(instanceOf(SQLServerBlobResource.class)));
-					});
-				});
-
-	}
+    @Nested
+    class EnableJpaStoresCases {
+        @Nested
+        class GivenAContextAndAConfigurationWithAJpaContentRepositoryBean {
+            @BeforeEach
+            void setUp() {
+                context.register(TestConfig.class);
+                						context.refresh();
+            }
+            @AfterEach
+            void tearDown() {
+                context.close();
+            }
+            @Test
+            void shouldHaveAContentRepositoryBean() {
+                assertThat(context.getBean(TestEntityContentRepository.class)).isNotNull();
+            }
+            @Test
+            void shouldHaveADelegatingBlobResourceLoader() {
+                assertThat(context.getBean(DelegatingBlobResourceLoader.class)).isNotNull();
+            }
+            @Test
+            void shouldHaveAGenericBlobResourceLoader() {
+                assertThat(context.getBean("genericBlobResourceLoader")).isNotNull();
+            }
+            @Test
+            void shouldHaveAMySQLBlobResourceLoader() {
+                BlobResourceLoader loader = (BlobResourceLoader)context.getBean("mysqlBlobResourceLoader");
+                						assertThat(loader).isNotNull();
+                						assertThat(loader.getDatabaseName()).isEqualTo("MySQL");
+                						assertThat(loader.getResource("some-id")).isInstanceOf(MySQLBlobResource.class);
+            }
+            @Test
+            void shouldHaveASQLServerBlobResourceLoader() {
+                BlobResourceLoader loader = (BlobResourceLoader)context.getBean("sqlServerBlobResourceLoader");
+                						assertThat(loader).isNotNull();
+                						assertThat(loader.getDatabaseName()).isEqualTo("Microsoft SQL Server");
+                						assertThat(loader.getResource("some-id")).isInstanceOf(SQLServerBlobResource.class);
+            }
+        }
+        @Nested
+        class GivenAContextWithAnEmptyConfiguration {
+            @BeforeEach
+            void setUp() {
+                context = new AnnotationConfigApplicationContext();
+                					context.register(EmptyConfig.class);
+                					context.refresh();
+            }
+            @AfterEach
+            void tearDown() {
+                context.close();
+            }
+            @Test
+            void shouldNotContainAnyJpaRepositoryBeans() {
+                try {
+                						context.getBean(TestEntityContentRepository.class);
+                						fail("expected no such bean");
+                					}
+                					catch (NoSuchBeanDefinitionException e) {
+                						assertThat(true).isTrue();
+                					}
+            }
+        }
+    }
 
 	@Test
 	public void noop() {
@@ -215,12 +202,10 @@ public class EnableJpaStoresTest {
 
 		@Override
 		public void associate(TestEntity entity, String id) {
-
 		}
 
 		@Override
 		public void unassociate(TestEntity entity) {
-
 		}
 
 		@Override
@@ -243,13 +228,11 @@ public class EnableJpaStoresTest {
 		@Override
         public void associate(TestEntity entity, PropertyPath propertyPath, String id) {
             // TODO Auto-generated method stub
-
         }
 
         @Override
         public void unassociate(TestEntity entity, PropertyPath propertyPath) {
             // TODO Auto-generated method stub
-
         }
 
         @Override

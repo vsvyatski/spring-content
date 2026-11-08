@@ -1,10 +1,14 @@
 package org.springframework.content.elasticsearch;
 
-import org.apache.http.HttpHost;
-import org.elasticsearch.client.RestClient;
-import org.elasticsearch.client.RestHighLevelClient;
+import java.net.URI;
+
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 import org.testcontainers.utility.DockerImageName;
+
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.json.jackson.JacksonJsonpMapper;
+import co.elastic.clients.transport.rest5_client.Rest5ClientTransport;
+import co.elastic.clients.transport.rest5_client.low_level.Rest5Client;
 
 public class ElasticsearchTestContainer extends ElasticsearchContainer {
 
@@ -24,12 +28,13 @@ public class ElasticsearchTestContainer extends ElasticsearchContainer {
 //        }
     }
 
-    public static RestHighLevelClient client() {
-        return new RestHighLevelClient(RestClient.builder(new HttpHost(Singleton.INSTANCE.getContainerIpAddress(), Singleton.INSTANCE.getMappedPort(9200), "http")));
+    public static ElasticsearchClient client() {
+        Rest5Client restClient = Rest5Client.builder(URI.create(getUrl())).build();
+        return new ElasticsearchClient(new Rest5ClientTransport(restClient, new JacksonJsonpMapper()));
     }
 
-    public static Object getUrl() {
-        return String.format("http://%s:%d", Singleton.INSTANCE.getContainerIpAddress(), Singleton.INSTANCE.getMappedPort(9200));
+    public static String getUrl() {
+        return String.format("http://%s:%d", Singleton.INSTANCE.getHost(), Singleton.INSTANCE.getMappedPort(9200));
     }
 
     @SuppressWarnings("unused") // Serializable safe singleton usage

@@ -21,6 +21,8 @@
     <file url="file://$PROJECT_DIR$/spring-content-bom/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/spring-content-commons/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/spring-content-commons/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/spring-content-docx4j/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/spring-content-docx4j/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/spring-content-elasticsearch-boot-starter/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/spring-content-elasticsearch-boot-starter/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/spring-content-elasticsearch/src/main/java" charset="UTF-8" />

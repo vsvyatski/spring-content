@@ -1,16 +1,21 @@
 package it.internal.org.springframework.content.rest.controllers;
 
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.*;
+import org.junit.jupiter.api.extension.ExtendWith;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import static org.assertj.core.api.Assertions.assertThat;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+
 import static java.lang.String.format;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
@@ -23,8 +28,6 @@ import java.util.UUID;
 import internal.org.springframework.content.rest.support.*;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.content.commons.property.PropertyPath;
 import org.springframework.content.rest.config.HypermediaConfiguration;
@@ -42,10 +45,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfiguration;
 
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jSpringRunner;
-
-@RunWith(Ginkgo4jSpringRunner.class)
-// @Ginkgo4jConfiguration(threads=1)
 @WebAppConfiguration
 @ContextConfiguration(classes = {
       StoreConfig.class,
@@ -56,6 +55,7 @@ import com.github.paulcwarren.ginkgo4j.Ginkgo4jSpringRunner;
 })
 @Transactional
 @ActiveProfiles("store")
+@ExtendWith(SpringExtension.class)
 public class NestedContentPropertiesRestEndpointsIT {
 
    @Autowired private TestEntity10Repository repository;
@@ -71,247 +71,435 @@ public class NestedContentPropertiesRestEndpointsIT {
 
    private MockMvc mvc;
 
-   {
-      Describe("Nested Content Properties REST Endpoints", () -> {
-		BeforeEach(() -> {
-		  mvc = MockMvcBuilders.webAppContextSetup(context).build();
-		});
-		Context("given an Entity with a simple content property", () -> {
-		  BeforeEach(() -> {
-			  testEntity10 = repository.save(new TestEntity10());
-		  });
+    @Nested
+    class NestedContentPropertiesRESTEndpoints {
+        @Nested
+        class GivenAnEntityWithASimpleContentProperty {
+            @Nested
+            class GivenARequestToANonExistentEntity {
+                @BeforeEach
+                void setUp() {
+                    mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
-		  Context("given a request to a non-existent entity", () -> {
-              It("should return 404", () -> {
-                  mvc.perform(
-                          get("/testEntity10s/9999999/foo"))
+                    testEntity10 = repository.save(new TestEntity10());
+                }
+
+                @Test
+                void shouldReturn404() throws Exception {
+                    mvc.perform(
+                            get("/testEntity10s/9999999/foo"))
+                            .andExpect(status().isNotFound());
+                }
+
+            }
+
+            @Nested
+            class GivenARequestToANonExistentContentProperty {
+                @BeforeEach
+                void setUp() {
+                    mvc = MockMvcBuilders.webAppContextSetup(context).build();
+
+                    testEntity10 = repository.save(new TestEntity10());
+                }
+
+                @Test
+                void shouldReturn404() throws Exception {
+                    mvc.perform(
+                            get("/testEntity10s/" + testEntity10.getId() + "/doesnotexist"))
+                            .andExpect(status().isNotFound());
+                }
+
+            }
+
+            @Nested
+            class GivenThatIsHasNoContent {
+                @Nested
+                class AGETToRepositoryIdContentProperty {
+                    @BeforeEach
+                    void setUp() {
+                        mvc = MockMvcBuilders.webAppContextSetup(context).build();
+
+                        testEntity10 = repository.save(new TestEntity10());
+                    }
+
+                    @Test
+                    void shouldReturn404() throws Exception {
+                        mvc.perform(
+                          get("/testEntity10s/" + testEntity10.getId() + "/child"))
                           .andExpect(status().isNotFound());
-              });
-		  });
+                    }
 
-          Context("given a request to a non-existent content property", () -> {
-              It("should return 404", () -> {
-                  mvc.perform(
-                          get("/testEntity10s/" + testEntity10.getId() + "/doesnotexist"))
-                          .andExpect(status().isNotFound());
-              });
-          });
+                }
 
-		  Context("given that is has no content", () -> {
-			  Context("a GET to /{repository}/{id}/{contentProperty}", () -> {
-				  It("should return 404", () -> {
-					  mvc.perform(
-							  get("/testEntity10s/" + testEntity10.getId() + "/child"))
-							  .andExpect(status().isNotFound());
-				  });
-			  });
-			  Context("a PUT to /{repository}/{id}/{property}/{contentProperty}", () -> {
-				  It("should create the content", () -> {
+                @Nested
+                class APUTToRepositoryIdPropertyContentProperty {
+                    @BeforeEach
+                    void setUp() {
+                        mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
-					  mvc.perform(
-							  put("/testEntity10s/" + testEntity10.getId() + "/child/content")
-									  .content("Hello New Spring Content World!")
-									  .contentType("text/plain"))
-							  .andExpect(status().is2xxSuccessful());
+                        testEntity10 = repository.save(new TestEntity10());
+                    }
 
-					  Optional<TestEntity10> fetched = repository.findById(testEntity10.getId());
-					  assertThat(fetched.isPresent(), is(true));
-					  assertThat(fetched.get().getChild().contentId,is(not(nullValue())));
-					  assertThat(fetched.get().getChild().contentLen, is(31L));
-					  assertThat(fetched.get().getChild().contentMimeType, is("text/plain"));
-					  try (InputStream actual = store.getResource(fetched.get(), PropertyPath.from("child/content")).getInputStream()) {
-					      IOUtils.contentEquals(actual, new ByteArrayInputStream("Hello New Spring Content World!".getBytes()));
-					  }
+                    @Test
+                    void shouldCreateTheContent() throws Exception {
+                        mvc.perform(
+                          put("/testEntity10s/" + testEntity10.getId() + "/child/content")
+                        		  .content("Hello New Spring Content World!")
+                        		  .contentType("text/plain"))
+                          .andExpect(status().is2xxSuccessful());
 
-                      mvc.perform(
-                                put("/testEntity10s/" + testEntity10.getId() + "/child/preview")
-                                        .content("Hello New Spring Content Preview World!")
-                                        .contentType("text/plain"))
-                                .andExpect(status().is2xxSuccessful());
+                        Optional<TestEntity10> fetched = repository.findById(testEntity10.getId());
+                        assertThat(fetched.isPresent()).isTrue();
+                        assertThat(fetched.get().getChild().contentId).isNotNull();
+                        assertThat(fetched.get().getChild().contentLen).isEqualTo(31L);
+                        assertThat(fetched.get().getChild().contentMimeType).isEqualTo("text/plain");
+                        try (InputStream actual = store.getResource(fetched.get(), PropertyPath.from("child/content")).getInputStream()) {
+                            IOUtils.contentEquals(actual, new ByteArrayInputStream("Hello New Spring Content World!".getBytes()));
+                        }
 
-                      fetched = repository.findById(testEntity10.getId());
-                      assertThat(fetched.isPresent(), is(true));
-                      assertThat(fetched.get().getChild().getPreviewId(),is(not(nullValue())));
-                      assertThat(fetched.get().getChild().getPreviewLen(), is(39L));
-                      assertThat(fetched.get().getChild().getPreviewMimeType(), is("text/plain"));
-                      try (InputStream actual = store.getResource(fetched.get(), PropertyPath.from("child/preview")).getInputStream()) {
-                          IOUtils.contentEquals(actual, new ByteArrayInputStream("Hello New Spring Content Preview World!".getBytes()));
-                      }
-				  });
-			  });
-			  Context("a PUT to /{store}/{id}/{property}/{contentProperty} with json content", () -> {
-			      It("should set the content and return 201", () -> {
-			          String content = "{\"content\":\"Hello New Spring Content World!\"}";
-			          mvc.perform(
-                            put("/testEntity10s/" + testEntity10.getId() + "/child/content")
-                            .content(content)
-                            .contentType("application/json"))
-			          .andExpect(status().isCreated());
+                                       mvc.perform(
+                                                 put("/testEntity10s/" + testEntity10.getId() + "/child/preview")
+                                                         .content("Hello New Spring Content Preview World!")
+                                                         .contentType("text/plain"))
+                                                 .andExpect(status().is2xxSuccessful());
 
-			          Optional<TestEntity10> fetched = repository.findById(testEntity10.getId());
-			          assertThat(fetched.isPresent(), is(true));
-			          assertThat(fetched.get().getChild().getContentId(), is(not(nullValue())));
-			          assertThat(fetched.get().getChild().getContentLen(), is(45L));
-			          assertThat(fetched.get().getChild().getContentMimeType(), is("application/json"));
-                      try (InputStream actual = store.getResource(fetched.get(), PropertyPath.from("child/content")).getInputStream()) {
-                          IOUtils.contentEquals(actual, new ByteArrayInputStream(content.getBytes()));
-                      }
-			      });
-			  });
-		  });
-		  Context("given that it has content", () -> {
-			  BeforeEach(() -> {
-				  String content = "Hello Spring Content World!";
+                                       fetched = repository.findById(testEntity10.getId());
+                                       assertThat(fetched.isPresent()).isTrue();
+                                       assertThat(fetched.get().getChild().getPreviewId()).isNotNull();
+                                       assertThat(fetched.get().getChild().getPreviewLen()).isEqualTo(39L);
+                                       assertThat(fetched.get().getChild().getPreviewMimeType()).isEqualTo("text/plain");
+                                       try (InputStream actual = store.getResource(fetched.get(), PropertyPath.from("child/preview")).getInputStream()) {
+                                           IOUtils.contentEquals(actual, new ByteArrayInputStream("Hello New Spring Content Preview World!".getBytes()));
+                                       }
+                    }
 
-				  testEntity10.getChild().contentMimeType = "text/plain";
-				  UUID contentId = UUID.randomUUID();
-				  store.associate(testEntity10, PropertyPath.from("child/content"), contentId);
-				  WritableResource r = (WritableResource)store.getResource(testEntity10, PropertyPath.from("child/content"));
-				  try (OutputStream out = r.getOutputStream()) {
-				      out.write(content.getBytes());
-				  }
-				  testEntity10 = repository.save(testEntity10);
+                }
 
-				  versionTests.setMvc(mvc);
-				  versionTests.setUrl("/testEntity10s/" + testEntity10.getId() + "/child/content");
-				  versionTests.setCollectionUrl("/testEntity10s");
-				  versionTests.setContentLinkRel("child/content");
-				  versionTests.setRepo(repository);
-				  versionTests.setStore(store);
-				  versionTests.setEtag(format("\"%s\"", testEntity10.getVersion()));
+                @Nested
+                class APUTToStoreIdPropertyContentPropertyWithJsonContent {
+                    @BeforeEach
+                    void setUp() {
+                        mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
-				  lastModifiedDateTests.setMvc(mvc);
-				  lastModifiedDateTests.setUrl("/testEntity10s/" + testEntity10.getId() + "/child/content");
-				  lastModifiedDateTests.setLastModifiedDate(testEntity10.getModifiedDate());
-				  lastModifiedDateTests.setEtag(testEntity10.getVersion().toString());
-				  lastModifiedDateTests.setContent(content);
-			  });
-			  Context("a GET to /{repository}/{id}/{contentProperty}", () -> {
-				  It("should return the content", () -> {
-					  MockHttpServletResponse response = mvc
-							  .perform(get("/testEntity10s/" + testEntity10.getId() + "/child/content")
-									  .accept("text/plain"))
-							  .andExpect(status().isOk())
-							  .andExpect(header().string("etag", is("\"1\"")))
-							  .andExpect(header().string("last-modified", LastModifiedDate
-									  .isWithinASecond(testEntity10.getModifiedDate())))
-							  .andReturn().getResponse();
+                        testEntity10 = repository.save(new TestEntity10());
+                    }
 
-					  assertThat(response, is(not(nullValue())));
-					  assertThat(response.getContentAsString(), is("Hello Spring Content World!"));
-				  });
-			  });
-			  Context("a GET to /{repository}/{id}/{contentProperty} with a mime type that matches a renderer", () -> {
-				  It("should return the rendition and 200", () -> {
-					  MockHttpServletResponse response = mvc
-							  .perform(get(
-									  "/testEntity10s/" + testEntity10.getId()
-											  + "/child/content")
-									  .accept("text/html"))
-							  .andExpect(status().isOk()).andReturn()
-							  .getResponse();
+                    @Test
+                    void shouldSetTheContentAndReturn201() throws Exception {
+                        String content = "{\"content\":\"Hello New Spring Content World!\"}";
+                        mvc.perform(
+                                       put("/testEntity10s/" + testEntity10.getId() + "/child/content")
+                                       .content(content)
+                                       .contentType("application/json"))
+                        .andExpect(status().isCreated());
 
-					  assertThat(response, is(not(nullValue())));
-					  assertThat(response.getContentAsString(), is(
-							  "<html><body>Hello Spring Content World!</body></html>"));
-				  });
-			  });
-			  Context("a GET to /{repository}/{id}/{contentProperty} with multiple mime types the last of which matches the content", () -> {
-				  It("should return the original content and 200", () -> {
-					  MockHttpServletResponse response = mvc
-							  .perform(get("/testEntity10s/"
-									  + testEntity10.getId()
-									  + "/child/content").accept(
-									  new String[] {"text/xml",
-											  "text/plain"}))
-							  .andExpect(status().isOk()).andReturn()
-							  .getResponse();
+                        Optional<TestEntity10> fetched = repository.findById(testEntity10.getId());
+                        assertThat(fetched.isPresent()).isTrue();
+                        assertThat(fetched.get().getChild().getContentId()).isNotNull();
+                        assertThat(fetched.get().getChild().getContentLen()).isEqualTo(45L);
+                        assertThat(fetched.get().getChild().getContentMimeType()).isEqualTo("application/json");
+                                 try (InputStream actual = store.getResource(fetched.get(), PropertyPath.from("child/content")).getInputStream()) {
+                                     IOUtils.contentEquals(actual, new ByteArrayInputStream(content.getBytes()));
+                                 }
+                    }
 
-					  assertThat(response, is(not(nullValue())));
-					  assertThat(response.getContentAsString(),
-							  is("Hello Spring Content World!"));
-				  });
-			  });
-			  Context("a PUT to /{repository}/{id}/{contentProperty}", () -> {
-				  It("should create the content", () -> {
-					  mvc.perform(
-							  put("/testEntity10s/" + testEntity10.getId() + "/child/content")
-									  .content("Hello New Spring Content World!")
-									  .contentType("text/plain"))
-							  .andExpect(status().is2xxSuccessful());
+                }
 
-					  Optional<TestEntity10> fetched = repository
-							  .findById(testEntity10.getId());
-					  assertThat(fetched.isPresent(), is(true));
-					  assertThat(fetched.get().getChild().contentId,is(not(nullValue())));
-					  assertThat(fetched.get().getChild().contentLen, is(31L));
-					  assertThat(fetched.get().getChild().contentMimeType, is("text/plain"));
-				  });
-			  });
-			  Context("a DELETE to /{repository}/{id}/{contentProperty}", () -> {
-				  It("should delete the content", () -> {
-					  mvc.perform(delete(
-							  "/testEntity10s/" + testEntity10.getId() + "/child/content"))
-							  .andExpect(status().isNoContent());
+            }
 
-					  Optional<TestEntity10> fetched = repository.findById(testEntity10.getId());
-					  assertThat(fetched.isPresent(), is(true));
-					  assertThat(fetched.get().getChild().contentId, is(nullValue()));
-					  assertThat(fetched.get().getChild().contentLen, is(nullValue()));
-                      assertThat(fetched.get().getChild().contentMimeType, is(nullValue()));
-				  });
-			  });
+            @Nested
+            class GivenThatItHasContent {
+                @Nested
+                class AGETToRepositoryIdContentProperty {
+                    @BeforeEach
+                    void setUp() throws IOException {
+                        mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
-			  versionTests = Version.tests();
-			  lastModifiedDateTests = LastModifiedDate.tests();
-		  });
-		});
+                        testEntity10 = repository.save(new TestEntity10());
 
-		Context("given a POST to the entity endpoint with a multipart/form request", () -> {
-		  It("should create a new entity and its content and respond with a 201 Created", () -> {
-			  // assert content does not exist
-			  String content = "This is some new content";
-			  String previewContent = "This is some new preview content";
+                        String content = "Hello Spring Content World!";
+                        testEntity10.getChild().contentMimeType = "text/plain";
+                        UUID contentId = UUID.randomUUID();
+                        store.associate(testEntity10, PropertyPath.from("child/content"), contentId);
+                        WritableResource r = (WritableResource)store.getResource(testEntity10, PropertyPath.from("child/content"));
+                        try (OutputStream out = r.getOutputStream()) {
+                        				      out.write(content.getBytes());
+                        				  }
+                        				  testEntity10 = repository.save(testEntity10);
+                        versionTests.setMvc(mvc);
+                        versionTests.setUrl("/testEntity10s/" + testEntity10.getId() + "/child/content");
+                        versionTests.setCollectionUrl("/testEntity10s");
+                        versionTests.setContentLinkRel("child/content");
+                        versionTests.setRepo(repository);
+                        versionTests.setStore(store);
+                        versionTests.setEtag(format("\"%s\"", testEntity10.getVersion()));
+                        lastModifiedDateTests.setMvc(mvc);
+                        lastModifiedDateTests.setUrl("/testEntity10s/" + testEntity10.getId() + "/child/content");
+                        lastModifiedDateTests.setLastModifiedDate(testEntity10.getModifiedDate());
+                        lastModifiedDateTests.setEtag(testEntity10.getVersion().toString());
+                        lastModifiedDateTests.setContent(content);
+                    }
 
-			  MockMultipartFile file1 = new MockMultipartFile("child/content", "filename.txt", "text/plain", content.getBytes());
-			  MockMultipartFile file2 = new MockMultipartFile("child/preview", "preview.txt", "text/plain", previewContent.getBytes());
+                    @Test
+                    void shouldReturnTheContent() throws Exception {
+                        MockHttpServletResponse response = mvc
+                          .perform(get("/testEntity10s/" + testEntity10.getId() + "/child/content")
+                        		  .accept("text/plain"))
+                          .andExpect(status().isOk())
+                          .andExpect(header().string("etag", is("\"1\"")))
+                          .andExpect(header().string("last-modified", LastModifiedDate
+                        		  .isWithinASecond(testEntity10.getModifiedDate())))
+                          .andReturn().getResponse();
 
-			  // POST the new content
-			  MockHttpServletResponse response = mvc.perform(multipart("/testEntity10s")
-							  .file(file1)
-							  .file(file2)
-							  .param("name", "foo")
-							  .param("hidden", "bar"))
-					  .andExpect(status().isCreated())
-					  .andReturn().getResponse();
+                        assertThat(response).isNotNull();
+                        assertThat(response.getContentAsString()).isEqualTo("Hello Spring Content World!");
+                    }
 
-			  String location = response.getHeader("Location");
+                }
 
-			  Optional<TestEntity10> fetchedEntity = repository.findById(Long.valueOf(StringUtils.substringAfterLast(location, "/")));
-			  assertThat(fetchedEntity.get().getHidden(), is(nullValue()));
+                @Nested
+                class AGETToRepositoryIdContentPropertyWithAMimeTypeThatMatchesARenderer {
+                    @BeforeEach
+                    void setUp() throws IOException {
+                        mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
-			  // assert that it now exists
-			  response = mvc.perform(get(location + "/child/content")
-							  .accept("text/plain"))
-					  .andExpect(status().isOk())
-					  .andReturn().getResponse();
+                        testEntity10 = repository.save(new TestEntity10());
 
-			  assertThat(response.getContentAsString(), is(content));
+                        String content = "Hello Spring Content World!";
+                        testEntity10.getChild().contentMimeType = "text/plain";
+                        UUID contentId = UUID.randomUUID();
+                        store.associate(testEntity10, PropertyPath.from("child/content"), contentId);
+                        WritableResource r = (WritableResource)store.getResource(testEntity10, PropertyPath.from("child/content"));
+                        try (OutputStream out = r.getOutputStream()) {
+                        				      out.write(content.getBytes());
+                        				  }
+                        				  testEntity10 = repository.save(testEntity10);
+                        versionTests.setMvc(mvc);
+                        versionTests.setUrl("/testEntity10s/" + testEntity10.getId() + "/child/content");
+                        versionTests.setCollectionUrl("/testEntity10s");
+                        versionTests.setContentLinkRel("child/content");
+                        versionTests.setRepo(repository);
+                        versionTests.setStore(store);
+                        versionTests.setEtag(format("\"%s\"", testEntity10.getVersion()));
+                        lastModifiedDateTests.setMvc(mvc);
+                        lastModifiedDateTests.setUrl("/testEntity10s/" + testEntity10.getId() + "/child/content");
+                        lastModifiedDateTests.setLastModifiedDate(testEntity10.getModifiedDate());
+                        lastModifiedDateTests.setEtag(testEntity10.getVersion().toString());
+                        lastModifiedDateTests.setContent(content);
+                    }
 
-			  response = mvc.perform(get(location + "/child/preview")
-							  .accept("text/plain"))
-					  .andExpect(status().isOk())
-					  .andReturn().getResponse();
+                    @Test
+                    void shouldReturnTheRenditionAnd200() throws Exception {
+                        MockHttpServletResponse response = mvc
+                          .perform(get(
+                        		  "/testEntity10s/" + testEntity10.getId()
+                        				  + "/child/content")
+                        		  .accept("text/html"))
+                          .andExpect(status().isOk()).andReturn()
+                          .getResponse();
 
-			  assertThat(response.getContentAsString(), is(previewContent));
-		  });
-	  	});
-  	  });
-   }
+                        assertThat(response).isNotNull();
+                        assertThat(response.getContentAsString()).isEqualTo("<html><body>Hello Spring Content World!</body></html>");
+                    }
 
-	@Test
-   public void noop() {
-   }
+                }
+
+                @Nested
+                class AGETToRepositoryIdContentPropertyWithMultipleMimeTypesTheLastOfWhichMatchesTheCo {
+                    @BeforeEach
+                    void setUp() throws IOException {
+                        mvc = MockMvcBuilders.webAppContextSetup(context).build();
+
+                        testEntity10 = repository.save(new TestEntity10());
+
+                        String content = "Hello Spring Content World!";
+                        testEntity10.getChild().contentMimeType = "text/plain";
+                        UUID contentId = UUID.randomUUID();
+                        store.associate(testEntity10, PropertyPath.from("child/content"), contentId);
+                        WritableResource r = (WritableResource)store.getResource(testEntity10, PropertyPath.from("child/content"));
+                        try (OutputStream out = r.getOutputStream()) {
+                        				      out.write(content.getBytes());
+                        				  }
+                        				  testEntity10 = repository.save(testEntity10);
+                        versionTests.setMvc(mvc);
+                        versionTests.setUrl("/testEntity10s/" + testEntity10.getId() + "/child/content");
+                        versionTests.setCollectionUrl("/testEntity10s");
+                        versionTests.setContentLinkRel("child/content");
+                        versionTests.setRepo(repository);
+                        versionTests.setStore(store);
+                        versionTests.setEtag(format("\"%s\"", testEntity10.getVersion()));
+                        lastModifiedDateTests.setMvc(mvc);
+                        lastModifiedDateTests.setUrl("/testEntity10s/" + testEntity10.getId() + "/child/content");
+                        lastModifiedDateTests.setLastModifiedDate(testEntity10.getModifiedDate());
+                        lastModifiedDateTests.setEtag(testEntity10.getVersion().toString());
+                        lastModifiedDateTests.setContent(content);
+                    }
+
+                    @Test
+                    void shouldReturnTheOriginalContentAnd200() throws Exception {
+                        MockHttpServletResponse response = mvc
+                          .perform(get("/testEntity10s/"
+                        		  + testEntity10.getId()
+                        		  + "/child/content").accept(
+                        		  new String[] {"text/xml",
+                        				  "text/plain"}))
+                          .andExpect(status().isOk()).andReturn()
+                          .getResponse();
+
+                        assertThat(response).isNotNull();
+                        assertThat(response.getContentAsString()).isEqualTo("Hello Spring Content World!");
+                    }
+
+                }
+
+                @Nested
+                class APUTToRepositoryIdContentProperty {
+                    @BeforeEach
+                    void setUp() throws IOException {
+                        mvc = MockMvcBuilders.webAppContextSetup(context).build();
+
+                        testEntity10 = repository.save(new TestEntity10());
+
+                        String content = "Hello Spring Content World!";
+                        testEntity10.getChild().contentMimeType = "text/plain";
+                        UUID contentId = UUID.randomUUID();
+                        store.associate(testEntity10, PropertyPath.from("child/content"), contentId);
+                        WritableResource r = (WritableResource)store.getResource(testEntity10, PropertyPath.from("child/content"));
+                        try (OutputStream out = r.getOutputStream()) {
+                        				      out.write(content.getBytes());
+                        				  }
+                        				  testEntity10 = repository.save(testEntity10);
+                        versionTests.setMvc(mvc);
+                        versionTests.setUrl("/testEntity10s/" + testEntity10.getId() + "/child/content");
+                        versionTests.setCollectionUrl("/testEntity10s");
+                        versionTests.setContentLinkRel("child/content");
+                        versionTests.setRepo(repository);
+                        versionTests.setStore(store);
+                        versionTests.setEtag(format("\"%s\"", testEntity10.getVersion()));
+                        lastModifiedDateTests.setMvc(mvc);
+                        lastModifiedDateTests.setUrl("/testEntity10s/" + testEntity10.getId() + "/child/content");
+                        lastModifiedDateTests.setLastModifiedDate(testEntity10.getModifiedDate());
+                        lastModifiedDateTests.setEtag(testEntity10.getVersion().toString());
+                        lastModifiedDateTests.setContent(content);
+                    }
+
+                    @Test
+                    void shouldCreateTheContent() throws Exception {
+                        mvc.perform(
+                          put("/testEntity10s/" + testEntity10.getId() + "/child/content")
+                        		  .content("Hello New Spring Content World!")
+                        		  .contentType("text/plain"))
+                          .andExpect(status().is2xxSuccessful());
+
+                        Optional<TestEntity10> fetched = repository
+                          .findById(testEntity10.getId());
+                        assertThat(fetched.isPresent()).isTrue();
+                        assertThat(fetched.get().getChild().contentId).isNotNull();
+                        assertThat(fetched.get().getChild().contentLen).isEqualTo(31L);
+                        assertThat(fetched.get().getChild().contentMimeType).isEqualTo("text/plain");
+                    }
+
+                }
+
+                @Nested
+                class ADELETEToRepositoryIdContentProperty {
+                    @BeforeEach
+                    void setUp() throws IOException {
+                        mvc = MockMvcBuilders.webAppContextSetup(context).build();
+
+                        testEntity10 = repository.save(new TestEntity10());
+
+                        String content = "Hello Spring Content World!";
+                        testEntity10.getChild().contentMimeType = "text/plain";
+                        UUID contentId = UUID.randomUUID();
+                        store.associate(testEntity10, PropertyPath.from("child/content"), contentId);
+                        WritableResource r = (WritableResource)store.getResource(testEntity10, PropertyPath.from("child/content"));
+                        try (OutputStream out = r.getOutputStream()) {
+                        				      out.write(content.getBytes());
+                        				  }
+                        				  testEntity10 = repository.save(testEntity10);
+                        versionTests.setMvc(mvc);
+                        versionTests.setUrl("/testEntity10s/" + testEntity10.getId() + "/child/content");
+                        versionTests.setCollectionUrl("/testEntity10s");
+                        versionTests.setContentLinkRel("child/content");
+                        versionTests.setRepo(repository);
+                        versionTests.setStore(store);
+                        versionTests.setEtag(format("\"%s\"", testEntity10.getVersion()));
+                        lastModifiedDateTests.setMvc(mvc);
+                        lastModifiedDateTests.setUrl("/testEntity10s/" + testEntity10.getId() + "/child/content");
+                        lastModifiedDateTests.setLastModifiedDate(testEntity10.getModifiedDate());
+                        lastModifiedDateTests.setEtag(testEntity10.getVersion().toString());
+                        lastModifiedDateTests.setContent(content);
+                    }
+
+                    @Test
+                    void shouldDeleteTheContent() throws Exception {
+                        mvc.perform(delete(
+                          "/testEntity10s/" + testEntity10.getId() + "/child/content"))
+                          .andExpect(status().isNoContent());
+
+                        Optional<TestEntity10> fetched = repository.findById(testEntity10.getId());
+                        assertThat(fetched.isPresent()).isTrue();
+                        assertThat(fetched.get().getChild().contentId).isNull();
+                        assertThat(fetched.get().getChild().contentLen).isNull();
+                                       assertThat(fetched.get().getChild().contentMimeType).isNull();
+                    }
+
+                }
+
+            }
+
+        }
+
+        @Nested
+        class GivenAPOSTToTheEntityEndpointWithAMultipartFormRequest {
+            @BeforeEach
+            void setUp() {
+                mvc = MockMvcBuilders.webAppContextSetup(context).build();
+            }
+
+            @Test
+            void shouldCreateANewEntityAndItsContentAndRespondWithA201Created() throws Exception {
+                // assert content does not exist
+                String content = "This is some new content";
+                String previewContent = "This is some new preview content";
+
+                MockMultipartFile file1 = new MockMultipartFile("child/content", "filename.txt", "text/plain", content.getBytes());
+                MockMultipartFile file2 = new MockMultipartFile("child/preview", "preview.txt", "text/plain", previewContent.getBytes());
+
+                // POST the new content
+                MockHttpServletResponse response = mvc.perform(multipart("/testEntity10s")
+                		  .file(file1)
+                		  .file(file2)
+                		  .param("name", "foo")
+                		  .param("hidden", "bar"))
+                  .andExpect(status().isCreated())
+                  .andReturn().getResponse();
+
+                String location = response.getHeader("Location");
+
+                Optional<TestEntity10> fetchedEntity = repository.findById(Long.valueOf(StringUtils.substringAfterLast(location, "/")));
+                assertThat(fetchedEntity.get().getHidden()).isNull();
+
+                // assert that it now exists
+                response = mvc.perform(get(location + "/child/content")
+                		  .accept("text/plain"))
+                  .andExpect(status().isOk())
+                  .andReturn().getResponse();
+
+                assertThat(response.getContentAsString()).isEqualTo(content);
+
+                response = mvc.perform(get(location + "/child/preview")
+                		  .accept("text/plain"))
+                  .andExpect(status().isOk())
+                  .andReturn().getResponse();
+
+                assertThat(response.getContentAsString()).isEqualTo(previewContent);
+            }
+
+        }
+
+    }
 
    private static String toHeaderDateFormat(Date dt) {
       SimpleDateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);

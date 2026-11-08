@@ -1,13 +1,17 @@
 package internal.org.springframework.content.rest.storedrenditions;
 
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.*;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
+import org.junit.jupiter.api.extension.ExtendWith;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import static org.assertj.core.api.Assertions.assertThat;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.hamcrest.Matchers.not;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -19,8 +23,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.content.commons.annotations.HandleAfterSetContent;
 import org.springframework.content.commons.annotations.HandleBeforeUnsetContent;
@@ -45,19 +47,16 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfiguration;
 
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jSpringRunner;
-
 import internal.org.springframework.content.rest.support.StoreConfig;
 import internal.org.springframework.content.rest.support.TestEntity5;
 import internal.org.springframework.content.rest.support.TestEntity5Repository;
 import internal.org.springframework.content.rest.support.TestEntity5Store;
 
-@RunWith(Ginkgo4jSpringRunner.class)
-// @Ginkgo4jConfiguration(threads=1)
 @WebAppConfiguration
 @ContextConfiguration(classes = { StoredRenditionsRestIT.StoredRenditionsConfig.class, StoreConfig.class, DelegatingWebMvcConfiguration.class, RepositoryRestMvcConfiguration.class, RestConfiguration.class })
 @Transactional
 @ActiveProfiles("store")
+@ExtendWith(SpringExtension.class)
 public class StoredRenditionsRestIT {
 
     @Autowired
@@ -75,93 +74,117 @@ public class StoredRenditionsRestIT {
 
     private MockMvc mvc;
 
-    {
-        Describe("Stored Renditions", () -> {
+    @Nested
+    class StoredRenditions {
+        @Nested
+        class GivenAnEntityWithAContentProperty {
+            @Nested
+            class APUTToRepositoryIdContentProperty {
+                @BeforeEach
+                void setUp() throws Exception {
+                    mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
-            BeforeEach(() -> {
-                mvc = MockMvcBuilders.webAppContextSetup(context).build();
-            });
-
-            Context("given an Entity with a content property", () -> {
-
-                BeforeEach(() -> {
                     testEntity5 = repo.save(new TestEntity5());
-                });
 
-                Context("a PUT to /{repository}/{id}/{contentProperty}", () -> {
+                    mvc.perform(put("/testEntity5s/" + testEntity5.getId() + "/content").content("foo").contentType("text/plain")).andExpect(status().is2xxSuccessful());
+                }
 
-                    BeforeEach(() -> {
+                @Test
+                void shouldStoreTheRendition() throws IOException {
+                    testEntity5 = repo.findById(testEntity5.getId()).get();
+                    Resource r = store.getResource(testEntity5, PropertyPath.from("content"));
+                    try (InputStream actual = r.getInputStream()) {
+                        assertThat(IOUtils.toString(actual)).isEqualTo("foo");
+                    }
+
+                    r = store.getResource(testEntity5, PropertyPath.from("rendition"));
+                    try (InputStream actual = r.getInputStream()) {
+                        assertThat(IOUtils.toString(actual)).isEqualTo("<html><head><title>Stored Rendition</title></head><body>foo</body></html>");
+                    }
+                }
+
+                @Nested
+                class AGETToRepositoryIdContentProperty {
+                    @BeforeEach
+                    void setUp() throws Exception {
+                        mvc = MockMvcBuilders.webAppContextSetup(context).build();
+
+                        testEntity5 = repo.save(new TestEntity5());
+
                         mvc.perform(put("/testEntity5s/" + testEntity5.getId() + "/content").content("foo").contentType("text/plain")).andExpect(status().is2xxSuccessful());
-                    });
+                    }
 
-                    It("should store the rendition", () -> {
+                    @Test
+                    void shouldGetTheStoredRendition() throws Exception {
+                        Long id = testEntity5.getId();
 
-                        testEntity5 = repo.findById(testEntity5.getId()).get();
-                        Resource r = store.getResource(testEntity5, PropertyPath.from("content"));
-                        try (InputStream actual = r.getInputStream()) {
-                            assertThat(IOUtils.toString(actual), is("foo"));
-                        }
+                        mvc.perform(
+                                get("/testEntity5s/" + testEntity5.getId() + "/content")
+                                .accept("text/html"))
+                            .andExpect(status().isOk())
+                            .andExpect(content().string(not("<html><head><title>Dynamic Rendition</title></head><body>foo</body></html>")))
+                            .andExpect(content().string("<html><head><title>Stored Rendition</title></head><body>foo</body></html>"));
+                    }
 
-                        r = store.getResource(testEntity5, PropertyPath.from("rendition"));
-                        try (InputStream actual = r.getInputStream()) {
-                            assertThat(IOUtils.toString(actual), is("<html><head><title>Stored Rendition</title></head><body>foo</body></html>"));
-                        }
-                    });
+                }
 
-                    Context("a GET to /{repository}/{id}/{contentProperty}", () -> {
+                @Nested
+                class AGETToRepositoryIdRenditionProperty {
+                    @BeforeEach
+                    void setUp() throws Exception {
+                        mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
-                        It("should get the stored rendition", () -> {
+                        testEntity5 = repo.save(new TestEntity5());
 
-                            Long id = testEntity5.getId();
+                        mvc.perform(put("/testEntity5s/" + testEntity5.getId() + "/content").content("foo").contentType("text/plain")).andExpect(status().is2xxSuccessful());
+                    }
 
-                            mvc.perform(
-                                    get("/testEntity5s/" + testEntity5.getId() + "/content")
-                                    .accept("text/html"))
-                                .andExpect(status().isOk())
-                                .andExpect(content().string(not("<html><head><title>Dynamic Rendition</title></head><body>foo</body></html>")))
-                                .andExpect(content().string("<html><head><title>Stored Rendition</title></head><body>foo</body></html>"));
-                        });
-                    });
+                    @Test
+                    void shouldReturnA405() throws Exception {
+                        Long id = testEntity5.getId();
 
-                    Context("a GET to /{repository}/{id}/{renditionProperty}", () -> {
+                        mvc.perform(
+                                get("/testEntity5s/" + testEntity5.getId() + "/rendition")
+                                .accept("text/html"))
+                            .andExpect(status().isMethodNotAllowed());
+                    }
 
-                        It("should return a 405", () -> {
+                }
 
-                            Long id = testEntity5.getId();
+                @Nested
+                class ADELETEToRepositoryIdContentProperty {
+                    @BeforeEach
+                    void setUp() throws Exception {
+                        mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
-                            mvc.perform(
-                                    get("/testEntity5s/" + testEntity5.getId() + "/rendition")
-                                    .accept("text/html"))
-                                .andExpect(status().isMethodNotAllowed());
-                        });
-                    });
+                        testEntity5 = repo.save(new TestEntity5());
 
-                    Context("a DELETE to /{repository}/{id}/{contentProperty}", () -> {
+                        mvc.perform(put("/testEntity5s/" + testEntity5.getId() + "/content").content("foo").contentType("text/plain")).andExpect(status().is2xxSuccessful());
+                    }
 
-                        It("should also delete the rendition", () -> {
+                    @Test
+                    void shouldAlsoDeleteTheRendition() throws Exception {
+                        Long id = testEntity5.getId();
 
-                            Long id = testEntity5.getId();
+                        mvc.perform(delete("/testEntity5s/" + testEntity5.getId() + "/content")).andExpect(status().isNoContent());
 
-                            mvc.perform(delete("/testEntity5s/" + testEntity5.getId() + "/content")).andExpect(status().isNoContent());
+                        Optional<TestEntity5> fetched = repo.findById(id);
+                        assertThat(fetched.isPresent()).isTrue();
+                        assertThat(fetched.get().getContentId()).isNull();
+                        assertThat(fetched.get().getContentLen()).isNull();
+                        assertThat(fetched.get().getContentMimeType()).isNull();
 
-                            Optional<TestEntity5> fetched = repo.findById(id);
-                            assertThat(fetched.isPresent(), is(true));
-                            assertThat(fetched.get().getContentId(), is(nullValue()));
-                            assertThat(fetched.get().getContentLen(), is(nullValue()));
-                            assertThat(fetched.get().getContentMimeType(), is(nullValue()));
+                        assertThat(fetched.get().getRenditionId()).isNull();
+                        assertThat(fetched.get().getRenditionLen()).isEqualTo(0L);
+                        assertThat(fetched.get().getRenditionMimeType()).isNull();
+                    }
 
-                            assertThat(fetched.get().getRenditionId(), is(nullValue()));
-                            assertThat(fetched.get().getRenditionLen(), is(0L));
-                            assertThat(fetched.get().getRenditionMimeType(), is(nullValue()));
-                        });
-                    });
-                });
-            });
-        });
-    }
+                }
 
-    @Test
-    public void noop() {
+            }
+
+        }
+
     }
 
     @Configuration
@@ -212,8 +235,7 @@ public class StoredRenditionsRestIT {
         private TestEntity5Store store;
 
         @HandleAfterSetContent
-        public void onAfterSetContent(AfterSetContentEvent event)
-                throws IOException {
+        public void onAfterSetContent(AfterSetContentEvent event) throws IOException {
 
             TestEntity5 entity = (TestEntity5)event.getSource();
 

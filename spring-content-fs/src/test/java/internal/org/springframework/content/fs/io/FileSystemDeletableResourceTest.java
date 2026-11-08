@@ -1,87 +1,108 @@
 package internal.org.springframework.content.fs.io;
 
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jRunner;
-import org.junit.runner.RunWith;
-
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.springframework.content.commons.utils.FileService;
 import org.springframework.core.io.FileSystemResource;
 
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.BeforeEach;
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.Describe;
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.It;
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.JustBeforeEach;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import java.io.IOException;
 
-@RunWith(Ginkgo4jRunner.class)
+import static org.mockito.Mockito.*;
+
 public class FileSystemDeletableResourceTest {
 
     private FileSystemDeletableResource resource;
 
     private FileSystemResource delegate;
-    private FileService fileService;
 
-    {
-        Describe("FileSystemDeletableResource", () -> {
-            BeforeEach(() -> {
-                delegate = mock(FileSystemResource.class);
-                fileService = mock(FileService.class);
-            });
-            JustBeforeEach(() -> resource = new FileSystemDeletableResource(delegate, fileService));
-            It("should delegate isOpen", () -> {
-                resource.isOpen();
-                verify(delegate).isOpen();
-            });
-            It("should delegate exists", () -> {
-                resource.exists();
-                verify(delegate).exists();
-            });
-            It("should delegate isReadable", () -> {
-                resource.isReadable();
-                verify(delegate).isReadable();
-            });
-            It("should delegate getInputStream", () -> {
-                resource.getInputStream();
-                verify(delegate).getInputStream();
-            });
-            It("should delegate isWritable", () -> {
-                resource.isWritable();
-                verify(delegate).isWritable();
-            });
-            It("should delegate getOutputStream", () -> {
-                when(delegate.exists()).thenReturn(true);
-                resource.getOutputStream();
-                verify(delegate).getOutputStream();
-            });
-            It("should delegate getURL", () -> {
-                resource.getURL();
-                verify(delegate).getURL();
-            });
-            It("should delegate getURI", () -> {
-                resource.getURI();
-                verify(delegate).getURI();
-            });
-            It("should delegate getFile", () -> {
-                resource.getFile();
-                verify(delegate).getFile();
-            });
-            It("should delegate contentLength", () -> {
-                resource.contentLength();
-                verify(delegate).contentLength();
-            });
-            It("should delegate createRelative", () -> {
-                resource.createRelative("some-path");
-                verify(delegate).createRelative("some-path");
-            });
-            It("should delegate getFilename", () -> {
-                resource.getFilename();
-                verify(delegate).getFilename();
-            });
-            It("should delegate getDescription", () -> {
-                resource.getDescription();
-                verify(delegate).getDescription();
-            });
-        });
+    @Nested
+    class FileSystemDeletableResourceCases {
+        @BeforeEach
+        void setUp() {
+            delegate = mock(FileSystemResource.class);
+            FileService fileService = mock(FileService.class);
+
+            resource = new FileSystemDeletableResource(delegate, fileService);
+        }
+
+        @Test
+        void shouldDelegateIsOpen() {
+            resource.isOpen();
+            verify(delegate).isOpen();
+        }
+
+        @Test
+        void shouldDelegateExists() {
+            resource.exists();
+            verify(delegate).exists();
+        }
+
+        @Test
+        void shouldDelegateIsReadable() {
+            resource.isReadable();
+            verify(delegate).isReadable();
+        }
+
+        @Test
+        void shouldDelegateGetInputStream() throws IOException {
+            resource.getInputStream();
+            verify(delegate).getInputStream();
+        }
+
+        @Test
+        void shouldDelegateIsWritable() {
+            resource.isWritable();
+            verify(delegate).isWritable();
+        }
+
+        @Test
+        void shouldDelegateGetOutputStream() throws IOException {
+            when(delegate.exists()).thenReturn(true);
+            resource.getOutputStream();
+            verify(delegate).getOutputStream();
+        }
+
+        @Test
+        void shouldDelegateGetURL() throws IOException {
+            resource.getURL();
+            verify(delegate).getURL();
+        }
+
+        @Test
+        void shouldDelegateGetURI() throws IOException {
+            resource.getURI();
+            verify(delegate).getURI();
+        }
+
+        @Test
+        void shouldDelegateGetFile() {
+            resource.getFile();
+            verify(delegate).getFile();
+        }
+
+        @Test
+        void shouldDelegateContentLength() throws IOException {
+            resource.contentLength();
+            verify(delegate).contentLength();
+        }
+
+        @Test
+        void shouldDelegateCreateRelative() {
+            resource.createRelative("some-path");
+            verify(delegate).createRelative("some-path");
+        }
+
+        @Test
+        void shouldDelegateGetFilename() {
+            resource.getFilename();
+            verify(delegate).getFilename();
+        }
+
+        @Test
+        void shouldDelegateGetDescription() {
+            resource.getDescription();
+            verify(delegate).getDescription();
+        }
     }
 }

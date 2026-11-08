@@ -49,7 +49,6 @@ public class StoredDataEncryptionKeyGenericConverter implements ConditionalGener
                     .anyMatch(type -> conversionService.canConvert(type, targetType));
         }
         return false;
-
     }
 
     @Override

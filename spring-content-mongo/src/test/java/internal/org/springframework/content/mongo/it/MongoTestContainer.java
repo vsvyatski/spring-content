@@ -18,7 +18,6 @@ public class MongoTestContainer extends MongoDBContainer {
     // Strip the db name from the end of the replicaSetUrl
     public static String getTestDbName() {
         return StringUtils.substringAfterLast(Singleton.INSTANCE.getReplicaSetUrl(), "/");
-
     }
 
     public static String getTestDbUrl() {

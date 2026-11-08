@@ -1,15 +1,13 @@
 package it.store;
 
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jConfiguration;
-import com.github.paulcwarren.ginkgo4j.Ginkgo4jRunner;
 import internal.org.springframework.content.fs.store.DefaultFileSystemStoreImpl;
 import jakarta.persistence.*;
 import net.bytebuddy.utility.RandomString;
 import org.apache.commons.io.IOUtils;
-import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.jpa.EntityManagerFactoryBuilder;
 import org.springframework.boot.jpa.autoconfigure.JpaProperties;
 import org.springframework.boot.persistence.autoconfigure.EntityScan;
@@ -44,22 +42,13 @@ import java.io.*;
 import java.nio.file.Files;
 import java.util.UUID;
 
-import static com.github.paulcwarren.ginkgo4j.Ginkgo4jDSL.*;
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(Ginkgo4jRunner.class)
-@Ginkgo4jConfiguration(threads = 1)
 public class FileSystemStorePropertyPathAccessorsIT {
 
-    private DefaultFileSystemStoreImpl<Object, String> mongoContentRepoImpl;
     private FileSystemStorePropertyPathAccessorsIT.TEntity entity;
     private Resource genericResource;
 
-    private InputStream content;
-    private InputStream result;
     private Exception e;
 
     private AnnotationConfigApplicationContext context;
@@ -69,294 +58,15 @@ public class FileSystemStorePropertyPathAccessorsIT {
 
     private String resourceLocation;
 
-    {
-        Describe("DefaultFileSystemStoreImpl PropertyPath Accessors", () -> {
-
-            BeforeEach(() -> {
-                context = new AnnotationConfigApplicationContext();
-                context.register(FileSystemStorePropertyPathAccessorsIT.TestConfig.class);
-                context.refresh();
-
-                repo = context.getBean(TestEntityRepository.class);
-                store = context.getBean(TestEntityStore.class);
-
-                RandomString random = new RandomString(5);
-                resourceLocation = random.nextString();
-            });
-
-            AfterEach(() -> {
-                context.close();
-            });
-
-            Describe("Store", () -> {
-
-                Context("#getResource", () -> {
-
-                    BeforeEach(() -> {
-                        genericResource = store.getResource(resourceLocation);
-                    });
-
-                    AfterEach(() -> {
-                        ((DeletableResource) genericResource).delete();
-                    });
-
-                    It("should get Resource", () -> {
-                        assertThat(genericResource, is(instanceOf(Resource.class)));
-                    });
-
-                    It("should not exist", () -> {
-                        assertThat(genericResource.exists(), is(false));
-                    });
-
-                    Context("given content is added to that resource", () -> {
-
-                        BeforeEach(() -> {
-                            try (InputStream is = new ByteArrayInputStream("Hello Spring Content World!".getBytes())) {
-                                try (OutputStream os = ((WritableResource) genericResource).getOutputStream()) {
-                                    IOUtils.copy(is, os);
-                                }
-                            }
-                        });
-
-                        It("should store that content", () -> {
-                            assertThat(genericResource.exists(), is(true));
-
-                            boolean matches = false;
-                            try (InputStream expected = new ByteArrayInputStream("Hello Spring Content World!".getBytes())) {
-                                try (InputStream actual = genericResource.getInputStream()) {
-                                    matches = IOUtils.contentEquals(expected, actual);
-                                    assertThat(matches, Matchers.is(true));
-                                }
-                            }
-                        });
-
-                        Context("given that resource is then updated", () -> {
-
-                            BeforeEach(() -> {
-                                try (InputStream is = new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes())) {
-                                    try (OutputStream os = ((WritableResource) genericResource).getOutputStream()) {
-                                        IOUtils.copy(is, os);
-                                    }
-                                }
-                            });
-
-                            It("should store that updated content", () -> {
-                                assertThat(genericResource.exists(), is(true));
-
-                                try (InputStream expected = new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes())) {
-                                    try (InputStream actual = genericResource.getInputStream()) {
-                                        assertThat(IOUtils.contentEquals(expected, actual), is(true));
-                                    }
-                                }
-                            });
-                        });
-
-                        Context("given that resource is then deleted", () -> {
-
-                            BeforeEach(() -> {
-                                try {
-                                    ((DeletableResource) genericResource).delete();
-                                } catch (Exception e) {
-                                    this.e = e;
-                                }
-                            });
-
-                            It("should not exist", () -> {
-                                assertThat(e, is(nullValue()));
-                            });
-                        });
-                    });
-                });
-            });
-
-            Describe("AssociativeStore", () -> {
-
-                Context("given a new entity", () -> {
-
-                    BeforeEach(() -> {
-                        entity = new FileSystemStorePropertyPathAccessorsIT.TEntity();
-                        entity = repo.save(entity);
-                    });
-
-                    It("should not have an associated resource", () -> {
-                        assertThat(entity.getContent().getId(), is(nullValue()));
-                        assertThat(store.getResource(entity, PropertyPath.from("content")), is(nullValue()));
-                    });
-
-                    Context("given a resource", () -> {
-
-                        BeforeEach(() -> {
-                            genericResource = store.getResource(resourceLocation);
-                        });
-
-                        Context("when the resource is associated", () -> {
-
-                            BeforeEach(() -> {
-                                store.associate(entity, PropertyPath.from("content"), resourceLocation);
-                            });
-
-                            It("should be recorded as such on the entity's @ContentId", () -> {
-                                assertThat(entity.getContent().getId(), is(resourceLocation));
-                            });
-
-                            Context("when the resource is unassociated", () -> {
-
-                                BeforeEach(() -> {
-                                    store.unassociate(entity, PropertyPath.from("content"));
-                                });
-
-                                It("should reset the entity's @ContentId", () -> {
-                                    assertThat(entity.getContent().getId(), is(nullValue()));
-                                });
-                            });
-
-                            Context("when a invalid property path is used to associate a resource", () -> {
-                                It("should throw an error", () -> {
-                                    try {
-                                        store.associate(entity, PropertyPath.from("does.not.exist"), resourceLocation);
-                                    } catch (Exception sae) {
-                                        this.e = sae;
-                                    }
-                                    assertThat(e, is(instanceOf(StoreAccessException.class)));
-                                });
-                            });
-
-                            Context("when a invalid property path is used to load a resource", () -> {
-                                It("should throw an error", () -> {
-                                    try {
-                                        store.getResource(entity, PropertyPath.from("does.not.exist"));
-                                    } catch (Exception sae) {
-                                        this.e = sae;
-                                    }
-                                    assertThat(e, is(instanceOf(StoreAccessException.class)));
-                                });
-                            });
-
-                            Context("when a invalid property path is used to unassociate a resource", () -> {
-                                It("should throw an error", () -> {
-                                    try {
-                                        store.unassociate(entity, PropertyPath.from("does.not.exist"));
-                                    } catch (Exception sae) {
-                                        this.e = sae;
-                                    }
-                                    assertThat(e, is(instanceOf(StoreAccessException.class)));
-                                });
-                            });
-                        });
-                    });
-                });
-            });
-
-            Describe("ContentStore", () -> {
-
-                BeforeEach(() -> {
-                    entity = new FileSystemStorePropertyPathAccessorsIT.TEntity();
-                    entity = repo.save(entity);
-
-                    store.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-                });
-
-                It("should be able to store new content", () -> {
-                    // content
-                    try (InputStream content = store.getContent(entity, PropertyPath.from("content"))) {
-                        assertThat(IOUtils.contentEquals(new ByteArrayInputStream("Hello Spring Content World!".getBytes()), content), is(true));
-                    } catch (IOException ignored) {
-                    }
-                });
-
-                It("should have content metadata", () -> {
-                    // content
-                    assertThat(entity.getContent().getId(), is(notNullValue()));
-                    assertThat(entity.getContent().getId().trim().length(), greaterThan(0));
-                    Assert.assertEquals(entity.getContent().getLength(), 27L);
-                });
-
-                Context("when content is updated", () -> {
-                    BeforeEach(() -> {
-                        store.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()));
-                        entity = repo.save(entity);
-                    });
-
-                    It("should have the updated content", () -> {
-                        //content
-                        try (InputStream content = store.getContent(entity, PropertyPath.from("content"))) {
-                            boolean matches = IOUtils.contentEquals(new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), content);
-                            assertThat(matches, is(true));
-                        }
-                    });
-                });
-
-                Context("when content is updated with shorter content", () -> {
-                    BeforeEach(() -> {
-                        store.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Spring World!".getBytes()));
-                        entity = repo.save(entity);
-                    });
-                    It("should store only the new content", () -> {
-                        //content
-                        try (InputStream content = store.getContent(entity, PropertyPath.from("content"))) {
-                            boolean matches = IOUtils.contentEquals(new ByteArrayInputStream("Hello Spring World!".getBytes()), content);
-                            assertThat(matches, is(true));
-                        }
-                    });
-                });
-
-                Context("when content is deleted", () -> {
-                    BeforeEach(() -> {
-                        resourceLocation = entity.getContent().getId().toString();
-                        entity = store.unsetContent(entity, PropertyPath.from("content"));
-                        entity = repo.save(entity);
-                    });
-
-                    It("should have no content", () -> {
-                        //content
-                        try (InputStream content = store.getContent(entity, PropertyPath.from("content"))) {
-                            assertThat(content, is(Matchers.nullValue()));
-                        }
-
-                        assertThat(entity.getContent().getId(), is(Matchers.nullValue()));
-                        Assert.assertEquals(entity.getContent().getLength(), 0);
-                    });
-                });
-
-                Context("when an invalid property path is used to setContent", () -> {
-                    It("should throw an error", () -> {
-                        try {
-                            store.setContent(entity, PropertyPath.from("does.not.exist"), new ByteArrayInputStream("foo".getBytes()));
-                        } catch (Exception sae) {
-                            this.e = sae;
-                        }
-                        assertThat(e, is(instanceOf(StoreAccessException.class)));
-                    });
-                });
-
-                Context("when an invalid property path is used to getContent", () -> {
-                    It("should throw an error", () -> {
-                        try {
-                            store.getContent(entity, PropertyPath.from("does.not.exist"));
-                        } catch (Exception sae) {
-                            this.e = sae;
-                        }
-                        assertThat(e, is(instanceOf(StoreAccessException.class)));
-                    });
-                });
-
-                Context("when an invalid property path is used to unsetContent", () -> {
-                    It("should throw an error", () -> {
-                        try {
-                            store.unsetContent(entity, PropertyPath.from("does.not.exist"));
-                        } catch (Exception sae) {
-                            this.e = sae;
-                        }
-                        assertThat(e, is(instanceOf(StoreAccessException.class)));
-                    });
-                });
-            });
-        });
-    }
-
     @Test
     public void test() {
         // noop
+    }
+
+    public interface TestEntityRepository extends JpaRepository<TEntity, UUID> {
+    }
+
+    public interface TestEntityStore extends ContentStore<TEntity, String> {
     }
 
     @Configuration
@@ -476,9 +186,6 @@ public class FileSystemStorePropertyPathAccessorsIT {
         @OriginalFileName
         private String filename;
 
-        public EmbeddedContent() {
-        }
-
         public String getId() {
             return id;
         }
@@ -512,9 +219,659 @@ public class FileSystemStorePropertyPathAccessorsIT {
         }
     }
 
-    public interface TestEntityRepository extends JpaRepository<TEntity, UUID> {
-    }
+    @Nested
+    class DefaultFileSystemStoreImplPropertyPathAccessors {
+        @Nested
+        class Store {
+            @Nested
+            class GetResource {
+                @BeforeEach
+                void setUp() {
+                    context = new AnnotationConfigApplicationContext();
+                    context.register(FileSystemStorePropertyPathAccessorsIT.TestConfig.class);
+                    context.refresh();
 
-    public interface TestEntityStore extends ContentStore<TEntity, String> {
+                    repo = context.getBean(TestEntityRepository.class);
+                    store = context.getBean(TestEntityStore.class);
+
+                    RandomString random = new RandomString(5);
+                    resourceLocation = random.nextString();
+
+                    genericResource = store.getResource(resourceLocation);
+                }
+
+                @AfterEach
+                void tearDown() throws IOException {
+                    ((DeletableResource) genericResource).delete();
+                    context.close();
+                }
+
+                @Test
+                void shouldGetResource() {
+                    assertThat(genericResource).isInstanceOf(Resource.class);
+                }
+
+                @Test
+                void shouldNotExist() {
+                    assertThat(genericResource.exists()).isFalse();
+                }
+
+                @Nested
+                class GivenContentIsAddedToThatResource {
+                    @BeforeEach
+                    void setUp() throws IOException {
+                        context = new AnnotationConfigApplicationContext();
+                        context.register(FileSystemStorePropertyPathAccessorsIT.TestConfig.class);
+                        context.refresh();
+
+                        repo = context.getBean(TestEntityRepository.class);
+                        store = context.getBean(TestEntityStore.class);
+
+                        RandomString random = new RandomString(5);
+                        resourceLocation = random.nextString();
+
+                        genericResource = store.getResource(resourceLocation);
+
+                        try (InputStream is = new ByteArrayInputStream("Hello Spring Content World!".getBytes())) {
+                            try (OutputStream os = ((WritableResource) genericResource).getOutputStream()) {
+                                IOUtils.copy(is, os);
+                            }
+                        }
+                    }
+
+                    @AfterEach
+                    void tearDown() throws IOException {
+                        ((DeletableResource) genericResource).delete();
+                        context.close();
+                    }
+
+                    @Test
+                    void shouldStoreThatContent() throws IOException {
+                        assertThat(genericResource.exists()).isTrue();
+
+                        try (InputStream expected = new ByteArrayInputStream("Hello Spring Content World!".getBytes())) {
+                            try (InputStream actual = genericResource.getInputStream()) {
+                                boolean matches = IOUtils.contentEquals(expected, actual);
+                                assertThat(matches).isTrue();
+                            }
+                        }
+                    }
+
+                    @Nested
+                    class GivenThatResourceIsThenUpdated {
+                        @BeforeEach
+                        void setUp() throws IOException {
+                            context = new AnnotationConfigApplicationContext();
+                            context.register(FileSystemStorePropertyPathAccessorsIT.TestConfig.class);
+                            context.refresh();
+
+                            repo = context.getBean(TestEntityRepository.class);
+                            store = context.getBean(TestEntityStore.class);
+
+                            RandomString random = new RandomString(5);
+                            resourceLocation = random.nextString();
+
+                            genericResource = store.getResource(resourceLocation);
+
+                            try (InputStream is = new ByteArrayInputStream("Hello Spring Content World!".getBytes())) {
+                                try (OutputStream os = ((WritableResource) genericResource).getOutputStream()) {
+                                    IOUtils.copy(is, os);
+                                }
+                            }
+
+                            try (InputStream is = new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes())) {
+                                try (OutputStream os = ((WritableResource) genericResource).getOutputStream()) {
+                                    IOUtils.copy(is, os);
+                                }
+                            }
+                        }
+
+                        @AfterEach
+                        void tearDown() throws IOException {
+                            ((DeletableResource) genericResource).delete();
+                            context.close();
+                        }
+
+                        @Test
+                        void shouldStoreThatUpdatedContent() throws IOException {
+                            assertThat(genericResource.exists()).isTrue();
+
+                            try (InputStream expected = new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes())) {
+                                try (InputStream actual = genericResource.getInputStream()) {
+                                    assertThat(IOUtils.contentEquals(expected, actual)).isTrue();
+                                }
+                            }
+                        }
+                    }
+
+                    @Nested
+                    class GivenThatResourceIsThenDeleted {
+                        @BeforeEach
+                        void setUp() throws IOException {
+                            context = new AnnotationConfigApplicationContext();
+                            context.register(FileSystemStorePropertyPathAccessorsIT.TestConfig.class);
+                            context.refresh();
+
+                            repo = context.getBean(TestEntityRepository.class);
+                            store = context.getBean(TestEntityStore.class);
+
+                            RandomString random = new RandomString(5);
+                            resourceLocation = random.nextString();
+
+                            genericResource = store.getResource(resourceLocation);
+
+                            try (InputStream is = new ByteArrayInputStream("Hello Spring Content World!".getBytes())) {
+                                try (OutputStream os = ((WritableResource) genericResource).getOutputStream()) {
+                                    IOUtils.copy(is, os);
+                                }
+                            }
+
+                            try {
+                                ((DeletableResource) genericResource).delete();
+                            } catch (Exception e) {
+                                FileSystemStorePropertyPathAccessorsIT.this.e = e;
+                            }
+                        }
+
+                        @AfterEach
+                        void tearDown() throws IOException {
+                            ((DeletableResource) genericResource).delete();
+                            context.close();
+                        }
+
+                        @Test
+                        void shouldNotExist() {
+                            assertThat(e).isNull();
+                        }
+                    }
+                }
+            }
+        }
+
+        @Nested
+        class AssociativeStore {
+            @Nested
+            class GivenANewEntity {
+                @BeforeEach
+                void setUp() {
+                    context = new AnnotationConfigApplicationContext();
+                    context.register(FileSystemStorePropertyPathAccessorsIT.TestConfig.class);
+                    context.refresh();
+
+                    repo = context.getBean(TestEntityRepository.class);
+                    store = context.getBean(TestEntityStore.class);
+
+                    RandomString random = new RandomString(5);
+                    resourceLocation = random.nextString();
+
+                    entity = new FileSystemStorePropertyPathAccessorsIT.TEntity();
+                    entity = repo.save(entity);
+                }
+
+                @AfterEach
+                void tearDown() {
+                    context.close();
+                }
+
+                @Test
+                void shouldNotHaveAnAssociatedResource() {
+                    assertThat(entity.getContent().getId()).isNull();
+                    assertThat(store.getResource(entity, PropertyPath.from("content"))).isNull();
+                }
+
+                @Nested
+                class GivenAResource {
+                    @Nested
+                    class WhenTheResourceIsAssociated {
+                        @BeforeEach
+                        void setUp() {
+                            context = new AnnotationConfigApplicationContext();
+                            context.register(FileSystemStorePropertyPathAccessorsIT.TestConfig.class);
+                            context.refresh();
+
+                            repo = context.getBean(TestEntityRepository.class);
+                            store = context.getBean(TestEntityStore.class);
+
+                            RandomString random = new RandomString(5);
+                            resourceLocation = random.nextString();
+
+                            entity = new FileSystemStorePropertyPathAccessorsIT.TEntity();
+                            entity = repo.save(entity);
+
+                            genericResource = store.getResource(resourceLocation);
+
+                            store.associate(entity, PropertyPath.from("content"), resourceLocation);
+                        }
+
+                        @AfterEach
+                        void tearDown() {
+                            context.close();
+                        }
+
+                        @Test
+                        void shouldBeRecordedAsSuchOnTheEntitySContentId() {
+                            assertThat(entity.getContent().getId()).isEqualTo(resourceLocation);
+                        }
+
+                        @Nested
+                        class WhenTheResourceIsUnassociated {
+                            @BeforeEach
+                            void setUp() {
+                                context = new AnnotationConfigApplicationContext();
+                                context.register(FileSystemStorePropertyPathAccessorsIT.TestConfig.class);
+                                context.refresh();
+
+                                repo = context.getBean(TestEntityRepository.class);
+                                store = context.getBean(TestEntityStore.class);
+
+                                RandomString random = new RandomString(5);
+                                resourceLocation = random.nextString();
+
+                                entity = new FileSystemStorePropertyPathAccessorsIT.TEntity();
+                                entity = repo.save(entity);
+
+                                genericResource = store.getResource(resourceLocation);
+
+                                store.associate(entity, PropertyPath.from("content"), resourceLocation);
+
+                                store.unassociate(entity, PropertyPath.from("content"));
+                            }
+
+                            @AfterEach
+                            void tearDown() {
+                                context.close();
+                            }
+
+                            @Test
+                            void shouldResetTheEntitySContentId() {
+                                assertThat(entity.getContent().getId()).isNull();
+                            }
+                        }
+
+                        @Nested
+                        class WhenAInvalidPropertyPathIsUsedToAssociateAResource {
+                            @BeforeEach
+                            void setUp() {
+                                context = new AnnotationConfigApplicationContext();
+                                context.register(FileSystemStorePropertyPathAccessorsIT.TestConfig.class);
+                                context.refresh();
+
+                                repo = context.getBean(TestEntityRepository.class);
+                                store = context.getBean(TestEntityStore.class);
+
+                                RandomString random = new RandomString(5);
+                                resourceLocation = random.nextString();
+
+                                entity = new FileSystemStorePropertyPathAccessorsIT.TEntity();
+                                entity = repo.save(entity);
+
+                                genericResource = store.getResource(resourceLocation);
+
+                                store.associate(entity, PropertyPath.from("content"), resourceLocation);
+                            }
+
+                            @AfterEach
+                            void tearDown() {
+                                context.close();
+                            }
+
+                            @Test
+                            void shouldThrowAnError() {
+                                try {
+                                    store.associate(entity, PropertyPath.from("does.not.exist"), resourceLocation);
+                                } catch (Exception sae) {
+                                    FileSystemStorePropertyPathAccessorsIT.this.e = sae;
+                                }
+                                assertThat(e).isInstanceOf(StoreAccessException.class);
+                            }
+                        }
+
+                        @Nested
+                        class WhenAInvalidPropertyPathIsUsedToLoadAResource {
+                            @BeforeEach
+                            void setUp() {
+                                context = new AnnotationConfigApplicationContext();
+                                context.register(FileSystemStorePropertyPathAccessorsIT.TestConfig.class);
+                                context.refresh();
+
+                                repo = context.getBean(TestEntityRepository.class);
+                                store = context.getBean(TestEntityStore.class);
+
+                                RandomString random = new RandomString(5);
+                                resourceLocation = random.nextString();
+
+                                entity = new FileSystemStorePropertyPathAccessorsIT.TEntity();
+                                entity = repo.save(entity);
+
+                                genericResource = store.getResource(resourceLocation);
+
+                                store.associate(entity, PropertyPath.from("content"), resourceLocation);
+                            }
+
+                            @AfterEach
+                            void tearDown() {
+                                context.close();
+                            }
+
+                            @Test
+                            void shouldThrowAnError() {
+                                try {
+                                    store.getResource(entity, PropertyPath.from("does.not.exist"));
+                                } catch (Exception sae) {
+                                    FileSystemStorePropertyPathAccessorsIT.this.e = sae;
+                                }
+                                assertThat(e).isInstanceOf(StoreAccessException.class);
+                            }
+                        }
+
+                        @Nested
+                        class WhenAInvalidPropertyPathIsUsedToUnassociateAResource {
+                            @BeforeEach
+                            void setUp() {
+                                context = new AnnotationConfigApplicationContext();
+                                context.register(FileSystemStorePropertyPathAccessorsIT.TestConfig.class);
+                                context.refresh();
+
+                                repo = context.getBean(TestEntityRepository.class);
+                                store = context.getBean(TestEntityStore.class);
+
+                                RandomString random = new RandomString(5);
+                                resourceLocation = random.nextString();
+
+                                entity = new FileSystemStorePropertyPathAccessorsIT.TEntity();
+                                entity = repo.save(entity);
+
+                                genericResource = store.getResource(resourceLocation);
+
+                                store.associate(entity, PropertyPath.from("content"), resourceLocation);
+                            }
+
+                            @AfterEach
+                            void tearDown() {
+                                context.close();
+                            }
+
+                            @Test
+                            void shouldThrowAnError() {
+                                try {
+                                    store.unassociate(entity, PropertyPath.from("does.not.exist"));
+                                } catch (Exception sae) {
+                                    FileSystemStorePropertyPathAccessorsIT.this.e = sae;
+                                }
+                                assertThat(e).isInstanceOf(StoreAccessException.class);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        @Nested
+        class ContentStoreCases {
+            @BeforeEach
+            void setUp() {
+                context = new AnnotationConfigApplicationContext();
+                context.register(FileSystemStorePropertyPathAccessorsIT.TestConfig.class);
+                context.refresh();
+
+                repo = context.getBean(TestEntityRepository.class);
+                store = context.getBean(TestEntityStore.class);
+
+                RandomString random = new RandomString(5);
+                resourceLocation = random.nextString();
+
+                entity = new FileSystemStorePropertyPathAccessorsIT.TEntity();
+                entity = repo.save(entity);
+
+                store.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+            }
+
+            @AfterEach
+            void tearDown() {
+                context.close();
+            }
+
+            @Test
+            void shouldBeAbleToStoreNewContent() {
+                // content
+                try (InputStream content = store.getContent(entity, PropertyPath.from("content"))) {
+                    assertThat(IOUtils.contentEquals(new ByteArrayInputStream("Hello Spring Content World!".getBytes()), content)).isTrue();
+                } catch (IOException ignored) {
+                }
+            }
+
+            @Test
+            void shouldHaveContentMetadata() {
+                // content
+                assertThat(entity.getContent().getId()).isNotNull();
+                assertThat(entity.getContent().getId().trim().length()).isGreaterThan(0);
+                assertThat(entity.getContent().getLength()).isEqualTo(27L);
+            }
+
+            @Nested
+            class WhenContentIsUpdated {
+                @BeforeEach
+                void setUp() {
+                    context = new AnnotationConfigApplicationContext();
+                    context.register(FileSystemStorePropertyPathAccessorsIT.TestConfig.class);
+                    context.refresh();
+
+                    repo = context.getBean(TestEntityRepository.class);
+                    store = context.getBean(TestEntityStore.class);
+
+                    RandomString random = new RandomString(5);
+                    resourceLocation = random.nextString();
+
+                    entity = new FileSystemStorePropertyPathAccessorsIT.TEntity();
+                    entity = repo.save(entity);
+
+                    store.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+
+                    store.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()));
+                    entity = repo.save(entity);
+                }
+
+                @AfterEach
+                void tearDown() {
+                    context.close();
+                }
+
+                @Test
+                void shouldHaveTheUpdatedContent() throws IOException {
+                    //content
+                    try (InputStream content = store.getContent(entity, PropertyPath.from("content"))) {
+                        boolean matches = IOUtils.contentEquals(new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), content);
+                        assertThat(matches).isTrue();
+                    }
+                }
+            }
+
+            @Nested
+            class WhenContentIsUpdatedWithShorterContent {
+                @BeforeEach
+                void setUp() {
+                    context = new AnnotationConfigApplicationContext();
+                    context.register(FileSystemStorePropertyPathAccessorsIT.TestConfig.class);
+                    context.refresh();
+
+                    repo = context.getBean(TestEntityRepository.class);
+                    store = context.getBean(TestEntityStore.class);
+
+                    RandomString random = new RandomString(5);
+                    resourceLocation = random.nextString();
+
+                    entity = new FileSystemStorePropertyPathAccessorsIT.TEntity();
+                    entity = repo.save(entity);
+
+                    store.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+
+                    store.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Spring World!".getBytes()));
+                    entity = repo.save(entity);
+                }
+
+                @AfterEach
+                void tearDown() {
+                    context.close();
+                }
+
+                @Test
+                void shouldStoreOnlyTheNewContent() throws IOException {
+                    //content
+                    try (InputStream content = store.getContent(entity, PropertyPath.from("content"))) {
+                        boolean matches = IOUtils.contentEquals(new ByteArrayInputStream("Hello Spring World!".getBytes()), content);
+                        assertThat(matches).isTrue();
+                    }
+                }
+            }
+
+            @Nested
+            class WhenContentIsDeleted {
+                @BeforeEach
+                void setUp() {
+                    context = new AnnotationConfigApplicationContext();
+                    context.register(FileSystemStorePropertyPathAccessorsIT.TestConfig.class);
+                    context.refresh();
+
+                    repo = context.getBean(TestEntityRepository.class);
+                    store = context.getBean(TestEntityStore.class);
+
+                    RandomString random = new RandomString(5);
+                    resourceLocation = random.nextString();
+
+                    entity = new FileSystemStorePropertyPathAccessorsIT.TEntity();
+                    entity = repo.save(entity);
+
+                    store.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+
+                    resourceLocation = entity.getContent().getId();
+                    entity = store.unsetContent(entity, PropertyPath.from("content"));
+                    entity = repo.save(entity);
+                }
+
+                @AfterEach
+                void tearDown() {
+                    context.close();
+                }
+
+                @Test
+                void shouldHaveNoContent() throws IOException {
+                    //content
+                    try (InputStream content = store.getContent(entity, PropertyPath.from("content"))) {
+                        assertThat(content).isNull();
+                    }
+
+                    assertThat(entity.getContent().getId()).isNull();
+                    assertThat(entity.getContent().getLength()).isEqualTo(0);
+                }
+            }
+
+            @Nested
+            class WhenAnInvalidPropertyPathIsUsedToSetContent {
+                @BeforeEach
+                void setUp() {
+                    context = new AnnotationConfigApplicationContext();
+                    context.register(FileSystemStorePropertyPathAccessorsIT.TestConfig.class);
+                    context.refresh();
+
+                    repo = context.getBean(TestEntityRepository.class);
+                    store = context.getBean(TestEntityStore.class);
+
+                    RandomString random = new RandomString(5);
+                    resourceLocation = random.nextString();
+
+                    entity = new FileSystemStorePropertyPathAccessorsIT.TEntity();
+                    entity = repo.save(entity);
+
+                    store.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                }
+
+                @AfterEach
+                void tearDown() {
+                    context.close();
+                }
+
+                @Test
+                void shouldThrowAnError() {
+                    try {
+                        store.setContent(entity, PropertyPath.from("does.not.exist"), new ByteArrayInputStream("foo".getBytes()));
+                    } catch (Exception sae) {
+                        FileSystemStorePropertyPathAccessorsIT.this.e = sae;
+                    }
+                    assertThat(e).isInstanceOf(StoreAccessException.class);
+                }
+            }
+
+            @Nested
+            class WhenAnInvalidPropertyPathIsUsedToGetContent {
+                @BeforeEach
+                void setUp() {
+                    context = new AnnotationConfigApplicationContext();
+                    context.register(FileSystemStorePropertyPathAccessorsIT.TestConfig.class);
+                    context.refresh();
+
+                    repo = context.getBean(TestEntityRepository.class);
+                    store = context.getBean(TestEntityStore.class);
+
+                    RandomString random = new RandomString(5);
+                    resourceLocation = random.nextString();
+
+                    entity = new FileSystemStorePropertyPathAccessorsIT.TEntity();
+                    entity = repo.save(entity);
+
+                    store.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                }
+
+                @AfterEach
+                void tearDown() {
+                    context.close();
+                }
+
+                @Test
+                void shouldThrowAnError() {
+                    try {
+                        store.getContent(entity, PropertyPath.from("does.not.exist"));
+                    } catch (Exception sae) {
+                        FileSystemStorePropertyPathAccessorsIT.this.e = sae;
+                    }
+                    assertThat(e).isInstanceOf(StoreAccessException.class);
+                }
+            }
+
+            @Nested
+            class WhenAnInvalidPropertyPathIsUsedToUnsetContent {
+                @BeforeEach
+                void setUp() {
+                    context = new AnnotationConfigApplicationContext();
+                    context.register(FileSystemStorePropertyPathAccessorsIT.TestConfig.class);
+                    context.refresh();
+
+                    repo = context.getBean(TestEntityRepository.class);
+                    store = context.getBean(TestEntityStore.class);
+
+                    RandomString random = new RandomString(5);
+                    resourceLocation = random.nextString();
+
+                    entity = new FileSystemStorePropertyPathAccessorsIT.TEntity();
+                    entity = repo.save(entity);
+
+                    store.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                }
+
+                @AfterEach
+                void tearDown() {
+                    context.close();
+                }
+
+                @Test
+                void shouldThrowAnError() {
+                    try {
+                        store.unsetContent(entity, PropertyPath.from("does.not.exist"));
+                    } catch (Exception sae) {
+                        FileSystemStorePropertyPathAccessorsIT.this.e = sae;
+                    }
+                    assertThat(e).isInstanceOf(StoreAccessException.class);
+                }
+            }
+        }
     }
 }

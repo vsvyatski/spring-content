@@ -144,7 +144,6 @@ class ContentCryptoService<S, DEK extends StoredDataEncryptionKey> {
                 );
             }
         }, encryptionParameters, finalRequestParams), resource);
-
     }
 
     public S clearKeys(S entity, PropertyPath propertyPath) {

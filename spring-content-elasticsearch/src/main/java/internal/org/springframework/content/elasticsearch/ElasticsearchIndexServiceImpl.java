@@ -5,7 +5,6 @@ import static java.lang.String.format;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.HashMap;
@@ -13,33 +12,22 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.elasticsearch.ElasticsearchStatusException;
-import org.elasticsearch.action.delete.DeleteRequest;
-import org.elasticsearch.action.delete.DeleteResponse;
-import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.action.index.IndexResponse;
-import org.elasticsearch.action.ingest.GetPipelineRequest;
-import org.elasticsearch.action.ingest.GetPipelineResponse;
-import org.elasticsearch.action.ingest.PutPipelineRequest;
-import org.elasticsearch.action.support.master.AcknowledgedResponse;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.common.bytes.BytesArray;
-import org.elasticsearch.rest.RestStatus;
-import org.elasticsearch.xcontent.XContentType;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.annotations.MimeType;
 import org.springframework.content.commons.renditions.RenditionService;
-import org.springframework.content.commons.store.StoreAccessException;
 import org.springframework.content.commons.search.IndexService;
+import org.springframework.content.commons.store.StoreAccessException;
 import org.springframework.content.commons.utils.BeanUtils;
 import org.springframework.content.elasticsearch.AttributeProvider;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch._types.ElasticsearchException;
 
+/**
+ * @author Vladimir Svyatski
+ */
 @Service
 public class ElasticsearchIndexServiceImpl<T> implements IndexService<T> {
 
@@ -49,21 +37,19 @@ public class ElasticsearchIndexServiceImpl<T> implements IndexService<T> {
     private static final String SPRING_CONTENT_ATTACHMENT = "spring-content-attachment-pipeline";
     private static final int BUFFER_SIZE = 3 * 1024;
 
-    private final RestHighLevelClient client;
+    private final ElasticsearchClient client;
     private final RenditionService renditionService;
     private final IndexManager manager;
     private final AttributeProvider attributeProvider;
-    private final ObjectMapper objectMapper;
 
     private boolean pipelinedInitialized = false;
 
-    public ElasticsearchIndexServiceImpl(RestHighLevelClient client, RenditionService renditionService, IndexManager manager, AttributeProvider attributeProvider) {
+    public ElasticsearchIndexServiceImpl(ElasticsearchClient client, RenditionService renditionService, IndexManager manager, AttributeProvider attributeProvider) {
 
         this.client = client;
         this.renditionService = renditionService;
         this.manager = manager;
         this.attributeProvider = attributeProvider;
-        this.objectMapper = new ObjectMapper();
     }
 
     @Override
@@ -108,28 +94,18 @@ public class ElasticsearchIndexServiceImpl<T> implements IndexService<T> {
             throw new StoreAccessException(format("Error base64 encoding stream for content %s", id), e);
         }
 
-        IndexRequest req = new IndexRequest(manager.indexName(entity.getClass()), entity.getClass().getName(), id);
-        req.setPipeline(SPRING_CONTENT_ATTACHMENT);
-
-        Map<String, String> attributesToSync = new HashMap<>();
-        if (attributeProvider != null) {
-            attributesToSync = attributeProvider.synchronize(entity);
-        }
-
+        Map<String, String> attributesToSync = attributeProvider == null ? new HashMap<>() : attributeProvider.synchronize(entity);
         attributesToSync.put("data", result.toString());
-
-        String payload = "";
-        try {
-            payload = objectMapper.writeValueAsString(attributesToSync);
-        } catch (JsonProcessingException e) {
-            throw new StoreAccessException(format("Unable to serialize payload for content %s", id), e);
-        }
-
-        req.source(payload, XContentType.JSON);
+        // mapping types are gone; this field is what searches filter on
+        attributesToSync.put("entityClass", entity.getClass().getName());
 
         try {
-            IndexResponse res = client.index(req, RequestOptions.DEFAULT);
-            LOGGER.info(format("Content '%s' indexed with result %s", id, res.getResult()));
+            var res = client.index(i -> i
+                    .index(manager.indexName(entity.getClass()))
+                    .id(id)
+                    .pipeline(SPRING_CONTENT_ATTACHMENT)
+                    .document(attributesToSync));
+            LOGGER.info(format("Content '%s' indexed with result %s", id, res.result()));
         }
         catch (IOException e) {
             throw new StoreAccessException(format("Error indexing content %s", id), e);
@@ -152,13 +128,12 @@ public class ElasticsearchIndexServiceImpl<T> implements IndexService<T> {
             return;
         }
 
-        DeleteRequest req = new DeleteRequest(manager.indexName(entity.getClass()), entity.getClass().getName(), id.toString());
         try {
-            DeleteResponse res = client.delete(req, RequestOptions.DEFAULT);
-            LOGGER.info(format("Indexed content '%s' deleted with result %s", id, res.getResult()));
+            var res = client.delete(d -> d.index(manager.indexName(entity.getClass())).id(id.toString()));
+            LOGGER.info(format("Indexed content '%s' deleted with result %s", id, res.result()));
         }
-        catch (ElasticsearchStatusException ese) {
-            if (ese.status() != RestStatus.NOT_FOUND) {
+        catch (ElasticsearchException ese) {
+            if (ese.status() != 404) {
                 // TODO: re-throw as StoreIndexException
             }
         }
@@ -168,16 +143,23 @@ public class ElasticsearchIndexServiceImpl<T> implements IndexService<T> {
     }
 
     void ensureAttachmentPipeline() throws IOException {
-        GetPipelineRequest getRequest = new GetPipelineRequest(SPRING_CONTENT_ATTACHMENT);
-        GetPipelineResponse res = client.ingest().getPipeline(getRequest, RequestOptions.DEFAULT);
-        if (!res.isFound()) {
-            String source = "{\"description\":\"Extract attachment information encoded in Base64 with UTF-8 charset\"," +
-                    "\"processors\":[{\"attachment\":{\"field\":\"data\"}}]}";
-            PutPipelineRequest put = new PutPipelineRequest(SPRING_CONTENT_ATTACHMENT,
-                    new BytesArray(source.getBytes(StandardCharsets.UTF_8)),
-                    XContentType.JSON);
-            AcknowledgedResponse wpr = client.ingest().putPipeline(put, RequestOptions.DEFAULT);
-            Assert.isTrue(wpr.isAcknowledged(), "Attachment pipeline not acknowledged by server");
+        boolean found = false;
+        try {
+            var res = client.ingest().getPipeline(g -> g.id(SPRING_CONTENT_ATTACHMENT));
+            found = res.get(SPRING_CONTENT_ATTACHMENT) != null;
         }
+        catch (ElasticsearchException ese) {
+            if (ese.status() != 404) {
+                throw ese;
+            }
+        }
+        if (!found) {
+            var wpr = client.ingest().putPipeline(p -> p
+                    .id(SPRING_CONTENT_ATTACHMENT)
+                    .description("Extract attachment information encoded in Base64 with UTF-8 charset")
+                    .processors(proc -> proc.attachment(a -> a.field("data"))));
+            Assert.isTrue(wpr.acknowledged(), "Attachment pipeline not acknowledged by server");
+        }
+        pipelinedInitialized = true;
     }
 }

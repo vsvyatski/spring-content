@@ -32,21 +32,21 @@ public class MockStoreFactoryBean extends AbstractStoreFactoryBean {
 		mock = mock(ContentStore.class);
 		when(mock.setContent(any(), any(InputStream.class))).thenAnswer(new Answer<Object>() {
 			@Override
-			public Object answer(InvocationOnMock invocation) throws Throwable {
+			public Object answer(InvocationOnMock invocation) {
 				Object[] args = invocation.getArguments();
 				return args[0];
 			}
 		});
 		when(mock.setContent(any(), any(Resource.class))).thenAnswer(new Answer<Object>() {
 			@Override
-			public Object answer(InvocationOnMock invocation) throws Throwable {
+			public Object answer(InvocationOnMock invocation) {
 				Object[] args = invocation.getArguments();
 				return args[0];
 			}
 		});
 		when(mock.setContent(any(), any(PropertyPath.class), any(Resource.class))).thenAnswer(new Answer<Object>() {
 			@Override
-			public Object answer(InvocationOnMock invocation) throws Throwable {
+			public Object answer(InvocationOnMock invocation) {
 				Object[] args = invocation.getArguments();
 				return args[0];
 			}

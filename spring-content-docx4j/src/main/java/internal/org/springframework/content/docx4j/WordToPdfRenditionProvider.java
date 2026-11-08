@@ -46,6 +46,11 @@ public class WordToPdfRenditionProvider implements RenditionProvider {
 			OutputStream os = new java.io.FileOutputStream(tmpFile);
 
 			Docx4J.toPDF(pkg, os);
+			os.close();
+
+			if (pkg.getMainDocumentPart().getFontTablePart() != null) {
+				pkg.getMainDocumentPart().getFontTablePart().deleteEmbeddedFontTempFiles();
+			}
 
 			return new ObservableInputStream(new FileInputStream(tmpFile), new FileRemover(tmpFile));
 		}

@@ -1,10 +1,7 @@
 package internal.org.springframework.content.elasticsearch.boot.autoconfigure;
 
-import internal.org.springframework.content.elasticsearch.ElasticsearchConfig;
-import internal.org.springframework.content.elasticsearch.ElasticsearchIndexer;
-import org.apache.http.HttpHost;
-import org.elasticsearch.client.RestClient;
-import org.elasticsearch.client.RestHighLevelClient;
+import java.net.URI;
+
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -18,32 +15,32 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.json.jackson.JacksonJsonpMapper;
+import co.elastic.clients.transport.rest5_client.Rest5ClientTransport;
+import co.elastic.clients.transport.rest5_client.low_level.Rest5Client;
+import internal.org.springframework.content.elasticsearch.ElasticsearchConfig;
+import internal.org.springframework.content.elasticsearch.ElasticsearchIndexer;
 
 @AutoConfiguration
-//@Configuration
 @AutoConfigureAfter(ElasticsearchClientAutoConfiguration.class)
-@ConditionalOnClass({RestHighLevelClient.class, EnableElasticsearchFulltextIndexing.class})
+@ConditionalOnClass({ElasticsearchClient.class, EnableElasticsearchFulltextIndexing.class})
 @Import(ElasticsearchConfig.class)
 public class ElasticsearchAutoConfiguration {
 
-    // optional (based on properties)
     @ConditionalOnProperty(prefix = "spring.content.elasticsearch", name = "autoindex",
             havingValue = "true", matchIfMissing = true)
     @ConditionalOnMissingBean(ElasticsearchIndexer.class)
     @Bean
-    public ElasticsearchIndexer elasticFulltextIndexerEventListener(
-            RestHighLevelClient client, IndexService<?> elasticFulltextIndexService
-    ) throws IOException {
-        return new ElasticsearchIndexer(client, elasticFulltextIndexService);
+    public ElasticsearchIndexer elasticFulltextIndexerEventListener(IndexService<?> elasticFulltextIndexService) {
+        return new ElasticsearchIndexer(elasticFulltextIndexService);
     }
 
-    // user supplied
-    @Bean
-    @ConditionalOnMissingBean(RestHighLevelClient.class)
-    public RestHighLevelClient restHighLevelClient() {
-        return new RestHighLevelClient(RestClient
-                .builder(new HttpHost("localhost", 9200, "http")));
+    @Bean(destroyMethod = "close")
+    @ConditionalOnMissingBean(ElasticsearchClient.class)
+    public ElasticsearchClient elasticsearchClient() {
+        Rest5Client restClient = Rest5Client.builder(URI.create("http://localhost:9200")).build();
+        return new ElasticsearchClient(new Rest5ClientTransport(restClient, new JacksonJsonpMapper()));
     }
 
     @Component

@@ -61,12 +61,12 @@
             <version>${project.parent.version}</version>
             <optional>true</optional>
         </dependency>
-        <!--		<dependency>-->
-        <!--			<groupId>io.github.vsvyatski</groupId>-->
-        <!--			<artifactId>spring-content-docx4j</artifactId>-->
-        <!--			<version>${project.parent.version}</version>-->
-        <!--			<optional>true</optional>-->
-        <!--		</dependency>-->
+        <dependency>
+            <groupId>io.github.vsvyatski</groupId>
+            <artifactId>spring-content-docx4j</artifactId>
+            <version>${project.parent.version}</version>
+            <optional>true</optional>
+        </dependency>
         <dependency>
             <groupId>io.github.vsvyatski</groupId>
             <artifactId>spring-content-rest</artifactId>
@@ -114,9 +114,9 @@
             <optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>org.elasticsearch.client</groupId>
-            <artifactId>elasticsearch-rest-high-level-client</artifactId>
-            <version>${elasticsearch-rest-high-level-client.version}</version>
+            <groupId>co.elastic.clients</groupId>
+            <artifactId>elasticsearch-java</artifactId>
+            <version>${elastic-client.version}</version>
             <optional>true</optional>
         </dependency>
         <dependency>
@@ -149,31 +149,11 @@
         </dependency>
 
         <!-- Test Dependencies -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.github.vsvyatski</groupId>
-            <artifactId>ginkgo4j</artifactId>
-            <version>${ginkgo4j.version}</version>
-            <scope>test</scope>
-        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.junit.jupiter</groupId>
-                    <artifactId>junit-jupiter-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.junit.jupiter</groupId>
-                    <artifactId>junit-jupiter-engine</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
