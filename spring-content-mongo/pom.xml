@@ -11,10 +11,6 @@
     <packaging>jar</packaging>
     <name>Spring Content Mongo</name>
 
-    <properties>
-        <mockito.version>5.20.0</mockito.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.springframework</groupId>
