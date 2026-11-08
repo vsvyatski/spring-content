@@ -146,45 +146,6 @@
                     <allowSnapshots>true</allowSnapshots>
                 </configuration>
             </plugin>
-            <!--
-                        Doc Publishing
-                        <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-scm-publish-plugin</artifactId>
-                            <version>3.0.0</version>
-                            <configuration>
-                                <providerImplementations>
-                                    <git>jgit</git>
-                                </providerImplementations>
-                                <checkoutDirectory>${project.build.directory}/scmpublish</checkoutDirectory>
-                                <checkinComment>Publishing reference guides for
-                                    ${project.artifactId}:${project.version}</checkinComment>
-                                <content>${basedir}/target/generated-docs</content>
-                                <skipDeletedFiles>true</skipDeletedFiles>
-                                <dryRun>true</dryRun>
-                                <pubScmUrl>scm:git:https://github.com/paulcwarren/spring-content.git</pubScmUrl>
-                                <scmBranch>gh-pages</scmBranch> branch with static site
-                                <username>${env.CI_USERNAME}</username>
-                                <password>${env.CI_PASSWORD}</password>
-                                <ignorePathsToDelete>
-                                    <ignorePathToDelete>/*</ignorePathToDelete>
-                                </ignorePathsToDelete>
-                            </configuration>
-                            <dependencies>
-                                <dependency>
-                                    <groupId>org.apache.maven.scm</groupId>
-                                    <artifactId>maven-scm-provider-jgit</artifactId>
-                                    <artifactId>maven-scm-provider-gitexe</artifactId>
-                                    <version>1.11.2</version>
-                                </dependency>
-                                <dependency>
-                                    <groupId>org.apache.maven.scm</groupId>
-                                    <artifactId>maven-scm-api</artifactId>
-                                    <version>1.11.2</version>
-                                </dependency>
-                            </dependencies>
-                        </plugin>
-             -->
         </plugins>
     </build>
 
