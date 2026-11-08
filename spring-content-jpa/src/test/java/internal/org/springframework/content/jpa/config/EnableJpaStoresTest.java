@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
 
 import java.io.InputStream;
 
@@ -13,7 +12,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import javax.sql.DataSource;
 
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.property.PropertyPath;
 import org.springframework.content.commons.store.ContentStore;
@@ -100,13 +98,7 @@ public class EnableJpaStoresTest {
             }
             @Test
             void shouldNotContainAnyJpaRepositoryBeans() {
-                try {
-                						context.getBean(TestEntityContentRepository.class);
-                						fail("expected no such bean");
-                					}
-                					catch (NoSuchBeanDefinitionException e) {
-                						assertThat(true).isTrue();
-                					}
+                assertThat(context.getBeanNamesForType(TestEntityContentRepository.class)).isEmpty();
             }
         }
     }

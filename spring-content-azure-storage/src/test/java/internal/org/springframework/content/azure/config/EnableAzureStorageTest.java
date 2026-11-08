@@ -5,13 +5,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Nested;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.content.azure.config.AzureStorageConfigurer;
 import org.springframework.content.azure.config.BlobId;
 import org.springframework.content.azure.config.EnableAzureStorage;
@@ -114,13 +112,7 @@ public class EnableAzureStorageTest {
 
             @Test
             void shouldNotContainsAnyAzureStorageBeans() {
-                try {
-                	context.getBean(TestEntityContentStore.class);
-                	fail("expected no such bean");
-                }
-                catch (NoSuchBeanDefinitionException e) {
-                	assertThat(true).isTrue();
-                }
+                assertThat(context.getBeanNamesForType(TestEntityContentStore.class)).isEmpty();
             }
 
         }

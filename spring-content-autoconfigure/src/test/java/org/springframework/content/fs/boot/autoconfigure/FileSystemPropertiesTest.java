@@ -3,15 +3,16 @@ package org.springframework.content.fs.boot.autoconfigure;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.EnabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import internal.org.springframework.content.fs.boot.autoconfigure.FileSystemContentAutoConfiguration;
-import org.apache.commons.lang3.SystemUtils;
 
 public class FileSystemPropertiesTest {
 
     private FileSystemContentAutoConfiguration.FileSystemProperties props;
-    private String someRandomPath;
 
     @Nested
     class FileSystemPropertiesCases {
@@ -33,15 +34,21 @@ public class FileSystemPropertiesTest {
         class GivenAFilesystemPropertiesWithRootSet {
             @BeforeEach
             void setUp() {
-                someRandomPath = SystemUtils.IS_OS_WINDOWS ?
-                                        "C:\\some\\random\\path" : "/some/random/path";
                 props = new FileSystemContentAutoConfiguration.FileSystemProperties();
-                props.setFileSystemRoot(someRandomPath);
             }
 
             @Test
-            void shouldReturnAJAVAIOTMPDIRBasedDefault() {
-                assertThat(props.getFileSystemRoot()).isEqualTo(someRandomPath);
+            @EnabledOnOs(OS.WINDOWS)
+            void shouldReturnTheConfiguredRootOnWindows() {
+                props.setFileSystemRoot("C:\\some\\random\\path");
+                assertThat(props.getFileSystemRoot()).isEqualTo("C:\\some\\random\\path");
+            }
+
+            @Test
+            @DisabledOnOs(OS.WINDOWS)
+            void shouldReturnTheConfiguredRoot() {
+                props.setFileSystemRoot("/some/random/path");
+                assertThat(props.getFileSystemRoot()).isEqualTo("/some/random/path");
             }
 
         }

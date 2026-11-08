@@ -5,12 +5,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
 
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.contrib.nio.testing.LocalStorageHelper;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.store.AssociativeStore;
 import org.springframework.content.commons.store.ContentStore;
@@ -88,12 +86,7 @@ public class EnableGCPStorageTest {
             }
             @Test
             void shouldNotContainsAnyS3RepositoryBeans() {
-                try {
-                                        context.getBean(TestEntityContentStore.class);
-                                        fail("expected no such bean");
-                                    } catch (NoSuchBeanDefinitionException e) {
-                                        assertThat(true).isTrue();
-                                    }
+                assertThat(context.getBeanNamesForType(TestEntityContentStore.class)).isEmpty();
             }
         }
     }

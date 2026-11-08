@@ -1,11 +1,12 @@
 package org.springframework.content.fs.io;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.SystemUtils;
-import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.EnabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 import org.springframework.content.commons.io.DeletableResource;
 import org.springframework.core.io.Resource;
 
@@ -19,11 +20,7 @@ public class FileSystemResourceLoaderTest {
 
     private FileSystemResourceLoader loader = null;
 
-    private String path;
-
     private File file;
-
-    private Exception ex;
 
     @Nested
     class FileSystemResourceLoaderCases {
@@ -31,42 +28,38 @@ public class FileSystemResourceLoaderTest {
         class GetResource {
             @Nested
             class GivenWellFormedPathHasATrailingSlash {
-                @BeforeEach
-                void setUp() {
-                    path = getPathWithProperSeparators("/some/well-formed/path/");
-                    try {
-                        loader = new FileSystemResourceLoader(path);
-                    } catch (Exception e) {
-                        ex = e;
-                    }
+                @Test
+                @DisabledOnOs(OS.WINDOWS)
+                void succeeds() throws IOException {
+                    loader = new FileSystemResourceLoader("/some/well-formed/path/");
+                    assertThat(loader.getResource("/something").getFile().getPath()).isEqualTo("/some/well-formed/path/something");
+                    assertThat(loader.getResource("/something")).isInstanceOf(DeletableResource.class);
                 }
 
                 @Test
-                void succeeds() throws IOException {
-                    assertThat(ex).isNull();
-                    final String expected = getPathWithProperSeparators("/some/well-formed/path/something");
-                    assertThat(loader.getResource("/something").getFile().getPath()).isEqualTo(expected);
+                @EnabledOnOs(OS.WINDOWS)
+                void succeedsOnWindows() throws IOException {
+                    loader = new FileSystemResourceLoader("C:\\some\\well-formed\\path\\");
+                    assertThat(loader.getResource("/something").getFile().getPath()).endsWith("\\some\\well-formed\\path\\something");
                     assertThat(loader.getResource("/something")).isInstanceOf(DeletableResource.class);
                 }
             }
 
             @Nested
             class GivenMalformedPathWithoutATrailingSlash {
-                @BeforeEach
-                void setUp() {
-                    path = getPathWithProperSeparators("/some/malformed/path");
-                    try {
-                        loader = new FileSystemResourceLoader(path);
-                    } catch (Exception e) {
-                        ex = e;
-                    }
+                @Test
+                @DisabledOnOs(OS.WINDOWS)
+                void succeeds() throws IOException {
+                    loader = new FileSystemResourceLoader("/some/malformed/path");
+                    assertThat(loader.getResource("/something").getFile().getPath()).isEqualTo("/some/malformed/path/something");
+                    assertThat(loader.getResource("/something")).isInstanceOf(DeletableResource.class);
                 }
 
                 @Test
-                void succeeds() throws IOException {
-                    assertThat(ex).isNull();
-                    final String expected = getPathWithProperSeparators("/some/malformed/path/something");
-                    assertThat(loader.getResource("/something").getFile().getPath()).isEqualTo(expected);
+                @EnabledOnOs(OS.WINDOWS)
+                void succeedsOnWindows() throws IOException {
+                    loader = new FileSystemResourceLoader("C:\\some\\malformed\\path");
+                    assertThat(loader.getResource("/something").getFile().getPath()).endsWith("\\some\\malformed\\path\\something");
                     assertThat(loader.getResource("/something")).isInstanceOf(DeletableResource.class);
                 }
             }
@@ -101,10 +94,4 @@ public class FileSystemResourceLoaderTest {
         }
     }
 
-    private String getPathWithProperSeparators(@NonNull String path) {
-        if (SystemUtils.IS_OS_WINDOWS) {
-            return path.replace('/', '\\');
-        }
-        return path;
-    }
 }

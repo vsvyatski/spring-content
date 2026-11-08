@@ -1,16 +1,17 @@
 package org.springframework.content.fs.boot.autoconfigure;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Nested;
-import static org.assertj.core.api.Assertions.assertThat;
-
 import internal.org.springframework.content.fs.boot.autoconfigure.FileSystemContentAutoConfiguration;
 import internal.org.springframework.content.s3.boot.autoconfigure.S3ContentAutoConfiguration;
 import internal.org.springframework.content.solr.boot.autoconfigure.SolrAutoConfiguration;
 import internal.org.springframework.content.solr.boot.autoconfigure.SolrExtensionAutoConfiguration;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.EnabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -75,10 +76,20 @@ public class ContentFileSystemAutoConfigurationTest {
             }
 
             @Test
+            @DisabledOnOs(OS.WINDOWS)
             void shouldHaveThatLoaderBeanInTheContext() {
                 contextRunner.withUserConfiguration(ConfigWithLoaderBean.class).run((context) -> {
                                                 Assertions.assertThat(context).hasSingleBean(FileSystemResourceLoader.class);
                                                 Assertions.assertThat(context).getBean(FileSystemResourceLoader.class).extracting("root").matches((val) -> val.toString().contains("/some/random/path"));
+                                            });
+            }
+
+            @Test
+            @EnabledOnOs(OS.WINDOWS)
+            void shouldHaveThatLoaderBeanInTheContextOnWindows() {
+                contextRunner.withUserConfiguration(ConfigWithLoaderBean.class).run((context) -> {
+                                                Assertions.assertThat(context).hasSingleBean(FileSystemResourceLoader.class);
+                                                Assertions.assertThat(context).getBean(FileSystemResourceLoader.class).extracting("root").matches((val) -> val.toString().matches("(?s).*([A-Za-z]:)?\\\\some\\\\random\\\\path.*"));
                                             });
             }
 
@@ -96,7 +107,7 @@ public class ContentFileSystemAutoConfigurationTest {
             void shouldLoadTheContext() {
                 contextRunner.withUserConfiguration(ConfigWithExplicitEnableFileSystemStores.class).run((context) -> {
                                         Assertions.assertThat(context).hasSingleBean(TestEntityContentRepository.class);
-                                        Assertions.assertThat(context).getBean(FileSystemResourceLoader.class);
+                                        Assertions.assertThat(context).hasSingleBean(FileSystemResourceLoader.class);
                                     });
             }
         }

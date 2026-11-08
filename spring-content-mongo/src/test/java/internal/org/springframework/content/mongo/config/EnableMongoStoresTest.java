@@ -5,11 +5,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.mongo.config.EnableMongoStores;
@@ -94,14 +92,7 @@ public class EnableMongoStoresTest {
             }
             @Test
             void shouldLoadTheContextButHaveNoMongoRepositoryBeans() {
-                try {
-                										context.getBean(
-                												TestEntityContentRepository.class);
-                										fail("expected no such bean");
-                									}
-                									catch (NoSuchBeanDefinitionException e) {
-                										assertThat(true).isTrue();
-                									}
+                assertThat(context.getBeanNamesForType(TestEntityContentRepository.class)).isEmpty();
             }
         }
     }

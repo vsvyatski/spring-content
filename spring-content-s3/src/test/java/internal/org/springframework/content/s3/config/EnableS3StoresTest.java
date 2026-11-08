@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -14,7 +13,6 @@ import static org.mockito.Mockito.verify;
 import java.net.URISyntaxException;
 
 import internal.org.springframework.content.s3.it.LocalStack;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.store.AssociativeStore;
@@ -108,13 +106,7 @@ public class EnableS3StoresTest {
             }
             @Test
             void shouldNotContainsAnyS3RepositoryBeans() {
-                try {
-                						context.getBean(TestEntityContentRepository.class);
-                						fail("expected no such bean");
-                					}
-                					catch (NoSuchBeanDefinitionException e) {
-                						assertThat(true).isTrue();
-                					}
+                assertThat(context.getBeanNamesForType(TestEntityContentRepository.class)).isEmpty();
             }
         }
         @Nested

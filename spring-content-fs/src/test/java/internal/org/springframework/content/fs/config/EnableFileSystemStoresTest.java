@@ -4,7 +4,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.store.ContentStore;
@@ -20,7 +19,6 @@ import org.springframework.context.annotation.PropertySource;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -102,12 +100,7 @@ public class EnableFileSystemStoresTest {
 
             @Test
             void shouldNotContainAnyFilesystemRepositoryBeans() {
-                try {
-                    context.getBean(TestEntityContentRepository.class);
-                    fail("expected no such bean");
-                } catch (NoSuchBeanDefinitionException e) {
-                    assertThat(true).isTrue();
-                }
+                assertThat(context.getBeanNamesForType(TestEntityContentRepository.class)).isEmpty();
             }
         }
     }
