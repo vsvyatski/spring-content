@@ -66,6 +66,7 @@
         <ojdbc.version>23.26.4.0.0</ojdbc.version>
         <hamcrest.version>3.0</hamcrest.version>
 
+        <!--suppress UnresolvedMavenProperty -->
         <docs.output.dir>../target/generated-docs/refs/${env.BUILD_TYPE}/</docs.output.dir>
     </properties>
 
@@ -242,6 +243,7 @@
                         <artifactId>maven-surefire-plugin</artifactId>
                         <version>3.6.1</version>
                         <configuration>
+                            <!--suppress UnresolvedMavenProperty -->
                             <argLine>${surefireArgLine}</argLine>
                             <skipTests>true</skipTests>
                         </configuration>
