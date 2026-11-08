@@ -5,7 +5,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Disabled;
 import static org.assertj.core.api.Assertions.assertThat;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -57,7 +56,6 @@ public class SolrAutoConfigurationTest {
     public void test() {
     }
 
-    @Disabled("This is not a test")
     @SpringBootApplication(exclude = ElasticsearchAutoConfiguration.class)
     public static class TestConfig {
 

@@ -3,7 +3,6 @@ package org.springframework.content.jpa.boot.autoconfigure;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Disabled;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import internal.org.springframework.content.jpa.boot.autoconfigure.ContentJpaDatabaseInitializer;
@@ -106,7 +105,6 @@ public class ContentJpaAutoConfigurationTest {
 
     }
 
-	@Disabled("This is not a test")
 	@Configuration
 	public static class JpaTestConfig {
 		@Bean
@@ -137,14 +135,12 @@ public class ContentJpaAutoConfigurationTest {
 		}
 	}
 
-	@Disabled("This is not a test")
 	@SpringBootApplication(exclude={JpaVersionsAutoConfiguration.class,SolrAutoConfiguration.class, SolrExtensionAutoConfiguration.class, S3ContentAutoConfiguration.class})
 	@Import(JpaTestConfig.class)
 	@PropertySource("classpath:/default.properties")
 	public static class TestConfig {
 	}
 
-	@Disabled("This is not a test")
 	@SpringBootApplication(exclude={JpaVersionsAutoConfiguration.class,SolrAutoConfiguration.class, SolrExtensionAutoConfiguration.class, S3ContentAutoConfiguration.class})
 	@Import(JpaTestConfig.class)
 	public static class CustomBeanConfig extends TestConfig {
@@ -159,13 +155,11 @@ public class ContentJpaAutoConfigurationTest {
 		}
 	}
 
-	@Disabled("This is not a test")
 	@SpringBootApplication(exclude={JpaVersionsAutoConfiguration.class,SolrAutoConfiguration.class, SolrExtensionAutoConfiguration.class, S3ContentAutoConfiguration.class})
 	@Import(JpaTestConfig.class)
 	@EnableJpaStores
 	public static class ConfigWithExplicitEnableJpaStores {}
 
-	@Disabled("This is not a test")
 	@SpringBootApplication(exclude={JpaVersionsAutoConfiguration.class,SolrAutoConfiguration.class, SolrExtensionAutoConfiguration.class, S3ContentAutoConfiguration.class})
 	@Import(JpaTestConfig.class)
 	@PropertySource("classpath:/custom-jpa.properties")

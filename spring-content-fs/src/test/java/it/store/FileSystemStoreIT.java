@@ -84,7 +84,6 @@ public class FileSystemStoreIT {
     public interface EmbeddedStore extends ContentStore<EntityWithEmbeddedContent, String> {
     }
 
-    @Disabled("It's not a test and must not be considered as one.")
     @Configuration
     @EnableJpaRepositories(considerNestedRepositories = true)
     @EnableFileSystemStores
@@ -92,7 +91,6 @@ public class FileSystemStoreIT {
     public static class TestConfig {
     }
 
-    @Disabled("It's not a test and must not be considered as one.")
     @Configuration
     public static class InfrastructureConfig {
 
@@ -140,7 +138,6 @@ public class FileSystemStoreIT {
         }
     }
 
-    @Disabled("It's not a test and must not be considered as one.")
     @Entity
     @Table(name = "tentity")
     public static class TEntity implements ContentProperty {
@@ -200,7 +197,6 @@ public class FileSystemStoreIT {
         }
     }
 
-    @Disabled("It's not a test and must not be considered as one.")
     @Entity
     @Table(name = "shared_id_entity")
     public static class SharedIdContentIdEntity implements ContentProperty {
@@ -233,7 +229,6 @@ public class FileSystemStoreIT {
         }
     }
 
-    @Disabled("It's not a test and must not be considered as one.")
     @Entity
     @Table(name = "entity_with_embedded")
     public static class EntityWithEmbeddedContent {
@@ -260,7 +255,6 @@ public class FileSystemStoreIT {
         }
     }
 
-    @Disabled("It's not a test and must not be considered as one.")
     @Embeddable
     public static class EmbeddedContent {
         @ContentId

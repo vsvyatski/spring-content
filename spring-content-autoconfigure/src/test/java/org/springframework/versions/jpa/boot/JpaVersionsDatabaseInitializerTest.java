@@ -82,11 +82,7 @@ public class JpaVersionsDatabaseInitializerTest {
                 void shouldNotExecuteAnyStatementsOnTheDatabase() throws SQLException {
                     verify(stmt, never()).execute(anyString());
                 }
-
             }
-
         }
-
     }
-
 }

@@ -2,7 +2,6 @@ package org.springframework.content.renditions.boot;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Disabled;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import internal.org.springframework.content.solr.boot.autoconfigure.SolrAutoConfiguration;
@@ -54,7 +53,6 @@ public class ContentRenditionsAutoConfigurationTest {
 
     }
 
-    @Disabled("This is not a test")
     @Configuration
     @AutoConfigurationPackage
     @EnableAutoConfiguration(exclude = {SolrAutoConfiguration.class, SolrExtensionAutoConfiguration.class, S3ContentAutoConfiguration.class})

@@ -2,7 +2,6 @@ package internal.org.springframework.content.rest.mappings;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Disabled;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import internal.org.springframework.content.rest.mappingcontext.RestResourceMappingBuilder;
@@ -62,21 +61,18 @@ public class RestResourceMappingBuilderTest {
 
     }
 
-    @Disabled("This is not a test and must not be treated as such.")
     public static class TestSubClass {
         @RestResource(path = "two")
         private TestSubSubClass child;
         private TestSubSubClass childWithout;
     }
 
-    @Disabled("This is not a test and must not be treated as such.")
     public static class TestClass {
         @RestResource(path = "one")
         private TestSubClass child;
         private TestSubClass childWithout;
     }
 
-    @Disabled("This is not a test and must not be treated as such.")
     public static class TestSubSubClass {
         @RestResource(path = "three")
         private @ContentId UUID contentId;

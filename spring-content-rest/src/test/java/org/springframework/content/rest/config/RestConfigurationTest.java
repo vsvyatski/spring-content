@@ -3,7 +3,6 @@ package org.springframework.content.rest.config;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Disabled;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
@@ -72,7 +71,6 @@ public class RestConfigurationTest {
 
     }
 
-   @Disabled("This is not a test and must not be treated as such.")
    @Configuration
    @EnableFileSystemStores
    public static class TestConfig {
@@ -88,7 +86,6 @@ public class RestConfigurationTest {
       }
    }
 
-   @Disabled("This is not a test and must not be treated as such.")
    @Document
    public class TestEntity {
       @Id

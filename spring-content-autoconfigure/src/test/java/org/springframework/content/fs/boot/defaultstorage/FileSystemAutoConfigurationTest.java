@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Disabled;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import internal.org.springframework.content.fs.boot.autoconfigure.FileSystemContentAutoConfiguration;
@@ -89,7 +88,6 @@ public class FileSystemAutoConfigurationTest {
 
     }
 
-    @Disabled("This is not a test")
     @SpringBootApplication(exclude = {SolrAutoConfiguration.class, SolrExtensionAutoConfiguration.class, S3ContentAutoConfiguration.class})
     public static class TestConfig {
     }

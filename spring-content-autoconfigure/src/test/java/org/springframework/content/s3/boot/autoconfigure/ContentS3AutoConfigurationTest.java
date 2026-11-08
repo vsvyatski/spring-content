@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Disabled;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import internal.org.springframework.content.fs.boot.autoconfigure.FileSystemContentAutoConfiguration;
@@ -123,7 +122,6 @@ public class ContentS3AutoConfigurationTest {
 
     }
 
-	@Disabled("This is not a test")
 	@SpringBootApplication(exclude={FileSystemContentAutoConfiguration.class, MongoContentAutoConfiguration.class, SolrAutoConfiguration.class, SolrExtensionAutoConfiguration.class})
 	public static class TestConfig {
 
@@ -133,20 +131,17 @@ public class ContentS3AutoConfigurationTest {
 		}
 	}
 
-	@Disabled("This is not a test")
 	@SpringBootApplication
 	public static class TestConfigWithoutBeans {
 		// will be supplied by autoconfiguration
 	}
 
-	@Disabled("This is not a test")
 	@SpringBootApplication
 	@EnableS3Stores
 	public static class TestConfigWithExplicitEnableS3Stores {
 		// will be supplied by autoconfiguration
 	}
 
-	@Disabled("This is not a test")
 	@SpringBootApplication
     public static class TestConfigWithProperties {
         // will be supplied by autoconfiguration

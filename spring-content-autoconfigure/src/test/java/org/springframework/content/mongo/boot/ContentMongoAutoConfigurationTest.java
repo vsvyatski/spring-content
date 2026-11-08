@@ -3,7 +3,6 @@ package org.springframework.content.mongo.boot;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Disabled;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.mongodb.client.MongoClient;
@@ -51,7 +50,6 @@ public class ContentMongoAutoConfigurationTest {
 
     }
 
-    @Disabled("This is not a test")
     @Configuration
     public static class InfrastructureConfig extends AbstractMongoClientConfiguration {
         @Override
@@ -77,13 +75,11 @@ public class ContentMongoAutoConfigurationTest {
         }
     }
 
-    @Disabled("This is not a test")
     @SpringBootApplication(exclude = {SolrAutoConfiguration.class, SolrExtensionAutoConfiguration.class, S3ContentAutoConfiguration.class})
     @Import(InfrastructureConfig.class)
     public static class TestConfig {
     }
 
-    @Disabled("This is not a test")
     @Document
     public static class TestEntity {
         @Id

@@ -1,7 +1,6 @@
 package it.rest.embeddedid;
 
 import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
@@ -104,7 +103,6 @@ public class EmbeddedIdTest {
         }
     }
 
-    @Disabled("This is not a test and must not be treated as such.")
     @SpringBootApplication
     @EnableJpaRepositories(considerNestedRepositories = true, basePackages={"it.rest.embeddedid"})
     @EnableFileSystemStores(basePackages = "it.rest.embeddedid")
@@ -139,7 +137,6 @@ public class EmbeddedIdTest {
        }
     }
 
-    @Disabled("This is not a test and must not be treated as such.")
     @Entity
     public static class TestEntity {
 
@@ -196,7 +193,6 @@ public class EmbeddedIdTest {
        }
     }
 
-    @Disabled("This is not a test and must not be treated as such.")
     public static class TestEntityId implements Serializable {
 
        @Serial

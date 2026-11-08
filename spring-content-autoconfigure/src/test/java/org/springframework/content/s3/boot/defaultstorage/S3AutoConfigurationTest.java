@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Disabled;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import internal.org.springframework.content.elasticsearch.boot.autoconfigure.ElasticsearchAutoConfiguration;
@@ -98,7 +97,6 @@ public class S3AutoConfigurationTest {
 
     }
 
-    @Disabled("This is not a test")
     @SpringBootApplication(exclude={ElasticsearchAutoConfiguration.class})
 	@EnableS3Stores(basePackageClasses=S3AutoConfigurationTest.class)
 	public static class TestConfigWithoutBeans {

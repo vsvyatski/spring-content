@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Disabled;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import internal.org.springframework.content.rest.boot.autoconfigure.ContentRestAutoConfiguration;
@@ -95,7 +94,6 @@ public class ContentRestAutoConfigurationTest {
 
     }
 
-	@Disabled("This is not a test")
 	@SpringBootApplication(exclude={SolrAutoConfiguration.class, SolrExtensionAutoConfiguration.class, S3ContentAutoConfiguration.class})
 	@ImportAutoConfiguration({ HibernateJpaAutoConfiguration.class, DataJpaRepositoriesAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class, DataRestAutoConfiguration.class,
@@ -103,12 +101,10 @@ public class ContentRestAutoConfigurationTest {
 	public static class TestConfig {
 	}
 
-	@Disabled("This is not a test")
 	@Configuration
 	@ImportAutoConfiguration({HypermediaAutoConfiguration.class})
 	public static class HypermediaConfig {}
 
-	@Disabled("This is not a test")
 	@Document
 	public class TestEntity {
 		@Id

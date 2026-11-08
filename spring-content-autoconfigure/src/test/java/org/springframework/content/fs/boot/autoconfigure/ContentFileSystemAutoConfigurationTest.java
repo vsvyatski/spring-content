@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Disabled;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import internal.org.springframework.content.fs.boot.autoconfigure.FileSystemContentAutoConfiguration;
@@ -19,7 +18,6 @@ import org.springframework.content.fs.config.EnableFileSystemStores;
 import org.springframework.content.fs.io.FileSystemResourceLoader;
 import org.springframework.content.fs.store.FileSystemContentStore;
 import org.springframework.context.annotation.Bean;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.support.TestEntity;
 
 public class ContentFileSystemAutoConfigurationTest {
@@ -101,17 +99,13 @@ public class ContentFileSystemAutoConfigurationTest {
                                         Assertions.assertThat(context).getBean(FileSystemResourceLoader.class);
                                     });
             }
-
         }
-
     }
 
-    @Disabled("This is not a test")
     @SpringBootApplication(exclude = {SolrAutoConfiguration.class, SolrExtensionAutoConfiguration.class, S3ContentAutoConfiguration.class})
     public static class TestConfig {
     }
 
-    @Disabled("This is not a test")
     @SpringBootApplication
     public static class ConfigWithLoaderBean {
 
@@ -121,13 +115,9 @@ public class ContentFileSystemAutoConfigurationTest {
         }
     }
 
-    @Disabled("This is not a test")
     @SpringBootApplication
     @EnableFileSystemStores
     public static class ConfigWithExplicitEnableFileSystemStores {
-    }
-
-    public interface TestEntityRepository extends JpaRepository<TestEntity, Long> {
     }
 
     public interface TestEntityContentRepository extends FileSystemContentStore<TestEntity, String> {
