@@ -1,45 +1,40 @@
 package internal.org.springframework.content.docx4j;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.greaterThan;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.InputStream;
-import java.util.Arrays;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.content.commons.io.FileRemover;
 import org.springframework.content.commons.io.ObservableInputStream;
 import org.springframework.content.commons.renditions.RenditionProvider;
-
-import internal.org.springframework.content.docx4j.WordToTextRenditionProvider;
 
 public class WordToTextRenditionProviderTest {
 
 	private RenditionProvider service;
 
-	@Before
-	public void setUp() {
+	@BeforeEach
+	void setUp() {
 		service = new WordToTextRenditionProvider();
 	}
 
 	@Test
-	public void testCanConvert() {
-		assertThat(service.consumes(), is("application/vnd.openxmlformats-officedocument.wordprocessingml.document"));
-		assertThat(Arrays.asList(service.produces()), hasItems("text/plain"));
+	void consumesDocxAndProducesPlainText() {
+		assertThat(service.consumes()).isEqualTo("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+		assertThat(service.produces()).contains("text/plain");
 	}
 
 	@Test
-	public void testConvert() throws Exception {
+	void convertsDocxToText() throws Exception {
 		InputStream converted = service.convert(this.getClass().getResourceAsStream("/sample-docx2.docx"), "text/plain");
 
-		assertThat(converted.available(), is(greaterThan(0)));
-		assertThat(((ObservableInputStream)converted).getObservers(), hasItem(is(instanceOf(FileRemover.class))));
+		assertThat(converted.available()).isGreaterThan(0);
+		assertThat(((ObservableInputStream) converted).getObservers()).anyMatch(observer -> observer instanceof FileRemover);
 
-		String content = IOUtils.toString(converted);
-		assertThat(content,is("This is the Document Title and this is the document body."));
+		assertThat(IOUtils.toString(converted, StandardCharsets.UTF_8)).isEqualTo("This is the Document Title and this is the document body.");
 	}
 
 }

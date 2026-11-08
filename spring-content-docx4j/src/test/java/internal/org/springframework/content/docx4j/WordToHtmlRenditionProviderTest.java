@@ -1,52 +1,41 @@
 package internal.org.springframework.content.docx4j;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.greaterThan;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.InputStream;
-import java.util.Arrays;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.content.commons.io.FileRemover;
 import org.springframework.content.commons.io.ObservableInputStream;
 import org.springframework.content.commons.renditions.RenditionProvider;
-
-import internal.org.springframework.content.docx4j.WordToHtmlRenditionProvider;
 
 public class WordToHtmlRenditionProviderTest {
 
 	private RenditionProvider service;
 
-	@Before
-	public void setUp() {
+	@BeforeEach
+	void setUp() {
 		service = new WordToHtmlRenditionProvider();
 	}
 
 	@Test
-	public void testCanConvert() {
-		assertThat(service.consumes(), is("application/vnd.openxmlformats-officedocument.wordprocessingml.document"));
-		assertThat(Arrays.asList(service.produces()), hasItems("text/html"));
+	void consumesDocxAndProducesHtml() {
+		assertThat(service.consumes()).isEqualTo("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+		assertThat(service.produces()).contains("text/html");
 	}
 
 	@Test
-	public void testConvert() throws Exception {
+	void convertsDocxToHtml() throws Exception {
 		InputStream converted = service.convert(this.getClass().getResourceAsStream("/sample-docx.docx"), "text/html");
 
-		assertThat(converted.available(), is(greaterThan(0)));
-		assertThat(((ObservableInputStream)converted).getObservers(), hasItem(is(instanceOf(FileRemover.class))));
+		assertThat(converted.available()).isGreaterThan(0);
+		assertThat(((ObservableInputStream) converted).getObservers()).anyMatch(observer -> observer instanceof FileRemover);
 
 		Document doc = Jsoup.parse(converted, "UTF8", "http://example.com");
-		Elements htmls = doc.getElementsByTag("HTML");
-		assertThat(htmls.size(), is(1));
-		Element html = htmls.get(0);
-		assertThat(html, is(not(nullValue())));
+		assertThat(doc.getElementsByTag("html")).hasSize(1);
 	}
 
 }

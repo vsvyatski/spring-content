@@ -61,12 +61,12 @@
             <version>${project.parent.version}</version>
             <optional>true</optional>
         </dependency>
-        <!--		<dependency>-->
-        <!--			<groupId>io.github.vsvyatski</groupId>-->
-        <!--			<artifactId>spring-content-docx4j</artifactId>-->
-        <!--			<version>${project.parent.version}</version>-->
-        <!--			<optional>true</optional>-->
-        <!--		</dependency>-->
+        <dependency>
+            <groupId>io.github.vsvyatski</groupId>
+            <artifactId>spring-content-docx4j</artifactId>
+            <version>${project.parent.version}</version>
+            <optional>true</optional>
+        </dependency>
         <dependency>
             <groupId>io.github.vsvyatski</groupId>
             <artifactId>spring-content-rest</artifactId>

@@ -21,9 +21,9 @@ import org.springframework.context.annotation.EnableMBeanExport;
 import org.springframework.jmx.support.RegistrationPolicy;
 import org.springframework.support.TestEntity;
 
-//import internal.org.springframework.content.docx4j.WordToHtmlRenditionProvider;
-//import internal.org.springframework.content.docx4j.WordToPdfRenditionProvider;
-//import internal.org.springframework.content.docx4j.WordToTextRenditionProvider;
+import internal.org.springframework.content.docx4j.WordToHtmlRenditionProvider;
+import internal.org.springframework.content.docx4j.WordToPdfRenditionProvider;
+import internal.org.springframework.content.docx4j.WordToTextRenditionProvider;
 import internal.org.springframework.content.s3.boot.autoconfigure.S3ContentAutoConfiguration;
 
 public class ContentRenditionsAutoConfigurationTest {
@@ -43,9 +43,9 @@ public class ContentRenditionsAutoConfigurationTest {
                                     assertThat(context.getBean(WordToJpegRenderer.class)).isNotNull();
 
                                     assertThat(context.getBean(JpegToPngRenditionProvider.class)).isNotNull();
-                //					assertThat(context.getBean(WordToHtmlRenditionProvider.class)).isNotNull();
-                //					assertThat(context.getBean(WordToPdfRenditionProvider.class)).isNotNull();
-                //					assertThat(context.getBean(WordToTextRenditionProvider.class)).isNotNull();
+                                    assertThat(context.getBean(WordToHtmlRenditionProvider.class)).isNotNull();
+                                    assertThat(context.getBean(WordToPdfRenditionProvider.class)).isNotNull();
+                                    assertThat(context.getBean(WordToTextRenditionProvider.class)).isNotNull();
 
                                     context.close();
             }

@@ -56,8 +56,8 @@ PostgreSQL, SQL Server, Oracle).
 | `spring-content-encryption`                            | Encrypting store mixin (`EncryptingContentStore`)                   |
 | `spring-versions-commons` / `spring-versions-jpa`      | Locking and versioning (`@LockParticipant`, ancestor/successor IDs) |
 
-`spring-content-docx4j` exists on disk but is **commented out** of the reactor. Do not re-enable it unless that is the
-task.
+`spring-content-docx4j` converts Word documents to text, HTML, and PDF. Renditions auto-configuration imports it
+when `Docx4jConfiguration` is on the classpath.
 
 ### Boot starters
 
@@ -191,6 +191,6 @@ Do:
 
 Don’t:
 
-- Enable `spring-content-docx4j` or rewrite Boot 2 `spring.factories` as the primary auto-config path
+- Rewrite Boot 2 `spring.factories` as the primary auto-config path
 - Change `groupId` / public package names as a drive-by
 - Skip `-P tests` when the change affects storage, REST mapping, or SQL dialects

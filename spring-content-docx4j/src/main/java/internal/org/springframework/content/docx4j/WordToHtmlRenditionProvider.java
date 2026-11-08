@@ -6,8 +6,6 @@ import org.apache.commons.logging.LogFactory;
 import org.docx4j.Docx4J;
 import org.docx4j.Docx4jProperties;
 import org.docx4j.convert.out.HTMLSettings;
-import org.docx4j.convert.out.html.AbstractHtmlExporter;
-import org.docx4j.convert.out.html.HtmlExporterNG2;
 import org.docx4j.model.fields.FieldUpdater;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.springframework.content.commons.io.FileRemover;
@@ -44,7 +42,6 @@ public class WordToHtmlRenditionProvider implements RenditionProvider {
 			FieldUpdater updater = new FieldUpdater(pkg);
 			updater.update(true);
 
-			AbstractHtmlExporter exporter = new HtmlExporterNG2();
 			HTMLSettings htmlSettings = Docx4J.createHTMLSettings();
 			htmlSettings.setWmlPackage(pkg);
 
