@@ -32,7 +32,7 @@ public class ContentFileSystemAutoConfigurationTest {
             @BeforeEach
             void setUp() {
                 contextRunner = new ApplicationContextRunner()
-                                    .withConfiguration(AutoConfigurations.of(FileSystemContentAutoConfiguration.class));
+                        .withConfiguration(AutoConfigurations.of(FileSystemContentAutoConfiguration.class));
             }
 
             @Test
@@ -47,9 +47,8 @@ public class ContentFileSystemAutoConfigurationTest {
             @BeforeEach
             void setUp() {
                 contextRunner = new ApplicationContextRunner()
-                                    .withConfiguration(AutoConfigurations.of(FileSystemContentAutoConfiguration.class));
-                System.setProperty("spring.content.fs.filesystem-root",
-                                        "${java.io.tmpdir}/UPPERCASE/NOTATION/");
+                        .withConfiguration(AutoConfigurations.of(FileSystemContentAutoConfiguration.class));
+                System.setProperty("spring.content.fs.filesystem-root", "${java.io.tmpdir}/UPPERCASE/NOTATION/");
             }
 
             @AfterEach
@@ -60,9 +59,9 @@ public class ContentFileSystemAutoConfigurationTest {
             @Test
             void shouldHaveAFilesystemPropertiesBeanWithTheCorrectRootSet() {
                 contextRunner.withUserConfiguration(TestConfig.class).run((context) -> {
-                                            Assertions.assertThat(context).hasSingleBean(FileSystemContentAutoConfiguration.FileSystemProperties.class);
-                                            Assertions.assertThat(context).getBean(FileSystemContentAutoConfiguration.FileSystemProperties.class).extracting("fileSystemRoot").matches((val) -> val.toString().endsWith("/UPPERCASE/NOTATION/"));
-                                        });
+                    Assertions.assertThat(context).hasSingleBean(FileSystemContentAutoConfiguration.FileSystemProperties.class);
+                    Assertions.assertThat(context).getBean(FileSystemContentAutoConfiguration.FileSystemProperties.class).extracting("fileSystemRoot").matches((val) -> val.toString().endsWith("/UPPERCASE/NOTATION/"));
+                });
             }
 
         }
@@ -72,25 +71,25 @@ public class ContentFileSystemAutoConfigurationTest {
             @BeforeEach
             void setUp() {
                 contextRunner = new ApplicationContextRunner()
-                                    .withConfiguration(AutoConfigurations.of(FileSystemContentAutoConfiguration.class));
+                        .withConfiguration(AutoConfigurations.of(FileSystemContentAutoConfiguration.class));
             }
 
             @Test
             @DisabledOnOs(OS.WINDOWS)
             void shouldHaveThatLoaderBeanInTheContext() {
                 contextRunner.withUserConfiguration(ConfigWithLoaderBean.class).run((context) -> {
-                                                Assertions.assertThat(context).hasSingleBean(FileSystemResourceLoader.class);
-                                                Assertions.assertThat(context).getBean(FileSystemResourceLoader.class).extracting("root").matches((val) -> val.toString().contains("/some/random/path"));
-                                            });
+                    Assertions.assertThat(context).hasSingleBean(FileSystemResourceLoader.class);
+                    Assertions.assertThat(context).getBean(FileSystemResourceLoader.class).extracting("root").matches((val) -> val.toString().contains("/some/random/path"));
+                });
             }
 
             @Test
             @EnabledOnOs(OS.WINDOWS)
             void shouldHaveThatLoaderBeanInTheContextOnWindows() {
                 contextRunner.withUserConfiguration(ConfigWithLoaderBean.class).run((context) -> {
-                                                Assertions.assertThat(context).hasSingleBean(FileSystemResourceLoader.class);
-                                                Assertions.assertThat(context).getBean(FileSystemResourceLoader.class).extracting("root").matches((val) -> val.toString().matches("(?s).*([A-Za-z]:)?\\\\some\\\\random\\\\path.*"));
-                                            });
+                    Assertions.assertThat(context).hasSingleBean(FileSystemResourceLoader.class);
+                    Assertions.assertThat(context).getBean(FileSystemResourceLoader.class).extracting("root").matches((val) -> val.toString().matches("(?s).*([A-Za-z]:)?\\\\some\\\\random\\\\path.*"));
+                });
             }
 
         }
@@ -100,15 +99,15 @@ public class ContentFileSystemAutoConfigurationTest {
             @BeforeEach
             void setUp() {
                 contextRunner = new ApplicationContextRunner()
-                                    .withConfiguration(AutoConfigurations.of(FileSystemContentAutoConfiguration.class));
+                        .withConfiguration(AutoConfigurations.of(FileSystemContentAutoConfiguration.class));
             }
 
             @Test
             void shouldLoadTheContext() {
                 contextRunner.withUserConfiguration(ConfigWithExplicitEnableFileSystemStores.class).run((context) -> {
-                                        Assertions.assertThat(context).hasSingleBean(TestEntityContentRepository.class);
-                                        Assertions.assertThat(context).hasSingleBean(FileSystemResourceLoader.class);
-                                    });
+                    Assertions.assertThat(context).hasSingleBean(TestEntityContentRepository.class);
+                    Assertions.assertThat(context).hasSingleBean(FileSystemResourceLoader.class);
+                });
             }
         }
     }
@@ -121,7 +120,7 @@ public class ContentFileSystemAutoConfigurationTest {
     public static class ConfigWithLoaderBean {
 
         @Bean
-        FileSystemResourceLoader fileSystemResourceLoader() {
+        FileSystemResourceLoader contributedFileSystemResourceLoader() {
             return new FileSystemResourceLoader("/some/random/path/");
         }
     }

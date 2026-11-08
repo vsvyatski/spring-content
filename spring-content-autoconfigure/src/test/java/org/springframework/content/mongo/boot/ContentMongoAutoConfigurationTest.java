@@ -1,10 +1,5 @@
 package org.springframework.content.mongo.boot;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
-import static org.assertj.core.api.Assertions.assertThat;
-
 import com.mongodb.client.MongoClient;
 import internal.org.springframework.content.mongo.boot.autoconfigure.MongoContentAutoConfiguration;
 import internal.org.springframework.content.s3.boot.autoconfigure.S3ContentAutoConfiguration;
@@ -12,6 +7,9 @@ import internal.org.springframework.content.solr.boot.autoconfigure.SolrAutoConf
 import internal.org.springframework.content.solr.boot.autoconfigure.SolrExtensionAutoConfiguration;
 import org.assertj.core.api.Assertions;
 import org.jspecify.annotations.NonNull;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -27,7 +25,6 @@ import org.springframework.data.mongodb.core.SimpleMongoClientDatabaseFactory;
 import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
-import org.springframework.data.mongodb.repository.MongoRepository;
 
 public class ContentMongoAutoConfigurationTest {
 
@@ -38,14 +35,14 @@ public class ContentMongoAutoConfigurationTest {
         @BeforeEach
         void setUp() {
             contextRunner = new ApplicationContextRunner()
-                                .withConfiguration(AutoConfigurations.of(MongoContentAutoConfiguration.class));
+                    .withConfiguration(AutoConfigurations.of(MongoContentAutoConfiguration.class));
         }
 
         @Test
         void shouldLoadTheContext() {
             contextRunner.withUserConfiguration(TestConfig.class)
-                                .run((context) ->
-                                        Assertions.assertThat(context).hasSingleBean(TestEntityContentRepository.class));
+                    .run((context) ->
+                            Assertions.assertThat(context).hasSingleBean(TestEntityContentRepository.class));
         }
 
     }
@@ -86,9 +83,6 @@ public class ContentMongoAutoConfigurationTest {
         private String id;
         @ContentId
         private String contentId;
-    }
-
-    public interface TestEntityRepository extends MongoRepository<TestEntity, String> {
     }
 
     public interface TestEntityContentRepository extends MongoContentStore<TestEntity, String> {

@@ -2,6 +2,7 @@ package internal.org.springframework.content.jpa.boot.autoconfigure;
 
 import javax.sql.DataSource;
 
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -18,7 +19,7 @@ import internal.org.springframework.content.jpa.config.JpaStoreFactoryBean;
 import internal.org.springframework.content.jpa.config.JpaStoresRegistrar;
 import internal.org.springframework.versions.jpa.boot.autoconfigure.JpaVersionsAutoConfiguration;
 
-@Configuration
+@AutoConfiguration
 @AutoConfigureAfter({DataSourceAutoConfiguration.class, JpaVersionsAutoConfiguration.class})
 @ConditionalOnClass({DataSource.class, JpaStoresRegistrar.class})
 @ConditionalOnProperty(
@@ -43,7 +44,7 @@ public class JpaContentAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean
+    @ConditionalOnMissingBean(name = "copyBufferSize")
     public Integer copyBufferSize() {
         return properties.getCopyBufferSize();
     }

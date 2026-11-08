@@ -1,25 +1,18 @@
 package org.springframework.content.rest.boot;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.net.URI;
-
-import org.springframework.content.rest.config.RestConfiguration;
-import org.springframework.http.MediaType;
-
 import internal.org.springframework.content.rest.boot.autoconfigure.ContentRestAutoConfiguration.ContentRestProperties;
 import internal.org.springframework.content.rest.boot.autoconfigure.ContentRestAutoConfiguration.ContentRestProperties.ShortcutRequestMappings;
 import internal.org.springframework.content.rest.boot.autoconfigure.SpringBootContentRestConfigurer;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.springframework.content.rest.config.RestConfiguration;
+import org.springframework.http.MediaType;
+
+import java.net.URI;
+
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 public class SpringBootContentRestConfigurerTest {
 
@@ -100,7 +93,6 @@ public class SpringBootContentRestConfigurerTest {
                 void shouldDisableTheShortcutLinks() {
                     verify(restConfig).setShortcutLinks(false);
                 }
-
             }
 
             @Nested
@@ -126,7 +118,6 @@ public class SpringBootContentRestConfigurerTest {
                     verify(exclusions).exclude("GET", MediaType.parseMediaType("c/d"));
                     verify(exclusions).exclude("PUT", MediaType.parseMediaType("*/*"));
                 }
-
             }
 
             @Nested
@@ -150,7 +141,6 @@ public class SpringBootContentRestConfigurerTest {
                 void shouldNotSetTheExclusionsPropertyOnTheRestConfiguration() {
                     verify(exclusions, never()).exclude(any(), any());
                 }
-
             }
 
             @Nested
@@ -174,7 +164,6 @@ public class SpringBootContentRestConfigurerTest {
                 void shouldNotSetTheExclusionsPropertyOnTheRestConfiguration() {
                     verify(exclusions, never()).exclude(any(), any());
                 }
-
             }
 
             @Nested
@@ -198,7 +187,6 @@ public class SpringBootContentRestConfigurerTest {
                 void shouldNotSetTheExclusionsPropertyOnTheRestConfiguration() {
                     verify(exclusions, never()).exclude(any(), any());
                 }
-
             }
 
             @Nested
@@ -218,7 +206,6 @@ public class SpringBootContentRestConfigurerTest {
                 void shouldNotSetThePropertyOnTheRestConfiguration() {
                     verify(restConfig, never()).setBaseUri(any());
                 }
-
             }
 
             @Nested
@@ -230,9 +217,7 @@ public class SpringBootContentRestConfigurerTest {
                     exclusions = mock(RestConfiguration.Exclusions.class);
                     when(restConfig.shortcutExclusions()).thenReturn(exclusions);
 
-                    properties = null;
-
-                    configurer = new SpringBootContentRestConfigurer(properties);
+                    configurer = new SpringBootContentRestConfigurer(properties = null);
                     configurer.configure(restConfig);
                 }
 
@@ -241,11 +226,7 @@ public class SpringBootContentRestConfigurerTest {
                     verify(restConfig, never()).setBaseUri(any());
                     verify(restConfig, never()).setFullyQualifiedLinks(anyBoolean());
                 }
-
             }
-
         }
-
     }
-
 }

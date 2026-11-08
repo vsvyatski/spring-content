@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.condition.EnabledOnOs;
 import org.junit.jupiter.api.condition.OS;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 import internal.org.springframework.content.fs.boot.autoconfigure.FileSystemContentAutoConfiguration;
@@ -24,10 +25,9 @@ public class FileSystemPropertiesTest {
             }
 
             @Test
-            void shouldReturnAJAVAIOTMPDIRBasedDefault() {
+            void shouldReturnAJavaIOTmpDirBasedDefault() {
                 assertThat(props.getFileSystemRoot()).startsWith(System.getProperty("java.io.tmpdir"));
             }
-
         }
 
         @Nested
@@ -50,9 +50,6 @@ public class FileSystemPropertiesTest {
                 props.setFileSystemRoot("/some/random/path");
                 assertThat(props.getFileSystemRoot()).isEqualTo("/some/random/path");
             }
-
         }
-
     }
-
 }

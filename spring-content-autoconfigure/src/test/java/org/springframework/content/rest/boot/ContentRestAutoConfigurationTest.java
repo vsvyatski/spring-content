@@ -20,12 +20,7 @@ import org.springframework.boot.data.rest.autoconfigure.DataRestAutoConfiguratio
 import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
 import org.springframework.boot.hibernate.autoconfigure.HibernateJpaAutoConfiguration;
 import org.springframework.boot.web.context.servlet.AnnotationConfigServletWebApplicationContext;
-import org.springframework.content.commons.annotations.ContentId;
-import org.springframework.content.commons.store.ContentStore;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
@@ -49,7 +44,6 @@ public class ContentRestAutoConfigurationTest {
 
                 context.close();
             }
-
         }
 
         @Nested
@@ -89,9 +83,7 @@ public class ContentRestAutoConfigurationTest {
 
                 context.close();
             }
-
         }
-
     }
 
 	@SpringBootApplication(exclude={SolrAutoConfiguration.class, SolrExtensionAutoConfiguration.class, S3ContentAutoConfiguration.class})
@@ -104,18 +96,4 @@ public class ContentRestAutoConfigurationTest {
 	@Configuration
 	@ImportAutoConfiguration({HypermediaAutoConfiguration.class})
 	public static class HypermediaConfig {}
-
-	@Document
-	public class TestEntity {
-		@Id
-		private String id;
-		@ContentId
-		private String contentId;
-	}
-
-	public interface TestEntityRepository extends MongoRepository<TestEntity, String> {
-	}
-
-	public interface TestEntityContentRepository extends ContentStore<TestEntity, String> {
-	}
 }

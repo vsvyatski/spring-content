@@ -29,7 +29,7 @@ import java.nio.file.Files;
 public class FileSystemContentAutoConfiguration {
 
     @Bean
-    @ConditionalOnMissingBean(FileSystemResourceLoader.class)
+    @ConditionalOnMissingBean(value = FileSystemResourceLoader.class, name = "fileSystemResourceLoader")
     FileSystemResourceLoader fileSystemResourceLoader(FileSystemProperties props) {
         return new FileSystemResourceLoader(props.getFileSystemRoot());
     }
