@@ -55,7 +55,7 @@ public class DefaultJpaStoreImplTest {
                         blobResourceLoader = mock(BlobResourceLoader.class);
                         id = "1";
                         store =
-                                            spy(new DefaultJpaStoreImpl(blobResourceLoader, null, 8096));
+                                            spy(new DefaultJpaStoreImpl<Object, String>(blobResourceLoader, null, 8096));
                         resource = store.getResource(id);
                     }
 
@@ -81,7 +81,7 @@ public class DefaultJpaStoreImplTest {
                         blobResourceLoader = mock(BlobResourceLoader.class);
                         entity = new TestEntity();
                         store =
-                                            spy(new DefaultJpaStoreImpl(blobResourceLoader, null, 8096));
+                                            spy(new DefaultJpaStoreImpl<Object, String>(blobResourceLoader, null, 8096));
                         resource = store.getResource(entity);
                     }
 
@@ -102,7 +102,7 @@ public class DefaultJpaStoreImplTest {
                         entity.setContentId("12345");
 
                         store =
-                                            spy(new DefaultJpaStoreImpl(blobResourceLoader, null, 8096));
+                                            spy(new DefaultJpaStoreImpl<Object, String>(blobResourceLoader, null, 8096));
                         resource = store.getResource(entity);
                     }
 
@@ -130,7 +130,7 @@ public class DefaultJpaStoreImplTest {
                     when(resource.contentLength()).thenReturn(20L);
 
                     store =
-                                        spy(new DefaultJpaStoreImpl(blobResourceLoader, null, 8096));
+                                        spy(new DefaultJpaStoreImpl<Object, String>(blobResourceLoader, null, 8096));
                     store.associate(entity, id);
                 }
 
@@ -153,7 +153,7 @@ public class DefaultJpaStoreImplTest {
                     entity.setContentLen(20L);
 
                     store =
-                                        spy(new DefaultJpaStoreImpl(blobResourceLoader, null, 8096));
+                                        spy(new DefaultJpaStoreImpl<Object, String>(blobResourceLoader, null, 8096));
                     store.unassociate(entity);
                 }
 
@@ -188,7 +188,7 @@ public class DefaultJpaStoreImplTest {
                         when(resource.getInputStream()).thenReturn(stream);
 
                         store =
-                                            spy(new DefaultJpaStoreImpl(blobResourceLoader, null, 8096));
+                                            spy(new DefaultJpaStoreImpl<Object, String>(blobResourceLoader, null, 8096));
                         try {
                             inputStream = store.getContent(entity);
                         } catch (Exception e) {
@@ -223,7 +223,7 @@ public class DefaultJpaStoreImplTest {
                         when(resource.getInputStream())
                                                         .thenThrow(new IOException("get-ioexception"));
                         store =
-                                            spy(new DefaultJpaStoreImpl(blobResourceLoader, null, 8096));
+                                            spy(new DefaultJpaStoreImpl<Object, String>(blobResourceLoader, null, 8096));
                         try {
                             inputStream = store.getContent(entity);
                         } catch (Exception e) {
@@ -263,7 +263,7 @@ public class DefaultJpaStoreImplTest {
                     when(((BlobResource) resource).getId()).thenReturn(12345);
 
                     store =
-                                        spy(new DefaultJpaStoreImpl(blobResourceLoader, null, 8096));
+                                        spy(new DefaultJpaStoreImpl<Object, String>(blobResourceLoader, null, 8096));
                     try {
                         store.setContent(entity, inputStream);
                     } catch (Exception e) {
@@ -309,7 +309,7 @@ public class DefaultJpaStoreImplTest {
                         when(((BlobResource) resource).getOutputStream())
                                                         .thenThrow(new IOException("set-ioexception"));
                         store =
-                                            spy(new DefaultJpaStoreImpl(blobResourceLoader, null, 8096));
+                                            spy(new DefaultJpaStoreImpl<Object, String>(blobResourceLoader, null, 8096));
                         try {
                             store.setContent(entity, inputStream);
                         } catch (Exception e) {
@@ -336,7 +336,7 @@ public class DefaultJpaStoreImplTest {
                     inputResource = new InputStreamResource(stream);
 
                     store =
-                                        spy(new DefaultJpaStoreImpl(blobResourceLoader, null, 8096));
+                                        spy(new DefaultJpaStoreImpl<Object, String>(blobResourceLoader, null, 8096));
                     try {
                         store.setContent(entity, inputResource);
                     } catch (Exception e) {
@@ -361,7 +361,7 @@ public class DefaultJpaStoreImplTest {
                         when(inputResource.getInputStream()).thenThrow(new IOException("setContent badness"));
 
                         store =
-                                            spy(new DefaultJpaStoreImpl(blobResourceLoader, null, 8096));
+                                            spy(new DefaultJpaStoreImpl<Object, String>(blobResourceLoader, null, 8096));
                         try {
                             store.setContent(entity, inputResource);
                         } catch (Exception e) {
@@ -392,7 +392,7 @@ public class DefaultJpaStoreImplTest {
                             .thenReturn(blobResource);
 
                     store =
-                                        spy(new DefaultJpaStoreImpl(blobResourceLoader, null, 8096));
+                                        spy(new DefaultJpaStoreImpl<Object, String>(blobResourceLoader, null, 8096));
                     try {
                         store.unsetContent(entity);
                     } catch (Exception e) {
@@ -419,7 +419,7 @@ public class DefaultJpaStoreImplTest {
 
                         doThrow(new IOException("unset-ioexception")).when(blobResource).delete();
                         store =
-                                            spy(new DefaultJpaStoreImpl(blobResourceLoader, null, 8096));
+                                            spy(new DefaultJpaStoreImpl<Object, String>(blobResourceLoader, null, 8096));
                         try {
                             store.unsetContent(entity);
                         } catch (Exception e) {
@@ -454,7 +454,7 @@ public class DefaultJpaStoreImplTest {
                         blobResourceLoader = mock(BlobResourceLoader.class);
                         id = "1";
                         store =
-                                            spy(new DefaultJpaStoreImpl(blobResourceLoader, null, 8096));
+                                            spy(new DefaultJpaStoreImpl<Object, String>(blobResourceLoader, null, 8096));
                         resource = store.getResource(id);
                     }
 
@@ -483,7 +483,7 @@ public class DefaultJpaStoreImplTest {
                     jakartaAnnotatedEntity.setContentLen(20L);
 
                     store =
-                                        spy(new DefaultJpaStoreImpl(blobResourceLoader, null, 8096));
+                                        spy(new DefaultJpaStoreImpl<Object, String>(blobResourceLoader, null, 8096));
                     store.unassociate(jakartaAnnotatedEntity);
                 }
 

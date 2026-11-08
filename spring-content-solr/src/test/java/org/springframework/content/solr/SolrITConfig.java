@@ -76,7 +76,7 @@ public class SolrITConfig {
         return new AttributeProvider<Document>() {
 
             @Override
-            public Map synchronize(Document entity) {
+            public Map<String, String> synchronize(Document entity) {
                 Map<String, String> attrs = new HashMap<>();
                 attrs.put("email", entity.getEmail());
                 return attrs;

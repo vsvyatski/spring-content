@@ -1,8 +1,6 @@
 package internal.org.springframework.versions.jpa;
 
 import java.security.Principal;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 
 import javax.security.auth.Subject;
@@ -13,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Service;
 
@@ -38,7 +35,7 @@ public class JpaLockingServiceImpl implements LockingService {
         }
 
         String sql = "SELECT count(lock_owner) from locks where entity_id = ?  and lock_owner = ?";
-        Integer rc = template.queryForObject(sql, new String[] {entityId.toString(), principal.getName()}, Integer.class);
+        Integer rc = template.queryForObject(sql, Integer.class, entityId.toString(), principal.getName());
         if (rc == 1) {
             return true;
         }
@@ -66,14 +63,7 @@ public class JpaLockingServiceImpl implements LockingService {
     @Override
     public Principal lockOwner(Object entityId) {
         String sql = "SELECT lock_owner from locks where entity_id = '" + entityId + "'";
-        List<String> lockOwners = template.query(sql, new RowMapper() {
-
-            @Override
-            public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
-                return rs.getString(1);
-            }
-
-        });
+        List<String> lockOwners = template.query(sql, (rs, rowNum) -> rs.getString(1));
 
         if (lockOwners.isEmpty()) {
             return null;

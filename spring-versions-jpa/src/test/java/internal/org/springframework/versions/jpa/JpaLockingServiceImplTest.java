@@ -11,7 +11,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.security.Principal;
-import java.sql.ResultSet;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -50,7 +49,7 @@ public class JpaLockingServiceImplTest {
                     principal = mock(Principal.class);
                     when(principal.getName()).thenReturn("some-principal");
 
-                    when(jdbcTemplate.queryForObject(any(String.class), any(Object[].class), any(Class.class))).thenThrow(new CannotGetJdbcConnectionException("connection-error"));
+                    when(jdbcTemplate.queryForObject(anyString(), eq(Integer.class), anyString(), anyString())).thenThrow(new CannotGetJdbcConnectionException("connection-error"));
 
                     locker = new JpaLockingServiceImpl(jdbcTemplate);
 
@@ -79,9 +78,8 @@ public class JpaLockingServiceImplTest {
                     principal = mock(Principal.class);
                     when(principal.getName()).thenReturn("some-principal");
 
-                    ResultSet rs = mock(ResultSet.class);
-                    when(jdbcTemplate.queryForObject(any(String.class), any(Object[].class), any(Class.class))).thenReturn(0);
-                    when(jdbcTemplate.update(any(String.class), ArgumentMatchers.<String>any())).thenThrow(new CannotGetJdbcConnectionException("connection-error"));
+                    when(jdbcTemplate.queryForObject(anyString(), eq(Integer.class), anyString(), anyString())).thenReturn(0);
+                    when(jdbcTemplate.update(anyString(), anyString(), anyString())).thenThrow(new CannotGetJdbcConnectionException("connection-error"));
 
                     locker = new JpaLockingServiceImpl(jdbcTemplate);
 
@@ -114,7 +112,7 @@ public class JpaLockingServiceImplTest {
                     principal = mock(Principal.class);
                     when(principal.getName()).thenReturn("some-principal");
 
-                    when(jdbcTemplate.update(any(String.class), ArgumentMatchers.<String>any())).thenThrow(new CannotGetJdbcConnectionException("connection-error"));
+                    when(jdbcTemplate.update(anyString(), anyString(), anyString())).thenThrow(new CannotGetJdbcConnectionException("connection-error"));
 
                     locker = new JpaLockingServiceImpl(jdbcTemplate);
 
@@ -174,7 +172,7 @@ public class JpaLockingServiceImplTest {
                     principal = mock(Principal.class);
                     when(principal.getName()).thenReturn("some-principal");
 
-                    when(jdbcTemplate.queryForRowSet(any(String.class), ArgumentMatchers.<String>any())).thenThrow(new CannotGetJdbcConnectionException("connection-error"));
+                    when(jdbcTemplate.queryForRowSet(anyString(), anyString(), anyString())).thenThrow(new CannotGetJdbcConnectionException("connection-error"));
 
                     locker = new JpaLockingServiceImpl(jdbcTemplate);
 
@@ -203,7 +201,7 @@ public class JpaLockingServiceImplTest {
 
                     SqlRowSet rs = mock(SqlRowSet.class);
                     when(rs.next()).thenReturn(true);
-                    when(jdbcTemplate.queryForRowSet(any(String.class), ArgumentMatchers.<String>any())).thenReturn(rs);
+                    when(jdbcTemplate.queryForRowSet(anyString(), anyString(), anyString())).thenReturn(rs);
 
                     locker = new JpaLockingServiceImpl(jdbcTemplate);
 
@@ -232,7 +230,7 @@ public class JpaLockingServiceImplTest {
 
                     SqlRowSet rs = mock(SqlRowSet.class);
                     when(rs.next()).thenReturn(false);
-                    when(jdbcTemplate.queryForRowSet(any(String.class), ArgumentMatchers.<String>any())).thenReturn(rs);
+                    when(jdbcTemplate.queryForRowSet(anyString(), anyString(), anyString())).thenReturn(rs);
 
                     locker = new JpaLockingServiceImpl(jdbcTemplate);
 
@@ -260,7 +258,7 @@ public class JpaLockingServiceImplTest {
 
                     entityId = "some-id";
 
-                    when(jdbcTemplate.query(anyString(), (RowMapper) any())).thenThrow(new CannotGetJdbcConnectionException("connection-error"));
+                    when(jdbcTemplate.query(anyString(), ArgumentMatchers.<RowMapper<String>>any())).thenThrow(new CannotGetJdbcConnectionException("connection-error"));
 
                     locker = new JpaLockingServiceImpl(jdbcTemplate);
 
@@ -286,7 +284,7 @@ public class JpaLockingServiceImplTest {
 
                     entityId = "some-id";
 
-                    when(jdbcTemplate.query(anyString(), (RowMapper) any())).thenReturn(null);
+                    when(jdbcTemplate.query(anyString(), ArgumentMatchers.<RowMapper<String>>any())).thenReturn(null);
 
                     locker = new JpaLockingServiceImpl(jdbcTemplate);
 
@@ -312,7 +310,7 @@ public class JpaLockingServiceImplTest {
 
                     entityId = "some-id";
 
-                    when(jdbcTemplate.query(anyString(), (RowMapper) any())).thenReturn(Collections.singletonList("some-principal"));
+                    when(jdbcTemplate.query(anyString(), ArgumentMatchers.<RowMapper<String>>any())).thenReturn(Collections.singletonList("some-principal"));
 
                     locker = new JpaLockingServiceImpl(jdbcTemplate);
 
@@ -339,7 +337,7 @@ public class JpaLockingServiceImplTest {
 
                     entityId = "some-id";
 
-                    when(jdbcTemplate.query(anyString(), (RowMapper) any())).thenReturn(Arrays.asList(new String[]{("some-principal"), "some-other-principal"}));
+                    when(jdbcTemplate.query(anyString(), ArgumentMatchers.<RowMapper<String>>any())).thenReturn(Arrays.asList(new String[]{("some-principal"), "some-other-principal"}));
 
                     locker = new JpaLockingServiceImpl(jdbcTemplate);
 

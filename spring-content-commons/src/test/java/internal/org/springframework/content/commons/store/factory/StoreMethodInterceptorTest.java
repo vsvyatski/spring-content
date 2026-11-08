@@ -33,6 +33,7 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.UUID;
@@ -191,7 +192,7 @@ public class StoreMethodInterceptorTest {
 
                                         inOrder.verify(store).setContent(any(), setContentArgCaptor.capture());
                                         try (InputStream setContentInputStream = setContentArgCaptor.getValue()) {
-                                            assertThat(IOUtils.toString(setContentInputStream)).isEqualTo("test");
+                                            assertThat(IOUtils.toString(setContentInputStream, StandardCharsets.UTF_8)).isEqualTo("test");
                                         }
 
                                         inOrder.verify(publisher, times(1)).publishEvent(afterArgCaptor.capture());
@@ -463,7 +464,7 @@ public class StoreMethodInterceptorTest {
 
                                     inOrder.verify(store).setContent(any(), setContentArgCaptor.capture());
                                     try (InputStream setContentInputStream = setContentArgCaptor.getValue().getInputStream()) {
-                                        assertThat(IOUtils.toString(setContentInputStream)).isEqualTo("test");
+                                        assertThat(IOUtils.toString(setContentInputStream, StandardCharsets.UTF_8)).isEqualTo("test");
                                     }
 
                                     inOrder.verify(publisher, times(1)).publishEvent(afterArgCaptor.capture());

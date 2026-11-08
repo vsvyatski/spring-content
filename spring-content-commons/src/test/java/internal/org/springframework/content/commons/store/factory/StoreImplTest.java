@@ -14,6 +14,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
@@ -26,7 +27,7 @@ public class StoreImplTest {
 
     private StoreImpl stores;
 
-    private ContentStore store;
+    private ContentStore<Object, Serializable> store;
     private ApplicationEventPublisher publisher;
     private Path contentCopyPathRoot;
 
@@ -36,7 +37,7 @@ public class StoreImplTest {
         class SetContentInputStream {
             @BeforeEach
             void setUp() throws IOException {
-                store = mock(ContentStore.class);
+                store = mock();
                                 publisher = mock(ApplicationEventPublisher.class);
 
                 when(store.setContent(any(), any(InputStream.class))).thenReturn(new Object());
@@ -66,7 +67,7 @@ public class StoreImplTest {
         class GetContent {
             @BeforeEach
             void setUp() throws IOException {
-                store = mock(ContentStore.class);
+                store = mock();
                                 publisher = mock(ApplicationEventPublisher.class);
 
                 contentCopyPathRoot = Files.createTempDirectory("storeImplTest");

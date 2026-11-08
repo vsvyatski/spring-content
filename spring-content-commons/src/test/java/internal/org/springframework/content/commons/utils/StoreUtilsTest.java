@@ -49,7 +49,7 @@ public class StoreUtilsTest {
                     def2 = new GenericBeanDefinition();
                     def2.setBeanClassName(StoreBean2.class.getName());
 
-                    Set<BeanDefinition> defs = new HashSet();
+                    Set<BeanDefinition> defs = new HashSet<>();
                     defs.add(def1);
                     defs.add(def2);
 
@@ -83,7 +83,7 @@ public class StoreUtilsTest {
                         def2 = new GenericBeanDefinition();
                         def2.setBeanClassName(StoreBean2.class.getName());
 
-                        Set<BeanDefinition> defs = new HashSet();
+                        Set<BeanDefinition> defs = new HashSet<>();
                         defs.add(def1);
                         defs.add(def2);
 
@@ -125,7 +125,7 @@ public class StoreUtilsTest {
                         def2 = new GenericBeanDefinition();
                         def2.setBeanClassName(StoreBean2.class.getName());
 
-                        Set<BeanDefinition> defs = new HashSet();
+                        Set<BeanDefinition> defs = new HashSet<>();
                         defs.add(def1);
                         defs.add(def2);
 
@@ -170,7 +170,7 @@ public class StoreUtilsTest {
                     def2 = new GenericBeanDefinition();
                     def2.setBeanClassName(StoreBean2.class.getName());
 
-                    Set<BeanDefinition> defs = new HashSet();
+                    Set<BeanDefinition> defs = new HashSet<>();
                     defs.add(def1);
                     defs.add(def2);
 

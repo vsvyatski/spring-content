@@ -12,6 +12,8 @@ import internal.org.springframework.content.rest.support.TestEntityChild;
 import jakarta.persistence.*;
 import jakarta.transaction.Transactional;
 import org.apache.commons.io.IOUtils;
+
+import java.nio.charset.StandardCharsets;
 import org.hibernate.annotations.Formula;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.content.commons.annotations.ContentId;
@@ -747,7 +749,7 @@ public class ContentLinkRelIT {
                 public InputStream convert(InputStream fromInputSource, String toMimeType) {
                     String input = null;
                     try {
-                        input = IOUtils.toString(fromInputSource);
+                        input = IOUtils.toString(fromInputSource, StandardCharsets.UTF_8);
                     }
                     catch (IOException e) {
                     }

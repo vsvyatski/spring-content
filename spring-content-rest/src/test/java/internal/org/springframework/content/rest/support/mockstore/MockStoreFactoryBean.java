@@ -5,6 +5,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.io.InputStream;
+import java.io.Serializable;
 
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -17,19 +18,19 @@ import org.springframework.content.commons.property.PropertyPath;
 
 public class MockStoreFactoryBean extends AbstractStoreFactoryBean {
 
-	private ContentStore mock;
+	private ContentStore<Object, Serializable> mock;
 
 	protected MockStoreFactoryBean(Class<? extends Store> storeInterface) {
 		super(storeInterface);
 	}
 
-	public ContentStore getMock() {
+	public ContentStore<Object, Serializable> getMock() {
 		return mock;
 	}
 
 	@Override
 	protected Object getContentStoreImpl() {
-		mock = mock(ContentStore.class);
+		mock = mock();
 		when(mock.setContent(any(), any(InputStream.class))).thenAnswer(new Answer<Object>() {
 			@Override
 			public Object answer(InvocationOnMock invocation) {

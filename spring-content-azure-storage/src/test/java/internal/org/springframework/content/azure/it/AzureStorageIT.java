@@ -41,6 +41,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
 import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -393,7 +394,7 @@ public class AzureStorageIT {
                                 // relies on REST-layer to serve byte range
                                                                     Resource r = store.getResource(entity, PropertyPath.from("content"), new GetResourceParams("5-10"));
                                                                     try (InputStream is = r.getInputStream()) {
-                                                                        assertThat(IOUtils.toString(is)).isEqualTo("Hello Client-side World!");
+                                                                        assertThat(IOUtils.toString(is, StandardCharsets.UTF_8)).isEqualTo("Hello Client-side World!");
                                                                     }
                             }
                         }

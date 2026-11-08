@@ -92,10 +92,10 @@ public class DefaultS3StoreImplTest {
                         client = mock(S3Client.class);
                         defaultBucket = null;
 
-                        context.registerBean("s3Client", S3Client.class, new Supplier() {
+                        context.registerBean("s3Client", S3Client.class, new Supplier<S3Client>() {
 
                                        @Override
-                                       public Object get() {
+                                       public S3Client get() {
                                            return client;
                                        }
                         }, new BeanDefinitionCustomizer[]{});
@@ -151,10 +151,10 @@ public class DefaultS3StoreImplTest {
                                     client = mock(S3Client.class);
                                     defaultBucket = null;
 
-                                    context.registerBean("s3Client", S3Client.class, new Supplier() {
+                                    context.registerBean("s3Client", S3Client.class, new Supplier<S3Client>() {
 
                                                    @Override
-                                                   public Object get() {
+                                                   public S3Client get() {
                                                        return client;
                                                    }
                                     }, new BeanDefinitionCustomizer[]{});
@@ -220,10 +220,10 @@ public class DefaultS3StoreImplTest {
                                     client = mock(S3Client.class);
                                     defaultBucket = null;
 
-                                    context.registerBean("s3Client", S3Client.class, new Supplier() {
+                                    context.registerBean("s3Client", S3Client.class, new Supplier<S3Client>() {
 
                                                    @Override
-                                                   public Object get() {
+                                                   public S3Client get() {
                                                        return client;
                                                    }
                                     }, new BeanDefinitionCustomizer[]{});
@@ -270,10 +270,10 @@ public class DefaultS3StoreImplTest {
                         client = mock(S3Client.class);
                         defaultBucket = null;
 
-                        context.registerBean("s3Client", S3Client.class, new Supplier() {
+                        context.registerBean("s3Client", S3Client.class, new Supplier<S3Client>() {
 
                                        @Override
-                                       public Object get() {
+                                       public S3Client get() {
                                            return client;
                                        }
                         }, new BeanDefinitionCustomizer[]{});
@@ -332,10 +332,10 @@ public class DefaultS3StoreImplTest {
                                 client = mock(S3Client.class);
                                 defaultBucket = null;
 
-                                context.registerBean("s3Client", S3Client.class, new Supplier() {
+                                context.registerBean("s3Client", S3Client.class, new Supplier<S3Client>() {
 
                                                @Override
-                                               public Object get() {
+                                               public S3Client get() {
                                                    return client;
                                                }
                                 }, new BeanDefinitionCustomizer[]{});
@@ -390,10 +390,10 @@ public class DefaultS3StoreImplTest {
                                 client = mock(S3Client.class);
                                 defaultBucket = null;
 
-                                context.registerBean("s3Client", S3Client.class, new Supplier() {
+                                context.registerBean("s3Client", S3Client.class, new Supplier<S3Client>() {
 
                                                @Override
-                                               public Object get() {
+                                               public S3Client get() {
                                                    return client;
                                                }
                                 }, new BeanDefinitionCustomizer[]{});
@@ -444,10 +444,10 @@ public class DefaultS3StoreImplTest {
                                 client = mock(S3Client.class);
                                 defaultBucket = null;
 
-                                context.registerBean("s3Client", S3Client.class, new Supplier() {
+                                context.registerBean("s3Client", S3Client.class, new Supplier<S3Client>() {
 
                                                @Override
-                                               public Object get() {
+                                               public S3Client get() {
                                                    return client;
                                                }
                                 }, new BeanDefinitionCustomizer[]{});
@@ -494,10 +494,10 @@ public class DefaultS3StoreImplTest {
                                 client = mock(S3Client.class);
                                 defaultBucket = null;
 
-                                context.registerBean("s3Client", S3Client.class, new Supplier() {
+                                context.registerBean("s3Client", S3Client.class, new Supplier<S3Client>() {
 
                                                @Override
-                                               public Object get() {
+                                               public S3Client get() {
                                                    return client;
                                                }
                                 }, new BeanDefinitionCustomizer[]{});
@@ -560,10 +560,10 @@ public class DefaultS3StoreImplTest {
                                 client = mock(S3Client.class);
                                 defaultBucket = null;
 
-                                context.registerBean("s3Client", S3Client.class, new Supplier() {
+                                context.registerBean("s3Client", S3Client.class, new Supplier<S3Client>() {
 
                                                @Override
-                                               public Object get() {
+                                               public S3Client get() {
                                                    return client;
                                                }
                                 }, new BeanDefinitionCustomizer[]{});
@@ -622,10 +622,10 @@ public class DefaultS3StoreImplTest {
                                 client = mock(S3Client.class);
                                 defaultBucket = null;
 
-                                context.registerBean("s3Client", S3Client.class, new Supplier() {
+                                context.registerBean("s3Client", S3Client.class, new Supplier<S3Client>() {
 
                                                @Override
-                                               public Object get() {
+                                               public S3Client get() {
                                                    return client;
                                                }
                                 }, new BeanDefinitionCustomizer[]{});
@@ -680,10 +680,10 @@ public class DefaultS3StoreImplTest {
                                 client = mock(S3Client.class);
                                 defaultBucket = null;
 
-                                context.registerBean("s3Client", S3Client.class, new Supplier() {
+                                context.registerBean("s3Client", S3Client.class, new Supplier<S3Client>() {
 
                                                @Override
-                                               public Object get() {
+                                               public S3Client get() {
                                                    return client;
                                                }
                                 }, new BeanDefinitionCustomizer[]{});
@@ -734,10 +734,10 @@ public class DefaultS3StoreImplTest {
                                 client = mock(S3Client.class);
                                 defaultBucket = null;
 
-                                context.registerBean("s3Client", S3Client.class, new Supplier() {
+                                context.registerBean("s3Client", S3Client.class, new Supplier<S3Client>() {
 
                                                @Override
-                                               public Object get() {
+                                               public S3Client get() {
                                                    return client;
                                                }
                                 }, new BeanDefinitionCustomizer[]{});
@@ -784,10 +784,10 @@ public class DefaultS3StoreImplTest {
                                 client = mock(S3Client.class);
                                 defaultBucket = null;
 
-                                context.registerBean("s3Client", S3Client.class, new Supplier() {
+                                context.registerBean("s3Client", S3Client.class, new Supplier<S3Client>() {
 
                                                @Override
-                                               public Object get() {
+                                               public S3Client get() {
                                                    return client;
                                                }
                                 }, new BeanDefinitionCustomizer[]{});
@@ -868,10 +868,10 @@ public class DefaultS3StoreImplTest {
                                 client = mock(S3Client.class);
                                 defaultBucket = null;
 
-                                context.registerBean("s3Client", S3Client.class, new Supplier() {
+                                context.registerBean("s3Client", S3Client.class, new Supplier<S3Client>() {
 
                                                @Override
-                                               public Object get() {
+                                               public S3Client get() {
                                                    return client;
                                                }
                                 }, new BeanDefinitionCustomizer[]{});
@@ -924,10 +924,10 @@ public class DefaultS3StoreImplTest {
                     client = mock(S3Client.class);
                     defaultBucket = null;
 
-                    context.registerBean("s3Client", S3Client.class, new Supplier() {
+                    context.registerBean("s3Client", S3Client.class, new Supplier<S3Client>() {
 
                                    @Override
-                                   public Object get() {
+                                   public S3Client get() {
                                        return client;
                                    }
                     }, new BeanDefinitionCustomizer[]{});
@@ -959,10 +959,10 @@ public class DefaultS3StoreImplTest {
                     client = mock(S3Client.class);
                     defaultBucket = null;
 
-                    context.registerBean("s3Client", S3Client.class, new Supplier() {
+                    context.registerBean("s3Client", S3Client.class, new Supplier<S3Client>() {
 
                                    @Override
-                                   public Object get() {
+                                   public S3Client get() {
                                        return client;
                                    }
                     }, new BeanDefinitionCustomizer[]{});
@@ -1004,10 +1004,10 @@ public class DefaultS3StoreImplTest {
                                 client = mock(S3Client.class);
                                 defaultBucket = null;
 
-                                context.registerBean("s3Client", S3Client.class, new Supplier() {
+                                context.registerBean("s3Client", S3Client.class, new Supplier<S3Client>() {
 
                                                @Override
-                                               public Object get() {
+                                               public S3Client get() {
                                                    return client;
                                                }
                                 }, new BeanDefinitionCustomizer[]{});
@@ -1069,10 +1069,10 @@ public class DefaultS3StoreImplTest {
                                     client = mock(S3Client.class);
                                     defaultBucket = null;
 
-                                    context.registerBean("s3Client", S3Client.class, new Supplier() {
+                                    context.registerBean("s3Client", S3Client.class, new Supplier<S3Client>() {
 
                                                    @Override
-                                                   public Object get() {
+                                                   public S3Client get() {
                                                        return client;
                                                    }
                                     }, new BeanDefinitionCustomizer[]{});
@@ -1129,10 +1129,10 @@ public class DefaultS3StoreImplTest {
                                 client = mock(S3Client.class);
                                 defaultBucket = null;
 
-                                context.registerBean("s3Client", S3Client.class, new Supplier() {
+                                context.registerBean("s3Client", S3Client.class, new Supplier<S3Client>() {
 
                                                @Override
-                                               public Object get() {
+                                               public S3Client get() {
                                                    return client;
                                                }
                                 }, new BeanDefinitionCustomizer[]{});
@@ -1200,10 +1200,10 @@ public class DefaultS3StoreImplTest {
                                 client = mock(S3Client.class);
                                 defaultBucket = null;
 
-                                context.registerBean("s3Client", S3Client.class, new Supplier() {
+                                context.registerBean("s3Client", S3Client.class, new Supplier<S3Client>() {
 
                                                @Override
-                                               public Object get() {
+                                               public S3Client get() {
                                                    return client;
                                                }
                                 }, new BeanDefinitionCustomizer[]{});
@@ -1259,10 +1259,10 @@ public class DefaultS3StoreImplTest {
                     client = mock(S3Client.class);
                     defaultBucket = null;
 
-                    context.registerBean("s3Client", S3Client.class, new Supplier() {
+                    context.registerBean("s3Client", S3Client.class, new Supplier<S3Client>() {
 
                                    @Override
-                                   public Object get() {
+                                   public S3Client get() {
                                        return client;
                                    }
                     }, new BeanDefinitionCustomizer[]{});
@@ -1297,10 +1297,10 @@ public class DefaultS3StoreImplTest {
                         client = mock(S3Client.class);
                         defaultBucket = null;
 
-                        context.registerBean("s3Client", S3Client.class, new Supplier() {
+                        context.registerBean("s3Client", S3Client.class, new Supplier<S3Client>() {
 
                                        @Override
-                                       public Object get() {
+                                       public S3Client get() {
                                            return client;
                                        }
                         }, new BeanDefinitionCustomizer[]{});
@@ -1351,10 +1351,10 @@ public class DefaultS3StoreImplTest {
                                     client = mock(S3Client.class);
                                     defaultBucket = null;
 
-                                    context.registerBean("s3Client", S3Client.class, new Supplier() {
+                                    context.registerBean("s3Client", S3Client.class, new Supplier<S3Client>() {
 
                                                    @Override
-                                                   public Object get() {
+                                                   public S3Client get() {
                                                        return client;
                                                    }
                                     }, new BeanDefinitionCustomizer[]{});
@@ -1404,10 +1404,10 @@ public class DefaultS3StoreImplTest {
                                         client = mock(S3Client.class);
                                         defaultBucket = null;
 
-                                        context.registerBean("s3Client", S3Client.class, new Supplier() {
+                                        context.registerBean("s3Client", S3Client.class, new Supplier<S3Client>() {
 
                                                        @Override
-                                                       public Object get() {
+                                                       public S3Client get() {
                                                            return client;
                                                        }
                                         }, new BeanDefinitionCustomizer[]{});
@@ -1459,10 +1459,10 @@ public class DefaultS3StoreImplTest {
                                     client = mock(S3Client.class);
                                     defaultBucket = null;
 
-                                    context.registerBean("s3Client", S3Client.class, new Supplier() {
+                                    context.registerBean("s3Client", S3Client.class, new Supplier<S3Client>() {
 
                                                    @Override
-                                                   public Object get() {
+                                                   public S3Client get() {
                                                        return client;
                                                    }
                                     }, new BeanDefinitionCustomizer[]{});
@@ -1517,10 +1517,10 @@ public class DefaultS3StoreImplTest {
                                     client = mock(S3Client.class);
                                     defaultBucket = null;
 
-                                    context.registerBean("s3Client", S3Client.class, new Supplier() {
+                                    context.registerBean("s3Client", S3Client.class, new Supplier<S3Client>() {
 
                                                    @Override
-                                                   public Object get() {
+                                                   public S3Client get() {
                                                        return client;
                                                    }
                                     }, new BeanDefinitionCustomizer[]{});
@@ -1584,10 +1584,10 @@ public class DefaultS3StoreImplTest {
                                     client = mock(S3Client.class);
                                     defaultBucket = null;
 
-                                    context.registerBean("s3Client", S3Client.class, new Supplier() {
+                                    context.registerBean("s3Client", S3Client.class, new Supplier<S3Client>() {
 
                                                    @Override
-                                                   public Object get() {
+                                                   public S3Client get() {
                                                        return client;
                                                    }
                                     }, new BeanDefinitionCustomizer[]{});
@@ -1631,10 +1631,10 @@ public class DefaultS3StoreImplTest {
                                         client = mock(S3Client.class);
                                         defaultBucket = null;
 
-                                        context.registerBean("s3Client", S3Client.class, new Supplier() {
+                                        context.registerBean("s3Client", S3Client.class, new Supplier<S3Client>() {
 
                                                        @Override
-                                                       public Object get() {
+                                                       public S3Client get() {
                                                            return client;
                                                        }
                                         }, new BeanDefinitionCustomizer[]{});
@@ -1681,10 +1681,10 @@ public class DefaultS3StoreImplTest {
                                         client = mock(S3Client.class);
                                         defaultBucket = null;
 
-                                        context.registerBean("s3Client", S3Client.class, new Supplier() {
+                                        context.registerBean("s3Client", S3Client.class, new Supplier<S3Client>() {
 
                                                        @Override
-                                                       public Object get() {
+                                                       public S3Client get() {
                                                            return client;
                                                        }
                                         }, new BeanDefinitionCustomizer[]{});
@@ -1734,10 +1734,10 @@ public class DefaultS3StoreImplTest {
                                         client = mock(S3Client.class);
                                         defaultBucket = null;
 
-                                        context.registerBean("s3Client", S3Client.class, new Supplier() {
+                                        context.registerBean("s3Client", S3Client.class, new Supplier<S3Client>() {
 
                                                        @Override
-                                                       public Object get() {
+                                                       public S3Client get() {
                                                            return client;
                                                        }
                                         }, new BeanDefinitionCustomizer[]{});
@@ -1789,10 +1789,10 @@ public class DefaultS3StoreImplTest {
                                     client = mock(S3Client.class);
                                     defaultBucket = null;
 
-                                    context.registerBean("s3Client", S3Client.class, new Supplier() {
+                                    context.registerBean("s3Client", S3Client.class, new Supplier<S3Client>() {
 
                                                    @Override
-                                                   public Object get() {
+                                                   public S3Client get() {
                                                        return client;
                                                    }
                                     }, new BeanDefinitionCustomizer[]{});
