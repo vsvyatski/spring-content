@@ -1,29 +1,16 @@
 package org.springframework.content.solr.boot;
 
-import org.junit.jupiter.api.extension.ExtendWith;
-
-import org.junit.jupiter.api.Test;
+import internal.org.springframework.content.elasticsearch.boot.autoconfigure.ElasticsearchAutoConfiguration;
+import internal.org.springframework.content.solr.boot.autoconfigure.SolrAutoConfiguration;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
-import static org.assertj.core.api.Assertions.assertThat;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import internal.org.springframework.content.elasticsearch.boot.autoconfigure.ElasticsearchAutoConfiguration;
-import internal.org.springframework.content.solr.SolrFulltextIndexServiceImpl;
-import internal.org.springframework.content.solr.boot.autoconfigure.SolrAutoConfiguration;
-import org.apache.solr.client.solrj.SolrClient;
-import org.assertj.core.api.Assertions;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.content.commons.search.IndexService;
-import org.springframework.content.solr.SolrIndexerStoreEventHandler;
-import org.springframework.content.solr.SolrProperties;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.core.convert.ConversionService;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 public class SolrAutoConfigurationTest {
@@ -37,19 +24,17 @@ public class SolrAutoConfigurationTest {
             @BeforeEach
             void setUp() {
                 contextRunner = new ApplicationContextRunner()
-                                        .withConfiguration(AutoConfigurations.of(SolrAutoConfiguration.class));
+                        .withConfiguration(AutoConfigurations.of(SolrAutoConfiguration.class));
             }
 
             @Test
             void shouldIncludeTheAutoconfiguredAnnotatedEventHandlerBean() {
                 contextRunner.withUserConfiguration(TestConfig.class)
-                                                .run((context) ->
-                                                        Assertions.assertThat(context).getBean("solrFulltextEventListener")
-                                                                .isNotNull());
+                        .run((context) ->
+                                Assertions.assertThat(context).getBean("solrFulltextEventListener")
+                                        .isNotNull());
             }
-
         }
-
     }
 
     @Test
@@ -58,23 +43,5 @@ public class SolrAutoConfigurationTest {
 
     @SpringBootApplication(exclude = ElasticsearchAutoConfiguration.class)
     public static class TestConfig {
-
-        @Autowired
-        private SolrProperties props;
-        @Autowired
-        private SolrClient solrClient;
-
-        public TestConfig() {
-        }
-
-        @Bean
-        public IndexService solrIndexService() {
-            return new SolrFulltextIndexServiceImpl(solrClient, props);
-        }
-
-        @Bean
-        public Object solrFulltextEventListener() {
-            return new SolrIndexerStoreEventHandler(solrIndexService());
-        }
     }
 }
