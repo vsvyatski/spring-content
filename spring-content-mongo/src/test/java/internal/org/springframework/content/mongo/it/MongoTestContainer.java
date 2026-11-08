@@ -25,6 +25,7 @@ public class MongoTestContainer extends MongoDBContainer {
     }
 
     public static MongoClient getMongoClient() {
+        // noinspection resource
         return MongoClients.create(getTestDbUrl());
     }
 

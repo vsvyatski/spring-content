@@ -67,6 +67,7 @@ public class EnableFullTextSolrIndexingTest {
 
         @Bean
         public SolrClient solrClient() {
+            // noinspection resource
             return new HttpJdkSolrClient.Builder("http://some/url").build();
         }
 

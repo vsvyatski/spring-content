@@ -113,6 +113,7 @@ public class EnableS3StoresTest {
         class GivenAContextWithAMultiTenantConfiguration {
             @BeforeEach
             void setUp() {
+                // noinspection resource
                 client = mock(S3Client.class);
 
                 					context = new AnnotationConfigApplicationContext();

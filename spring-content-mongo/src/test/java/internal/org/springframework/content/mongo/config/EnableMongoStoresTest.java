@@ -143,6 +143,7 @@ public class EnableMongoStoresTest {
 
 		@Bean
 		public MongoClient mongoClient() {
+			// noinspection resource
 			return MongoClients.create("mongodb://localhost:27017");
 		}
 

@@ -17,6 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Optional;
@@ -94,12 +95,12 @@ public class StoredRenditionsRestIT {
                     testEntity5 = repo.findById(testEntity5.getId()).get();
                     Resource r = store.getResource(testEntity5, PropertyPath.from("content"));
                     try (InputStream actual = r.getInputStream()) {
-                        assertThat(IOUtils.toString(actual)).isEqualTo("foo");
+                        assertThat(IOUtils.toString(actual, StandardCharsets.UTF_8)).isEqualTo("foo");
                     }
 
                     r = store.getResource(testEntity5, PropertyPath.from("rendition"));
                     try (InputStream actual = r.getInputStream()) {
-                        assertThat(IOUtils.toString(actual)).isEqualTo("<html><head><title>Stored Rendition</title></head><body>foo</body></html>");
+                        assertThat(IOUtils.toString(actual, StandardCharsets.UTF_8)).isEqualTo("<html><head><title>Stored Rendition</title></head><body>foo</body></html>");
                     }
                 }
 
@@ -214,7 +215,7 @@ public class StoredRenditionsRestIT {
                 public InputStream convert(InputStream fromInputSource, String toMimeType) {
                     String input = null;
                     try {
-                        input = IOUtils.toString(fromInputSource);
+                        input = IOUtils.toString(fromInputSource, StandardCharsets.UTF_8);
                     }
                     catch (IOException e) {
                     }
@@ -242,7 +243,7 @@ public class StoredRenditionsRestIT {
             long renderedLength = 0;
             try (InputStream inputStream = store.getContent(entity, PropertyPath.from("content"))) {
 
-                String renderedContent = IOUtils.toString(inputStream);
+                String renderedContent = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
 
                 // create and associate resource
                 UUID resourceId = UUID.randomUUID();

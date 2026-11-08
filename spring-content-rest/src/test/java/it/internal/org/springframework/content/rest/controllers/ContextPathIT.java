@@ -1,19 +1,14 @@
 package it.internal.org.springframework.content.rest.controllers;
 
-import org.junit.jupiter.api.extension.ExtendWith;
-
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.DisplayName;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-
+import internal.org.springframework.content.rest.support.TestEntity3;
+import internal.org.springframework.content.rest.support.TestEntity3ContentRepository;
+import internal.org.springframework.content.rest.support.TestEntity3Repository;
+import internal.org.springframework.content.rest.support.config.JpaInfrastructureConfig;
 import org.apache.commons.io.IOUtils;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.content.commons.renditions.RenditionProvider;
 import org.springframework.content.fs.config.EnableFileSystemStores;
@@ -26,6 +21,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -34,36 +30,31 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfiguration;
 
-import internal.org.springframework.content.rest.support.TestEntity3;
-import internal.org.springframework.content.rest.support.TestEntity3ContentRepository;
-import internal.org.springframework.content.rest.support.TestEntity3Repository;
-import internal.org.springframework.content.rest.support.config.JpaInfrastructureConfig;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 @WebAppConfiguration
 @ContextConfiguration(classes = {
-		ContextPathIT.ContextPathConfig.class,
-		DelegatingWebMvcConfiguration.class,
-		RepositoryRestMvcConfiguration.class,
-		RestConfiguration.class })
+        ContextPathIT.ContextPathConfig.class,
+        DelegatingWebMvcConfiguration.class,
+        RepositoryRestMvcConfiguration.class,
+        RestConfiguration.class})
 @Transactional
 @ActiveProfiles("store")
 @ExtendWith(SpringExtension.class)
 public class ContextPathIT {
 
-	@Autowired
-	private TestEntity3Repository repo3;
+    @Autowired
+    private TestEntity3Repository repo3;
 
-	@Autowired
-	private TestEntity3ContentRepository store3;
+    @Autowired
+    private TestEntity3ContentRepository store3;
 
-	@Autowired
-	private WebApplicationContext context;
-
-	private MockMvc mvc;
-
-	private TestEntity3 testEntity3;
-
-	private Content contentTests;
+    @Autowired
+    private WebApplicationContext context;
 
     @Nested
     class ContextPathContentTests {
@@ -74,8 +65,8 @@ public class ContextPathIT {
             class GivenTheRepositoryAndStorageAreExportedToTheSameURIContent extends Content {
                 @BeforeEach
                 void setUp() {
-                    mvc = MockMvcBuilders.webAppContextSetup(context).build();
-                    testEntity3 = repo3.save(new TestEntity3());
+                    MockMvc mvc = MockMvcBuilders.webAppContextSetup(context).build();
+                    TestEntity3 testEntity3 = repo3.save(new TestEntity3());
                     testEntity3.name = "tests";
                     testEntity3 = repo3.save(testEntity3);
                     this.setMvc(mvc);
@@ -86,86 +77,81 @@ public class ContextPathIT {
                     this.setContextPath("/contextPath");
                 }
             }
-
         }
-
     }
 
-	@Configuration
-	@EnableJpaRepositories(basePackages = "internal.org.springframework.content.rest.support")
-	@EnableTransactionManagement
-	@EnableFileSystemStores(basePackages = "internal.org.springframework.content.rest.support")
-	@Profile("store")
-	public static class ContextPathConfig extends JpaInfrastructureConfig {
+    @Configuration
+    @EnableJpaRepositories(basePackages = "internal.org.springframework.content.rest.support")
+    @EnableTransactionManagement
+    @EnableFileSystemStores(basePackages = "internal.org.springframework.content.rest.support")
+    @Profile("store")
+    public static class ContextPathConfig extends JpaInfrastructureConfig {
 
-		@Bean
-		FileSystemResourceLoader fileSystemResourceLoader() {
-			return new FileSystemResourceLoader(filesystemRoot().getAbsolutePath());
-		}
+        @Bean
+        FileSystemResourceLoader fileSystemResourceLoader() {
+            return new FileSystemResourceLoader(filesystemRoot().getAbsolutePath());
+        }
 
-		@Bean
-		public File filesystemRoot() {
-			File baseDir = new File(System.getProperty("java.io.tmpdir"));
-			File filesystemRoot = new File(baseDir, "spring-content-controller-tests");
-			filesystemRoot.mkdirs();
-			return filesystemRoot;
-		}
+        @Bean
+        public File filesystemRoot() {
+            File baseDir = new File(System.getProperty("java.io.tmpdir"));
+            File filesystemRoot = new File(baseDir, "spring-content-controller-tests");
+            filesystemRoot.mkdirs();
+            return filesystemRoot;
+        }
 
-		@Bean
-		public RenditionProvider textToHtml() {
-			return new RenditionProvider() {
+        @Bean
+        public RenditionProvider textToHtml() {
+            return new RenditionProvider() {
 
-				@Override
-				public String consumes() {
-					return "text/plain";
-				}
+                @Override
+                public String consumes() {
+                    return "text/plain";
+                }
 
-				@Override
-				public String[] produces() {
-					return new String[] { "text/html" };
-				}
+                @Override
+                public String[] produces() {
+                    return new String[]{"text/html"};
+                }
 
-				@Override
-				public InputStream convert(InputStream fromInputSource, String toMimeType) {
-					String input = null;
-					try {
-						input = IOUtils.toString(fromInputSource);
-					}
-					catch (IOException e) {
-					}
-					return new ByteArrayInputStream(
-							String.format("<html><body>%s</body></html>", input).getBytes());
-				}
-			};
-		}
+                @Override
+                public InputStream convert(InputStream fromInputSource, String toMimeType) {
+                    String input = null;
+                    try {
+                        input = IOUtils.toString(fromInputSource, StandardCharsets.UTF_8);
+                    } catch (IOException ignored) {
+                    }
+                    return new ByteArrayInputStream(
+                            String.format("<html><body>%s</body></html>", input).getBytes());
+                }
+            };
+        }
 
-		@Bean
-		public RenditionProvider htmlToHtml() {
-			return new RenditionProvider() {
+        @Bean
+        public RenditionProvider htmlToHtml() {
+            return new RenditionProvider() {
 
-				@Override
-				public String consumes() {
-					return "text/html";
-				}
+                @Override
+                public String consumes() {
+                    return "text/html";
+                }
 
-				@Override
-				public String[] produces() {
-					return new String[] { "text/html" };
-				}
+                @Override
+                public String[] produces() {
+                    return new String[]{"text/html"};
+                }
 
-				@Override
-				public InputStream convert(InputStream fromInputSource, String toMimeType) {
-					String input = null;
-					try {
-						input = IOUtils.toString(fromInputSource);
-					}
-					catch (IOException e) {
-					}
-					return new ByteArrayInputStream(
-							String.format("<html><body>Hello Spring Content World!</body></html>", input).getBytes());
-				}
-			};
-		}
-	}
-
+                @Override
+                public InputStream convert(InputStream fromInputSource, String toMimeType) {
+                    String input = null;
+                    try {
+                        input = IOUtils.toString(fromInputSource, StandardCharsets.UTF_8);
+                    } catch (IOException ignored) {
+                    }
+                    return new ByteArrayInputStream(
+                            String.format("<html><body>%s</body></html>", input).getBytes());
+                }
+            };
+        }
+    }
 }

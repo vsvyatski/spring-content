@@ -44,6 +44,7 @@ public class SolrFulltextIndexServiceImplTest {
                 {
                     java.util.List<org.junit.jupiter.api.DynamicNode> nodes1 = new java.util.ArrayList<>();
                     nodes1.add(org.junit.jupiter.api.DynamicTest.dynamicTest("should throw a StoreAccessException", () -> {
+                        // noinspection resource
                         solr = mock(SolrClient.class);
                                         props = new SolrProperties();
 
@@ -77,6 +78,7 @@ public class SolrFulltextIndexServiceImplTest {
                 {
                     java.util.List<org.junit.jupiter.api.DynamicNode> nodes2 = new java.util.ArrayList<>();
                     nodes2.add(org.junit.jupiter.api.DynamicTest.dynamicTest("should throw a StoreAccessException", () -> {
+                        // noinspection resource
                         solr = mock(SolrClient.class);
                                         props = new SolrProperties();
 

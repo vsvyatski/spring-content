@@ -1,19 +1,14 @@
 package internal.org.springframework.content.rest.links;
 
-import org.junit.jupiter.api.extension.ExtendWith;
-
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.DisplayName;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-
+import internal.org.springframework.content.rest.support.TestEntity3;
+import internal.org.springframework.content.rest.support.TestEntity3ContentRepository;
+import internal.org.springframework.content.rest.support.TestEntity3Repository;
+import internal.org.springframework.content.rest.support.config.JpaInfrastructureConfig;
 import org.apache.commons.io.IOUtils;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.content.commons.renditions.RenditionProvider;
 import org.springframework.content.fs.config.EnableFileSystemStores;
@@ -27,6 +22,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -35,36 +31,31 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfiguration;
 
-import internal.org.springframework.content.rest.support.TestEntity3;
-import internal.org.springframework.content.rest.support.TestEntity3ContentRepository;
-import internal.org.springframework.content.rest.support.TestEntity3Repository;
-import internal.org.springframework.content.rest.support.config.JpaInfrastructureConfig;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 @WebAppConfiguration
 @ContextConfiguration(classes = {
-		ContextPathContentLinksIT.ContextPathConfig.class,
-		DelegatingWebMvcConfiguration.class,
-		RepositoryRestMvcConfiguration.class,
-		RestConfiguration.class,
-		HypermediaConfiguration.class })
+        ContextPathContentLinksIT.ContextPathConfig.class,
+        DelegatingWebMvcConfiguration.class,
+        RepositoryRestMvcConfiguration.class,
+        RestConfiguration.class,
+        HypermediaConfiguration.class})
 @Transactional
 @ActiveProfiles("store")
 @ExtendWith(SpringExtension.class)
 public class ContextPathContentLinksIT {
 
-	@Autowired
-	TestEntity3Repository repository3;
-	@Autowired
-	TestEntity3ContentRepository contentRepository3;
+    @Autowired
+    TestEntity3Repository repository3;
+    @Autowired
+    TestEntity3ContentRepository contentRepository3;
 
-	@Autowired
-	private WebApplicationContext context;
-
-	private MockMvc mvc;
-
-	private TestEntity3 testEntity3;
-
-	private ContentLinkTests contentLinkTests;
+    @Autowired
+    private WebApplicationContext context;
 
     @Nested
     class GivenTheSpringContentBaseUriPropertyIsSetToContentApi {
@@ -73,8 +64,8 @@ public class ContextPathContentLinksIT {
         class GivenAnEntityAndAStoreWithADefaultStorePathContentLinkTests extends ContentLinkTests {
             @BeforeEach
             void setUp() {
-                mvc = MockMvcBuilders.webAppContextSetup(context).build();
-                testEntity3 = new TestEntity3();
+                MockMvc mvc = MockMvcBuilders.webAppContextSetup(context).build();
+                TestEntity3 testEntity3 = new TestEntity3();
                 contentRepository3.setContent(testEntity3, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
                 testEntity3 = repository3.save(testEntity3);
                 this.setMvc(mvc);
@@ -84,59 +75,56 @@ public class ContextPathContentLinksIT {
                 this.setUrl("/contextPath/testEntity3s/" + testEntity3.getId());
                 this.setContextPath("/contextPath");
                 this.setLinkRel("testEntity3");
-                this.setExpectedLinkRegex("http://localhost/contextPath/testEntity3s/" + testEntity3.getId() );
+                this.setExpectedLinkRegex("http://localhost/contextPath/testEntity3s/" + testEntity3.getId());
             }
         }
-
     }
 
-	@Configuration
-	@EnableJpaRepositories(basePackages = "internal.org.springframework.content.rest.support")
-	@EnableTransactionManagement
-	@EnableFileSystemStores(basePackages = "internal.org.springframework.content.rest.support")
-	@Profile("store")
-	public static class ContextPathConfig extends JpaInfrastructureConfig {
+    @Configuration
+    @EnableJpaRepositories(basePackages = "internal.org.springframework.content.rest.support")
+    @EnableTransactionManagement
+    @EnableFileSystemStores(basePackages = "internal.org.springframework.content.rest.support")
+    @Profile("store")
+    public static class ContextPathConfig extends JpaInfrastructureConfig {
 
-		@Bean
-		FileSystemResourceLoader fileSystemResourceLoader() {
-			return new FileSystemResourceLoader(filesystemRoot().getAbsolutePath());
-		}
+        @Bean
+        FileSystemResourceLoader fileSystemResourceLoader() {
+            return new FileSystemResourceLoader(filesystemRoot().getAbsolutePath());
+        }
 
-		@Bean
-		public File filesystemRoot() {
-			File baseDir = new File(System.getProperty("java.io.tmpdir"));
-			File filesystemRoot = new File(baseDir, "spring-content-controller-tests");
-			filesystemRoot.mkdirs();
-			return filesystemRoot;
-		}
+        @Bean
+        public File filesystemRoot() {
+            File baseDir = new File(System.getProperty("java.io.tmpdir"));
+            File filesystemRoot = new File(baseDir, "spring-content-controller-tests");
+            filesystemRoot.mkdirs();
+            return filesystemRoot;
+        }
 
-		@Bean
-		public RenditionProvider textToHtml() {
-			return new RenditionProvider() {
+        @Bean
+        public RenditionProvider textToHtml() {
+            return new RenditionProvider() {
 
-				@Override
-				public String consumes() {
-					return "text/plain";
-				}
+                @Override
+                public String consumes() {
+                    return "text/plain";
+                }
 
-				@Override
-				public String[] produces() {
-					return new String[] { "text/html" };
-				}
+                @Override
+                public String[] produces() {
+                    return new String[]{"text/html"};
+                }
 
-				@Override
-				public InputStream convert(InputStream fromInputSource, String toMimeType) {
-					String input = null;
-					try {
-						input = IOUtils.toString(fromInputSource);
-					}
-					catch (IOException e) {
-					}
-					return new ByteArrayInputStream(
-							String.format("<html><body>%s</body></html>", input).getBytes());
-				}
-			};
-		}
-	}
-
+                @Override
+                public InputStream convert(InputStream fromInputSource, String toMimeType) {
+                    String input = null;
+                    try {
+                        input = IOUtils.toString(fromInputSource, StandardCharsets.UTF_8);
+                    } catch (IOException ignored) {
+                    }
+                    return new ByteArrayInputStream(
+                            String.format("<html><body>%s</body></html>", input).getBytes());
+                }
+            };
+        }
+    }
 }

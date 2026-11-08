@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.IOUtils;
 import org.springframework.content.commons.renditions.RenditionProvider;
@@ -84,7 +85,7 @@ public class StoreConfig extends JpaInfrastructureConfig {
 			public InputStream convert(InputStream fromInputSource, String toMimeType) {
 				String input = null;
 				try {
-					input = IOUtils.toString(fromInputSource);
+					input = IOUtils.toString(fromInputSource, StandardCharsets.UTF_8);
 				}
 				catch (IOException e) {
 				}
@@ -112,7 +113,7 @@ public class StoreConfig extends JpaInfrastructureConfig {
 			public InputStream convert(InputStream fromInputSource, String toMimeType) {
 				String input = null;
 				try {
-					input = IOUtils.toString(fromInputSource);
+					input = IOUtils.toString(fromInputSource, StandardCharsets.UTF_8);
 				}
 				catch (IOException e) {
 				}

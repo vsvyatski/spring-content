@@ -89,6 +89,7 @@ public class DefaultS3StoreImplTest {
                         resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
                         loader = mock(ResourceLoader.class);
                         placementService = mock(PlacementService.class);
+                        // noinspection resource
                         client = mock(S3Client.class);
                         defaultBucket = null;
 
@@ -148,6 +149,7 @@ public class DefaultS3StoreImplTest {
                                     resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
                                     loader = mock(ResourceLoader.class);
                                     placementService = mock(PlacementService.class);
+                                    // noinspection resource
                                     client = mock(S3Client.class);
                                     defaultBucket = null;
 
@@ -217,6 +219,7 @@ public class DefaultS3StoreImplTest {
                                     resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
                                     loader = mock(ResourceLoader.class);
                                     placementService = mock(PlacementService.class);
+                                    // noinspection resource
                                     client = mock(S3Client.class);
                                     defaultBucket = null;
 
@@ -267,6 +270,7 @@ public class DefaultS3StoreImplTest {
                         resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
                         loader = mock(ResourceLoader.class);
                         placementService = mock(PlacementService.class);
+                        // noinspection resource
                         client = mock(S3Client.class);
                         defaultBucket = null;
 
@@ -280,6 +284,7 @@ public class DefaultS3StoreImplTest {
                         context = new GenericApplicationContext();
                         context.refresh();
 
+                        // noinspection resource
                         client2 = mock(S3Client.class);
                         clientProvider = new MultiTenantS3ClientProvider() {
                         	@Override
@@ -329,6 +334,7 @@ public class DefaultS3StoreImplTest {
                                 resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
                                 loader = mock(ResourceLoader.class);
                                 placementService = mock(PlacementService.class);
+                                // noinspection resource
                                 client = mock(S3Client.class);
                                 defaultBucket = null;
 
@@ -387,6 +393,7 @@ public class DefaultS3StoreImplTest {
                                 resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
                                 loader = mock(ResourceLoader.class);
                                 placementService = mock(PlacementService.class);
+                                // noinspection resource
                                 client = mock(S3Client.class);
                                 defaultBucket = null;
 
@@ -441,6 +448,7 @@ public class DefaultS3StoreImplTest {
                                 resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
                                 loader = mock(ResourceLoader.class);
                                 placementService = mock(PlacementService.class);
+                                // noinspection resource
                                 client = mock(S3Client.class);
                                 defaultBucket = null;
 
@@ -491,6 +499,7 @@ public class DefaultS3StoreImplTest {
                                 resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
                                 loader = mock(ResourceLoader.class);
                                 placementService = mock(PlacementService.class);
+                                // noinspection resource
                                 client = mock(S3Client.class);
                                 defaultBucket = null;
 
@@ -557,6 +566,7 @@ public class DefaultS3StoreImplTest {
                                 resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
                                 loader = mock(ResourceLoader.class);
                                 placementService = mock(PlacementService.class);
+                                // noinspection resource
                                 client = mock(S3Client.class);
                                 defaultBucket = null;
 
@@ -619,6 +629,7 @@ public class DefaultS3StoreImplTest {
                                 resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
                                 loader = mock(ResourceLoader.class);
                                 placementService = mock(PlacementService.class);
+                                // noinspection resource
                                 client = mock(S3Client.class);
                                 defaultBucket = null;
 
@@ -677,6 +688,7 @@ public class DefaultS3StoreImplTest {
                                 resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
                                 loader = mock(ResourceLoader.class);
                                 placementService = mock(PlacementService.class);
+                                // noinspection resource
                                 client = mock(S3Client.class);
                                 defaultBucket = null;
 
@@ -731,6 +743,7 @@ public class DefaultS3StoreImplTest {
                                 resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
                                 loader = mock(ResourceLoader.class);
                                 placementService = mock(PlacementService.class);
+                                // noinspection resource
                                 client = mock(S3Client.class);
                                 defaultBucket = null;
 
@@ -781,6 +794,7 @@ public class DefaultS3StoreImplTest {
                                 resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
                                 loader = mock(ResourceLoader.class);
                                 placementService = mock(PlacementService.class);
+                                // noinspection resource
                                 client = mock(S3Client.class);
                                 defaultBucket = null;
 
@@ -865,6 +879,7 @@ public class DefaultS3StoreImplTest {
                                 resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
                                 loader = mock(ResourceLoader.class);
                                 placementService = mock(PlacementService.class);
+                                // noinspection resource
                                 client = mock(S3Client.class);
                                 defaultBucket = null;
 
@@ -921,6 +936,7 @@ public class DefaultS3StoreImplTest {
                     resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
                     loader = mock(ResourceLoader.class);
                     placementService = mock(PlacementService.class);
+                    // noinspection resource
                     client = mock(S3Client.class);
                     defaultBucket = null;
 
@@ -956,6 +972,7 @@ public class DefaultS3StoreImplTest {
                     resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
                     loader = mock(ResourceLoader.class);
                     placementService = mock(PlacementService.class);
+                    // noinspection resource
                     client = mock(S3Client.class);
                     defaultBucket = null;
 
@@ -1001,6 +1018,7 @@ public class DefaultS3StoreImplTest {
                                 resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
                                 loader = mock(ResourceLoader.class);
                                 placementService = mock(PlacementService.class);
+                                // noinspection resource
                                 client = mock(S3Client.class);
                                 defaultBucket = null;
 
@@ -1066,6 +1084,7 @@ public class DefaultS3StoreImplTest {
                                     resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
                                     loader = mock(ResourceLoader.class);
                                     placementService = mock(PlacementService.class);
+                                    // noinspection resource
                                     client = mock(S3Client.class);
                                     defaultBucket = null;
 
@@ -1126,6 +1145,7 @@ public class DefaultS3StoreImplTest {
                                 resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
                                 loader = mock(ResourceLoader.class);
                                 placementService = mock(PlacementService.class);
+                                // noinspection resource
                                 client = mock(S3Client.class);
                                 defaultBucket = null;
 
@@ -1197,6 +1217,7 @@ public class DefaultS3StoreImplTest {
                                 resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
                                 loader = mock(ResourceLoader.class);
                                 placementService = mock(PlacementService.class);
+                                // noinspection resource
                                 client = mock(S3Client.class);
                                 defaultBucket = null;
 
@@ -1256,6 +1277,7 @@ public class DefaultS3StoreImplTest {
                     resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
                     loader = mock(ResourceLoader.class);
                     placementService = mock(PlacementService.class);
+                    // noinspection resource
                     client = mock(S3Client.class);
                     defaultBucket = null;
 
@@ -1294,6 +1316,7 @@ public class DefaultS3StoreImplTest {
                         resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
                         loader = mock(ResourceLoader.class);
                         placementService = mock(PlacementService.class);
+                        // noinspection resource
                         client = mock(S3Client.class);
                         defaultBucket = null;
 
@@ -1348,6 +1371,7 @@ public class DefaultS3StoreImplTest {
                                     resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
                                     loader = mock(ResourceLoader.class);
                                     placementService = mock(PlacementService.class);
+                                    // noinspection resource
                                     client = mock(S3Client.class);
                                     defaultBucket = null;
 
@@ -1401,6 +1425,7 @@ public class DefaultS3StoreImplTest {
                                         resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
                                         loader = mock(ResourceLoader.class);
                                         placementService = mock(PlacementService.class);
+                                        // noinspection resource
                                         client = mock(S3Client.class);
                                         defaultBucket = null;
 
@@ -1456,6 +1481,7 @@ public class DefaultS3StoreImplTest {
                                     resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
                                     loader = mock(ResourceLoader.class);
                                     placementService = mock(PlacementService.class);
+                                    // noinspection resource
                                     client = mock(S3Client.class);
                                     defaultBucket = null;
 
@@ -1514,6 +1540,7 @@ public class DefaultS3StoreImplTest {
                                     resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
                                     loader = mock(ResourceLoader.class);
                                     placementService = mock(PlacementService.class);
+                                    // noinspection resource
                                     client = mock(S3Client.class);
                                     defaultBucket = null;
 
@@ -1581,6 +1608,7 @@ public class DefaultS3StoreImplTest {
                                     resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
                                     loader = mock(ResourceLoader.class);
                                     placementService = mock(PlacementService.class);
+                                    // noinspection resource
                                     client = mock(S3Client.class);
                                     defaultBucket = null;
 
@@ -1628,6 +1656,7 @@ public class DefaultS3StoreImplTest {
                                         resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
                                         loader = mock(ResourceLoader.class);
                                         placementService = mock(PlacementService.class);
+                                        // noinspection resource
                                         client = mock(S3Client.class);
                                         defaultBucket = null;
 
@@ -1678,6 +1707,7 @@ public class DefaultS3StoreImplTest {
                                         resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
                                         loader = mock(ResourceLoader.class);
                                         placementService = mock(PlacementService.class);
+                                        // noinspection resource
                                         client = mock(S3Client.class);
                                         defaultBucket = null;
 
@@ -1731,6 +1761,7 @@ public class DefaultS3StoreImplTest {
                                         resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
                                         loader = mock(ResourceLoader.class);
                                         placementService = mock(PlacementService.class);
+                                        // noinspection resource
                                         client = mock(S3Client.class);
                                         defaultBucket = null;
 
@@ -1786,6 +1817,7 @@ public class DefaultS3StoreImplTest {
                                     resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
                                     loader = mock(ResourceLoader.class);
                                     placementService = mock(PlacementService.class);
+                                    // noinspection resource
                                     client = mock(S3Client.class);
                                     defaultBucket = null;
 

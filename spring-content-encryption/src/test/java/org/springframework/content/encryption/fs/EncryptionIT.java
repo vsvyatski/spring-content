@@ -41,6 +41,8 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Optional;
 import java.util.UUID;
@@ -91,7 +93,10 @@ public class EncryptionIT {
                                         assertThat(fetched.isPresent()).isTrue();
                                         f = fetched.get();
 
-                                        String contents = IOUtils.toString(new FileInputStream(new java.io.File(filesystemRoot, f.getContentId().toString())));
+                                        String contents;
+                                        try (InputStream in = new FileInputStream(new java.io.File(filesystemRoot, f.getContentId().toString()))) {
+                                            contents = IOUtils.toString(in, StandardCharsets.UTF_8);
+                                        }
                                         assertThat(contents).isNotEqualTo("Hello Client-side encryption World!");
                 }
                 @Test

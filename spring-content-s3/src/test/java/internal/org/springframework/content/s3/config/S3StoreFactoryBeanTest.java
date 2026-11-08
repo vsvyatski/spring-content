@@ -36,6 +36,7 @@ public class S3StoreFactoryBeanTest {
             class GivenAStore {
                 @BeforeEach
                 void setUp() {
+                    // noinspection resource
                     client = mock(S3Client.class);
                     				placer = mock(PlacementService.class);
 
@@ -60,6 +61,7 @@ public class S3StoreFactoryBeanTest {
             class GivenAnAssociativeStore {
                 @BeforeEach
                 void setUp() {
+                    // noinspection resource
                     client = mock(S3Client.class);
                     				placer = mock(PlacementService.class);
 

@@ -23,6 +23,7 @@ public class ElasticsearchAutoConfigurationTest {
     private static final ElasticsearchClient client;
 
     static {
+        // noinspection resource
         client = mock(ElasticsearchClient.class);
     }
 
