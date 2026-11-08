@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Nested;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -11,10 +12,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import org.springframework.content.azure.config.AzureStorageConfigurer;
-import org.springframework.content.azure.config.BlobId;
 import org.springframework.content.azure.config.EnableAzureStorage;
 import org.springframework.content.commons.annotations.ContentId;
-import org.springframework.content.commons.store.AssociativeStore;
 import org.springframework.content.commons.store.ContentStore;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -40,10 +39,10 @@ public class EnableAzureStorageTest {
         System.setProperty("spring.content.azure.bucket", "azure-test-bucket");
     }
 
-	private AnnotationConfigApplicationContext context;
+    private AnnotationConfigApplicationContext context;
 
-	// mocks
-	static AzureStorageConfigurer configurer;
+    // mocks
+    static AzureStorageConfigurer configurer;
 
     @Nested
     class EnableAzureStorageCases {
@@ -119,68 +118,64 @@ public class EnableAzureStorageTest {
 
     }
 
-	@Configuration
-	@EnableAzureStorage(basePackages = "contains.no.fs.repositores")
-	@Import(InfrastructureConfig.class)
-	public static class EmptyConfig {
-	}
+    @Configuration
+    @EnableAzureStorage(basePackages = "contains.no.fs.repositores")
+    @Import(InfrastructureConfig.class)
+    public static class EmptyConfig {
+    }
 
-	@Configuration
-	@EnableAzureStorage
-	@Import(InfrastructureConfig.class)
-	public static class TestConfig {
-	}
+    @Configuration
+    @EnableAzureStorage
+    @Import(InfrastructureConfig.class)
+    public static class TestConfig {
+    }
 
-	@Configuration
-	@EnableAzureStorage
-	@Import(InfrastructureConfig.class)
-	public static class ConverterConfig {
-		@Bean
-		public AzureStorageConfigurer configurer() {
-			return configurer;
-		}
-	}
+    @Configuration
+    @EnableAzureStorage
+    @Import(InfrastructureConfig.class)
+    public static class ConverterConfig {
+        @Bean
+        public AzureStorageConfigurer configurer() {
+            return configurer;
+        }
+    }
 
-	@Configuration
-	@EnableAzureStorage
-	@Import(InfrastructureConfig.class)
-	public static class TestConverterConfig {
-		@Bean
-		public AzureStorageConfigurer configurer() {
-			return new AzureStorageConfigurer() {
+    @Configuration
+    @EnableAzureStorage
+    @Import(InfrastructureConfig.class)
+    public static class TestConverterConfig {
+        @Bean
+        public AzureStorageConfigurer configurer() {
+            return new AzureStorageConfigurer() {
 
-				@Override
-				public void configureAzureStorageConverters(ConverterRegistry registry) {
-				}
-			};
-		}
-	}
+                @Override
+                public void configureAzureStorageConverters(ConverterRegistry registry) {
+                }
+            };
+        }
+    }
 
-	public interface TestEntityStore extends AssociativeStore<TestEntity, BlobId> {
-	}
+    @Configuration
+    public static class InfrastructureConfig {
+        @Bean
+        public BlobServiceClientBuilder builder() {
+            return builder;
+        }
+    }
 
-	@Configuration
-	public static class InfrastructureConfig {
-	    @Bean
-	    public BlobServiceClientBuilder builder() {
-	        return builder;
-	    }
-	}
+    public static class TestEntity {
+        @ContentId
+        private String contentId;
 
-	public class TestEntity {
-		@ContentId
-		private String contentId;
+        public String getContentId() {
+            return contentId;
+        }
 
-		public String getContentId() {
-			return contentId;
-		}
+        public void setContentId(String contentId) {
+            this.contentId = contentId;
+        }
+    }
 
-		public void setContentId(String contentId) {
-			this.contentId = contentId;
-		}
-	}
-
-	public interface TestEntityContentStore
-			extends ContentStore<TestEntity, String> {
-	}
+    public interface TestEntityContentStore extends ContentStore<TestEntity, String> {
+    }
 }
