@@ -27,6 +27,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.condition.RequestCondition;
+import org.springframework.web.util.ServletRequestPathUtils;
 import org.springframework.web.util.UrlPathHelper;
 
 import internal.org.springframework.content.rest.annotations.ContentRestController;
@@ -130,7 +131,7 @@ public class ContentHandlerMapping extends StoreAwareHandlerMapping {
 
 	@Override
 	protected CorsConfiguration getCorsConfiguration(Object handler, HttpServletRequest request) {
-		String lookupPath = getUrlPathHelper().getLookupPathForRequest(request);
+		String lookupPath = ServletRequestPathUtils.getCachedPathValue(request);
 		String storeLookupPath = StoreUtils.storeLookupPath(lookupPath, this.getConfiguration().getBaseUri());
 		CorsConfiguration corsConfiguration = super.getCorsConfiguration(handler, request);
 

@@ -62,6 +62,7 @@
         <!-- Test dependencies -->
         <test-containers.version>1.21.4</test-containers.version>
         <mockito.version>5.24.0</mockito.version>
+        <surefire.mockitoAgent>-javaagent:${settings.localRepository}/org/mockito/mockito-core/${mockito.version}/mockito-core-${mockito.version}.jar -Xshare:off</surefire.mockitoAgent>
         <mysql-connector.version>26.10.0</mysql-connector.version>
         <ojdbc.version>23.26.4.0.0</ojdbc.version>
 
@@ -137,6 +138,14 @@
                 </configuration>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.6.1</version>
+                <configuration>
+                    <argLine>${surefire.mockitoAgent}</argLine>
+                </configuration>
+            </plugin>
+            <plugin>
                 <!-- Can be used to set project version in this root project and all its children by
                      invoking the following: mvnw versions:set "-DnewVersion=THE_VERSION_YOU_WANT" -->
                 <groupId>org.codehaus.mojo</groupId>
@@ -204,7 +213,7 @@
                         <version>3.6.1</version>
                         <configuration>
                             <!--suppress UnresolvedMavenProperty -->
-                            <argLine>${surefireArgLine}</argLine>
+                            <argLine>${surefireArgLine} ${surefire.mockitoAgent}</argLine>
                             <skipTests>true</skipTests>
                         </configuration>
                         <executions>
