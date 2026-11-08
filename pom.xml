@@ -48,7 +48,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <spring-content.version>${project.version}</spring-content.version>
-        <springboot.version>4.1.1</springboot.version>
+        <springboot.version>4.1.2</springboot.version>
         <commons-io.version>2.22.0</commons-io.version>
         <commons-lang.version>3.20.0</commons-lang.version>
         <commons-logging.version>1.4.0</commons-logging.version>
@@ -128,7 +128,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.15.0</version>
+                <version>3.16.0</version>
                 <configuration>
                     <release>17</release>
                     <compilerArgs>
@@ -141,7 +141,7 @@
                      invoking the following: mvnw versions:set "-DnewVersion=THE_VERSION_YOU_WANT" -->
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>versions-maven-plugin</artifactId>
-                <version>2.21.0</version>
+                <version>2.24.0</version>
                 <configuration>
                     <allowSnapshots>true</allowSnapshots>
                 </configuration>
@@ -215,7 +215,7 @@
                     <plugin>
                         <groupId>org.jacoco</groupId>
                         <artifactId>jacoco-maven-plugin</artifactId>
-                        <version>0.8.14</version>
+                        <version>0.8.16</version>
                         <executions>
                             <!-- Prepare execution with Surefire -->
                             <execution>
@@ -240,7 +240,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
-                        <version>3.5.5</version>
+                        <version>3.6.1</version>
                         <configuration>
                             <argLine>${surefireArgLine}</argLine>
                             <skipTests>true</skipTests>
@@ -316,7 +316,7 @@
                     <plugin>
                         <groupId>org.sonatype.central</groupId>
                         <artifactId>central-publishing-maven-plugin</artifactId>
-                        <version>0.10.0</version>
+                        <version>0.12.0</version>
                         <extensions>true</extensions>
                         <configuration>
                             <publishingServerId>central</publishingServerId>

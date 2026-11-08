@@ -1,7 +1,7 @@
 if [ -n "$TRAVIS_TAG" ]
 then
     export BUILD_TYPE=release/$TRAVIS_TAG
-    mvn org.codehaus.mojo:versions-maven-plugin:2.1:set -DnewVersion="$TRAVIS_TAG"
+    mvn -B versions:set -DnewVersion="$TRAVIS_TAG" --file pom.xml
 fi
 
 echo BUILD_TYPE: "$BUILD_TYPE"

@@ -44,7 +44,7 @@ jobs:
 
         if [[ "${GITHUB_REF}" == *"tags"* ]]; then
             TAG="${GITHUB_REF#refs/tags/}"
-            mvn org.codehaus.mojo:versions-maven-plugin:2.1:set -DnewVersion="${TAG}"
+            mvn -B versions:set -DnewVersion="${TAG}" --file pom.xml
         fi
 
         mvn -B -DskipTests=true -P ci,docs deploy --file pom.xml
@@ -70,7 +70,7 @@ jobs:
         if [[ "${GITHUB_REF}" == *"tags"* ]]; then
             TAG="${GITHUB_REF#refs/tags/}"
             export BUILD_TYPE=release/"${TAG}"
-            mvn org.codehaus.mojo:versions-maven-plugin:2.1:set -DnewVersion="${TAG}"
+            mvn -B versions:set -DnewVersion="${TAG}" --file pom.xml
         else
             export BUILD_TYPE=snapshot/"${GITHUB_REF#refs/heads/}"
         fi
