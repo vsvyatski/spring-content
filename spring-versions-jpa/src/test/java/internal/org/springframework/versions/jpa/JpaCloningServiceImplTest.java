@@ -17,10 +17,13 @@ public class JpaCloningServiceImplTest {
     private Exception e;
 
     public static class TestEntity {
+        protected short someField;
+
         public TestEntity() {
         }
 
         public TestEntity(TestEntity entity) {
+            someField = entity.someField;
         }
     }
 
@@ -30,11 +33,16 @@ public class JpaCloningServiceImplTest {
     }
 
     public static class FailingCopyConstructorTestEntity {
+        protected String someStringThatMustBeSetToSomething;
+
         public FailingCopyConstructorTestEntity() {
         }
 
+        @SuppressWarnings("unused")
         public FailingCopyConstructorTestEntity(FailingCopyConstructorTestEntity entity) {
-            throw new RuntimeException();
+            if (entity.someStringThatMustBeSetToSomething == null)
+                throw new IllegalArgumentException("The incoming entity seems uninitialized.");
+            someStringThatMustBeSetToSomething = entity.someStringThatMustBeSetToSomething;
         }
     }
 
