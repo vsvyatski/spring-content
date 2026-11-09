@@ -52,16 +52,12 @@ public class SearchableImpl implements Searchable<Object> {
     public SearchableImpl() {
         client = null;
         manager = null;
-        domainClass = null;
-        idClass = null;
-        filterProvider = null;
     }
 
     @Autowired
     public SearchableImpl(ElasticsearchClient client, IndexManager manager) {
         this.client = client;
         this.manager = manager;
-        this.filterProvider = null;
         this.conversionService = new DefaultConversionService();
     }
 
@@ -186,14 +182,11 @@ public class SearchableImpl implements Searchable<Object> {
     @SuppressWarnings("unchecked")
     private <R> R wrapResult(Class<R> returnType, List<Object> content, Pageable pageable, long total) {
 
-        R rc = null;
         if (Page.class.isAssignableFrom(returnType)) {
             LOGGER.debug("Wrapping result in Page");
-            rc = (R) new PageImpl<Object>(content, pageable, total);
-        } else {
-            LOGGER.debug("Returning result as-is");
-            rc = (R) content;
+            return (R) new PageImpl<Object>(content, pageable, total);
         }
-        return rc;
+        LOGGER.debug("Returning result as-is");
+        return (R) content;
     }
 }

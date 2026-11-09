@@ -57,9 +57,6 @@ public class WordToHtmlRenditionProvider implements RenditionProvider {
                 pkg.getMainDocumentPart().getFontTablePart().deleteEmbeddedFontTempFiles();
             }
 
-            htmlSettings = null;
-            pkg = null;
-
             return new ObservableInputStream(new FileInputStream(tmpFile), new FileRemover(tmpFile));
         } catch (Exception e) {
             logger.warn(format("%s rendition failed", toMimeType), e);

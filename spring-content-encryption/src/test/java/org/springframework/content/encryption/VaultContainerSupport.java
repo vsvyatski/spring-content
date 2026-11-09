@@ -4,7 +4,7 @@ import org.testcontainers.vault.VaultContainer;
 
 public class VaultContainerSupport {
 
-    private static VaultContainer vaultContainer = null;
+    private static VaultContainer vaultContainer;
 
     public static VaultContainer getVaultContainer() {
 

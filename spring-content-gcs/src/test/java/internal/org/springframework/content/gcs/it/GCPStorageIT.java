@@ -1349,7 +1349,6 @@ public class GCPStorageIT {
                     void shouldReturnNullWhenContentIsUnset() {
                         EntityWithEmbeddedContent entity = embeddedRepo.save(new EntityWithEmbeddedContent());
                         assertThat(embeddedStore.unsetContent(entity, PropertyPath.from("content"))).isSameAs(entity);
-                        int i = 0;
                     }
                 }
             }

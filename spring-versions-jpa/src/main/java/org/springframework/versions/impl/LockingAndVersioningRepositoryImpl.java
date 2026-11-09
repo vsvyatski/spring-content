@@ -26,6 +26,7 @@ import java.lang.reflect.Field;
 import java.security.Principal;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.lang.String.format;
 
@@ -292,9 +293,9 @@ public class LockingAndVersioningRepositoryImpl<T, ID extends Serializable> impl
         if (sort.isSorted()) {
             builder.append("order by ");
 
-            int i = 0;
+            final AtomicInteger sortIndex = new AtomicInteger();
             sort.forEach((property) -> {
-                if (i > 0) {
+                if (sortIndex.getAndIncrement() > 0) {
                     builder.append(",");
                 }
                 builder.append("t.");

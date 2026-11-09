@@ -51,7 +51,7 @@ public class StoreResourceImpl implements Resource, StoreResource {
 
     @Override
     public MediaType getMimeType() {
-        String mimeType = null;
+        final String mimeType;
         try {
             mimeType = Files.probeContentType(Paths.get(this.getFilename()));
         } catch (IOException e) {

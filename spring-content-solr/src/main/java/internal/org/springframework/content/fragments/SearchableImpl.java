@@ -123,14 +123,11 @@ public class SearchableImpl implements Searchable<Object>, ContentStoreAware {
             request = solrAuthenticate(request);
         }
 
-        QueryResponse response = null;
         try {
-            response = request.process(solr, null);
+            return request.process(solr, null);
         } catch (SolrServerException | IOException e) {
             throw new StoreAccessException(String.format("Error running query %s on field %s against solr.", queryString, field), e);
         }
-
-        return response;
     }
 
     private <T> T getResults(QueryResponse response, Pageable pageable, Class<?> searchType, Class<T> returnType) {
@@ -151,12 +148,13 @@ public class SearchableImpl implements Searchable<Object>, ContentStoreAware {
             if (ContentPropertyUtils.isPrimitiveContentPropertyClass(searchType)) {
                 results.add(conversionService.convert(strippedId, TypeDescriptor.valueOf(String.class), TypeDescriptor.valueOf(idClass)));
             } else {
-                Object result = null;
+                Object result;
                 try {
                     result = searchType.getDeclaredConstructor().newInstance();
                 } catch (InstantiationException | IllegalAccessException | NoSuchMethodException
                         | java.lang.reflect.InvocationTargetException e) {
                     e.printStackTrace(System.err);
+                    continue;
                 }
 
                 Field idField = DomainObjectUtils.getIdField(searchType);

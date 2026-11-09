@@ -168,8 +168,7 @@ public class ContentLinksResourceProcessor implements RepresentationModelProcess
 
     private Link shortcutLink(URI baseUri, StoreInfo store, Object id, String defaultLinkRel) {
 
-        LinkBuilder builder = null;
-        builder = StoreLinkBuilder.linkTo(new BaseUri(baseUri), store);
+        LinkBuilder builder = StoreLinkBuilder.linkTo(new BaseUri(baseUri), store);
 
         builder = builder.slash(id);
 

@@ -72,8 +72,7 @@ public class RestResourceMappedRestEndpointsIT {
     private MockMvc mvc;
 
     private Object parse(Map<String, Object> obj, String... path) {
-        Object current = null;
-        current = obj.get(path[0]);
+        Object current = obj.get(path[0]);
         if (current instanceof Map) {
             current = parse((Map<String, Object>) current, Arrays.copyOfRange(path, 1, path.length));
         }

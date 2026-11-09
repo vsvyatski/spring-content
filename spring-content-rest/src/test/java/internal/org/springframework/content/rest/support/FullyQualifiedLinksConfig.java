@@ -65,10 +65,11 @@ public class FullyQualifiedLinksConfig extends JpaInfrastructureConfig {
 
             @Override
             public InputStream convert(InputStream fromInputSource, String toMimeType) {
-                String input = null;
+                String input;
                 try {
                     input = IOUtils.toString(fromInputSource, StandardCharsets.UTF_8);
                 } catch (IOException e) {
+                    input = "";
                 }
                 return new ByteArrayInputStream(
                         String.format("<html><body>%s</body></html>", input).getBytes());
@@ -92,10 +93,11 @@ public class FullyQualifiedLinksConfig extends JpaInfrastructureConfig {
 
             @Override
             public InputStream convert(InputStream fromInputSource, String toMimeType) {
-                String input = null;
+                String input;
                 try {
                     input = IOUtils.toString(fromInputSource, StandardCharsets.UTF_8);
                 } catch (IOException e) {
+                    input = "";
                 }
                 return new ByteArrayInputStream(
                         String.format("<html><body>Hello Spring Content World!</body></html>", input).getBytes());

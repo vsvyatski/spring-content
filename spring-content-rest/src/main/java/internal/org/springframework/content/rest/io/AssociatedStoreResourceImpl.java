@@ -126,16 +126,7 @@ public class AssociatedStoreResourceImpl<S> implements HttpResource, AssociatedS
     @Override
     public Object getETag() {
 
-        Object etag = null;
-
-        //        if (property != null) {
-        //            etag = BeanUtils.getFieldWithAnnotation(property, Version.class);
-        //        }
-
-        if (etag == null) {
-            etag = BeanUtils.getFieldWithAnnotation(entity, Version.class);
-        }
-
+        Object etag = BeanUtils.getFieldWithAnnotation(entity, Version.class);
         if (etag == null) {
             etag = "";
         }
@@ -146,9 +137,7 @@ public class AssociatedStoreResourceImpl<S> implements HttpResource, AssociatedS
     @Override
     public MediaType getMimeType() {
 
-        Object mimeType = null;
-
-        mimeType = this.getContentProperty().getMimeType(this.getAssociation());
+        Object mimeType = this.getContentProperty().getMimeType(this.getAssociation());
 
         return MediaType.valueOf(mimeType != null ? mimeType.toString() : MediaType.ALL_VALUE);
     }

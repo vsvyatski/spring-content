@@ -44,8 +44,6 @@ public class WordToTextRenditionProvider implements RenditionProvider {
                 pkg.getMainDocumentPart().getFontTablePart().deleteEmbeddedFontTempFiles();
             }
 
-            pkg = null;
-
             return new ObservableInputStream(new FileInputStream(tmpFile), new FileRemover(tmpFile));
         } catch (Exception e) {
             logger.warn(format("%s rendition failed", toMimeType), e);

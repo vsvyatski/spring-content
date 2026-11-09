@@ -41,11 +41,11 @@ public class TransactionIT {
     // for postgres (large object api operations must be in a transaction)
     private PlatformTransactionManager ptm;
 
-    private TestEntityRepository repo = null;
-    private TestEntityContentRepository store = null;
-    private DbService dbService = null;
+    private TestEntityRepository repo;
+    private TestEntityContentRepository store;
+    private DbService dbService;
 
-    private TestEntity te = null;
+    private TestEntity te;
 
     private static String getContextName(Class<?> configClass) {
         return configClass.getSimpleName().replaceAll("Config", "");

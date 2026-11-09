@@ -93,10 +93,11 @@ public class ContextPathContentLinksIT {
 
                 @Override
                 public InputStream convert(InputStream fromInputSource, String toMimeType) {
-                    String input = null;
+                    String input;
                     try {
                         input = IOUtils.toString(fromInputSource, StandardCharsets.UTF_8);
                     } catch (IOException ignored) {
+                        input = "";
                     }
                     return new ByteArrayInputStream(
                             String.format("<html><body>%s</body></html>", input).getBytes());

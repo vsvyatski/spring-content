@@ -21,12 +21,11 @@ public class EntityResolvers extends ArrayList<EntityResolver> {
             }
         }
 
-        String bestMatch = null;
         if (entityUriTemplates.size() > 1) {
             entityUriTemplates.sort(patternComparator);
         }
 
-        bestMatch = entityUriTemplates.get(0);
+        String bestMatch = entityUriTemplates.get(0);
 
         EntityResolver matchedEntityResolver = null;
         for (EntityResolver resolver : this) {
@@ -49,12 +48,11 @@ public class EntityResolvers extends ArrayList<EntityResolver> {
             }
         }
 
-        String bestMatch = null;
         if (entityUriTemplates.size() > 1) {
             entityUriTemplates.sort(patternComparator);
         }
 
-        bestMatch = entityUriTemplates.get(0);
+        String bestMatch = entityUriTemplates.get(0);
 
         EntityResolver matchedEntityResolver = null;
         for (EntityResolver resolver : this) {

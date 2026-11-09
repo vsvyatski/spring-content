@@ -111,12 +111,11 @@ public class ResourceHandlerMethodArgumentResolver implements HandlerMethodArgum
                 }
             }
 
-            String bestMatch = null;
             if (uriTemplates.size() > 1) {
                 uriTemplates.sort(patternComparator);
             }
 
-            bestMatch = uriTemplates.get(0);
+            String bestMatch = uriTemplates.get(0);
 
             ResourceResolver matchedResolver = null;
             for (ResourceResolver resolver : resolvers) {
