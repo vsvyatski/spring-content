@@ -11,48 +11,48 @@ import java.util.UUID;
 
 @Embeddable
 public class TestEntity8Child {
-	@ContentId
-	public UUID contentId;
-	@ContentLength
-	public Long contentLen;
-	@MimeType
-	public String contentMimeType;
-	@OriginalFileName
-	public String contentFileName = "";
+    @ContentId
+    public UUID contentId;
+    @ContentLength
+    public Long contentLen;
+    @MimeType
+    public String contentMimeType;
+    @OriginalFileName
+    public String contentFileName = "";
 
-	// prevent TestEntity8Child from being return by hibernate as null
-	@Formula("1")
-	private int workaroundForBraindeadJpaImplementation;
+    // prevent TestEntity8Child from being return by hibernate as null
+    @Formula("1")
+    private int workaroundForBraindeadJpaImplementation;
 
-	public UUID getContentId() {
-		return contentId;
-	}
+    public UUID getContentId() {
+        return contentId;
+    }
 
-	public void setContentId(UUID contentId) {
-		this.contentId = contentId;
-	}
+    public void setContentId(UUID contentId) {
+        this.contentId = contentId;
+    }
 
-	public Long getContentLen() {
-		return contentLen;
-	}
+    public Long getContentLen() {
+        return contentLen;
+    }
 
-	public void setContentLen(Long contentLen) {
-		this.contentLen = contentLen;
-	}
+    public void setContentLen(Long contentLen) {
+        this.contentLen = contentLen;
+    }
 
-	public String getContentMimeType() {
-		return contentMimeType;
-	}
+    public String getContentMimeType() {
+        return contentMimeType;
+    }
 
-	public void setContentMimeType(String mimeType) {
-		this.contentMimeType = mimeType;
-	}
+    public void setContentMimeType(String mimeType) {
+        this.contentMimeType = mimeType;
+    }
 
-	public String getContentFileName() {
-		return contentFileName;
-	}
+    public String getContentFileName() {
+        return contentFileName;
+    }
 
-	public void setContentFileName(String fileName) {
-		this.contentFileName = fileName;
-	}
+    public void setContentFileName(String fileName) {
+        this.contentFileName = fileName;
+    }
 }

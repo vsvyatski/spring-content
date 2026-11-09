@@ -89,7 +89,7 @@ public class SolrITConfig {
 
             @Override
             public String[] filterQueries(Class<?> entity) {
-                return new String[] { "email:\"author@email.com\"" };
+                return new String[]{"email:\"author@email.com\""};
             }
         };
     }

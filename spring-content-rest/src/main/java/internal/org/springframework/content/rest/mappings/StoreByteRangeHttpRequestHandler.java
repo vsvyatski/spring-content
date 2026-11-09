@@ -11,25 +11,25 @@ import java.io.IOException;
 
 public class StoreByteRangeHttpRequestHandler extends ResourceHttpRequestHandler {
 
-	public StoreByteRangeHttpRequestHandler() {
-	}
+    public StoreByteRangeHttpRequestHandler() {
+    }
 
-	@Override
-	protected Resource getResource(HttpServletRequest request) throws IOException {
-		return (Resource) request.getAttribute("SPRING_CONTENT_RESOURCE");
-	}
+    @Override
+    protected Resource getResource(HttpServletRequest request) throws IOException {
+        return (Resource) request.getAttribute("SPRING_CONTENT_RESOURCE");
+    }
 
-	@Override
-	protected MediaType getMediaType(HttpServletRequest request, Resource resource) {
-		if (request.getAttribute("SPRING_CONTENT_CONTENTTYPE") != null) {
-			return (MediaType) request.getAttribute("SPRING_CONTENT_CONTENTTYPE");
-		}
-		return super.getMediaType(request, resource);
-	}
+    @Override
+    protected MediaType getMediaType(HttpServletRequest request, Resource resource) {
+        if (request.getAttribute("SPRING_CONTENT_CONTENTTYPE") != null) {
+            return (MediaType) request.getAttribute("SPRING_CONTENT_CONTENTTYPE");
+        }
+        return super.getMediaType(request, resource);
+    }
 
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		this.setResourceHttpMessageConverter(new ResourceHttpMessageConverter());
-		this.setResourceRegionHttpMessageConverter(new ResourceRegionHttpMessageConverter());
-	}
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        this.setResourceHttpMessageConverter(new ResourceHttpMessageConverter());
+        this.setResourceRegionHttpMessageConverter(new ResourceRegionHttpMessageConverter());
+    }
 }

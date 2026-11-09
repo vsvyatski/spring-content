@@ -9,19 +9,19 @@ import java.lang.annotation.Annotation;
 
 public class S3StoresRegistrar extends AbstractStoreBeanDefinitionRegistrar {
 
-	@Override
-	protected void createOperationsBean(BeanDefinitionRegistry registry) {
-	}
+    @Override
+    protected void createOperationsBean(BeanDefinitionRegistry registry) {
+    }
 
-	@Override
-	protected Class<? extends Annotation> getAnnotation() {
-		return EnableS3Stores.class;
-	}
+    @Override
+    protected Class<? extends Annotation> getAnnotation() {
+        return EnableS3Stores.class;
+    }
 
-	@Override
-	protected Class<?>[] getSignatureTypes() {
-		return new Class[]{S3ContentStore.class};
-	}
+    @Override
+    protected Class<?>[] getSignatureTypes() {
+        return new Class[]{S3ContentStore.class};
+    }
 
     @Override
     protected String getOverridePropertyValue() {

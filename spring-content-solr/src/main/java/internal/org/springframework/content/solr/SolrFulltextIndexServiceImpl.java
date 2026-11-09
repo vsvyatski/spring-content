@@ -50,7 +50,7 @@ public class SolrFulltextIndexServiceImpl implements IndexService {
         };
     }
 
-    @Autowired(required=false)
+    @Autowired(required = false)
     public void setAttributeSyncer(AttributeProvider syncer) {
         this.syncer = syncer;
     }
@@ -67,24 +67,22 @@ public class SolrFulltextIndexServiceImpl implements IndexService {
         String id = BeanUtils.getFieldWithAnnotation(entity, ContentId.class).toString();
         up.setParam("literal.id", entity.getClass().getCanonicalName() + ":" + id);
 
-        Map<String,String> attributesToSync = builtinSyncer.synchronize(entity);
+        Map<String, String> attributesToSync = builtinSyncer.synchronize(entity);
         if (syncer != null) {
             attributesToSync.putAll(syncer.synchronize(entity));
         }
 
-        for (Entry<String,String> entry : attributesToSync.entrySet()) {
+        for (Entry<String, String> entry : attributesToSync.entrySet()) {
             up.setParam(format("literal.%s", entry.getKey()), entry.getValue());
         }
 
-        up.setAction(COMMIT,true, true);
+        up.setAction(COMMIT, true, true);
 
         try {
             solrClient.request(up, null);
-        }
-        catch (SolrServerException e) {
+        } catch (SolrServerException e) {
             throw new StoreAccessException(format("Error indexing entity with id '%s'", id), e);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new StoreAccessException(format("Error indexing entity with id '%s'", id), e);
         }
     }
@@ -95,7 +93,7 @@ public class SolrFulltextIndexServiceImpl implements IndexService {
         Object id = BeanUtils.getFieldWithAnnotation(entity, ContentId.class);
 
         UpdateRequest up = new UpdateRequest();
-        up.setAction(COMMIT,true, true);
+        up.setAction(COMMIT, true, true);
         up.deleteById(entity.getClass().getCanonicalName() + ":" + id.toString());
 
         if (properties.getUser() != null) {
@@ -104,11 +102,9 @@ public class SolrFulltextIndexServiceImpl implements IndexService {
 
         try {
             solrClient.request(up, null);
-        }
-        catch (SolrServerException e) {
+        } catch (SolrServerException e) {
             throw new StoreAccessException(format("Error unindexing entity with id '%s'", id), e);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new StoreAccessException(format("Error unindexing entity with id '%s'", id), e);
         }
     }

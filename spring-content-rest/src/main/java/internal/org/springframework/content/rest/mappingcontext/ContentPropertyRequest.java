@@ -15,15 +15,10 @@ public record ContentPropertyRequest(String store, String id, String contentProp
         Assert.notNull(store, "invalid content property path");
     }
 
-    public String getRequestURI() {
-        return String.format("/%s/%s/%s", store, id, contentPropertyPath);
-    }
-
     /**
      * Creates a ContentPropertyRequest from a storeLookupPath
      *
-     * @param storeLookupPath
-     *          a storeLookupPath as created with {@link StoreUtils#storeLookupPath(String, URI) storeLookupPath}
+     * @param storeLookupPath a storeLookupPath as created with {@link StoreUtils#storeLookupPath(String, URI) storeLookupPath}
      * @return a ContentPropertyRequest
      */
     public static ContentPropertyRequest from(String storeLookupPath) {
@@ -40,13 +35,16 @@ public record ContentPropertyRequest(String store, String id, String contentProp
     /**
      * Creates a ContentPropertyRequest from a storeLookupPath
      *
-     * @param store the store
-     * @param id the id
+     * @param store               the store
+     * @param id                  the id
      * @param contentPropertyPath the path to the content property
-     *
      * @return a ContentPropertyRequest
      */
     public static ContentPropertyRequest from(String store, String id, String contentPropertyPath) {
         return new ContentPropertyRequest(store, id, contentPropertyPath);
+    }
+
+    public String getRequestURI() {
+        return String.format("/%s/%s/%s", store, id, contentPropertyPath);
     }
 }

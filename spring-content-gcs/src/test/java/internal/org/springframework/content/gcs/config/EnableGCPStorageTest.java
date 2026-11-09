@@ -24,74 +24,18 @@ import static org.mockito.Mockito.verify;
 
 public class EnableGCPStorageTest {
 
-    private AnnotationConfigApplicationContext context;
-
     // mocks
     static GCPStorageConfigurer configurer;
-
-    @Nested
-    class EnableGCPStorageCases {
-        @Nested
-        class GivenAContextAndAConfigurationWithAnGCSContentStore {
-            @BeforeEach
-            void setUp() {
-                context = new AnnotationConfigApplicationContext();
-                                            context.register(TestConfig.class);
-                                            context.refresh();
-            }
-            @AfterEach
-            void tearDown() {
-                context.close();
-            }
-            @Test
-            void shouldHaveAContentStoreBean() {
-                assertThat(context.getBean(TestEntityContentStore.class)).isNotNull();
-            }
-            @Test
-            void shouldHaveAnPlacementService() {
-                assertThat(context.getBean("gcpStoragePlacementService")).isNotNull();
-            }
-        }
-        @Nested
-        class GivenAContextWithAConfigurer {
-            @BeforeEach
-            void setUp() {
-                configurer = mock(GCPStorageConfigurer.class);
-
-                                    context = new AnnotationConfigApplicationContext();
-                                    context.register(ConverterConfig.class);
-                                    context.refresh();
-            }
-            @AfterEach
-            void tearDown() {
-                context.close();
-            }
-            @Test
-            void shouldCallThatConfigurerToHelpSetupTheStore() {
-                verify(configurer).configureGCPStorageConverters(any());
-            }
-        }
-        @Nested
-        class GivenAContextWithAnEmptyConfiguration {
-            @BeforeEach
-            void setUp() {
-                context = new AnnotationConfigApplicationContext();
-                                    context.register(EmptyConfig.class);
-                                    context.refresh();
-            }
-            @AfterEach
-            void tearDown() {
-                context.close();
-            }
-            @Test
-            void shouldNotContainsAnyS3RepositoryBeans() {
-                assertThat(context.getBeanNamesForType(TestEntityContentStore.class)).isEmpty();
-            }
-        }
-    }
+    private AnnotationConfigApplicationContext context;
 
     @Test
     public void noop() {
+    }
+
+    public interface TestEntityStore extends AssociativeStore<TestEntity, BlobId> {
+    }
+
+    public interface TestEntityContentStore extends ContentStore<TestEntity, String> {
     }
 
     @Configuration
@@ -127,9 +71,6 @@ public class EnableGCPStorageTest {
         }
     }
 
-    public interface TestEntityStore extends AssociativeStore<TestEntity, BlobId> {
-    }
-
     @Configuration
     public static class InfrastructureConfig {
 
@@ -152,6 +93,73 @@ public class EnableGCPStorageTest {
         }
     }
 
-    public interface TestEntityContentStore extends ContentStore<TestEntity, String> {
+    @Nested
+    class EnableGCPStorageCases {
+        @Nested
+        class GivenAContextAndAConfigurationWithAnGCSContentStore {
+            @BeforeEach
+            void setUp() {
+                context = new AnnotationConfigApplicationContext();
+                context.register(TestConfig.class);
+                context.refresh();
+            }
+
+            @AfterEach
+            void tearDown() {
+                context.close();
+            }
+
+            @Test
+            void shouldHaveAContentStoreBean() {
+                assertThat(context.getBean(TestEntityContentStore.class)).isNotNull();
+            }
+
+            @Test
+            void shouldHaveAnPlacementService() {
+                assertThat(context.getBean("gcpStoragePlacementService")).isNotNull();
+            }
+        }
+
+        @Nested
+        class GivenAContextWithAConfigurer {
+            @BeforeEach
+            void setUp() {
+                configurer = mock(GCPStorageConfigurer.class);
+
+                context = new AnnotationConfigApplicationContext();
+                context.register(ConverterConfig.class);
+                context.refresh();
+            }
+
+            @AfterEach
+            void tearDown() {
+                context.close();
+            }
+
+            @Test
+            void shouldCallThatConfigurerToHelpSetupTheStore() {
+                verify(configurer).configureGCPStorageConverters(any());
+            }
+        }
+
+        @Nested
+        class GivenAContextWithAnEmptyConfiguration {
+            @BeforeEach
+            void setUp() {
+                context = new AnnotationConfigApplicationContext();
+                context.register(EmptyConfig.class);
+                context.refresh();
+            }
+
+            @AfterEach
+            void tearDown() {
+                context.close();
+            }
+
+            @Test
+            void shouldNotContainsAnyS3RepositoryBeans() {
+                assertThat(context.getBeanNamesForType(TestEntityContentStore.class)).isEmpty();
+            }
+        }
     }
 }

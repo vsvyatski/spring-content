@@ -43,7 +43,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebAppConfiguration
-@ContextConfiguration(classes = { RevisionPropertyRestEndpointsIT.TestConfig.class, DelegatingWebMvcConfiguration.class, RepositoryRestMvcConfiguration.class, RestConfiguration.class })
+@ContextConfiguration(classes = {RevisionPropertyRestEndpointsIT.TestConfig.class, DelegatingWebMvcConfiguration.class, RepositoryRestMvcConfiguration.class, RestConfiguration.class})
 @ExtendWith(SpringExtension.class)
 public class RevisionPropertyRestEndpointsIT {
 
@@ -60,68 +60,10 @@ public class RevisionPropertyRestEndpointsIT {
 
     private TEntity testEntity;
 
-    @Nested
-    class RevisionPropertyRESTEndpoints {
-        @Nested
-        class GivenAnEntityWithRevisions {
-            @Nested
-            class AGETToRepositoryIdRevisions1Content {
-                @BeforeEach
-                void setUp() {
-                    mvc = MockMvcBuilders.webAppContextSetup(context).build();
+    public interface TEntityRepository extends JpaRepository<TEntity, Long>, RevisionRepository<TEntity, Long, Integer> {
+    }
 
-                    testEntity = repository.save(new TEntity());
-                    testEntity = store.setContent(testEntity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-                    testEntity.setMimeType("text/plain");
-                    testEntity = repository.save(testEntity);
-
-                    assertThat(repository.findRevisions(testEntity.getId()).toList().size()).isEqualTo(2);
-                }
-
-                @Test
-                void shouldReturnA404() throws Exception {
-                    mvc.perform(
-                        get("/tEntities/" + testEntity.getId() + "/revisions/1/content").
-                            accept("text/plain")).
-                        andExpect(status().isNotFound());
-                }
-
-            }
-
-            @Nested
-            class AGETToRepositoryIdRevisionsLatestContent {
-                @BeforeEach
-                void setUp() {
-                    mvc = MockMvcBuilders.webAppContextSetup(context).build();
-
-                    testEntity = repository.save(new TEntity());
-                    testEntity = store.setContent(testEntity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-                    testEntity.setMimeType("text/plain");
-                    testEntity = repository.save(testEntity);
-
-                    assertThat(repository.findRevisions(testEntity.getId()).toList().size()).isEqualTo(2);
-                }
-
-                @Test
-                void shouldReturnTheContent() throws Exception {
-                    Revisions<Integer, TEntity> revisions = repository.findRevisions(testEntity.getId());
-                    Integer revisionId = revisions.getLatestRevision().getRequiredRevisionNumber();
-
-                    MockHttpServletResponse response =
-                        mvc.perform(
-                            get("/tEntities/" + testEntity.getId() + "/revisions/" + revisionId + "/content").
-                                accept("text/plain")).
-                            andExpect(status().isOk()).
-                            andReturn().getResponse();
-
-                    assertThat(response).isNotNull();
-                    assertThat(response.getContentAsString()).isEqualTo("Hello Spring Content World!");
-                }
-
-            }
-
-        }
-
+    public interface TEntityContentStore extends FileSystemContentStore<TEntity, String> {
     }
 
     @Configuration
@@ -131,7 +73,7 @@ public class RevisionPropertyRestEndpointsIT {
 
         @Override
         protected String[] packagesToScan() {
-            return new String[] { "it.rest.revisions" };
+            return new String[]{"it.rest.revisions"};
         }
 
         @Bean
@@ -146,12 +88,6 @@ public class RevisionPropertyRestEndpointsIT {
             filesystemRoot.mkdirs();
             return filesystemRoot;
         }
-    }
-
-    public interface TEntityRepository extends JpaRepository<TEntity, Long>, RevisionRepository<TEntity, Long, Integer> {
-    }
-
-    public interface TEntityContentStore extends FileSystemContentStore<TEntity, String> {
     }
 
     @Entity
@@ -205,5 +141,69 @@ public class RevisionPropertyRestEndpointsIT {
         public void setMimeType(String mimeType) {
             this.mimeType = mimeType;
         }
+    }
+
+    @Nested
+    class RevisionPropertyRESTEndpoints {
+        @Nested
+        class GivenAnEntityWithRevisions {
+            @Nested
+            class AGETToRepositoryIdRevisions1Content {
+                @BeforeEach
+                void setUp() {
+                    mvc = MockMvcBuilders.webAppContextSetup(context).build();
+
+                    testEntity = repository.save(new TEntity());
+                    testEntity = store.setContent(testEntity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                    testEntity.setMimeType("text/plain");
+                    testEntity = repository.save(testEntity);
+
+                    assertThat(repository.findRevisions(testEntity.getId()).toList().size()).isEqualTo(2);
+                }
+
+                @Test
+                void shouldReturnA404() throws Exception {
+                    mvc.perform(
+                                    get("/tEntities/" + testEntity.getId() + "/revisions/1/content").
+                                            accept("text/plain")).
+                            andExpect(status().isNotFound());
+                }
+
+            }
+
+            @Nested
+            class AGETToRepositoryIdRevisionsLatestContent {
+                @BeforeEach
+                void setUp() {
+                    mvc = MockMvcBuilders.webAppContextSetup(context).build();
+
+                    testEntity = repository.save(new TEntity());
+                    testEntity = store.setContent(testEntity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                    testEntity.setMimeType("text/plain");
+                    testEntity = repository.save(testEntity);
+
+                    assertThat(repository.findRevisions(testEntity.getId()).toList().size()).isEqualTo(2);
+                }
+
+                @Test
+                void shouldReturnTheContent() throws Exception {
+                    Revisions<Integer, TEntity> revisions = repository.findRevisions(testEntity.getId());
+                    Integer revisionId = revisions.getLatestRevision().getRequiredRevisionNumber();
+
+                    MockHttpServletResponse response =
+                            mvc.perform(
+                                            get("/tEntities/" + testEntity.getId() + "/revisions/" + revisionId + "/content").
+                                                    accept("text/plain")).
+                                    andExpect(status().isOk()).
+                                    andReturn().getResponse();
+
+                    assertThat(response).isNotNull();
+                    assertThat(response.getContentAsString()).isEqualTo("Hello Spring Content World!");
+                }
+
+            }
+
+        }
+
     }
 }

@@ -21,14 +21,13 @@ import java.net.URISyntaxException;
 public class LocalStack extends LocalStackContainer implements Serializable {
 
     private static final DockerImageName IMAGE_NAME = DockerImageName.parse("localstack/localstack");
+    private static final LocalStack INSTANCE = new LocalStack();
 
     private LocalStack() {
         super(IMAGE_NAME);
         withServices(Service.S3);
         start();
     }
-
-    private static final LocalStack INSTANCE = new LocalStack();
 
     public static S3Client getAmazonS3Client() throws URISyntaxException {
         return S3Client.builder()

@@ -4,21 +4,27 @@ import java.util.UUID;
 
 public interface ContentEntity {
 
-	Long getId();
-	void setId(Long id);
+    Long getId();
 
-	UUID getContentId();
-	void setContentId(UUID id);
+    void setId(Long id);
 
-	Long getLen();
-	void setLen(Long len);
+    UUID getContentId();
 
-	String getMimeType();
-	void setMimeType(String mimeType);
+    void setContentId(UUID id);
 
-	String getOriginalFileName();
-	void setOriginalFileName(String originalFileName);
+    Long getLen();
 
-	String getTitle();
-	void setTitle(String title);
+    void setLen(Long len);
+
+    String getMimeType();
+
+    void setMimeType(String mimeType);
+
+    String getOriginalFileName();
+
+    void setOriginalFileName(String originalFileName);
+
+    String getTitle();
+
+    void setTitle(String title);
 }

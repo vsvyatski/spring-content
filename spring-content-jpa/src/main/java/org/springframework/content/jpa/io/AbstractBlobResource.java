@@ -165,8 +165,7 @@ public abstract class AbstractBlobResource implements BlobResource {
 
             Blob b = rs.getBlob(2);
             is = b.getBinaryStream();
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             logger.error(format("getting input stream for blob resource %s", id), e);
             return null;
         }
@@ -212,10 +211,10 @@ public abstract class AbstractBlobResource implements BlobResource {
             try {
                 return actual.read();
             } catch (IOException ioe) {
-              if (txnStatus != null && txnStatus.isCompleted() == false) {
-                  txnMgr.rollback(txnStatus);
-              }
-              throw ioe;
+                if (txnStatus != null && txnStatus.isCompleted() == false) {
+                    txnMgr.rollback(txnStatus);
+                }
+                throw ioe;
             }
         }
 
@@ -228,47 +227,38 @@ public abstract class AbstractBlobResource implements BlobResource {
                         try {
                             try {
                                 try {
-                                }
-                                finally {
+                                } finally {
                                     try {
                                         actual.close();
-                                    }
-                                    catch (IOException e) {
+                                    } catch (IOException e) {
                                         logger.debug(format("closing stream for blob resource %s", id),
                                                 e);
                                     }
                                 }
-                            }
-                            finally {
+                            } finally {
                                 try {
                                     rs.close();
-                                }
-                                catch (SQLException e) {
+                                } catch (SQLException e) {
                                     logger.debug(format("closing resultset for blob resource %s", id),
                                             e);
                                 }
                             }
-                        }
-                        finally {
+                        } finally {
                             try {
                                 stmt.close();
-                            }
-                            catch (SQLException e) {
+                            } catch (SQLException e) {
                                 logger.debug(format("closing statement for blob resource %s", id), e);
                             }
                         }
-                    }
-                    finally {
+                    } finally {
                         if (txnStatus != null && txnStatus.isCompleted() == false) {
                             txnMgr.commit(txnStatus);
                         }
                     }
-                }
-                finally {
+                } finally {
                     DataSourceUtils.releaseConnection(conn, ds);
                 }
-            }
-            finally {
+            } finally {
             }
         }
     }

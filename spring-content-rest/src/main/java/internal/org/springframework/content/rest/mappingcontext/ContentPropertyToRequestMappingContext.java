@@ -8,9 +8,10 @@ import java.util.stream.Collectors;
 
 public class ContentPropertyToRequestMappingContext {
 
-    private Map<Class<?>, Map<String, String>> mappings = new HashMap<Class<?>, Map<String,String>>();
+    private Map<Class<?>, Map<String, String>> mappings = new HashMap<Class<?>, Map<String, String>>();
 
-    public ContentPropertyToRequestMappingContext() {}
+    public ContentPropertyToRequestMappingContext() {
+    }
 
     public Map<String, String> getMappings(Class<?> domainClass) {
 
@@ -40,11 +41,11 @@ public class ContentPropertyToRequestMappingContext {
                 .collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
     }
 
-    private Map<String,String> resolveMappings(Class<?> domainClass) {
+    private Map<String, String> resolveMappings(Class<?> domainClass) {
         RestResourceMappingBuilder visitor = new RestResourceMappingBuilder((restResource -> restResource.path()));
         ClassWalker walker = new ClassWalker(visitor);
         walker.accept(domainClass);
-        Map<String,String> mappings = visitor.getMappings();
+        Map<String, String> mappings = visitor.getMappings();
         this.mappings.put(domainClass, mappings);
         return mappings;
     }

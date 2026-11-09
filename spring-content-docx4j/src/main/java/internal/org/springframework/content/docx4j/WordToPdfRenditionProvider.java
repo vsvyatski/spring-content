@@ -22,42 +22,41 @@ import static java.lang.String.format;
 @Service
 public class WordToPdfRenditionProvider implements RenditionProvider {
 
-	private static final Log logger = LogFactory.getLog(WordToPdfRenditionProvider.class);
+    private static final Log logger = LogFactory.getLog(WordToPdfRenditionProvider.class);
 
-	@Override
-	public String consumes() {
-		return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-	}
+    @Override
+    public String consumes() {
+        return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+    }
 
-	@Override
-	public String[] produces() {
-		return new String[] { "application/pdf" };
-	}
+    @Override
+    public String[] produces() {
+        return new String[]{"application/pdf"};
+    }
 
-	@Override
-	public InputStream convert(InputStream fromInputSource, String toMimeType) {
-		try {
-			WordprocessingMLPackage pkg = WordprocessingMLPackage.load(fromInputSource);
+    @Override
+    public InputStream convert(InputStream fromInputSource, String toMimeType) {
+        try {
+            WordprocessingMLPackage pkg = WordprocessingMLPackage.load(fromInputSource);
 
-			FieldUpdater updater = new FieldUpdater(pkg);
-			updater.update(true);
+            FieldUpdater updater = new FieldUpdater(pkg);
+            updater.update(true);
 
-			File tmpFile = Files.createTempFile(null, null, new FileAttribute<?>[]{}).toFile();
-			OutputStream os = new java.io.FileOutputStream(tmpFile);
+            File tmpFile = Files.createTempFile(null, null, new FileAttribute<?>[]{}).toFile();
+            OutputStream os = new java.io.FileOutputStream(tmpFile);
 
-			Docx4J.toPDF(pkg, os);
-			os.close();
+            Docx4J.toPDF(pkg, os);
+            os.close();
 
-			if (pkg.getMainDocumentPart().getFontTablePart() != null) {
-				pkg.getMainDocumentPart().getFontTablePart().deleteEmbeddedFontTempFiles();
-			}
+            if (pkg.getMainDocumentPart().getFontTablePart() != null) {
+                pkg.getMainDocumentPart().getFontTablePart().deleteEmbeddedFontTempFiles();
+            }
 
-			return new ObservableInputStream(new FileInputStream(tmpFile), new FileRemover(tmpFile));
-		}
-		catch (Exception e) {
-			logger.warn(format("%s rendition failed", toMimeType), e);
-		}
+            return new ObservableInputStream(new FileInputStream(tmpFile), new FileRemover(tmpFile));
+        } catch (Exception e) {
+            logger.warn(format("%s rendition failed", toMimeType), e);
+        }
 
-		return null;
-	}
+        return null;
+    }
 }

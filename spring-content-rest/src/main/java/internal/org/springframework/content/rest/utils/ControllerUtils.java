@@ -22,7 +22,8 @@ public final class ControllerUtils {
 
     private static final EmbeddedWrappers WRAPPERS = new EmbeddedWrappers(false);
 
-    private ControllerUtils() {}
+    private ControllerUtils() {
+    }
 
     public static <R extends RepresentationModel<?>> ResponseEntity<RepresentationModel<?>> toResponseEntity(HttpStatus status, HttpHeaders headers, Optional<R> resource) {
         HttpHeaders hdrs = new HttpHeaders();
@@ -30,13 +31,13 @@ public final class ControllerUtils {
             hdrs.putAll(headers);
         }
 
-        return new ResponseEntity((RepresentationModel)resource.orElse(null), hdrs, status);
+        return new ResponseEntity((RepresentationModel) resource.orElse(null), hdrs, status);
     }
 
     protected static CollectionModel<?> entitiesToResources(Page<Object> page,
-            PagedResourcesAssembler<Object> prAssembler,
-            PersistentEntityResourceAssembler assembler,
-            Class<?> domainType) {
+                                                            PagedResourcesAssembler<Object> prAssembler,
+                                                            PersistentEntityResourceAssembler assembler,
+                                                            Class<?> domainType) {
 
         if (page.getContent().isEmpty()) {
             return prAssembler.toEmptyModel(page, domainType);
@@ -50,12 +51,12 @@ public final class ControllerUtils {
     }
 
     protected static CollectionModel<?> entitiesToResources(Iterable<Object> entities,
-            PersistentEntityResourceAssembler assembler,
-            Class<?> domainType) {
+                                                            PersistentEntityResourceAssembler assembler,
+                                                            Class<?> domainType) {
 
         if (!entities.iterator().hasNext()) {
 
-            List<Object> content = Arrays.<Object> asList(WRAPPERS.emptyCollectionOf(domainType));
+            List<Object> content = Arrays.<Object>asList(WRAPPERS.emptyCollectionOf(domainType));
             return CollectionModel.of(content, getDefaultSelfLink());
         }
 
@@ -79,9 +80,9 @@ public final class ControllerUtils {
     }
 
     public static CollectionModel<?> toCollectionModel(Iterable<?> source,
-            PagedResourcesAssembler<Object> prAssembler,
-            PersistentEntityResourceAssembler assembler,
-            Class<?> domainType) {
+                                                       PagedResourcesAssembler<Object> prAssembler,
+                                                       PersistentEntityResourceAssembler assembler,
+                                                       Class<?> domainType) {
 
         if (source instanceof Page) {
             Page<Object> page = (Page<Object>) source;

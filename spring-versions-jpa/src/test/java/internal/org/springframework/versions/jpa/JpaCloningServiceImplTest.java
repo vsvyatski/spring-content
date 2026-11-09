@@ -16,6 +16,28 @@ public class JpaCloningServiceImplTest {
 
     private Exception e;
 
+    public static class TestEntity {
+        public TestEntity() {
+        }
+
+        public TestEntity(TestEntity entity) {
+        }
+    }
+
+    public static class NoCopyConstructorTestEntity {
+        public NoCopyConstructorTestEntity() {
+        }
+    }
+
+    public static class FailingCopyConstructorTestEntity {
+        public FailingCopyConstructorTestEntity() {
+        }
+
+        public FailingCopyConstructorTestEntity(FailingCopyConstructorTestEntity entity) {
+            throw new RuntimeException();
+        }
+    }
+
     @Nested
     class JpaCloningServiceImplCases {
         @Nested
@@ -91,24 +113,5 @@ public class JpaCloningServiceImplTest {
 
         }
 
-    }
-
-    public static class TestEntity {
-        public TestEntity() {}
-
-        public TestEntity(TestEntity entity) {
-        }
-    }
-
-    public static class NoCopyConstructorTestEntity {
-        public NoCopyConstructorTestEntity() {}
-    }
-
-    public static class FailingCopyConstructorTestEntity {
-        public FailingCopyConstructorTestEntity() {}
-
-        public FailingCopyConstructorTestEntity(FailingCopyConstructorTestEntity entity) {
-            throw new RuntimeException();
-        }
     }
 }

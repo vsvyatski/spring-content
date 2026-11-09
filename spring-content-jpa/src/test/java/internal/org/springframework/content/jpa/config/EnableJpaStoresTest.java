@@ -40,7 +40,58 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class EnableJpaStoresTest {
 
-	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+    private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+
+    @Test
+    public void noop() {
+    }
+
+    public interface TestEntityContentRepository
+            extends ContentStore<TestEntity, String> {
+    }
+
+    @Configuration
+    @EnableJpaStores(basePackages = "contains.no.jpa.repositories")
+    @Import(InfrastructureConfig.class)
+    public static class EmptyConfig {
+    }
+
+    @Configuration
+    @EnableJpaStores
+    @Import(InfrastructureConfig.class)
+    public static class TestConfig {
+    }
+
+    @Configuration
+    @EnableTransactionManagement
+    public static class InfrastructureConfig {
+        @Bean
+        public DataSource dataSource() {
+            EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
+            return builder.setType(EmbeddedDatabaseType.HSQL).build();
+        }
+
+        @Bean
+        public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+            HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+            vendorAdapter.setDatabase(Database.HSQL);
+            vendorAdapter.setGenerateDdl(true);
+
+            LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
+            factory.setJpaVendorAdapter(vendorAdapter);
+            factory.setPackagesToScan(getClass().getPackage().getName());
+            factory.setDataSource(dataSource());
+
+            return factory;
+        }
+
+        @Bean
+        public PlatformTransactionManager transactionManager() {
+            JpaTransactionManager txManager = new JpaTransactionManager();
+            txManager.setEntityManagerFactory(entityManagerFactory().getObject());
+            return txManager;
+        }
+    }
 
     @Nested
     class EnableJpaStoresCases {
@@ -49,51 +100,60 @@ public class EnableJpaStoresTest {
             @BeforeEach
             void setUp() {
                 context.register(TestConfig.class);
-                						context.refresh();
+                context.refresh();
             }
+
             @AfterEach
             void tearDown() {
                 context.close();
             }
+
             @Test
             void shouldHaveAContentRepositoryBean() {
                 assertThat(context.getBean(TestEntityContentRepository.class)).isNotNull();
             }
+
             @Test
             void shouldHaveADelegatingBlobResourceLoader() {
                 assertThat(context.getBean(DelegatingBlobResourceLoader.class)).isNotNull();
             }
+
             @Test
             void shouldHaveAGenericBlobResourceLoader() {
                 assertThat(context.getBean("genericBlobResourceLoader")).isNotNull();
             }
+
             @Test
             void shouldHaveAMySQLBlobResourceLoader() {
-                BlobResourceLoader loader = (BlobResourceLoader)context.getBean("mysqlBlobResourceLoader");
-                						assertThat(loader).isNotNull();
-                						assertThat(loader.getDatabaseName()).isEqualTo("MySQL");
-                						assertThat(loader.getResource("some-id")).isInstanceOf(MySQLBlobResource.class);
+                BlobResourceLoader loader = (BlobResourceLoader) context.getBean("mysqlBlobResourceLoader");
+                assertThat(loader).isNotNull();
+                assertThat(loader.getDatabaseName()).isEqualTo("MySQL");
+                assertThat(loader.getResource("some-id")).isInstanceOf(MySQLBlobResource.class);
             }
+
             @Test
             void shouldHaveASQLServerBlobResourceLoader() {
-                BlobResourceLoader loader = (BlobResourceLoader)context.getBean("sqlServerBlobResourceLoader");
-                						assertThat(loader).isNotNull();
-                						assertThat(loader.getDatabaseName()).isEqualTo("Microsoft SQL Server");
-                						assertThat(loader.getResource("some-id")).isInstanceOf(SQLServerBlobResource.class);
+                BlobResourceLoader loader = (BlobResourceLoader) context.getBean("sqlServerBlobResourceLoader");
+                assertThat(loader).isNotNull();
+                assertThat(loader.getDatabaseName()).isEqualTo("Microsoft SQL Server");
+                assertThat(loader.getResource("some-id")).isInstanceOf(SQLServerBlobResource.class);
             }
         }
+
         @Nested
         class GivenAContextWithAnEmptyConfiguration {
             @BeforeEach
             void setUp() {
                 context = new AnnotationConfigApplicationContext();
-                					context.register(EmptyConfig.class);
-                					context.refresh();
+                context.register(EmptyConfig.class);
+                context.refresh();
             }
+
             @AfterEach
             void tearDown() {
                 context.close();
             }
+
             @Test
             void shouldNotContainAnyJpaRepositoryBeans() {
                 assertThat(context.getBeanNamesForType(TestEntityContentRepository.class)).isEmpty();
@@ -101,107 +161,56 @@ public class EnableJpaStoresTest {
         }
     }
 
-	@Test
-	public void noop() {
-	}
+    public class TestEntity {
+        @Id
+        private String id;
+        @ContentId
+        private String contentId;
+    }
 
-	@Configuration
-	@EnableJpaStores(basePackages = "contains.no.jpa.repositories")
-	@Import(InfrastructureConfig.class)
-	public static class EmptyConfig {
-	}
+    @Repository
+    public class JpaTestContentRepository implements TestEntityContentRepository {
 
-	@Configuration
-	@EnableJpaStores
-	@Import(InfrastructureConfig.class)
-	public static class TestConfig {
-	}
+        @PersistenceContext
+        private EntityManager em;
 
-	@Configuration
-	@EnableTransactionManagement
-	public static class InfrastructureConfig {
-		@Bean
-		public DataSource dataSource() {
-			EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
-			return builder.setType(EmbeddedDatabaseType.HSQL).build();
-		}
+        @Override
+        public TestEntity setContent(TestEntity property, InputStream content) {
+            return null;
+        }
 
-		@Bean
-		public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-			HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-			vendorAdapter.setDatabase(Database.HSQL);
-			vendorAdapter.setGenerateDdl(true);
+        @Override
+        public TestEntity setContent(TestEntity property, Resource resourceContent) {
+            return null;
+        }
 
-			LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
-			factory.setJpaVendorAdapter(vendorAdapter);
-			factory.setPackagesToScan(getClass().getPackage().getName());
-			factory.setDataSource(dataSource());
+        @Override
+        public TestEntity unsetContent(TestEntity property) {
+            return null;
+        }
 
-			return factory;
-		}
+        @Override
+        public InputStream getContent(TestEntity property) {
+            return null;
+        }
 
-		@Bean
-		public PlatformTransactionManager transactionManager() {
-			JpaTransactionManager txManager = new JpaTransactionManager();
-			txManager.setEntityManagerFactory(entityManagerFactory().getObject());
-			return txManager;
-		}
-	}
+        @Override
+        public Resource getResource(TestEntity entity) {
+            return null;
+        }
 
-	public class TestEntity {
-		@Id
-		private String id;
-		@ContentId
-		private String contentId;
-	}
+        @Override
+        public void associate(TestEntity entity, String id) {
+        }
 
-	public interface TestEntityContentRepository
-			extends ContentStore<TestEntity, String> {
-	}
+        @Override
+        public void unassociate(TestEntity entity) {
+        }
 
-	@Repository
-	public class JpaTestContentRepository implements TestEntityContentRepository {
-
-		@PersistenceContext
-		private EntityManager em;
-
-		@Override
-		public TestEntity setContent(TestEntity property, InputStream content) {
-			return null;
-		}
-
-		@Override
-		public TestEntity setContent(TestEntity property, Resource resourceContent) {
-			return null;
-		}
-
-		@Override
-		public TestEntity unsetContent(TestEntity property) {
-			return null;
-		}
-
-		@Override
-		public InputStream getContent(TestEntity property) {
-			return null;
-		}
-
-		@Override
-		public Resource getResource(TestEntity entity) {
-			return null;
-		}
-
-		@Override
-		public void associate(TestEntity entity, String id) {
-		}
-
-		@Override
-		public void unassociate(TestEntity entity) {
-		}
-
-		@Override
-		public Resource getResource(String id) {
-			return null;
-		}
+        @Override
+        public Resource getResource(String id) {
+            return null;
+        }
 
         @Override
         public Resource getResource(TestEntity entity, PropertyPath propertyPath) {
@@ -209,13 +218,13 @@ public class EnableJpaStoresTest {
             return null;
         }
 
-		@Override
-		public Resource getResource(TestEntity entity, PropertyPath propertyPath, GetResourceParams params) {
-			// TODO Auto-generated method stub
-			return null;
-		}
+        @Override
+        public Resource getResource(TestEntity entity, PropertyPath propertyPath, GetResourceParams params) {
+            // TODO Auto-generated method stub
+            return null;
+        }
 
-		@Override
+        @Override
         public void associate(TestEntity entity, PropertyPath propertyPath, String id) {
             // TODO Auto-generated method stub
         }
@@ -231,17 +240,17 @@ public class EnableJpaStoresTest {
             return null;
         }
 
-		@Override
-		public TestEntity setContent(TestEntity entity, PropertyPath propertyPath, InputStream content, long contentLen) {
-			return null;
-		}
+        @Override
+        public TestEntity setContent(TestEntity entity, PropertyPath propertyPath, InputStream content, long contentLen) {
+            return null;
+        }
 
-		@Override
-		public TestEntity setContent(TestEntity entity, PropertyPath propertyPath, InputStream content, SetContentParams params) {
-			return null;
-		}
+        @Override
+        public TestEntity setContent(TestEntity entity, PropertyPath propertyPath, InputStream content, SetContentParams params) {
+            return null;
+        }
 
-		@Override
+        @Override
         public TestEntity setContent(TestEntity property, PropertyPath propertyPath, Resource resourceContent) {
             // TODO Auto-generated method stub
             return null;
@@ -253,15 +262,15 @@ public class EnableJpaStoresTest {
             return null;
         }
 
-		@Override
-		public TestEntity unsetContent(TestEntity entity, PropertyPath propertyPath, UnsetContentParams params) {
-			return null;
-		}
+        @Override
+        public TestEntity unsetContent(TestEntity entity, PropertyPath propertyPath, UnsetContentParams params) {
+            return null;
+        }
 
-		@Override
+        @Override
         public InputStream getContent(TestEntity property, PropertyPath propertyPath) {
             // TODO Auto-generated method stub
             return null;
         }
-	}
+    }
 }

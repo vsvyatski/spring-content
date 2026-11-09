@@ -19,48 +19,48 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class ContentLinkTests {
 
-	private MockMvc mvc;
+    private MockMvc mvc;
 
-	private CrudRepository repository;
-	private Store store;
+    private CrudRepository repository;
+    private Store store;
 
-	private Object testEntity;
-	private String url;
-	private String contextPath = "";
-	private String linkRel;
-	private String expectedLinkRegex;
+    private Object testEntity;
+    private String url;
+    private String contextPath = "";
+    private String linkRel;
+    private String expectedLinkRegex;
 
-	public void setMvc(MockMvc mvc) {
-		this.mvc = mvc;
-	}
+    public void setMvc(MockMvc mvc) {
+        this.mvc = mvc;
+    }
 
-	public void setRepository(CrudRepository repository) {
-		this.repository = repository;
-	}
+    public void setRepository(CrudRepository repository) {
+        this.repository = repository;
+    }
 
-	public void setStore(Store store) {
-		this.store = store;
-	}
+    public void setStore(Store store) {
+        this.store = store;
+    }
 
-	public void setTestEntity(Object testEntity) {
-		this.testEntity = testEntity;
-	}
+    public void setTestEntity(Object testEntity) {
+        this.testEntity = testEntity;
+    }
 
-	public void setUrl(String url) {
-		this.url = url;
-	}
+    public void setUrl(String url) {
+        this.url = url;
+    }
 
-	public void setContextPath(String contextPath) {
-		this.contextPath = contextPath;
-	}
+    public void setContextPath(String contextPath) {
+        this.contextPath = contextPath;
+    }
 
-	public void setLinkRel(String linkRel) {
-		this.linkRel = linkRel;
-	}
+    public void setLinkRel(String linkRel) {
+        this.linkRel = linkRel;
+    }
 
-	public void setExpectedLinkRegex(String expectedLinkRegex) {
-		this.expectedLinkRegex = expectedLinkRegex;
-	}
+    public void setExpectedLinkRegex(String expectedLinkRegex) {
+        this.expectedLinkRegex = expectedLinkRegex;
+    }
 
     @Nested
     class GivenContentIsAssociated {
@@ -69,22 +69,23 @@ public class ContentLinkTests {
             @BeforeEach
             void setUp() {
             }
+
             @Test
             void shouldProvideAResponseWithAContentLink() throws Exception {
                 MockHttpServletResponse response = mvc.perform(get(url)
-                									.accept("application/hal+json")
-                									.contextPath(contextPath))
-                							.andExpect(status().isOk()).andReturn().getResponse();
-                					assertThat(response).isNotNull();
+                                .accept("application/hal+json")
+                                .contextPath(contextPath))
+                        .andExpect(status().isOk()).andReturn().getResponse();
+                assertThat(response).isNotNull();
 
-                					RepresentationFactory representationFactory = new StandardRepresentationFactory();
-                					ReadableRepresentation halResponse = representationFactory
-                							.readRepresentation("application/hal+json",
-                									new StringReader(response.getContentAsString()));
+                RepresentationFactory representationFactory = new StandardRepresentationFactory();
+                ReadableRepresentation halResponse = representationFactory
+                        .readRepresentation("application/hal+json",
+                                new StringReader(response.getContentAsString()));
 
-                					assertThat(halResponse).isNotNull();
-                					assertThat(halResponse.getLinksByRel(linkRel)).isNotNull();
-                					assertThat(halResponse.getLinksByRel(linkRel)).extracting("href").anySatisfy(href -> assertThat(href.toString()).matches(expectedLinkRegex));
+                assertThat(halResponse).isNotNull();
+                assertThat(halResponse.getLinksByRel(linkRel)).isNotNull();
+                assertThat(halResponse.getLinksByRel(linkRel)).extracting("href").anySatisfy(href -> assertThat(href.toString()).matches(expectedLinkRegex));
             }
         }
     }

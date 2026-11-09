@@ -60,7 +60,7 @@ public class FullyQualifiedLinksConfig extends JpaInfrastructureConfig {
 
             @Override
             public String[] produces() {
-                return new String[] { "text/html" };
+                return new String[]{"text/html"};
             }
 
             @Override
@@ -68,8 +68,7 @@ public class FullyQualifiedLinksConfig extends JpaInfrastructureConfig {
                 String input = null;
                 try {
                     input = IOUtils.toString(fromInputSource, StandardCharsets.UTF_8);
-                }
-                catch (IOException e) {
+                } catch (IOException e) {
                 }
                 return new ByteArrayInputStream(
                         String.format("<html><body>%s</body></html>", input).getBytes());
@@ -88,7 +87,7 @@ public class FullyQualifiedLinksConfig extends JpaInfrastructureConfig {
 
             @Override
             public String[] produces() {
-                return new String[] { "text/html" };
+                return new String[]{"text/html"};
             }
 
             @Override
@@ -96,8 +95,7 @@ public class FullyQualifiedLinksConfig extends JpaInfrastructureConfig {
                 String input = null;
                 try {
                     input = IOUtils.toString(fromInputSource, StandardCharsets.UTF_8);
-                }
-                catch (IOException e) {
+                } catch (IOException e) {
                 }
                 return new ByteArrayInputStream(
                         String.format("<html><body>Hello Spring Content World!</body></html>", input).getBytes());

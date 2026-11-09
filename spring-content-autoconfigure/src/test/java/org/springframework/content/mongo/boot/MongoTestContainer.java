@@ -8,6 +8,7 @@ import org.testcontainers.containers.MongoDBContainer;
 public class MongoTestContainer extends MongoDBContainer {
 
     private static final String DOCKER_IMAGE_NAME = "mongo:4.4.30";
+    private static final MongoTestContainer INSTANCE = new MongoTestContainer();
 
     private MongoTestContainer() {
         super(DOCKER_IMAGE_NAME);
@@ -32,6 +33,4 @@ public class MongoTestContainer extends MongoDBContainer {
     protected MongoTestContainer readResolve() {
         return INSTANCE;
     }
-
-    private static final MongoTestContainer INSTANCE = new MongoTestContainer();
 }

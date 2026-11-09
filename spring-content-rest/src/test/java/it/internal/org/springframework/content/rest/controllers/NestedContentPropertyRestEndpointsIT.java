@@ -44,28 +44,36 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebAppConfiguration
 @ContextConfiguration(classes = {
-      StoreConfig.class,
-      DelegatingWebMvcConfiguration.class,
-      RepositoryRestMvcConfiguration.class,
-      RestConfiguration.class,
-	  HypermediaConfiguration.class})
+        StoreConfig.class,
+        DelegatingWebMvcConfiguration.class,
+        RepositoryRestMvcConfiguration.class,
+        RestConfiguration.class,
+        HypermediaConfiguration.class})
 @Transactional
 @ActiveProfiles("store")
 @ExtendWith(SpringExtension.class)
 public class NestedContentPropertyRestEndpointsIT {
 
-   @Autowired private TestEntity8Repository repository2;
-   @Autowired private TestEntity8Store store;
+    @Autowired
+    private TestEntity8Repository repository2;
+    @Autowired
+    private TestEntity8Store store;
 
-   private TestEntity8 testEntity8;
+    private TestEntity8 testEntity8;
 
-	@Autowired
-   private WebApplicationContext context;
+    @Autowired
+    private WebApplicationContext context;
 
-   private Version versionTests;
-   private LastModifiedDate lastModifiedDateTests;
+    private Version versionTests;
+    private LastModifiedDate lastModifiedDateTests;
 
-   private MockMvc mvc;
+    private MockMvc mvc;
+
+    private static String toHeaderDateFormat(Date dt) {
+        SimpleDateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
+        format.setTimeZone(TimeZone.getTimeZone("GMT"));
+        return format.format(dt);
+    }
 
     @Nested
     class NestedContentPropertyRESTEndpoints {
@@ -83,7 +91,7 @@ public class NestedContentPropertyRestEndpointsIT {
                 @Test
                 void shouldReturn404() throws Exception {
                     mvc.perform(
-                            get("/testEntity8s/9999999/foo"))
+                                    get("/testEntity8s/9999999/foo"))
                             .andExpect(status().isNotFound());
                 }
 
@@ -107,11 +115,11 @@ public class NestedContentPropertyRestEndpointsIT {
 
                     // POST the new content
                     MockHttpServletResponse response = mvc.perform(multipart("/testEntity8s")
-                      .file(file)
-                      .param("name", "foo")
-                      .param("hidden", "bar"))
-                      .andExpect(status().isCreated())
-                      .andReturn().getResponse();
+                                    .file(file)
+                                    .param("name", "foo")
+                                    .param("hidden", "bar"))
+                            .andExpect(status().isCreated())
+                            .andReturn().getResponse();
 
                     String location = response.getHeader("Location");
 
@@ -120,9 +128,9 @@ public class NestedContentPropertyRestEndpointsIT {
 
                     // assert that it now exists
                     response = mvc.perform(get(location + "/child")
-                      .accept("text/plain"))
-                      .andExpect(status().isOk())
-                      .andReturn().getResponse();
+                                    .accept("text/plain"))
+                            .andExpect(status().isOk())
+                            .andReturn().getResponse();
 
                     assertThat(response.getContentAsString()).isEqualTo(newContent);
                 }
@@ -141,7 +149,7 @@ public class NestedContentPropertyRestEndpointsIT {
                 @Test
                 void shouldReturn404() throws Exception {
                     mvc.perform(
-                            get("/testEntity8s/" + testEntity8.getId() + "/doesnotexist"))
+                                    get("/testEntity8s/" + testEntity8.getId() + "/doesnotexist"))
                             .andExpect(status().isNotFound());
                 }
 
@@ -161,8 +169,8 @@ public class NestedContentPropertyRestEndpointsIT {
                     @Test
                     void shouldReturn404() throws Exception {
                         mvc.perform(
-                          get("/testEntity8s/" + testEntity8.getId() + "/child"))
-                          .andExpect(status().isNotFound());
+                                        get("/testEntity8s/" + testEntity8.getId() + "/child"))
+                                .andExpect(status().isNotFound());
                     }
 
                 }
@@ -179,10 +187,10 @@ public class NestedContentPropertyRestEndpointsIT {
                     @Test
                     void shouldCreateTheContent() throws Exception {
                         mvc.perform(
-                          put("/testEntity8s/" + testEntity8.getId() + "/child")
-                        		  .content("Hello New Spring Content World!")
-                        		  .contentType("text/plain"))
-                          .andExpect(status().is2xxSuccessful());
+                                        put("/testEntity8s/" + testEntity8.getId() + "/child")
+                                                .content("Hello New Spring Content World!")
+                                                .contentType("text/plain"))
+                                .andExpect(status().is2xxSuccessful());
 
                         Optional<TestEntity8> fetched = repository2.findById(testEntity8.getId());
                         assertThat(fetched.isPresent()).isTrue();
@@ -209,19 +217,19 @@ public class NestedContentPropertyRestEndpointsIT {
                     void shouldSetTheContentAndReturn201() throws Exception {
                         String content = "{\"content\":\"Hello New Spring Content World!\"}";
                         mvc.perform(
-                                       put("/testEntity8s/" + testEntity8.getId() + "/child")
-                                       .content(content)
-                                       .contentType("application/json"))
-                        .andExpect(status().isCreated());
+                                        put("/testEntity8s/" + testEntity8.getId() + "/child")
+                                                .content(content)
+                                                .contentType("application/json"))
+                                .andExpect(status().isCreated());
 
                         Optional<TestEntity8> fetched = repository2.findById(testEntity8.getId());
                         assertThat(fetched.isPresent()).isTrue();
                         assertThat(fetched.get().getChild().getContentId()).isNotNull();
                         assertThat(fetched.get().getChild().getContentLen()).isEqualTo(45L);
                         assertThat(fetched.get().getChild().getContentMimeType()).isEqualTo("application/json");
-                                 try (InputStream actual = store.getResource(fetched.get(), PropertyPath.from("child")).getInputStream()) {
-                                     IOUtils.contentEquals(actual, new ByteArrayInputStream(content.getBytes()));
-                                 }
+                        try (InputStream actual = store.getResource(fetched.get(), PropertyPath.from("child")).getInputStream()) {
+                            IOUtils.contentEquals(actual, new ByteArrayInputStream(content.getBytes()));
+                        }
                     }
 
                 }
@@ -242,11 +250,11 @@ public class NestedContentPropertyRestEndpointsIT {
                         testEntity8.getChild().contentMimeType = "text/plain";
                         UUID contentId = UUID.randomUUID();
                         store.associate(testEntity8, PropertyPath.from("child"), contentId);
-                        WritableResource r = (WritableResource)store.getResource(testEntity8, PropertyPath.from("child"));
+                        WritableResource r = (WritableResource) store.getResource(testEntity8, PropertyPath.from("child"));
                         try (OutputStream out = r.getOutputStream()) {
-                        				      out.write(content.getBytes());
-                        				  }
-                        				  testEntity8 = repository2.save(testEntity8);
+                            out.write(content.getBytes());
+                        }
+                        testEntity8 = repository2.save(testEntity8);
                         versionTests.setMvc(mvc);
                         versionTests.setUrl("/testEntity8s/" + testEntity8.getId() + "/child");
                         versionTests.setCollectionUrl("/testEntity8s");
@@ -264,13 +272,13 @@ public class NestedContentPropertyRestEndpointsIT {
                     @Test
                     void shouldReturnTheContent() throws Exception {
                         MockHttpServletResponse response = mvc
-                          .perform(get("/testEntity8s/" + testEntity8.getId() + "/child")
-                        		  .accept("text/plain"))
-                          .andExpect(status().isOk())
-                          .andExpect(header().string("etag", is("\"1\"")))
-                          .andExpect(header().string("last-modified", LastModifiedDate
-                        		  .isWithinASecond(testEntity8.getModifiedDate())))
-                          .andReturn().getResponse();
+                                .perform(get("/testEntity8s/" + testEntity8.getId() + "/child")
+                                        .accept("text/plain"))
+                                .andExpect(status().isOk())
+                                .andExpect(header().string("etag", is("\"1\"")))
+                                .andExpect(header().string("last-modified", LastModifiedDate
+                                        .isWithinASecond(testEntity8.getModifiedDate())))
+                                .andReturn().getResponse();
 
                         assertThat(response).isNotNull();
                         assertThat(response.getContentAsString()).isEqualTo("Hello Spring Content World!");
@@ -290,11 +298,11 @@ public class NestedContentPropertyRestEndpointsIT {
                         testEntity8.getChild().contentMimeType = "text/plain";
                         UUID contentId = UUID.randomUUID();
                         store.associate(testEntity8, PropertyPath.from("child"), contentId);
-                        WritableResource r = (WritableResource)store.getResource(testEntity8, PropertyPath.from("child"));
+                        WritableResource r = (WritableResource) store.getResource(testEntity8, PropertyPath.from("child"));
                         try (OutputStream out = r.getOutputStream()) {
-                        				      out.write(content.getBytes());
-                        				  }
-                        				  testEntity8 = repository2.save(testEntity8);
+                            out.write(content.getBytes());
+                        }
+                        testEntity8 = repository2.save(testEntity8);
                         versionTests.setMvc(mvc);
                         versionTests.setUrl("/testEntity8s/" + testEntity8.getId() + "/child");
                         versionTests.setCollectionUrl("/testEntity8s");
@@ -312,12 +320,12 @@ public class NestedContentPropertyRestEndpointsIT {
                     @Test
                     void shouldReturnTheRenditionAnd200() throws Exception {
                         MockHttpServletResponse response = mvc
-                          .perform(get(
-                        		  "/testEntity8s/" + testEntity8.getId()
-                        				  + "/child")
-                        		  .accept("text/html"))
-                          .andExpect(status().isOk()).andReturn()
-                          .getResponse();
+                                .perform(get(
+                                        "/testEntity8s/" + testEntity8.getId()
+                                                + "/child")
+                                        .accept("text/html"))
+                                .andExpect(status().isOk()).andReturn()
+                                .getResponse();
 
                         assertThat(response).isNotNull();
                         assertThat(response.getContentAsString()).isEqualTo("<html><body>Hello Spring Content World!</body></html>");
@@ -337,11 +345,11 @@ public class NestedContentPropertyRestEndpointsIT {
                         testEntity8.getChild().contentMimeType = "text/plain";
                         UUID contentId = UUID.randomUUID();
                         store.associate(testEntity8, PropertyPath.from("child"), contentId);
-                        WritableResource r = (WritableResource)store.getResource(testEntity8, PropertyPath.from("child"));
+                        WritableResource r = (WritableResource) store.getResource(testEntity8, PropertyPath.from("child"));
                         try (OutputStream out = r.getOutputStream()) {
-                        				      out.write(content.getBytes());
-                        				  }
-                        				  testEntity8 = repository2.save(testEntity8);
+                            out.write(content.getBytes());
+                        }
+                        testEntity8 = repository2.save(testEntity8);
                         versionTests.setMvc(mvc);
                         versionTests.setUrl("/testEntity8s/" + testEntity8.getId() + "/child");
                         versionTests.setCollectionUrl("/testEntity8s");
@@ -359,13 +367,13 @@ public class NestedContentPropertyRestEndpointsIT {
                     @Test
                     void shouldReturnTheOriginalContentAnd200() throws Exception {
                         MockHttpServletResponse response = mvc
-                          .perform(get("/testEntity8s/"
-                        		  + testEntity8.getId()
-                        		  + "/child").accept(
-                        		  new String[] {"text/xml",
-                        				  "text/plain"}))
-                          .andExpect(status().isOk()).andReturn()
-                          .getResponse();
+                                .perform(get("/testEntity8s/"
+                                        + testEntity8.getId()
+                                        + "/child").accept(
+                                        new String[]{"text/xml",
+                                                "text/plain"}))
+                                .andExpect(status().isOk()).andReturn()
+                                .getResponse();
 
                         assertThat(response).isNotNull();
                         assertThat(response.getContentAsString()).isEqualTo("Hello Spring Content World!");
@@ -385,11 +393,11 @@ public class NestedContentPropertyRestEndpointsIT {
                         testEntity8.getChild().contentMimeType = "text/plain";
                         UUID contentId = UUID.randomUUID();
                         store.associate(testEntity8, PropertyPath.from("child"), contentId);
-                        WritableResource r = (WritableResource)store.getResource(testEntity8, PropertyPath.from("child"));
+                        WritableResource r = (WritableResource) store.getResource(testEntity8, PropertyPath.from("child"));
                         try (OutputStream out = r.getOutputStream()) {
-                        				      out.write(content.getBytes());
-                        				  }
-                        				  testEntity8 = repository2.save(testEntity8);
+                            out.write(content.getBytes());
+                        }
+                        testEntity8 = repository2.save(testEntity8);
                         versionTests.setMvc(mvc);
                         versionTests.setUrl("/testEntity8s/" + testEntity8.getId() + "/child");
                         versionTests.setCollectionUrl("/testEntity8s");
@@ -407,13 +415,13 @@ public class NestedContentPropertyRestEndpointsIT {
                     @Test
                     void shouldCreateTheContent() throws Exception {
                         mvc.perform(
-                          put("/testEntity8s/" + testEntity8.getId() + "/child")
-                        		  .content("Hello New Spring Content World!")
-                        		  .contentType("text/plain"))
-                          .andExpect(status().is2xxSuccessful());
+                                        put("/testEntity8s/" + testEntity8.getId() + "/child")
+                                                .content("Hello New Spring Content World!")
+                                                .contentType("text/plain"))
+                                .andExpect(status().is2xxSuccessful());
 
                         Optional<TestEntity8> fetched = repository2
-                          .findById(testEntity8.getId());
+                                .findById(testEntity8.getId());
                         assertThat(fetched.isPresent()).isTrue();
                         assertThat(fetched.get().getChild().contentId).isNotNull();
                         assertThat(fetched.get().getChild().contentLen).isEqualTo(31L);
@@ -434,11 +442,11 @@ public class NestedContentPropertyRestEndpointsIT {
                         testEntity8.getChild().contentMimeType = "text/plain";
                         UUID contentId = UUID.randomUUID();
                         store.associate(testEntity8, PropertyPath.from("child"), contentId);
-                        WritableResource r = (WritableResource)store.getResource(testEntity8, PropertyPath.from("child"));
+                        WritableResource r = (WritableResource) store.getResource(testEntity8, PropertyPath.from("child"));
                         try (OutputStream out = r.getOutputStream()) {
-                        				      out.write(content.getBytes());
-                        				  }
-                        				  testEntity8 = repository2.save(testEntity8);
+                            out.write(content.getBytes());
+                        }
+                        testEntity8 = repository2.save(testEntity8);
                         versionTests.setMvc(mvc);
                         versionTests.setUrl("/testEntity8s/" + testEntity8.getId() + "/child");
                         versionTests.setCollectionUrl("/testEntity8s");
@@ -456,14 +464,14 @@ public class NestedContentPropertyRestEndpointsIT {
                     @Test
                     void shouldDeleteTheContent() throws Exception {
                         mvc.perform(delete(
-                          "/testEntity8s/" + testEntity8.getId() + "/child"))
-                          .andExpect(status().isNoContent());
+                                        "/testEntity8s/" + testEntity8.getId() + "/child"))
+                                .andExpect(status().isNoContent());
 
                         Optional<TestEntity8> fetched = repository2.findById(testEntity8.getId());
                         assertThat(fetched.isPresent()).isTrue();
                         assertThat(fetched.get().getChild().contentId).isNull();
                         assertThat(fetched.get().getChild().contentLen).isNull();
-                                       assertThat(fetched.get().getChild().contentMimeType).isNull();
+                        assertThat(fetched.get().getChild().contentMimeType).isNull();
                     }
 
                 }
@@ -473,11 +481,5 @@ public class NestedContentPropertyRestEndpointsIT {
         }
 
     }
-
-   private static String toHeaderDateFormat(Date dt) {
-      SimpleDateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
-      format.setTimeZone(TimeZone.getTimeZone("GMT"));
-      return format.format(dt);
-   }
 
 }

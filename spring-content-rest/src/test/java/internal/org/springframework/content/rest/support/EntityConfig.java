@@ -20,7 +20,7 @@ public class EntityConfig {
         public void softDelete(@PathVariable("id") Long id) {
             TestEntity3 te3 = repo.getById(id);
             // set delete flag
-            int i=0;
+            int i = 0;
         }
     }
 }

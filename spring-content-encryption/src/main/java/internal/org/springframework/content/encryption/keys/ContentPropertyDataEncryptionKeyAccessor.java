@@ -12,18 +12,16 @@ import java.util.Collection;
 
 public class ContentPropertyDataEncryptionKeyAccessor<S, T extends StoredDataEncryptionKey> implements DataEncryptionKeyAccessor<S, T> {
 
-    private final String customPropertyName;
-    private final ConversionService conversionService;
-
-    public ContentPropertyDataEncryptionKeyAccessor(String customPropertyName, ConversionService conversionService) {
-        this.customPropertyName = customPropertyName;
-        this.conversionService = conversionService;
-    }
-
     private static final TypeDescriptor ENCRYPTED_DEK = new TypeDescriptor(
             ResolvableType.forClass(StoredDataEncryptionKey.class), null, null);
     private static final TypeDescriptor ENCRYPTED_DEK_COLLECTION = TypeDescriptor.collection(Collection.class,
             ENCRYPTED_DEK);
+    private final String customPropertyName;
+    private final ConversionService conversionService;
+    public ContentPropertyDataEncryptionKeyAccessor(String customPropertyName, ConversionService conversionService) {
+        this.customPropertyName = customPropertyName;
+        this.conversionService = conversionService;
+    }
 
     @Override
     public Collection<T> findKeys(S entity, ContentProperty contentProperty) {

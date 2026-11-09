@@ -36,7 +36,7 @@ import java.util.UUID;
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@ContextConfiguration(classes = { SolrITConfig.class })
+@ContextConfiguration(classes = {SolrITConfig.class})
 @ExtendWith(SpringExtension.class)
 public class SolrIT {
 
@@ -52,6 +52,111 @@ public class SolrIT {
     private SolrProperties solrProperties;
     private Document doc, doc2, doc3;
     private UUID id = null;
+
+    public interface DocumentRepository extends CrudRepository<Document, Long> {
+    }
+
+    public interface DocumentContentRepository extends ContentStore<Document, UUID>, Searchable<UUID> {
+    }
+
+    public interface DocumentStoreSearchable extends ContentStore<Document, UUID>, Searchable<FulltextInfo> {
+    }
+
+    @Entity
+    public static class Document {
+
+        @Id
+        @GeneratedValue(strategy = GenerationType.AUTO)
+        private Long id;
+
+        private String title;
+        private String email;
+
+        @ContentId
+        private UUID contentId;
+
+        public Document() {
+        }
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public void setTitle(String title) {
+            this.title = title;
+        }
+
+        public String getEmail() {
+            return email;
+        }
+
+        public void setEmail(String email) {
+            this.email = email;
+        }
+
+        public UUID getContentId() {
+            return contentId;
+        }
+
+        public void setContentId(UUID contentId) {
+            this.contentId = contentId;
+        }
+    }
+
+    public static class FulltextInfo {
+
+        @Id
+        private Long id;
+
+        @ContentId
+        private UUID contentId;
+
+        @Highlight
+        private String highlight;
+
+        @Attribute(name = "email")
+        private String email;
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+
+        public UUID getContentId() {
+            return contentId;
+        }
+
+        public void setContentId(UUID contentId) {
+            this.contentId = contentId;
+        }
+
+        public String getHighlight() {
+            return highlight;
+        }
+
+        public void setHighlight(String highlight) {
+            this.highlight = highlight;
+        }
+
+        public String getEmail() {
+            return email;
+        }
+
+        public void setEmail(String email) {
+            this.email = email;
+        }
+    }
 
     @Nested
     class Index {
@@ -255,7 +360,7 @@ public class SolrIT {
                 solrProperties.setUser(System.getenv("SOLR_USER"));
                 solrProperties.setPassword(System.getenv("SOLR_PASSWORD"));
 
-                for (int i=0; i < 10; i++) {
+                for (int i = 0; i < 10; i++) {
                     Document doc = new Document();
                     doc.setTitle(format("doc %s", i));
                     doc.setEmail("author@email.com");
@@ -286,37 +391,37 @@ public class SolrIT {
             @Test
             void shouldReturnResultsInPages() {
                 org.awaitility.Awaitility.await().untilAsserted(() -> {
-    var page = (docContentRepo.search("foo", PageRequest.of(0, 3)));
-    assertThat(page.getNumberOfElements()).isEqualTo(3);
+                    var page = (docContentRepo.search("foo", PageRequest.of(0, 3)));
+                    assertThat(page.getNumberOfElements()).isEqualTo(3);
 
-});
-
-                org.awaitility.Awaitility.await().untilAsserted(() -> {
-    var page = (docContentRepo.search("foo", PageRequest.of(1, 3)));
-    assertThat(page.getNumberOfElements()).isEqualTo(3);
-
-});
+                });
 
                 org.awaitility.Awaitility.await().untilAsserted(() -> {
-    var page = (docContentRepo.search("foo", PageRequest.of(2, 3)));
-    assertThat(page.getNumberOfElements()).isEqualTo(3);
+                    var page = (docContentRepo.search("foo", PageRequest.of(1, 3)));
+                    assertThat(page.getNumberOfElements()).isEqualTo(3);
 
-});
+                });
 
                 org.awaitility.Awaitility.await().untilAsserted(() -> {
-    var page = (docContentRepo.search("foo", PageRequest.of(3, 3)));
-    assertThat(page.getNumberOfElements()).isEqualTo(1);
+                    var page = (docContentRepo.search("foo", PageRequest.of(2, 3)));
+                    assertThat(page.getNumberOfElements()).isEqualTo(3);
 
-});
+                });
+
+                org.awaitility.Awaitility.await().untilAsserted(() -> {
+                    var page = (docContentRepo.search("foo", PageRequest.of(3, 3)));
+                    assertThat(page.getNumberOfElements()).isEqualTo(1);
+
+                });
             }
 
             @Test
             void shouldReturnSpecificResultPage() {
                 org.awaitility.Awaitility.await().untilAsserted(() -> {
-    var page = (docContentRepo.search("foo", PageRequest.of(3, 3)));
-    assertThat(page.getNumberOfElements()).isEqualTo(1);
+                    var page = (docContentRepo.search("foo", PageRequest.of(3, 3)));
+                    assertThat(page.getNumberOfElements()).isEqualTo(1);
 
-});
+                });
             }
 
         }
@@ -408,119 +513,18 @@ public class SolrIT {
         @Test
         void shouldReturnResultsUsingTheReturnType() {
             org.awaitility.Awaitility.await().untilAsserted(() -> {
-    var result = (store.search("one"));
-    Iterator<FulltextInfo> iterator = result.iterator();
-    assertThat(iterator.hasNext()).isTrue();
-    assertThat(iterator.next()).satisfies(actual -> { assertThat(actual).hasFieldOrPropertyWithValue("contentId", doc.getContentId()); assertThat(actual).extracting("highlight", org.assertj.core.api.InstanceOfAssertFactories.STRING).contains("<em>one</em>"); assertThat(actual).extracting("email", org.assertj.core.api.InstanceOfAssertFactories.STRING).contains("author@email.com"); });
-    assertThat(iterator.hasNext()).isFalse();
+                var result = (store.search("one"));
+                Iterator<FulltextInfo> iterator = result.iterator();
+                assertThat(iterator.hasNext()).isTrue();
+                assertThat(iterator.next()).satisfies(actual -> {
+                    assertThat(actual).hasFieldOrPropertyWithValue("contentId", doc.getContentId());
+                    assertThat(actual).extracting("highlight", org.assertj.core.api.InstanceOfAssertFactories.STRING).contains("<em>one</em>");
+                    assertThat(actual).extracting("email", org.assertj.core.api.InstanceOfAssertFactories.STRING).contains("author@email.com");
+                });
+                assertThat(iterator.hasNext()).isFalse();
 
-});
+            });
         }
 
-    }
-
-    @Entity
-    public static class Document {
-
-        @Id
-        @GeneratedValue(strategy = GenerationType.AUTO)
-        private Long id;
-
-        private String title;
-        private String email;
-
-        @ContentId
-        private UUID contentId;
-
-        public Document() {
-        }
-
-        public Long getId() {
-            return id;
-        }
-
-        public void setId(Long id) {
-            this.id = id;
-        }
-
-        public String getTitle() {
-            return title;
-        }
-
-        public void setTitle(String title) {
-            this.title = title;
-        }
-
-        public String getEmail() {
-            return email;
-        }
-
-        public void setEmail(String email) {
-            this.email = email;
-        }
-
-        public UUID getContentId() {
-            return contentId;
-        }
-
-        public void setContentId(UUID contentId) {
-            this.contentId = contentId;
-        }
-    }
-
-    public interface DocumentRepository extends CrudRepository<Document, Long> {
-    }
-
-    public interface DocumentContentRepository extends ContentStore<Document, UUID>, Searchable<UUID> {
-    }
-
-    public interface DocumentStoreSearchable extends ContentStore<Document, UUID>, Searchable<FulltextInfo> {
-    }
-
-    public static class FulltextInfo {
-
-        @Id
-        private Long id;
-
-        @ContentId
-        private UUID contentId;
-
-        @Highlight
-        private String highlight;
-
-        @Attribute(name = "email")
-        private String email;
-
-        public Long getId() {
-            return id;
-        }
-
-        public void setId(Long id) {
-            this.id = id;
-        }
-
-        public UUID getContentId() {
-            return contentId;
-        }
-
-        public void setContentId(UUID contentId) {
-            this.contentId = contentId;
-        }
-
-        public String getHighlight() {
-            return highlight;
-        }
-
-        public void setHighlight(String highlight) {
-            this.highlight = highlight;
-        }
-
-        public String getEmail() {
-            return email;
-        }
-
-        public void setEmail(String email) {
-            this.email = email;
-        }
     }
 }

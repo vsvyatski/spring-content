@@ -12,67 +12,68 @@ import java.util.UUID;
 
 @Entity
 public class TestEntity implements ContentEntity {
-	private @Id @GeneratedValue Long id;
-	private String name;
-	private @ContentId UUID contentId;
-	private @ContentLength Long len;
-	private @MimeType String mimeType;
-	private @OriginalFileName String originalFileName;
-	private String title;
+    private @Id
+    @GeneratedValue Long id;
+    private String name;
+    private @ContentId UUID contentId;
+    private @ContentLength Long len;
+    private @MimeType String mimeType;
+    private @OriginalFileName String originalFileName;
+    private String title;
 
-	public Long getId() {
-		return id;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public UUID getContentId() {
-		return contentId;
-	}
+    public UUID getContentId() {
+        return contentId;
+    }
 
-	public void setContentId(UUID contentId) {
-		this.contentId = contentId;
-	}
+    public void setContentId(UUID contentId) {
+        this.contentId = contentId;
+    }
 
-	public Long getLen() {
-		return len;
-	}
+    public Long getLen() {
+        return len;
+    }
 
-	public void setLen(Long len) {
-		this.len = len;
-	}
+    public void setLen(Long len) {
+        this.len = len;
+    }
 
-	public String getMimeType() {
-		return mimeType;
-	}
+    public String getMimeType() {
+        return mimeType;
+    }
 
-	public void setMimeType(String mimeType) {
-		this.mimeType = mimeType;
-	}
+    public void setMimeType(String mimeType) {
+        this.mimeType = mimeType;
+    }
 
-	public String getOriginalFileName() {
-		return originalFileName;
-	}
+    public String getOriginalFileName() {
+        return originalFileName;
+    }
 
-	public void setOriginalFileName(String originalFileName) {
-		this.originalFileName = originalFileName;
-	}
+    public void setOriginalFileName(String originalFileName) {
+        this.originalFileName = originalFileName;
+    }
 
-	public String getTitle() {
-		return title;
-	}
+    public String getTitle() {
+        return title;
+    }
 
-	public void setTitle(String title) {
-		this.title = title;
-	}
+    public void setTitle(String title) {
+        this.title = title;
+    }
 }

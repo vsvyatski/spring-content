@@ -57,29 +57,6 @@ public class ContextPathContentLinksIT {
     @Autowired
     private WebApplicationContext context;
 
-    @Nested
-    class GivenTheSpringContentBaseUriPropertyIsSetToContentApi {
-        @Nested
-        @DisplayName("given an Entity and a Store with a default store path")
-        class GivenAnEntityAndAStoreWithADefaultStorePathContentLinkTests extends ContentLinkTests {
-            @BeforeEach
-            void setUp() {
-                MockMvc mvc = MockMvcBuilders.webAppContextSetup(context).build();
-                TestEntity3 testEntity3 = new TestEntity3();
-                contentRepository3.setContent(testEntity3, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-                testEntity3 = repository3.save(testEntity3);
-                this.setMvc(mvc);
-                this.setRepository(repository3);
-                this.setStore(contentRepository3);
-                this.setTestEntity(testEntity3);
-                this.setUrl("/contextPath/testEntity3s/" + testEntity3.getId());
-                this.setContextPath("/contextPath");
-                this.setLinkRel("testEntity3");
-                this.setExpectedLinkRegex("http://localhost/contextPath/testEntity3s/" + testEntity3.getId());
-            }
-        }
-    }
-
     @Configuration
     @EnableJpaRepositories(basePackages = "internal.org.springframework.content.rest.support")
     @EnableTransactionManagement
@@ -125,6 +102,29 @@ public class ContextPathContentLinksIT {
                             String.format("<html><body>%s</body></html>", input).getBytes());
                 }
             };
+        }
+    }
+
+    @Nested
+    class GivenTheSpringContentBaseUriPropertyIsSetToContentApi {
+        @Nested
+        @DisplayName("given an Entity and a Store with a default store path")
+        class GivenAnEntityAndAStoreWithADefaultStorePathContentLinkTests extends ContentLinkTests {
+            @BeforeEach
+            void setUp() {
+                MockMvc mvc = MockMvcBuilders.webAppContextSetup(context).build();
+                TestEntity3 testEntity3 = new TestEntity3();
+                contentRepository3.setContent(testEntity3, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                testEntity3 = repository3.save(testEntity3);
+                this.setMvc(mvc);
+                this.setRepository(repository3);
+                this.setStore(contentRepository3);
+                this.setTestEntity(testEntity3);
+                this.setUrl("/contextPath/testEntity3s/" + testEntity3.getId());
+                this.setContextPath("/contextPath");
+                this.setLinkRel("testEntity3");
+                this.setExpectedLinkRegex("http://localhost/contextPath/testEntity3s/" + testEntity3.getId());
+            }
         }
     }
 }

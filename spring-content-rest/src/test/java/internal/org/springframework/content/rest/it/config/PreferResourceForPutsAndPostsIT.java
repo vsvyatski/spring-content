@@ -49,7 +49,7 @@ import java.util.UUID;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static org.mockito.Mockito.verify;
 
-@SpringBootTest(classes = PreferResourceForPutsAndPostsIT.Application.class, webEnvironment=WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = PreferResourceForPutsAndPostsIT.Application.class, webEnvironment = WebEnvironment.RANDOM_PORT)
 @ExtendWith(SpringExtension.class)
 public class PreferResourceForPutsAndPostsIT {
 
@@ -66,6 +66,89 @@ public class PreferResourceForPutsAndPostsIT {
     private WebApplicationContext webApplicationContext;
 
     private TestEntity2 existingClaim;
+
+    public interface PreferResourceForPutsAndPostsRepository extends CrudRepository<TestEntity, Long> {
+    }
+
+    private interface PreferResourceForPutsAndPostsStore extends MockContentStore<TestEntity, UUID> {
+    }
+
+    @SpringBootApplication(exclude = {
+            MongoAutoConfiguration.class,
+            DataMongoAutoConfiguration.class,
+            DataMongoRepositoriesAutoConfiguration.class
+    })
+    public static class Application {
+
+        public static void main(String[] args) {
+            SpringApplication.run(Application.class, args);
+        }
+
+        @Configuration
+        @Import({RestConfiguration.class, SecurityConfiguration.class})
+        @EnableJpaRepositories(basePackages = "internal.org.springframework.content.rest.it.config", considerNestedRepositories = true)
+        @EnableMockStores(basePackages = "internal.org.springframework.content.rest.it.config")
+        public static class AppConfig {
+
+            @Value("/org/springframework/content/jpa/schema-drop-h2.sql")
+            private ClassPathResource dropReopsitoryTables;
+
+            @Value("/org/springframework/content/jpa/schema-h2.sql")
+            private ClassPathResource dataReopsitorySchema;
+
+            @Bean
+            DataSourceInitializer datasourceInitializer(DataSource dataSource) {
+                ResourceDatabasePopulator databasePopulator = new ResourceDatabasePopulator();
+
+                databasePopulator.addScript(dropReopsitoryTables);
+                databasePopulator.addScript(dataReopsitorySchema);
+                databasePopulator.setIgnoreFailedDrops(true);
+
+                DataSourceInitializer initializer = new DataSourceInitializer();
+                initializer.setDataSource(dataSource);
+                initializer.setDatabasePopulator(databasePopulator);
+
+                return initializer;
+            }
+
+            @Bean
+            public DataSource dataSource() {
+                EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
+                return builder.setType(EmbeddedDatabaseType.H2).build();
+            }
+
+            @Bean
+            public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+                HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+                vendorAdapter.setDatabase(Database.H2);
+                vendorAdapter.setGenerateDdl(true);
+
+                LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
+                factory.setJpaVendorAdapter(vendorAdapter);
+                factory.setPackagesToScan("internal.org.springframework.content.rest.support");
+                factory.setDataSource(dataSource());
+
+                return factory;
+            }
+
+            @Bean
+            public PlatformTransactionManager transactionManager() {
+                JpaTransactionManager txManager = new JpaTransactionManager();
+                txManager.setEntityManagerFactory(entityManagerFactory().getObject());
+                return txManager;
+            }
+
+            @Bean
+            public ContentRestConfigurer configurer() {
+                return new ContentRestConfigurer() {
+                    @Override
+                    public void configure(RestConfiguration config) {
+                        config.forDomainType(TestEntity.class).putAndPostPreferResource();
+                    }
+                };
+            }
+        }
+    }
 
     @Nested
     class PreferResourceForPutsAndPosts {
@@ -87,92 +170,9 @@ public class PreferResourceForPutsAndPostsIT {
 
             MockStoreFactoryBean storeFactory = context.getBean(MockStoreFactoryBean.class);
 
-            verify(storeFactory.getMock()).setContent(org.mockito.ArgumentMatchers.isA(TestEntity.class), org.mockito.ArgumentMatchers.isA(PropertyPath.class), (Resource)org.mockito.ArgumentMatchers.isA(Resource.class));
+            verify(storeFactory.getMock()).setContent(org.mockito.ArgumentMatchers.isA(TestEntity.class), org.mockito.ArgumentMatchers.isA(PropertyPath.class), (Resource) org.mockito.ArgumentMatchers.isA(Resource.class));
         }
 
-    }
-
-    public interface PreferResourceForPutsAndPostsRepository extends CrudRepository<TestEntity, Long> {
-    }
-
-    private interface PreferResourceForPutsAndPostsStore extends MockContentStore<TestEntity, UUID> {
-    }
-
-    @SpringBootApplication(exclude = {
-            MongoAutoConfiguration.class,
-            DataMongoAutoConfiguration.class,
-            DataMongoRepositoriesAutoConfiguration.class
-    })
-    public static class Application {
-
-       public static void main(String[] args) {
-            SpringApplication.run(Application.class, args);
-        }
-
-       @Configuration
-       @Import({RestConfiguration.class, SecurityConfiguration.class})
-       @EnableJpaRepositories(basePackages="internal.org.springframework.content.rest.it.config", considerNestedRepositories = true)
-       @EnableMockStores(basePackages="internal.org.springframework.content.rest.it.config")
-       public static class AppConfig {
-
-           @Value("/org/springframework/content/jpa/schema-drop-h2.sql")
-           private ClassPathResource dropReopsitoryTables;
-
-           @Value("/org/springframework/content/jpa/schema-h2.sql")
-           private ClassPathResource dataReopsitorySchema;
-
-           @Bean
-           DataSourceInitializer datasourceInitializer(DataSource dataSource) {
-               ResourceDatabasePopulator databasePopulator = new ResourceDatabasePopulator();
-
-               databasePopulator.addScript(dropReopsitoryTables);
-               databasePopulator.addScript(dataReopsitorySchema);
-               databasePopulator.setIgnoreFailedDrops(true);
-
-               DataSourceInitializer initializer = new DataSourceInitializer();
-               initializer.setDataSource(dataSource);
-               initializer.setDatabasePopulator(databasePopulator);
-
-               return initializer;
-           }
-
-           @Bean
-           public DataSource dataSource() {
-               EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
-               return builder.setType(EmbeddedDatabaseType.H2).build();
-           }
-
-           @Bean
-           public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-               HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-               vendorAdapter.setDatabase(Database.H2);
-               vendorAdapter.setGenerateDdl(true);
-
-               LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
-               factory.setJpaVendorAdapter(vendorAdapter);
-               factory.setPackagesToScan("internal.org.springframework.content.rest.support");
-               factory.setDataSource(dataSource());
-
-               return factory;
-           }
-
-           @Bean
-           public PlatformTransactionManager transactionManager() {
-               JpaTransactionManager txManager = new JpaTransactionManager();
-               txManager.setEntityManagerFactory(entityManagerFactory().getObject());
-               return txManager;
-           }
-
-           @Bean
-           public ContentRestConfigurer configurer() {
-               return new ContentRestConfigurer() {
-                   @Override
-                   public void configure(RestConfiguration config) {
-                       config.forDomainType(TestEntity.class).putAndPostPreferResource();
-                   }
-               };
-           }
-       }
     }
 
 }

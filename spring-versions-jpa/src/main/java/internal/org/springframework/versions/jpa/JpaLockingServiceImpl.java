@@ -22,7 +22,7 @@ public class JpaLockingServiceImpl implements LockingService {
     private JdbcTemplate template;
 
     @Autowired
-    public JpaLockingServiceImpl(JdbcTemplate template){
+    public JpaLockingServiceImpl(JdbcTemplate template) {
         this.template = template;
     }
 

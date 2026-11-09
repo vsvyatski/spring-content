@@ -12,23 +12,19 @@ import java.util.Date;
 @EntityListeners(AuditingEntityListener.class)
 public class TestEntity10 {
 
-    public TestEntity10() {
-    }
-
     @Id
     @GeneratedValue
     private Long id;
-
     private String name;
-
     @JsonIgnore
     private String hidden;
-
     private @Version Long version;
     private @CreatedDate Date createdDate;
     private @LastModifiedDate Date modifiedDate;
-
     private @Embedded TestEntity10Child child = new TestEntity10Child();
+
+    public TestEntity10() {
+    }
 
     public Long getId() {
         return id;

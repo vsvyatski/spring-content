@@ -9,22 +9,22 @@ import java.lang.annotation.Annotation;
 
 public class JpaStoresRegistrar extends AbstractStoreBeanDefinitionRegistrar {
 
-	@Override
-	protected void createOperationsBean(BeanDefinitionRegistry registry) {
-	}
+    @Override
+    protected void createOperationsBean(BeanDefinitionRegistry registry) {
+    }
 
-	@Override
-	protected Class<? extends Annotation> getAnnotation() {
-		return EnableJpaStores.class;
-	}
+    @Override
+    protected Class<? extends Annotation> getAnnotation() {
+        return EnableJpaStores.class;
+    }
 
-	@Override
-	protected Class<?>[] getSignatureTypes() {
-		return new Class[]{JpaContentStore.class};
-	}
+    @Override
+    protected Class<?>[] getSignatureTypes() {
+        return new Class[]{JpaContentStore.class};
+    }
 
-	@Override
-	protected String getOverridePropertyValue() {
-		return "jpa";
-	}
+    @Override
+    protected String getOverridePropertyValue() {
+        return "jpa";
+    }
 }

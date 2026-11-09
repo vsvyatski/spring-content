@@ -14,7 +14,7 @@ import java.time.ZonedDateTime;
 
 /**
  * Represents an input stream provided by a renderer as a resource.
- *
+ * <p>
  * TODO: refactor this into the renditions sub-system.
  */
 public class RenderedResource extends InputStreamResource {

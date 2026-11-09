@@ -10,9 +10,9 @@ import java.io.OutputStream;
 
 public interface PDFService {
 
-	PDDocument load(InputStream stream) throws IOException;
+    PDDocument load(InputStream stream) throws IOException;
 
-	PDFRenderer renderer(PDDocument doc);
+    PDFRenderer renderer(PDDocument doc);
 
-	void writeImage(BufferedImage bim, String format, OutputStream out) throws IOException;
+    void writeImage(BufferedImage bim, String format, OutputStream out) throws IOException;
 }

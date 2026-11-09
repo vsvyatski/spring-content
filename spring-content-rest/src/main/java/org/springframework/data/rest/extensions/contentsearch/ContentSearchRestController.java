@@ -49,22 +49,17 @@ public class ContentSearchRestController {
 
     private static final Map<String, Method> searchMethods = new HashMap<>();
 
-    private final Repositories repositories;
-    private final Stores stores;
-    private final PagedResourcesAssembler<Object> pagedResourcesAssembler;
-    private DefaultEntityLookupStrategy defaultLookupStrategy;
-    private QueryMethodsEntityLookupStrategy qmLookupStrategy;
-
-    private ReflectionService reflectionService;
-
     static {
         put("search", ReflectionUtils.findMethod(Searchable.class, "search", String.class));
         put("search", ReflectionUtils.findMethod(Searchable.class, "search", String.class, Pageable.class));
     }
 
-    private static void put(String key, Method findMethod) {
-        ContentSearchRestController.searchMethods.put(format("%s:%s", key, Arrays.toString(findMethod.getParameterTypes())), findMethod);
-    }
+    private final Repositories repositories;
+    private final Stores stores;
+    private final PagedResourcesAssembler<Object> pagedResourcesAssembler;
+    private DefaultEntityLookupStrategy defaultLookupStrategy;
+    private QueryMethodsEntityLookupStrategy qmLookupStrategy;
+    private ReflectionService reflectionService;
 
     @Autowired
     public ContentSearchRestController(@Autowired(required = false) Repositories repositories, Stores stores, PagedResourcesAssembler<Object> assembler) {
@@ -76,6 +71,31 @@ public class ContentSearchRestController {
         this.reflectionService = new ReflectionServiceImpl();
         this.defaultLookupStrategy = new DefaultEntityLookupStrategy();
         this.qmLookupStrategy = new QueryMethodsEntityLookupStrategy();
+    }
+
+    private static void put(String key, Method findMethod) {
+        ContentSearchRestController.searchMethods.put(format("%s:%s", key, Arrays.toString(findMethod.getParameterTypes())), findMethod);
+    }
+
+    public static void fetchEntitiesInBatches(CrudRepository<?, ?> r, List entityIds, List results) {
+
+        int size = entityIds.size();
+
+        Method findAllByIdMethod = ReflectionUtils.findMethod(CrudRepository.class, "findAllById", Iterable.class);
+
+        for (int i = 0; i < size; ) {
+            int lowerBound = i;
+            int upperBound = (lowerBound + 250 <= entityIds.size() ? lowerBound + 250 : size);
+
+            List<Object> subset = entityIds.subList(lowerBound, upperBound);
+
+            Iterable<?> entities = (Iterable<?>) ReflectionUtils.invokeMethod(findAllByIdMethod, r, subset);
+            for (Object entity : entities) {
+                results.add(entity);
+            }
+
+            i += 250;
+        }
     }
 
     public void setReflectionService(ReflectionService reflectionService) {
@@ -220,27 +240,6 @@ public class ContentSearchRestController {
             return new PageImpl<>(results, pageable.getPageable(), ((Page) intermediateResults).getTotalPages());
         } else {
             return new PageImpl<>(results);
-        }
-    }
-
-    public static void fetchEntitiesInBatches(CrudRepository<?, ?> r, List entityIds, List results) {
-
-        int size = entityIds.size();
-
-        Method findAllByIdMethod = ReflectionUtils.findMethod(CrudRepository.class, "findAllById", Iterable.class);
-
-        for (int i = 0; i < size; ) {
-            int lowerBound = i;
-            int upperBound = (lowerBound + 250 <= entityIds.size() ? lowerBound + 250 : size);
-
-            List<Object> subset = entityIds.subList(lowerBound, upperBound);
-
-            Iterable<?> entities = (Iterable<?>) ReflectionUtils.invokeMethod(findAllByIdMethod, r, subset);
-            for (Object entity : entities) {
-                results.add(entity);
-            }
-
-            i += 250;
         }
     }
 

@@ -6,12 +6,12 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 public class MySQLBlobResource extends AbstractBlobResource {
 
-	public MySQLBlobResource(Object id, JdbcTemplate template, PlatformTransactionManager txnMgr) {
-		super(id, template, txnMgr);
-	}
+    public MySQLBlobResource(Object id, JdbcTemplate template, PlatformTransactionManager txnMgr) {
+        super(id, template, txnMgr);
+    }
 
-	@Override
-	protected String getSelectBlobSQL(Object id) {
-		return "SELECT id, 'content' as content FROM BLOBS WHERE id='" + id + "'";
-	}
+    @Override
+    protected String getSelectBlobSQL(Object id) {
+        return "SELECT id, 'content' as content FROM BLOBS WHERE id='" + id + "'";
+    }
 }

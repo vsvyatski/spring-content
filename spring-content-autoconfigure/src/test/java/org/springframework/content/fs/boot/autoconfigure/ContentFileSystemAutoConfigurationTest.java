@@ -25,6 +25,27 @@ public class ContentFileSystemAutoConfigurationTest {
 
     private ApplicationContextRunner contextRunner;
 
+    public interface TestEntityContentRepository extends FileSystemContentStore<TestEntity, String> {
+    }
+
+    @SpringBootApplication(exclude = {SolrAutoConfiguration.class, SolrExtensionAutoConfiguration.class, S3ContentAutoConfiguration.class})
+    public static class TestConfig {
+    }
+
+    @SpringBootApplication
+    public static class ConfigWithLoaderBean {
+
+        @Bean
+        FileSystemResourceLoader contributedFileSystemResourceLoader() {
+            return new FileSystemResourceLoader("/some/random/path/");
+        }
+    }
+
+    @SpringBootApplication
+    @EnableFileSystemStores
+    public static class ConfigWithExplicitEnableFileSystemStores {
+    }
+
     @Nested
     class FileSystemContentAutoConfigurationCases {
         @Nested
@@ -110,26 +131,5 @@ public class ContentFileSystemAutoConfigurationTest {
                 });
             }
         }
-    }
-
-    @SpringBootApplication(exclude = {SolrAutoConfiguration.class, SolrExtensionAutoConfiguration.class, S3ContentAutoConfiguration.class})
-    public static class TestConfig {
-    }
-
-    @SpringBootApplication
-    public static class ConfigWithLoaderBean {
-
-        @Bean
-        FileSystemResourceLoader contributedFileSystemResourceLoader() {
-            return new FileSystemResourceLoader("/some/random/path/");
-        }
-    }
-
-    @SpringBootApplication
-    @EnableFileSystemStores
-    public static class ConfigWithExplicitEnableFileSystemStores {
-    }
-
-    public interface TestEntityContentRepository extends FileSystemContentStore<TestEntity, String> {
     }
 }

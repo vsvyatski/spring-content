@@ -19,12 +19,12 @@ public class StoreFragmentDefinition {
         this.beanDefinition = beanDef;
     }
 
-    public void setStoreInterfaceName(String storeInterface) {
-        this.storeInterfaceName = storeInterface;
-    }
-
     public String getStoreInterfaceName() {
         return this.storeInterfaceName;
+    }
+
+    public void setStoreInterfaceName(String storeInterface) {
+        this.storeInterfaceName = storeInterface;
     }
 
     public String getInterfaceName() {

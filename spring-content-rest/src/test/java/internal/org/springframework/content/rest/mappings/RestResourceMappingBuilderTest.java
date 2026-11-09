@@ -16,6 +16,44 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class RestResourceMappingBuilderTest {
 
+    public static class TestSubClass {
+        @RestResource(path = "two")
+        private TestSubSubClass child;
+        private TestSubSubClass childWithout;
+    }
+
+    public static class TestClass {
+        @RestResource(path = "one")
+        private TestSubClass child;
+        private TestSubClass childWithout;
+    }
+
+    public static class TestSubSubClass {
+        @RestResource(path = "three")
+        private @ContentId UUID contentId;
+        private @ContentLength Long contentLen;
+        private @MimeType String contentMimeType;
+        private @OriginalFileName String contentOriginalFileName;
+
+        @RestResource(path = "should-be-ignored")
+        private String shouldBeIgnored;
+
+        private @ContentId UUID previewId;
+        private @ContentLength Long previewLen;
+        private @MimeType String previewMimeType;
+        private @OriginalFileName String previewOriginalFileName;
+
+        @RestResource(exported = true)
+        private @ContentId UUID thumbnailId;
+        private @ContentLength Long thumbnailLen;
+        private @MimeType String thumbnailMimeType;
+
+        @RestResource(path = "idcard-front")
+        private @ContentId UUID idcardFrontId;
+        private @ContentLength Long idcardFrontLen;
+        private @MimeType String idcardFrontMimeType;
+    }
+
     @Nested
     class RestResourceMappingBuilderCases {
         @Test
@@ -59,43 +97,5 @@ public class RestResourceMappingBuilderTest {
             assertThat(visitor.getInverseMappings()).containsEntry("childWithout/childWithout/idcard-front", "childWithout/childWithout/idcardFront");
         }
 
-    }
-
-    public static class TestSubClass {
-        @RestResource(path = "two")
-        private TestSubSubClass child;
-        private TestSubSubClass childWithout;
-    }
-
-    public static class TestClass {
-        @RestResource(path = "one")
-        private TestSubClass child;
-        private TestSubClass childWithout;
-    }
-
-    public static class TestSubSubClass {
-        @RestResource(path = "three")
-        private @ContentId UUID contentId;
-        private @ContentLength Long contentLen;
-        private @MimeType String contentMimeType;
-        private @OriginalFileName String contentOriginalFileName;
-
-        @RestResource(path = "should-be-ignored")
-        private String shouldBeIgnored;
-
-        private @ContentId UUID previewId;
-        private @ContentLength Long previewLen;
-        private @MimeType String previewMimeType;
-        private @OriginalFileName String previewOriginalFileName;
-
-        @RestResource(exported = true)
-        private @ContentId UUID thumbnailId;
-        private @ContentLength Long thumbnailLen;
-        private @MimeType String thumbnailMimeType;
-
-        @RestResource(path="idcard-front")
-        private @ContentId UUID idcardFrontId;
-        private @ContentLength Long idcardFrontLen;
-        private @MimeType String idcardFrontMimeType;
     }
 }

@@ -24,33 +24,28 @@ import java.util.Objects;
 @Configuration
 public class S3StoreConfiguration implements InitializingBean {
 
-	@Autowired(required = false)
-	private List<S3StoreConfigurer> configurers;
+    @Autowired(required = false)
+    private List<S3StoreConfigurer> configurers;
 
-	@Value("${spring.content.s3.bucket:#{environment.AWS_BUCKET}}")
-	private String bucket;
+    @Value("${spring.content.s3.bucket:#{environment.AWS_BUCKET}}")
+    private String bucket;
 
-    private PlacementService conversion =  new PlacementServiceImpl();
+    private PlacementService conversion = new PlacementServiceImpl();
 
-    @Bean
-	public PlacementService s3StorePlacementService() {
-		return conversion;
-	}
+    public static void addDefaultS3ObjectIdConverters(PlacementService conversion, String bucket) {
+        // Serializable -> S3ObjectId
+        conversion.addConverter(new Converter<Serializable, S3ObjectId>() {
 
-	public static void addDefaultS3ObjectIdConverters(PlacementService conversion, String bucket) {
-		// Serializable -> S3ObjectId
-		conversion.addConverter(new Converter<Serializable, S3ObjectId>() {
-
-		    private String defaultBucket = bucket;
+            private String defaultBucket = bucket;
 
             @Override
             public S3ObjectId convert(Serializable id) {
                 return new S3ObjectId(defaultBucket, Objects.requireNonNull(id, "ContentId must not be null").toString());
             }
 
-		});
+        });
 
-		// Object -> S3ObjectId
+        // Object -> S3ObjectId
         conversion.addConverter(new Converter<Object, S3ObjectId>() {
 
             private String defaultBucket = bucket;
@@ -75,7 +70,7 @@ public class S3StoreConfiguration implements InitializingBean {
                 if (BeanUtils.hasFieldWithAnnotation(idOrEntity, ContentId.class)) {
                     Object contentId = BeanUtils.getFieldWithAnnotation(idOrEntity, ContentId.class);
                     key = (contentId != null) ? contentId.toString() : null;
-                // otherwise it is the id
+                    // otherwise it is the id
                 } else {
                     key = idOrEntity.toString();
                 }
@@ -111,16 +106,21 @@ public class S3StoreConfiguration implements InitializingBean {
             }
 
         });
-	}
+    }
 
-	private void addConverters(ConverterRegistry registry) {
-		if (configurers == null)
-			return;
+    @Bean
+    public PlacementService s3StorePlacementService() {
+        return conversion;
+    }
 
-		for (S3StoreConfigurer configurer : configurers) {
-			configurer.configureS3StoreConverters(registry);
-		}
-	}
+    private void addConverters(ConverterRegistry registry) {
+        if (configurers == null)
+            return;
+
+        for (S3StoreConfigurer configurer : configurers) {
+            configurer.configureS3StoreConverters(registry);
+        }
+    }
 
     @Override
     public void afterPropertiesSet() throws Exception {

@@ -23,8 +23,25 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(SpringExtension.class)
 public class StoreTest {
 
-	@Autowired
-	private ApplicationContext context;
+    @Autowired
+    private ApplicationContext context;
+
+    public interface TestContentRepository extends ContentStore<Object, Serializable> {
+    }
+
+    public interface TestStore extends Store<URI> {
+    }
+
+    public interface TestAssociativeStore extends AssociativeStore<Object, URI> {
+    }
+
+    public interface TestAssociativeAndContentStore extends ContentStore<Object, URI> {
+    }
+
+    @Configuration
+    @EnableTestStores
+    public static class StoreTestConfiguration {
+    }
 
     @Nested
     class GivenAStoreDefinition {
@@ -58,22 +75,5 @@ public class StoreTest {
         }
 
     }
-
-	@Configuration
-	@EnableTestStores
-	public static class StoreTestConfiguration {
-	}
-
-	public interface TestContentRepository extends ContentStore<Object, Serializable> {
-	}
-
-	public interface TestStore extends Store<URI> {
-	}
-
-	public interface TestAssociativeStore extends AssociativeStore<Object, URI> {
-	}
-
-	public interface TestAssociativeAndContentStore extends ContentStore<Object, URI> {
-	}
 
 }

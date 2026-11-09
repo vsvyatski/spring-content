@@ -81,7 +81,7 @@ public class RepositoryEntityMultipartController {
         this.publisher = publisher;
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @ResponseBody
     @PostMapping(value = ENTITY_POST_MAPPING, consumes = "multipart/form-data")
     @Transactional

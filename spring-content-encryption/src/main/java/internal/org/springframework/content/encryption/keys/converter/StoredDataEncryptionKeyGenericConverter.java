@@ -11,16 +11,14 @@ import java.util.stream.Stream;
 
 public class StoredDataEncryptionKeyGenericConverter implements ConditionalGenericConverter {
 
-    private final ConversionService conversionService;
-
-    public StoredDataEncryptionKeyGenericConverter(ConversionService conversionService) {
-        this.conversionService = conversionService;
-    }
-
     private static final TypeDescriptor ENCRYPTED_DEK = TypeDescriptor.valueOf(StoredDataEncryptionKey.class);
     private static final Collection<TypeDescriptor> SUB_TYPES = permittedSubClasses(StoredDataEncryptionKey.class).stream()
             .map(TypeDescriptor::valueOf)
             .toList();
+    private final ConversionService conversionService;
+    public StoredDataEncryptionKeyGenericConverter(ConversionService conversionService) {
+        this.conversionService = conversionService;
+    }
 
     private static Collection<Class<?>> permittedSubClasses(Class<?> type) {
         var permittedSubclasses = type.getPermittedSubclasses();

@@ -38,193 +38,6 @@ public class AesCtrEncryptionEngineTest {
     private static final byte[] PLAINTEXT = concat(BLOCK_1_PLAIN, BLOCK_2_PLAIN, BLOCK_3_PLAIN, BLOCK_4_PLAIN);
     private static final byte[] CIPHERTEXT = concat(BLOCK_1_CIPHER, BLOCK_2_CIPHER, BLOCK_3_CIPHER, BLOCK_4_CIPHER);
 
-    @Nested
-    class AESCTREncryptionCases {
-        @Nested
-        class Tests {
-            @Test
-            void generatesAppropriateEncryptionParameters() {
-                var engine = new AesCtrEncryptionEngine(128);
-                                var parameters = engine.createNewParameters();
-
-                                assertThat(parameters.secretKey().getAlgorithm()).isEqualTo("AES");
-                                assertThat(parameters.secretKey().getEncoded().length).isEqualTo(16);
-
-                                assertThat(parameters.initializationVector().length).isEqualTo(16);
-            }
-            @Test
-            void encryptsPlaintextAccordingToTheEncryptionParameters() throws IOException {
-                var engine = new AesCtrEncryptionEngine(128);
-
-                                var encrypted = engine.encrypt(new ByteArrayInputStream(PLAINTEXT), PARAMS);
-
-                                var encryptedBytes = StreamUtils.copyToByteArray(encrypted);
-
-                                assertThat(encryptedBytes).isEqualTo(CIPHERTEXT);
-            }
-            @Test
-            void decryptsCiphertextAccordingToTheEncryptionParameters() throws IOException {
-                var engine = new AesCtrEncryptionEngine(128);
-
-                                try(var decrypted = engine.decrypt(req -> new ByteArrayInputStream(CIPHERTEXT), PARAMS, InputStreamRequestParameters.full())) {
-                                    var decryptedBytes = StreamUtils.copyToByteArray(decrypted);
-
-                                    assertThat(decryptedBytes).isEqualTo(PLAINTEXT);
-                                }
-            }
-        }
-        @Nested
-        class DecryptionWithWeirdIVs {
-            @Test
-            void handlesAnIVThatStartsWithZeroes() throws IOException {
-                var engine = new AesCtrEncryptionEngine(128);
-                                    EncryptionParameters params = new EncryptionParameters(
-                                            new SecretKeySpec(KEY, "AES"),
-                                            DatatypeConverter.parseHexBinary("000000f3f4f5f6f7f8f9fafbfcfdfeff")
-                                    );
-
-                                    var encrypted = engine.encrypt(new ByteArrayInputStream(PLAINTEXT), params);
-                                    var offsetStart = BLOCK_1_PLAIN.length + BLOCK_2_PLAIN.length;
-
-                                    try(var decrypted = engine.decrypt(req -> onlyByteRange(encrypted, req), params, InputStreamRequestParameters.startingFrom(offsetStart))) {
-                                        // We have no use for the first bytes when we have not requested them
-                                        decrypted.skipNBytes(offsetStart);
-
-                                        var decryptedBytes = StreamUtils.copyToByteArray(decrypted);
-
-                                        assertThat(decryptedBytes).isEqualTo(concat(BLOCK_3_PLAIN, BLOCK_4_PLAIN));
-                                    }
-            }
-            @Test
-            void handlesAnIVThatBehavesNormallyDuringCalculation() throws IOException {
-                var engine = new AesCtrEncryptionEngine(128);
-
-                                    EncryptionParameters params = new EncryptionParameters(
-                                            new SecretKeySpec(KEY, "AES"),
-                                            DatatypeConverter.parseHexBinary("4ffffffffffffffffffffffffffffffe")
-                                    );
-
-                                    var encrypted = engine.encrypt(new ByteArrayInputStream(PLAINTEXT), params);
-                                    var offsetStart = BLOCK_1_PLAIN.length + BLOCK_2_PLAIN.length;
-
-                                    try(var decrypted = engine.decrypt(req -> onlyByteRange(encrypted, req), params, InputStreamRequestParameters.startingFrom(offsetStart))) {
-                                        // We have no use for the first bytes when we have not requested them
-                                        decrypted.skipNBytes(offsetStart);
-
-                                        var decryptedBytes = StreamUtils.copyToByteArray(decrypted);
-
-                                        assertThat(decryptedBytes).isEqualTo(concat(BLOCK_3_PLAIN, BLOCK_4_PLAIN));
-                                    }
-            }
-            @Test
-            void handlesAnIVThatWrapsAroundDuringCalculation() throws IOException {
-                var engine = new AesCtrEncryptionEngine(128);
-
-                                    EncryptionParameters params = new EncryptionParameters(
-                                            new SecretKeySpec(KEY, "AES"),
-                                            DatatypeConverter.parseHexBinary("fffffffffffffffffffffffffffffffe")
-                                    );
-
-                                    var encrypted = engine.encrypt(new ByteArrayInputStream(PLAINTEXT), params);
-                                    var offsetStart = BLOCK_1_PLAIN.length + BLOCK_2_PLAIN.length;
-
-                                    try(var decrypted = engine.decrypt(req -> onlyByteRange(encrypted, req), params, InputStreamRequestParameters.startingFrom(offsetStart))) {
-                                        // We have no use for the first bytes when we have not requested them
-                                        decrypted.skipNBytes(offsetStart);
-
-                                        var decryptedBytes = StreamUtils.copyToByteArray(decrypted);
-
-                                        assertThat(decryptedBytes).isEqualTo(concat(BLOCK_3_PLAIN, BLOCK_4_PLAIN));
-                                    }
-            }
-        }
-        @Nested
-        class PartialContentDecryption {
-            @Test
-            void decryptsStartingFromTheThirdBlock() throws IOException {
-                var engine = new AesCtrEncryptionEngine(128);
-
-                                    var offsetStart = BLOCK_1_PLAIN.length + BLOCK_2_PLAIN.length;
-                                    try(var decrypted = engine.decrypt(req -> {
-                                                assertThat(req.startByteOffset()).isGreaterThan(0L);
-                                                return onlyByteRange(new ByteArrayInputStream(CIPHERTEXT), req);
-                                            }, PARAMS, InputStreamRequestParameters.startingFrom(offsetStart)
-                                    )) {
-
-                                        // We have no use for the first bytes when we have not requested them
-                                        decrypted.skipNBytes(offsetStart);
-
-                                        var decryptedBytes = StreamUtils.copyToByteArray(decrypted);
-
-                                        assertThat(decryptedBytes).isEqualTo(concat(BLOCK_3_PLAIN, BLOCK_4_PLAIN));
-                                    }
-            }
-            @Test
-            void decryptsStartingInTheMiddleOfTheSecondBlock() throws IOException {
-                var engine = new AesCtrEncryptionEngine(128);
-
-                                    var offsetStart = BLOCK_1_PLAIN.length+BLOCK_2_PLAIN.length/2;
-
-                                    try(var decrypted = engine.decrypt(req -> {
-                                        assertThat(req.startByteOffset()).isGreaterThan(0L); // We do not start requesting from the first byte
-                                        return onlyByteRange(new ByteArrayInputStream(CIPHERTEXT), req);
-                                    }, PARAMS, InputStreamRequestParameters.startingFrom(offsetStart))) {
-                                        var original = new ByteArrayInputStream(PLAINTEXT);
-
-                                        // We have no use for the first bytes when we have not requested them
-                                        decrypted.skipNBytes(offsetStart);
-                                        original.skipNBytes(offsetStart);
-
-                                        var originalBytes = StreamUtils.copyToByteArray(original);
-                                        var decryptedBytes = StreamUtils.copyToByteArray(decrypted);
-
-                                        assertThat(decryptedBytes).isEqualTo(originalBytes);
-                                    }
-            }
-            @Test
-            void decryptsOnlyTheFirst2Blocks() throws IOException {
-                var engine = new AesCtrEncryptionEngine(128);
-
-                                    var offsetEnd = BLOCK_1_PLAIN.length+BLOCK_2_PLAIN.length;
-
-                                    try(var decrypted = engine.decrypt(req -> {
-                                                assertThat(req.startByteOffset()).isEqualTo(0L);
-                                                assertThat(req.endByteOffset()).isLessThan((long)CIPHERTEXT.length); // We don't need to read the full ciphertext
-                                                return onlyByteRange(new ByteArrayInputStream(CIPHERTEXT), req);
-                                            }, PARAMS, new InputStreamRequestParameters(0, (long)offsetEnd)
-                                    )) {
-                                        var decryptedBytes = decrypted.readNBytes(offsetEnd);
-
-                                        assertThat(decryptedBytes).isEqualTo(concat(BLOCK_1_PLAIN, BLOCK_2_PLAIN));
-                                    }
-            }
-            @Test
-            void decryptsOnlyUntilTheMiddleOfBlock3() throws IOException {
-                var engine = new AesCtrEncryptionEngine(128);
-
-                                    var offsetEnd = BLOCK_1_PLAIN.length+BLOCK_2_PLAIN.length + BLOCK_3_PLAIN.length/2;
-
-                                    try(var decrypted = engine.decrypt(req -> {
-                                                assertThat(req.startByteOffset()).isEqualTo(0L);
-                                                assertThat(req.endByteOffset()).isLessThan((long)CIPHERTEXT.length); // We don't need to read the full ciphertext
-                                                return onlyByteRange(new ByteArrayInputStream(CIPHERTEXT), req);
-                                            }, PARAMS, new InputStreamRequestParameters(0, (long)offsetEnd)
-                                    )) {
-
-                                        var original = new ByteArrayInputStream(PLAINTEXT);
-
-                                        var decryptedBytes = decrypted.readNBytes(offsetEnd);
-                                        var originalBytes = original.readNBytes(offsetEnd);
-
-                                        assertThat(decryptedBytes).isEqualTo(originalBytes);
-                                    }
-            }
-        }
-    }
-
-    @Test
-    void noop() {}
-
     private static byte[] concat(byte[]... blocks) {
         var totalLength = Arrays.stream(blocks).mapToInt(b -> b.length).sum();
         var fullBuffer = ByteBuffer.allocate(totalLength);
@@ -238,5 +51,202 @@ public class AesCtrEncryptionEngineTest {
 
     private static InputStream onlyByteRange(InputStream inputStream, InputStreamRequestParameters params) {
         return new ZeroPrefixedInputStream(new SkippingInputStream(inputStream, params.startByteOffset()), params.startByteOffset());
+    }
+
+    @Test
+    void noop() {
+    }
+
+    @Nested
+    class AESCTREncryptionCases {
+        @Nested
+        class Tests {
+            @Test
+            void generatesAppropriateEncryptionParameters() {
+                var engine = new AesCtrEncryptionEngine(128);
+                var parameters = engine.createNewParameters();
+
+                assertThat(parameters.secretKey().getAlgorithm()).isEqualTo("AES");
+                assertThat(parameters.secretKey().getEncoded().length).isEqualTo(16);
+
+                assertThat(parameters.initializationVector().length).isEqualTo(16);
+            }
+
+            @Test
+            void encryptsPlaintextAccordingToTheEncryptionParameters() throws IOException {
+                var engine = new AesCtrEncryptionEngine(128);
+
+                var encrypted = engine.encrypt(new ByteArrayInputStream(PLAINTEXT), PARAMS);
+
+                var encryptedBytes = StreamUtils.copyToByteArray(encrypted);
+
+                assertThat(encryptedBytes).isEqualTo(CIPHERTEXT);
+            }
+
+            @Test
+            void decryptsCiphertextAccordingToTheEncryptionParameters() throws IOException {
+                var engine = new AesCtrEncryptionEngine(128);
+
+                try (var decrypted = engine.decrypt(req -> new ByteArrayInputStream(CIPHERTEXT), PARAMS, InputStreamRequestParameters.full())) {
+                    var decryptedBytes = StreamUtils.copyToByteArray(decrypted);
+
+                    assertThat(decryptedBytes).isEqualTo(PLAINTEXT);
+                }
+            }
+        }
+
+        @Nested
+        class DecryptionWithWeirdIVs {
+            @Test
+            void handlesAnIVThatStartsWithZeroes() throws IOException {
+                var engine = new AesCtrEncryptionEngine(128);
+                EncryptionParameters params = new EncryptionParameters(
+                        new SecretKeySpec(KEY, "AES"),
+                        DatatypeConverter.parseHexBinary("000000f3f4f5f6f7f8f9fafbfcfdfeff")
+                );
+
+                var encrypted = engine.encrypt(new ByteArrayInputStream(PLAINTEXT), params);
+                var offsetStart = BLOCK_1_PLAIN.length + BLOCK_2_PLAIN.length;
+
+                try (var decrypted = engine.decrypt(req -> onlyByteRange(encrypted, req), params, InputStreamRequestParameters.startingFrom(offsetStart))) {
+                    // We have no use for the first bytes when we have not requested them
+                    decrypted.skipNBytes(offsetStart);
+
+                    var decryptedBytes = StreamUtils.copyToByteArray(decrypted);
+
+                    assertThat(decryptedBytes).isEqualTo(concat(BLOCK_3_PLAIN, BLOCK_4_PLAIN));
+                }
+            }
+
+            @Test
+            void handlesAnIVThatBehavesNormallyDuringCalculation() throws IOException {
+                var engine = new AesCtrEncryptionEngine(128);
+
+                EncryptionParameters params = new EncryptionParameters(
+                        new SecretKeySpec(KEY, "AES"),
+                        DatatypeConverter.parseHexBinary("4ffffffffffffffffffffffffffffffe")
+                );
+
+                var encrypted = engine.encrypt(new ByteArrayInputStream(PLAINTEXT), params);
+                var offsetStart = BLOCK_1_PLAIN.length + BLOCK_2_PLAIN.length;
+
+                try (var decrypted = engine.decrypt(req -> onlyByteRange(encrypted, req), params, InputStreamRequestParameters.startingFrom(offsetStart))) {
+                    // We have no use for the first bytes when we have not requested them
+                    decrypted.skipNBytes(offsetStart);
+
+                    var decryptedBytes = StreamUtils.copyToByteArray(decrypted);
+
+                    assertThat(decryptedBytes).isEqualTo(concat(BLOCK_3_PLAIN, BLOCK_4_PLAIN));
+                }
+            }
+
+            @Test
+            void handlesAnIVThatWrapsAroundDuringCalculation() throws IOException {
+                var engine = new AesCtrEncryptionEngine(128);
+
+                EncryptionParameters params = new EncryptionParameters(
+                        new SecretKeySpec(KEY, "AES"),
+                        DatatypeConverter.parseHexBinary("fffffffffffffffffffffffffffffffe")
+                );
+
+                var encrypted = engine.encrypt(new ByteArrayInputStream(PLAINTEXT), params);
+                var offsetStart = BLOCK_1_PLAIN.length + BLOCK_2_PLAIN.length;
+
+                try (var decrypted = engine.decrypt(req -> onlyByteRange(encrypted, req), params, InputStreamRequestParameters.startingFrom(offsetStart))) {
+                    // We have no use for the first bytes when we have not requested them
+                    decrypted.skipNBytes(offsetStart);
+
+                    var decryptedBytes = StreamUtils.copyToByteArray(decrypted);
+
+                    assertThat(decryptedBytes).isEqualTo(concat(BLOCK_3_PLAIN, BLOCK_4_PLAIN));
+                }
+            }
+        }
+
+        @Nested
+        class PartialContentDecryption {
+            @Test
+            void decryptsStartingFromTheThirdBlock() throws IOException {
+                var engine = new AesCtrEncryptionEngine(128);
+
+                var offsetStart = BLOCK_1_PLAIN.length + BLOCK_2_PLAIN.length;
+                try (var decrypted = engine.decrypt(req -> {
+                            assertThat(req.startByteOffset()).isGreaterThan(0L);
+                            return onlyByteRange(new ByteArrayInputStream(CIPHERTEXT), req);
+                        }, PARAMS, InputStreamRequestParameters.startingFrom(offsetStart)
+                )) {
+
+                    // We have no use for the first bytes when we have not requested them
+                    decrypted.skipNBytes(offsetStart);
+
+                    var decryptedBytes = StreamUtils.copyToByteArray(decrypted);
+
+                    assertThat(decryptedBytes).isEqualTo(concat(BLOCK_3_PLAIN, BLOCK_4_PLAIN));
+                }
+            }
+
+            @Test
+            void decryptsStartingInTheMiddleOfTheSecondBlock() throws IOException {
+                var engine = new AesCtrEncryptionEngine(128);
+
+                var offsetStart = BLOCK_1_PLAIN.length + BLOCK_2_PLAIN.length / 2;
+
+                try (var decrypted = engine.decrypt(req -> {
+                    assertThat(req.startByteOffset()).isGreaterThan(0L); // We do not start requesting from the first byte
+                    return onlyByteRange(new ByteArrayInputStream(CIPHERTEXT), req);
+                }, PARAMS, InputStreamRequestParameters.startingFrom(offsetStart))) {
+                    var original = new ByteArrayInputStream(PLAINTEXT);
+
+                    // We have no use for the first bytes when we have not requested them
+                    decrypted.skipNBytes(offsetStart);
+                    original.skipNBytes(offsetStart);
+
+                    var originalBytes = StreamUtils.copyToByteArray(original);
+                    var decryptedBytes = StreamUtils.copyToByteArray(decrypted);
+
+                    assertThat(decryptedBytes).isEqualTo(originalBytes);
+                }
+            }
+
+            @Test
+            void decryptsOnlyTheFirst2Blocks() throws IOException {
+                var engine = new AesCtrEncryptionEngine(128);
+
+                var offsetEnd = BLOCK_1_PLAIN.length + BLOCK_2_PLAIN.length;
+
+                try (var decrypted = engine.decrypt(req -> {
+                            assertThat(req.startByteOffset()).isEqualTo(0L);
+                            assertThat(req.endByteOffset()).isLessThan((long) CIPHERTEXT.length); // We don't need to read the full ciphertext
+                            return onlyByteRange(new ByteArrayInputStream(CIPHERTEXT), req);
+                        }, PARAMS, new InputStreamRequestParameters(0, (long) offsetEnd)
+                )) {
+                    var decryptedBytes = decrypted.readNBytes(offsetEnd);
+
+                    assertThat(decryptedBytes).isEqualTo(concat(BLOCK_1_PLAIN, BLOCK_2_PLAIN));
+                }
+            }
+
+            @Test
+            void decryptsOnlyUntilTheMiddleOfBlock3() throws IOException {
+                var engine = new AesCtrEncryptionEngine(128);
+
+                var offsetEnd = BLOCK_1_PLAIN.length + BLOCK_2_PLAIN.length + BLOCK_3_PLAIN.length / 2;
+
+                try (var decrypted = engine.decrypt(req -> {
+                            assertThat(req.startByteOffset()).isEqualTo(0L);
+                            assertThat(req.endByteOffset()).isLessThan((long) CIPHERTEXT.length); // We don't need to read the full ciphertext
+                            return onlyByteRange(new ByteArrayInputStream(CIPHERTEXT), req);
+                        }, PARAMS, new InputStreamRequestParameters(0, (long) offsetEnd)
+                )) {
+
+                    var original = new ByteArrayInputStream(PLAINTEXT);
+
+                    var decryptedBytes = decrypted.readNBytes(offsetEnd);
+                    var originalBytes = original.readNBytes(offsetEnd);
+
+                    assertThat(decryptedBytes).isEqualTo(originalBytes);
+                }
+            }
+        }
     }
 }

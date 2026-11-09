@@ -12,19 +12,17 @@ import java.util.Date;
 @EntityListeners(AuditingEntityListener.class)
 public class TestEntity11 {
 
-    public TestEntity11() {
-    }
-
     @Id
     @GeneratedValue
     private Long id;
-
     private @Version Long version;
     private @CreatedDate Date createdDate;
     private @LastModifiedDate Date modifiedDate;
-
-    @RestResource(linkRel="package", path="package")
+    @RestResource(linkRel = "package", path = "package")
     private @Embedded TestEntity10Child _package = new TestEntity10Child();
+
+    public TestEntity11() {
+    }
 
     public Long getId() {
         return id;

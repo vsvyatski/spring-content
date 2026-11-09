@@ -22,51 +22,50 @@ import static java.lang.String.format;
 @Service
 public class WordToHtmlRenditionProvider implements RenditionProvider {
 
-	private static final Log logger = LogFactory.getLog(WordToHtmlRenditionProvider.class);
+    private static final Log logger = LogFactory.getLog(WordToHtmlRenditionProvider.class);
 
-	@Override
-	public String consumes() {
-		return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-	}
+    @Override
+    public String consumes() {
+        return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+    }
 
-	@Override
-	public String[] produces() {
-		return new String[] { "text/html" };
-	}
+    @Override
+    public String[] produces() {
+        return new String[]{"text/html"};
+    }
 
-	@Override
-	public InputStream convert(InputStream fromInputSource, String toMimeType) {
-		try {
-			WordprocessingMLPackage pkg = WordprocessingMLPackage.load(fromInputSource);
+    @Override
+    public InputStream convert(InputStream fromInputSource, String toMimeType) {
+        try {
+            WordprocessingMLPackage pkg = WordprocessingMLPackage.load(fromInputSource);
 
-			FieldUpdater updater = new FieldUpdater(pkg);
-			updater.update(true);
+            FieldUpdater updater = new FieldUpdater(pkg);
+            updater.update(true);
 
-			HTMLSettings htmlSettings = Docx4J.createHTMLSettings();
-			htmlSettings.setWmlPackage(pkg);
+            HTMLSettings htmlSettings = Docx4J.createHTMLSettings();
+            htmlSettings.setWmlPackage(pkg);
 
-			Docx4jProperties.setProperty("docx4j.Convert.Out.HTML.OutputMethodXML", true);
+            Docx4jProperties.setProperty("docx4j.Convert.Out.HTML.OutputMethodXML", true);
 
-			File tmpFile = Files.createTempFile(null, null, new FileAttribute<?>[]{}).toFile();
-			OutputStream os = new FileOutputStream(tmpFile);
+            File tmpFile = Files.createTempFile(null, null, new FileAttribute<?>[]{}).toFile();
+            OutputStream os = new FileOutputStream(tmpFile);
 
-			Docx4J.toHTML(htmlSettings, os, Docx4J.FLAG_EXPORT_PREFER_XSL);
-			IOUtils.closeQuietly(os);
+            Docx4J.toHTML(htmlSettings, os, Docx4J.FLAG_EXPORT_PREFER_XSL);
+            IOUtils.closeQuietly(os);
 
-			if (pkg.getMainDocumentPart().getFontTablePart() != null) {
-				pkg.getMainDocumentPart().getFontTablePart().deleteEmbeddedFontTempFiles();
-			}
+            if (pkg.getMainDocumentPart().getFontTablePart() != null) {
+                pkg.getMainDocumentPart().getFontTablePart().deleteEmbeddedFontTempFiles();
+            }
 
-			htmlSettings = null;
-			pkg = null;
+            htmlSettings = null;
+            pkg = null;
 
-			return new ObservableInputStream(new FileInputStream(tmpFile), new FileRemover(tmpFile));
-		}
-		catch (Exception e) {
-			logger.warn(format("%s rendition failed", toMimeType), e);
-		}
+            return new ObservableInputStream(new FileInputStream(tmpFile), new FileRemover(tmpFile));
+        } catch (Exception e) {
+            logger.warn(format("%s rendition failed", toMimeType), e);
+        }
 
-		return null;
-	}
+        return null;
+    }
 
 }

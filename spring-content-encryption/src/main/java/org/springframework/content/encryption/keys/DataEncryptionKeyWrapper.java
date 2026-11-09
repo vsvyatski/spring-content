@@ -4,18 +4,21 @@ import org.springframework.content.encryption.engine.ContentEncryptionEngine.Enc
 
 /**
  * Encryption and decryption of data encryption keys
+ *
  * @param <T> format of the encrypted data encryption key
  */
 public interface DataEncryptionKeyWrapper<T extends StoredDataEncryptionKey> {
 
     /**
      * Checks if this encryptor can decrypt a certain encrypted key
+     *
      * @param storedDataEncryptionKey The key to check support for
      */
     boolean supports(StoredDataEncryptionKey storedDataEncryptionKey);
 
     /**
      * Encrypt the data encryption key
+     *
      * @param dataEncryptionParameters Unencrypted data encryption parameters
      * @return A representation of the encrypted data encryption key
      */
@@ -23,6 +26,7 @@ public interface DataEncryptionKeyWrapper<T extends StoredDataEncryptionKey> {
 
     /**
      * Decrypt the encrypted data encryption key
+     *
      * @param encryptedDataEncryptionKey A representation of the encrypted data encryption key
      * @return Unencrypted data encryption parameters
      */

@@ -21,6 +21,7 @@ import java.net.URISyntaxException;
 public class LocalStack extends LocalStackContainer implements Serializable {
 
     private static final DockerImageName IMAGE_NAME = DockerImageName.parse("localstack/localstack");
+    private static final LocalStack INSTANCE = new LocalStack();
 
     private LocalStack() {
         super(IMAGE_NAME);
@@ -70,8 +71,6 @@ public class LocalStack extends LocalStackContainer implements Serializable {
     protected LocalStack readResolve() {
         return INSTANCE;
     }
-
-    private static final LocalStack INSTANCE = new LocalStack();
 
     private record CrossAwsCredentialsProvider(AWSCredentials credentials) implements AwsCredentialsProvider {
         private CrossAwsCredentialsProvider(AWSCredentialsProvider credentials) {

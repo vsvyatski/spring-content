@@ -34,28 +34,7 @@ public class EnableFullTextSolrIndexingTest {
     @Autowired
     private ApplicationContext context;
 
-    @Nested
-    class EnableFullTextSolrIndexingCases {
-        @Test
-        void shouldHaveASolrPropertiesBean() {
-            assertThat(context.getBean(SolrProperties.class)).isNotNull();
-        }
-
-        @Test
-        void shouldHaveASolrIndexingStoreEventHandlerBean() {
-            assertThat(context.getBean(SolrIndexerStoreEventHandler.class)).isNotNull();
-        }
-
-        @Test
-        void shouldHaveASearchableImplementationBean() {
-            assertThat(context.getBeansOfType(SearchableImpl.class)).isNotNull();
-        }
-
-        @Test
-        void shouldHaveASolrBasedFulltextIndexServiceBean() {
-            assertThat(context.getBean(IndexService.class)).isInstanceOf(SolrFulltextIndexServiceImpl.class);
-        }
-
+    public interface TContentStore extends ContentStore<Object, Serializable>, Searchable<Serializable> {
     }
 
     @Configuration
@@ -81,7 +60,28 @@ public class EnableFullTextSolrIndexingTest {
         }
     }
 
-    public interface TContentStore extends ContentStore<Object, Serializable>, Searchable<Serializable> {
+    @Nested
+    class EnableFullTextSolrIndexingCases {
+        @Test
+        void shouldHaveASolrPropertiesBean() {
+            assertThat(context.getBean(SolrProperties.class)).isNotNull();
+        }
+
+        @Test
+        void shouldHaveASolrIndexingStoreEventHandlerBean() {
+            assertThat(context.getBean(SolrIndexerStoreEventHandler.class)).isNotNull();
+        }
+
+        @Test
+        void shouldHaveASearchableImplementationBean() {
+            assertThat(context.getBeansOfType(SearchableImpl.class)).isNotNull();
+        }
+
+        @Test
+        void shouldHaveASolrBasedFulltextIndexServiceBean() {
+            assertThat(context.getBean(IndexService.class)).isInstanceOf(SolrFulltextIndexServiceImpl.class);
+        }
+
     }
 
 }

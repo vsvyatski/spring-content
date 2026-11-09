@@ -27,6 +27,137 @@ public class ClassWalkerTest {
     private static Field subSubContentIdField = ReflectionUtils.findField(TestSubSubClass.class, "contentId");
     private static Field subSubContentLengthField = ReflectionUtils.findField(TestSubSubClass.class, "contentLength");
 
+    public static enum TestEnum {
+        A, B, C, D
+    }
+
+    public static class TestClass {
+
+        private TestEnum enums;
+
+        private TestClass circlularRef;
+
+        private String str;
+        private int i;
+        @ContentId
+        private String contentId;
+        @ContentLength
+        private Long contentLength;
+        @MimeType
+        private Long contentMimeType;
+        @OriginalFileName
+        private Long contentOriginalFileName;
+        private TestSubClass child;
+
+        private TestCamelCasedProperty camelCaseProperty;
+        private OtherTestCamelCasedProperty otherCamelCaseProperty;
+    }
+
+    public static class TestSubClass {
+        @ContentId
+        private String contentId;
+        @ContentLength
+        private long contentLength;
+        @MimeType
+        private Long contentMimeType;
+        @OriginalFileName
+        private Long contentOriginalFileName;
+        private TestSubSubClass subChild;
+    }
+
+    public static class TestSubSubClass {
+        @ContentId
+        private String contentId;
+        @ContentLength
+        private int contentLength;
+        @MimeType
+        private Long contentMimeType;
+        @OriginalFileName
+        private Long contentOriginalFileName;
+    }
+
+    public static class UncorrelatedAttrClass {
+        private @Id
+        @GeneratedValue Long id;
+        private String name;
+        private @ContentId UUID contentId;
+        private @ContentLength Long len;
+        private @MimeType String mimeType;
+        private @OriginalFileName String originalFileName;
+        private String title;
+    }
+
+    public static class CorrelatedAttrClass {
+        private @Id
+        @GeneratedValue Long id;
+        private String name;
+        private @ContentId UUID contentId;
+        private @ContentLength Long contentLen;
+        private @MimeType String contentMimeType;
+        private @OriginalFileName String contentOriginalFileName;
+        private String title;
+    }
+
+    public static class TestClass2 {
+        private UncorrelatedAttrClass child;
+    }
+
+    public static class TestClass3 {
+
+        @OneToOne
+        private TestSubClass oneToOne;
+        @OneToMany
+        private TestSubClass oneToMany;
+        @ManyToOne
+        private TestSubClass manyToOne;
+        @ManyToMany
+        private TestSubClass manyToMany;
+        @DBRef
+        private TestSubClass docRef;
+    }
+
+    public static class TestClass4 extends TestSubSubClass {
+    }
+
+    public static class TestClass5 {
+        private UncorrelatedAttrClass child1;
+        private UncorrelatedAttrClass child2;
+    }
+
+    public static class TestClass6 {
+        private TestMultipleAttrs child;
+    }
+
+    public static class TestMultipleAttrs {
+        private @ContentId UUID contentId;
+        private @ContentLength Long contentLen;
+        private @MimeType String contentMimeType;
+        private @OriginalFileName String contentOriginalFileName;
+
+        private @ContentId UUID previewId;
+        private @ContentLength Integer previewLen;
+        private @MimeType String previewMimeType;
+        private @OriginalFileName String previewOriginalFileName;
+    }
+
+    public static class TestClass7 {
+        private TestClass6 child;
+    }
+
+    private static class TestCamelCasedProperty {
+        private @ContentId UUID camelCasePropertyId;
+        private @ContentLength Long camelCasePropertyLen;
+        private @MimeType String camelCasePropertyMimeType;
+        private @OriginalFileName String camelCasePropertyOriginalFileName;
+    }
+
+    private static class OtherTestCamelCasedProperty {
+        private @ContentId UUID camelCasePropertyIds;
+        private @ContentLength Long camelCasePropertyLens;
+        private @MimeType String camelCasePropertyMimetypes;
+        private @OriginalFileName String camelCasePropertyFilenames;
+    }
+
     @Nested
     class ClassWalkerCases {
         @Test
@@ -276,134 +407,5 @@ public class ClassWalkerTest {
             assertThat(visitor.getProperties()).containsEntry("child/child/preview", expectedProperty2);
         }
 
-    }
-
-    public static class TestClass {
-
-        private TestEnum enums;
-
-        private TestClass circlularRef;
-
-        private String str;
-        private int i;
-        @ContentId
-        private String contentId;
-        @ContentLength
-        private Long contentLength;
-        @MimeType
-        private Long contentMimeType;
-        @OriginalFileName
-        private Long contentOriginalFileName;
-        private TestSubClass child;
-
-        private TestCamelCasedProperty camelCaseProperty;
-        private OtherTestCamelCasedProperty otherCamelCaseProperty;
-    }
-
-    public static class TestSubClass {
-        @ContentId
-        private String contentId;
-        @ContentLength
-        private long contentLength;
-        @MimeType
-        private Long contentMimeType;
-        @OriginalFileName
-        private Long contentOriginalFileName;
-        private TestSubSubClass subChild;
-    }
-
-    public static class TestSubSubClass {
-        @ContentId
-        private String contentId;
-        @ContentLength
-        private int contentLength;
-        @MimeType
-        private Long contentMimeType;
-        @OriginalFileName
-        private Long contentOriginalFileName;
-    }
-
-    public static class UncorrelatedAttrClass {
-        private @Id @GeneratedValue Long id;
-        private String name;
-        private @ContentId UUID contentId;
-        private @ContentLength Long len;
-        private @MimeType String mimeType;
-        private @OriginalFileName String originalFileName;
-        private String title;
-    }
-
-    public static class CorrelatedAttrClass {
-        private @Id @GeneratedValue Long id;
-        private String name;
-        private @ContentId UUID contentId;
-        private @ContentLength Long contentLen;
-        private @MimeType String contentMimeType;
-        private @OriginalFileName String contentOriginalFileName;
-        private String title;
-    }
-
-    public static class TestClass2 {
-        private UncorrelatedAttrClass child;
-    }
-
-    public static class TestClass3 {
-
-        @OneToOne
-        private TestSubClass oneToOne;
-        @OneToMany
-        private TestSubClass oneToMany;
-        @ManyToOne
-        private TestSubClass manyToOne;
-        @ManyToMany
-        private TestSubClass manyToMany;
-        @DBRef
-        private TestSubClass docRef;
-    }
-
-    public static class TestClass4 extends TestSubSubClass {
-    }
-
-    public static class TestClass5 {
-        private UncorrelatedAttrClass child1;
-        private UncorrelatedAttrClass child2;
-    }
-
-    public static class TestClass6 {
-        private TestMultipleAttrs child;
-    }
-
-    public static class TestMultipleAttrs {
-        private @ContentId UUID contentId;
-        private @ContentLength Long contentLen;
-        private @MimeType String contentMimeType;
-        private @OriginalFileName String contentOriginalFileName;
-
-        private @ContentId UUID previewId;
-        private @ContentLength Integer previewLen;
-        private @MimeType String previewMimeType;
-        private @OriginalFileName String previewOriginalFileName;
-    }
-
-    public static class TestClass7 {
-        private TestClass6 child;
-    }
-
-    public static enum TestEnum {
-        A, B, C, D
-    }
-
-    private static class TestCamelCasedProperty {
-        private @ContentId UUID camelCasePropertyId;
-        private @ContentLength Long camelCasePropertyLen;
-        private @MimeType String camelCasePropertyMimeType;
-        private @OriginalFileName String camelCasePropertyOriginalFileName;
-    }
-
-    private static class OtherTestCamelCasedProperty {
-        private @ContentId UUID camelCasePropertyIds;
-        private @ContentLength Long camelCasePropertyLens;
-        private @MimeType String camelCasePropertyMimetypes;
-        private @OriginalFileName String camelCasePropertyFilenames;
     }
 }

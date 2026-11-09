@@ -50,7 +50,8 @@ public class DefaultEntityResolver implements EntityResolver {
     static {
         try {
             ROOT_RESOURCE_INFORMATION_CLASS_PRESENT = DefaultEntityResolver.class.getClassLoader().loadClass("org.springframework.data.rest.webmvc.config.RootResourceInformationHandlerMethodArgumentResolver") != null;
-        } catch (ClassNotFoundException e) {}
+        } catch (ClassNotFoundException e) {
+        }
     }
 
     private ApplicationContext context;
@@ -69,6 +70,10 @@ public class DefaultEntityResolver implements EntityResolver {
         this.mappingContext = mappingContext;
     }
 
+    public static NativeWebRequest nativeWebRequestForGetItemResource(String pathInfo) {
+        return new GetItemResourceNativeWebRequest(pathInfo);
+    }
+
     @Override
     public String getMapping() {
         return this.mapping;
@@ -78,7 +83,7 @@ public class DefaultEntityResolver implements EntityResolver {
     public EntityResolution resolve(String pathInfo) {
 
         AntPathMatcher matcher = new AntPathMatcher();
-        Map<String,String> variables = matcher.extractUriTemplateVariables(this.mapping, pathInfo);
+        Map<String, String> variables = matcher.extractUriTemplateVariables(this.mapping, pathInfo);
         String repository = variables.get("repository");
         String id = variables.get("id");
 
@@ -97,8 +102,7 @@ public class DefaultEntityResolver implements EntityResolver {
             } catch (IllegalArgumentException iae) {
                 domainObj = findOne(repositories, info, repository, id);
             }
-        }
-        catch (HttpRequestMethodNotSupportedException e) {
+        } catch (HttpRequestMethodNotSupportedException e) {
             throw new ResourceNotFoundException();
         }
 
@@ -115,7 +119,7 @@ public class DefaultEntityResolver implements EntityResolver {
     public boolean hasPropertyFor(String pathInfo) {
 
         AntPathMatcher matcher = new AntPathMatcher();
-        Map<String,String> variables = matcher.extractUriTemplateVariables(this.mapping, pathInfo);
+        Map<String, String> variables = matcher.extractUriTemplateVariables(this.mapping, pathInfo);
         String repository = variables.get("repository");
         String id = variables.get("id");
 
@@ -225,7 +229,7 @@ public class DefaultEntityResolver implements EntityResolver {
         }
 
         if (ri == null) {
-            throw new IllegalStateException(String.format("Unable to resolve root resource information for ", String.join("/", new String[] {repository, id.toString()})));
+            throw new IllegalStateException(String.format("Unable to resolve root resource information for ", String.join("/", new String[]{repository, id.toString()})));
         }
 
         String repo = RepositoryUtils.repositoryPath(ri);
@@ -246,7 +250,8 @@ public class DefaultEntityResolver implements EntityResolver {
         ContentProperty contentProperty = null;
         try {
             contentProperty = mappingContext.getContentProperties(info.getDomainObjectClass()).iterator().next();
-        } catch (NoSuchElementException nsee) {}
+        } catch (NoSuchElementException nsee) {
+        }
         return contentProperty;
     }
 
@@ -257,10 +262,6 @@ public class DefaultEntityResolver implements EntityResolver {
                 throws Exception {
             return null;
         }
-    }
-
-    public static NativeWebRequest nativeWebRequestForGetItemResource(String pathInfo) {
-        return new GetItemResourceNativeWebRequest(pathInfo);
     }
 
     public static class GetItemResourceNativeWebRequest implements NativeWebRequest {
@@ -847,6 +848,8 @@ public class DefaultEntityResolver implements EntityResolver {
         @RequestMapping(value = "/{repository}/{id}", method = RequestMethod.GET)
         public ResponseEntity<EntityModel<?>> getItemResource(@QuerydslPredicate org.springframework.data.rest.webmvc.RootResourceInformation resourceInformation) {
             return null;
-        };
+        }
+
+        ;
     }
 }

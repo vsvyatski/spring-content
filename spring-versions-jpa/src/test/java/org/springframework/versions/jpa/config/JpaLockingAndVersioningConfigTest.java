@@ -25,6 +25,26 @@ public class JpaLockingAndVersioningConfigTest {
 
     private AnnotationConfigApplicationContext context;
 
+    @Configuration
+    @Import(JpaLockingAndVersioningConfig.class)
+    public static class TestConfig {
+
+        @Bean
+        public DataSource ds() {
+            return mock(DataSource.class);
+        }
+
+        @Bean
+        public PlatformTransactionManager txn() {
+            return mock(PlatformTransactionManager.class);
+        }
+
+        @Bean
+        public EntityManager em() {
+            return mock(EntityManager.class);
+        }
+    }
+
     @Nested
     class JpaLockingAndVersioningConfigCases {
         @BeforeEach
@@ -64,26 +84,6 @@ public class JpaLockingAndVersioningConfigTest {
             assertThat(context.getBean(LockingAndVersioningProxyFactory.class)).isNotNull();
         }
 
-    }
-
-    @Configuration
-    @Import(JpaLockingAndVersioningConfig.class)
-    public static class TestConfig {
-
-        @Bean
-        public DataSource ds() {
-            return mock(DataSource.class);
-        }
-
-        @Bean
-        public PlatformTransactionManager txn() {
-            return mock(PlatformTransactionManager.class);
-        }
-
-        @Bean
-        public EntityManager em() {
-            return mock(EntityManager.class);
-        }
     }
 
 }

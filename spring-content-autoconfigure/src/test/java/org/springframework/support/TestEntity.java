@@ -9,6 +9,9 @@ import org.springframework.content.commons.annotations.ContentId;
 
 @Entity
 public class TestEntity {
-    @Id @GeneratedValue(strategy = GenerationType.AUTO) private long id;
-    @ContentId private String contentId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private long id;
+    @ContentId
+    private String contentId;
 }

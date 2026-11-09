@@ -30,21 +30,7 @@ public class ContentMongoAutoConfigurationTest {
 
     private ApplicationContextRunner contextRunner;
 
-    @Nested
-    class ContentMongoAutoConfiguration {
-        @BeforeEach
-        void setUp() {
-            contextRunner = new ApplicationContextRunner()
-                    .withConfiguration(AutoConfigurations.of(MongoContentAutoConfiguration.class));
-        }
-
-        @Test
-        void shouldLoadTheContext() {
-            contextRunner.withUserConfiguration(TestConfig.class)
-                    .run((context) ->
-                            Assertions.assertThat(context).hasSingleBean(TestEntityContentRepository.class));
-        }
-
+    public interface TestEntityContentRepository extends MongoContentStore<TestEntity, String> {
     }
 
     @Configuration
@@ -85,6 +71,20 @@ public class ContentMongoAutoConfigurationTest {
         private String contentId;
     }
 
-    public interface TestEntityContentRepository extends MongoContentStore<TestEntity, String> {
+    @Nested
+    class ContentMongoAutoConfiguration {
+        @BeforeEach
+        void setUp() {
+            contextRunner = new ApplicationContextRunner()
+                    .withConfiguration(AutoConfigurations.of(MongoContentAutoConfiguration.class));
+        }
+
+        @Test
+        void shouldLoadTheContext() {
+            contextRunner.withUserConfiguration(TestConfig.class)
+                    .run((context) ->
+                            Assertions.assertThat(context).hasSingleBean(TestEntityContentRepository.class));
+        }
+
     }
 }

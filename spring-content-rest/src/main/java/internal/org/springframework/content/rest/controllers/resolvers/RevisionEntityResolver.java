@@ -43,7 +43,7 @@ public class RevisionEntityResolver implements EntityResolver {
     public EntityResolution resolve(String pathInfo) {
 
         AntPathMatcher matcher = new AntPathMatcher();
-        Map<String,String> variables = matcher.extractUriTemplateVariables(this.mapping, pathInfo);
+        Map<String, String> variables = matcher.extractUriTemplateVariables(this.mapping, pathInfo);
         String repository = variables.get("repository");
         String id = variables.get("id");
         String revisionId = variables.get("revisionId");
@@ -62,7 +62,7 @@ public class RevisionEntityResolver implements EntityResolver {
         Optional<Object> repo = repositories.getRepositoryFor(info.getDomainObjectClass());
         repo.orElseThrow(() -> new IllegalStateException(format("Unable to find repository '%s'", repository)));
 
-        Optional<Revision<?,?>> revision = (Optional<Revision<?, ?>>) ReflectionUtils.invokeMethod(FIND_REVISION_METHOD, repo.get(), Long.parseLong(id), Integer.parseInt(revisionId));
+        Optional<Revision<?, ?>> revision = (Optional<Revision<?, ?>>) ReflectionUtils.invokeMethod(FIND_REVISION_METHOD, repo.get(), Long.parseLong(id), Integer.parseInt(revisionId));
 
         Object domainObj = null;
         if (revision.isPresent()) {
@@ -84,7 +84,7 @@ public class RevisionEntityResolver implements EntityResolver {
     public boolean hasPropertyFor(String pathInfo) {
 
         AntPathMatcher matcher = new AntPathMatcher();
-        Map<String,String> variables = matcher.extractUriTemplateVariables(this.mapping, pathInfo);
+        Map<String, String> variables = matcher.extractUriTemplateVariables(this.mapping, pathInfo);
 
         String[] pathSegments = pathInfo.split("/");
         String store = pathSegments[1];

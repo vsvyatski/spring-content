@@ -46,7 +46,7 @@ public class RestResourceMappingBuilder implements ClassVisitor {
     public boolean visitFieldBefore(String path, Class<?> klazz, Field f) {
         if (isObject(f) ||
                 (f.isAnnotationPresent(ContentId.class) && looseModes.get(klazz + ":" + path(segments)) == Boolean.FALSE ||
-                 f.isAnnotationPresent(ContentId.class) && looseModes.get(klazz + ":" + path(segments)) == Boolean.TRUE && segments.size() == 0)) {
+                        f.isAnnotationPresent(ContentId.class) && looseModes.get(klazz + ":" + path(segments)) == Boolean.TRUE && segments.size() == 0)) {
             RestResource restResource = f.getAnnotation(RestResource.class);
             if (restResource != null) {
                 String segment = segmentProvider.apply(restResource);
@@ -55,14 +55,14 @@ public class RestResourceMappingBuilder implements ClassVisitor {
                 } else {
                     if (f.isAnnotationPresent(ContentId.class)) {
                         segments.push(ClassWalker.propertyName(f.getName()));
-                    } else  {
+                    } else {
                         segments.push(f.getName());
                     }
                 }
             } else {
                 if (f.isAnnotationPresent(ContentId.class)) {
                     segments.push(ClassWalker.propertyName(f.getName()));
-                } else  {
+                } else {
                     segments.push(f.getName());
                 }
             }
@@ -108,18 +108,19 @@ public class RestResourceMappingBuilder implements ClassVisitor {
                 .stream()
                 .collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
     }
+
     private boolean isObject(Field field) {
         return field.getType().isPrimitive() == false &&
-            field.getType().equals(String.class) == false &&
-            field.getType().equals(UUID.class) == false &&
-            field.getType().isEnum() == false &&
-            ContentPropertyUtils.isWrapperType(field.getType()) == false &&
-            ContentPropertyUtils.isRelationshipField(field) == false;
+                field.getType().equals(String.class) == false &&
+                field.getType().equals(UUID.class) == false &&
+                field.getType().isEnum() == false &&
+                ContentPropertyUtils.isWrapperType(field.getType()) == false &&
+                ContentPropertyUtils.isRelationshipField(field) == false;
     }
 
     private String path(Stack<String> segments) {
         String fqPath = "";
-        for (int i=0; i < segments.size(); i++) {
+        for (int i = 0; i < segments.size(); i++) {
             if (i > 0) {
                 fqPath += "/";
             }

@@ -1,2 +1,3 @@
 DROP INDEX IF EXISTS locks_pk;
+
 DROP TABLE IF EXISTS locks;

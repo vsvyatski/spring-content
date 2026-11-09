@@ -9,14 +9,14 @@ import java.lang.annotation.Annotation;
 public class MongoContentStoresRegistrar extends AbstractStoreBeanDefinitionRegistrar {
 
     @Override
-	protected Class<? extends Annotation> getAnnotation() {
-		return EnableMongoStores.class;
-	}
+    protected Class<? extends Annotation> getAnnotation() {
+        return EnableMongoStores.class;
+    }
 
-	@Override
-	protected Class<?>[] getSignatureTypes() {
-		return new Class[]{MongoContentStore.class};
-	}
+    @Override
+    protected Class<?>[] getSignatureTypes() {
+        return new Class[]{MongoContentStore.class};
+    }
 
     @Override
     protected String getOverridePropertyValue() {

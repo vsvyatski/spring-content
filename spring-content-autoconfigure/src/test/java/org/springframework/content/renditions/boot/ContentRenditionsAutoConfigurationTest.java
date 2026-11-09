@@ -23,6 +23,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class ContentRenditionsAutoConfigurationTest {
 
+    @Configuration
+    @AutoConfigurationPackage
+    @EnableAutoConfiguration(exclude = {SolrAutoConfiguration.class, SolrExtensionAutoConfiguration.class, S3ContentAutoConfiguration.class})
+    @EnableMBeanExport(registration = RegistrationPolicy.IGNORE_EXISTING)
+    public static class TestConfig {
+    }
+
     @Nested
     class ContentRenditionsAutoConfiguration {
         @Nested
@@ -45,12 +52,5 @@ public class ContentRenditionsAutoConfigurationTest {
                 context.close();
             }
         }
-    }
-
-    @Configuration
-    @AutoConfigurationPackage
-    @EnableAutoConfiguration(exclude = {SolrAutoConfiguration.class, SolrExtensionAutoConfiguration.class, S3ContentAutoConfiguration.class})
-    @EnableMBeanExport(registration = RegistrationPolicy.IGNORE_EXISTING)
-    public static class TestConfig {
     }
 }

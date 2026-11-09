@@ -8,13 +8,15 @@ import java.io.IOException;
 public class IndexManager {
 
     public static final String INDEX_NAME = "spring-content-fulltext-index";
-
-    private final ElasticsearchClient client;
-
     private static Boolean globalIndexing = null;
+    private final ElasticsearchClient client;
 
     public IndexManager(ElasticsearchClient client) {
         this.client = client;
+    }
+
+    public static void reset() {
+        globalIndexing = null;
     }
 
     public String indexName(Class<?> entityClass) {
@@ -22,8 +24,7 @@ public class IndexManager {
         if (globalIndexing == null) {
             try {
                 globalIndexing = client.indices().exists(e -> e.index(INDEX_NAME)).value();
-            }
-            catch (IOException ioe) {
+            } catch (IOException ioe) {
                 throw new StoreAccessException("Unable to resolve elasticsearch index", ioe);
             }
         }
@@ -33,9 +34,5 @@ public class IndexManager {
         } else {
             return entityClass.getName().toLowerCase();
         }
-    }
-
-    public static void reset() {
-        globalIndexing = null;
     }
 }

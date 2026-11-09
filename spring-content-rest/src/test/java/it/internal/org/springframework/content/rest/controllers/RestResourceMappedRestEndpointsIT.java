@@ -46,28 +46,39 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebAppConfiguration
 @ContextConfiguration(classes = {
-      StoreConfig.class,
-      DelegatingWebMvcConfiguration.class,
-      RepositoryRestMvcConfiguration.class,
-      RestConfiguration.class,
-	  HypermediaConfiguration.class})
+        StoreConfig.class,
+        DelegatingWebMvcConfiguration.class,
+        RepositoryRestMvcConfiguration.class,
+        RestConfiguration.class,
+        HypermediaConfiguration.class})
 @Transactional
 @ActiveProfiles("store")
 @ExtendWith(SpringExtension.class)
 public class RestResourceMappedRestEndpointsIT {
 
-   @Autowired private TestEntity11Repository repo;
-   @Autowired private TestEntity11Store store;
+    @Autowired
+    private TestEntity11Repository repo;
+    @Autowired
+    private TestEntity11Store store;
 
-   private TestEntity11 testEntity11;
+    private TestEntity11 testEntity11;
 
-	@Autowired
-   private WebApplicationContext context;
+    @Autowired
+    private WebApplicationContext context;
 
-   private Version versionTests;
-   private LastModifiedDate lastModifiedDateTests;
+    private Version versionTests;
+    private LastModifiedDate lastModifiedDateTests;
 
-   private MockMvc mvc;
+    private MockMvc mvc;
+
+    private Object parse(Map<String, Object> obj, String... path) {
+        Object current = null;
+        current = obj.get(path[0]);
+        if (current instanceof Map) {
+            current = parse((Map<String, Object>) current, Arrays.copyOfRange(path, 1, path.length));
+        }
+        return current;
+    }
 
     @Nested
     class RestResourceMappedRESTEndpoints {
@@ -85,7 +96,7 @@ public class RestResourceMappedRestEndpointsIT {
                 @Test
                 void shouldReturn404() throws Exception {
                     mvc.perform(
-                            get("/testEntity11s/9999999/package/content"))
+                                    get("/testEntity11s/9999999/package/content"))
                             .andExpect(status().isNotFound());
                 }
 
@@ -103,7 +114,7 @@ public class RestResourceMappedRestEndpointsIT {
                 @Test
                 void shouldReturn404() throws Exception {
                     mvc.perform(
-                            get("/testEntity11s/" + testEntity11.getId() + "/doesnotexist"))
+                                    get("/testEntity11s/" + testEntity11.getId() + "/doesnotexist"))
                             .andExpect(status().isNotFound());
                 }
 
@@ -123,8 +134,8 @@ public class RestResourceMappedRestEndpointsIT {
                     @Test
                     void shouldReturn404() throws Exception {
                         mvc.perform(
-                          get("/testEntity11s/" + testEntity11.getId() + "/package/content"))
-                          .andExpect(status().isNotFound());
+                                        get("/testEntity11s/" + testEntity11.getId() + "/package/content"))
+                                .andExpect(status().isNotFound());
                     }
 
                 }
@@ -141,10 +152,10 @@ public class RestResourceMappedRestEndpointsIT {
                     @Test
                     void shouldCreateTheContent() throws Exception {
                         mvc.perform(
-                          put("/testEntity11s/" + testEntity11.getId() + "/package/content")
-                        		  .content("Hello New Spring Content World!")
-                        		  .contentType("text/plain"))
-                          .andExpect(status().is2xxSuccessful());
+                                        put("/testEntity11s/" + testEntity11.getId() + "/package/content")
+                                                .content("Hello New Spring Content World!")
+                                                .contentType("text/plain"))
+                                .andExpect(status().is2xxSuccessful());
 
                         Optional<TestEntity11> fetched = repo.findById(testEntity11.getId());
                         assertThat(fetched.isPresent()).isTrue();
@@ -171,19 +182,19 @@ public class RestResourceMappedRestEndpointsIT {
                     void shouldSetTheContentAndReturn201() throws Exception {
                         String content = "{\"content\":\"Hello New Spring Content World!\"}";
                         mvc.perform(
-                                       put("/testEntity11s/" + testEntity11.getId() + "/package/content")
-                                       .content(content)
-                                       .contentType("application/json"))
-                        .andExpect(status().isCreated());
+                                        put("/testEntity11s/" + testEntity11.getId() + "/package/content")
+                                                .content(content)
+                                                .contentType("application/json"))
+                                .andExpect(status().isCreated());
 
                         Optional<TestEntity11> fetched = repo.findById(testEntity11.getId());
                         assertThat(fetched.isPresent()).isTrue();
                         assertThat(fetched.get().get_package().getContentId()).isNotNull();
                         assertThat(fetched.get().get_package().getContentLen()).isEqualTo(45L);
                         assertThat(fetched.get().get_package().getContentMimeType()).isEqualTo("application/json");
-                                 try (InputStream actual = store.getResource(fetched.get(), PropertyPath.from("_package/content")).getInputStream()) {
-                                     IOUtils.contentEquals(actual, new ByteArrayInputStream(content.getBytes()));
-                                 }
+                        try (InputStream actual = store.getResource(fetched.get(), PropertyPath.from("_package/content")).getInputStream()) {
+                            IOUtils.contentEquals(actual, new ByteArrayInputStream(content.getBytes()));
+                        }
                     }
 
                 }
@@ -204,11 +215,11 @@ public class RestResourceMappedRestEndpointsIT {
                         testEntity11.get_package().contentMimeType = "text/plain";
                         UUID contentId = UUID.randomUUID();
                         store.associate(testEntity11, PropertyPath.from("_package/content"), contentId);
-                        WritableResource r = (WritableResource)store.getResource(testEntity11, PropertyPath.from("_package/content"));
+                        WritableResource r = (WritableResource) store.getResource(testEntity11, PropertyPath.from("_package/content"));
                         try (OutputStream out = r.getOutputStream()) {
-                        				      out.write(content.getBytes());
-                        				  }
-                        				  testEntity11 = repo.save(testEntity11);
+                            out.write(content.getBytes());
+                        }
+                        testEntity11 = repo.save(testEntity11);
                         versionTests.setMvc(mvc);
                         versionTests.setUrl("/testEntity11s/" + testEntity11.getId() + "/package/content");
                         versionTests.setCollectionUrl("/testEntity11s");
@@ -226,13 +237,13 @@ public class RestResourceMappedRestEndpointsIT {
                     @Test
                     void shouldReturnTheMappedContentLinks() throws Exception, JsonProcessingException {
                         MockHttpServletResponse res = mvc.perform(
-                        		  get("/testEntity11s/" + testEntity11.getId())
-                        				  .accept("application/hal+json"))
-                          .andExpect(status().is2xxSuccessful())
-                          .andReturn().getResponse();
+                                        get("/testEntity11s/" + testEntity11.getId())
+                                                .accept("application/hal+json"))
+                                .andExpect(status().is2xxSuccessful())
+                                .andReturn().getResponse();
 
                         ObjectMapper mapper = new ObjectMapper();
-                        Map<String,Object> obj = mapper.readValue(res.getContentAsString(), Map.class);
+                        Map<String, Object> obj = mapper.readValue(res.getContentAsString(), Map.class);
 
                         Object val = parse(obj, "_links", "package/content", "href");
                         assertThat(val).isNotNull();
@@ -253,11 +264,11 @@ public class RestResourceMappedRestEndpointsIT {
                         testEntity11.get_package().contentMimeType = "text/plain";
                         UUID contentId = UUID.randomUUID();
                         store.associate(testEntity11, PropertyPath.from("_package/content"), contentId);
-                        WritableResource r = (WritableResource)store.getResource(testEntity11, PropertyPath.from("_package/content"));
+                        WritableResource r = (WritableResource) store.getResource(testEntity11, PropertyPath.from("_package/content"));
                         try (OutputStream out = r.getOutputStream()) {
-                        				      out.write(content.getBytes());
-                        				  }
-                        				  testEntity11 = repo.save(testEntity11);
+                            out.write(content.getBytes());
+                        }
+                        testEntity11 = repo.save(testEntity11);
                         versionTests.setMvc(mvc);
                         versionTests.setUrl("/testEntity11s/" + testEntity11.getId() + "/package/content");
                         versionTests.setCollectionUrl("/testEntity11s");
@@ -275,13 +286,13 @@ public class RestResourceMappedRestEndpointsIT {
                     @Test
                     void shouldReturnTheContent() throws Exception {
                         MockHttpServletResponse response = mvc
-                          .perform(get("/testEntity11s/" + testEntity11.getId() + "/package/content")
-                        		  .accept("text/plain"))
-                          .andExpect(status().isOk())
-                          .andExpect(header().string("etag", is("\"1\"")))
-                          .andExpect(header().string("last-modified", LastModifiedDate
-                        		  .isWithinASecond(testEntity11.getModifiedDate())))
-                          .andReturn().getResponse();
+                                .perform(get("/testEntity11s/" + testEntity11.getId() + "/package/content")
+                                        .accept("text/plain"))
+                                .andExpect(status().isOk())
+                                .andExpect(header().string("etag", is("\"1\"")))
+                                .andExpect(header().string("last-modified", LastModifiedDate
+                                        .isWithinASecond(testEntity11.getModifiedDate())))
+                                .andReturn().getResponse();
 
                         assertThat(response).isNotNull();
                         assertThat(response.getContentAsString()).isEqualTo("Hello Spring Content World!");
@@ -301,11 +312,11 @@ public class RestResourceMappedRestEndpointsIT {
                         testEntity11.get_package().contentMimeType = "text/plain";
                         UUID contentId = UUID.randomUUID();
                         store.associate(testEntity11, PropertyPath.from("_package/content"), contentId);
-                        WritableResource r = (WritableResource)store.getResource(testEntity11, PropertyPath.from("_package/content"));
+                        WritableResource r = (WritableResource) store.getResource(testEntity11, PropertyPath.from("_package/content"));
                         try (OutputStream out = r.getOutputStream()) {
-                        				      out.write(content.getBytes());
-                        				  }
-                        				  testEntity11 = repo.save(testEntity11);
+                            out.write(content.getBytes());
+                        }
+                        testEntity11 = repo.save(testEntity11);
                         versionTests.setMvc(mvc);
                         versionTests.setUrl("/testEntity11s/" + testEntity11.getId() + "/package/content");
                         versionTests.setCollectionUrl("/testEntity11s");
@@ -323,11 +334,11 @@ public class RestResourceMappedRestEndpointsIT {
                     @Test
                     void shouldReturnTheRenditionAnd200() throws Exception {
                         MockHttpServletResponse response = mvc
-                          .perform(get(
-                        		  "/testEntity11s/" + testEntity11.getId() + "/package/content")
-                        		  .accept("text/html"))
-                          .andExpect(status().isOk()).andReturn()
-                          .getResponse();
+                                .perform(get(
+                                        "/testEntity11s/" + testEntity11.getId() + "/package/content")
+                                        .accept("text/html"))
+                                .andExpect(status().isOk()).andReturn()
+                                .getResponse();
 
                         assertThat(response).isNotNull();
                         assertThat(response.getContentAsString()).isEqualTo("<html><body>Hello Spring Content World!</body></html>");
@@ -347,11 +358,11 @@ public class RestResourceMappedRestEndpointsIT {
                         testEntity11.get_package().contentMimeType = "text/plain";
                         UUID contentId = UUID.randomUUID();
                         store.associate(testEntity11, PropertyPath.from("_package/content"), contentId);
-                        WritableResource r = (WritableResource)store.getResource(testEntity11, PropertyPath.from("_package/content"));
+                        WritableResource r = (WritableResource) store.getResource(testEntity11, PropertyPath.from("_package/content"));
                         try (OutputStream out = r.getOutputStream()) {
-                        				      out.write(content.getBytes());
-                        				  }
-                        				  testEntity11 = repo.save(testEntity11);
+                            out.write(content.getBytes());
+                        }
+                        testEntity11 = repo.save(testEntity11);
                         versionTests.setMvc(mvc);
                         versionTests.setUrl("/testEntity11s/" + testEntity11.getId() + "/package/content");
                         versionTests.setCollectionUrl("/testEntity11s");
@@ -369,11 +380,11 @@ public class RestResourceMappedRestEndpointsIT {
                     @Test
                     void shouldReturnTheOriginalContentAnd200() throws Exception {
                         MockHttpServletResponse response = mvc
-                          .perform(get("/testEntity11s/" + testEntity11.getId() + "/package/content").accept(
-                        		  new String[] {"text/xml",
-                        				  "text/plain"}))
-                          .andExpect(status().isOk()).andReturn()
-                          .getResponse();
+                                .perform(get("/testEntity11s/" + testEntity11.getId() + "/package/content").accept(
+                                        new String[]{"text/xml",
+                                                "text/plain"}))
+                                .andExpect(status().isOk()).andReturn()
+                                .getResponse();
 
                         assertThat(response).isNotNull();
                         assertThat(response.getContentAsString()).isEqualTo("Hello Spring Content World!");
@@ -393,11 +404,11 @@ public class RestResourceMappedRestEndpointsIT {
                         testEntity11.get_package().contentMimeType = "text/plain";
                         UUID contentId = UUID.randomUUID();
                         store.associate(testEntity11, PropertyPath.from("_package/content"), contentId);
-                        WritableResource r = (WritableResource)store.getResource(testEntity11, PropertyPath.from("_package/content"));
+                        WritableResource r = (WritableResource) store.getResource(testEntity11, PropertyPath.from("_package/content"));
                         try (OutputStream out = r.getOutputStream()) {
-                        				      out.write(content.getBytes());
-                        				  }
-                        				  testEntity11 = repo.save(testEntity11);
+                            out.write(content.getBytes());
+                        }
+                        testEntity11 = repo.save(testEntity11);
                         versionTests.setMvc(mvc);
                         versionTests.setUrl("/testEntity11s/" + testEntity11.getId() + "/package/content");
                         versionTests.setCollectionUrl("/testEntity11s");
@@ -415,10 +426,10 @@ public class RestResourceMappedRestEndpointsIT {
                     @Test
                     void shouldCreateTheContent() throws Exception {
                         mvc.perform(
-                          put("/testEntity11s/" + testEntity11.getId() + "/package/content")
-                        		  .content("Hello New Spring Content World!")
-                        		  .contentType("text/plain"))
-                          .andExpect(status().is2xxSuccessful());
+                                        put("/testEntity11s/" + testEntity11.getId() + "/package/content")
+                                                .content("Hello New Spring Content World!")
+                                                .contentType("text/plain"))
+                                .andExpect(status().is2xxSuccessful());
 
                         Optional<TestEntity11> fetched = repo.findById(testEntity11.getId());
                         assertThat(fetched.isPresent()).isTrue();
@@ -441,11 +452,11 @@ public class RestResourceMappedRestEndpointsIT {
                         testEntity11.get_package().contentMimeType = "text/plain";
                         UUID contentId = UUID.randomUUID();
                         store.associate(testEntity11, PropertyPath.from("_package/content"), contentId);
-                        WritableResource r = (WritableResource)store.getResource(testEntity11, PropertyPath.from("_package/content"));
+                        WritableResource r = (WritableResource) store.getResource(testEntity11, PropertyPath.from("_package/content"));
                         try (OutputStream out = r.getOutputStream()) {
-                        				      out.write(content.getBytes());
-                        				  }
-                        				  testEntity11 = repo.save(testEntity11);
+                            out.write(content.getBytes());
+                        }
+                        testEntity11 = repo.save(testEntity11);
                         versionTests.setMvc(mvc);
                         versionTests.setUrl("/testEntity11s/" + testEntity11.getId() + "/package/content");
                         versionTests.setCollectionUrl("/testEntity11s");
@@ -463,14 +474,14 @@ public class RestResourceMappedRestEndpointsIT {
                     @Test
                     void shouldDeleteTheContent() throws Exception {
                         mvc.perform(delete(
-                          "/testEntity11s/" + testEntity11.getId() + "/package/content"))
-                          .andExpect(status().isNoContent());
+                                        "/testEntity11s/" + testEntity11.getId() + "/package/content"))
+                                .andExpect(status().isNoContent());
 
                         Optional<TestEntity11> fetched = repo.findById(testEntity11.getId());
                         assertThat(fetched.isPresent()).isTrue();
                         assertThat(fetched.get().get_package().contentId).isNull();
                         assertThat(fetched.get().get_package().contentLen).isNull();
-                                       assertThat(fetched.get().get_package().contentMimeType).isNull();
+                        assertThat(fetched.get().get_package().contentMimeType).isNull();
                     }
 
                 }
@@ -480,14 +491,5 @@ public class RestResourceMappedRestEndpointsIT {
         }
 
     }
-
-	private Object parse(Map<String, Object> obj, String... path) {
-		Object current = null;
-		current = obj.get(path[0]);
-		if (current instanceof Map) {
-			current = parse((Map<String,Object>)current, Arrays.copyOfRange(path, 1, path.length));
-		}
-		return current;
-	}
 
 }

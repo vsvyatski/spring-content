@@ -62,18 +62,18 @@ public class AssociativeStoreIT {
                         java.util.List<org.junit.jupiter.api.DynamicNode> nodes8 = new java.util.ArrayList<>();
                         nodes8.add(org.junit.jupiter.api.DynamicTest.dynamicTest("should not have an associated resource", () -> {
                             context = new AnnotationConfigApplicationContext();
-                                                    context.register(StoreIT.TestConfig.class);
-                                                    context.register(configClass);
-                                                    context.refresh();
+                            context.register(StoreIT.TestConfig.class);
+                            context.register(configClass);
+                            context.refresh();
 
-                                                    repo = context.getBean(DocumentRepository.class);
-                                                    store = context.getBean(DocumentAssociativeStore.class);
-                                                    txn = context.getBean(PlatformTransactionManager.class);
+                            repo = context.getBean(DocumentRepository.class);
+                            store = context.getBean(DocumentAssociativeStore.class);
+                            txn = context.getBean(PlatformTransactionManager.class);
 
                             document = new Document();
-                                                        document = repo.save(document);
+                            document = repo.save(document);
                             assertThat(document.getContentId()).isNull();
-                                                        assertThat(store.getResource(document)).isNull();
+                            assertThat(store.getResource(document)).isNull();
                         }));
                         {
                             java.util.List<org.junit.jupiter.api.DynamicNode> nodes7 = new java.util.ArrayList<>();
@@ -81,58 +81,58 @@ public class AssociativeStoreIT {
                                 java.util.List<org.junit.jupiter.api.DynamicNode> nodes3 = new java.util.ArrayList<>();
                                 nodes3.add(org.junit.jupiter.api.DynamicTest.dynamicTest("should be recorded as such on the entity's @ContentId", () -> {
                                     context = new AnnotationConfigApplicationContext();
-                                                            context.register(StoreIT.TestConfig.class);
-                                                            context.register(configClass);
-                                                            context.refresh();
+                                    context.register(StoreIT.TestConfig.class);
+                                    context.register(configClass);
+                                    context.refresh();
 
-                                                            repo = context.getBean(DocumentRepository.class);
-                                                            store = context.getBean(DocumentAssociativeStore.class);
-                                                            txn = context.getBean(PlatformTransactionManager.class);
+                                    repo = context.getBean(DocumentRepository.class);
+                                    store = context.getBean(DocumentAssociativeStore.class);
+                                    txn = context.getBean(PlatformTransactionManager.class);
 
                                     document = new Document();
-                                                                document = repo.save(document);
+                                    document = repo.save(document);
 
                                     resourceId = UuidCreator.getTimeOrdered().toString();
-                                                                    resource = store.getResource(resourceId);
+                                    resource = store.getResource(resourceId);
 
                                     store.associate(document, resourceId);
-                                                                        store.associate(document, PropertyPath.from("rendition"), resourceId);
+                                    store.associate(document, PropertyPath.from("rendition"), resourceId);
                                     assertThat(document.getContentId()).isEqualTo(resourceId);
-                                                                        assertThat(document.getRenditionId()).isEqualTo(resourceId);
+                                    assertThat(document.getRenditionId()).isEqualTo(resourceId);
                                 }));
                                 {
                                     java.util.List<org.junit.jupiter.api.DynamicNode> nodes1 = new java.util.ArrayList<>();
                                     nodes1.add(org.junit.jupiter.api.DynamicTest.dynamicTest("should not honor byte ranges", () -> {
                                         context = new AnnotationConfigApplicationContext();
-                                                                context.register(StoreIT.TestConfig.class);
-                                                                context.register(configClass);
-                                                                context.refresh();
+                                        context.register(StoreIT.TestConfig.class);
+                                        context.register(configClass);
+                                        context.refresh();
 
-                                                                repo = context.getBean(DocumentRepository.class);
-                                                                store = context.getBean(DocumentAssociativeStore.class);
-                                                                txn = context.getBean(PlatformTransactionManager.class);
+                                        repo = context.getBean(DocumentRepository.class);
+                                        store = context.getBean(DocumentAssociativeStore.class);
+                                        txn = context.getBean(PlatformTransactionManager.class);
 
                                         document = new Document();
-                                                                    document = repo.save(document);
+                                        document = repo.save(document);
 
                                         resourceId = UuidCreator.getTimeOrdered().toString();
-                                                                        resource = store.getResource(resourceId);
+                                        resource = store.getResource(resourceId);
 
                                         store.associate(document, resourceId);
-                                                                            store.associate(document, PropertyPath.from("rendition"), resourceId);
+                                        store.associate(document, PropertyPath.from("rendition"), resourceId);
 
                                         TransactionStatus status = txn.getTransaction(new DefaultTransactionDefinition());
 
-                                                                                try (OutputStream os = ((WritableResource) resource).getOutputStream()) {
-                                                                                    os.write("Hello Client-side World!".getBytes());
-                                                                                }
+                                        try (OutputStream os = ((WritableResource) resource).getOutputStream()) {
+                                            os.write("Hello Client-side World!".getBytes());
+                                        }
 
-                                                                                txn.commit(status);
+                                        txn.commit(status);
                                         // relies on REST-layer to serve byte range
-                                                                                Resource r = store.getResource(document, PropertyPath.from("content"), new GetResourceParams("5-10"));
-                                                                                try (InputStream is = r.getInputStream()) {
-                                                                                    assertThat(IOUtils.toString(is, Charset.defaultCharset())).isEqualTo("Hello Client-side World!");
-                                                                                }
+                                        Resource r = store.getResource(document, PropertyPath.from("content"), new GetResourceParams("5-10"));
+                                        try (InputStream is = r.getInputStream()) {
+                                            assertThat(IOUtils.toString(is, Charset.defaultCharset())).isEqualTo("Hello Client-side World!");
+                                        }
                                     }));
                                     nodes1.add(org.junit.jupiter.api.DynamicContainer.dynamicContainer("when the resource has content", nodes1.stream()));
                                 }
@@ -140,27 +140,27 @@ public class AssociativeStoreIT {
                                     java.util.List<org.junit.jupiter.api.DynamicNode> nodes2 = new java.util.ArrayList<>();
                                     nodes2.add(org.junit.jupiter.api.DynamicTest.dynamicTest("should reset the entity's @ContentId", () -> {
                                         context = new AnnotationConfigApplicationContext();
-                                                                context.register(StoreIT.TestConfig.class);
-                                                                context.register(configClass);
-                                                                context.refresh();
+                                        context.register(StoreIT.TestConfig.class);
+                                        context.register(configClass);
+                                        context.refresh();
 
-                                                                repo = context.getBean(DocumentRepository.class);
-                                                                store = context.getBean(DocumentAssociativeStore.class);
-                                                                txn = context.getBean(PlatformTransactionManager.class);
+                                        repo = context.getBean(DocumentRepository.class);
+                                        store = context.getBean(DocumentAssociativeStore.class);
+                                        txn = context.getBean(PlatformTransactionManager.class);
 
                                         document = new Document();
-                                                                    document = repo.save(document);
+                                        document = repo.save(document);
 
                                         resourceId = UuidCreator.getTimeOrdered().toString();
-                                                                        resource = store.getResource(resourceId);
+                                        resource = store.getResource(resourceId);
 
                                         store.associate(document, resourceId);
-                                                                            store.associate(document, PropertyPath.from("rendition"), resourceId);
+                                        store.associate(document, PropertyPath.from("rendition"), resourceId);
 
                                         store.unassociate(document);
-                                                                                store.unassociate(document, PropertyPath.from("rendition"));
+                                        store.unassociate(document, PropertyPath.from("rendition"));
                                         assertThat(document.getContentId()).isNull();
-                                                                                assertThat(document.getRenditionId()).isNull();
+                                        assertThat(document.getRenditionId()).isNull();
                                     }));
                                     nodes2.add(org.junit.jupiter.api.DynamicContainer.dynamicContainer("when the resource is unassociated", nodes2.stream()));
                                 }
@@ -170,25 +170,25 @@ public class AssociativeStoreIT {
                                 java.util.List<org.junit.jupiter.api.DynamicNode> nodes4 = new java.util.ArrayList<>();
                                 nodes4.add(org.junit.jupiter.api.DynamicTest.dynamicTest("should throw an error", () -> {
                                     context = new AnnotationConfigApplicationContext();
-                                                            context.register(StoreIT.TestConfig.class);
-                                                            context.register(configClass);
-                                                            context.refresh();
+                                    context.register(StoreIT.TestConfig.class);
+                                    context.register(configClass);
+                                    context.refresh();
 
-                                                            repo = context.getBean(DocumentRepository.class);
-                                                            store = context.getBean(DocumentAssociativeStore.class);
-                                                            txn = context.getBean(PlatformTransactionManager.class);
+                                    repo = context.getBean(DocumentRepository.class);
+                                    store = context.getBean(DocumentAssociativeStore.class);
+                                    txn = context.getBean(PlatformTransactionManager.class);
 
                                     document = new Document();
-                                                                document = repo.save(document);
+                                    document = repo.save(document);
 
                                     resourceId = UuidCreator.getTimeOrdered().toString();
-                                                                    resource = store.getResource(resourceId);
+                                    resource = store.getResource(resourceId);
                                     try {
-                                                                                store.associate(document, PropertyPath.from("does.not.exist"), resourceId);
-                                                                            } catch (Exception sae) {
-                                                                                AssociativeStoreIT.this.e = sae;
-                                                                            }
-                                                                            assertThat(e).isInstanceOf(StoreAccessException.class);
+                                        store.associate(document, PropertyPath.from("does.not.exist"), resourceId);
+                                    } catch (Exception sae) {
+                                        AssociativeStoreIT.this.e = sae;
+                                    }
+                                    assertThat(e).isInstanceOf(StoreAccessException.class);
                                 }));
                                 nodes4.add(org.junit.jupiter.api.DynamicContainer.dynamicContainer("when a invalid property path is used to associate a resource", nodes4.stream()));
                             }
@@ -196,25 +196,25 @@ public class AssociativeStoreIT {
                                 java.util.List<org.junit.jupiter.api.DynamicNode> nodes5 = new java.util.ArrayList<>();
                                 nodes5.add(org.junit.jupiter.api.DynamicTest.dynamicTest("should throw an error", () -> {
                                     context = new AnnotationConfigApplicationContext();
-                                                            context.register(StoreIT.TestConfig.class);
-                                                            context.register(configClass);
-                                                            context.refresh();
+                                    context.register(StoreIT.TestConfig.class);
+                                    context.register(configClass);
+                                    context.refresh();
 
-                                                            repo = context.getBean(DocumentRepository.class);
-                                                            store = context.getBean(DocumentAssociativeStore.class);
-                                                            txn = context.getBean(PlatformTransactionManager.class);
+                                    repo = context.getBean(DocumentRepository.class);
+                                    store = context.getBean(DocumentAssociativeStore.class);
+                                    txn = context.getBean(PlatformTransactionManager.class);
 
                                     document = new Document();
-                                                                document = repo.save(document);
+                                    document = repo.save(document);
 
                                     resourceId = UuidCreator.getTimeOrdered().toString();
-                                                                    resource = store.getResource(resourceId);
+                                    resource = store.getResource(resourceId);
                                     try {
-                                                                                store.getResource(document, PropertyPath.from("does.not.exist"));
-                                                                            } catch (Exception sae) {
-                                                                                AssociativeStoreIT.this.e = sae;
-                                                                            }
-                                                                            assertThat(e).isInstanceOf(StoreAccessException.class);
+                                        store.getResource(document, PropertyPath.from("does.not.exist"));
+                                    } catch (Exception sae) {
+                                        AssociativeStoreIT.this.e = sae;
+                                    }
+                                    assertThat(e).isInstanceOf(StoreAccessException.class);
                                 }));
                                 nodes5.add(org.junit.jupiter.api.DynamicContainer.dynamicContainer("when a invalid property path is used to load a resource", nodes5.stream()));
                             }
@@ -222,25 +222,25 @@ public class AssociativeStoreIT {
                                 java.util.List<org.junit.jupiter.api.DynamicNode> nodes6 = new java.util.ArrayList<>();
                                 nodes6.add(org.junit.jupiter.api.DynamicTest.dynamicTest("should throw an error", () -> {
                                     context = new AnnotationConfigApplicationContext();
-                                                            context.register(StoreIT.TestConfig.class);
-                                                            context.register(configClass);
-                                                            context.refresh();
+                                    context.register(StoreIT.TestConfig.class);
+                                    context.register(configClass);
+                                    context.refresh();
 
-                                                            repo = context.getBean(DocumentRepository.class);
-                                                            store = context.getBean(DocumentAssociativeStore.class);
-                                                            txn = context.getBean(PlatformTransactionManager.class);
+                                    repo = context.getBean(DocumentRepository.class);
+                                    store = context.getBean(DocumentAssociativeStore.class);
+                                    txn = context.getBean(PlatformTransactionManager.class);
 
                                     document = new Document();
-                                                                document = repo.save(document);
+                                    document = repo.save(document);
 
                                     resourceId = UuidCreator.getTimeOrdered().toString();
-                                                                    resource = store.getResource(resourceId);
+                                    resource = store.getResource(resourceId);
                                     try {
-                                                                                store.unassociate(document, PropertyPath.from("does.not.exist"));
-                                                                            } catch (Exception sae) {
-                                                                                AssociativeStoreIT.this.e = sae;
-                                                                            }
-                                                                            assertThat(e).isInstanceOf(StoreAccessException.class);
+                                        store.unassociate(document, PropertyPath.from("does.not.exist"));
+                                    } catch (Exception sae) {
+                                        AssociativeStoreIT.this.e = sae;
+                                    }
+                                    assertThat(e).isInstanceOf(StoreAccessException.class);
                                 }));
                                 nodes6.add(org.junit.jupiter.api.DynamicContainer.dynamicContainer("when a invalid property path is used to unassociate a resource", nodes6.stream()));
                             }

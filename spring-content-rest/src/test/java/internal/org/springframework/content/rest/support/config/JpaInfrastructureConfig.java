@@ -17,37 +17,37 @@ import javax.sql.DataSource;
 @EnableJpaAuditing
 public class JpaInfrastructureConfig {
 
-	@Bean
-	public DataSource dataSource() {
-		EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
-		return builder.setType(EmbeddedDatabaseType.H2).build();
-	}
+    @Bean
+    public DataSource dataSource() {
+        EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
+        return builder.setType(EmbeddedDatabaseType.H2).build();
+    }
 
-	@Bean
-	public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+    @Bean
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
 
-		HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-		vendorAdapter.setDatabase(Database.H2);
-		vendorAdapter.setGenerateDdl(true);
+        HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+        vendorAdapter.setDatabase(Database.H2);
+        vendorAdapter.setGenerateDdl(true);
 
-		LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
-		factory.setJpaVendorAdapter(vendorAdapter);
-		factory.setPackagesToScan(packagesToScan());
-		factory.setPersistenceUnitName("spring-data-rest-webmvc");
-		factory.setDataSource(dataSource());
-		factory.afterPropertiesSet();
+        LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
+        factory.setJpaVendorAdapter(vendorAdapter);
+        factory.setPackagesToScan(packagesToScan());
+        factory.setPersistenceUnitName("spring-data-rest-webmvc");
+        factory.setDataSource(dataSource());
+        factory.afterPropertiesSet();
 
-		return factory;
-	}
+        return factory;
+    }
 
-	protected String[] packagesToScan() {
-		return new String[] {
-	        "internal.org.springframework.content.rest.support"
-		};
-	}
+    protected String[] packagesToScan() {
+        return new String[]{
+                "internal.org.springframework.content.rest.support"
+        };
+    }
 
-	@Bean
-	public PlatformTransactionManager transactionManager() {
-		return new JpaTransactionManager();
-	}
+    @Bean
+    public PlatformTransactionManager transactionManager() {
+        return new JpaTransactionManager();
+    }
 }

@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 /**
  * Based on AWS SDK V1 S3ObjectId.
- *
+ * <p>
  * Duplicated for backward compatibility.
  */
 public class S3ObjectId implements Serializable {
@@ -24,12 +24,9 @@ public class S3ObjectId implements Serializable {
     }
 
     /**
-     * @param bucket
-     *            the S3 bucket name which must not be null
-     * @param key
-     *            the S3 key name which must not be null
-     * @param versionId
-     *            optional version id
+     * @param bucket    the S3 bucket name which must not be null
+     * @param key       the S3 key name which must not be null
+     * @param versionId optional version id
      */
     public S3ObjectId(String bucket, String key, String versionId) {
         if (bucket == null || key == null)

@@ -9,11 +9,11 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ElasticsearchFulltextIndexingConfig {
 
-	@Autowired
-	private IndexService elasticFulltextIndexService;
+    @Autowired
+    private IndexService elasticFulltextIndexService;
 
-	@Bean
-	public ElasticsearchIndexer elasticFulltextIndexerEventListener() {
-		return new ElasticsearchIndexer(elasticFulltextIndexService);
-	}
+    @Bean
+    public ElasticsearchIndexer elasticFulltextIndexerEventListener() {
+        return new ElasticsearchIndexer(elasticFulltextIndexService);
+    }
 }

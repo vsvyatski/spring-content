@@ -40,23 +40,55 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebAppConfiguration
 @ContextConfiguration(classes = {
-		ShortcutExclusionsIT.Config.class,
-		DelegatingWebMvcConfiguration.class,
-		RepositoryRestMvcConfiguration.class,
-		RestConfiguration.class })
+        ShortcutExclusionsIT.Config.class,
+        DelegatingWebMvcConfiguration.class,
+        RepositoryRestMvcConfiguration.class,
+        RestConfiguration.class})
 @Transactional
 @ExtendWith(SpringExtension.class)
 public class ShortcutExclusionsIT {
 
-	@Autowired
-	private TestEntity3Repository repo;
+    @Autowired
+    private TestEntity3Repository repo;
 
-	@Autowired
-	private WebApplicationContext context;
+    @Autowired
+    private WebApplicationContext context;
 
-	private MockMvc mvc;
+    private MockMvc mvc;
 
-	private TestEntity3 testEntity;
+    private TestEntity3 testEntity;
+
+    @Configuration
+    @EnableJpaRepositories(basePackages = "internal.org.springframework.content.rest.support")
+    @EnableTransactionManagement
+    @EnableFileSystemStores(basePackages = "internal.org.springframework.content.rest.support")
+    public static class Config extends JpaInfrastructureConfig {
+
+        @Bean
+        public ContentRestConfigurer contentRestConfigurer() {
+
+            return new ContentRestConfigurer() {
+
+                @Override
+                public void configure(RestConfiguration config) {
+                    config.shortcutExclusions().exclude("GET", MediaType.parseMediaType("*/*"));
+                }
+            };
+        }
+
+        @Bean
+        FileSystemResourceLoader fileSystemResourceLoader() {
+            return new FileSystemResourceLoader(filesystemRoot().getAbsolutePath());
+        }
+
+        @Bean
+        public File filesystemRoot() {
+            File baseDir = new File(System.getProperty("java.io.tmpdir"));
+            File filesystemRoot = new File(baseDir, "spring-content-excluded-shortcut-links");
+            filesystemRoot.mkdirs();
+            return filesystemRoot;
+        }
+    }
 
     @Nested
     class ExcludedShortcutLinkTests {
@@ -67,7 +99,7 @@ public class ShortcutExclusionsIT {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                 testEntity = repo.save(new TestEntity3());
-                            testEntity = repo.save(testEntity);
+                testEntity = repo.save(testEntity);
             }
 
             @Test
@@ -89,36 +121,4 @@ public class ShortcutExclusionsIT {
         }
 
     }
-
-	@Configuration
-	@EnableJpaRepositories(basePackages = "internal.org.springframework.content.rest.support")
-	@EnableTransactionManagement
-	@EnableFileSystemStores(basePackages = "internal.org.springframework.content.rest.support")
-	public static class Config extends JpaInfrastructureConfig {
-
-	    @Bean
-	    public ContentRestConfigurer contentRestConfigurer() {
-
-	        return new ContentRestConfigurer() {
-
-	            @Override
-	            public void configure(RestConfiguration config) {
-	                config.shortcutExclusions().exclude("GET", MediaType.parseMediaType("*/*"));
-	            }
-	        };
-	    }
-
-	    @Bean
-	    FileSystemResourceLoader fileSystemResourceLoader() {
-	        return new FileSystemResourceLoader(filesystemRoot().getAbsolutePath());
-	    }
-
-	    @Bean
-	    public File filesystemRoot() {
-	        File baseDir = new File(System.getProperty("java.io.tmpdir"));
-	        File filesystemRoot = new File(baseDir, "spring-content-excluded-shortcut-links");
-	        filesystemRoot.mkdirs();
-	        return filesystemRoot;
-	    }
-	}
 }

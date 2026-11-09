@@ -17,6 +17,12 @@ public class S3AutoConfigurationTest {
 
     private ApplicationContextRunner contextRunner;
 
+    @SpringBootApplication(exclude = {ElasticsearchAutoConfiguration.class})
+    @EnableS3Stores(basePackageClasses = S3AutoConfigurationTest.class)
+    public static class TestConfigWithoutBeans {
+        // will be supplied by autoconfiguration
+    }
+
     @Nested
     class S3AutoConfigurationWithDefaultStorage {
         @Nested
@@ -76,11 +82,5 @@ public class S3AutoConfigurationTest {
                         .run((context) -> Assertions.assertThat(context).hasSingleBean(S3Client.class));
             }
         }
-    }
-
-    @SpringBootApplication(exclude = {ElasticsearchAutoConfiguration.class})
-    @EnableS3Stores(basePackageClasses = S3AutoConfigurationTest.class)
-    public static class TestConfigWithoutBeans {
-        // will be supplied by autoconfiguration
     }
 }

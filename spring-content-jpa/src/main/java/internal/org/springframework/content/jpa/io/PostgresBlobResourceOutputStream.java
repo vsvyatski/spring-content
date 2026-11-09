@@ -17,120 +17,119 @@ import java.sql.*;
 
 public class PostgresBlobResourceOutputStream extends BlobResourceOutputStream {
 
-	private static Log logger = LogFactory.getLog(PostgresBlobResourceOutputStream.class);
+    private static Log logger = LogFactory.getLog(PostgresBlobResourceOutputStream.class);
 
-	private Connection con;
-	private PreparedStatement ps;
-	private ResultSet rs;
-	private OutputStream os;
-	private LargeObject lo;
-	private boolean insert;
-	
-	public PostgresBlobResourceOutputStream(BlobResource blobResource, JdbcTemplate template) {
-		super(blobResource, template);
-	}
-	
-	@Override
-	protected OutputStream initializeStream() {
-		
-		final Object rid = this.getResource().getId();
-		con = DataSourceUtils.getConnection(this.getTemplate().getDataSource());
+    private Connection con;
+    private PreparedStatement ps;
+    private ResultSet rs;
+    private OutputStream os;
+    private LargeObject lo;
+    private boolean insert;
 
-		String sql = "SELECT id, content FROM BLOBS WHERE id=?";
-		try {
-			ps = con.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-			ps.setString(1, rid.toString());
-			rs = ps.executeQuery();
+    public PostgresBlobResourceOutputStream(BlobResource blobResource, JdbcTemplate template) {
+        super(blobResource, template);
+    }
 
-			if (!rs.next()) {
-				insert = true;
-				rs.moveToInsertRow();
-			} 
-			
-			LargeObjectManager lobj = con.unwrap(org.postgresql.PGConnection.class).getLargeObjectAPI();
-			long oid = lobj.createLO(LargeObjectManager.READ | LargeObjectManager.WRITE);
-			lo = lobj.open(oid);
-			return lo.getOutputStream();
-			
-		} catch (SQLException e) {
-			logger.error(String.format("initializing postgres blob output stream for resource: %s", rid), e);
-		}
-		
-		return null;
-	}
+    @Override
+    protected OutputStream initializeStream() {
 
-	@Override
-	public void close() throws IOException {
-		
-		Object rid = this.getResource().getId();
-		
-		IOUtils.closeQuietly(os);
-		
-		try {
-			lo.close();
-		} catch (SQLException e) {
-			logger.error(String.format("closing large object for resource %s", rid));
-		}
-		
-		Long oidToBeRemoved = null;
-		try {
-			
-			rs.updateString(1, rid.toString());
-			
-			if (!insert) {
-				oidToBeRemoved = rs.getLong(2);
-			}
-				
-			rs.updateLong(2,  lo.getOID());
-			
-			if (!insert) {
-				rs.updateRow();
-			} else {
-				rs.insertRow();
-			}
-		} catch (SQLException e) {
-			logger.error(String.format("updating large object for resource %s", rid));
-		} finally {
-			try {
-				rs.close();
-				ps.close();
-				
-				if (oidToBeRemoved != null) {
-					deleteReplacedLO(con, oidToBeRemoved);
-				}
-				
-				DataSourceUtils.releaseConnection(con, this.getTemplate().getDataSource());
-			} catch (SQLException e) {
-				logger.error(String.format("finalizing large object for resource %s", rid));
-			}
-			
-		}
-	}
+        final Object rid = this.getResource().getId();
+        con = DataSourceUtils.getConnection(this.getTemplate().getDataSource());
 
-	
-	private void deleteReplacedLO(Connection con2, Long oidToBeRemoved) {
-		LargeObjectManager lobj;
-		try {
-			lobj = con.unwrap(org.postgresql.PGConnection.class).getLargeObjectAPI();
-			lobj.delete(oidToBeRemoved);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
+        String sql = "SELECT id, content FROM BLOBS WHERE id=?";
+        try {
+            ps = con.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            ps.setString(1, rid.toString());
+            rs = ps.executeQuery();
 
-	public Blob getBlob() { 
-		String sql = "SELECT id, content FROM BLOBS WHERE id='" + this.getResource().getId() + "'";
-		return this.getTemplate().query(sql, new ResultSetExtractor<Blob>() {
-			@Override
-			public Blob extractData(ResultSet rs)
-					throws SQLException, DataAccessException {
-				if (rs.next()) {
-					return rs.getBlob(1);
-				}
-				else {
-					return null;
-				}
-			}
-		});
-	}
+            if (!rs.next()) {
+                insert = true;
+                rs.moveToInsertRow();
+            }
+
+            LargeObjectManager lobj = con.unwrap(org.postgresql.PGConnection.class).getLargeObjectAPI();
+            long oid = lobj.createLO(LargeObjectManager.READ | LargeObjectManager.WRITE);
+            lo = lobj.open(oid);
+            return lo.getOutputStream();
+
+        } catch (SQLException e) {
+            logger.error(String.format("initializing postgres blob output stream for resource: %s", rid), e);
+        }
+
+        return null;
+    }
+
+    @Override
+    public void close() throws IOException {
+
+        Object rid = this.getResource().getId();
+
+        IOUtils.closeQuietly(os);
+
+        try {
+            lo.close();
+        } catch (SQLException e) {
+            logger.error(String.format("closing large object for resource %s", rid));
+        }
+
+        Long oidToBeRemoved = null;
+        try {
+
+            rs.updateString(1, rid.toString());
+
+            if (!insert) {
+                oidToBeRemoved = rs.getLong(2);
+            }
+
+            rs.updateLong(2, lo.getOID());
+
+            if (!insert) {
+                rs.updateRow();
+            } else {
+                rs.insertRow();
+            }
+        } catch (SQLException e) {
+            logger.error(String.format("updating large object for resource %s", rid));
+        } finally {
+            try {
+                rs.close();
+                ps.close();
+
+                if (oidToBeRemoved != null) {
+                    deleteReplacedLO(con, oidToBeRemoved);
+                }
+
+                DataSourceUtils.releaseConnection(con, this.getTemplate().getDataSource());
+            } catch (SQLException e) {
+                logger.error(String.format("finalizing large object for resource %s", rid));
+            }
+
+        }
+    }
+
+
+    private void deleteReplacedLO(Connection con2, Long oidToBeRemoved) {
+        LargeObjectManager lobj;
+        try {
+            lobj = con.unwrap(org.postgresql.PGConnection.class).getLargeObjectAPI();
+            lobj.delete(oidToBeRemoved);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Blob getBlob() {
+        String sql = "SELECT id, content FROM BLOBS WHERE id='" + this.getResource().getId() + "'";
+        return this.getTemplate().query(sql, new ResultSetExtractor<Blob>() {
+            @Override
+            public Blob extractData(ResultSet rs)
+                    throws SQLException, DataAccessException {
+                if (rs.next()) {
+                    return rs.getBlob(1);
+                } else {
+                    return null;
+                }
+            }
+        });
+    }
 }

@@ -51,24 +51,111 @@ import java.util.UUID;
 
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 
-@SpringBootTest(classes = CacheControlIT.Application.class, webEnvironment=WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = CacheControlIT.Application.class, webEnvironment = WebEnvironment.RANDOM_PORT)
 @ExtendWith(SpringExtension.class)
 public class CacheControlIT {
 
-    @Autowired
-    private ApplicationContext context;
-
-    @Autowired
-    private CacheControlRepository repo;
-
-    @Autowired
-    private CacheControlStore store;
-
     @LocalServerPort
     int port;
-
+    @Autowired
+    private ApplicationContext context;
+    @Autowired
+    private CacheControlRepository repo;
+    @Autowired
+    private CacheControlStore store;
     @Autowired
     private WebApplicationContext webApplicationContext;
+
+    public interface CacheControlRepository extends CrudRepository<TestEntity, Long> {
+    }
+
+    private interface CacheControlStore extends FileSystemContentStore<TestEntity, UUID> {
+    }
+
+    @SpringBootApplication(exclude = {
+            MongoAutoConfiguration.class,
+            DataMongoAutoConfiguration.class,
+            DataMongoRepositoriesAutoConfiguration.class
+    })
+    public static class Application {
+
+        public static void main(String[] args) {
+            SpringApplication.run(Application.class, args);
+        }
+
+        @Configuration
+        @Import({RestConfiguration.class, SecurityConfiguration.class})
+        @EnableJpaRepositories(basePackages = "internal.org.springframework.content.rest.it.cachecontrol", considerNestedRepositories = true)
+        @EnableFileSystemStores(basePackages = "internal.org.springframework.content.rest.it.cachecontrol")
+        public static class AppConfig {
+
+            @Value("/org/springframework/content/jpa/schema-drop-h2.sql")
+            private ClassPathResource dropReopsitoryTables;
+
+            @Value("/org/springframework/content/jpa/schema-h2.sql")
+            private ClassPathResource dataReopsitorySchema;
+
+            @Bean
+            DataSourceInitializer datasourceInitializer(DataSource dataSource) {
+                ResourceDatabasePopulator databasePopulator = new ResourceDatabasePopulator();
+
+                databasePopulator.addScript(dropReopsitoryTables);
+                databasePopulator.addScript(dataReopsitorySchema);
+                databasePopulator.setIgnoreFailedDrops(true);
+
+                DataSourceInitializer initializer = new DataSourceInitializer();
+                initializer.setDataSource(dataSource);
+                initializer.setDatabasePopulator(databasePopulator);
+
+                return initializer;
+            }
+
+            @Bean
+            public DataSource dataSource() {
+                EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
+                return builder.setType(EmbeddedDatabaseType.H2).build();
+            }
+
+            @Bean
+            public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+                HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+                vendorAdapter.setDatabase(Database.H2);
+                vendorAdapter.setGenerateDdl(true);
+
+                LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
+                factory.setJpaVendorAdapter(vendorAdapter);
+                factory.setPackagesToScan("internal.org.springframework.content.rest.support");
+                factory.setDataSource(dataSource());
+
+                return factory;
+            }
+
+            @Bean
+            public PlatformTransactionManager transactionManager() {
+                JpaTransactionManager txManager = new JpaTransactionManager();
+                txManager.setEntityManagerFactory(entityManagerFactory().getObject());
+                return txManager;
+            }
+
+            @Bean
+            public FileSystemResourceLoader fileSystemResourceLoader() throws IOException {
+                return new FileSystemResourceLoader(Files.createTempDirectory("").toFile().getAbsolutePath());
+            }
+
+            @Bean
+            public ContentRestConfigurer configurer() {
+
+                return new ContentRestConfigurer() {
+                    @Override
+                    public void configure(RestConfiguration config) {
+                        config
+                                .cacheControl()
+                                .antMatcher("/testEntities/*", CacheControl.maxAge(Duration.ofSeconds(60)));
+                    }
+                };
+            }
+        }
+    }
 
     @Nested
     class CacheControlCases {
@@ -87,11 +174,11 @@ public class CacheControlIT {
 
             given()
                     .accept("text/plain")
-            .when()
-                .get("/testEntities/" + tentity.getId())
-            .then()
-                .statusCode(200)
-                .header("Cache-Control", "max-age=60");
+                    .when()
+                    .get("/testEntities/" + tentity.getId())
+                    .then()
+                    .statusCode(200)
+                    .header("Cache-Control", "max-age=60");
         }
 
         @Test
@@ -104,104 +191,13 @@ public class CacheControlIT {
 
             given()
                     .accept("text/plain")
-            .when()
-                .get("/testEntities/" + tentity.getId() + "/content")
-            .then()
-                .statusCode(200)
-                .header("Cache-Control", "no-cache, no-store, max-age=0, must-revalidate");
+                    .when()
+                    .get("/testEntities/" + tentity.getId() + "/content")
+                    .then()
+                    .statusCode(200)
+                    .header("Cache-Control", "no-cache, no-store, max-age=0, must-revalidate");
         }
 
-    }
-
-    public interface CacheControlRepository extends CrudRepository<TestEntity, Long> {
-    }
-
-    private interface CacheControlStore extends FileSystemContentStore<TestEntity, UUID> {
-    }
-
-    @SpringBootApplication(exclude = {
-            MongoAutoConfiguration.class,
-            DataMongoAutoConfiguration.class,
-            DataMongoRepositoriesAutoConfiguration.class
-    })
-    public static class Application {
-
-       public static void main(String[] args) {
-            SpringApplication.run(Application.class, args);
-        }
-
-       @Configuration
-       @Import({RestConfiguration.class, SecurityConfiguration.class})
-       @EnableJpaRepositories(basePackages="internal.org.springframework.content.rest.it.cachecontrol", considerNestedRepositories = true)
-       @EnableFileSystemStores(basePackages="internal.org.springframework.content.rest.it.cachecontrol")
-       public static class AppConfig {
-
-           @Value("/org/springframework/content/jpa/schema-drop-h2.sql")
-           private ClassPathResource dropReopsitoryTables;
-
-           @Value("/org/springframework/content/jpa/schema-h2.sql")
-           private ClassPathResource dataReopsitorySchema;
-
-           @Bean
-           DataSourceInitializer datasourceInitializer(DataSource dataSource) {
-               ResourceDatabasePopulator databasePopulator = new ResourceDatabasePopulator();
-
-               databasePopulator.addScript(dropReopsitoryTables);
-               databasePopulator.addScript(dataReopsitorySchema);
-               databasePopulator.setIgnoreFailedDrops(true);
-
-               DataSourceInitializer initializer = new DataSourceInitializer();
-               initializer.setDataSource(dataSource);
-               initializer.setDatabasePopulator(databasePopulator);
-
-               return initializer;
-           }
-
-           @Bean
-           public DataSource dataSource() {
-               EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
-               return builder.setType(EmbeddedDatabaseType.H2).build();
-           }
-
-           @Bean
-           public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-               HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-               vendorAdapter.setDatabase(Database.H2);
-               vendorAdapter.setGenerateDdl(true);
-
-               LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
-               factory.setJpaVendorAdapter(vendorAdapter);
-               factory.setPackagesToScan("internal.org.springframework.content.rest.support");
-               factory.setDataSource(dataSource());
-
-               return factory;
-           }
-
-           @Bean
-           public PlatformTransactionManager transactionManager() {
-               JpaTransactionManager txManager = new JpaTransactionManager();
-               txManager.setEntityManagerFactory(entityManagerFactory().getObject());
-               return txManager;
-           }
-
-           @Bean
-           public FileSystemResourceLoader fileSystemResourceLoader() throws IOException {
-               return new FileSystemResourceLoader(Files.createTempDirectory("").toFile().getAbsolutePath());
-           }
-
-           @Bean
-           public ContentRestConfigurer configurer() {
-
-               return new ContentRestConfigurer() {
-                   @Override
-                   public void configure(RestConfiguration config) {
-                       config
-                           .cacheControl()
-                               .antMatcher("/testEntities/*", CacheControl.maxAge(Duration.ofSeconds(60)));
-                   }
-               };
-           }
-       }
     }
 
 }

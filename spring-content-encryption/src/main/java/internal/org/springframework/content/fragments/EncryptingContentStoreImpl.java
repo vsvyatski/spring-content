@@ -28,9 +28,8 @@ public class EncryptingContentStoreImpl<S, SID extends Serializable> implements
         ContentStoreAware {
 
     private final MappingContext mappingContext;
-    private ContentCryptoService<S, ?> cryptoService;
     private final List<EncryptingContentStoreConfigurer<S>> configurers;
-
+    private ContentCryptoService<S, ?> cryptoService;
     private ContentStore<S, SID> storeDelegate;
 
     @Autowired

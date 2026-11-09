@@ -30,6 +30,11 @@ import java.io.InputStream;
 @EnableJpaStores
 public class ElasticsearchConfig {
 
+    @Value("/org/springframework/content/jpa/schema-drop-hsqldb.sql")
+    private Resource dropReopsitoryTables;
+    @Value("/org/springframework/content/jpa/schema-hsqldb.sql")
+    private Resource dataReopsitorySchema;
+
     @Bean
     public ConversionService conversionService() {
         return new DefaultFormattingConversionService();
@@ -51,7 +56,7 @@ public class ElasticsearchConfig {
 
             @Override
             public String[] produces() {
-                return new String[] {"text/plain"};
+                return new String[]{"text/plain"};
             }
 
             @Override
@@ -87,12 +92,6 @@ public class ElasticsearchConfig {
         txManager.setEntityManagerFactory(entityManagerFactory().getObject());
         return txManager;
     }
-
-    @Value("/org/springframework/content/jpa/schema-drop-hsqldb.sql")
-    private Resource dropReopsitoryTables;
-
-    @Value("/org/springframework/content/jpa/schema-hsqldb.sql")
-    private Resource dataReopsitorySchema;
 
     @Bean
     DataSourceInitializer datasourceInitializer(DataSource dataSource) {

@@ -47,8 +47,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(classes = {EmbeddedIdTest.Application.class},
-                webEnvironment=WebEnvironment.RANDOM_PORT)
-@EnableAutoConfiguration(exclude = { HypermediaAutoConfiguration.class, SecurityAutoConfiguration.class })
+        webEnvironment = WebEnvironment.RANDOM_PORT)
+@EnableAutoConfiguration(exclude = {HypermediaAutoConfiguration.class, SecurityAutoConfiguration.class})
 @ExtendWith(SpringExtension.class)
 public class EmbeddedIdTest {
 
@@ -66,19 +66,145 @@ public class EmbeddedIdTest {
 
     private MockMvc mvc;
 
+    @Test
+    public void noop() {
+    }
+
+    public interface TestEntityRepository extends JpaRepository<TestEntity, TestEntityId> {
+    }
+
+    public interface TestEntityContentRepository extends FileSystemContentStore<TestEntity, TestEntityId> {
+    }
+
+    @SpringBootApplication
+    @EnableJpaRepositories(considerNestedRepositories = true, basePackages = {"it.rest.embeddedid"})
+    @EnableFileSystemStores(basePackages = "it.rest.embeddedid")
+    @Import({RestConfiguration.class})
+    public static class Application {
+
+        public static void main(String[] args) {
+            SpringApplication.run(Application.class, args);
+        }
+
+        @Bean
+        public FileSystemResourceLoader filesystemRoot() throws IOException {
+            return new FileSystemResourceLoader(Files.createTempDirectory("").toFile().getAbsolutePath());
+        }
+
+        @Bean
+        public ContentRestConfigurer configureConversionService() {
+            return new ContentRestConfigurer() {
+
+                @Override
+                public void configure(RestConfiguration config) {
+
+                    config.converters().addConverter(new Converter<String, TestEntityId>() {
+                        @Override
+                        public TestEntityId convert(String source) {
+                            String[] segments = source.split("_");
+                            return new TestEntityId(segments[0], segments[1]);
+                        }
+                    });
+                }
+            };
+        }
+    }
+
+    @Entity
+    public static class TestEntity {
+
+        @EmbeddedId
+        private TestEntityId id = new TestEntityId();
+
+        @ContentId
+        @Column(name = "content_id")
+        private String contentId;
+
+        @ContentLength
+        @Column(name = "content_length")
+        private long contentLength;
+
+        @MimeType
+        @Column(name = "mime_type")
+        private String mimeType = "text/plain";
+
+        public TestEntityId getId() {
+            return id;
+        }
+
+        public void setId(TestEntityId id) {
+            this.id = id;
+        }
+
+        public String getContentId() {
+            return contentId;
+        }
+
+        public void setContentId(String contentId) {
+            this.contentId = contentId;
+        }
+
+        public long getContentLength() {
+            return contentLength;
+        }
+
+        public void setContentLength(long contentLength) {
+            this.contentLength = contentLength;
+        }
+
+        public String getMimeType() {
+            return mimeType;
+        }
+
+        public void setMimeType(String mimeType) {
+            this.mimeType = mimeType;
+        }
+
+        @Override
+        public String toString() {
+            return "TestEntity(id=" + id + ", contentId=" + contentId + ", contentLength=" + contentLength + ", mimeType=" + mimeType + ")";
+        }
+    }
+
+    public static class TestEntityId implements Serializable {
+
+        @Serial
+        private static final long serialVersionUID = -1710555467685181030L;
+
+        private String first;
+
+        private String last;
+
+        public TestEntityId() {
+            this.first = UUID.randomUUID().toString();
+            this.last = UUID.randomUUID().toString();
+        }
+
+        public TestEntityId(String mediumId, String fileId) {
+            this.first = mediumId;
+            this.last = fileId;
+        }
+
+        @Override
+        public String toString() {
+            return first + "_" + last;
+        }
+    }
+
     @Nested
     class EmbeddedIdCases {
         @BeforeEach
         void setUp() {
             mvc = MockMvcBuilders.webAppContextSetup(context).build();
         }
+
         @Test
         void shouldHaveAContentHandlerMappingBean() throws Exception {
             String content = "this is some content";
 
-                            TestEntity entity = repo.save(new TestEntity());
-                            entity = store.setContent(entity, new ByteArrayInputStream(content.getBytes()));
-                            entity = repo.save(entity);
+            TestEntity entity = repo.save(new TestEntity());
+            entity = store.setContent(entity, new ByteArrayInputStream(content.getBytes()));
+            entity = repo.save(entity);
 
             //                String command = "curl -H 'Accept: text/plain' http://localhost:" + serverPort + "/testEntities/" + entity.getId().toString();
             //                Process process = Runtime.getRuntime().exec(command);
@@ -88,139 +214,15 @@ public class EmbeddedIdTest {
             //                assertThat(process.exitValue()).isEqualTo(0);
             //                assertThat(IOUtils.toString(process.getInputStream())).isEqualTo(content);
 
-                            MockHttpServletResponse response =
-                                    mvc.perform(
-                                        get("/testEntities/" + entity.getId()).
+            MockHttpServletResponse response =
+                    mvc.perform(
+                                    get("/testEntities/" + entity.getId()).
                                             accept("text/plain")).
-                                        andExpect(status().isOk()).
-                                        andReturn().getResponse();
+                            andExpect(status().isOk()).
+                            andReturn().getResponse();
 
-                                assertThat(response).isNotNull();
-                                assertThat(response.getContentAsString()).isEqualTo(content);
+            assertThat(response).isNotNull();
+            assertThat(response.getContentAsString()).isEqualTo(content);
         }
     }
-
-    @SpringBootApplication
-    @EnableJpaRepositories(considerNestedRepositories = true, basePackages={"it.rest.embeddedid"})
-    @EnableFileSystemStores(basePackages = "it.rest.embeddedid")
-    @Import({RestConfiguration.class})
-    public static class Application {
-
-       public static void main(String[] args) {
-           SpringApplication.run(Application.class, args);
-       }
-
-       @Bean
-       public FileSystemResourceLoader filesystemRoot() throws IOException {
-          return new FileSystemResourceLoader(Files.createTempDirectory("").toFile().getAbsolutePath());
-       }
-
-       @Bean
-       public ContentRestConfigurer configureConversionService() {
-           return new ContentRestConfigurer() {
-
-               @Override
-               public void configure(RestConfiguration config) {
-
-                   config.converters().addConverter(new Converter<String, TestEntityId>() {
-                       @Override
-                       public TestEntityId convert(String source) {
-                           String[] segments = source.split("_");
-                           return new TestEntityId(segments[0], segments[1]);
-                       }
-                   });
-               }
-           };
-       }
-    }
-
-    @Entity
-    public static class TestEntity {
-
-       @EmbeddedId
-       private TestEntityId id = new TestEntityId();
-
-       @ContentId
-       @Column(name = "content_id")
-       private String contentId;
-
-       @ContentLength
-       @Column(name = "content_length")
-       private long contentLength;
-
-       @MimeType
-       @Column(name = "mime_type")
-       private String mimeType = "text/plain";
-
-       public TestEntityId getId() {
-           return id;
-       }
-
-       public void setId(TestEntityId id) {
-           this.id = id;
-       }
-
-       public String getContentId() {
-           return contentId;
-       }
-
-       public void setContentId(String contentId) {
-           this.contentId = contentId;
-       }
-
-       public long getContentLength() {
-           return contentLength;
-       }
-
-       public void setContentLength(long contentLength) {
-           this.contentLength = contentLength;
-       }
-
-       public String getMimeType() {
-           return mimeType;
-       }
-
-       public void setMimeType(String mimeType) {
-           this.mimeType = mimeType;
-       }
-
-       @Override
-       public String toString() {
-           return "TestEntity(id=" + id + ", contentId=" + contentId + ", contentLength=" + contentLength + ", mimeType=" + mimeType + ")";
-       }
-    }
-
-    public static class TestEntityId implements Serializable {
-
-       @Serial
-       private static final long serialVersionUID = -1710555467685181030L;
-
-       private String first;
-
-       private String last;
-
-       public TestEntityId() {
-           this.first = UUID.randomUUID().toString();
-           this.last = UUID.randomUUID().toString();
-       }
-
-       public TestEntityId(String mediumId, String fileId) {
-           this.first = mediumId;
-           this.last = fileId;
-       }
-
-       @Override
-       public String toString() {
-           return first + "_" + last;
-       }
-    }
-
-    public interface TestEntityRepository extends JpaRepository<TestEntity, TestEntityId> {
-    }
-
-    public interface TestEntityContentRepository extends FileSystemContentStore<TestEntity, TestEntityId> {
-    }
-
-    @Test
-    public void noop() {}
 }

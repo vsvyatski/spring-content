@@ -20,8 +20,67 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(SpringExtension.class)
 public class StoreFragmentTest {
 
-	@Autowired
-	private ApplicationContext context;
+    @Autowired
+    private ApplicationContext context;
+
+    @Test
+    public void noop() {
+    }
+
+    public interface TestContentStore extends ContentStore<Object, Serializable>, Customization {
+    }
+
+    public interface Customization {
+        String greet(String name);
+    }
+
+    @Configuration
+    @EnableTestStores
+    public static class StoreTestConfiguration {
+
+        @Bean
+        public String bean() {
+            return "Spring Content";
+        }
+    }
+
+    public static class CustomizationImpl implements Customization {
+
+        @Autowired
+        private String bean;
+
+        private Class<?> domainClass;
+        private Class<?> idClass;
+
+        @Override
+        public String greet(String name) {
+            return "Hello " + bean + " " + name;
+        }
+
+        public String getBean() {
+            return bean;
+        }
+
+        public void setBean(String bean) {
+            this.bean = bean;
+        }
+
+        public Class<?> getDomainClass() {
+            return domainClass;
+        }
+
+        public void setDomainClass(Class<?> domainClass) {
+            this.domainClass = domainClass;
+        }
+
+        public Class<?> getIdClass() {
+            return idClass;
+        }
+
+        public void setIdClass(Class<?> idClass) {
+            this.idClass = idClass;
+        }
+    }
 
     @Nested
     class GivenAStoreDefinitionCases {
@@ -30,70 +89,11 @@ public class StoreFragmentTest {
             @Test
             void shouldSupportTheExtension() {
                 assertThat(context.getBean(TestContentStore.class)).isNotNull();
-                					assertThat(context.getBean(CustomizationImpl.class).getBean()).isEqualTo("Spring Content");
-                					assertThat(context.getBean(CustomizationImpl.class).getDomainClass()).isEqualTo(Object.class);
-                					assertThat(context.getBean(CustomizationImpl.class).getIdClass()).isEqualTo(Serializable.class);
-                					assertThat(context.getBean(TestContentStore.class).greet("World")).isEqualTo("Hello Spring Content World");
+                assertThat(context.getBean(CustomizationImpl.class).getBean()).isEqualTo("Spring Content");
+                assertThat(context.getBean(CustomizationImpl.class).getDomainClass()).isEqualTo(Object.class);
+                assertThat(context.getBean(CustomizationImpl.class).getIdClass()).isEqualTo(Serializable.class);
+                assertThat(context.getBean(TestContentStore.class).greet("World")).isEqualTo("Hello Spring Content World");
             }
         }
     }
-
-	@Configuration
-	@EnableTestStores
-	public static class StoreTestConfiguration {
-
-		@Bean
-		public String bean() {
-			return "Spring Content";
-		}
-	}
-
-	public interface TestContentStore extends ContentStore<Object, Serializable>, Customization {
-	}
-
-	public interface Customization {
-		String greet(String name);
-	}
-
-	public static class CustomizationImpl implements Customization {
-
-		@Autowired
-		private String bean;
-
-		private Class<?> domainClass;
-		private Class<?> idClass;
-
-		@Override
-		public String greet(String name) {
-			return "Hello " + bean + " " + name;
-		}
-
-		public String getBean() {
-			return bean;
-		}
-
-		public void setBean(String bean) {
-			this.bean = bean;
-		}
-
-		public Class<?> getDomainClass() {
-			return domainClass;
-		}
-
-		public void setDomainClass(Class<?> domainClass) {
-			this.domainClass = domainClass;
-		}
-
-		public Class<?> getIdClass() {
-			return idClass;
-		}
-
-		public void setIdClass(Class<?> idClass) {
-			this.idClass = idClass;
-		}
-	}
-
-	@Test
-	public void noop() {
-	}
 }

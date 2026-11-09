@@ -12,6 +12,7 @@ import java.util.List;
 public interface DataEncryptionKeyAccessor<S, T extends StoredDataEncryptionKey> {
 
     Collection<T> findKeys(S entity, ContentProperty contentProperty);
+
     S setKeys(S entity, ContentProperty contentProperty, Collection<T> dataEncryptionKeys);
 
     default S clearKeys(S entity, ContentProperty contentProperty) {

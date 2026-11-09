@@ -15,7 +15,95 @@ import static org.assertj.core.api.Assertions.fail;
 
 public class BeanUtilsTest {
 
-	private TestEntity testEntity;
+    private TestEntity testEntity;
+
+    public static class TestEntity {
+        @ContentId
+        public String fieldOnly;
+        @ContentLength
+        private String fieldWithGetterSetter;
+
+        public TestEntity() {
+        }
+
+        public String getFieldWithGetterSetter() {
+            return fieldWithGetterSetter;
+        }
+
+        public void setFieldWithGetterSetter(String fieldWithGetterSetter) {
+            this.fieldWithGetterSetter = fieldWithGetterSetter;
+        }
+    }
+
+    public static class InheritingTestEntity extends TestEntity {
+    }
+
+    public static class TestEntity2 {
+        @ContentId
+        public String contentId;
+        @ContentId
+        public String otherContentId;
+        @ContentLength
+        private String contentLen;
+        @MimeType
+        private String mimeType;
+        @ContentLength
+        private String otherContentLen;
+
+        public String getContentId() {
+            return contentId;
+        }
+
+        public void setContentId(String contentId) {
+            this.contentId = contentId;
+        }
+
+        public String getContentLen() {
+            return contentLen;
+        }
+
+        public void setContentLen(String contentLen) {
+            this.contentLen = contentLen;
+        }
+
+        public String getMimeType() {
+            return mimeType;
+        }
+
+        public void setMimeType(String mimeType) {
+            this.mimeType = mimeType;
+        }
+
+        public String getOtherContentId() {
+            return otherContentId;
+        }
+
+        public void setOtherContentId(String otherContentId) {
+            this.otherContentId = otherContentId;
+        }
+
+        public String getOtherContentLen() {
+            return otherContentLen;
+        }
+
+        public void setOtherContentLen(String otherContentLen) {
+            this.otherContentLen = otherContentLen;
+        }
+    }
+
+    public static class MatchingCondition implements Condition {
+        @Override
+        public boolean matches(Field field) {
+            return true;
+        }
+    }
+
+    public static class UnmatchingCondition implements Condition {
+        @Override
+        public boolean matches(Field field) {
+            return false;
+        }
+    }
 
     @Nested
     class BeanUtilsCases {
@@ -30,25 +118,24 @@ public class BeanUtilsTest {
 
                 @Test
                 void shouldSetFieldDirectly() {
-                    BeanUtils.setFieldWithAnnotation(testEntity, ContentId.class,"a value");
+                    BeanUtils.setFieldWithAnnotation(testEntity, ContentId.class, "a value");
                     assertThat(testEntity.fieldOnly).isEqualTo("a value");
                 }
 
                 @Test
                 void shouldSetFieldViaItsSetter() {
                     BeanUtils.setFieldWithAnnotation(testEntity, ContentLength.class,
-                    		"b value");
+                            "b value");
                     assertThat(testEntity.getFieldWithGetterSetter()).isEqualTo("b value");
                 }
 
                 @Test
                 void shouldNotFailWhenToldToSetOnAMissingField() {
                     try {
-                    	BeanUtils.setFieldWithAnnotation(testEntity, Override.class,
-                    			"value");
-                    }
-                    catch (Exception e) {
-                    	fail("should not fail");
+                        BeanUtils.setFieldWithAnnotation(testEntity, Override.class,
+                                "value");
+                    } catch (Exception e) {
+                        fail("should not fail");
                     }
                 }
 
@@ -64,25 +151,24 @@ public class BeanUtilsTest {
                 @Test
                 void shouldSetFieldDirectly() {
                     BeanUtils.setFieldWithAnnotation(testEntity, ContentId.class,
-                    		"a value");
+                            "a value");
                     assertThat(testEntity.fieldOnly).isEqualTo("a value");
                 }
 
                 @Test
                 void shouldSetFieldViaItsSetter() {
                     BeanUtils.setFieldWithAnnotation(testEntity, ContentLength.class,
-                    		"b value");
+                            "b value");
                     assertThat(testEntity.getFieldWithGetterSetter()).isEqualTo("b value");
                 }
 
                 @Test
                 void shouldNotFailWhenToldToSetOnAMissingField() {
                     try {
-                    	BeanUtils.setFieldWithAnnotation(testEntity, Override.class,
-                    			"value");
-                    }
-                    catch (Exception e) {
-                    	fail("should not fail");
+                        BeanUtils.setFieldWithAnnotation(testEntity, Override.class,
+                                "value");
+                    } catch (Exception e) {
+                        fail("should not fail");
                     }
                 }
 
@@ -102,44 +188,43 @@ public class BeanUtilsTest {
                 @Test
                 void shouldSetFieldIfTheConditionMatches() {
                     BeanUtils.setFieldWithAnnotationConditionally(testEntity,
-                    		ContentId.class, "a value", new MatchingCondition() {
-                    		});
+                            ContentId.class, "a value", new MatchingCondition() {
+                            });
                     assertThat(testEntity.fieldOnly).isEqualTo("a value");
                 }
 
                 @Test
                 void shouldSetFieldViaItsSetterIfTheConditionMatches() {
                     BeanUtils.setFieldWithAnnotationConditionally(testEntity,
-                    		ContentLength.class, "b value", new MatchingCondition() {
-                    		});
+                            ContentLength.class, "b value", new MatchingCondition() {
+                            });
                     assertThat(testEntity.getFieldWithGetterSetter()).isEqualTo("b value");
                 }
 
                 @Test
                 void shouldNotSetFieldIfTheConditionDoesNotMatch() {
                     BeanUtils.setFieldWithAnnotationConditionally(testEntity,
-                    		ContentId.class, "a value", new UnmatchingCondition() {
-                    		});
+                            ContentId.class, "a value", new UnmatchingCondition() {
+                            });
                     assertThat(testEntity.fieldOnly).isNull();
                 }
 
                 @Test
                 void shouldNotSetFieldViaItsSetterIfTheConditionDoesNotMatch() {
                     BeanUtils.setFieldWithAnnotationConditionally(testEntity,
-                    		ContentLength.class, "b value",
-                    		new UnmatchingCondition() {
-                    		});
+                            ContentLength.class, "b value",
+                            new UnmatchingCondition() {
+                            });
                     assertThat(testEntity.getFieldWithGetterSetter()).isNull();
                 }
 
                 @Test
                 void shouldNotFailWhenToldToSetOnAMissingField() {
                     try {
-                    	BeanUtils.setFieldWithAnnotation(testEntity, Override.class,
-                    			"value");
-                    }
-                    catch (Exception e) {
-                    	fail("should not fail");
+                        BeanUtils.setFieldWithAnnotation(testEntity, Override.class,
+                                "value");
+                    } catch (Exception e) {
+                        fail("should not fail");
                     }
                 }
 
@@ -155,44 +240,43 @@ public class BeanUtilsTest {
                 @Test
                 void shouldSetFieldIfTheConditionMatches() {
                     BeanUtils.setFieldWithAnnotationConditionally(testEntity,
-                    		ContentId.class, "a value", new MatchingCondition() {
-                    		});
+                            ContentId.class, "a value", new MatchingCondition() {
+                            });
                     assertThat(testEntity.fieldOnly).isEqualTo("a value");
                 }
 
                 @Test
                 void shouldSetFieldViaItsSetterIfTheConditionMatches() {
                     BeanUtils.setFieldWithAnnotationConditionally(testEntity,
-                    		ContentLength.class, "b value", new MatchingCondition() {
-                    		});
+                            ContentLength.class, "b value", new MatchingCondition() {
+                            });
                     assertThat(testEntity.getFieldWithGetterSetter()).isEqualTo("b value");
                 }
 
                 @Test
                 void shouldNotSetFieldIfTheConditionDoesNotMatch() {
                     BeanUtils.setFieldWithAnnotationConditionally(testEntity,
-                    		ContentId.class, "a value", new UnmatchingCondition() {
-                    		});
+                            ContentId.class, "a value", new UnmatchingCondition() {
+                            });
                     assertThat(testEntity.fieldOnly).isNull();
                 }
 
                 @Test
                 void shouldNotSetFieldViaItsSetterIfTheConditionDoesNotMatch() {
                     BeanUtils.setFieldWithAnnotationConditionally(testEntity,
-                    		ContentLength.class, "b value",
-                    		new UnmatchingCondition() {
-                    		});
+                            ContentLength.class, "b value",
+                            new UnmatchingCondition() {
+                            });
                     assertThat(testEntity.getFieldWithGetterSetter()).isNull();
                 }
 
                 @Test
                 void shouldNotFailWhenToldToSetOnAMissingField() {
                     try {
-                    	BeanUtils.setFieldWithAnnotation(testEntity, Override.class,
-                    			"value");
-                    }
-                    catch (Exception e) {
-                    	fail("should not fail");
+                        BeanUtils.setFieldWithAnnotation(testEntity, Override.class,
+                                "value");
+                    } catch (Exception e) {
+                        fail("should not fail");
                     }
                 }
 
@@ -214,24 +298,23 @@ public class BeanUtilsTest {
                 @Test
                 void shouldGetFieldDirectly() {
                     Object value = BeanUtils.getFieldWithAnnotation(testEntity,
-                    		ContentId.class);
+                            ContentId.class);
                     assertThat(value).isEqualTo("a value");
                 }
 
                 @Test
                 void shouldGetFieldViaItsGetter() {
                     Object value = BeanUtils.getFieldWithAnnotation(testEntity,
-                    		ContentLength.class);
+                            ContentLength.class);
                     assertThat(value).isEqualTo("b value");
                 }
 
                 @Test
                 void shouldNotFailWhenToldToGetOnAMissingField() {
                     try {
-                    	BeanUtils.getFieldWithAnnotation(testEntity, Override.class);
-                    }
-                    catch (Exception e) {
-                    	fail("should not fail");
+                        BeanUtils.getFieldWithAnnotation(testEntity, Override.class);
+                    } catch (Exception e) {
+                        fail("should not fail");
                     }
                 }
 
@@ -249,24 +332,23 @@ public class BeanUtilsTest {
                 @Test
                 void shouldGetFieldDirectly() {
                     Object value = BeanUtils.getFieldWithAnnotation(testEntity,
-                    		ContentId.class);
+                            ContentId.class);
                     assertThat(value).isEqualTo("a value");
                 }
 
                 @Test
                 void shouldGetFieldViaItsGetter() {
                     Object value = BeanUtils.getFieldWithAnnotation(testEntity,
-                    		ContentLength.class);
+                            ContentLength.class);
                     assertThat(value).isEqualTo("b value");
                 }
 
                 @Test
                 void shouldNotFailWhenToldToGetOnAMissingField() {
                     try {
-                    	BeanUtils.getFieldWithAnnotation(testEntity, Override.class);
-                    }
-                    catch (Exception e) {
-                    	fail("should not fail");
+                        BeanUtils.getFieldWithAnnotation(testEntity, Override.class);
+                    } catch (Exception e) {
+                        fail("should not fail");
                     }
                 }
 
@@ -286,22 +368,21 @@ public class BeanUtilsTest {
                 @Test
                 void shouldReturnTrueForAnnotatedPublicFields() {
                     assertThat(BeanUtils.hasFieldWithAnnotation(testEntity,
-                    		ContentId.class)).isTrue();
+                            ContentId.class)).isTrue();
                 }
 
                 @Test
                 void shouldReturnTrueForAnnotatedPrivateFieldsWithGetter() {
                     assertThat(BeanUtils.hasFieldWithAnnotation(testEntity,
-                    		ContentLength.class)).isTrue();
+                            ContentLength.class)).isTrue();
                 }
 
                 @Test
                 void shouldNotFailWhenAboutAMissingField() {
                     try {
-                    	BeanUtils.hasFieldWithAnnotation(testEntity, Override.class);
-                    }
-                    catch (Exception e) {
-                    	fail("should not fail");
+                        BeanUtils.hasFieldWithAnnotation(testEntity, Override.class);
+                    } catch (Exception e) {
+                        fail("should not fail");
                     }
                 }
 
@@ -317,22 +398,21 @@ public class BeanUtilsTest {
                 @Test
                 void shouldReturnTrueForAnnotatedPublicFields() {
                     assertThat(BeanUtils.hasFieldWithAnnotation(testEntity,
-                    		ContentId.class)).isTrue();
+                            ContentId.class)).isTrue();
                 }
 
                 @Test
                 void shouldReturnTrueForAnnotatedPrivateFieldsWithGetter() {
                     assertThat(BeanUtils.hasFieldWithAnnotation(testEntity,
-                    		ContentLength.class)).isTrue();
+                            ContentLength.class)).isTrue();
                 }
 
                 @Test
                 void shouldNotFailWhenAboutAMissingField() {
                     try {
-                    	BeanUtils.hasFieldWithAnnotation(testEntity, Override.class);
-                    }
-                    catch (Exception e) {
-                    	fail("should not fail");
+                        BeanUtils.hasFieldWithAnnotation(testEntity, Override.class);
+                    } catch (Exception e) {
+                        fail("should not fail");
                     }
                 }
 
@@ -352,23 +432,22 @@ public class BeanUtilsTest {
                 @Test
                 void shouldReturnTrueForAnnotatedPublicFields() {
                     assertThat(BeanUtils.getFieldWithAnnotationType(testEntity,
-                    				ContentId.class)).isEqualTo(String.class);
+                            ContentId.class)).isEqualTo(String.class);
                 }
 
                 @Test
                 void shouldReturnTrueForAnnotatedPrivateFieldsWithGetter() {
                     assertThat(BeanUtils.getFieldWithAnnotationType(testEntity,
-                    				ContentLength.class)).isEqualTo(String.class);
+                            ContentLength.class)).isEqualTo(String.class);
                 }
 
                 @Test
                 void shouldNotFailWhenAskedAboutAMissingField() {
                     try {
-                    	BeanUtils.getFieldWithAnnotationType(testEntity,
-                    			Override.class);
-                    }
-                    catch (Exception e) {
-                    	fail("should not fail");
+                        BeanUtils.getFieldWithAnnotationType(testEntity,
+                                Override.class);
+                    } catch (Exception e) {
+                        fail("should not fail");
                     }
                 }
 
@@ -384,23 +463,22 @@ public class BeanUtilsTest {
                 @Test
                 void shouldReturnTrueForAnnotatedPublicFields() {
                     assertThat(BeanUtils.getFieldWithAnnotationType(testEntity,
-                    				ContentId.class)).isEqualTo(String.class);
+                            ContentId.class)).isEqualTo(String.class);
                 }
 
                 @Test
                 void shouldReturnTrueForAnnotatedPrivateFieldsWithGetter() {
                     assertThat(BeanUtils.getFieldWithAnnotationType(testEntity,
-                    				ContentLength.class)).isEqualTo(String.class);
+                            ContentLength.class)).isEqualTo(String.class);
                 }
 
                 @Test
                 void shouldNotFailWhenAskedAboutAMissingField() {
                     try {
-                    	BeanUtils.getFieldWithAnnotationType(testEntity,
-                    			Override.class);
-                    }
-                    catch (Exception e) {
-                    	fail("should not fail");
+                        BeanUtils.getFieldWithAnnotationType(testEntity,
+                                Override.class);
+                    } catch (Exception e) {
+                        fail("should not fail");
                     }
                 }
 
@@ -420,22 +498,21 @@ public class BeanUtilsTest {
                 @Test
                 void shouldFindFields() {
                     assertThat(BeanUtils.findFieldWithAnnotation(testEntity,
-                    		ContentId.class)).isNotNull();
+                            ContentId.class)).isNotNull();
                 }
 
                 @Test
                 void shouldFindFieldsWithGetters() {
                     assertThat(BeanUtils.findFieldWithAnnotation(testEntity,
-                    		ContentLength.class)).isNotNull();
+                            ContentLength.class)).isNotNull();
                 }
 
                 @Test
                 void shouldNotFailWhenAboutAMissingField() {
                     try {
-                    	BeanUtils.findFieldWithAnnotation(testEntity, Override.class);
-                    }
-                    catch (Exception e) {
-                    	fail("should not fail");
+                        BeanUtils.findFieldWithAnnotation(testEntity, Override.class);
+                    } catch (Exception e) {
+                        fail("should not fail");
                     }
                 }
 
@@ -451,22 +528,21 @@ public class BeanUtilsTest {
                 @Test
                 void shouldFindFields() {
                     assertThat(BeanUtils.findFieldWithAnnotation(testEntity,
-                    		ContentId.class)).isNotNull();
+                            ContentId.class)).isNotNull();
                 }
 
                 @Test
                 void shouldFindFieldsWithGetters() {
                     assertThat(BeanUtils.findFieldWithAnnotation(testEntity,
-                    		ContentLength.class)).isNotNull();
+                            ContentLength.class)).isNotNull();
                 }
 
                 @Test
                 void shouldNotFailWhenAboutAMissingField() {
                     try {
-                    	BeanUtils.findFieldWithAnnotation(testEntity, Override.class);
-                    }
-                    catch (Exception e) {
-                    	fail("should not fail");
+                        BeanUtils.findFieldWithAnnotation(testEntity, Override.class);
+                    } catch (Exception e) {
+                        fail("should not fail");
                     }
                 }
 
@@ -497,87 +573,4 @@ public class BeanUtilsTest {
         }
 
     }
-
-	public static class TestEntity {
-		@ContentId
-		public String fieldOnly;
-		@ContentLength
-		private String fieldWithGetterSetter;
-
-		public TestEntity() {
-		}
-
-		public String getFieldWithGetterSetter() {
-			return fieldWithGetterSetter;
-		}
-
-		public void setFieldWithGetterSetter(String fieldWithGetterSetter) {
-			this.fieldWithGetterSetter = fieldWithGetterSetter;
-		}
-	}
-
-	public static class InheritingTestEntity extends TestEntity {}
-
-	public static class TestEntity2 {
-		@ContentId public String contentId;
-		@ContentLength private String contentLen;
-		@MimeType private String mimeType;
-
-		@ContentId public String otherContentId;
-		@ContentLength private String otherContentLen;
-
-		public String getContentId() {
-			return contentId;
-		}
-
-		public void setContentId(String contentId) {
-			this.contentId = contentId;
-		}
-
-		public String getContentLen() {
-			return contentLen;
-		}
-
-		public void setContentLen(String contentLen) {
-			this.contentLen = contentLen;
-		}
-
-		public String getMimeType() {
-			return mimeType;
-		}
-
-		public void setMimeType(String mimeType) {
-			this.mimeType = mimeType;
-		}
-
-		public String getOtherContentId() {
-			return otherContentId;
-		}
-
-		public void setOtherContentId(String otherContentId) {
-			this.otherContentId = otherContentId;
-		}
-
-		public String getOtherContentLen() {
-			return otherContentLen;
-		}
-
-		public void setOtherContentLen(String otherContentLen) {
-			this.otherContentLen = otherContentLen;
-		}
-	}
-
-	public static class MatchingCondition implements Condition {
-		@Override
-		public boolean matches(Field field) {
-			return true;
-		}
-	}
-
-	public static class UnmatchingCondition implements Condition {
-		@Override
-		public boolean matches(Field field) {
-			return false;
-		}
-	}
 }

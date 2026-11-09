@@ -1,7 +1,8 @@
 package org.springframework.content.commons.utils;
 
 public final class AssertUtils {
-    private AssertUtils() {}
+    private AssertUtils() {
+    }
 
     public static void atLeastOneNotNull(Object[] objects, String message) {
         boolean isNull = true;

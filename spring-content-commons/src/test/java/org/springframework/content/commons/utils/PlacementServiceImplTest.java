@@ -8,7 +8,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class PlacementServiceImplTest {
 
-	private PlacementServiceImpl placer = null;
+    private PlacementServiceImpl placer = null;
 
     @Nested
     class PlacementServiceImplCases {

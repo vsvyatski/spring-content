@@ -77,11 +77,22 @@ public class AssociativeStoreContentService implements ContentService {
         this.byteRangeRestRequestHandler = byteRangeRestRequestHandler;
     }
 
+    public static StoreExportedMethodsMap getExportedMethodsFor(Class<?> storeInterfaceClass) {
+
+        StoreExportedMethodsMap exportMap = storeExportedMethods.get(storeInterfaceClass);
+        if (exportMap == null) {
+            storeExportedMethods.put(storeInterfaceClass, new StoreExportedMethodsMap(storeInterfaceClass));
+            exportMap = storeExportedMethods.get(storeInterfaceClass);
+        }
+
+        return exportMap;
+    }
+
     @Override
     public void getContent(HttpServletRequest request, HttpServletResponse response, HttpHeaders headers, Resource resource, MediaType resourceType)
             throws ResponseStatusException, MethodNotAllowedException {
 
-        Method[] methodsToUse = getExportedMethodsFor(((StoreResource)resource).getStoreInfo().getInterface()).getResourceMethods();
+        Method[] methodsToUse = getExportedMethodsFor(((StoreResource) resource).getStoreInfo().getInterface()).getResourceMethods();
 
         if (methodsToUse.length > 1) {
             throw new IllegalStateException("Too many getResource methods");
@@ -119,7 +130,7 @@ public class AssociativeStoreContentService implements ContentService {
             }
 
             if (resource instanceof RangeableResource) {
-                this.configureResourceForByteRangeRequest((RangeableResource)resource, headers);
+                this.configureResourceForByteRangeRequest((RangeableResource) resource, headers);
             }
 
             request.setAttribute("SPRING_CONTENT_RESOURCE", resource);
@@ -133,8 +144,7 @@ public class AssociativeStoreContentService implements ContentService {
 
         try {
             byteRangeRestRequestHandler.handleRequest(request, response);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             if (ContentStoreContentService.isClientAbortException(e)) {
                 // suppress
             } else {
@@ -148,7 +158,7 @@ public class AssociativeStoreContentService implements ContentService {
     @Override
     public void setContent(HttpServletRequest request, HttpServletResponse response, HttpHeaders headers, Resource source, MediaType sourceMimeType, Resource target) throws IOException, MethodNotAllowedException {
 
-        AssociatedStoreResource storeResource = (AssociatedStoreResource)target;
+        AssociatedStoreResource storeResource = (AssociatedStoreResource) target;
 
         ContentProperty property = storeResource.getContentProperty();
 
@@ -160,7 +170,7 @@ public class AssociativeStoreContentService implements ContentService {
             property.setOriginalFileName(updateObject, source.getFilename());
         }
 
-        Method[] methodsToUse = getExportedMethodsFor(((StoreResource)target).getStoreInfo().getInterface()).getResourceMethods();
+        Method[] methodsToUse = getExportedMethodsFor(((StoreResource) target).getStoreInfo().getInterface()).getResourceMethods();
 
         if (methodsToUse.length == 0) {
             throw new MethodNotAllowedException();
@@ -169,7 +179,7 @@ public class AssociativeStoreContentService implements ContentService {
         Method methodToUse = methodsToUse[0];
 
         try {
-            long len = IOUtils.copyLarge(source.getInputStream(), ((WritableResource)target).getOutputStream());
+            long len = IOUtils.copyLarge(source.getInputStream(), ((WritableResource) target).getOutputStream());
             property.setContentLength(updateObject, len);
 
             repoInvoker.invokeSave(updateObject);
@@ -180,11 +190,11 @@ public class AssociativeStoreContentService implements ContentService {
     @Override
     public void unsetContent(Resource resource) throws MethodNotAllowedException {
 
-        AssociatedStoreResource storeResource = (AssociatedStoreResource)resource;
+        AssociatedStoreResource storeResource = (AssociatedStoreResource) resource;
 
         ContentProperty property = storeResource.getContentProperty();
 
-        Method[] methodsToUse = getExportedMethodsFor(((StoreResource)resource).getStoreInfo().getInterface()).getResourceMethods();
+        Method[] methodsToUse = getExportedMethodsFor(((StoreResource) resource).getStoreInfo().getInterface()).getResourceMethods();
 
         if (methodsToUse.length == 0) {
             throw new MethodNotAllowedException();
@@ -225,15 +235,10 @@ public class AssociativeStoreContentService implements ContentService {
         return true;
     }
 
-    public static StoreExportedMethodsMap getExportedMethodsFor(Class<?> storeInterfaceClass) {
-
-        StoreExportedMethodsMap exportMap = storeExportedMethods.get(storeInterfaceClass);
-        if (exportMap == null) {
-            storeExportedMethods.put(storeInterfaceClass, new StoreExportedMethodsMap(storeInterfaceClass));
-            exportMap = storeExportedMethods.get(storeInterfaceClass);
+    private void configureResourceForByteRangeRequest(RangeableResource resource, HttpHeaders headers) {
+        if (headers.containsHeader(HttpHeaders.RANGE)) {
+            resource.setRange(headers.getFirst(HttpHeaders.RANGE));
         }
-
-        return exportMap;
     }
 
     public static class StoreExportedMethodsMap {
@@ -244,21 +249,21 @@ public class AssociativeStoreContentService implements ContentService {
         private static Method[] GETCONTENT_METHODS = null;
 
         static {
-            GETRESOURCE_METHODS = new Method[] {
+            GETRESOURCE_METHODS = new Method[]{
                     ReflectionUtils.findMethod(AssociativeStore.class, "getResource", Object.class, PropertyPath.class),
-                };
-
-            SETCONTENT_METHODS = new Method[] {
-                ReflectionUtils.findMethod(ContentStore.class, "setContent", Object.class, InputStream.class),
-                ReflectionUtils.findMethod(ContentStore.class, "setContent", Object.class, Resource.class),
             };
 
-            UNSETCONTENT_METHODS = new Method[] {
-                ReflectionUtils.findMethod(ContentStore.class, "unsetContent", Object.class),
+            SETCONTENT_METHODS = new Method[]{
+                    ReflectionUtils.findMethod(ContentStore.class, "setContent", Object.class, InputStream.class),
+                    ReflectionUtils.findMethod(ContentStore.class, "setContent", Object.class, Resource.class),
             };
 
-            GETCONTENT_METHODS = new Method[] {
-                ReflectionUtils.findMethod(ContentStore.class, "getContent", Object.class),
+            UNSETCONTENT_METHODS = new Method[]{
+                    ReflectionUtils.findMethod(ContentStore.class, "unsetContent", Object.class),
+            };
+
+            GETCONTENT_METHODS = new Method[]{
+                    ReflectionUtils.findMethod(ContentStore.class, "getContent", Object.class),
             };
         }
 
@@ -326,7 +331,7 @@ public class AssociativeStoreContentService implements ContentService {
 
         private boolean argsMatch(Method dm, Method m) {
 
-            for (int i=0; i < m.getParameterTypes().length; i++) {
+            for (int i = 0; i < m.getParameterTypes().length; i++) {
 
                 if (!m.getParameterTypes()[i].isAssignableFrom(dm.getParameterTypes()[i])) {
 
@@ -335,12 +340,6 @@ public class AssociativeStoreContentService implements ContentService {
             }
 
             return true;
-        }
-    }
-
-    private void configureResourceForByteRangeRequest(RangeableResource resource, HttpHeaders headers) {
-        if (headers.containsHeader(HttpHeaders.RANGE)) {
-            resource.setRange(headers.getFirst(HttpHeaders.RANGE));
         }
     }
 }

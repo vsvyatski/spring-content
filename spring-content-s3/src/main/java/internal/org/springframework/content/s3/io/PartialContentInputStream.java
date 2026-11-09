@@ -17,29 +17,13 @@ import java.util.regex.Pattern;
  */
 class PartialContentInputStream extends InputStream {
 
+    // As per https://www.rfc-editor.org/rfc/rfc9110.html#field.content-range
+    private static final Pattern CONTENT_RANGE_PATTERN = Pattern.compile("\\Abytes (?<firstPos>[0-9]+)-(?<lastPos>[0-9]+)/(?<completeLength>[0-9]+|\\*)\\Z");
     private final InputStream delegate;
     private final long totalLength;
     private final long rangeStart;
     private final long rangeEnd;
     private long currentPosition = 0;
-
-    // As per https://www.rfc-editor.org/rfc/rfc9110.html#field.content-range
-    private static final Pattern CONTENT_RANGE_PATTERN = Pattern.compile("\\Abytes (?<firstPos>[0-9]+)-(?<lastPos>[0-9]+)/(?<completeLength>[0-9]+|\\*)\\Z");
-
-    public static InputStream fromContentRange(InputStream delegate, String contentRange) {
-        Assert.notNull(delegate, "delegate");
-        Assert.notNull(contentRange, "contentRange");
-        var contentRangeMatch = CONTENT_RANGE_PATTERN.matcher(contentRange);
-        if(!contentRangeMatch.matches()) {
-            throw new IllegalArgumentException("Content-Range '%s' is not RFC9110 compliant.".formatted(contentRange));
-        }
-        var rangeStart = Long.parseUnsignedLong(contentRangeMatch.group("firstPos"));
-        // HTTP Content-Range has last byte inclusive; but this object requires an exclusive boundary
-        var rangeEnd = Long.parseUnsignedLong(contentRangeMatch.group("lastPos")) + 1;
-        var completeLengthStr = contentRangeMatch.group("completeLength");
-        var completeLength = Objects.equals(completeLengthStr, "*")?rangeEnd:Long.parseUnsignedLong(completeLengthStr);
-        return new PartialContentInputStream(delegate, completeLength, rangeStart, rangeEnd);
-    }
 
     public PartialContentInputStream(
             InputStream delegate,
@@ -48,7 +32,7 @@ class PartialContentInputStream extends InputStream {
             long rangeEndExclusive
     ) {
         this.delegate = delegate;
-        if(totalLength < rangeEndExclusive) {
+        if (totalLength < rangeEndExclusive) {
             // Total length can not be less than the end of the range
             // Note that this also covers the case where the total length is unknown
             totalLength = rangeEndExclusive;
@@ -58,8 +42,23 @@ class PartialContentInputStream extends InputStream {
         this.rangeEnd = rangeEndExclusive;
     }
 
+    public static InputStream fromContentRange(InputStream delegate, String contentRange) {
+        Assert.notNull(delegate, "delegate");
+        Assert.notNull(contentRange, "contentRange");
+        var contentRangeMatch = CONTENT_RANGE_PATTERN.matcher(contentRange);
+        if (!contentRangeMatch.matches()) {
+            throw new IllegalArgumentException("Content-Range '%s' is not RFC9110 compliant.".formatted(contentRange));
+        }
+        var rangeStart = Long.parseUnsignedLong(contentRangeMatch.group("firstPos"));
+        // HTTP Content-Range has last byte inclusive; but this object requires an exclusive boundary
+        var rangeEnd = Long.parseUnsignedLong(contentRangeMatch.group("lastPos")) + 1;
+        var completeLengthStr = contentRangeMatch.group("completeLength");
+        var completeLength = Objects.equals(completeLengthStr, "*") ? rangeEnd : Long.parseUnsignedLong(completeLengthStr);
+        return new PartialContentInputStream(delegate, completeLength, rangeStart, rangeEnd);
+    }
+
     private BlockState blockState(long length) {
-        if(currentPosition + length < 0) { // Sum is negative -> overflow of currentPosition. Reduce n to a more sensible value.
+        if (currentPosition + length < 0) { // Sum is negative -> overflow of currentPosition. Reduce n to a more sensible value.
             length = Long.MAX_VALUE - currentPosition; // maximum value of length (will be MAX_VALUE after adding currentPosition + length)
         }
         var startPosition = currentPosition;
@@ -100,7 +99,7 @@ class PartialContentInputStream extends InputStream {
         var startPosition = this.currentPosition;
         var positionState = blockState(n);
 
-        if(positionState.insideRange()) {
+        if (positionState.insideRange()) {
             // Skip on the delegate stream (however much it wants to skip) and update our current position
             // We know that the delegate stream can not skip beyond EOF, so no end position check is necessary
             this.currentPosition += delegate.skip(n);
@@ -114,12 +113,12 @@ class PartialContentInputStream extends InputStream {
     @Override
     public int read()
             throws IOException {
-        if(currentPosition >= totalLength) {
+        if (currentPosition >= totalLength) {
             return -1;
         }
         var positionState = blockState(1);
         try {
-            if(positionState.insideRange()) {
+            if (positionState.insideRange()) {
                 // Current position is inside the range, read from the delegate stream
                 return delegate.read();
             }
@@ -133,17 +132,17 @@ class PartialContentInputStream extends InputStream {
     @Override
     public int read(byte[] buffer, int off, int len) throws IOException {
         Objects.checkFromIndexSize(off, len, buffer.length);
-        if(currentPosition >= totalLength) {
+        if (currentPosition >= totalLength) {
             return -1;
         }
         var positionState = blockState(len);
-        if(positionState.insideRange()) {
+        if (positionState.insideRange()) {
             var readBytes = delegate.read(buffer, off, positionState.intLength());
             this.currentPosition += readBytes;
             return readBytes;
         } else {
             // Outside of the range; fill the necessary part of the buffer with NUL bytes
-            Arrays.fill(buffer, off, off+positionState.intLength(), (byte)0);
+            Arrays.fill(buffer, off, off + positionState.intLength(), (byte) 0);
             this.currentPosition = positionState.endPosition();
             return positionState.intLength();
         }
@@ -157,7 +156,7 @@ class PartialContentInputStream extends InputStream {
     @Override
     public int available() throws IOException {
         var state = blockState(Integer.MAX_VALUE);
-        if(state.insideRange()) {
+        if (state.insideRange()) {
             return delegate.available();
         } else {
             return state.intLength();
@@ -181,7 +180,7 @@ class PartialContentInputStream extends InputStream {
         }
 
         public int intLength() {
-            return (int)Math.min(length(), Integer.MAX_VALUE);
+            return (int) Math.min(length(), Integer.MAX_VALUE);
         }
 
     }

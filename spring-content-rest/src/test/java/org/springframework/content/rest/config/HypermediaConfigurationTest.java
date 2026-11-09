@@ -26,6 +26,30 @@ public class HypermediaConfigurationTest {
 
     private AnnotationConfigWebApplicationContext context;
 
+    public interface TestEntityRepository extends MongoRepository<TestEntity, String> {
+    }
+
+    public interface TestEntityContentStore extends FileSystemContentStore<TestEntity, String> {
+    }
+
+    @Configuration
+    @EnableFileSystemStores
+    public static class TestConfig {
+
+        @Bean
+        public FileSystemResourceLoader filesystemRoot() throws IOException {
+            return new FileSystemResourceLoader(Files.createTempDirectory("").toFile().getAbsolutePath());
+        }
+    }
+
+    @Document
+    public static class TestEntity {
+        @Id
+        private String id;
+        @ContentId
+        private String contentId;
+    }
+
     @Nested
     class HypermediaConfigurationCases {
         @Nested
@@ -48,29 +72,5 @@ public class HypermediaConfigurationTest {
 
         }
 
-    }
-
-    @Configuration
-    @EnableFileSystemStores
-    public static class TestConfig {
-
-        @Bean
-        public FileSystemResourceLoader filesystemRoot() throws IOException {
-            return new FileSystemResourceLoader(Files.createTempDirectory("").toFile().getAbsolutePath());
-        }
-    }
-
-    @Document
-    public static class TestEntity {
-        @Id
-        private String id;
-        @ContentId
-        private String contentId;
-    }
-
-    public interface TestEntityRepository extends MongoRepository<TestEntity, String> {
-    }
-
-    public interface TestEntityContentStore extends FileSystemContentStore<TestEntity, String> {
     }
 }

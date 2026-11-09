@@ -8,7 +8,7 @@ import java.io.Serializable;
 /**
  * This class provides a TestContainers implementation of Azure storage via
  * an Azurite docker container.
- *
+ * <p>
  * Please refer to the following for details:-
  * <a href="https://www.testcontainers.org">http://www.testcontainers.org</a>
  * <a href="http://github.com/testcontainers/testcontainers-java">http://github.com/testcontainers/testcontainers-java</a>

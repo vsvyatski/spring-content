@@ -8,10 +8,10 @@ import java.lang.annotation.Annotation;
 
 public class GCPStorageRegistrar extends AbstractStoreBeanDefinitionRegistrar {
 
-	@Override
-	protected Class<? extends Annotation> getAnnotation() {
-		return EnableGCPStorage.class;
-	}
+    @Override
+    protected Class<? extends Annotation> getAnnotation() {
+        return EnableGCPStorage.class;
+    }
 
     @Override
     protected Class<?>[] getSignatureTypes() {

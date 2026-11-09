@@ -23,14 +23,30 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(SpringExtension.class)
 public class StoreCandidateComponentProviderEnvironmentTest {
 
-	@Autowired(required=false)
-	private TestStore store;
+    @Autowired(required = false)
+    private TestStore store;
 
-	@Autowired(required=false)
-	private TestAssociativeStore associativeStore;
+    @Autowired(required = false)
+    private TestAssociativeStore associativeStore;
 
-	@Autowired(required=false)
-	private TestContentStore contentStore;
+    @Autowired(required = false)
+    private TestContentStore contentStore;
+
+    public interface TestStore extends Store<URI> {
+    }
+
+    @Profile("b")
+    public interface TestAssociativeStore extends AssociativeStore<Object, URI> {
+    }
+
+    @Profile("c")
+    public interface TestContentStore extends ContentStore<Object, URI> {
+    }
+
+    @Configuration
+    @EnableTestStores
+    public static class StoreTestConfiguration {
+    }
 
     @Nested
     class GivenTwoStoresWithProfiles {
@@ -42,21 +58,5 @@ public class StoreCandidateComponentProviderEnvironmentTest {
         }
 
     }
-
-	@Configuration
-	@EnableTestStores
-	public static class StoreTestConfiguration {
-	}
-
-	public interface TestStore extends Store<URI> {
-	}
-
-	@Profile("b")
-	public interface TestAssociativeStore extends AssociativeStore<Object, URI> {
-	}
-
-	@Profile("c")
-	public interface TestContentStore extends ContentStore<Object, URI> {
-	}
 
 }

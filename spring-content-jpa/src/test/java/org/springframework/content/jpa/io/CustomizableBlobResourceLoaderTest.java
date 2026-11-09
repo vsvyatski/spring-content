@@ -20,18 +20,18 @@ import static org.mockito.Mockito.when;
 
 public class CustomizableBlobResourceLoaderTest {
 
-	private CustomizableBlobResourceLoader loader;
+    private CustomizableBlobResourceLoader loader;
 
-	private JdbcTemplate template;
-	private PlatformTransactionManager txnMgr;
+    private JdbcTemplate template;
+    private PlatformTransactionManager txnMgr;
 
-	private DataSource ds;
-	private Connection conn;
-	private Statement stmt;
+    private DataSource ds;
+    private Connection conn;
+    private Statement stmt;
 
-	private Resource customDBResource;
+    private Resource customDBResource;
 
-	private Object result;
+    private Object result;
 
     @Nested
     class CustomizableBlobResourceLoaderCases {
@@ -106,7 +106,9 @@ public class CustomizableBlobResourceLoaderTest {
 
                     loader = new CustomizableBlobResourceLoader(template, txnMgr);
 
-                    loader = new CustomizableBlobResourceLoader(template, txnMgr, "CUSTOM_DB", (l, t, txn) -> { return customDBResource; });
+                    loader = new CustomizableBlobResourceLoader(template, txnMgr, "CUSTOM_DB", (l, t, txn) -> {
+                        return customDBResource;
+                    });
 
                     result = loader.getResource("some-id");
                 }

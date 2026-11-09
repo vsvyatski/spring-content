@@ -10,22 +10,22 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@ComponentScan(basePackages = { "org.springframework.content.solr" })
+@ComponentScan(basePackages = {"org.springframework.content.solr"})
 public class FullTextSolrIndexingConfig {
 
-	@Autowired
-	private SolrClient solrClient;
+    @Autowired
+    private SolrClient solrClient;
 
-	@Autowired
-	private SolrProperties props;
+    @Autowired
+    private SolrProperties props;
 
-	@Bean
-	public Object solrFulltextEventListener() {
-		return new SolrIndexerStoreEventHandler(solrFulltextIndexService());
-	}
+    @Bean
+    public Object solrFulltextEventListener() {
+        return new SolrIndexerStoreEventHandler(solrFulltextIndexService());
+    }
 
-	@Bean
-	public IndexService solrFulltextIndexService() {
-		return new SolrFulltextIndexServiceImpl(solrClient, props);
-	}
+    @Bean
+    public IndexService solrFulltextIndexService() {
+        return new SolrFulltextIndexServiceImpl(solrClient, props);
+    }
 }

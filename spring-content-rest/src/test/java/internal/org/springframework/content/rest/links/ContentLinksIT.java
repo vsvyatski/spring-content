@@ -26,20 +26,20 @@ import static java.lang.String.format;
 
 @WebAppConfiguration
 @ContextConfiguration(classes = {
-		BaseUriConfig.class,
-		DelegatingWebMvcConfiguration.class,
-		RepositoryRestMvcConfiguration.class,
-		RestConfiguration.class,
-		HypermediaConfiguration.class })
+        BaseUriConfig.class,
+        DelegatingWebMvcConfiguration.class,
+        RepositoryRestMvcConfiguration.class,
+        RestConfiguration.class,
+        HypermediaConfiguration.class})
 @Transactional
 @ActiveProfiles("store")
 @ExtendWith(SpringExtension.class)
 public class ContentLinksIT {
 
-	@Autowired
-	TestEntityRepository repository;
-	@Autowired
-	TestEntityContentRepository contentRepository;
+    @Autowired
+    TestEntityRepository repository;
+    @Autowired
+    TestEntityContentRepository contentRepository;
 
     @Autowired
     TestEntity5Repository repository5;
@@ -51,28 +51,28 @@ public class ContentLinksIT {
     @Autowired
     TestEntity2Store store2;
 
-	@Autowired
-	TestEntity10Repository repository10;
-	@Autowired
-	TestEntity10Store store10;
+    @Autowired
+    TestEntity10Repository repository10;
+    @Autowired
+    TestEntity10Store store10;
 
     @Autowired
     TestEntity3Repository repository3;
     @Autowired
     TestEntity3ContentRepository contentRepository3;
 
-	@Autowired
-	private WebApplicationContext context;
+    @Autowired
+    private WebApplicationContext context;
 
-	private MockMvc mvc;
+    private MockMvc mvc;
 
-	private TestEntity testEntity;
-	private TestEntity3 testEntity3;
+    private TestEntity testEntity;
+    private TestEntity3 testEntity3;
     private TestEntity5 testEntity5;
     private TestEntity2 testEntity2;
-	private TestEntity10 testEntity10;
+    private TestEntity10 testEntity10;
 
-	private ContentLinkTests contentLinkTests;
+    private ContentLinkTests contentLinkTests;
 
     @Nested
     class NoLinkrel {

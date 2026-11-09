@@ -20,44 +20,43 @@ import static java.lang.String.format;
 
 public class SQLServerBlobResource extends AbstractBlobResource {
 
-	private static Log logger = LogFactory.getLog(SQLServerBlobResource.class);
+    private static Log logger = LogFactory.getLog(SQLServerBlobResource.class);
 
-	public SQLServerBlobResource(Object id, JdbcTemplate template, PlatformTransactionManager txnMgr) {
-		super(id, template, txnMgr);
-	}
+    public SQLServerBlobResource(Object id, JdbcTemplate template, PlatformTransactionManager txnMgr) {
+        super(id, template, txnMgr);
+    }
 
-	@Override
-	public InputStream getInputStream() throws IOException {
-		final Object id = getId();
+    @Override
+    public InputStream getInputStream() throws IOException {
+        final Object id = getId();
 
-		String sql = getSelectBlobSQL(getId());
+        String sql = getSelectBlobSQL(getId());
 
-		DataSource ds = getTemplate().getDataSource();
-		Connection conn = DataSourceUtils.getConnection(ds);
-		try {
-			conn.setAutoCommit(false);
-		} catch (SQLException e) {
-			logger.error(format("setting autocommit to false whilst getting content %s", id), e);
-		}
-		InputStream is = null;
-		Statement stmt = null;
-		ResultSet rs = null;
-		try {
-			stmt = conn.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE);
+        DataSource ds = getTemplate().getDataSource();
+        Connection conn = DataSourceUtils.getConnection(ds);
+        try {
+            conn.setAutoCommit(false);
+        } catch (SQLException e) {
+            logger.error(format("setting autocommit to false whilst getting content %s", id), e);
+        }
+        InputStream is = null;
+        Statement stmt = null;
+        ResultSet rs = null;
+        try {
+            stmt = conn.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE);
 
-			if (stmt.isWrapperFor(com.microsoft.sqlserver.jdbc.SQLServerStatement.class)) {
-				SQLServerStatement SQLstmt = stmt.unwrap(com.microsoft.sqlserver.jdbc.SQLServerStatement.class);
-				SQLstmt.setResponseBuffering("adaptive");
-			}
-			rs = stmt.executeQuery(sql);
+            if (stmt.isWrapperFor(com.microsoft.sqlserver.jdbc.SQLServerStatement.class)) {
+                SQLServerStatement SQLstmt = stmt.unwrap(com.microsoft.sqlserver.jdbc.SQLServerStatement.class);
+                SQLstmt.setResponseBuffering("adaptive");
+            }
+            rs = stmt.executeQuery(sql);
 
-			if (!rs.next())
-				return null;
-			is = rs.getBinaryStream(2);
-		}
-		catch (SQLException e) {
-			logger.error(format("getting content %s", id), e);
-		}
-		return new ClosingInputStream(id, is, rs, stmt, null, getTransactionManager(), conn, ds);
-	}
+            if (!rs.next())
+                return null;
+            is = rs.getBinaryStream(2);
+        } catch (SQLException e) {
+            logger.error(format("getting content %s", id), e);
+        }
+        return new ClosingInputStream(id, is, rs, stmt, null, getTransactionManager(), conn, ds);
+    }
 }

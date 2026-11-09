@@ -19,51 +19,51 @@ import java.io.IOException;
 @StoreEventHandler
 public class SolrIndexerStoreEventHandler {
 
-	private final IndexService indexer;
+    private final IndexService indexer;
 
-	@Autowired
-	public SolrIndexerStoreEventHandler(IndexService indexer) {
-		Assert.notNull(indexer, "indexer must not be null");
+    @Autowired
+    public SolrIndexerStoreEventHandler(IndexService indexer) {
+        Assert.notNull(indexer, "indexer must not be null");
 
-		this.indexer = indexer;
-	}
+        this.indexer = indexer;
+    }
 
-	@HandleAfterSetContent
-	@Order(100)
-	protected void onAfterSetContent(AfterSetContentEvent event) {
+    @HandleAfterSetContent
+    @Order(100)
+    protected void onAfterSetContent(AfterSetContentEvent event) {
 
-		Object contentEntity = event.getSource();
-		if (BeanUtils.hasFieldWithAnnotation(contentEntity, ContentId.class) == false) {
-			return;
-		}
+        Object contentEntity = event.getSource();
+        if (BeanUtils.hasFieldWithAnnotation(contentEntity, ContentId.class) == false) {
+            return;
+        }
 
-		if (BeanUtils.getFieldWithAnnotation(contentEntity, ContentId.class) == null) {
-			return;
-		}
+        if (BeanUtils.getFieldWithAnnotation(contentEntity, ContentId.class) == null) {
+            return;
+        }
 
-		if (event.getStore() instanceof ContentStore) {
-			try {
-				indexer.index(event.getSource(), ((ContentStore) event.getStore()).getContent(event.getSource()));
-			} catch (IOException e) {
-				throw new StoreAccessException("Error reading content for indexing.", e);
-			}
-		}
-	}
+        if (event.getStore() instanceof ContentStore) {
+            try {
+                indexer.index(event.getSource(), ((ContentStore) event.getStore()).getContent(event.getSource()));
+            } catch (IOException e) {
+                throw new StoreAccessException("Error reading content for indexing.", e);
+            }
+        }
+    }
 
-	@HandleBeforeUnsetContent
-	@Order(100)
-	protected void onBeforeUnsetContent(BeforeUnsetContentEvent event) {
+    @HandleBeforeUnsetContent
+    @Order(100)
+    protected void onBeforeUnsetContent(BeforeUnsetContentEvent event) {
 
-		Object contentEntity = event.getSource();
-		if (BeanUtils.hasFieldWithAnnotation(contentEntity, ContentId.class) == false) {
-			return;
-		}
+        Object contentEntity = event.getSource();
+        if (BeanUtils.hasFieldWithAnnotation(contentEntity, ContentId.class) == false) {
+            return;
+        }
 
-		Object id = BeanUtils.getFieldWithAnnotation(contentEntity, ContentId.class);
-		if (id == null) {
-			return;
-		}
+        Object id = BeanUtils.getFieldWithAnnotation(contentEntity, ContentId.class);
+        if (id == null) {
+            return;
+        }
 
-		indexer.unindex(event.getSource());
-	}
+        indexer.unindex(event.getSource());
+    }
 }

@@ -41,6 +41,10 @@ public class AnnotatedStoreEventInvoker
         this.reflectionService = reflectionService;
     }
 
+    private static boolean isStoreEventType(Class<?> type) {
+        return ClassUtils.isAssignable(StoreEvent.class, type);
+    }
+
     MultiValueMap<Class<? extends ApplicationEvent>, EventHandlerMethod> getHandlers() {
         return handlerMethods;
     }
@@ -123,10 +127,6 @@ public class AnnotatedStoreEventInvoker
             reflectionService.invokeMethod(handlerMethod.method, handlerMethod.handler,
                     parameters.toArray());
         }
-    }
-
-    private static boolean isStoreEventType(Class<?> type) {
-        return ClassUtils.isAssignable(StoreEvent.class, type);
     }
 
     <H extends Annotation> void findHandler(Object bean, Method method,

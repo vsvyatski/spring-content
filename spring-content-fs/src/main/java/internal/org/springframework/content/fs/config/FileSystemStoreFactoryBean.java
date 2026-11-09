@@ -16,39 +16,39 @@ import org.springframework.versions.LockingAndVersioningProxyFactory;
 @SuppressWarnings("rawtypes")
 public class FileSystemStoreFactoryBean extends AbstractStoreFactoryBean {
 
-	@Autowired
-	FileSystemResourceLoader loader;
+    @Autowired
+    FileSystemResourceLoader loader;
 
-	@Autowired
-	PlacementService filesystemStorePlacementService;
+    @Autowired
+    PlacementService filesystemStorePlacementService;
 
-	@Autowired(required=false)
-	private LockingAndVersioningProxyFactory versioning;
+    @Autowired(required = false)
+    private LockingAndVersioningProxyFactory versioning;
 
-    @Autowired(required=false)
+    @Autowired(required = false)
     private MappingContext mappingContext;
 
-	public FileSystemStoreFactoryBean(Class<? extends Store> storeInterface) {
-		super(storeInterface);
-	}
+    public FileSystemStoreFactoryBean(Class<? extends Store> storeInterface) {
+        super(storeInterface);
+    }
 
-	@Override
-	protected void addProxyAdvice(ProxyFactory result, BeanFactory beanFactory) {
-		if (versioning != null) {
-			versioning.apply(result);
-		}
-	}
+    @Override
+    protected void addProxyAdvice(ProxyFactory result, BeanFactory beanFactory) {
+        if (versioning != null) {
+            versioning.apply(result);
+        }
+    }
 
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		super.afterPropertiesSet();
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        super.afterPropertiesSet();
 
-		Assert.notNull(loader, "resource loader cannot be null");
-		Assert.notNull(filesystemStorePlacementService, "filesystemStorePlacementService cannot be null");
-	}
+        Assert.notNull(loader, "resource loader cannot be null");
+        Assert.notNull(filesystemStorePlacementService, "filesystemStorePlacementService cannot be null");
+    }
 
-	@Override
-	protected Object getContentStoreImpl() {
-		return new DefaultFileSystemStoreImpl(loader, mappingContext, filesystemStorePlacementService, new FileServiceImpl());
-	}
+    @Override
+    protected Object getContentStoreImpl() {
+        return new DefaultFileSystemStoreImpl(loader, mappingContext, filesystemStorePlacementService, new FileServiceImpl());
+    }
 }

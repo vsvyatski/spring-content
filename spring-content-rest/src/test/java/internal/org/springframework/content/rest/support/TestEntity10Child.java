@@ -12,83 +12,88 @@ import java.util.UUID;
 @Embeddable
 public class TestEntity10Child {
 
+    @ContentId
+    public UUID contentId;
+    @ContentLength
+    public Long contentLen;
+    @MimeType
+    public String contentMimeType;
+    @OriginalFileName
+    public String contentFileName = "";
+    @ContentId
+    public UUID previewId;
+    @ContentLength
+    public Long previewLen;
+    @MimeType
+    public String previewMimeType;
+    // prevent TestEntity8Child from being return by hibernate as null
+    @Formula("1")
+    private int workaroundForBraindeadJpaImplementation;
+
     public TestEntity10Child() {
     }
 
-    @ContentId public UUID contentId;
-	@ContentLength public Long contentLen;
-	@MimeType public String contentMimeType;
-	@OriginalFileName public String contentFileName = "";
+    public UUID getContentId() {
+        return contentId;
+    }
 
-    @ContentId public UUID previewId;
-    @ContentLength public Long previewLen;
-    @MimeType public String previewMimeType;
+    public void setContentId(UUID contentId) {
+        this.contentId = contentId;
+    }
 
-	// prevent TestEntity8Child from being return by hibernate as null
-	@Formula("1")
-	private int workaroundForBraindeadJpaImplementation;
+    public Long getContentLen() {
+        return contentLen;
+    }
 
-	public UUID getContentId() {
-		return contentId;
-	}
+    public void setContentLen(Long contentLen) {
+        this.contentLen = contentLen;
+    }
 
-	public void setContentId(UUID contentId) {
-		this.contentId = contentId;
-	}
+    public String getContentMimeType() {
+        return contentMimeType;
+    }
 
-	public Long getContentLen() {
-		return contentLen;
-	}
+    public void setContentMimeType(String contentMimeType) {
+        this.contentMimeType = contentMimeType;
+    }
 
-	public void setContentLen(Long contentLen) {
-		this.contentLen = contentLen;
-	}
+    public String getContentFileName() {
+        return contentFileName;
+    }
 
-	public String getContentMimeType() {
-		return contentMimeType;
-	}
+    public void setContentFileName(String contentFileName) {
+        this.contentFileName = contentFileName;
+    }
 
-	public void setContentMimeType(String contentMimeType) {
-		this.contentMimeType = contentMimeType;
-	}
+    public UUID getPreviewId() {
+        return previewId;
+    }
 
-	public String getContentFileName() {
-		return contentFileName;
-	}
+    public void setPreviewId(UUID previewId) {
+        this.previewId = previewId;
+    }
 
-	public void setContentFileName(String contentFileName) {
-		this.contentFileName = contentFileName;
-	}
+    public Long getPreviewLen() {
+        return previewLen;
+    }
 
-	public UUID getPreviewId() {
-		return previewId;
-	}
+    public void setPreviewLen(Long previewLen) {
+        this.previewLen = previewLen;
+    }
 
-	public void setPreviewId(UUID previewId) {
-		this.previewId = previewId;
-	}
+    public String getPreviewMimeType() {
+        return previewMimeType;
+    }
 
-	public Long getPreviewLen() {
-		return previewLen;
-	}
+    public void setPreviewMimeType(String previewMimeType) {
+        this.previewMimeType = previewMimeType;
+    }
 
-	public void setPreviewLen(Long previewLen) {
-		this.previewLen = previewLen;
-	}
+    public int getWorkaroundForBraindeadJpaImplementation() {
+        return workaroundForBraindeadJpaImplementation;
+    }
 
-	public String getPreviewMimeType() {
-		return previewMimeType;
-	}
-
-	public void setPreviewMimeType(String previewMimeType) {
-		this.previewMimeType = previewMimeType;
-	}
-
-	public int getWorkaroundForBraindeadJpaImplementation() {
-		return workaroundForBraindeadJpaImplementation;
-	}
-
-	public void setWorkaroundForBraindeadJpaImplementation(int workaroundForBraindeadJpaImplementation) {
-		this.workaroundForBraindeadJpaImplementation = workaroundForBraindeadJpaImplementation;
-	}
+    public void setWorkaroundForBraindeadJpaImplementation(int workaroundForBraindeadJpaImplementation) {
+        this.workaroundForBraindeadJpaImplementation = workaroundForBraindeadJpaImplementation;
+    }
 }

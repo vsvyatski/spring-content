@@ -20,7 +20,7 @@ public class ElasticsearchConfig {
     @Autowired
     private ElasticsearchClient client;
 
-    @Autowired(required=false)
+    @Autowired(required = false)
     private RenditionService renditionService;
 
     @Autowired(required = false)
@@ -28,7 +28,7 @@ public class ElasticsearchConfig {
 
     private List<RenditionProvider> providers = new ArrayList<>();
 
-    @Autowired(required=false)
+    @Autowired(required = false)
     public void setRenditionProviders(RenditionProvider... providers) {
         for (RenditionProvider provider : providers) {
             this.providers.add(provider);

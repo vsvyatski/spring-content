@@ -18,9 +18,9 @@ public class ContentServiceFactory {
     private final Repositories repositories;
     private final RepositoryInvokerFactory repoInvokerFactory;
     private final Stores stores;
-    private MappingContext mappingContext;
     private final ContentPropertyToExportedContext exportContext;
     private final StoreByteRangeHttpRequestHandler byteRangeRestRequestHandler;
+    private MappingContext mappingContext;
 
     public ContentServiceFactory(RestConfiguration config, Repositories repositories, RepositoryInvokerFactory repoInvokerFactory, Stores stores, MappingContext mappingContext, ContentPropertyToExportedContext exportContext, StoreByteRangeHttpRequestHandler byteRangeRestRequestHandler) {
         this.config = config;
@@ -36,13 +36,13 @@ public class ContentServiceFactory {
 
         if (ContentStore.class.isAssignableFrom(resource.getStoreInfo().getInterface()) || org.springframework.content.commons.store.ContentStore.class.isAssignableFrom(resource.getStoreInfo().getInterface())) {
 
-            Object entity = ((AssociatedStoreResource)resource).getAssociation();
+            Object entity = ((AssociatedStoreResource) resource).getAssociation();
 
             return new ContentStoreContentService(config, repoInvokerFactory.getInvokerFor(entity.getClass()), mappingContext, exportContext, byteRangeRestRequestHandler);
 
         } else if (AssociativeStore.class.isAssignableFrom(resource.getStoreInfo().getInterface()) || org.springframework.content.commons.store.AssociativeStore.class.isAssignableFrom(resource.getStoreInfo().getInterface())) {
 
-            Object entity = ((AssociatedStoreResource)resource).getAssociation();
+            Object entity = ((AssociatedStoreResource) resource).getAssociation();
             return new AssociativeStoreContentService(config, null, repoInvokerFactory.getInvokerFor(entity.getClass()), entity, byteRangeRestRequestHandler);
 
         } else {

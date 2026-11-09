@@ -17,32 +17,34 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class JpegToPngRenditionProviderTest {
 
-	private RenditionProvider service;
+    private RenditionProvider service;
 
-	@BeforeEach
-	public void setUp() {
-		service = new JpegToPngRenditionProvider();
-	}
+    @BeforeEach
+    public void setUp() {
+        service = new JpegToPngRenditionProvider();
+    }
 
-	@Test
-	public void testCanConvert() {
-		assertThat(service.consumes()).isEqualTo("image/jpeg");
-		assertThat(Arrays.asList(service.produces())).contains("image/png");
-	}
+    @Test
+    public void testCanConvert() {
+        assertThat(service.consumes()).isEqualTo("image/jpeg");
+        assertThat(Arrays.asList(service.produces())).contains("image/png");
+    }
 
-	@Test
-	public void testConvert() throws IOException {
-		InputStream converted = service.convert(this.getClass().getResourceAsStream("/sample.jpeg"), "image/png");
+    @Test
+    public void testConvert() throws IOException {
+        InputStream converted = service.convert(this.getClass().getResourceAsStream("/sample.jpeg"), "image/png");
 
-		assertThat(converted.available()).isGreaterThan(0);
-		assertThat(((ObservableInputStream)converted).getObservers()).anySatisfy(item -> { assertThat(item).isInstanceOf(FileRemover.class); });
+        assertThat(converted.available()).isGreaterThan(0);
+        assertThat(((ObservableInputStream) converted).getObservers()).anySatisfy(item -> {
+            assertThat(item).isInstanceOf(FileRemover.class);
+        });
 
-		BufferedImage expectedImage = ImageIO.read(this.getClass().getResourceAsStream("/sample.png"));
-		byte[] expectedRastaData = ((DataBufferByte) expectedImage.getData().getDataBuffer()).getData();
+        BufferedImage expectedImage = ImageIO.read(this.getClass().getResourceAsStream("/sample.png"));
+        byte[] expectedRastaData = ((DataBufferByte) expectedImage.getData().getDataBuffer()).getData();
 
-		BufferedImage actualImage = ImageIO.read(converted);
-		byte[] actualRastaData = ((DataBufferByte) actualImage.getData().getDataBuffer()).getData();
+        BufferedImage actualImage = ImageIO.read(converted);
+        byte[] actualRastaData = ((DataBufferByte) actualImage.getData().getDataBuffer()).getData();
 
         assertThat(expectedRastaData).isEqualTo(actualRastaData);
-	}
+    }
 }

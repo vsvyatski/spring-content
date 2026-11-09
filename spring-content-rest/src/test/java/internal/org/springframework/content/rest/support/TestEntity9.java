@@ -12,12 +12,14 @@ import java.util.UUID;
 
 @Entity
 public class TestEntity9 {
-    public @Id @GeneratedValue Long id;
+    public @Id
+    @GeneratedValue Long id;
     public String name;
-    @JsonIgnore private String hidden;
     public @ContentId UUID contentId;
     public @ContentLength Long contentLen;
     public @MimeType String contentMimeType;
+    @JsonIgnore
+    private String hidden;
 
     public Long getId() {
         return id;

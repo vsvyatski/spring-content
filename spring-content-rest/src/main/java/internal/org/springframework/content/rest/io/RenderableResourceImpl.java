@@ -21,7 +21,7 @@ import java.time.ZonedDateTime;
 
 /**
  * Represents an input stream provided by a renderer as a resource.
- *
+ * <p>
  * TODO: refactor this into the renditions sub-system.
  */
 public class RenderableResourceImpl implements Resource, HttpResource, RenderableResource {
@@ -40,7 +40,7 @@ public class RenderableResourceImpl implements Resource, HttpResource, Renderabl
     public boolean isRenderableAs(MimeType mimeType) {
 
         if (original instanceof AssociatedStoreResource) {
-            return renderer.hasRendition(((AssociatedStoreResource)original).getAssociation(), mimeType.toString());
+            return renderer.hasRendition(((AssociatedStoreResource) original).getAssociation(), mimeType.toString());
         }
 
         return false;
@@ -50,7 +50,7 @@ public class RenderableResourceImpl implements Resource, HttpResource, Renderabl
     public InputStream renderAs(MimeType mimeType) {
 
         if (original instanceof AssociatedStoreResource) {
-            return renderer.getRendition(((AssociatedStoreResource)original).getAssociation(), mimeType.toString());
+            return renderer.getRendition(((AssociatedStoreResource) original).getAssociation(), mimeType.toString());
         }
 
         return null;
@@ -138,19 +138,19 @@ public class RenderableResourceImpl implements Resource, HttpResource, Renderabl
     @Override
     public HttpHeaders getResponseHeaders() {
         if (original instanceof HttpResource) {
-            return ((HttpResource)original).getResponseHeaders();
+            return ((HttpResource) original).getResponseHeaders();
         } else {
-          return new HttpHeaders();
+            return new HttpHeaders();
         }
     }
 
     public OutputStream getOutputStream()
             throws IOException {
-        return ((WritableResource)original).getOutputStream();
+        return ((WritableResource) original).getOutputStream();
     }
 
     public void delete()
             throws IOException {
-        ((DeletableResource)original).delete();
+        ((DeletableResource) original).delete();
     }
 }

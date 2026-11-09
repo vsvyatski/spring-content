@@ -20,10 +20,46 @@ import static org.mockito.Mockito.when;
 
 public class StoresImplTest {
 
-	private StoresImpl contentRepoService;
+    private StoresImpl contentRepoService;
 
-	private ApplicationContext context;
-	private StoreFactory mockFactory;
+    private ApplicationContext context;
+    private StoreFactory mockFactory;
+
+    @Test
+    public void test() {
+    }
+
+    public interface StoreInterface extends Store<String> {
+    }
+
+    public interface AssociativeStoreInterface extends AssociativeStore<Object, String> {
+    }
+
+    public interface ContentRepositoryInterface extends ContentStore<Object, String> {
+    }
+
+    public interface EntityStoreInterface extends AssociativeStore<Entity, String> {
+    }
+
+    public interface OtherEntityStoreInterface
+            extends AssociativeStore<OtherEntity, String> {
+    }
+
+    ;
+
+    public interface FsEntityStoreInterface extends ContentStore<Entity, String> {
+    }
+
+    ;
+
+    public interface JpaEntityStoreInterface extends ContentStore<Entity, String> {
+    }
+
+    public static class Entity {
+    }
+
+    public static class OtherEntity {
+    }
 
     @Nested
     class StoresImplCases {
@@ -41,7 +77,7 @@ public class StoresImplTest {
 
             @Test
             void shouldAlwaysReturnEmpty() {
-                assertThat(contentRepoService.getStores(Store.class)).isEqualTo(new StoreInfo[] {});
+                assertThat(contentRepoService.getStores(Store.class)).isEqualTo(new StoreInfo[]{});
             }
 
         }
@@ -56,16 +92,16 @@ public class StoresImplTest {
                 Store store = mock(ContentStore.class);
                 when(mockFactory.getStore()).thenReturn(store);
                 when(mockFactory.getStoreInterface())
-                		.thenAnswer(new Answer<Object>() {
-                			@Override
-                			public Object answer(InvocationOnMock invocation) {
-                				return ContentRepositoryInterface.class;
-                			}
-                		});
+                        .thenAnswer(new Answer<Object>() {
+                            @Override
+                            public Object answer(InvocationOnMock invocation) {
+                                return ContentRepositoryInterface.class;
+                            }
+                        });
 
                 when(context.getBeanNamesForType(StoreFactory.class)).thenReturn(new String[]{"&testStoreFactory"});
                 when(context.getBean("&testStoreFactory", StoreFactory.class)).thenReturn(mockFactory);
-                               when(context.getBean("testStoreFactory", Store.class)).thenReturn(store);
+                when(context.getBean("testStoreFactory", Store.class)).thenReturn(store);
 
                 contentRepoService = new StoresImpl(context);
                 contentRepoService.afterPropertiesSet();
@@ -80,7 +116,7 @@ public class StoresImplTest {
             @Test
             void shouldReturnNoAssociativestoreInfo() {
                 StoreInfo[] infos = contentRepoService
-                		.getStores(AssociativeStore.class);
+                        .getStores(AssociativeStore.class);
                 assertThat(infos.length).isEqualTo(1);
             }
 
@@ -99,20 +135,20 @@ public class StoresImplTest {
                 context = mock(ApplicationContext.class);
 
                 mockFactory = mock(StoreFactory.class);
-                               Store store = mock(Store.class);
-                               when(mockFactory.getStore()).thenReturn(store);
+                Store store = mock(Store.class);
+                when(mockFactory.getStore()).thenReturn(store);
                 when(mockFactory.getStoreInterface())
-                		.thenAnswer(new Answer<Object>() {
-                			@Override
-                			public Object answer(InvocationOnMock invocation) {
-                				return StoreInterface.class;
-                			}
-                		});
+                        .thenAnswer(new Answer<Object>() {
+                            @Override
+                            public Object answer(InvocationOnMock invocation) {
+                                return StoreInterface.class;
+                            }
+                        });
 
-                               context = mock(ApplicationContext.class);
-                               when(context.getBeanNamesForType(StoreFactory.class)).thenReturn(new String[]{"&testStoreFactory"});
-                               when(context.getBean("&testStoreFactory", StoreFactory.class)).thenReturn(mockFactory);
-                               when(context.getBean("testStoreFactory", Store.class)).thenReturn(store);
+                context = mock(ApplicationContext.class);
+                when(context.getBeanNamesForType(StoreFactory.class)).thenReturn(new String[]{"&testStoreFactory"});
+                when(context.getBean("&testStoreFactory", StoreFactory.class)).thenReturn(mockFactory);
+                when(context.getBean("testStoreFactory", Store.class)).thenReturn(store);
 
                 contentRepoService = new StoresImpl(context);
                 contentRepoService.afterPropertiesSet();
@@ -127,7 +163,7 @@ public class StoresImplTest {
             @Test
             void shouldReturnAssociativestoreInfo() {
                 StoreInfo[] infos = contentRepoService
-                		.getStores(AssociativeStore.class);
+                        .getStores(AssociativeStore.class);
                 assertThat(infos.length).isEqualTo(0);
             }
 
@@ -146,20 +182,20 @@ public class StoresImplTest {
                 context = mock(ApplicationContext.class);
 
                 mockFactory = mock(StoreFactory.class);
-                               Store store = mock(AssociativeStore.class);
-                               when(mockFactory.getStore()).thenReturn(store);
+                Store store = mock(AssociativeStore.class);
+                when(mockFactory.getStore()).thenReturn(store);
                 when(mockFactory.getStoreInterface())
-                		.thenAnswer(new Answer<Object>() {
-                			@Override
-                			public Object answer(InvocationOnMock invocation) {
-                				return AssociativeStoreInterface.class;
-                			}
-                		});
+                        .thenAnswer(new Answer<Object>() {
+                            @Override
+                            public Object answer(InvocationOnMock invocation) {
+                                return AssociativeStoreInterface.class;
+                            }
+                        });
 
-                               context = mock(ApplicationContext.class);
-                               when(context.getBeanNamesForType(StoreFactory.class)).thenReturn(new String[]{"&testStoreFactory"});
-                               when(context.getBean("&testStoreFactory", StoreFactory.class)).thenReturn(mockFactory);
-                               when(context.getBean("testStoreFactory", Store.class)).thenReturn(store);
+                context = mock(ApplicationContext.class);
+                when(context.getBeanNamesForType(StoreFactory.class)).thenReturn(new String[]{"&testStoreFactory"});
+                when(context.getBean("&testStoreFactory", StoreFactory.class)).thenReturn(mockFactory);
+                when(context.getBean("testStoreFactory", Store.class)).thenReturn(store);
 
                 contentRepoService = new StoresImpl(context);
                 contentRepoService.afterPropertiesSet();
@@ -180,7 +216,7 @@ public class StoresImplTest {
             @Test
             void shouldReturnAssociativestoreInfo() {
                 StoreInfo[] infos = contentRepoService
-                		.getStores(AssociativeStore.class);
+                        .getStores(AssociativeStore.class);
                 assertThat(infos.length).isEqualTo(1);
             }
 
@@ -193,33 +229,33 @@ public class StoresImplTest {
                 context = mock(ApplicationContext.class);
 
                 mockFactory = mock(StoreFactory.class);
-                               Store store = mock(AssociativeStore.class);
-                               when(mockFactory.getStore()).thenReturn(store);
+                Store store = mock(AssociativeStore.class);
+                when(mockFactory.getStore()).thenReturn(store);
                 when(mockFactory.getStoreInterface())
-                		.thenAnswer(new Answer<Object>() {
-                			@Override
-                			public Object answer(InvocationOnMock invocation) {
-                				return EntityStoreInterface.class;
-                			}
-                		});
+                        .thenAnswer(new Answer<Object>() {
+                            @Override
+                            public Object answer(InvocationOnMock invocation) {
+                                return EntityStoreInterface.class;
+                            }
+                        });
 
                 StoreFactory mockFactory2 = mock(StoreFactory.class);
                 Store store2 = mock(AssociativeStore.class);
                 when(mockFactory2.getStore()).thenReturn(store2);
                 when(mockFactory2.getStoreInterface())
-                		.thenAnswer(new Answer<Object>() {
-                			@Override
-                			public Object answer(InvocationOnMock invocation) {
-                				return OtherEntityStoreInterface.class;
-                			}
-                		});
+                        .thenAnswer(new Answer<Object>() {
+                            @Override
+                            public Object answer(InvocationOnMock invocation) {
+                                return OtherEntityStoreInterface.class;
+                            }
+                        });
 
-                               context = mock(ApplicationContext.class);
-                               when(context.getBeanNamesForType(StoreFactory.class)).thenReturn(new String[]{"&testStoreFactory1", "&testStoreFactory2"});
-                               when(context.getBean("&testStoreFactory1", StoreFactory.class)).thenReturn(mockFactory);
-                               when(context.getBean("&testStoreFactory2", StoreFactory.class)).thenReturn(mockFactory2);
-                               when(context.getBean("testStoreFactory1", Store.class)).thenReturn(store);
-                               when(context.getBean("testStoreFactory2", Store.class)).thenReturn(store2);
+                context = mock(ApplicationContext.class);
+                when(context.getBeanNamesForType(StoreFactory.class)).thenReturn(new String[]{"&testStoreFactory1", "&testStoreFactory2"});
+                when(context.getBean("&testStoreFactory1", StoreFactory.class)).thenReturn(mockFactory);
+                when(context.getBean("&testStoreFactory2", StoreFactory.class)).thenReturn(mockFactory2);
+                when(context.getBean("testStoreFactory1", Store.class)).thenReturn(store);
+                when(context.getBean("testStoreFactory2", Store.class)).thenReturn(store2);
 
                 contentRepoService = new StoresImpl(context);
                 contentRepoService.afterPropertiesSet();
@@ -228,24 +264,24 @@ public class StoresImplTest {
             @Test
             void shouldReturnStoresThatMatchTheFilter() {
                 StoreInfo[] infos = contentRepoService.getStores(
-                		AssociativeStore.class, Stores.MATCH_ALL);
+                        AssociativeStore.class, Stores.MATCH_ALL);
                 assertThat(infos.length).isEqualTo(2);
             }
 
             @Test
             void shouldNotReturnStoresThatDontMatchTheFilter() {
                 StoreInfo[] infos = contentRepoService
-                		.getStores(AssociativeStore.class, new StoreFilter() {
-                			@Override
-                			public String name() {
-                				return "test";
-                			}
+                        .getStores(AssociativeStore.class, new StoreFilter() {
+                            @Override
+                            public String name() {
+                                return "test";
+                            }
 
-                			@Override
-                			public boolean matches(StoreInfo info) {
-                				return false;
-                			}
-                		});
+                            @Override
+                            public boolean matches(StoreInfo info) {
+                                return false;
+                            }
+                        });
                 assertThat(infos.length).isEqualTo(0);
             }
 
@@ -261,30 +297,30 @@ public class StoresImplTest {
                 Store store = mock(ContentStore.class);
                 when(mockFactory.getStore()).thenReturn(store);
                 when(mockFactory.getStoreInterface())
-                		.thenAnswer(new Answer<Object>() {
-                			@Override
-                			public Object answer(InvocationOnMock invocation) {
-                				return FsEntityStoreInterface.class;
-                			}
-                		});
+                        .thenAnswer(new Answer<Object>() {
+                            @Override
+                            public Object answer(InvocationOnMock invocation) {
+                                return FsEntityStoreInterface.class;
+                            }
+                        });
 
                 StoreFactory mockFactory2 = mock(StoreFactory.class);
-                               Store store2 = mock(ContentStore.class);
-                               when(mockFactory2.getStore()).thenReturn(store2);
+                Store store2 = mock(ContentStore.class);
+                when(mockFactory2.getStore()).thenReturn(store2);
                 when(mockFactory2.getStoreInterface())
-                		.thenAnswer(new Answer<Object>() {
-                			@Override
-                			public Object answer(InvocationOnMock invocation) {
-                				return JpaEntityStoreInterface.class;
-                			}
-                		});
+                        .thenAnswer(new Answer<Object>() {
+                            @Override
+                            public Object answer(InvocationOnMock invocation) {
+                                return JpaEntityStoreInterface.class;
+                            }
+                        });
 
-                               context = mock(ApplicationContext.class);
-                               when(context.getBeanNamesForType(StoreFactory.class)).thenReturn(new String[]{"&testStoreFactory1", "&testStoreFactory2"});
-                               when(context.getBean("&testStoreFactory1", StoreFactory.class)).thenReturn(mockFactory);
-                               when(context.getBean("&testStoreFactory2", StoreFactory.class)).thenReturn(mockFactory2);
-                               when(context.getBean("testStoreFactory1", Store.class)).thenReturn(store);
-                               when(context.getBean("testStoreFactory2", Store.class)).thenReturn(store2);
+                context = mock(ApplicationContext.class);
+                when(context.getBeanNamesForType(StoreFactory.class)).thenReturn(new String[]{"&testStoreFactory1", "&testStoreFactory2"});
+                when(context.getBean("&testStoreFactory1", StoreFactory.class)).thenReturn(mockFactory);
+                when(context.getBean("&testStoreFactory2", StoreFactory.class)).thenReturn(mockFactory2);
+                when(context.getBean("testStoreFactory1", Store.class)).thenReturn(store);
+                when(context.getBean("testStoreFactory2", Store.class)).thenReturn(store2);
 
                 contentRepoService = new StoresImpl(context);
                 contentRepoService.afterPropertiesSet();
@@ -299,36 +335,4 @@ public class StoresImplTest {
         }
 
     }
-
-	@Test
-	public void test() {
-	}
-
-	public interface StoreInterface extends Store<String> {
-	}
-
-	public interface AssociativeStoreInterface extends AssociativeStore<Object, String> {
-	}
-
-	public interface ContentRepositoryInterface extends ContentStore<Object, String> {
-	}
-
-	public static class Entity {
-	};
-
-	public static class OtherEntity {
-	};
-
-	public interface EntityStoreInterface extends AssociativeStore<Entity, String> {
-	}
-
-	public interface OtherEntityStoreInterface
-			extends AssociativeStore<OtherEntity, String> {
-	}
-
-	public interface FsEntityStoreInterface extends ContentStore<Entity, String> {
-	}
-
-	public interface JpaEntityStoreInterface extends ContentStore<Entity, String> {
-	}
 }

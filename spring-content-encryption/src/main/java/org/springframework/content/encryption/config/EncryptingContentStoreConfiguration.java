@@ -11,6 +11,7 @@ import java.util.function.Consumer;
 
 /**
  * Configuration for encrypting content store
+ *
  * @param <S> The type of the store
  */
 public interface EncryptingContentStoreConfiguration<S> {
@@ -55,12 +56,14 @@ public interface EncryptingContentStoreConfiguration<S> {
 
     /**
      * Configure converters to be used for converting between a {@link StoredDataEncryptionKey} and its representation in an entity
+     *
      * @param converterConfigurer Configure converters
      */
     EncryptingContentStoreConfiguration<S> configureConverters(Consumer<ConverterRegistry> converterConfigurer);
 
     /**
      * Configure encryption to be used for encrypting content before it is stored
+     *
      * @see #contentEncryptionEngine(ContentEncryptionEngine) for configuring a general method for encrypting content
      */
     EncryptingContentStoreConfiguration<S> contentEncryptionMethod(ContentEncryptionMethod contentEncryptionMethod);

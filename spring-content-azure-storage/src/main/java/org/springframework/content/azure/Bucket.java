@@ -8,6 +8,6 @@ import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target(value = { FIELD, METHOD })
+@Target(value = {FIELD, METHOD})
 public @interface Bucket {
 }

@@ -39,28 +39,25 @@ import static java.lang.String.format;
 
 /**
  * Represents a Spring Content Resource that is associated with a Spring Data Entity.
- *
+ * <p>
  * Overrides the ContentLength and LastModifiedDate with the values stored on the
  * Spring Data entity, rather than the values of the actual content itself (these are
  * used as fallback values though).
- *
+ * <p>
  * Also sets appropriate headers to pass the Spring Data Entity recorded filename, if exists.
  */
 public class AssociatedStoreResourceImpl<S> implements HttpResource, AssociatedStoreResource<S> {
 
     private final ConfigurableConversionService conversionService = new DefaultConversionService();
+    private S entity;
+    private Resource original;
+    private StoreInfo info;
+    private ContentProperty contentProperty;
+    private PropertyPath propertyPath;
 
     {
         Jsr310Converters.getConvertersToRegister().forEach(conversionService::addConverter);
     }
-
-    private S entity;
-    private Resource original;
-    private StoreInfo info;
-
-    private ContentProperty contentProperty;
-
-    private PropertyPath propertyPath;
 
 
     public AssociatedStoreResourceImpl(StoreInfo info, S entity, PropertyPath propertyPath, ContentProperty property, Resource original) {
@@ -107,7 +104,7 @@ public class AssociatedStoreResourceImpl<S> implements HttpResource, AssociatedS
 
         if (Renderable.class.isAssignableFrom(this.getStoreInfo().getInterface())) {
 
-            Renderable renderer = (Renderable)this.getStoreInfo().getImplementation(AssociativeStore.class);
+            Renderable renderer = (Renderable) this.getStoreInfo().getImplementation(AssociativeStore.class);
             return renderer.hasRendition(getAssociation(), this.getPropertyPath(), mimeType.toString());
         }
 
@@ -119,7 +116,7 @@ public class AssociatedStoreResourceImpl<S> implements HttpResource, AssociatedS
 
         if (Renderable.class.isAssignableFrom(this.getStoreInfo().getInterface())) {
 
-            Renderable renderer = (Renderable)this.getStoreInfo().getImplementation(AssociativeStore.class);
+            Renderable renderer = (Renderable) this.getStoreInfo().getImplementation(AssociativeStore.class);
             return renderer.getRendition(getAssociation(), this.getPropertyPath(), mimeType.toString());
         }
 
@@ -131,9 +128,9 @@ public class AssociatedStoreResourceImpl<S> implements HttpResource, AssociatedS
 
         Object etag = null;
 
-    //        if (property != null) {
-    //            etag = BeanUtils.getFieldWithAnnotation(property, Version.class);
-    //        }
+        //        if (property != null) {
+        //            etag = BeanUtils.getFieldWithAnnotation(property, Version.class);
+        //        }
 
         if (etag == null) {
             etag = BeanUtils.getFieldWithAnnotation(entity, Version.class);
@@ -159,19 +156,19 @@ public class AssociatedStoreResourceImpl<S> implements HttpResource, AssociatedS
     @Override
     public long contentLength() throws IOException {
 
-     // TODO: can we remove this is all properties are effectively embedded?
+        // TODO: can we remove this is all properties are effectively embedded?
 //      Long contentLength = null; (Long) BeanUtils.getFieldWithAnnotation(property, ContentLength.class);
-      Long contentLength = (Long) this.getContentProperty().getContentLength(this.getAssociation());
-      if (contentLength == null) {
-          contentLength = getDelegate().contentLength();
-      }
-      return contentLength;
+        Long contentLength = (Long) this.getContentProperty().getContentLength(this.getAssociation());
+        if (contentLength == null) {
+            contentLength = getDelegate().contentLength();
+        }
+        return contentLength;
     }
 
     @Override
     public long lastModified() throws IOException {
 
-     // TODO: can we remove this is all properties are effectively embedded?
+        // TODO: can we remove this is all properties are effectively embedded?
         Object lastModified = null; //BeanUtils.getFieldWithAnnotation(property, LastModifiedDate.class);
         if (lastModified == null && getDelegate() != null) {
             return getDelegate().lastModified();
@@ -266,32 +263,32 @@ public class AssociatedStoreResourceImpl<S> implements HttpResource, AssociatedS
 
     @Override
     public boolean isWritable() {
-        return ((WritableResource)original).isWritable();
+        return ((WritableResource) original).isWritable();
     }
 
     @Override
     public OutputStream getOutputStream()
             throws IOException {
-        return ((WritableResource)original).getOutputStream();
+        return ((WritableResource) original).getOutputStream();
     }
 
     @Override
     public WritableByteChannel writableChannel()
             throws IOException {
-        return ((WritableResource)original).writableChannel();
+        return ((WritableResource) original).writableChannel();
     }
 
 
     @Override
     public void delete()
             throws IOException {
-        ((DeletableResource)original).delete();
+        ((DeletableResource) original).delete();
     }
 
     @Override
     public void setRange(String range) {
         if (original instanceof RangeableResource) {
-            ((RangeableResource)original).setRange(range);
+            ((RangeableResource) original).setRange(range);
         }
     }
 }

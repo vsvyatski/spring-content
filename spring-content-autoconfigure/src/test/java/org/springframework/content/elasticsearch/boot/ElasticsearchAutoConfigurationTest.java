@@ -27,6 +27,29 @@ public class ElasticsearchAutoConfigurationTest {
         client = mock(ElasticsearchClient.class);
     }
 
+    @Configuration
+    public static class ContextWithoutClientBean {
+    }
+
+    @Configuration
+    public static class ContextWithClientBean {
+
+        @Bean
+        public ElasticsearchClient client() {
+            return client;
+        }
+    }
+
+    @Configuration
+    @EnableElasticsearchFulltextIndexing
+    public static class ContextWithEnablement {
+
+        @Bean
+        public ElasticsearchClient client() {
+            return client;
+        }
+    }
+
     @Nested
     class GivenAContextWithoutAElasticsearchClientConfigured {
         @Test
@@ -115,29 +138,6 @@ public class ElasticsearchAutoConfigurationTest {
             contextRunner.withUserConfiguration(ContextWithEnablement.class)
                     .run((context) ->
                             assertThat(context).hasSingleBean(ElasticsearchClient.class));
-        }
-    }
-
-    @Configuration
-    public static class ContextWithoutClientBean {
-    }
-
-    @Configuration
-    public static class ContextWithClientBean {
-
-        @Bean
-        public ElasticsearchClient client() {
-            return client;
-        }
-    }
-
-    @Configuration
-    @EnableElasticsearchFulltextIndexing
-    public static class ContextWithEnablement {
-
-        @Bean
-        public ElasticsearchClient client() {
-            return client;
         }
     }
 }

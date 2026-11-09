@@ -80,16 +80,15 @@ public class ElasticsearchIndexServiceImpl<T> implements IndexService<T> {
                 Base64.Encoder encoder = Base64.getEncoder();
                 byte[] chunk = new byte[BUFFER_SIZE];
                 int len = 0;
-                while ( (len = in.read(chunk)) == BUFFER_SIZE ) {
-                    result.append( encoder.encodeToString(chunk) );
+                while ((len = in.read(chunk)) == BUFFER_SIZE) {
+                    result.append(encoder.encodeToString(chunk));
                 }
-                if ( len > 0 ) {
-                    chunk = Arrays.copyOf(chunk,len);
-                    result.append( encoder.encodeToString(chunk) );
+                if (len > 0) {
+                    chunk = Arrays.copyOf(chunk, len);
+                    result.append(encoder.encodeToString(chunk));
                 }
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new StoreAccessException(format("Error base64 encoding stream for content %s", id), e);
         }
 
@@ -105,8 +104,7 @@ public class ElasticsearchIndexServiceImpl<T> implements IndexService<T> {
                     .pipeline(SPRING_CONTENT_ATTACHMENT)
                     .document(attributesToSync));
             LOGGER.info(format("Content '%s' indexed with result %s", id, res.result()));
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new StoreAccessException(format("Error indexing content %s", id), e);
         }
     }
@@ -130,13 +128,11 @@ public class ElasticsearchIndexServiceImpl<T> implements IndexService<T> {
         try {
             var res = client.delete(d -> d.index(manager.indexName(entity.getClass())).id(id.toString()));
             LOGGER.info(format("Indexed content '%s' deleted with result %s", id, res.result()));
-        }
-        catch (ElasticsearchException ese) {
+        } catch (ElasticsearchException ese) {
             if (ese.status() != 404) {
                 // TODO: re-throw as StoreIndexException
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new StoreAccessException(format("Error deleting indexed content %s", id), e);
         }
     }
@@ -146,8 +142,7 @@ public class ElasticsearchIndexServiceImpl<T> implements IndexService<T> {
         try {
             var res = client.ingest().getPipeline(g -> g.id(SPRING_CONTENT_ATTACHMENT));
             found = res.get(SPRING_CONTENT_ATTACHMENT) != null;
-        }
-        catch (ElasticsearchException ese) {
+        } catch (ElasticsearchException ese) {
             if (ese.status() != 404) {
                 throw ese;
             }

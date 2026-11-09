@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class ContentPropertyToExportedContext {
 
-    private Map<Class<?>, Map<String, Boolean>> mappings = new HashMap<Class<?>, Map<String,Boolean>>();
+    private Map<Class<?>, Map<String, Boolean>> mappings = new HashMap<Class<?>, Map<String, Boolean>>();
 
     public Map<String, Boolean> getMappings(Class<?> domainClass) {
 
@@ -19,21 +19,21 @@ public class ContentPropertyToExportedContext {
         return mappings;
     }
 
-    private Map<String,Boolean> resolveMappings(Class<?> domainClass) {
+    private Map<String, Boolean> resolveMappings(Class<?> domainClass) {
         RestResourceMappingBuilder visitor = new RestResourceMappingBuilder((restResource -> String.valueOf(restResource.exported())));
         ClassWalker walker = new ClassWalker(visitor);
         walker.accept(domainClass);
-        Map<String,String> mappings = visitor.getMappings();
+        Map<String, String> mappings = visitor.getMappings();
         this.mappings.put(domainClass, collapse(mappings));
         return this.mappings.get(domainClass);
     }
 
     private Map<String, Boolean> collapse(Map<String, String> mappings) {
         Map<String, Boolean> collapsedMappings = new HashMap<>();
-        for (Map.Entry<String,String> entry : mappings.entrySet()) {
+        for (Map.Entry<String, String> entry : mappings.entrySet()) {
             Boolean exported = true;
             String[] segments = entry.getValue().split("/");
-            for (int i=0; i < segments.length; i++) {
+            for (int i = 0; i < segments.length; i++) {
                 exported = exported & valueOf(segments[i]);
             }
             collapsedMappings.put(entry.getKey(), exported);

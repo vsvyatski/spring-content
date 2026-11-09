@@ -17,13 +17,22 @@ import static org.mockito.Mockito.mock;
 
 public class S3StoreFactoryBeanTest {
 
-	private S3StoreFactoryBean factory;
+    private S3StoreFactoryBean factory;
 
-	private GenericApplicationContext context = new GenericApplicationContext();
-	private S3Client client;
-	private PlacementService placer;
+    private GenericApplicationContext context = new GenericApplicationContext();
+    private S3Client client;
+    private PlacementService placer;
 
-	private Store store;
+    private Store store;
+
+    public interface TestStore extends Store<Serializable> {
+    }
+
+    private interface TestAssociativeStore extends AssociativeStore<Object, Serializable> {
+    }
+
+    private interface TestContentStore extends ContentStore<Object, Serializable> {
+    }
 
     @Nested
     class S3StoreFactoryBeanCases {
@@ -35,45 +44,48 @@ public class S3StoreFactoryBeanTest {
                 void setUp() {
                     // noinspection resource
                     client = mock(S3Client.class);
-                    				placer = mock(PlacementService.class);
+                    placer = mock(PlacementService.class);
 
-                    				context.registerBean("amazonS3", S3Client.class, () -> client);
-                    				context.refresh();
+                    context.registerBean("amazonS3", S3Client.class, () -> client);
+                    context.refresh();
 
-                    				factory = new S3StoreFactoryBean(S3StoreFactoryBeanTest.TestStore.class/*, context, client, placer*/);
-                    				factory.setContext(context);
-                    				factory.setClient(client);
-                    				factory.setS3StorePlacementService(placer);
+                    factory = new S3StoreFactoryBean(S3StoreFactoryBeanTest.TestStore.class/*, context, client, placer*/);
+                    factory.setContext(context);
+                    factory.setClient(client);
+                    factory.setS3StorePlacementService(placer);
 
                     factory.setBeanClassLoader(Thread.currentThread().getContextClassLoader());
 
                     store = factory.getStore();
                 }
+
                 @Test
                 void shouldReturnAStoreImplementation() {
                     assertThat(store).isNotNull();
                 }
             }
+
             @Nested
             class GivenAnAssociativeStore {
                 @BeforeEach
                 void setUp() {
                     // noinspection resource
                     client = mock(S3Client.class);
-                    				placer = mock(PlacementService.class);
+                    placer = mock(PlacementService.class);
 
-                    				context.registerBean("amazonS3", S3Client.class, () -> client);
-                    				context.refresh();
+                    context.registerBean("amazonS3", S3Client.class, () -> client);
+                    context.refresh();
 
-                    				factory = new S3StoreFactoryBean(S3StoreFactoryBeanTest.TestStore.class/*, context, client, placer*/);
-                    				factory.setContext(context);
-                    				factory.setClient(client);
-                    				factory.setS3StorePlacementService(placer);
+                    factory = new S3StoreFactoryBean(S3StoreFactoryBeanTest.TestStore.class/*, context, client, placer*/);
+                    factory.setContext(context);
+                    factory.setClient(client);
+                    factory.setS3StorePlacementService(placer);
 
                     factory.setBeanClassLoader(Thread.currentThread().getContextClassLoader());
 
                     store = factory.getStore();
                 }
+
                 @Test
                 void shouldReturnAStoreImplementation() {
                     assertThat(store).isNotNull();
@@ -81,13 +93,4 @@ public class S3StoreFactoryBeanTest {
             }
         }
     }
-
-	public interface TestStore extends Store<Serializable> {
-	}
-
-	private interface TestAssociativeStore extends AssociativeStore<Object, Serializable> {
-	}
-
-	private interface TestContentStore extends ContentStore<Object, Serializable> {
-	}
 }

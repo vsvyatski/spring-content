@@ -25,12 +25,10 @@ import java.util.function.Consumer;
 class EncryptingContentStoreConfigurationImpl<S> implements EncryptingContentStoreConfiguration<S> {
 
     private static final Logger logger = LoggerFactory.getLogger(EncryptingContentStoreConfigurationImpl.class);
-
+    private final ConfigurableConversionService conversionService = new GenericConversionService();
     private DataEncryptionKeyAccessor<S, ? extends StoredDataEncryptionKey> dataEncryptionKeyAccessor;
     private List<DataEncryptionKeyWrapper<? extends StoredDataEncryptionKey>> dataEncryptionKeyWrappers;
     private ContentEncryptionEngine contentEncryptionEngine;
-
-    private final ConfigurableConversionService conversionService = new GenericConversionService();
 
     {
         conversionService.addConverter(new ByteArrayToListConverter(conversionService));

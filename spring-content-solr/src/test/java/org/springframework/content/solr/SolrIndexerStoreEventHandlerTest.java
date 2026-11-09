@@ -38,6 +38,22 @@ public class SolrIndexerStoreEventHandlerTest {
     private StoreAccessException sae;
     private Throwable e;
 
+    @Test
+    public void test() {
+    }
+
+    public static class ContentEntity {
+        @ContentId
+        public String contentId;
+        @ContentLength
+        public Long contentLen;
+        @MimeType
+        public String mimeType;
+    }
+
+    public static class NotAContentEntity {
+    }
+
     @Nested
     class SolrIndexerStoreEventHandlerCases {
         @Nested
@@ -280,21 +296,5 @@ public class SolrIndexerStoreEventHandlerTest {
 
         }
 
-    }
-
-    @Test
-    public void test() {
-    }
-
-    public static class ContentEntity {
-        @ContentId
-        public String contentId;
-        @ContentLength
-        public Long contentLen;
-        @MimeType
-        public String mimeType;
-    }
-
-    public static class NotAContentEntity {
     }
 }

@@ -34,13 +34,13 @@ Parent POM: `pom.xml`. Build with the Maven wrapper (`./mvnw` on Unix, `.\mvnw.c
 Each backend has public `Enable*Stores` annotations, store marker interfaces, and an
 `internal.org.springframework.content.*` implementation.
 
-| Module                         | Enable annotation         | Typical store type       |
-|--------------------------------|---------------------------|--------------------------|
-| `spring-content-fs`            | `@EnableFileSystemStores` | `FileSystemContentStore` |
-| `spring-content-jpa`           | `@EnableJpaStores`        | `JpaContentStore`        |
-| `spring-content-mongo`         | `@EnableMongoStores`      | GridFS `ContentStore`    |
-| `spring-content-s3`            | `@EnableS3Stores`         | S3 `ContentStore`        |
-| `spring-content-gcs`           | `@EnableGCPStorage`       | GCS store                |
+| Module                         | Enable annotation         | Typical store type                      |
+|--------------------------------|---------------------------|-----------------------------------------|
+| `spring-content-fs`            | `@EnableFileSystemStores` | `FileSystemContentStore`                |
+| `spring-content-jpa`           | `@EnableJpaStores`        | `JpaContentStore`                       |
+| `spring-content-mongo`         | `@EnableMongoStores`      | GridFS `ContentStore`                   |
+| `spring-content-s3`            | `@EnableS3Stores`         | S3 `ContentStore`                       |
+| `spring-content-gcs`           | `@EnableGCPStorage`       | GCS store                               |
 | `spring-content-azure-storage` | `@EnableAzureStorage`     | Azure Blob store (Spring Cloud Azure 7) |
 
 JPA ships vendor SQL under `spring-content-jpa/src/main/resources/org/springframework/content/jpa/` (H2, HSQLDB, MySQL,

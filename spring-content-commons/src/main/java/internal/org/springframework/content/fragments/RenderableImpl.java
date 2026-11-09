@@ -24,14 +24,10 @@ import java.util.List;
 public class RenderableImpl implements Renderable<Object>, ContentStoreAware {
 
     private static final Log LOGGER = LogFactory.getLog(RenderableImpl.class);
-
-    private ContentStore<Object, Serializable> store;
-
     private final MappingContext mappingContext;
-
-    private RenditionService renditionService = null;
-
     private final List<RenditionProvider> providers = new ArrayList<>();
+    private ContentStore<Object, Serializable> store;
+    private RenditionService renditionService = null;
 
     public RenderableImpl() {
         this.mappingContext = new MappingContext("/", ".");

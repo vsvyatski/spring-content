@@ -42,11 +42,11 @@ public class LockingAndVersioningRepositoryImpl<T, ID extends Serializable> impl
     private VersioningService versioner;
     private CloningService cloner;
 
-    @Autowired(required=false)
+    @Autowired(required = false)
     public LockingAndVersioningRepositoryImpl() {
     }
 
-    @Autowired(required=false)
+    @Autowired(required = false)
     public LockingAndVersioningRepositoryImpl(EntityManager em, EntityInformationFacade entityInfo, AuthenticationFacade auth, LockingService locker, VersioningService versioner, CloningService cloner) {
         this.em = em;
         this.entityInfo = entityInfo;
@@ -159,13 +159,13 @@ public class LockingAndVersioningRepositoryImpl<T, ID extends Serializable> impl
         }
 
         Principal lockOwner = lockingService.lockOwner(id);
-        if (lockOwner  == null || !authentication.isAuthenticated() || authentication.getName().equals(lockOwner.getName()) == false) {
+        if (lockOwner == null || !authentication.isAuthenticated() || authentication.getName().equals(lockOwner.getName()) == false) {
             throw new LockOwnerException(format("not lock owner"));
         }
 
         S ancestorRoot;
         if (isAncestralRoot(currentVersion)) {
-            currentVersion = (S)versioner.establishAncestralRoot(currentVersion);
+            currentVersion = (S) versioner.establishAncestralRoot(currentVersion);
             em.merge(currentVersion);
             ancestorRoot = currentVersion;
         } else {
@@ -176,13 +176,13 @@ public class LockingAndVersioningRepositoryImpl<T, ID extends Serializable> impl
             }
         }
 
-        S newVersion = (S)cloner.clone(currentVersion);
+        S newVersion = (S) cloner.clone(currentVersion);
 
         Object versionNumber = BeanUtils.getFieldWithAnnotation(currentVersion, VersionNumber.class);
         if (versionNumber == null) {
             versionNumber = "";
         }
-        newVersion = (S)versioner.establishSuccessor(newVersion, versionNumber.toString(), "~~PWC~~", ancestorRoot, currentVersion);
+        newVersion = (S) versioner.establishSuccessor(newVersion, versionNumber.toString(), "~~PWC~~", ancestorRoot, currentVersion);
 
         em.persist(newVersion);
         Object newId = getId(newVersion);
@@ -198,7 +198,7 @@ public class LockingAndVersioningRepositoryImpl<T, ID extends Serializable> impl
     @Transactional
     public <S extends T> S version(S currentVersion, VersionInfo info) {
 
-      Authentication authentication = auth.getAuthentication();
+        Authentication authentication = auth.getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
             throw new SecurityException("no principal");
         }
@@ -211,7 +211,7 @@ public class LockingAndVersioningRepositoryImpl<T, ID extends Serializable> impl
         }
 
         Principal lockOwner = lockingService.lockOwner(id);
-        if (lockOwner  == null || !authentication.isAuthenticated() || authentication.getName().equals(lockOwner.getName()) == false) {
+        if (lockOwner == null || !authentication.isAuthenticated() || authentication.getName().equals(lockOwner.getName()) == false) {
             throw new LockOwnerException("not lock owner");
         }
 
@@ -222,8 +222,7 @@ public class LockingAndVersioningRepositoryImpl<T, ID extends Serializable> impl
             if (isAncestralRoot(currentVersion)) {
                 currentVersion = (S) versioner.establishAncestralRoot(currentVersion);
                 ancestorRoot = currentVersion;
-            }
-            else {
+            } else {
                 Object ancestorRootId = getAncestralRootId(currentVersion);
                 ancestorRoot = em.find((Class<S>) currentVersion.getClass(), ancestorRootId);
                 if (ancestorRoot == null) {
@@ -293,7 +292,7 @@ public class LockingAndVersioningRepositoryImpl<T, ID extends Serializable> impl
         if (sort.isSorted()) {
             builder.append("order by ");
 
-            int i=0;
+            int i = 0;
             sort.forEach((property) -> {
                 if (i > 0) {
                     builder.append(",");
@@ -314,7 +313,7 @@ public class LockingAndVersioningRepositoryImpl<T, ID extends Serializable> impl
         StringSubstitutor sub = new StringSubstitutor(getAttributeMap(entity.getClass()));
         sql = sub.replace(sql);
 
-        TypedQuery<S> q = em.createQuery(sql, (Class<S>)entity.getClass());
+        TypedQuery<S> q = em.createQuery(sql, (Class<S>) entity.getClass());
 
         try {
             return q.getResultList();
@@ -326,7 +325,7 @@ public class LockingAndVersioningRepositoryImpl<T, ID extends Serializable> impl
     @Override
     public void delete(T entity) {
 
-      Authentication authentication = auth.getAuthentication();
+        Authentication authentication = auth.getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
             throw new SecurityException("no principal");
         }
@@ -358,7 +357,7 @@ public class LockingAndVersioningRepositoryImpl<T, ID extends Serializable> impl
             ancestor = (T) em.find(entity.getClass(), ancestorId);
 
             Principal lockOwner = null;
-            if ((lockOwner = lockingService.lockOwner(ancestorId)) != null && !Objects.equals(authentication.getName(),lockOwner.getName())) {
+            if ((lockOwner = lockingService.lockOwner(ancestorId)) != null && !Objects.equals(authentication.getName(), lockOwner.getName())) {
                 throw new LockOwnerException(format("Not lock owner %s", ancestorId));
             } else if (lockOwner == null && relock) {
                 lockingService.lock(ancestorId, authentication);
@@ -432,7 +431,7 @@ public class LockingAndVersioningRepositoryImpl<T, ID extends Serializable> impl
 
         String sql = "select count(f1.${id}) FROM ${entityClass} f1 inner join ${entityClass} f2 on f1.${ancestorId} = f2.${id} and f2.${successorId} IS NULL where f1.${id} = :id";
 
-        Map<String,String> attributes = getAttributeMap(entity.getClass());
+        Map<String, String> attributes = getAttributeMap(entity.getClass());
         StringSubstitutor sub = new StringSubstitutor(attributes);
         sql = sub.replace(sql);
 
@@ -447,11 +446,11 @@ public class LockingAndVersioningRepositoryImpl<T, ID extends Serializable> impl
 
         String sql = "select f1 FROM ${entityClass} f1 inner join ${entityClass} f2 on f1.${ancestorId} = f2.${id} and f2.${successorId} IS NULL where f1.${ancestorRootId} = :id";
 
-        Map<String,String> attributes = getAttributeMap(entity.getClass());
+        Map<String, String> attributes = getAttributeMap(entity.getClass());
         StringSubstitutor sub = new StringSubstitutor(attributes);
         sql = sub.replace(sql);
 
-        TypedQuery<S> q = em.createQuery(sql, (Class<S>)entity.getClass());
+        TypedQuery<S> q = em.createQuery(sql, (Class<S>) entity.getClass());
 
         q.setParameter("id", getAncestralRootId(entity));
 
@@ -462,8 +461,8 @@ public class LockingAndVersioningRepositoryImpl<T, ID extends Serializable> impl
         }
     }
 
-    private Map<String,String> getAttributeMap(Class<?> entityClass) {
-        Map<String,String> attributes = new HashMap<>();
+    private Map<String, String> getAttributeMap(Class<?> entityClass) {
+        Map<String, String> attributes = new HashMap<>();
         attributes.put("id", idAttribute(entityClass));
         attributes.put("ancestorId", ancestorIdAttribute(entityClass));
         attributes.put("ancestorRootId", ancestorRootIdAttribute(entityClass));
@@ -526,11 +525,11 @@ public class LockingAndVersioningRepositoryImpl<T, ID extends Serializable> impl
         return id;
     }
 
-    protected EntityInformation<T,?> getEntityInformation(Class<?> entityClass) {
-        EntityInformation<T,?> entityInformation = this.entityInformationMap.get(entityClass);
+    protected EntityInformation<T, ?> getEntityInformation(Class<?> entityClass) {
+        EntityInformation<T, ?> entityInformation = this.entityInformationMap.get(entityClass);
         if (entityInformation == null) {
             entityInformation = this.entityInfo.getEntityInformation(entityClass, em);
-            this.entityInformationMap.put(entityClass,  entityInformation);
+            this.entityInformationMap.put(entityClass, entityInformation);
         }
         return entityInformation;
     }

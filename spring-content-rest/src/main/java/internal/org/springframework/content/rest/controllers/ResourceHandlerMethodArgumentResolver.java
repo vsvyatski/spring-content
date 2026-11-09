@@ -30,21 +30,19 @@ import java.util.List;
 
 public class ResourceHandlerMethodArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private UriTemplate entityUriTemplate = new UriTemplate("/{repository}/{id}");
-    private UriTemplate entityPropertyUriTemplate = new UriTemplate("/{repository}/{id}/{property}");
-    private UriTemplate entityPropertyWithIdUriTemplate = new UriTemplate("/{repository}/{id}/{property}/**");
-    private UriTemplate revisionPropertyUriTemplate = new UriTemplate("/{repository}/{id}/revisions/{revisionId}/{property}");
-    private UriTemplate revisionPropertyWithIdUriTemplate = new UriTemplate("/{repository}/{id}/revisions/{revisionId}/{property}/{contentId}");
-
-    private EntityResolvers entityResolvers;
-    private List<ResourceResolver> resolvers = new ArrayList<>();
-
-    private ApplicationContext context;
     private final RestConfiguration config;
     private final Repositories repositories;
     private final Stores stores;
     private final ContentPropertyToRequestMappingContext requestMappingContext;
     private final MappingContext mappingContext;
+    private UriTemplate entityUriTemplate = new UriTemplate("/{repository}/{id}");
+    private UriTemplate entityPropertyUriTemplate = new UriTemplate("/{repository}/{id}/{property}");
+    private UriTemplate entityPropertyWithIdUriTemplate = new UriTemplate("/{repository}/{id}/{property}/**");
+    private UriTemplate revisionPropertyUriTemplate = new UriTemplate("/{repository}/{id}/revisions/{revisionId}/{property}");
+    private UriTemplate revisionPropertyWithIdUriTemplate = new UriTemplate("/{repository}/{id}/revisions/{revisionId}/{property}/{contentId}");
+    private EntityResolvers entityResolvers;
+    private List<ResourceResolver> resolvers = new ArrayList<>();
+    private ApplicationContext context;
 
     public ResourceHandlerMethodArgumentResolver(ApplicationContext context, RestConfiguration config, Repositories repositories, Stores stores, ContentPropertyToRequestMappingContext requestMappingContext, MappingContext mappingContext, EntityResolvers entityResolvers) {
         this.context = context;
@@ -142,5 +140,5 @@ public class ResourceHandlerMethodArgumentResolver implements HandlerMethodArgum
         String pathToUse = path.substring(StoreUtils.storePath(info).length() + 1);
 
         return new StoreResourceImpl(info, info.getImplementation(Store.class).getResource(pathToUse));
-      }
+    }
 }

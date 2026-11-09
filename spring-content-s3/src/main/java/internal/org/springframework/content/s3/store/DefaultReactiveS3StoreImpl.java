@@ -35,33 +35,33 @@ import java.util.concurrent.CompletableFuture;
 
 @Transactional
 public class DefaultReactiveS3StoreImpl<S, SID extends Serializable>
-		implements ReactiveContentStore<S> {
+        implements ReactiveContentStore<S> {
 
-	private static Log logger = LogFactory.getLog(DefaultReactiveS3StoreImpl.class);
+    private static Log logger = LogFactory.getLog(DefaultReactiveS3StoreImpl.class);
 
-	private ApplicationContext context;
-	private ResourceLoader loader;
-	private PlacementService placementService;
-	private MultiTenantS3ClientProvider clientProvider;
+    private ApplicationContext context;
+    private ResourceLoader loader;
+    private PlacementService placementService;
+    private MultiTenantS3ClientProvider clientProvider;
 
     private MappingContext mappingContext/* = new MappingContext("/", ".")*/;
 
     private S3AsyncClient asyncClient;
 
-	public DefaultReactiveS3StoreImpl(ApplicationContext context, ResourceLoader loader, MappingContext mappingContext, PlacementService placementService, S3AsyncClient asyncClient, MultiTenantS3ClientProvider provider) {
+    public DefaultReactiveS3StoreImpl(ApplicationContext context, ResourceLoader loader, MappingContext mappingContext, PlacementService placementService, S3AsyncClient asyncClient, MultiTenantS3ClientProvider provider) {
         Assert.notNull(context, "context must be specified");
-		Assert.notNull(loader, "loader must be specified");
-		Assert.notNull(placementService, "placementService must be specified");
-		this.context = context;
-		this.loader = loader;
-		this.placementService = placementService;
-		this.asyncClient = asyncClient;
-		this.clientProvider = provider;
+        Assert.notNull(loader, "loader must be specified");
+        Assert.notNull(placementService, "placementService must be specified");
+        this.context = context;
+        this.loader = loader;
+        this.placementService = placementService;
+        this.asyncClient = asyncClient;
+        this.clientProvider = provider;
         this.mappingContext = mappingContext;
         if (this.mappingContext == null) {
             this.mappingContext = new MappingContext("/", ".");
         }
-	}
+    }
 
     private S3ObjectId getS3ObjectId(S entity, PropertyPath path, ContentProperty property) {
         TypeDescriptor contentPropertyInfoType = ContentPropertyInfoTypeDescriptor.withGenerics(entity, property);
@@ -88,9 +88,9 @@ public class DefaultReactiveS3StoreImpl<S, SID extends Serializable>
             Serializable newId = UUID.randomUUID().toString();
 
             Object convertedId = placementService.convert(
-                        newId,
-                        TypeDescriptor.forObject(newId),
-                        property.getContentIdType(entity));
+                    newId,
+                    TypeDescriptor.forObject(newId),
+                    property.getContentIdType(entity));
 
             property.setContentId(entity, convertedId, null);
             contentId = convertedId;
@@ -115,22 +115,22 @@ public class DefaultReactiveS3StoreImpl<S, SID extends Serializable>
         );
 
         return Mono.fromFuture(future)
-          .map((response) -> {
-              try {
-                  property.setContentId(entity, s3ObjectId.getKey(), null);
-              } catch (Exception e) {
-                  logger.error("Error setting content id " + s3ObjectId.getKey(), e);
-                  throw e;
-              }
-              try {
-                  property.setContentLength(entity, contentLen);
-              } catch (Exception e) {
-                  logger.error("Error setting content length " + contentLen, e);
-                  throw e;
-              }
-              return entity;
-          }
-        );
+                .map((response) -> {
+                            try {
+                                property.setContentId(entity, s3ObjectId.getKey(), null);
+                            } catch (Exception e) {
+                                logger.error("Error setting content id " + s3ObjectId.getKey(), e);
+                                throw e;
+                            }
+                            try {
+                                property.setContentLength(entity, contentLen);
+                            } catch (Exception e) {
+                                logger.error("Error setting content length " + contentLen, e);
+                                throw e;
+                            }
+                            return entity;
+                        }
+                );
     }
 
     @Override
@@ -192,24 +192,24 @@ public class DefaultReactiveS3StoreImpl<S, SID extends Serializable>
 
         return Mono.fromFuture(future)
                 .map((response) -> {
-                    property.setContentId(entity, null, new org.springframework.content.commons.mappingcontext.Condition() {
-                        @Override
-                        public boolean matches(TypeDescriptor descriptor) {
-                            for (Annotation annotation : descriptor.getAnnotations()) {
-                                if ("jakarta.persistence.Id".equals(
-                                        annotation.annotationType().getCanonicalName())
-                                        || "org.springframework.data.annotation.Id"
+                            property.setContentId(entity, null, new org.springframework.content.commons.mappingcontext.Condition() {
+                                @Override
+                                public boolean matches(TypeDescriptor descriptor) {
+                                    for (Annotation annotation : descriptor.getAnnotations()) {
+                                        if ("jakarta.persistence.Id".equals(
+                                                annotation.annotationType().getCanonicalName())
+                                                || "org.springframework.data.annotation.Id"
                                                 .equals(annotation.annotationType()
                                                         .getCanonicalName())) {
-                                    return false;
+                                            return false;
+                                        }
+                                    }
+                                    return true;
                                 }
-                            }
-                            return true;
+                            });
+                            property.setContentLength(entity, BeanUtils.getDefaultValueForType(property.getContentLengthType().getType()));
+                            return entity;
                         }
-                    });
-                    property.setContentLength(entity, BeanUtils.getDefaultValueForType(property.getContentLengthType().getType()));
-                    return entity;
-                }
-              );
+                );
     }
 }

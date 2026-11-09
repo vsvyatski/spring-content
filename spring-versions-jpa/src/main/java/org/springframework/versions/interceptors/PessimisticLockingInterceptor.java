@@ -14,11 +14,10 @@ import java.lang.reflect.Field;
 
 public class PessimisticLockingInterceptor implements MethodInterceptor {
 
-    private LockingService locker;
-    private AuthenticationFacade auth;
-
     private static final ReflectionUtils.AnnotationFieldFilter ID_FILTER = new ReflectionUtils.AnnotationFieldFilter(Id.class);
     private static final ReflectionUtils.AnnotationFieldFilter DATA_ID_FILTER = new ReflectionUtils.AnnotationFieldFilter(org.springframework.data.annotation.Id.class);
+    private LockingService locker;
+    private AuthenticationFacade auth;
 
     public PessimisticLockingInterceptor(LockingService locker, AuthenticationFacade auth) {
         Assert.notNull(locker, "locker cannot be null");

@@ -15,8 +15,8 @@ import org.springframework.hateoas.server.RepresentationModelProcessor;
 @Import({RestConfiguration.class})
 public class HypermediaConfiguration {
 
-	@Bean
-	public RepresentationModelProcessor<PersistentEntityResource> contentLinksProcessor(Stores stores, RestConfiguration config, MappingContext mappingContext, ContentPropertyToRequestMappingContext requestMappingContext, ContentPropertyToLinkrelMappingContext linkrelMappingContext) {
-		return new ContentLinksResourceProcessor(stores, config, mappingContext, requestMappingContext, linkrelMappingContext);
-	}
+    @Bean
+    public RepresentationModelProcessor<PersistentEntityResource> contentLinksProcessor(Stores stores, RestConfiguration config, MappingContext mappingContext, ContentPropertyToRequestMappingContext requestMappingContext, ContentPropertyToLinkrelMappingContext linkrelMappingContext) {
+        return new ContentLinksResourceProcessor(stores, config, mappingContext, requestMappingContext, linkrelMappingContext);
+    }
 }

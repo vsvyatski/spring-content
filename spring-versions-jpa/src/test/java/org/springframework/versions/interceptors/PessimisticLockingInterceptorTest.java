@@ -36,6 +36,38 @@ public class PessimisticLockingInterceptorTest {
 
     private Authentication principal, lockOwner;
 
+    public static class TestEntity {
+        @Id
+        private Long id = 0L;
+
+        public TestEntity() {
+        }
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+    }
+
+    public static class TestEntity2 {
+        @org.springframework.data.annotation.Id
+        private Long id = 0L;
+
+        public TestEntity2() {
+        }
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+    }
+
     @Nested
     class PessimisticLockingInterceptorCases {
         @Nested
@@ -108,7 +140,7 @@ public class PessimisticLockingInterceptorTest {
                         @Test
                         void shouldProceed() throws Throwable {
                             verify(locker).lockOwner(0L);
-                            verify(locker).isLockOwner(0L,  principal);
+                            verify(locker).isLockOwner(0L, principal);
                             verify(mi).proceed();
                         }
 
@@ -188,37 +220,5 @@ public class PessimisticLockingInterceptorTest {
 
         }
 
-    }
-
-    public static class TestEntity {
-        @Id
-        private Long id = 0L;
-
-        public TestEntity() {
-        }
-
-        public Long getId() {
-            return id;
-        }
-
-        public void setId(Long id) {
-            this.id = id;
-        }
-    }
-
-    public static class TestEntity2 {
-        @org.springframework.data.annotation.Id
-        private Long id = 0L;
-
-        public TestEntity2() {
-        }
-
-        public Long getId() {
-            return id;
-        }
-
-        public void setId(Long id) {
-            this.id = id;
-        }
     }
 }

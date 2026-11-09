@@ -32,42 +32,11 @@ public class JpaVersionsAutoConfigurationTest {
 
     private ApplicationContextRunner contextRunner;
 
-    @Nested
-    class JpaVersionsAutoConfigurationCases {
-        @Nested
-        class GivenAnApplicationContextThatReliesOnAutoConfiguration {
-            @BeforeEach
-            void setUp() {
-                contextRunner = new ApplicationContextRunner()
-                        .withConfiguration(AutoConfigurations.of(JpaVersionsAutoConfiguration.class));
-            }
-
-            @Test
-            void shouldIncludeTheRepositoryBean() {
-                contextRunner.withUserConfiguration(StarterConfig.class).run((context) -> Assertions.assertThat(context).hasSingleBean(JpaVersionsDatabaseInitializer.class));
-            }
-        }
-
-        @Nested
-        class GivenAnApplicationContextWithAEnableJpaRepositoriesAnnotation {
-            @BeforeEach
-            void setUp() {
-                contextRunner = new ApplicationContextRunner()
-                        .withConfiguration(AutoConfigurations.of(JpaVersionsAutoConfiguration.class));
-            }
-
-            @Test
-            void shouldIncludeTheRepositoryBean() {
-                contextRunner.withUserConfiguration(StarterWithAnnotationConfig.class).run(
-                        (context) ->
-                                Assertions.assertThat(context).hasSingleBean(NestedTestEntityRepository.class)
-                );
-            }
-        }
-    }
-
     @Test
     public void test() {
+    }
+
+    public interface NestedTestEntityRepository extends CrudRepository<TestEntityVersioned, Long>, LockingAndVersioningRepository<TestEntityVersioned> {
     }
 
     @Configuration
@@ -111,6 +80,37 @@ public class JpaVersionsAutoConfigurationTest {
     public static class StarterWithAnnotationConfig /*extends BaseConfig*/ {
     }
 
-    public interface NestedTestEntityRepository extends CrudRepository<TestEntityVersioned, Long>, LockingAndVersioningRepository<TestEntityVersioned> {
+    @Nested
+    class JpaVersionsAutoConfigurationCases {
+        @Nested
+        class GivenAnApplicationContextThatReliesOnAutoConfiguration {
+            @BeforeEach
+            void setUp() {
+                contextRunner = new ApplicationContextRunner()
+                        .withConfiguration(AutoConfigurations.of(JpaVersionsAutoConfiguration.class));
+            }
+
+            @Test
+            void shouldIncludeTheRepositoryBean() {
+                contextRunner.withUserConfiguration(StarterConfig.class).run((context) -> Assertions.assertThat(context).hasSingleBean(JpaVersionsDatabaseInitializer.class));
+            }
+        }
+
+        @Nested
+        class GivenAnApplicationContextWithAEnableJpaRepositoriesAnnotation {
+            @BeforeEach
+            void setUp() {
+                contextRunner = new ApplicationContextRunner()
+                        .withConfiguration(AutoConfigurations.of(JpaVersionsAutoConfiguration.class));
+            }
+
+            @Test
+            void shouldIncludeTheRepositoryBean() {
+                contextRunner.withUserConfiguration(StarterWithAnnotationConfig.class).run(
+                        (context) ->
+                                Assertions.assertThat(context).hasSingleBean(NestedTestEntityRepository.class)
+                );
+            }
+        }
     }
 }

@@ -14,26 +14,26 @@ import java.util.List;
 @Configuration
 public class MongoStoreConfiguration {
 
-	@Autowired(required = false)
-	private List<MongoStoreConverter<?, String>> customConverters;
+    @Autowired(required = false)
+    private List<MongoStoreConverter<?, String>> customConverters;
 
-	@Bean
-	public PlacementService mongoStorePlacementService() {
-		PlacementService conversion = new PlacementServiceImpl();
+    @Bean
+    public PlacementService mongoStorePlacementService() {
+        PlacementService conversion = new PlacementServiceImpl();
 
-		if (customConverters != null) {
-			for (Converter<?, String> converter : customConverters) {
-				conversion.addConverter(converter);
-			}
-		}
+        if (customConverters != null) {
+            for (Converter<?, String> converter : customConverters) {
+                conversion.addConverter(converter);
+            }
+        }
 
-		conversion.addConverter(new Converter<URI, String>() {
-			@Override
-			public String convert(URI source) {
-				return source.toString();
-			}
-		});
+        conversion.addConverter(new Converter<URI, String>() {
+            @Override
+            public String convert(URI source) {
+                return source.toString();
+            }
+        });
 
-		return conversion;
-	}
+        return conversion;
+    }
 }

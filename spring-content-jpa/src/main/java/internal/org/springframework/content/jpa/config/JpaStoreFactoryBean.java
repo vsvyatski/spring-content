@@ -17,34 +17,34 @@ import org.springframework.util.Assert;
 @SuppressWarnings("rawtypes")
 public class JpaStoreFactoryBean extends AbstractStoreFactoryBean {
 
-	@Autowired
-	private DelegatingBlobResourceLoader blobResourceLoader;
+    @Autowired
+    private DelegatingBlobResourceLoader blobResourceLoader;
 
-    @Autowired(required=false)
+    @Autowired(required = false)
     private MappingContext mappingContext;
 
-	@Autowired(required=false)
-	private PlatformTransactionManager ptm;
+    @Autowired(required = false)
+    private PlatformTransactionManager ptm;
 
-	@Autowired(required=false)
-	private Integer copyBufferSize = 4096;
+    @Autowired(required = false)
+    private Integer copyBufferSize = 4096;
 
-	protected JpaStoreFactoryBean(Class<? extends Store> storeInterface) {
-		super(storeInterface);
-	}
+    protected JpaStoreFactoryBean(Class<? extends Store> storeInterface) {
+        super(storeInterface);
+    }
 
-	@Override
-	protected Object getContentStoreImpl() {
-		Assert.notNull(blobResourceLoader, "blobResourceLoader cannot be null");
-		return new DefaultJpaStoreImpl(blobResourceLoader, mappingContext, copyBufferSize);
-	}
+    @Override
+    protected Object getContentStoreImpl() {
+        Assert.notNull(blobResourceLoader, "blobResourceLoader cannot be null");
+        return new DefaultJpaStoreImpl(blobResourceLoader, mappingContext, copyBufferSize);
+    }
 
-	@Override
-	protected void addProxyAdvice(ProxyFactory result, BeanFactory beanFactory) {
-		super.addProxyAdvice(result, beanFactory);
+    @Override
+    protected void addProxyAdvice(ProxyFactory result, BeanFactory beanFactory) {
+        super.addProxyAdvice(result, beanFactory);
 
         result.addAdvice(this.transactionInterceptor(this.ptm, beanFactory));
-	}
+    }
 
     protected Advice transactionInterceptor(PlatformTransactionManager ptm, BeanFactory beanFactory) {
         TransactionInterceptor transactionInterceptor = new TransactionInterceptor(this.ptm, new AnnotationTransactionAttributeSource());

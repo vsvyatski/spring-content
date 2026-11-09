@@ -21,57 +21,57 @@ public class AzureStorageFactoryBean extends AbstractStoreFactoryBean {
 
     private BlobServiceClient client;
 
-	private PlacementService storePlacementService;
+    private PlacementService storePlacementService;
 
-	private AzureStorageBlobProtocolResolver resolver;
+    private AzureStorageBlobProtocolResolver resolver;
 
 //	@Autowired(required=false)
 //	private MultiTenantS3ClientProvider s3Provider = null;
 
-    @Autowired(required=false)
+    @Autowired(required = false)
     private MappingContext mappingContext;
 
-	@Autowired(required=false)
-	private LockingAndVersioningProxyFactory versioning;
+    @Autowired(required = false)
+    private LockingAndVersioningProxyFactory versioning;
 
 
-	public AzureStorageFactoryBean(Class<? extends Store> storeInterface) {
-		super(storeInterface);
-	}
+    public AzureStorageFactoryBean(Class<? extends Store> storeInterface) {
+        super(storeInterface);
+    }
 
-	@Autowired
-	public void setContext(ApplicationContext context) {
-		this.context = context;
-	}
+    @Autowired
+    public void setContext(ApplicationContext context) {
+        this.context = context;
+    }
 
-	@Autowired
-	public void setClient(BlobServiceClient client) {
-		this.client = client;
-	}
+    @Autowired
+    public void setClient(BlobServiceClient client) {
+        this.client = client;
+    }
 
-	@Autowired
-	public void setStorePlacementService(PlacementService storePlacementService) {
-		this.storePlacementService = storePlacementService;
-	}
+    @Autowired
+    public void setStorePlacementService(PlacementService storePlacementService) {
+        this.storePlacementService = storePlacementService;
+    }
 
-	@Autowired
-	public void setResolver(AzureStorageBlobProtocolResolver resolver) {
-		this.resolver = resolver;
-	}
+    @Autowired
+    public void setResolver(AzureStorageBlobProtocolResolver resolver) {
+        this.resolver = resolver;
+    }
 
-	@Override
-	protected void addProxyAdvice(ProxyFactory result, BeanFactory beanFactory) {
-		if (versioning != null) {
-			versioning.apply(result);
-		}
-	}
+    @Override
+    protected void addProxyAdvice(ProxyFactory result, BeanFactory beanFactory) {
+        if (versioning != null) {
+            versioning.apply(result);
+        }
+    }
 
-	@Override
-	protected Object getContentStoreImpl() {
+    @Override
+    protected Object getContentStoreImpl() {
 
-		DefaultResourceLoader loader = new DefaultResourceLoader();
-		loader.addProtocolResolver(resolver);
+        DefaultResourceLoader loader = new DefaultResourceLoader();
+        loader.addProtocolResolver(resolver);
 
-		return new DefaultAzureStorageImpl(context, loader, mappingContext, storePlacementService, client);
-	}
+        return new DefaultAzureStorageImpl(context, loader, mappingContext, storePlacementService, client);
+    }
 }

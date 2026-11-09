@@ -30,9 +30,17 @@ public class RepositoryEntityMultipartHttpMessageConverter implements HttpMessag
         this.delegate = converter;
     }
 
+    private static Field findField(Class<?> clazz, String propertyName) {
+        try {
+            return clazz.getDeclaredField(propertyName);
+        } catch (NoSuchFieldException e) {
+            return null;
+        }
+    }
+
     @Override
     public boolean canRead(Class clazz, MediaType mediaType) {
-        if(mediaType == null || !mediaType.includes(MediaType.MULTIPART_FORM_DATA)) {
+        if (mediaType == null || !mediaType.includes(MediaType.MULTIPART_FORM_DATA)) {
             return false;
         }
 
@@ -57,7 +65,7 @@ public class RepositoryEntityMultipartHttpMessageConverter implements HttpMessag
 
         BeanWrapper wrapper = new BeanWrapperImpl(clazz);
         Map<String, Object> paramsMap = new HashMap<>();
-        Enumeration<String> paramNames = ((ServletServerHttpRequest)inputMessage).getServletRequest().getParameterNames();
+        Enumeration<String> paramNames = ((ServletServerHttpRequest) inputMessage).getServletRequest().getParameterNames();
         while (paramNames.hasMoreElements()) {
             String paramName = paramNames.nextElement();
 
@@ -115,13 +123,5 @@ public class RepositoryEntityMultipartHttpMessageConverter implements HttpMessag
             }
         }
         return null;
-    }
-
-    private static Field findField(Class<?> clazz, String propertyName) {
-        try {
-            return clazz.getDeclaredField(propertyName);
-        } catch (NoSuchFieldException e) {
-            return null;
-        }
     }
 }

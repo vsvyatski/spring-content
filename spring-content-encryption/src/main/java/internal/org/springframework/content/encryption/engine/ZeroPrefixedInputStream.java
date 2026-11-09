@@ -20,11 +20,11 @@ class ZeroPrefixedInputStream extends InputStream {
         if (n <= 0) {
             return 0;
         }
-        if(n <= prefixBytes) {
+        if (n <= prefixBytes) {
             prefixBytes -= n;
             return n;
         }
-        if(prefixBytes > 0) {
+        if (prefixBytes > 0) {
             n = n - prefixBytes; // Still skipping so many bytes from the offset
             try {
                 return prefixBytes + delegate.skip(n);
@@ -38,7 +38,7 @@ class ZeroPrefixedInputStream extends InputStream {
 
     @Override
     public int read() throws IOException {
-        if(prefixBytes > 0) {
+        if (prefixBytes > 0) {
             prefixBytes--;
             return 0;
         }
@@ -47,7 +47,7 @@ class ZeroPrefixedInputStream extends InputStream {
 
     @Override
     public int read(byte[] b, int off, int len) throws IOException {
-        if(prefixBytes > 0) {
+        if (prefixBytes > 0) {
             return super.read(b, off, len);
         }
         return delegate.read(b, off, len);
@@ -55,8 +55,8 @@ class ZeroPrefixedInputStream extends InputStream {
 
     @Override
     public int available() throws IOException {
-        if(prefixBytes > 0) {
-            return (int)Math.max(prefixBytes, Integer.MAX_VALUE);
+        if (prefixBytes > 0) {
+            return (int) Math.max(prefixBytes, Integer.MAX_VALUE);
         }
         return delegate.available();
     }

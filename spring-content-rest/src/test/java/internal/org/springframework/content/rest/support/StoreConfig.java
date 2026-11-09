@@ -27,98 +27,96 @@ import java.nio.charset.StandardCharsets;
 @Profile("store")
 public class StoreConfig extends JpaInfrastructureConfig {
 
-	@Bean
-	RepositoryRestConfigurer repositoryRestConfigurer() {
+    @Bean
+    RepositoryRestConfigurer repositoryRestConfigurer() {
 
-		return RepositoryRestConfigurer.withConfig((config, corsRegistry) -> {
+        return RepositoryRestConfigurer.withConfig((config, corsRegistry) -> {
 
-			corsRegistry.addMapping("/**") //
-					.allowedMethods("GET", "PUT", "POST") //
-					.allowedOrigins("http://far.far.away");
+            corsRegistry.addMapping("/**") //
+                    .allowedMethods("GET", "PUT", "POST") //
+                    .allowedOrigins("http://far.far.away");
 
-			config.withEntityLookup().forRepository(TestEntity7Repository.class, TestEntity7::getName, TestEntity7Repository::findByName);
-		});
-	}
+            config.withEntityLookup().forRepository(TestEntity7Repository.class, TestEntity7::getName, TestEntity7Repository::findByName);
+        });
+    }
 
-	@Bean
-	ContentRestConfigurer contentRestConfigurer() {
+    @Bean
+    ContentRestConfigurer contentRestConfigurer() {
 
-		return new ContentRestConfigurer() {
-			@Override
-			public void configure(RestConfiguration config) {
-				config.getCorsRegistry().addMapping("/**") //
-						.allowedMethods("GET", "PUT", "POST") //
-						.allowedOrigins("http://far.far.away");
-			}
-		};
-	}
+        return new ContentRestConfigurer() {
+            @Override
+            public void configure(RestConfiguration config) {
+                config.getCorsRegistry().addMapping("/**") //
+                        .allowedMethods("GET", "PUT", "POST") //
+                        .allowedOrigins("http://far.far.away");
+            }
+        };
+    }
 
-	@Bean
-	FileSystemResourceLoader fileSystemResourceLoader() {
-		return new FileSystemResourceLoader(filesystemRoot().getAbsolutePath());
-	}
+    @Bean
+    FileSystemResourceLoader fileSystemResourceLoader() {
+        return new FileSystemResourceLoader(filesystemRoot().getAbsolutePath());
+    }
 
-	@Bean
-	public File filesystemRoot() {
-		File baseDir = new File(System.getProperty("java.io.tmpdir"));
-		File filesystemRoot = new File(baseDir, "spring-content-controller-tests");
-		filesystemRoot.mkdirs();
-		return filesystemRoot;
-	}
+    @Bean
+    public File filesystemRoot() {
+        File baseDir = new File(System.getProperty("java.io.tmpdir"));
+        File filesystemRoot = new File(baseDir, "spring-content-controller-tests");
+        filesystemRoot.mkdirs();
+        return filesystemRoot;
+    }
 
-	@Bean
-	public RenditionProvider textToHtml() {
-		return new RenditionProvider() {
+    @Bean
+    public RenditionProvider textToHtml() {
+        return new RenditionProvider() {
 
-			@Override
-			public String consumes() {
-				return "text/plain";
-			}
+            @Override
+            public String consumes() {
+                return "text/plain";
+            }
 
-			@Override
-			public String[] produces() {
-				return new String[] { "text/html" };
-			}
+            @Override
+            public String[] produces() {
+                return new String[]{"text/html"};
+            }
 
-			@Override
-			public InputStream convert(InputStream fromInputSource, String toMimeType) {
-				String input = null;
-				try {
-					input = IOUtils.toString(fromInputSource, StandardCharsets.UTF_8);
-				}
-				catch (IOException e) {
-				}
-				return new ByteArrayInputStream(
-						String.format("<html><body>%s</body></html>", input).getBytes());
-			}
-		};
-	}
+            @Override
+            public InputStream convert(InputStream fromInputSource, String toMimeType) {
+                String input = null;
+                try {
+                    input = IOUtils.toString(fromInputSource, StandardCharsets.UTF_8);
+                } catch (IOException e) {
+                }
+                return new ByteArrayInputStream(
+                        String.format("<html><body>%s</body></html>", input).getBytes());
+            }
+        };
+    }
 
-	@Bean
-	public RenditionProvider htmlToHtml() {
-		return new RenditionProvider() {
+    @Bean
+    public RenditionProvider htmlToHtml() {
+        return new RenditionProvider() {
 
-			@Override
-			public String consumes() {
-				return "text/html";
-			}
+            @Override
+            public String consumes() {
+                return "text/html";
+            }
 
-			@Override
-			public String[] produces() {
-				return new String[] { "text/html" };
-			}
+            @Override
+            public String[] produces() {
+                return new String[]{"text/html"};
+            }
 
-			@Override
-			public InputStream convert(InputStream fromInputSource, String toMimeType) {
-				String input = null;
-				try {
-					input = IOUtils.toString(fromInputSource, StandardCharsets.UTF_8);
-				}
-				catch (IOException e) {
-				}
-				return new ByteArrayInputStream(
-						String.format("<html><body>Hello Spring Content World!</body></html>", input).getBytes());
-			}
-		};
-	}
+            @Override
+            public InputStream convert(InputStream fromInputSource, String toMimeType) {
+                String input = null;
+                try {
+                    input = IOUtils.toString(fromInputSource, StandardCharsets.UTF_8);
+                } catch (IOException e) {
+                }
+                return new ByteArrayInputStream(
+                        String.format("<html><body>Hello Spring Content World!</body></html>", input).getBytes());
+            }
+        };
+    }
 }

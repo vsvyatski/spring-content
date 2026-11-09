@@ -24,9 +24,9 @@ public class FileSystemDeletableResource implements WritableResource, DeletableR
     private static final Log logger = LogFactory.getLog(FileSystemDeletableResource.class);
 
     private final FileSystemResource resource;
-    private Serializable id;
     private final FileService fileService;
-    
+    private Serializable id;
+
     public FileSystemDeletableResource(FileSystemResource resource, FileService fileService) {
         this.resource = resource;
         this.fileService = fileService;

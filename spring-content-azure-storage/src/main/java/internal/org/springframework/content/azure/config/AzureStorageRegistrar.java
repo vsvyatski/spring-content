@@ -8,10 +8,10 @@ import java.lang.annotation.Annotation;
 
 public class AzureStorageRegistrar extends AbstractStoreBeanDefinitionRegistrar {
 
-	@Override
-	protected Class<? extends Annotation> getAnnotation() {
-		return EnableAzureStorage.class;
-	}
+    @Override
+    protected Class<? extends Annotation> getAnnotation() {
+        return EnableAzureStorage.class;
+    }
 
     @Override
     protected Class<?>[] getSignatureTypes() {

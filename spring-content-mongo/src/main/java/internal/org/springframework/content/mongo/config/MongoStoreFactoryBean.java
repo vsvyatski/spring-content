@@ -13,36 +13,36 @@ import org.springframework.versions.LockingAndVersioningProxyFactory;
 
 public class MongoStoreFactoryBean extends AbstractStoreFactoryBean {
 
-	@Autowired
-	private GridFsTemplate gridFs;
+    @Autowired
+    private GridFsTemplate gridFs;
 
-	@Autowired
-	private PlacementService mongoStorePlacementService;
+    @Autowired
+    private PlacementService mongoStorePlacementService;
 
-    @Autowired(required=false)
+    @Autowired(required = false)
     private MappingContext mappingContext;
 
-	@Autowired(required=false)
+    @Autowired(required = false)
     private LockingAndVersioningProxyFactory versioning;
 
-	protected MongoStoreFactoryBean(Class<? extends Store> storeInterface) {
-		super(storeInterface);
-	}
+    protected MongoStoreFactoryBean(Class<? extends Store> storeInterface) {
+        super(storeInterface);
+    }
 
-	@Override
+    @Override
     protected void addProxyAdvice(ProxyFactory result, BeanFactory beanFactory) {
         if (versioning != null) {
             versioning.apply(result);
         }
     }
 
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		super.afterPropertiesSet();
-	}
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        super.afterPropertiesSet();
+    }
 
-	@Override
-	protected Object getContentStoreImpl() {
-		return new DefaultMongoStoreImpl(gridFs, mappingContext, mongoStorePlacementService);
-	}
+    @Override
+    protected Object getContentStoreImpl() {
+        return new DefaultMongoStoreImpl(gridFs, mappingContext, mongoStorePlacementService);
+    }
 }

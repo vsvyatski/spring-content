@@ -71,93 +71,17 @@ public class CustomKeyAccessorEncryptionIT {
 
     private FsFile f;
 
-    @Nested
-    class ClientSideEncryptionWithCustomKeyStorageCases {
-        @Nested
-        class GivenContent {
-            @Nested
-            class Tests {
-                @BeforeEach
-                void setUp() {
-                    RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
-
-                    f = repo.save(new FsFile());
-
-                    given()
-                            .contentType("text/plain")
-                            .body("Hello Client-side encryption World!")
-                            .when()
-                            .post("/fsFiles/" + f.getId() + "/content")
-                            .then()
-                            .statusCode(HttpStatus.SC_CREATED);
-                }
-
-                @Test
-                void shouldBeStoredEncrypted() throws IOException {
-                    Optional<FsFile> fetched = repo.findById(f.getId());
-                    assertThat(fetched.isPresent()).isTrue();
-                    f = fetched.get();
-
-                    String contents;
-                    try (InputStream in = new FileInputStream(new java.io.File(filesystemRoot, f.getContentId().toString()))) {
-                        contents = IOUtils.toString(in, StandardCharsets.UTF_8);
-                    }
-                    assertThat(contents).isNotEqualTo("Hello Client-side encryption World!");
-
-                    assertThat(contentEncryptionKeyRepository.findById(f.getContentId()).isPresent()).isTrue();
-                }
-
-                @Test
-                void shouldBeRetrievedDecrypted() {
-                    MockMvcResponse response =
-                            given()
-                                    .header("accept", "text/plain")
-                                    .get("/fsFiles/" + f.getId() + "/content")
-                                    .then()
-                                    .statusCode(HttpStatus.SC_OK)
-                                    .extract().response();
-                    assertThat(response.getContentType()).startsWith("text/plain");
-                    assertThat(response.asString()).isEqualTo("Hello Client-side encryption World!");
-                }
-            }
-
-            @Nested
-            class WhenTheContentIsUnset {
-                @BeforeEach
-                void setUp() {
-                    RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
-
-                    f = repo.save(new FsFile());
-
-                    given()
-                            .contentType("text/plain")
-                            .body("Hello Client-side encryption World!")
-                            .when()
-                            .post("/fsFiles/" + f.getId() + "/content")
-                            .then()
-                            .statusCode(HttpStatus.SC_CREATED);
-                }
-
-                @Test
-                void itShouldRemoveTheContentAndClearTheContentKey() {
-                    f = repo.findById(f.getId()).get();
-                    String contentId = f.getContentId().toString();
-
-                    given()
-                            .delete("/fsFiles/" + f.getId() + "/content")
-                            .then()
-                            .statusCode(HttpStatus.SC_NO_CONTENT);
-
-                    f = repo.findById(f.getId()).get();
-                    assertThat(contentEncryptionKeyRepository.findById(UUID.fromString(contentId)).isEmpty()).isTrue();
-                    assertThat(new java.io.File(filesystemRoot, contentId).exists()).isFalse();
-                }
-            }
-        }
-    }
-
     @Test
     public void noop() {
+    }
+
+    public interface FileRepository extends CrudRepository<FsFile, Long> {
+    }
+
+    public interface FileContentStore3 extends FileSystemContentStore<FsFile, UUID>, EncryptingContentStore<FsFile, UUID> {
+    }
+
+    public interface ContentEncryptionKeyRepository extends CrudRepository<ContentEncryptionKey, UUID> {
     }
 
     @SpringBootApplication(exclude = {S3ContentAutoConfiguration.class})
@@ -196,12 +120,6 @@ public class CustomKeyAccessorEncryptionIT {
                 };
             }
         }
-    }
-
-    public interface FileRepository extends CrudRepository<FsFile, Long> {
-    }
-
-    public interface FileContentStore3 extends FileSystemContentStore<FsFile, UUID>, EncryptingContentStore<FsFile, UUID> {
     }
 
     @Entity
@@ -258,9 +176,6 @@ public class CustomKeyAccessorEncryptionIT {
         public void setContentMimeType(String contentMimeType) {
             this.contentMimeType = contentMimeType;
         }
-    }
-
-    public interface ContentEncryptionKeyRepository extends CrudRepository<ContentEncryptionKey, UUID> {
     }
 
     @Entity
@@ -353,6 +268,91 @@ public class CustomKeyAccessorEncryptionIT {
             contentEncryptionKeyRepository.save(encryptionKeyEntity);
 
             return entity;
+        }
+    }
+
+    @Nested
+    class ClientSideEncryptionWithCustomKeyStorageCases {
+        @Nested
+        class GivenContent {
+            @Nested
+            class Tests {
+                @BeforeEach
+                void setUp() {
+                    RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
+
+                    f = repo.save(new FsFile());
+
+                    given()
+                            .contentType("text/plain")
+                            .body("Hello Client-side encryption World!")
+                            .when()
+                            .post("/fsFiles/" + f.getId() + "/content")
+                            .then()
+                            .statusCode(HttpStatus.SC_CREATED);
+                }
+
+                @Test
+                void shouldBeStoredEncrypted() throws IOException {
+                    Optional<FsFile> fetched = repo.findById(f.getId());
+                    assertThat(fetched.isPresent()).isTrue();
+                    f = fetched.get();
+
+                    String contents;
+                    try (InputStream in = new FileInputStream(new java.io.File(filesystemRoot, f.getContentId().toString()))) {
+                        contents = IOUtils.toString(in, StandardCharsets.UTF_8);
+                    }
+                    assertThat(contents).isNotEqualTo("Hello Client-side encryption World!");
+
+                    assertThat(contentEncryptionKeyRepository.findById(f.getContentId()).isPresent()).isTrue();
+                }
+
+                @Test
+                void shouldBeRetrievedDecrypted() {
+                    MockMvcResponse response =
+                            given()
+                                    .header("accept", "text/plain")
+                                    .get("/fsFiles/" + f.getId() + "/content")
+                                    .then()
+                                    .statusCode(HttpStatus.SC_OK)
+                                    .extract().response();
+                    assertThat(response.getContentType()).startsWith("text/plain");
+                    assertThat(response.asString()).isEqualTo("Hello Client-side encryption World!");
+                }
+            }
+
+            @Nested
+            class WhenTheContentIsUnset {
+                @BeforeEach
+                void setUp() {
+                    RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
+
+                    f = repo.save(new FsFile());
+
+                    given()
+                            .contentType("text/plain")
+                            .body("Hello Client-side encryption World!")
+                            .when()
+                            .post("/fsFiles/" + f.getId() + "/content")
+                            .then()
+                            .statusCode(HttpStatus.SC_CREATED);
+                }
+
+                @Test
+                void itShouldRemoveTheContentAndClearTheContentKey() {
+                    f = repo.findById(f.getId()).get();
+                    String contentId = f.getContentId().toString();
+
+                    given()
+                            .delete("/fsFiles/" + f.getId() + "/content")
+                            .then()
+                            .statusCode(HttpStatus.SC_NO_CONTENT);
+
+                    f = repo.findById(f.getId()).get();
+                    assertThat(contentEncryptionKeyRepository.findById(UUID.fromString(contentId)).isEmpty()).isTrue();
+                    assertThat(new java.io.File(filesystemRoot, contentId).exists()).isFalse();
+                }
+            }
         }
     }
 }

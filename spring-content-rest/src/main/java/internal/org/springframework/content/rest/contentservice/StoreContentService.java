@@ -53,8 +53,7 @@ public class StoreContentService implements ContentService {
                                 .renderAs(acceptedMimeType), resource);
                         producedResourceType = acceptedMimeType;
                         break;
-                    }
-                    else if (acceptedMimeType.includes(resourceType)) {
+                    } else if (acceptedMimeType.includes(resourceType)) {
                         producedResourceType = resourceType;
                         break;
                     }
@@ -67,7 +66,7 @@ public class StoreContentService implements ContentService {
             }
 
             if (resource instanceof RangeableResource) {
-                this.configureResourceForByteRangeRequest((RangeableResource)resource, headers);
+                this.configureResourceForByteRangeRequest((RangeableResource) resource, headers);
             }
 
             request.setAttribute("SPRING_CONTENT_RESOURCE", resource);
@@ -81,8 +80,7 @@ public class StoreContentService implements ContentService {
 
         try {
             byteRangeRestRequestHandler.handleRequest(request, response);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
 
             if (ContentStoreContentService.isClientAbortException(e)) {
                 // suppress
@@ -112,8 +110,7 @@ public class StoreContentService implements ContentService {
         if (resource instanceof DeletableResource) {
             try {
                 ((DeletableResource) resource).delete();
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }

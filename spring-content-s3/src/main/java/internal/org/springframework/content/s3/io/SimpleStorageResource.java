@@ -47,7 +47,7 @@ public class SimpleStorageResource extends AbstractResource implements WritableR
     private String contentType;
 
     public SimpleStorageResource(S3Client amazonS3, String bucketName, String objectName,
-            TaskExecutor taskExecutor) {
+                                 TaskExecutor taskExecutor) {
         this(amazonS3, bucketName, objectName, taskExecutor, null, null);
     }
 
@@ -57,7 +57,7 @@ public class SimpleStorageResource extends AbstractResource implements WritableR
     }
 
     public SimpleStorageResource(S3Client amazonS3, String bucketName, String objectName,
-            TaskExecutor taskExecutor, String versionId, String contentType) {
+                                 TaskExecutor taskExecutor, String versionId, String contentType) {
 //        this.amazonS3 = AmazonS3ProxyFactory.createProxy(amazonS3);
         this.amazonS3 = amazonS3;
         this.bucketName = bucketName;
@@ -83,6 +83,7 @@ public class SimpleStorageResource extends AbstractResource implements WritableR
 
     /**
      * Set the Content-Type value that will be specified as object metadata when saving resource to the object storage.
+     *
      * @param contentType Content-Type value or null
      */
     public void setContentType(String contentType) {
@@ -91,6 +92,7 @@ public class SimpleStorageResource extends AbstractResource implements WritableR
 
     /**
      * Determine the Content-Type value of the resource as saved in object storage.
+     *
      * @return Content-Type value of the resource
      * @throws IOException
      */
@@ -119,7 +121,7 @@ public class SimpleStorageResource extends AbstractResource implements WritableR
                     var contentRange = getObjectResponse.response().contentRange();
                     // As per https://www.rfc-editor.org/rfc/rfc9110.html#name-206-partial-content,
                     // a Content-Range header MUST be present when responding with a single part.
-                    if(contentRange == null) {
+                    if (contentRange == null) {
                         throw new IOException("Received HTTP 206, but missing a Content-Range header. Only single-part responses are supported.");
                     }
                     return PartialContentInputStream.fromContentRange(
@@ -212,14 +214,12 @@ public class SimpleStorageResource extends AbstractResource implements WritableR
                 }
                 this.objectMetadata = this.amazonS3
                         .headObject(headObjectRequestBuilder.build());
-            }
-            catch (S3Exception e) {
+            } catch (S3Exception e) {
                 // Catch 404 (object not found) and 301 (bucket not found, moved
                 // permanently)
                 if (e.statusCode() == 404 || e.statusCode() == 301) {
                     this.objectMetadata = null;
-                }
-                else {
+                } else {
                     throw e;
                 }
             }
@@ -276,8 +276,7 @@ public class SimpleStorageResource extends AbstractResource implements WritableR
 
                 if (isMultiPartUpload()) {
                     finishMultiPartUpload();
-                }
-                else {
+                } else {
                     finishSimpleUpload();
                 }
             }
@@ -293,17 +292,16 @@ public class SimpleStorageResource extends AbstractResource implements WritableR
             try {
                 MessageDigest messageDigest = MessageDigest.getInstance("MD5");
                 md5Digest = BinaryUtils.toBase64(messageDigest.digest(content));
-            }
-            catch (NoSuchAlgorithmException e) {
+            } catch (NoSuchAlgorithmException e) {
                 throw new IllegalStateException(
                         "MessageDigest could not be initialized because it uses an unknown algorithm",
                         e);
             }
 
             PutObjectRequest.Builder requestBuilder = PutObjectRequest.builder()
-                .bucket(SimpleStorageResource.this.bucketName)
-                .key(SimpleStorageResource.this.objectName)
-                .contentMD5(md5Digest);
+                    .bucket(SimpleStorageResource.this.bucketName)
+                    .key(SimpleStorageResource.this.objectName)
+                    .contentMD5(md5Digest);
 
             if (SimpleStorageResource.this.contentType != null) {
                 requestBuilder.contentType(SimpleStorageResource.this.contentType);
@@ -332,16 +330,13 @@ public class SimpleStorageResource extends AbstractResource implements WritableR
                                 .key(this.multiPartUploadResult.key())
                                 .multipartUpload(multipartUpload)
                                 .uploadId(this.multiPartUploadResult.uploadId()).build());
-            }
-            catch (ExecutionException e) {
+            } catch (ExecutionException e) {
                 abortMultiPartUpload();
                 throw new IOException("Multi part upload failed ", e.getCause());
-            }
-            catch (InterruptedException e) {
+            } catch (InterruptedException e) {
                 abortMultiPartUpload();
                 Thread.currentThread().interrupt();
-            }
-            finally {
+            } finally {
                 this.currentOutputStream = null;
             }
         }
@@ -400,8 +395,8 @@ public class SimpleStorageResource extends AbstractResource implements WritableR
             private byte[] content;
 
             private UploadPartResultCallable(S3Client amazon, byte[] content,
-                    int writtenDataSize, String bucketName, String key, String uploadId,
-                    int partNumber) {
+                                             int writtenDataSize, String bucketName, String key, String uploadId,
+                                             int partNumber) {
                 this.amazonS3 = amazon;
                 this.content = content;
                 this.contentLength = writtenDataSize;
@@ -425,8 +420,7 @@ public class SimpleStorageResource extends AbstractResource implements WritableR
                     return CompletedPart.builder().partNumber(this.partNumber)
                             .eTag(uploadPartResponse.eTag()).build();
 
-                }
-                finally {
+                } finally {
                     // Release the memory, as the callable may still live inside the
                     // CompletionService which would cause
                     // an exhaustive memory usage

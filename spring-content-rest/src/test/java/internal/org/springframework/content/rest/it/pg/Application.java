@@ -33,16 +33,16 @@ import javax.sql.DataSource;
 })
 public class Application {
 
-   public static void main(String[] args) {
+    public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
     }
 
-   @Configuration
+    @Configuration
     @Import({RestConfiguration.class, SecurityConfiguration.class})
-   @EnableJpaRepositories(basePackages="internal.org.springframework.content.rest.support")
-   @EnableTransactionManagement
-   @EnableJpaStores(basePackages="internal.org.springframework.content.rest.support")
-   public static class AppConfig {
+    @EnableJpaRepositories(basePackages = "internal.org.springframework.content.rest.support")
+    @EnableTransactionManagement
+    @EnableJpaStores(basePackages = "internal.org.springframework.content.rest.support")
+    public static class AppConfig {
 
         @Value("/org/springframework/content/jpa/schema-drop-postgresql.sql")
         private ClassPathResource dropReopsitoryTables;
@@ -94,5 +94,5 @@ public class Application {
             txManager.setEntityManagerFactory(entityManagerFactory().getObject());
             return txManager;
         }
-   }
+    }
 }

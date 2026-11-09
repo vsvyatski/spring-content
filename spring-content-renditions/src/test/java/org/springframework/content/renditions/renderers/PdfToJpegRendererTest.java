@@ -116,7 +116,7 @@ public class PdfToJpegRendererTest {
 
                             when(doc.getNumberOfPages()).thenReturn(1);
                             doThrow(IOException.class).when(pdfRenderer)
-                                                                .renderImageWithDPI(0, 300, ImageType.RGB);
+                                    .renderImageWithDPI(0, 300, ImageType.RGB);
                             try {
                                 renderer.convert(input, mimeType);
                             } catch (Exception e) {

@@ -67,29 +67,171 @@ import static org.assertj.core.api.Assertions.fail;
 public class EncryptionIT {
 
     private static final String BUCKET = "test-bucket";
+    private static final Object mutex = new Object();
 
     static {
         System.setProperty("spring.content.s3.bucket", BUCKET);
     }
 
-    private static final Object mutex = new Object();
+    static {
+        System.setProperty("spring.content.s3.bucket", "test-bucket");
+    }
 
     @Autowired
     private FileRepository repo;
-
     @Autowired
     private S3Client client;
-
     @Autowired
     private WebApplicationContext webApplicationContext;
-
     @Autowired
     private VaultTemplate vaultTemplate;
-
     private File f;
 
-    static {
-        System.setProperty("spring.content.s3.bucket", "test-bucket");
+    @Test
+    public void noop() {
+    }
+
+    public interface FileRepository extends CrudRepository<File, Long> {
+    }
+
+    public interface FileContentStore extends S3ContentStore<File, UUID>, EncryptingContentStore<File, UUID> {
+    }
+
+    @SpringBootApplication(exclude = {FileSystemContentAutoConfiguration.class})
+    @ImportAutoConfiguration(ContentRestAutoConfiguration.class)
+    @EnableJpaRepositories(considerNestedRepositories = true)
+    @EnableS3Stores
+    static class Application {
+        public static void main(String[] args) {
+            SpringApplication.run(Application.class, args);
+        }
+
+        @Configuration
+        public static class Config extends AbstractVaultConfiguration {
+
+            @Override
+            public @NonNull VaultEndpoint vaultEndpoint() {
+
+                String host = VaultContainerSupport.getVaultContainer().getHost();
+                int port = VaultContainerSupport.getVaultContainer().getFirstMappedPort();
+
+                VaultEndpoint vault = VaultEndpoint.create(host, port);
+                vault.setScheme("http");
+                return vault;
+            }
+
+            @Override
+            public @NonNull ClientAuthentication clientAuthentication() {
+                return new TokenAuthentication("my-root-token");
+            }
+
+            @Bean
+            public S3Client amazonS3() throws URISyntaxException {
+                return LocalStack.getAmazonS3Client();
+            }
+
+            @Bean
+            public EncryptingContentStoreConfigurer config() {
+                return new EncryptingContentStoreConfigurer<FileContentStore>() {
+                    @Override
+                    public void configure(EncryptingContentStoreConfiguration<FileContentStore> config) {
+                        config.encryptionKeyContentProperty("key")
+                                .dataEncryptionKeyWrappers(List.of(
+                                        new EncryptingOnlyKeyWrapper(), // A fake wrapper that only supports encrypt operation
+                                        new VaultTransitDataEncryptionKeyWrapper(
+                                                vaultTemplate().opsForTransit(),
+                                                "my-key"
+                                        )
+                                ));
+                    }
+                };
+            }
+        }
+    }
+
+    private static class EncryptingOnlyKeyWrapper implements DataEncryptionKeyWrapper<EncryptedSymmetricDataEncryptionKey> {
+        @Override
+        public boolean supports(StoredDataEncryptionKey storedDataEncryptionKey) {
+            return false;
+        }
+
+        @Override
+        public EncryptedSymmetricDataEncryptionKey wrapEncryptionKey(EncryptionParameters dataEncryptionParameters) {
+            return new EncryptedSymmetricDataEncryptionKey("drop", "", "", dataEncryptionParameters.secretKey().getAlgorithm(), new byte[0], new byte[0]);
+        }
+
+        @Override
+        public EncryptionParameters unwrapEncryptionKey(
+                EncryptedSymmetricDataEncryptionKey encryptedDataEncryptionKey) {
+            throw new IllegalArgumentException("Can not unwrap encryption key");
+        }
+    }
+
+    @Entity
+    public static class File {
+        @Id
+        @GeneratedValue(strategy = GenerationType.AUTO)
+        private Long id;
+
+        private String name;
+
+        @JsonIgnore
+        private byte[] contentKey;
+
+        @ContentId
+        private UUID contentId;
+        @ContentLength
+        private long contentLength;
+        @MimeType
+        private String contentMimeType;
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public byte[] getContentKey() {
+            return contentKey;
+        }
+
+        public void setContentKey(byte[] contentKey) {
+            this.contentKey = contentKey;
+        }
+
+        public UUID getContentId() {
+            return contentId;
+        }
+
+        public void setContentId(UUID contentId) {
+            this.contentId = contentId;
+        }
+
+        public long getContentLength() {
+            return contentLength;
+        }
+
+        public void setContentLength(long contentLength) {
+            this.contentLength = contentLength;
+        }
+
+        public String getContentMimeType() {
+            return contentMimeType;
+        }
+
+        public void setContentMimeType(String contentMimeType) {
+            this.contentMimeType = contentMimeType;
+        }
     }
 
     @Nested
@@ -298,153 +440,6 @@ public class EncryptionIT {
                     }
                 }
             }
-        }
-    }
-
-    @Test
-    public void noop() {
-    }
-
-    @SpringBootApplication(exclude = {FileSystemContentAutoConfiguration.class})
-    @ImportAutoConfiguration(ContentRestAutoConfiguration.class)
-    @EnableJpaRepositories(considerNestedRepositories = true)
-    @EnableS3Stores
-    static class Application {
-        public static void main(String[] args) {
-            SpringApplication.run(Application.class, args);
-        }
-
-        @Configuration
-        public static class Config extends AbstractVaultConfiguration {
-
-            @Override
-            public @NonNull VaultEndpoint vaultEndpoint() {
-
-                String host = VaultContainerSupport.getVaultContainer().getHost();
-                int port = VaultContainerSupport.getVaultContainer().getFirstMappedPort();
-
-                VaultEndpoint vault = VaultEndpoint.create(host, port);
-                vault.setScheme("http");
-                return vault;
-            }
-
-            @Override
-            public @NonNull ClientAuthentication clientAuthentication() {
-                return new TokenAuthentication("my-root-token");
-            }
-
-            @Bean
-            public S3Client amazonS3() throws URISyntaxException {
-                return LocalStack.getAmazonS3Client();
-            }
-
-            @Bean
-            public EncryptingContentStoreConfigurer config() {
-                return new EncryptingContentStoreConfigurer<FileContentStore>() {
-                    @Override
-                    public void configure(EncryptingContentStoreConfiguration<FileContentStore> config) {
-                        config.encryptionKeyContentProperty("key")
-                                .dataEncryptionKeyWrappers(List.of(
-                                        new EncryptingOnlyKeyWrapper(), // A fake wrapper that only supports encrypt operation
-                                        new VaultTransitDataEncryptionKeyWrapper(
-                                                vaultTemplate().opsForTransit(),
-                                                "my-key"
-                                        )
-                                ));
-                    }
-                };
-            }
-        }
-    }
-
-    private static class EncryptingOnlyKeyWrapper implements DataEncryptionKeyWrapper<EncryptedSymmetricDataEncryptionKey> {
-        @Override
-        public boolean supports(StoredDataEncryptionKey storedDataEncryptionKey) {
-            return false;
-        }
-
-        @Override
-        public EncryptedSymmetricDataEncryptionKey wrapEncryptionKey(EncryptionParameters dataEncryptionParameters) {
-            return new EncryptedSymmetricDataEncryptionKey("drop", "", "", dataEncryptionParameters.secretKey().getAlgorithm(), new byte[0], new byte[0]);
-        }
-
-        @Override
-        public EncryptionParameters unwrapEncryptionKey(
-                EncryptedSymmetricDataEncryptionKey encryptedDataEncryptionKey) {
-            throw new IllegalArgumentException("Can not unwrap encryption key");
-        }
-    }
-
-    public interface FileRepository extends CrudRepository<File, Long> {
-    }
-
-    public interface FileContentStore extends S3ContentStore<File, UUID>, EncryptingContentStore<File, UUID> {
-    }
-
-    @Entity
-    public static class File {
-        @Id
-        @GeneratedValue(strategy = GenerationType.AUTO)
-        private Long id;
-
-        private String name;
-
-        @JsonIgnore
-        private byte[] contentKey;
-
-        @ContentId
-        private UUID contentId;
-        @ContentLength
-        private long contentLength;
-        @MimeType
-        private String contentMimeType;
-
-        public Long getId() {
-            return id;
-        }
-
-        public void setId(Long id) {
-            this.id = id;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public byte[] getContentKey() {
-            return contentKey;
-        }
-
-        public void setContentKey(byte[] contentKey) {
-            this.contentKey = contentKey;
-        }
-
-        public UUID getContentId() {
-            return contentId;
-        }
-
-        public void setContentId(UUID contentId) {
-            this.contentId = contentId;
-        }
-
-        public long getContentLength() {
-            return contentLength;
-        }
-
-        public void setContentLength(long contentLength) {
-            this.contentLength = contentLength;
-        }
-
-        public String getContentMimeType() {
-            return contentMimeType;
-        }
-
-        public void setContentMimeType(String contentMimeType) {
-            this.contentMimeType = contentMimeType;
         }
     }
 }

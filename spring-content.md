@@ -1,6 +1,8 @@
 # Spring Content (incl. Spring Content Rest)
 
-(Hopefully) a new spring community project adding basic content handling patterns to Spring for both java and hypermedia-based REST.  This is done through a central "content store" abstraction with basic content store implementations for JPA, Mongo databases and the popular S3 object store.
+(Hopefully) a new spring community project adding basic content handling patterns to Spring for both java and
+hypermedia-based REST. This is done through a central "content store" abstraction with basic content store
+implementations for JPA, Mongo databases and the popular S3 object store.
 
 ## Projects
 
@@ -16,19 +18,24 @@
 - spring-boot-starter-content-rest; spring boot starter incl. autoconfiguration for spring-content-rest
 
 ### Example/Test Projects
+
 - spring-eg-content-jpa; tests spring-content-jpa Java API
 - spring-eg-content-mongo; tests spring-content-mongo Java API
 - spring-eg-content-s3; tests spring-content-mongo Java API
-- spring-eg-starter-content-jpa; tests spring-content-jpa autoconfiguration 
+- spring-eg-starter-content-jpa; tests spring-content-jpa autoconfiguration
 - spring-eg-starter-content-mongo; tests spring-content-mongo autoconfiguration
 - spring-eg-starter-content-s3; tests spring-content-s3 autoconfiguration
-- spring-eg-content-rest; tests spring content REST API (on top of a mongo content store) 
+- spring-eg-content-rest; tests spring content REST API (on top of a mongo content store)
 
 ### Getting Started
+
 - spring-gs-accessing-content-mongo; standard spring.io getting started guide project
-- [spring-quickclaim](https://bitbucket.org/paulcwarren/spring-content/src/ef9e0716a56310fac5e6390233a6cd73ad4a28e8/spring-gs-content-quickclaim/readme.md?at=master); example spring-boot based application based on an insurance companies claim system showing spring content and spring content REST in action
+- [spring-quickclaim](https://bitbucket.org/paulcwarren/spring-content/src/ef9e0716a56310fac5e6390233a6cd73ad4a28e8/spring-gs-content-quickclaim/readme.md?at=master);
+  example spring-boot based application based on an insurance companies claim system showing spring content and spring
+  content REST in action
 
 ## Todo
+
 - --Add S3 implementation--
 - Add support for basic transformations; i.e. (.doc → PDF)
 - Add File System implementation

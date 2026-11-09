@@ -1,1 +1,1 @@
-IF EXISTS (SELECT * FROM sysobjects WHERE name='BLOBS' AND xtype='U') DROP TABLE BLOBS
+IF EXISTS (SELECT * FROM sysobjects WHERE name = 'BLOBS' AND xtype = 'U') DROP TABLE BLOBS

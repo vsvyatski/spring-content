@@ -40,7 +40,7 @@ public class MappingContext {
         return properties.values();
     }
 
-    public Map<String,ContentProperty> getContentPropertyMap(Class<?> domainClass) {
+    public Map<String, ContentProperty> getContentPropertyMap(Class<?> domainClass) {
         Map<String, ContentProperty> properties = context.get(domainClass);
         if (properties == null) {
             properties = resolveProperties(domainClass);

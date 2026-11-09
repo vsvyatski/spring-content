@@ -14,27 +14,27 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class WordToTextRenditionProviderTest {
 
-	private RenditionProvider service;
+    private RenditionProvider service;
 
-	@BeforeEach
-	void setUp() {
-		service = new WordToTextRenditionProvider();
-	}
+    @BeforeEach
+    void setUp() {
+        service = new WordToTextRenditionProvider();
+    }
 
-	@Test
-	void consumesDocxAndProducesPlainText() {
-		assertThat(service.consumes()).isEqualTo("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
-		assertThat(service.produces()).contains("text/plain");
-	}
+    @Test
+    void consumesDocxAndProducesPlainText() {
+        assertThat(service.consumes()).isEqualTo("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+        assertThat(service.produces()).contains("text/plain");
+    }
 
-	@Test
-	void convertsDocxToText() throws Exception {
-		InputStream converted = service.convert(this.getClass().getResourceAsStream("/sample-docx2.docx"), "text/plain");
+    @Test
+    void convertsDocxToText() throws Exception {
+        InputStream converted = service.convert(this.getClass().getResourceAsStream("/sample-docx2.docx"), "text/plain");
 
-		assertThat(converted.available()).isGreaterThan(0);
-		assertThat(((ObservableInputStream) converted).getObservers()).anyMatch(observer -> observer instanceof FileRemover);
+        assertThat(converted.available()).isGreaterThan(0);
+        assertThat(((ObservableInputStream) converted).getObservers()).anyMatch(observer -> observer instanceof FileRemover);
 
-		assertThat(IOUtils.toString(converted, StandardCharsets.UTF_8)).isEqualTo("This is the Document Title and this is the document body.");
-	}
+        assertThat(IOUtils.toString(converted, StandardCharsets.UTF_8)).isEqualTo("This is the Document Title and this is the document body.");
+    }
 
 }

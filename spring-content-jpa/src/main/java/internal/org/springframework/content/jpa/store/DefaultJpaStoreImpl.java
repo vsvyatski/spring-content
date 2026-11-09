@@ -39,10 +39,8 @@ public class DefaultJpaStoreImpl<S, SID extends Serializable>
     private static final Log logger = LogFactory.getLog(DefaultJpaStoreImpl.class);
 
     private final ResourceLoader loader;
-
-    private MappingContext mappingContext;
-
     private final int copyBufferSize;
+    private MappingContext mappingContext;
 
     public DefaultJpaStoreImpl(ResourceLoader blobResourceLoader, MappingContext mappingContext, int copyBufferSize) {
         this.loader = blobResourceLoader;

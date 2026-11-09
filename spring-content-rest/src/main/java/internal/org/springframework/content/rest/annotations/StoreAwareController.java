@@ -7,6 +7,6 @@ import java.lang.annotation.*;
 @Documented
 @Component
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.TYPE, ElementType.ANNOTATION_TYPE })
+@Target({ElementType.TYPE, ElementType.ANNOTATION_TYPE})
 public @interface StoreAwareController {
 }

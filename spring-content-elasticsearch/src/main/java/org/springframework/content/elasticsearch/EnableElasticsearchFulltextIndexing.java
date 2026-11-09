@@ -10,6 +10,6 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-@Import({ ElasticsearchFulltextIndexingConfig.class, ElasticsearchConfig.class})
+@Import({ElasticsearchFulltextIndexingConfig.class, ElasticsearchConfig.class})
 public @interface EnableElasticsearchFulltextIndexing {
 }

@@ -11,10 +11,15 @@ import org.springframework.versions.SuccessorId;
 
 @Entity
 public class TestEntityVersioned {
-    @Id @GeneratedValue(strategy = GenerationType.AUTO) private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
 
     // these are required to satisfy the
-    @AncestorRootId private String ancestralRootId;
-    @AncestorId private String ancestorId;
-    @SuccessorId private String successorId;
+    @AncestorRootId
+    private String ancestralRootId;
+    @AncestorId
+    private String ancestorId;
+    @SuccessorId
+    private String successorId;
 }

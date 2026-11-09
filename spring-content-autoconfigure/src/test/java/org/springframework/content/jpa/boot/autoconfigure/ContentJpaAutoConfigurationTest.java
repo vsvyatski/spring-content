@@ -40,61 +40,7 @@ public class ContentJpaAutoConfigurationTest {
 
     private ApplicationContextRunner contextRunner;
 
-    @Nested
-    class ContentJpaAutoConfiguration {
-        @BeforeEach
-        void setUp() {
-            initializer = mock(ContentJpaDatabaseInitializer.class);
-            contextRunner = new ApplicationContextRunner()
-                    .withConfiguration(AutoConfigurations.of(JpaContentAutoConfiguration.class));
-        }
-
-        @Test
-        void shouldHaveAContentRepository() {
-            contextRunner.withUserConfiguration(TestConfig.class).run((context) -> {
-                Assertions.assertThat(context).hasSingleBean(TestEntityContentRepository.class);
-                Assertions.assertThat(context).hasSingleBean(ContentJpaDatabaseInitializer.class);
-                Assertions.assertThat(context).hasBean("copyBufferSize");
-            });
-        }
-
-        @Nested
-        class WhenACustomBeanConfigurationIsUsed {
-            @BeforeEach
-            void setUp() {
-                initializer = mock(ContentJpaDatabaseInitializer.class);
-                contextRunner = new ApplicationContextRunner();
-            }
-
-            @Test
-            void shouldUseTheSuppliedCustomBean() {
-                contextRunner.withUserConfiguration(CustomBeanConfig.class).run((context) -> {
-                    Assertions.assertThat(context).getBean(ContentJpaDatabaseInitializer.class).isEqualTo(initializer);
-                    Assertions.assertThat(context).getBean("copyBufferSize").isEqualTo(16192);
-                });
-            }
-
-        }
-
-        @Nested
-        class WhenAnExplicitEnableFileSystemStoresIsUsed {
-            @BeforeEach
-            void setUp() {
-                initializer = mock(ContentJpaDatabaseInitializer.class);
-                contextRunner = new ApplicationContextRunner()
-                        .withConfiguration(AutoConfigurations.of(JpaContentAutoConfiguration.class));
-            }
-
-            @Test
-            void shouldLoadTheContext() {
-                contextRunner.withUserConfiguration(ConfigWithExplicitEnableJpaStores.class).run((context) -> {
-                    Assertions.assertThat(context).hasSingleBean(TestEntityContentRepository.class);
-                    Assertions.assertThat(context).hasSingleBean(ContentJpaProperties.class);
-                    Assertions.assertThat(context).hasSingleBean(ContentJpaDatabaseInitializer.class);
-                    Assertions.assertThat(context).hasBean("copyBufferSize");
-                });
-            }
-        }
+    public interface TestEntityContentRepository extends JpaContentStore<TestEntity, String> {
     }
 
     @Configuration
@@ -160,6 +106,60 @@ public class ContentJpaAutoConfigurationTest {
     public static class CustomPropertiesConfig {
     }
 
-    public interface TestEntityContentRepository extends JpaContentStore<TestEntity, String> {
+    @Nested
+    class ContentJpaAutoConfiguration {
+        @BeforeEach
+        void setUp() {
+            initializer = mock(ContentJpaDatabaseInitializer.class);
+            contextRunner = new ApplicationContextRunner()
+                    .withConfiguration(AutoConfigurations.of(JpaContentAutoConfiguration.class));
+        }
+
+        @Test
+        void shouldHaveAContentRepository() {
+            contextRunner.withUserConfiguration(TestConfig.class).run((context) -> {
+                Assertions.assertThat(context).hasSingleBean(TestEntityContentRepository.class);
+                Assertions.assertThat(context).hasSingleBean(ContentJpaDatabaseInitializer.class);
+                Assertions.assertThat(context).hasBean("copyBufferSize");
+            });
+        }
+
+        @Nested
+        class WhenACustomBeanConfigurationIsUsed {
+            @BeforeEach
+            void setUp() {
+                initializer = mock(ContentJpaDatabaseInitializer.class);
+                contextRunner = new ApplicationContextRunner();
+            }
+
+            @Test
+            void shouldUseTheSuppliedCustomBean() {
+                contextRunner.withUserConfiguration(CustomBeanConfig.class).run((context) -> {
+                    Assertions.assertThat(context).getBean(ContentJpaDatabaseInitializer.class).isEqualTo(initializer);
+                    Assertions.assertThat(context).getBean("copyBufferSize").isEqualTo(16192);
+                });
+            }
+
+        }
+
+        @Nested
+        class WhenAnExplicitEnableFileSystemStoresIsUsed {
+            @BeforeEach
+            void setUp() {
+                initializer = mock(ContentJpaDatabaseInitializer.class);
+                contextRunner = new ApplicationContextRunner()
+                        .withConfiguration(AutoConfigurations.of(JpaContentAutoConfiguration.class));
+            }
+
+            @Test
+            void shouldLoadTheContext() {
+                contextRunner.withUserConfiguration(ConfigWithExplicitEnableJpaStores.class).run((context) -> {
+                    Assertions.assertThat(context).hasSingleBean(TestEntityContentRepository.class);
+                    Assertions.assertThat(context).hasSingleBean(ContentJpaProperties.class);
+                    Assertions.assertThat(context).hasSingleBean(ContentJpaDatabaseInitializer.class);
+                    Assertions.assertThat(context).hasBean("copyBufferSize");
+                });
+            }
+        }
     }
 }

@@ -7,11 +7,11 @@ permissions:
 
 jobs:
   autoapprove:
-    name: Auto Approve a PR by dependabot 
-    runs-on: ubuntu-latest 
+    name: Auto Approve a PR by dependabot
+    runs-on: ubuntu-latest
     steps:
       - name: Auto approve
-        uses: hmarr/auto-approve-action@v2.0.0 
+        uses: hmarr/auto-approve-action@v2.0.0
         if: ${{ github.actor == 'dependabot[bot]' }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}

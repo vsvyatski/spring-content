@@ -53,6 +53,15 @@ public class Application {
         SpringApplication.run(Application.class, args);
     }
 
+    public interface TEntityRepository extends JpaRepository<TEntity, Long> {
+    }
+
+    public interface TEntityFsStore extends FileSystemContentStore<TEntity, String> {
+    }
+
+    public interface TEntityJpaStore extends JpaContentStore<TEntity, String> {
+    }
+
     @Configuration
     @Import({RestConfiguration.class, SecurityConfiguration.class})
     @EnableJpaRepositories(basePackages = "internal.org.springframework.content.rest.storeresolver", considerNestedRepositories = true)
@@ -174,14 +183,5 @@ public class Application {
         public void setMimeType(String mimeType) {
             this.mimeType = mimeType;
         }
-    }
-
-    public interface TEntityRepository extends JpaRepository<TEntity, Long> {
-    }
-
-    public interface TEntityFsStore extends FileSystemContentStore<TEntity, String> {
-    }
-
-    public interface TEntityJpaStore extends JpaContentStore<TEntity, String> {
     }
 }

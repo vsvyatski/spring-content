@@ -28,6 +28,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class ContentRestAutoConfigurationTest {
 
+    @SpringBootApplication(exclude = {SolrAutoConfiguration.class, SolrExtensionAutoConfiguration.class, S3ContentAutoConfiguration.class})
+    @ImportAutoConfiguration({HibernateJpaAutoConfiguration.class, DataJpaRepositoriesAutoConfiguration.class,
+            PropertyPlaceholderAutoConfiguration.class, DataRestAutoConfiguration.class,
+            JacksonAutoConfiguration.class, ContentRestAutoConfiguration.class})
+    public static class TestConfig {
+    }
+
+    @Configuration
+    @ImportAutoConfiguration({HypermediaAutoConfiguration.class})
+    public static class HypermediaConfig {
+    }
+
     @Nested
     class ContentRestAutoConfigurationCases {
         @Nested
@@ -52,7 +64,7 @@ public class ContentRestAutoConfigurationTest {
             void setUp() {
                 System.setProperty("spring.content.rest.base-uri", "/contentApi");
                 System.setProperty("spring.content.rest.fully-qualified-links", "false");
-                               System.setProperty("spring.content.rest.shortcut-request-mappings.disabled", "true");
+                System.setProperty("spring.content.rest.shortcut-request-mappings.disabled", "true");
                 System.setProperty("spring.content.rest.shortcut-request-mappings.excludes", "GET=a/b,c/d:PUT=*/*");
                 System.setProperty("spring.content.rest.overwrite-existing-content", "false");
             }
@@ -60,9 +72,9 @@ public class ContentRestAutoConfigurationTest {
             @AfterEach
             void tearDown() {
                 System.clearProperty("spring.content.rest.base-uri");
-                               System.clearProperty("spring.content.rest.fully-qualified-links");
-                               System.clearProperty("spring.content.rest.shortcut-request-mappings.disabled");
-                               System.clearProperty("spring.content.rest.shortcut-request-mappings.excludes");
+                System.clearProperty("spring.content.rest.fully-qualified-links");
+                System.clearProperty("spring.content.rest.shortcut-request-mappings.disabled");
+                System.clearProperty("spring.content.rest.shortcut-request-mappings.excludes");
                 System.clearProperty("spring.content.rest.overwrite-existing-content");
             }
 
@@ -75,8 +87,8 @@ public class ContentRestAutoConfigurationTest {
 
                 assertThat(context.getBean(ContentRestAutoConfiguration.ContentRestProperties.class).getBaseUri()).isEqualTo(URI.create("/contentApi"));
                 assertThat(context.getBean(ContentRestAutoConfiguration.ContentRestProperties.class).fullyQualifiedLinks()).isFalse();
-                               assertThat(context.getBean(ContentRestAutoConfiguration.ContentRestProperties.class).shortcutRequestMappings().disabled()).isTrue();
-                               assertThat(context.getBean(ContentRestAutoConfiguration.ContentRestProperties.class).shortcutRequestMappings().excludes()).isEqualTo("GET=a/b,c/d:PUT=*/*");
+                assertThat(context.getBean(ContentRestAutoConfiguration.ContentRestProperties.class).shortcutRequestMappings().disabled()).isTrue();
+                assertThat(context.getBean(ContentRestAutoConfiguration.ContentRestProperties.class).shortcutRequestMappings().excludes()).isEqualTo("GET=a/b,c/d:PUT=*/*");
                 assertThat(context.getBean(ContentRestAutoConfiguration.ContentRestProperties.class).getOverwriteExistingContent()).isFalse();
 
                 assertThat(context.getBean(SpringBootContentRestConfigurer.class)).isNotNull();
@@ -85,15 +97,4 @@ public class ContentRestAutoConfigurationTest {
             }
         }
     }
-
-	@SpringBootApplication(exclude={SolrAutoConfiguration.class, SolrExtensionAutoConfiguration.class, S3ContentAutoConfiguration.class})
-	@ImportAutoConfiguration({ HibernateJpaAutoConfiguration.class, DataJpaRepositoriesAutoConfiguration.class,
-			PropertyPlaceholderAutoConfiguration.class, DataRestAutoConfiguration.class,
-			JacksonAutoConfiguration.class, ContentRestAutoConfiguration.class})
-	public static class TestConfig {
-	}
-
-	@Configuration
-	@ImportAutoConfiguration({HypermediaAutoConfiguration.class})
-	public static class HypermediaConfig {}
 }

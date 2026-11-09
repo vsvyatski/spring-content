@@ -33,6 +33,87 @@ public class DefaultMongoStoreImplTest {
     private InputStream result;
     private Exception e;
 
+    public interface ContentProperty {
+        String getContentId();
+
+        void setContentId(String contentId);
+
+        long getContentLen();
+
+        void setContentLen(long contentLen);
+    }
+
+    public static class TestEntity implements ContentProperty {
+
+        @ContentId
+        private String contentId;
+
+        @ContentLength
+        private long contentLen;
+
+        public TestEntity() {
+            this.contentId = null;
+        }
+
+        public TestEntity(String contentId) {
+            this.contentId = new String(contentId);
+        }
+
+        @Override
+        public String getContentId() {
+            return this.contentId;
+        }
+
+        @Override
+        public void setContentId(String contentId) {
+            this.contentId = contentId;
+        }
+
+        @Override
+        public long getContentLen() {
+            return contentLen;
+        }
+
+        @Override
+        public void setContentLen(long contentLen) {
+            this.contentLen = contentLen;
+        }
+    }
+
+    public static class SharedIdContentIdEntity implements ContentProperty {
+
+        @jakarta.persistence.Id
+        @ContentId
+        private String contentId;
+
+        @ContentLength
+        private long contentLen;
+
+        public SharedIdContentIdEntity() {
+            this.contentId = null;
+        }
+
+        @Override
+        public String getContentId() {
+            return this.contentId;
+        }
+
+        @Override
+        public void setContentId(String contentId) {
+            this.contentId = contentId;
+        }
+
+        @Override
+        public long getContentLen() {
+            return contentLen;
+        }
+
+        @Override
+        public void setContentLen(long contentLen) {
+            this.contentLen = contentLen;
+        }
+    }
+
     @Nested
     class AssociativeStore {
         @BeforeEach
@@ -241,87 +322,6 @@ public class DefaultMongoStoreImplTest {
                     assertThat(e.getCause().getMessage()).isEqualTo("unset-exception");
                 }
             }
-        }
-    }
-
-    public interface ContentProperty {
-        String getContentId();
-
-        void setContentId(String contentId);
-
-        long getContentLen();
-
-        void setContentLen(long contentLen);
-    }
-
-    public static class TestEntity implements ContentProperty {
-
-        @ContentId
-        private String contentId;
-
-        @ContentLength
-        private long contentLen;
-
-        public TestEntity() {
-            this.contentId = null;
-        }
-
-        public TestEntity(String contentId) {
-            this.contentId = new String(contentId);
-        }
-
-        @Override
-        public String getContentId() {
-            return this.contentId;
-        }
-
-        @Override
-        public void setContentId(String contentId) {
-            this.contentId = contentId;
-        }
-
-        @Override
-        public long getContentLen() {
-            return contentLen;
-        }
-
-        @Override
-        public void setContentLen(long contentLen) {
-            this.contentLen = contentLen;
-        }
-    }
-
-    public static class SharedIdContentIdEntity implements ContentProperty {
-
-        @jakarta.persistence.Id
-        @ContentId
-        private String contentId;
-
-        @ContentLength
-        private long contentLen;
-
-        public SharedIdContentIdEntity() {
-            this.contentId = null;
-        }
-
-        @Override
-        public String getContentId() {
-            return this.contentId;
-        }
-
-        @Override
-        public void setContentId(String contentId) {
-            this.contentId = contentId;
-        }
-
-        @Override
-        public long getContentLen() {
-            return contentLen;
-        }
-
-        @Override
-        public void setContentLen(long contentLen) {
-            this.contentLen = contentLen;
         }
     }
 }

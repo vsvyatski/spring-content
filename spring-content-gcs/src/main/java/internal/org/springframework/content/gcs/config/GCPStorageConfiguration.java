@@ -25,64 +25,64 @@ import java.util.List;
 @Import(GoogleStorageProtocolResolver.class)
 public class GCPStorageConfiguration implements InitializingBean {
 
-	@Autowired(required = false)
-	private List<GCPStorageConfigurer> configurers;
+    @Autowired(required = false)
+    private List<GCPStorageConfigurer> configurers;
 
-	@Value("${spring.content.gcp.storage.bucket:#{environment.GCP_STORAGE_BUCKET}}")
-	private String bucket;
+    @Value("${spring.content.gcp.storage.bucket:#{environment.GCP_STORAGE_BUCKET}}")
+    private String bucket;
 
-	private PlacementService conversion = new PlacementServiceImpl();
+    private PlacementService conversion = new PlacementServiceImpl();
 
-	@Bean
-	public PlacementService gcpStoragePlacementService() {
-		return conversion;
-	}
+    public static void addDefaultConverters(PlacementService conversion, String bucket) {
 
-	public static void addDefaultConverters(PlacementService conversion, String bucket) {
+        // Serializable -> BlobId
+        conversion.addConverter(new BlobIdResolverConverter(bucket));
 
-		// Serializable -> BlobId
-		conversion.addConverter(new BlobIdResolverConverter(bucket));
+        // ContentPropertyInfo -> BlobId
+        conversion.addConverter(new Converter<ContentPropertyInfo<Object, Serializable>, BlobId>() {
 
-		// ContentPropertyInfo -> BlobId
-		conversion.addConverter(new Converter<ContentPropertyInfo<Object, Serializable>, BlobId>() {
+            private String defaultBucket = bucket;
 
-			private String defaultBucket = bucket;
+            @Override
+            public BlobId convert(ContentPropertyInfo<Object, Serializable> info) {
 
-			@Override
-			public BlobId convert(ContentPropertyInfo<Object, Serializable> info) {
+                String strBucket = null;
+                // @Bucket can be only on entity level, not per content property
+                Object bucket = BeanUtils.getFieldWithAnnotation(info.entity(), Bucket.class);
+                if (bucket == null) {
+                    bucket = defaultBucket;
+                }
+                if (bucket == null) {
+                    throw new StoreAccessException("Bucket not set");
+                } else {
+                    strBucket = bucket.toString();
+                }
 
-				String strBucket = null;
-				// @Bucket can be only on entity level, not per content property
-				Object bucket = BeanUtils.getFieldWithAnnotation(info.entity(), Bucket.class);
-				if (bucket == null) {
-					bucket = defaultBucket;
-				}
-				if (bucket == null) {
-					throw new StoreAccessException("Bucket not set");
-				} else {
-					strBucket = bucket.toString();
-				}
+                Serializable key = info.contentId();
 
-				Serializable key = info.contentId();
+                return (key != null) ? BlobId.of(strBucket, key.toString()) : null;
+            }
 
-				return (key != null) ? BlobId.of(strBucket, key.toString()) : null;
-			}
+        });
+    }
 
-		});
-	}
+    @Bean
+    public PlacementService gcpStoragePlacementService() {
+        return conversion;
+    }
 
-	private void addConverters(ConverterRegistry registry) {
-		if (configurers == null)
-			return;
+    private void addConverters(ConverterRegistry registry) {
+        if (configurers == null)
+            return;
 
-		for (GCPStorageConfigurer configurer : configurers) {
-			configurer.configureGCPStorageConverters(registry);
-		}
-	}
+        for (GCPStorageConfigurer configurer : configurers) {
+            configurer.configureGCPStorageConverters(registry);
+        }
+    }
 
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		addDefaultConverters(conversion, bucket);
-		addConverters(conversion);
-	}
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        addDefaultConverters(conversion, bucket);
+        addConverters(conversion);
+    }
 }

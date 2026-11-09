@@ -17,7 +17,7 @@ class SkippingInputStream extends InputStream {
     }
 
     private void ensureSkipped() throws IOException {
-        if(!hasSkipped) {
+        if (!hasSkipped) {
             delegate.skipNBytes(skipBytes);
             hasSkipped = true;
         }

@@ -14,33 +14,27 @@ import java.util.UUID;
 @Entity
 public class TestEntity7 implements ContentEntity {
 
+    @Id
+    @GeneratedValue
+    private Long id;
+    @ContentId
+    private UUID contentId;
+    @NaturalId
+    private String name;
+    @ContentLength
+    private Long len;
+    @MimeType
+    private String mimeType;
+    @OriginalFileName
+    private String originalFileName;
+    private String title;
+
     public TestEntity7() {
     }
 
     public TestEntity7(String name) {
         this.name = name;
     }
-
-    @Id
-    @GeneratedValue
-    private Long id;
-
-    @ContentId
-    private UUID contentId;
-
-    @NaturalId
-    private String name;
-
-    @ContentLength
-    private Long len;
-
-    @MimeType
-    private String mimeType;
-
-    @OriginalFileName
-    private String originalFileName;
-
-    private String title;
 
     public Long getId() {
         return id;

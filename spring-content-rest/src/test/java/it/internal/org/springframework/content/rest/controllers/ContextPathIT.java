@@ -56,30 +56,6 @@ public class ContextPathIT {
     @Autowired
     private WebApplicationContext context;
 
-    @Nested
-    class ContextPathContentTests {
-        @Nested
-        class GivenAnEntityIsTheSubjectOfARepositoryAndStorage {
-            @Nested
-            @DisplayName("given the repository and storage are exported to the same URI")
-            class GivenTheRepositoryAndStorageAreExportedToTheSameURIContent extends Content {
-                @BeforeEach
-                void setUp() {
-                    MockMvc mvc = MockMvcBuilders.webAppContextSetup(context).build();
-                    TestEntity3 testEntity3 = repo3.save(new TestEntity3());
-                    testEntity3.name = "tests";
-                    testEntity3 = repo3.save(testEntity3);
-                    this.setMvc(mvc);
-                    this.setUrl("/contextPath/testEntity3s/" + testEntity3.getId());
-                    this.setEntity(testEntity3);
-                    this.setRepository(repo3);
-                    this.setStore(store3);
-                    this.setContextPath("/contextPath");
-                }
-            }
-        }
-    }
-
     @Configuration
     @EnableJpaRepositories(basePackages = "internal.org.springframework.content.rest.support")
     @EnableTransactionManagement
@@ -152,6 +128,30 @@ public class ContextPathIT {
                             String.format("<html><body>%s</body></html>", input).getBytes());
                 }
             };
+        }
+    }
+
+    @Nested
+    class ContextPathContentTests {
+        @Nested
+        class GivenAnEntityIsTheSubjectOfARepositoryAndStorage {
+            @Nested
+            @DisplayName("given the repository and storage are exported to the same URI")
+            class GivenTheRepositoryAndStorageAreExportedToTheSameURIContent extends Content {
+                @BeforeEach
+                void setUp() {
+                    MockMvc mvc = MockMvcBuilders.webAppContextSetup(context).build();
+                    TestEntity3 testEntity3 = repo3.save(new TestEntity3());
+                    testEntity3.name = "tests";
+                    testEntity3 = repo3.save(testEntity3);
+                    this.setMvc(mvc);
+                    this.setUrl("/contextPath/testEntity3s/" + testEntity3.getId());
+                    this.setEntity(testEntity3);
+                    this.setRepository(repo3);
+                    this.setStore(store3);
+                    this.setContextPath("/contextPath");
+                }
+            }
         }
     }
 }

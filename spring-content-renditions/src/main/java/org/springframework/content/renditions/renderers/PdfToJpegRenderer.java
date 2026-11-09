@@ -21,66 +21,68 @@ import java.io.*;
 @Service
 public class PdfToJpegRenderer implements RenditionProvider {
 
-	private static Log logger = LogFactory.getLog(PdfToJpegRenderer.class);
+    private static Log logger = LogFactory.getLog(PdfToJpegRenderer.class);
 
-	private PDFService pdfService;
+    private PDFService pdfService;
 
-	public PdfToJpegRenderer() {
-		this.pdfService = new PDFServiceImpl();
-	};
+    public PdfToJpegRenderer() {
+        this.pdfService = new PDFServiceImpl();
+    }
 
-	public PdfToJpegRenderer(PDFService pdfService) {
-		this.pdfService = pdfService;
-	}
+    ;
 
-	@Override
-	public String consumes() {
-		return "application/pdf";
-	}
+    public PdfToJpegRenderer(PDFService pdfService) {
+        this.pdfService = pdfService;
+    }
 
-	@Override
-	public String[] produces() {
-		return new String[] { "image/jpg" };
-	}
+    @Override
+    public String consumes() {
+        return "application/pdf";
+    }
 
-	@SuppressWarnings("resource")
-	@Override
-	public InputStream convert(InputStream fromInputSource, String toMimeType) {
+    @Override
+    public String[] produces() {
+        return new String[]{"image/jpg"};
+    }
 
-		Assert.notNull(fromInputSource, "input source must not be null");
+    @SuppressWarnings("resource")
+    @Override
+    public InputStream convert(InputStream fromInputSource, String toMimeType) {
 
-		PDDocument document = null;
-		try {
-			document = pdfService.load(fromInputSource);
-			PDFRenderer pdfRenderer = pdfService.renderer(document);
-			if (document.getNumberOfPages() > 0) {
-  				BufferedImage bim = pdfRenderer.renderImageWithDPI(0, 300, ImageType.RGB);
-  				File tmp = File.createTempFile("pdftojpegrenderer", ".tmp");
-  				tmp.deleteOnExit();
-				FileOutputStream out = new FileOutputStream(tmp);
-				try {
-					pdfService.writeImage(bim, "jpeg", out);
-				} catch (IOException e) {
-					logger.error("Error writing buffered image to output stream");
-					throw new RenditionException("Error writing buffered image to output stream", e);
-				} finally {
-					IOUtils.closeQuietly(out);
-				}
-				return new ObservableInputStream(new FileInputStream(tmp), new FileRemover(tmp));
-			}
-		} catch (IOException e) {
-			logger.error("Error rendering application/pdf to image/jpeg");
-			throw new RenditionException("Error rendering application/pdf to image/jpeg", e);
-		} finally {
-			try {
-				if (document != null) {
-					document.close();
-				}
-			} catch (IOException e) {
-				// silent
-			}
-		}
+        Assert.notNull(fromInputSource, "input source must not be null");
 
-		return null;
-	}
+        PDDocument document = null;
+        try {
+            document = pdfService.load(fromInputSource);
+            PDFRenderer pdfRenderer = pdfService.renderer(document);
+            if (document.getNumberOfPages() > 0) {
+                BufferedImage bim = pdfRenderer.renderImageWithDPI(0, 300, ImageType.RGB);
+                File tmp = File.createTempFile("pdftojpegrenderer", ".tmp");
+                tmp.deleteOnExit();
+                FileOutputStream out = new FileOutputStream(tmp);
+                try {
+                    pdfService.writeImage(bim, "jpeg", out);
+                } catch (IOException e) {
+                    logger.error("Error writing buffered image to output stream");
+                    throw new RenditionException("Error writing buffered image to output stream", e);
+                } finally {
+                    IOUtils.closeQuietly(out);
+                }
+                return new ObservableInputStream(new FileInputStream(tmp), new FileRemover(tmp));
+            }
+        } catch (IOException e) {
+            logger.error("Error rendering application/pdf to image/jpeg");
+            throw new RenditionException("Error rendering application/pdf to image/jpeg", e);
+        } finally {
+            try {
+                if (document != null) {
+                    document.close();
+                }
+            } catch (IOException e) {
+                // silent
+            }
+        }
+
+        return null;
+    }
 }

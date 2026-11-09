@@ -10,6 +10,7 @@ public interface Stores {
         public String name() {
             return "MATCH_ALL";
         }
+
         @Override
         public boolean matches(StoreInfo info) {
             return true;
@@ -24,6 +25,7 @@ public interface Stores {
             public String name() {
                 return domainClass.getCanonicalName();
             }
+
             @Override
             public boolean matches(StoreInfo info) {
                 return domainClass.equals(info.getDomainObjectClass());

@@ -23,16 +23,136 @@ import static org.mockito.Mockito.*;
 @SuppressWarnings("unchecked")
 public class AnnotatedStoreEventInvokerTest {
 
+    // event handlers
+    private final HighestPriorityCustomEventHandler priorityHandler = new HighestPriorityCustomEventHandler();
     private AnnotatedStoreEventInvoker invoker;
-
     private StoreEvent event;
-
     // mocks
     private ReflectionService reflectionService;
     private ContentStore<Object, Serializable> store;
 
-    // event handlers
-    private final HighestPriorityCustomEventHandler priorityHandler = new HighestPriorityCustomEventHandler();
+    @StoreEventHandler
+    public static class CustomEventHandler {
+
+        @HandleBeforeGetResource
+        public void beforeGetResource(Object contentObject) {
+        }
+
+        @HandleBeforeGetResource
+        public void beforeGetResource(BeforeGetResourceEvent event) {
+        }
+
+        @HandleAfterGetResource
+        public void afterGetResource(Object contentObject) {
+        }
+
+        @HandleAfterGetResource
+        public void afterGetResource(AfterGetResourceEvent event) {
+        }
+
+        @HandleBeforeAssociate
+        public void beforeAssociate(Object contentObject) {
+        }
+
+        @HandleBeforeAssociate
+        public void beforeAssociate(BeforeAssociateEvent event) {
+        }
+
+        @HandleAfterAssociate
+        public void afterAssociate(Object contentObject) {
+        }
+
+        @HandleAfterAssociate
+        public void afterAssociate(AfterAssociateEvent event) {
+        }
+
+        @HandleBeforeUnassociate
+        public void beforeUnassociate(Object contentObject) {
+        }
+
+        @HandleBeforeUnassociate
+        public void beforeUnassociate(BeforeUnassociateEvent event) {
+        }
+
+        @HandleAfterUnassociate
+        public void afterUnassociate(Object contentObject) {
+        }
+
+        @HandleAfterUnassociate
+        public void afterUnassociate(AfterUnassociateEvent event) {
+        }
+
+        @HandleBeforeGetContent
+        public void beforeGetContent(Object contentObject) {
+        }
+
+        @HandleBeforeGetContent
+        public void beforeGetContent(BeforeGetContentEvent event) {
+        }
+
+        @HandleAfterGetContent
+        public void afterGetContent(Object contentObject) {
+        }
+
+        @HandleAfterGetContent
+        public void afterGetContent(AfterGetContentEvent event) {
+        }
+
+        @HandleBeforeSetContent
+        public void beforeSetContent(Object contentObject) {
+        }
+
+        @HandleBeforeSetContent
+        public void beforeSetContent(BeforeSetContentEvent event) {
+        }
+
+        @HandleAfterSetContent
+        public void afterSetContent(Object contentObject) {
+        }
+
+        @HandleAfterSetContent
+        public void afterSetContent(AfterSetContentEvent event) {
+        }
+
+        @HandleBeforeUnsetContent
+        public void beforeUnsetContent(Object contentObject) {
+        }
+
+        @HandleBeforeUnsetContent
+        public void beforeUnsetContent(BeforeUnsetContentEvent event) {
+        }
+
+        @HandleAfterUnsetContent
+        public void afterUnsetContent(Object contentObject) {
+        }
+
+        @HandleAfterUnsetContent
+        public void afterUnsetContent(AfterUnsetContentEvent event) {
+        }
+    }
+
+    @StoreEventHandler
+    public static class HighestPriorityCustomEventHandler {
+
+        @HandleBeforeGetResource
+        @Order(Ordered.HIGHEST_PRECEDENCE)
+        public void beforeGetResource(Object contentObject) {
+        }
+    }
+
+    public static class EventSource {
+    }
+
+    public static class UnknownContentEvent extends StoreEvent {
+
+        @Serial
+        private static final long serialVersionUID = 4393640168031790561L;
+
+        public UnknownContentEvent(Object source,
+                                   ContentStore<Object, Serializable> store) {
+            super(source, store);
+        }
+    }
 
     @Nested
     class PostProcessAfterInitialization {
@@ -74,8 +194,8 @@ public class AnnotatedStoreEventInvokerTest {
                             "custom-bean");
 
                     invoker.postProcessAfterInitialization(
-                                                    priorityHandler, "high-priority-custom-bean"
-                                            );
+                            priorityHandler, "high-priority-custom-bean"
+                    );
                 }
 
                 @Test
@@ -791,128 +911,5 @@ public class AnnotatedStoreEventInvokerTest {
 
         }
 
-    }
-
-    @StoreEventHandler
-    public static class CustomEventHandler {
-
-        @HandleBeforeGetResource
-        public void beforeGetResource(Object contentObject) {
-        }
-
-        @HandleBeforeGetResource
-        public void beforeGetResource(BeforeGetResourceEvent event) {
-        }
-
-        @HandleAfterGetResource
-        public void afterGetResource(Object contentObject) {
-        }
-
-        @HandleAfterGetResource
-        public void afterGetResource(AfterGetResourceEvent event) {
-        }
-
-        @HandleBeforeAssociate
-        public void beforeAssociate(Object contentObject) {
-        }
-
-        @HandleBeforeAssociate
-        public void beforeAssociate(BeforeAssociateEvent event) {
-        }
-
-        @HandleAfterAssociate
-        public void afterAssociate(Object contentObject) {
-        }
-
-        @HandleAfterAssociate
-        public void afterAssociate(AfterAssociateEvent event) {
-        }
-
-        @HandleBeforeUnassociate
-        public void beforeUnassociate(Object contentObject) {
-        }
-
-        @HandleBeforeUnassociate
-        public void beforeUnassociate(BeforeUnassociateEvent event) {
-        }
-
-        @HandleAfterUnassociate
-        public void afterUnassociate(Object contentObject) {
-        }
-
-        @HandleAfterUnassociate
-        public void afterUnassociate(AfterUnassociateEvent event) {
-        }
-
-        @HandleBeforeGetContent
-        public void beforeGetContent(Object contentObject) {
-        }
-
-        @HandleBeforeGetContent
-        public void beforeGetContent(BeforeGetContentEvent event) {
-        }
-
-        @HandleAfterGetContent
-        public void afterGetContent(Object contentObject) {
-        }
-
-        @HandleAfterGetContent
-        public void afterGetContent(AfterGetContentEvent event) {
-        }
-
-        @HandleBeforeSetContent
-        public void beforeSetContent(Object contentObject) {
-        }
-
-        @HandleBeforeSetContent
-        public void beforeSetContent(BeforeSetContentEvent event) {
-        }
-
-        @HandleAfterSetContent
-        public void afterSetContent(Object contentObject) {
-        }
-
-        @HandleAfterSetContent
-        public void afterSetContent(AfterSetContentEvent event) {
-        }
-
-        @HandleBeforeUnsetContent
-        public void beforeUnsetContent(Object contentObject) {
-        }
-
-        @HandleBeforeUnsetContent
-        public void beforeUnsetContent(BeforeUnsetContentEvent event) {
-        }
-
-        @HandleAfterUnsetContent
-        public void afterUnsetContent(Object contentObject) {
-        }
-
-        @HandleAfterUnsetContent
-        public void afterUnsetContent(AfterUnsetContentEvent event) {
-        }
-    }
-
-    @StoreEventHandler
-    public static class HighestPriorityCustomEventHandler {
-
-        @HandleBeforeGetResource
-        @Order(Ordered.HIGHEST_PRECEDENCE)
-        public void beforeGetResource(Object contentObject) {
-        }
-    }
-
-    public static class EventSource {
-    }
-
-    public static class UnknownContentEvent extends StoreEvent {
-
-        @Serial
-        private static final long serialVersionUID = 4393640168031790561L;
-
-        public UnknownContentEvent(Object source,
-                                   ContentStore<Object, Serializable> store) {
-            super(source, store);
-        }
     }
 }

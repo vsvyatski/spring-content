@@ -25,10 +25,65 @@ import static org.mockito.Mockito.verify;
 
 public class EnableFileSystemStoresTest {
 
-    private AnnotationConfigApplicationContext context;
-
     // mocks
     static FileSystemStoreConfigurer configurer;
+    private AnnotationConfigApplicationContext context;
+
+    @Test
+    public void noop() {
+    }
+
+    public interface TestEntityContentRepository extends ContentStore<TestEntity, String> {
+    }
+
+    @Configuration
+    @EnableFileSystemStores(basePackages = "contains.no.fs.repositories")
+    @PropertySource("classpath:/test.properties")
+    public static class EmptyConfig {
+    }
+
+    @Configuration
+    @EnableFileSystemStores
+    @PropertySource("classpath:/test.properties")
+    public static class TestConfig {
+
+        @Value("${spring.content.fs.filesystemRoot:#{null}}")
+        private String filesystemRoot;
+
+        @Bean
+        FileSystemResourceLoader fileSystemResourceLoader() {
+            return new FileSystemResourceLoader(filesystemRoot);
+        }
+    }
+
+    @Configuration
+    @EnableFileSystemStores
+    @PropertySource("classpath:/test.properties")
+    public static class ConverterConfig {
+
+        @Value("${spring.content.fs.filesystemRoot:#{null}}")
+        private String filesystemRoot;
+
+        @Bean
+        public FileSystemStoreConverter<UUID, String> uuidConverter() {
+            return source -> String.format("/%s", source.toString().replaceAll("-", "/"));
+        }
+
+        @Bean
+        public FileSystemStoreConfigurer configurer() {
+            return configurer;
+        }
+
+        @Bean
+        FileSystemResourceLoader fileSystemResourceLoader() {
+            return new FileSystemResourceLoader(filesystemRoot);
+        }
+    }
+
+    public static class TestEntity {
+        @ContentId
+        private String contentId;
+    }
 
     @Nested
     class EnableFileSystemStoresCases {
@@ -103,61 +158,5 @@ public class EnableFileSystemStoresTest {
                 assertThat(context.getBeanNamesForType(TestEntityContentRepository.class)).isEmpty();
             }
         }
-    }
-
-    @Test
-    public void noop() {
-    }
-
-    @Configuration
-    @EnableFileSystemStores(basePackages = "contains.no.fs.repositories")
-    @PropertySource("classpath:/test.properties")
-    public static class EmptyConfig {
-    }
-
-    @Configuration
-    @EnableFileSystemStores
-    @PropertySource("classpath:/test.properties")
-    public static class TestConfig {
-
-        @Value("${spring.content.fs.filesystemRoot:#{null}}")
-        private String filesystemRoot;
-
-        @Bean
-        FileSystemResourceLoader fileSystemResourceLoader() {
-            return new FileSystemResourceLoader(filesystemRoot);
-        }
-    }
-
-    @Configuration
-    @EnableFileSystemStores
-    @PropertySource("classpath:/test.properties")
-    public static class ConverterConfig {
-
-        @Value("${spring.content.fs.filesystemRoot:#{null}}")
-        private String filesystemRoot;
-
-        @Bean
-        public FileSystemStoreConverter<UUID, String> uuidConverter() {
-            return source -> String.format("/%s", source.toString().replaceAll("-", "/"));
-        }
-
-        @Bean
-        public FileSystemStoreConfigurer configurer() {
-            return configurer;
-        }
-
-        @Bean
-        FileSystemResourceLoader fileSystemResourceLoader() {
-            return new FileSystemResourceLoader(filesystemRoot);
-        }
-    }
-
-    public static class TestEntity {
-        @ContentId
-        private String contentId;
-    }
-
-    public interface TestEntityContentRepository extends ContentStore<TestEntity, String> {
     }
 }

@@ -14,12 +14,76 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class CorsConfigurationBuilderTest {
 
-	private CorsConfigurationBuilder builder;
-	private CorsConfiguration config;
+    private CorsConfigurationBuilder builder;
+    private CorsConfiguration config;
 
-	private Class<?> storeInterface;
+    private Class<?> storeInterface;
 
-	private Exception e;
+    private Exception e;
+
+    public interface StoreWithNoCrossOrigin extends Store<UUID> {
+    }
+
+    @CrossOrigin(origins = {"http://domain1.com", "http://domain2.com"})
+    public interface StoreWithOrigins extends Store<UUID> {
+    }
+
+    @CrossOrigin(origins = {})
+    public interface StoreWithEmptyOrigins extends Store<UUID> {
+    }
+
+    @CrossOrigin(allowedHeaders = {"header1", "header2"})
+    public interface StoreWithAllowedHeaders extends Store<UUID> {
+    }
+
+    @CrossOrigin(allowedHeaders = {})
+    public interface StoreWithEmptyAllowedHeaders extends Store<UUID> {
+    }
+
+    @CrossOrigin(exposedHeaders = {"exposed1", "exposed2"})
+    public interface StoreWithExposedHeaders extends Store<UUID> {
+    }
+
+    @CrossOrigin(exposedHeaders = {})
+    public interface StoreWithEmptyExposedHeaders extends Store<UUID> {
+    }
+
+    @CrossOrigin(methods = {RequestMethod.GET, RequestMethod.PUT, RequestMethod.POST,
+            RequestMethod.DELETE})
+    public interface StoreWithAllowedMethods extends Store<UUID> {
+    }
+
+    @CrossOrigin(methods = {})
+    public interface StoreWithEmptyAllowedMethods extends Store<UUID> {
+    }
+
+    @CrossOrigin(allowCredentials = "true")
+    public interface StoreWithAllowCredentials extends Store<UUID> {
+    }
+
+    @CrossOrigin(allowCredentials = "false")
+    public interface StoreWithDisallowCredentials extends Store<UUID> {
+    }
+
+    @CrossOrigin(allowCredentials = "something-else")
+    public interface StoreWithMisconfiguredAllowCredentials extends Store<UUID> {
+    }
+
+    @CrossOrigin(allowCredentials = "")
+    public interface StoreWithEmptyAllowCredentials extends Store<UUID> {
+    }
+
+    @CrossOrigin(maxAge = 1000L)
+    public interface StoreWithMaxAge extends Store<UUID> {
+    }
+
+    @CrossOrigin(maxAge = 0L)
+    public interface StoreWithZeroMaxAge extends Store<UUID> {
+    }
+
+    @CrossOrigin(maxAge = -1000L)
+    public interface StoreWithNegativeMaxAge extends Store<UUID> {
+    }
 
     @Nested
     class CorsConfigurationBuilderCases {
@@ -32,18 +96,19 @@ public class CorsConfigurationBuilderTest {
                     storeInterface = StoreWithNoCrossOrigin.class;
 
                     builder = new CorsConfigurationBuilder();
-                    					try {
-                    						config = builder.build(storeInterface);
-                    					}
-                    					catch (Exception e) {
-                    						CorsConfigurationBuilderTest.this.e = e;
-                    					}
+                    try {
+                        config = builder.build(storeInterface);
+                    } catch (Exception e) {
+                        CorsConfigurationBuilderTest.this.e = e;
+                    }
                 }
+
                 @Test
                 void shouldNotACorsConfiguration() {
                     assertThat(config).isNull();
                 }
             }
+
             @Nested
             class GivenAnOriginsValue {
                 @BeforeEach
@@ -51,18 +116,19 @@ public class CorsConfigurationBuilderTest {
                     storeInterface = StoreWithOrigins.class;
 
                     builder = new CorsConfigurationBuilder();
-                    					try {
-                    						config = builder.build(storeInterface);
-                    					}
-                    					catch (Exception e) {
-                    						CorsConfigurationBuilderTest.this.e = e;
-                    					}
+                    try {
+                        config = builder.build(storeInterface);
+                    } catch (Exception e) {
+                        CorsConfigurationBuilderTest.this.e = e;
+                    }
                 }
+
                 @Test
                 void shouldCreateACorsConfigurationWithThoseOrigins() {
                     assertThat(config.getAllowedOrigins()).contains("http://domain1.com", "http://domain2.com");
                 }
             }
+
             @Nested
             class GivenAnEmptyOriginsValue {
                 @BeforeEach
@@ -70,18 +136,19 @@ public class CorsConfigurationBuilderTest {
                     storeInterface = StoreWithEmptyOrigins.class;
 
                     builder = new CorsConfigurationBuilder();
-                    					try {
-                    						config = builder.build(storeInterface);
-                    					}
-                    					catch (Exception e) {
-                    						CorsConfigurationBuilderTest.this.e = e;
-                    					}
+                    try {
+                        config = builder.build(storeInterface);
+                    } catch (Exception e) {
+                        CorsConfigurationBuilderTest.this.e = e;
+                    }
                 }
+
                 @Test
                 void shouldSetTheDefaultOrigin() {
                     assertThat(config.getAllowedOrigins()).contains("*");
                 }
             }
+
             @Nested
             class GivenAnAllowedMethodsValue {
                 @BeforeEach
@@ -89,18 +156,19 @@ public class CorsConfigurationBuilderTest {
                     storeInterface = StoreWithAllowedMethods.class;
 
                     builder = new CorsConfigurationBuilder();
-                    					try {
-                    						config = builder.build(storeInterface);
-                    					}
-                    					catch (Exception e) {
-                    						CorsConfigurationBuilderTest.this.e = e;
-                    					}
+                    try {
+                        config = builder.build(storeInterface);
+                    } catch (Exception e) {
+                        CorsConfigurationBuilderTest.this.e = e;
+                    }
                 }
+
                 @Test
                 void shouldCreateACorsConfigurationWithThoseAllowedMethods() {
                     assertThat(config.getAllowedMethods()).contains("GET", "PUT", "POST", "DELETE");
                 }
             }
+
             @Nested
             class GivenAnEmptyAllowedMethodsValue {
                 @BeforeEach
@@ -108,18 +176,19 @@ public class CorsConfigurationBuilderTest {
                     storeInterface = StoreWithEmptyAllowedMethods.class;
 
                     builder = new CorsConfigurationBuilder();
-                    					try {
-                    						config = builder.build(storeInterface);
-                    					}
-                    					catch (Exception e) {
-                    						CorsConfigurationBuilderTest.this.e = e;
-                    					}
+                    try {
+                        config = builder.build(storeInterface);
+                    } catch (Exception e) {
+                        CorsConfigurationBuilderTest.this.e = e;
+                    }
                 }
+
                 @Test
                 void shouldSetTheDefaultAllowedMethods() {
                     assertThat(config.getAllowedMethods()).contains("GET", "POST", "HEAD");
                 }
             }
+
             @Nested
             class GivenAnAllowedHeadersValue {
                 @BeforeEach
@@ -127,18 +196,19 @@ public class CorsConfigurationBuilderTest {
                     storeInterface = StoreWithAllowedHeaders.class;
 
                     builder = new CorsConfigurationBuilder();
-                    					try {
-                    						config = builder.build(storeInterface);
-                    					}
-                    					catch (Exception e) {
-                    						CorsConfigurationBuilderTest.this.e = e;
-                    					}
+                    try {
+                        config = builder.build(storeInterface);
+                    } catch (Exception e) {
+                        CorsConfigurationBuilderTest.this.e = e;
+                    }
                 }
+
                 @Test
                 void shouldCreateACorsConfigurationWithThoseAllowedHeaders() {
                     assertThat(config.getAllowedHeaders()).contains("header1", "header2");
                 }
             }
+
             @Nested
             class GivenAnEmptyAllowedHeadersValue {
                 @BeforeEach
@@ -146,18 +216,19 @@ public class CorsConfigurationBuilderTest {
                     storeInterface = StoreWithEmptyAllowedHeaders.class;
 
                     builder = new CorsConfigurationBuilder();
-                    					try {
-                    						config = builder.build(storeInterface);
-                    					}
-                    					catch (Exception e) {
-                    						CorsConfigurationBuilderTest.this.e = e;
-                    					}
+                    try {
+                        config = builder.build(storeInterface);
+                    } catch (Exception e) {
+                        CorsConfigurationBuilderTest.this.e = e;
+                    }
                 }
+
                 @Test
                 void shouldSetTheDefaultAllowedHeaders() {
                     assertThat(config.getAllowedHeaders()).contains("*");
                 }
             }
+
             @Nested
             class GivenAnExposedHeadersValue {
                 @BeforeEach
@@ -165,18 +236,19 @@ public class CorsConfigurationBuilderTest {
                     storeInterface = StoreWithExposedHeaders.class;
 
                     builder = new CorsConfigurationBuilder();
-                    					try {
-                    						config = builder.build(storeInterface);
-                    					}
-                    					catch (Exception e) {
-                    						CorsConfigurationBuilderTest.this.e = e;
-                    					}
+                    try {
+                        config = builder.build(storeInterface);
+                    } catch (Exception e) {
+                        CorsConfigurationBuilderTest.this.e = e;
+                    }
                 }
+
                 @Test
                 void shouldCreateACorsConfigurationWithThoseExposedHeaders() {
                     assertThat(config.getExposedHeaders()).contains("exposed1", "exposed2");
                 }
             }
+
             @Nested
             class GivenAnEmptyExposedHeadersValue {
                 @BeforeEach
@@ -184,18 +256,19 @@ public class CorsConfigurationBuilderTest {
                     storeInterface = StoreWithEmptyExposedHeaders.class;
 
                     builder = new CorsConfigurationBuilder();
-                    					try {
-                    						config = builder.build(storeInterface);
-                    					}
-                    					catch (Exception e) {
-                    						CorsConfigurationBuilderTest.this.e = e;
-                    					}
+                    try {
+                        config = builder.build(storeInterface);
+                    } catch (Exception e) {
+                        CorsConfigurationBuilderTest.this.e = e;
+                    }
                 }
+
                 @Test
                 void shouldCreateACorsConfigurationWithANullExposedHeaders() {
                     assertThat(config.getExposedHeaders()).isNull();
                 }
             }
+
             @Nested
             class GivenAnAllowCredentialsValueOfTrue {
                 @BeforeEach
@@ -203,18 +276,19 @@ public class CorsConfigurationBuilderTest {
                     storeInterface = StoreWithAllowCredentials.class;
 
                     builder = new CorsConfigurationBuilder();
-                    					try {
-                    						config = builder.build(storeInterface);
-                    					}
-                    					catch (Exception e) {
-                    						CorsConfigurationBuilderTest.this.e = e;
-                    					}
+                    try {
+                        config = builder.build(storeInterface);
+                    } catch (Exception e) {
+                        CorsConfigurationBuilderTest.this.e = e;
+                    }
                 }
+
                 @Test
                 void shouldCreateACorsConfigurationWithThatValue() {
                     assertThat(config.getAllowCredentials()).isTrue();
                 }
             }
+
             @Nested
             class GivenAnAllowCredentialsValueOfFalse {
                 @BeforeEach
@@ -222,18 +296,19 @@ public class CorsConfigurationBuilderTest {
                     storeInterface = StoreWithDisallowCredentials.class;
 
                     builder = new CorsConfigurationBuilder();
-                    					try {
-                    						config = builder.build(storeInterface);
-                    					}
-                    					catch (Exception e) {
-                    						CorsConfigurationBuilderTest.this.e = e;
-                    					}
+                    try {
+                        config = builder.build(storeInterface);
+                    } catch (Exception e) {
+                        CorsConfigurationBuilderTest.this.e = e;
+                    }
                 }
+
                 @Test
                 void shouldCreateACorsConfigurationWithThatValue() {
                     assertThat(config.getAllowCredentials()).isFalse();
                 }
             }
+
             @Nested
             class GivenAnAllowCredentialsValueOfSomethingElse {
                 @BeforeEach
@@ -241,18 +316,19 @@ public class CorsConfigurationBuilderTest {
                     storeInterface = StoreWithMisconfiguredAllowCredentials.class;
 
                     builder = new CorsConfigurationBuilder();
-                    					try {
-                    						config = builder.build(storeInterface);
-                    					}
-                    					catch (Exception e) {
-                    						CorsConfigurationBuilderTest.this.e = e;
-                    					}
+                    try {
+                        config = builder.build(storeInterface);
+                    } catch (Exception e) {
+                        CorsConfigurationBuilderTest.this.e = e;
+                    }
                 }
+
                 @Test
                 void shouldCreateACorsConfigurationWithThatValue() {
                     assertThat(e).isNotNull();
                 }
             }
+
             @Nested
             class GivenAnAllowCredentialsValueOf {
                 @BeforeEach
@@ -260,18 +336,19 @@ public class CorsConfigurationBuilderTest {
                     storeInterface = StoreWithEmptyAllowCredentials.class;
 
                     builder = new CorsConfigurationBuilder();
-                    					try {
-                    						config = builder.build(storeInterface);
-                    					}
-                    					catch (Exception e) {
-                    						CorsConfigurationBuilderTest.this.e = e;
-                    					}
+                    try {
+                        config = builder.build(storeInterface);
+                    } catch (Exception e) {
+                        CorsConfigurationBuilderTest.this.e = e;
+                    }
                 }
+
                 @Test
                 void shouldCreateACorsConfigurationWithTheDefaultAllowCredentialsValue() {
                     assertThat(config.getAllowCredentials()).isNull();
                 }
             }
+
             @Nested
             class GivenAPositiveMaxAgeSpecification {
                 @BeforeEach
@@ -279,18 +356,19 @@ public class CorsConfigurationBuilderTest {
                     storeInterface = StoreWithMaxAge.class;
 
                     builder = new CorsConfigurationBuilder();
-                    					try {
-                    						config = builder.build(storeInterface);
-                    					}
-                    					catch (Exception e) {
-                    						CorsConfigurationBuilderTest.this.e = e;
-                    					}
+                    try {
+                        config = builder.build(storeInterface);
+                    } catch (Exception e) {
+                        CorsConfigurationBuilderTest.this.e = e;
+                    }
                 }
+
                 @Test
                 void shouldCreateACorsConfigurationWithThatMaxAge() {
                     assertThat(config.getMaxAge()).isEqualTo(1000L);
                 }
             }
+
             @Nested
             class GivenAnZeroMaxAgeSpecification {
                 @BeforeEach
@@ -298,18 +376,19 @@ public class CorsConfigurationBuilderTest {
                     storeInterface = StoreWithZeroMaxAge.class;
 
                     builder = new CorsConfigurationBuilder();
-                    					try {
-                    						config = builder.build(storeInterface);
-                    					}
-                    					catch (Exception e) {
-                    						CorsConfigurationBuilderTest.this.e = e;
-                    					}
+                    try {
+                        config = builder.build(storeInterface);
+                    } catch (Exception e) {
+                        CorsConfigurationBuilderTest.this.e = e;
+                    }
                 }
+
                 @Test
                 void shouldCreateACorsConfigurationWithThatMaxAge() {
                     assertThat(config.getMaxAge()).isEqualTo(0L);
                 }
             }
+
             @Nested
             class GivenAnNegativeMaxAgeSpecification {
                 @BeforeEach
@@ -317,13 +396,13 @@ public class CorsConfigurationBuilderTest {
                     storeInterface = StoreWithNegativeMaxAge.class;
 
                     builder = new CorsConfigurationBuilder();
-                    					try {
-                    						config = builder.build(storeInterface);
-                    					}
-                    					catch (Exception e) {
-                    						CorsConfigurationBuilderTest.this.e = e;
-                    					}
+                    try {
+                        config = builder.build(storeInterface);
+                    } catch (Exception e) {
+                        CorsConfigurationBuilderTest.this.e = e;
+                    }
                 }
+
                 @Test
                 void shouldCreateACorsConfigurationWithTheDefaultMaxAge() {
                     assertThat(config.getMaxAge()).isEqualTo(1800L);
@@ -331,68 +410,4 @@ public class CorsConfigurationBuilderTest {
             }
         }
     }
-
-	public interface StoreWithNoCrossOrigin extends Store<UUID> {
-	}
-
-	@CrossOrigin(origins = { "http://domain1.com", "http://domain2.com" })
-	public interface StoreWithOrigins extends Store<UUID> {
-	}
-
-	@CrossOrigin(origins = {})
-	public interface StoreWithEmptyOrigins extends Store<UUID> {
-	}
-
-	@CrossOrigin(allowedHeaders = { "header1", "header2" })
-	public interface StoreWithAllowedHeaders extends Store<UUID> {
-	}
-
-	@CrossOrigin(allowedHeaders = {})
-	public interface StoreWithEmptyAllowedHeaders extends Store<UUID> {
-	}
-
-	@CrossOrigin(exposedHeaders = { "exposed1", "exposed2" })
-	public interface StoreWithExposedHeaders extends Store<UUID> {
-	}
-
-	@CrossOrigin(exposedHeaders = {})
-	public interface StoreWithEmptyExposedHeaders extends Store<UUID> {
-	}
-
-	@CrossOrigin(methods = { RequestMethod.GET, RequestMethod.PUT, RequestMethod.POST,
-			RequestMethod.DELETE })
-	public interface StoreWithAllowedMethods extends Store<UUID> {
-	}
-
-	@CrossOrigin(methods = {})
-	public interface StoreWithEmptyAllowedMethods extends Store<UUID> {
-	}
-
-	@CrossOrigin(allowCredentials = "true")
-	public interface StoreWithAllowCredentials extends Store<UUID> {
-	}
-
-	@CrossOrigin(allowCredentials = "false")
-	public interface StoreWithDisallowCredentials extends Store<UUID> {
-	}
-
-	@CrossOrigin(allowCredentials = "something-else")
-	public interface StoreWithMisconfiguredAllowCredentials extends Store<UUID> {
-	}
-
-	@CrossOrigin(allowCredentials = "")
-	public interface StoreWithEmptyAllowCredentials extends Store<UUID> {
-	}
-
-	@CrossOrigin(maxAge = 1000L)
-	public interface StoreWithMaxAge extends Store<UUID> {
-	}
-
-	@CrossOrigin(maxAge = 0L)
-	public interface StoreWithZeroMaxAge extends Store<UUID> {
-	}
-
-	@CrossOrigin(maxAge = -1000L)
-	public interface StoreWithNegativeMaxAge extends Store<UUID> {
-	}
 }

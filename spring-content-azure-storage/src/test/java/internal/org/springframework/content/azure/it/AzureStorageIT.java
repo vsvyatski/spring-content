@@ -71,6 +71,223 @@ public class AzureStorageIT {
 
     private String resourceLocation;
 
+    @Test
+    public void test() {
+        // noop
+    }
+
+    public interface TestEntityRepository extends JpaRepository<TestEntity, Long> {
+    }
+
+    public interface TestEntityStore extends ContentStore<TestEntity, String> {
+    }
+
+    public interface SharedIdRepository extends JpaRepository<SharedIdContentIdEntity, String> {
+    }
+
+    public interface SharedIdStore extends ContentStore<SharedIdContentIdEntity, String> {
+    }
+
+    public interface EmbeddedRepository extends JpaRepository<EntityWithEmbeddedContent, String> {
+    }
+
+    public interface EmbeddedStore extends ContentStore<EntityWithEmbeddedContent, String> {
+    }
+
+    @Configuration
+    @EnableJpaRepositories(basePackages = "internal.org.springframework.content.azure.it", considerNestedRepositories = true)
+    @EnableAzureStorage(basePackages = "internal.org.springframework.content.azure.it")
+    @Import(InfrastructureConfig.class)
+    public static class TestConfig {
+        @Bean
+        public BlobServiceClientBuilder blobServiceClientBuilder() {
+            return builder;
+        }
+    }
+
+    @Configuration
+    public static class InfrastructureConfig {
+
+        @Bean
+        public DataSource dataSource() {
+            EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
+            return builder.setType(EmbeddedDatabaseType.H2).build();
+        }
+
+        @Bean
+        public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+
+            HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+            vendorAdapter.setDatabase(Database.H2);
+            vendorAdapter.setGenerateDdl(true);
+
+            LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
+            factory.setJpaVendorAdapter(vendorAdapter);
+            factory.setPackagesToScan("internal.org.springframework.content.azure.it");
+            factory.setDataSource(dataSource());
+
+            return factory;
+        }
+
+        @Bean
+        public PlatformTransactionManager transactionManager() {
+
+            JpaTransactionManager txManager = new JpaTransactionManager();
+            txManager.setEntityManagerFactory(entityManagerFactory().getObject());
+            return txManager;
+        }
+    }
+
+    @Entity
+    public static class TestEntity {
+
+        @Id
+        @GeneratedValue(strategy = GenerationType.AUTO)
+        private Long id;
+
+        @ContentId
+        private String contentId;
+
+        @ContentLength
+        private Long contentLen;
+
+        @ContentId
+        private String renditionId;
+
+        @ContentLength
+        private long renditionLen;
+
+        public TestEntity() {
+        }
+
+        public TestEntity(String contentId) {
+            this.contentId = contentId;
+        }
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+
+        public String getContentId() {
+            return contentId;
+        }
+
+        public void setContentId(String contentId) {
+            this.contentId = contentId;
+        }
+
+        public Long getContentLen() {
+            return contentLen;
+        }
+
+        public void setContentLen(Long contentLen) {
+            this.contentLen = contentLen;
+        }
+
+        public String getRenditionId() {
+            return renditionId;
+        }
+
+        public void setRenditionId(String renditionId) {
+            this.renditionId = renditionId;
+        }
+
+        public long getRenditionLen() {
+            return renditionLen;
+        }
+
+        public void setRenditionLen(long renditionLen) {
+            this.renditionLen = renditionLen;
+        }
+    }
+
+    @Entity
+    public static class SharedIdContentIdEntity {
+
+        @jakarta.persistence.Id
+        @ContentId
+        private String contentId = UUID.randomUUID().toString();
+
+        @ContentLength
+        private long contentLen;
+
+        public SharedIdContentIdEntity() {
+        }
+
+        public String getContentId() {
+            return contentId;
+        }
+
+        public void setContentId(String contentId) {
+            this.contentId = contentId;
+        }
+
+        public long getContentLen() {
+            return contentLen;
+        }
+
+        public void setContentLen(long contentLen) {
+            this.contentLen = contentLen;
+        }
+    }
+
+    @Entity
+    @Table(name = "entity_with_embedded")
+    public static class EntityWithEmbeddedContent {
+
+        @Id
+        private String id = UUID.randomUUID().toString();
+
+        @Embedded
+        private EmbeddedContent content;
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
+        }
+
+        public EmbeddedContent getContent() {
+            return content;
+        }
+
+        public void setContent(EmbeddedContent content) {
+            this.content = content;
+        }
+    }
+
+    @Embeddable
+    public static class EmbeddedContent {
+
+        @ContentId
+        private String contentId;
+
+        @ContentLength
+        private Long contentLen;
+
+        public String getContentId() {
+            return contentId;
+        }
+
+        public void setContentId(String contentId) {
+            this.contentId = contentId;
+        }
+
+        public Long getContentLen() {
+            return contentLen;
+        }
+
+        public void setContentLen(Long contentLen) {
+            this.contentLen = contentLen;
+        }
+    }
+
     @Nested
     class DefaultAzureStorageImplCases {
         @Nested
@@ -1120,222 +1337,5 @@ public class AzureStorageIT {
                 }
             }
         }
-    }
-
-    @Test
-    public void test() {
-        // noop
-    }
-
-    @Configuration
-    @EnableJpaRepositories(basePackages = "internal.org.springframework.content.azure.it", considerNestedRepositories = true)
-    @EnableAzureStorage(basePackages = "internal.org.springframework.content.azure.it")
-    @Import(InfrastructureConfig.class)
-    public static class TestConfig {
-        @Bean
-        public BlobServiceClientBuilder blobServiceClientBuilder() {
-            return builder;
-        }
-    }
-
-    @Configuration
-    public static class InfrastructureConfig {
-
-        @Bean
-        public DataSource dataSource() {
-            EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
-            return builder.setType(EmbeddedDatabaseType.H2).build();
-        }
-
-        @Bean
-        public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-
-            HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-            vendorAdapter.setDatabase(Database.H2);
-            vendorAdapter.setGenerateDdl(true);
-
-            LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
-            factory.setJpaVendorAdapter(vendorAdapter);
-            factory.setPackagesToScan("internal.org.springframework.content.azure.it");
-            factory.setDataSource(dataSource());
-
-            return factory;
-        }
-
-        @Bean
-        public PlatformTransactionManager transactionManager() {
-
-            JpaTransactionManager txManager = new JpaTransactionManager();
-            txManager.setEntityManagerFactory(entityManagerFactory().getObject());
-            return txManager;
-        }
-    }
-
-    @Entity
-    public static class TestEntity {
-
-        @Id
-        @GeneratedValue(strategy = GenerationType.AUTO)
-        private Long id;
-
-        @ContentId
-        private String contentId;
-
-        @ContentLength
-        private Long contentLen;
-
-        @ContentId
-        private String renditionId;
-
-        @ContentLength
-        private long renditionLen;
-
-        public TestEntity() {
-        }
-
-        public TestEntity(String contentId) {
-            this.contentId = contentId;
-        }
-
-        public Long getId() {
-            return id;
-        }
-
-        public void setId(Long id) {
-            this.id = id;
-        }
-
-        public String getContentId() {
-            return contentId;
-        }
-
-        public void setContentId(String contentId) {
-            this.contentId = contentId;
-        }
-
-        public Long getContentLen() {
-            return contentLen;
-        }
-
-        public void setContentLen(Long contentLen) {
-            this.contentLen = contentLen;
-        }
-
-        public String getRenditionId() {
-            return renditionId;
-        }
-
-        public void setRenditionId(String renditionId) {
-            this.renditionId = renditionId;
-        }
-
-        public long getRenditionLen() {
-            return renditionLen;
-        }
-
-        public void setRenditionLen(long renditionLen) {
-            this.renditionLen = renditionLen;
-        }
-    }
-
-    public interface TestEntityRepository extends JpaRepository<TestEntity, Long> {
-    }
-
-    public interface TestEntityStore extends ContentStore<TestEntity, String> {
-    }
-
-    @Entity
-    public static class SharedIdContentIdEntity {
-
-        @jakarta.persistence.Id
-        @ContentId
-        private String contentId = UUID.randomUUID().toString();
-
-        @ContentLength
-        private long contentLen;
-
-        public SharedIdContentIdEntity() {
-        }
-
-        public String getContentId() {
-            return contentId;
-        }
-
-        public void setContentId(String contentId) {
-            this.contentId = contentId;
-        }
-
-        public long getContentLen() {
-            return contentLen;
-        }
-
-        public void setContentLen(long contentLen) {
-            this.contentLen = contentLen;
-        }
-    }
-
-    public interface SharedIdRepository extends JpaRepository<SharedIdContentIdEntity, String> {
-    }
-
-    public interface SharedIdStore extends ContentStore<SharedIdContentIdEntity, String> {
-    }
-
-    @Entity
-    @Table(name = "entity_with_embedded")
-    public static class EntityWithEmbeddedContent {
-
-        @Id
-        private String id = UUID.randomUUID().toString();
-
-        @Embedded
-        private EmbeddedContent content;
-
-        public String getId() {
-            return id;
-        }
-
-        public void setId(String id) {
-            this.id = id;
-        }
-
-        public EmbeddedContent getContent() {
-            return content;
-        }
-
-        public void setContent(EmbeddedContent content) {
-            this.content = content;
-        }
-    }
-
-    @Embeddable
-    public static class EmbeddedContent {
-
-        @ContentId
-        private String contentId;
-
-        @ContentLength
-        private Long contentLen;
-
-        public String getContentId() {
-            return contentId;
-        }
-
-        public void setContentId(String contentId) {
-            this.contentId = contentId;
-        }
-
-        public Long getContentLen() {
-            return contentLen;
-        }
-
-        public void setContentLen(Long contentLen) {
-            this.contentLen = contentLen;
-        }
-    }
-
-    public interface EmbeddedRepository extends JpaRepository<EntityWithEmbeddedContent, String> {
-    }
-
-    public interface EmbeddedStore extends ContentStore<EntityWithEmbeddedContent, String> {
     }
 }

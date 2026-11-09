@@ -40,11 +40,11 @@ public class SearchableImpl implements Searchable<Object>, ContentStoreAware {
 
     private final SolrClient solr;
     private final SolrProperties solrProperties;
+    private final ConversionService conversionService;
     private Class<?> domainClass;
     private Class<?> idClass;
     private Class<?>[] genericArguments;
     private FilterQueryProvider filterProvider;
-    private final ConversionService conversionService;
 
     @Autowired
     public SearchableImpl(SolrClient solr, SolrProperties solrProperties) {
@@ -56,11 +56,6 @@ public class SearchableImpl implements Searchable<Object>, ContentStoreAware {
     @Autowired(required = false)
     public void setFilterQueryProvider(FilterQueryProvider provider) {
         this.filterProvider = provider;
-    }
-
-    @Override
-    public void setDomainClass(Class<?> domainClass) {
-        this.domainClass = domainClass;
     }
 
     @Override
@@ -196,6 +191,11 @@ public class SearchableImpl implements Searchable<Object>, ContentStoreAware {
 
     protected Class<?> getDomainClass() {
         return domainClass;
+    }
+
+    @Override
+    public void setDomainClass(Class<?> domainClass) {
+        this.domainClass = domainClass;
     }
 
     @Override

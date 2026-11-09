@@ -65,7 +65,7 @@ public class SearchableImpl implements Searchable<Object> {
         this.conversionService = new DefaultConversionService();
     }
 
-    @Autowired(required=false)
+    @Autowired(required = false)
     public void setFilterQueryProvider(FilterQueryProvider provider) {
         this.filterProvider = provider;
     }
@@ -133,8 +133,7 @@ public class SearchableImpl implements Searchable<Object> {
                 return s;
             }, Map.class);
             return getResults(res.hits(), pageable, searchType, returnType);
-        }
-        catch (IOException | ElasticsearchException e) {
+        } catch (IOException | ElasticsearchException e) {
             LOGGER.error(format("Error searching indexed content for '%s'", queryString), e);
             throw new StoreAccessException(format("Error searching indexed content for '%s'", queryString), e);
         }

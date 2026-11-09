@@ -7,5 +7,6 @@ import org.springframework.web.context.request.NativeWebRequest;
 
 public interface ResourceResolver {
     public String getMapping();
+
     public Resource resolve(NativeWebRequest nativeWebRequest, StoreInfo info, Object domainObj, PropertyPath propertyPath);
 }

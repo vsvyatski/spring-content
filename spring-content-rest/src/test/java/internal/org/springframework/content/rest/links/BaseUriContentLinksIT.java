@@ -25,33 +25,33 @@ import static java.lang.String.format;
 
 @WebAppConfiguration
 @ContextConfiguration(classes = {
-		BaseUriConfig.class,
-		DelegatingWebMvcConfiguration.class,
-		RepositoryRestMvcConfiguration.class,
-		RestConfiguration.class,
-		HypermediaConfiguration.class })
+        BaseUriConfig.class,
+        DelegatingWebMvcConfiguration.class,
+        RepositoryRestMvcConfiguration.class,
+        RestConfiguration.class,
+        HypermediaConfiguration.class})
 @Transactional
 @ActiveProfiles("store")
 @ExtendWith(SpringExtension.class)
 public class BaseUriContentLinksIT {
 
-	@Autowired
-	TestEntityRepository repository;
-	@Autowired
-	TestEntityContentRepository contentRepository;
-	@Autowired
-	TestEntity3Repository repository3;
-	@Autowired
-	TestEntity3ContentRepository contentRepository3;
+    @Autowired
+    TestEntityRepository repository;
+    @Autowired
+    TestEntityContentRepository contentRepository;
+    @Autowired
+    TestEntity3Repository repository3;
+    @Autowired
+    TestEntity3ContentRepository contentRepository3;
 
-	@Autowired
-	private WebApplicationContext context;
+    @Autowired
+    private WebApplicationContext context;
 
-	private MockMvc mvc;
+    private MockMvc mvc;
 
-	private TestEntity3 testEntity3;
+    private TestEntity3 testEntity3;
 
-	private ContentLinkTests contentLinkTests;
+    private ContentLinkTests contentLinkTests;
 
     @Nested
     class GivenTheSpringContentBaseUriPropertyIsSetToContentApi {

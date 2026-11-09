@@ -15,9 +15,9 @@ import static org.assertj.core.api.Assertions.fail;
 
 public class POIServiceTest {
 
-	private POIService poi;
+    private POIService poi;
 
-	private InputStream stream;
+    private InputStream stream;
 
     @Nested
     class POIServiceCases {
@@ -49,12 +49,11 @@ public class POIServiceTest {
                 @Test
                 void shouldThrowAnException() {
                     try {
-                    	poi.xwpfDocument(stream);
-                    	fail("no exception thrown");
-                    }
-                    catch (Exception e) {
-                    	assertThat(e).isNotNull();
-                    	assertThat(e).isInstanceOf(IllegalArgumentException.class);
+                        poi.xwpfDocument(stream);
+                        fail("no exception thrown");
+                    } catch (Exception e) {
+                        assertThat(e).isNotNull();
+                        assertThat(e).isInstanceOf(IllegalArgumentException.class);
                     }
                 }
 
@@ -72,12 +71,11 @@ public class POIServiceTest {
                 @Test
                 void shouldThrowAnException() {
                     try {
-                    	poi.xwpfDocument(stream);
-                    	fail("no exception thrown");
-                    }
-                    catch (Exception e) {
-                    	assertThat(e).isNotNull();
-                    	assertThat(e).isInstanceOf(NotOfficeXmlFileException.class);
+                        poi.xwpfDocument(stream);
+                        fail("no exception thrown");
+                    } catch (Exception e) {
+                        assertThat(e).isNotNull();
+                        assertThat(e).isInstanceOf(NotOfficeXmlFileException.class);
                     }
                 }
 

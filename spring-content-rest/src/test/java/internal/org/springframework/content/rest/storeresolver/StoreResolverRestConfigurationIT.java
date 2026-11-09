@@ -27,18 +27,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @ExtendWith(SpringExtension.class)
 public class StoreResolverRestConfigurationIT {
 
-    @Autowired
-    private Application.TEntityRepository repo;
-
-    @Autowired
-    private Application.TEntityJpaStore jpaStore;
-
-    @Autowired
-    private Application.TEntityFsStore fsStore;
-
     @LocalServerPort
     int port;
-
+    @Autowired
+    private Application.TEntityRepository repo;
+    @Autowired
+    private Application.TEntityJpaStore jpaStore;
+    @Autowired
+    private Application.TEntityFsStore fsStore;
     @Autowired
     private WebApplicationContext webApplicationContext;
 

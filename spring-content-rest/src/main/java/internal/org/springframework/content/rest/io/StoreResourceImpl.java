@@ -152,24 +152,24 @@ public class StoreResourceImpl implements Resource, StoreResource {
 
     @Override
     public boolean isWritable() {
-        return ((WritableResource)delegate).isWritable();
+        return ((WritableResource) delegate).isWritable();
     }
 
     @Override
     public OutputStream getOutputStream()
             throws IOException {
-        return ((WritableResource)delegate).getOutputStream();
+        return ((WritableResource) delegate).getOutputStream();
     }
 
     @Override
     public WritableByteChannel writableChannel()
             throws IOException {
-        return ((WritableResource)delegate).writableChannel();
+        return ((WritableResource) delegate).writableChannel();
     }
 
     @Override
     public void delete()
             throws IOException {
-        ((DeletableResource)delegate).delete();
+        ((DeletableResource) delegate).delete();
     }
 }

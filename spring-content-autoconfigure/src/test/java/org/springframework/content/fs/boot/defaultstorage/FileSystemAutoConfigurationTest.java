@@ -18,6 +18,10 @@ public class FileSystemAutoConfigurationTest {
 
     private ApplicationContextRunner contextRunner;
 
+    @SpringBootApplication(exclude = {SolrAutoConfiguration.class, SolrExtensionAutoConfiguration.class, S3ContentAutoConfiguration.class})
+    public static class TestConfig {
+    }
+
     @Nested
     class FileSystemContentAutoConfigurationCases {
         @Nested
@@ -78,9 +82,5 @@ public class FileSystemAutoConfigurationTest {
                         .run((context) -> Assertions.assertThat(context).hasSingleBean(FileSystemResourceLoader.class));
             }
         }
-    }
-
-    @SpringBootApplication(exclude = {SolrAutoConfiguration.class, SolrExtensionAutoConfiguration.class, S3ContentAutoConfiguration.class})
-    public static class TestConfig {
     }
 }

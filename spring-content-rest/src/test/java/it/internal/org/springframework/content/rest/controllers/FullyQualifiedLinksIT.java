@@ -22,28 +22,28 @@ import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfigu
 
 @WebAppConfiguration
 @ContextConfiguration(classes = {
-		FullyQualifiedLinksConfig.class,
-		DelegatingWebMvcConfiguration.class,
-		RepositoryRestMvcConfiguration.class,
-		RestConfiguration.class })
+        FullyQualifiedLinksConfig.class,
+        DelegatingWebMvcConfiguration.class,
+        RepositoryRestMvcConfiguration.class,
+        RestConfiguration.class})
 @Transactional
 @ExtendWith(SpringExtension.class)
 public class FullyQualifiedLinksIT {
 
-	@Autowired
-	private TestEntityRepository repo3;
+    @Autowired
+    private TestEntityRepository repo3;
 
-	@Autowired
-	private TestEntityContentRepository store3;
+    @Autowired
+    private TestEntityContentRepository store3;
 
-	@Autowired
-	private WebApplicationContext context;
+    @Autowired
+    private WebApplicationContext context;
 
-	private MockMvc mvc;
+    private MockMvc mvc;
 
-	private TestEntity testEntity3;
+    private TestEntity testEntity3;
 
-	private Content contentTests;
+    private Content contentTests;
 
     @Nested
     class ContextPathContentTests {

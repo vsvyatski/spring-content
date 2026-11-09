@@ -67,6 +67,17 @@ public class DefaultAzureStorageImpl<S, SID extends Serializable>
         }
     }
 
+    private static String makeAbsolute(String bucket, String location) {
+        String locationToUse;
+        Assert.state(!location.startsWith("azure-blob://"), "resource location must start with azure-blob://");
+        if (location.startsWith("/")) {
+            locationToUse = location.substring(1);
+        } else {
+            locationToUse = location;
+        }
+        return format("azure-blob://%s/%s", bucket, locationToUse);
+    }
+
     @Override
     public Resource getResource(SID id) {
         if (id == null)
@@ -462,16 +473,5 @@ public class DefaultAzureStorageImpl<S, SID extends Serializable>
         }
 
         return entity;
-    }
-
-    private static String makeAbsolute(String bucket, String location) {
-        String locationToUse;
-        Assert.state(!location.startsWith("azure-blob://"), "resource location must start with azure-blob://");
-        if (location.startsWith("/")) {
-            locationToUse = location.substring(1);
-        } else {
-            locationToUse = location;
-        }
-        return format("azure-blob://%s/%s", bucket, locationToUse);
     }
 }

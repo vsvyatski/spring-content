@@ -10,55 +10,55 @@ import java.io.Serializable;
 
 public class TestStoreFactoryBean extends AbstractStoreFactoryBean {
 
-	public TestStoreFactoryBean(Class<? extends Store<Serializable>> storeInterface) {
-		super(storeInterface);
-	}
+    public TestStoreFactoryBean(Class<? extends Store<Serializable>> storeInterface) {
+        super(storeInterface);
+    }
 
-	@Override
-	protected Object getContentStoreImpl() {
-		return new TestConfigStoreImpl();
-	}
+    @Override
+    protected Object getContentStoreImpl() {
+        return new TestConfigStoreImpl();
+    }
 
-	public static class TestConfigStoreImpl implements ContentStore {
-		@Override
-		public Object setContent(Object property, InputStream content) {
-			throw new UnsupportedOperationException();
-		}
+    public static class TestConfigStoreImpl implements ContentStore {
+        @Override
+        public Object setContent(Object property, InputStream content) {
+            throw new UnsupportedOperationException();
+        }
 
-		@Override
-		public Object setContent(Object property, Resource resourceContent) {
-			throw new UnsupportedOperationException();
-		}
+        @Override
+        public Object setContent(Object property, Resource resourceContent) {
+            throw new UnsupportedOperationException();
+        }
 
-		@Override
-		public Object unsetContent(Object property) {
-			throw new UnsupportedOperationException();
-		}
+        @Override
+        public Object unsetContent(Object property) {
+            throw new UnsupportedOperationException();
+        }
 
-		@Override
-		public InputStream getContent(Object property) {
-			throw new UnsupportedOperationException();
-		}
+        @Override
+        public InputStream getContent(Object property) {
+            throw new UnsupportedOperationException();
+        }
 
-		@Override
-		public Resource getResource(Object entity) {
-			throw new UnsupportedOperationException();
-		}
+        @Override
+        public Resource getResource(Object entity) {
+            throw new UnsupportedOperationException();
+        }
 
-		@Override
-		public void associate(Object entity, Serializable id) {
-			throw new UnsupportedOperationException();
-		}
+        @Override
+        public void associate(Object entity, Serializable id) {
+            throw new UnsupportedOperationException();
+        }
 
-		@Override
-		public void unassociate(Object entity) {
-			throw new UnsupportedOperationException();
-		}
+        @Override
+        public void unassociate(Object entity) {
+            throw new UnsupportedOperationException();
+        }
 
-		@Override
-		public Resource getResource(Serializable id) {
-			throw new UnsupportedOperationException();
-		}
+        @Override
+        public Resource getResource(Serializable id) {
+            throw new UnsupportedOperationException();
+        }
 
         @Override
         public Resource getResource(Object entity, PropertyPath propertyPath) {
@@ -66,11 +66,11 @@ public class TestStoreFactoryBean extends AbstractStoreFactoryBean {
             return null;
         }
 
-		@Override
-		public Resource getResource(Object entity, PropertyPath propertyPath, GetResourceParams params) {
-			// TODO Auto-generated method stub
-			return null;
-		}
+        @Override
+        public Resource getResource(Object entity, PropertyPath propertyPath, GetResourceParams params) {
+            // TODO Auto-generated method stub
+            return null;
+        }
 
         @Override
         public void associate(Object entity, PropertyPath propertyPath, Serializable id) {
@@ -88,18 +88,18 @@ public class TestStoreFactoryBean extends AbstractStoreFactoryBean {
             return null;
         }
 
-		@Override
-		public Object setContent(Object property, PropertyPath propertyPath, InputStream content, long contentLen) {
-			// TODO Auto-generated method stub
-			return null;
-		}
+        @Override
+        public Object setContent(Object property, PropertyPath propertyPath, InputStream content, long contentLen) {
+            // TODO Auto-generated method stub
+            return null;
+        }
 
-		@Override
-		public Object setContent(Object entity, PropertyPath propertyPath, InputStream content, SetContentParams params) {
-			return null;
-		}
+        @Override
+        public Object setContent(Object entity, PropertyPath propertyPath, InputStream content, SetContentParams params) {
+            return null;
+        }
 
-		@Override
+        @Override
         public Object setContent(Object property, PropertyPath propertyPath, Resource resourceContent) {
             // TODO Auto-generated method stub
             return null;
@@ -111,15 +111,15 @@ public class TestStoreFactoryBean extends AbstractStoreFactoryBean {
             return null;
         }
 
-		@Override
-		public Object unsetContent(Object entity, PropertyPath propertyPath, UnsetContentParams params) {
-			return null;
-		}
+        @Override
+        public Object unsetContent(Object entity, PropertyPath propertyPath, UnsetContentParams params) {
+            return null;
+        }
 
-		@Override
+        @Override
         public InputStream getContent(Object property, PropertyPath propertyPath) {
             // TODO Auto-generated method stub
             return null;
         }
-	}
+    }
 }

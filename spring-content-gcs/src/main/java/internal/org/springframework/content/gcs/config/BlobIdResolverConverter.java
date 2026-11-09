@@ -16,31 +16,31 @@ import static java.lang.String.format;
 
 public class BlobIdResolverConverter implements GenericConverter {
 
-	private final String defaultBucket;
+    private static Set<ConvertiblePair> convertibleTypes = new HashSet<>();
 
-	private static Set<ConvertiblePair> convertibleTypes = new HashSet<>();
+    static {
+        convertibleTypes.add(new ConvertiblePair(Serializable.class, BlobId.class));
+    }
 
-	static {
-	    convertibleTypes.add(new ConvertiblePair(Serializable.class, BlobId.class));
-	}
+    private final String defaultBucket;
 
-	public BlobIdResolverConverter(String defaultBucket) {
-		this.defaultBucket = defaultBucket;
-	}
+    public BlobIdResolverConverter(String defaultBucket) {
+        this.defaultBucket = defaultBucket;
+    }
 
-	@Override
-	public Set<ConvertiblePair> getConvertibleTypes() {
-		return convertibleTypes;
-	}
+    @Override
+    public Set<ConvertiblePair> getConvertibleTypes() {
+        return convertibleTypes;
+    }
 
-	@Override
-	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+    @Override
+    public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 
-	    String bucket = this.getBucket(source, defaultBucket);
-		Assert.notNull(bucket, format("Unable to determine bucket from %s", source));
-		String key = this.getKey(source);
-		return (key != null) ? BlobId.of(bucket, key) : null;
-	}
+        String bucket = this.getBucket(source, defaultBucket);
+        Assert.notNull(bucket, format("Unable to determine bucket from %s", source));
+        String key = this.getKey(source);
+        return (key != null) ? BlobId.of(bucket, key) : null;
+    }
 
     private String getBucket(Object source, String defaultBucketName) {
 

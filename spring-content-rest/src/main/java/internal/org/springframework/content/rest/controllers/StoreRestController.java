@@ -35,7 +35,7 @@ import java.nio.file.FileSystemNotFoundException;
 import java.util.Date;
 
 @ContentRestController
-public class StoreRestController implements InitializingBean  {
+public class StoreRestController implements InitializingBean {
 
     private static final Logger logger = LoggerFactory.getLogger(StoreRestController.class);
 
@@ -44,13 +44,13 @@ public class StoreRestController implements InitializingBean  {
     @Autowired
     ApplicationContext context;
 
-    @Autowired(required=false)
+    @Autowired(required = false)
     private Repositories repositories;
 
     @Autowired
     private Stores stores;
 
-    @Autowired(required=false)
+    @Autowired(required = false)
     private RepositoryInvokerFactory repoInvokerFactory;
 
     @Autowired
@@ -70,18 +70,28 @@ public class StoreRestController implements InitializingBean  {
     public StoreRestController() {
     }
 
+    protected static long resolveLastModified(StoreResource storeResource) {
+        long lastModified = -1L;
+        try {
+            lastModified = storeResource.lastModified();
+        } catch (FileSystemNotFoundException fnfe) {
+        } catch (IOException e) {
+        }
+        return lastModified;
+    }
+
     @RequestMapping(value = STORE_REQUEST_MAPPING, method = RequestMethod.GET)
     public void getContent(HttpServletRequest request,
-            HttpServletResponse response,
-            @RequestHeader HttpHeaders headers,
-            StoreResource storeResource)
-                    throws MethodNotAllowedException {
+                           HttpServletResponse response,
+                           @RequestHeader HttpHeaders headers,
+                           StoreResource storeResource)
+            throws MethodNotAllowedException {
 
         if (storeResource == null || storeResource.exists() == false) {
             throw new ResourceNotFoundException();
         }
 
-        if(new ServletWebRequest(request, response).checkNotModified(storeResource.getETag() != null ? storeResource.getETag().toString() : null, resolveLastModified(storeResource))) {
+        if (new ServletWebRequest(request, response).checkNotModified(storeResource.getETag() != null ? storeResource.getETag().toString() : null, resolveLastModified(storeResource))) {
             return;
         }
 
@@ -91,10 +101,10 @@ public class StoreRestController implements InitializingBean  {
     }
 
     @RequestMapping(value = STORE_REQUEST_MAPPING, method = RequestMethod.PUT, headers = {
-            "content-type!=multipart/form-data", "accept!=application/hal+json" })
+            "content-type!=multipart/form-data", "accept!=application/hal+json"})
     @ResponseBody
     public void putContent(HttpServletRequest request, HttpServletResponse response, @RequestHeader HttpHeaders headers, StoreResource storeResource)
-                    throws IOException, MethodNotAllowedException {
+            throws IOException, MethodNotAllowedException {
 
         ContentService contentService = contentServiceFactory.getContentService(storeResource);
 
@@ -109,8 +119,8 @@ public class StoreRestController implements InitializingBean  {
     @RequestMapping(value = STORE_REQUEST_MAPPING, method = RequestMethod.PUT, headers = "content-type=multipart/form-data")
     @ResponseBody
     public void putMultipartContent(HttpServletRequest request, HttpServletResponse response, @RequestHeader HttpHeaders headers,
-            @RequestParam("file") MultipartFile multiPart, StoreResource storeResource)
-                    throws IOException, MethodNotAllowedException {
+                                    @RequestParam("file") MultipartFile multiPart, StoreResource storeResource)
+            throws IOException, MethodNotAllowedException {
 
         ContentService contentService = contentServiceFactory.getContentService(storeResource);
 
@@ -127,13 +137,13 @@ public class StoreRestController implements InitializingBean  {
     @RequestMapping(value = STORE_REQUEST_MAPPING, method = RequestMethod.POST, headers = "content-type=multipart/form-data")
     @ResponseBody
     public void postMultipartContent(HttpServletRequest request, HttpServletResponse response, @RequestHeader HttpHeaders headers,
-            @RequestParam("file") MultipartFile multiPart, StoreResource storeResource)
-                    throws IOException, MethodNotAllowedException {
+                                     @RequestParam("file") MultipartFile multiPart, StoreResource storeResource)
+            throws IOException, MethodNotAllowedException {
 
         ContentService contentService = contentServiceFactory.getContentService(storeResource);
 
         headers.setContentLength(multiPart.getSize());
-        
+
         handleMultipart(request, response, headers,
                 contentService,
                 new InputStreamResource(multiPart.getInputStream(), multiPart.getOriginalFilename()),
@@ -146,7 +156,7 @@ public class StoreRestController implements InitializingBean  {
     @RequestMapping(value = STORE_REQUEST_MAPPING, method = RequestMethod.POST, headers = {"content-type!=multipart/form-data"})
     @ResponseBody
     public void postContent(HttpServletRequest request, HttpServletResponse response, @RequestHeader HttpHeaders headers, StoreResource storeResource)
-                    throws IOException, MethodNotAllowedException {
+            throws IOException, MethodNotAllowedException {
 
         ContentService contentService = contentServiceFactory.getContentService(storeResource);
 
@@ -160,7 +170,7 @@ public class StoreRestController implements InitializingBean  {
 
     @RequestMapping(value = STORE_REQUEST_MAPPING, method = RequestMethod.DELETE, headers = "accept!=application/hal+json")
     public void deleteContent(@RequestHeader HttpHeaders headers, HttpServletResponse response, StoreResource storeResource)
-                    throws IOException, MethodNotAllowedException {
+            throws IOException, MethodNotAllowedException {
 
         if (!storeResource.exists()) {
             throw new ResourceNotFoundException();
@@ -175,13 +185,13 @@ public class StoreRestController implements InitializingBean  {
     }
 
     protected void handleMultipart(HttpServletRequest request, HttpServletResponse response,
-            HttpHeaders headers,
-            ContentService contentService,
-            Resource source,
-            MediaType sourceMimeType,
-            StoreResource target,
-            Object targetETag)
-                    throws IOException, MethodNotAllowedException {
+                                   HttpHeaders headers,
+                                   ContentService contentService,
+                                   Resource source,
+                                   MediaType sourceMimeType,
+                                   StoreResource target,
+                                   Object targetETag)
+            throws IOException, MethodNotAllowedException {
 
         boolean isNew = false;
 
@@ -194,19 +204,9 @@ public class StoreRestController implements InitializingBean  {
 
         if (isNew) {
             response.setStatus(HttpStatus.CREATED.value());
-        }
-        else {
+        } else {
             response.setStatus(HttpStatus.OK.value());
         }
-    }
-
-    protected static long resolveLastModified(StoreResource storeResource) {
-        long lastModified = -1L;
-        try {
-            lastModified = storeResource.lastModified();
-        } catch (FileSystemNotFoundException fnfe) {
-        } catch (IOException e) {}
-        return lastModified;
     }
 
     @Override
@@ -214,8 +214,7 @@ public class StoreRestController implements InitializingBean  {
 
         try {
             this.repositories = context.getBean(Repositories.class);
-        }
-        catch (BeansException be) {
+        } catch (BeansException be) {
             this.repositories = new Repositories(context);
         }
 

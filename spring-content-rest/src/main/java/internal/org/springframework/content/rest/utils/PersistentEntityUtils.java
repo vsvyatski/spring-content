@@ -4,10 +4,10 @@ import org.springframework.data.mapping.PersistentProperty;
 
 public final class PersistentEntityUtils {
 
-	private PersistentEntityUtils() {
-	}
+    private PersistentEntityUtils() {
+    }
 
-	public static boolean isPropertyMultiValued(PersistentProperty<?> prop) {
-		return (prop.isArray() || prop.isCollectionLike());
-	}
+    public static boolean isPropertyMultiValued(PersistentProperty<?> prop) {
+        return (prop.isArray() || prop.isCollectionLike());
+    }
 }

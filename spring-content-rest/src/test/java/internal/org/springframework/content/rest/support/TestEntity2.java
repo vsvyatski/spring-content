@@ -13,60 +13,62 @@ import java.util.List;
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 public class TestEntity2 {
-	private @Id @GeneratedValue Long id;
+    private @Id
+    @GeneratedValue Long id;
 
-	private @Version Long version;
-	private @CreatedDate Date createdDate;
-	private @LastModifiedDate Date modifiedDate;
+    private @Version Long version;
+    private @CreatedDate Date createdDate;
+    private @LastModifiedDate Date modifiedDate;
 
-	private @Embedded TestEntityChild child = new TestEntityChild();
-	private @RestResource @ElementCollection(fetch = FetchType.EAGER) List<TestEntityChild> children = new ArrayList<>();
+    private @Embedded TestEntityChild child = new TestEntityChild();
+    private @RestResource
+    @ElementCollection(fetch = FetchType.EAGER) List<TestEntityChild> children = new ArrayList<>();
 
-	public Long getId() {
-		return id;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public Long getVersion() {
-		return version;
-	}
+    public Long getVersion() {
+        return version;
+    }
 
-	public void setVersion(Long version) {
-		this.version = version;
-	}
+    public void setVersion(Long version) {
+        this.version = version;
+    }
 
-	public Date getCreatedDate() {
-		return createdDate;
-	}
+    public Date getCreatedDate() {
+        return createdDate;
+    }
 
-	public void setCreatedDate(Date createdDate) {
-		this.createdDate = createdDate;
-	}
+    public void setCreatedDate(Date createdDate) {
+        this.createdDate = createdDate;
+    }
 
-	public Date getModifiedDate() {
-		return modifiedDate;
-	}
+    public Date getModifiedDate() {
+        return modifiedDate;
+    }
 
-	public void setModifiedDate(Date modifiedDate) {
-		this.modifiedDate = modifiedDate;
-	}
+    public void setModifiedDate(Date modifiedDate) {
+        this.modifiedDate = modifiedDate;
+    }
 
-	public TestEntityChild getChild() {
-		return child;
-	}
+    public TestEntityChild getChild() {
+        return child;
+    }
 
-	public void setChild(TestEntityChild child) {
-		this.child = child;
-	}
+    public void setChild(TestEntityChild child) {
+        this.child = child;
+    }
 
-	public List<TestEntityChild> getChildren() {
-		return children;
-	}
+    public List<TestEntityChild> getChildren() {
+        return children;
+    }
 
-	public void setChildren(List<TestEntityChild> children) {
-		this.children = children;
-	}
+    public void setChildren(List<TestEntityChild> children) {
+        this.children = children;
+    }
 }

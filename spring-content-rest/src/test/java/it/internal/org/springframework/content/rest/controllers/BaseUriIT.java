@@ -25,53 +25,53 @@ import static java.lang.String.format;
 
 @WebAppConfiguration
 @ContextConfiguration(classes = {
-		BaseUriConfig.class,
-		EntityConfig.class,
-		DelegatingWebMvcConfiguration.class,
-		RepositoryRestMvcConfiguration.class,
-		RestConfiguration.class,
-		HypermediaConfiguration.class })
+        BaseUriConfig.class,
+        EntityConfig.class,
+        DelegatingWebMvcConfiguration.class,
+        RepositoryRestMvcConfiguration.class,
+        RestConfiguration.class,
+        HypermediaConfiguration.class})
 @Transactional
 @ActiveProfiles("store")
 @ExtendWith(SpringExtension.class)
 public class BaseUriIT {
 
-	// different exported URI
-	@Autowired
-	private TestEntityRepository repository;
-	@Autowired
-	private TestEntityContentRepository contentRepository;
+    // different exported URI
+    @Autowired
+    private TestEntityRepository repository;
+    @Autowired
+    private TestEntityContentRepository contentRepository;
 
-	// same exported URI
-	@Autowired
-	private TestEntity3Repository repo3;
-	@Autowired
-	private TestEntity3ContentRepository store3;
+    // same exported URI
+    @Autowired
+    private TestEntity3Repository repo3;
+    @Autowired
+    private TestEntity3ContentRepository store3;
 
-	// same exported URI
-	@Autowired
-	private TestEntity4Repository repo4;
-	@Autowired
-	private TestEntity4ContentRepository store4;
+    // same exported URI
+    @Autowired
+    private TestEntity4Repository repo4;
+    @Autowired
+    private TestEntity4ContentRepository store4;
 
-	@Autowired
-	private TestStore store;
+    @Autowired
+    private TestStore store;
 
-	@Autowired
-	private WebApplicationContext context;
+    @Autowired
+    private WebApplicationContext context;
 
-	private MockMvc mvc;
+    private MockMvc mvc;
 
-	private TestEntity testEntity;
-	private TestEntity3 testEntity3;
-	private TestEntity4 testEntity4;
+    private TestEntity testEntity;
+    private TestEntity3 testEntity3;
+    private TestEntity4 testEntity4;
 
-	private Version version;
-	private LastModifiedDate lastModifiedDate;
+    private Version version;
+    private LastModifiedDate lastModifiedDate;
 
-	private Entity entityTests;
-	private Content contentTests;
-	private Cors corsTests;
+    private Entity entityTests;
+    private Content contentTests;
+    private Cors corsTests;
 
     @Nested
     class BaseUriContentTests {

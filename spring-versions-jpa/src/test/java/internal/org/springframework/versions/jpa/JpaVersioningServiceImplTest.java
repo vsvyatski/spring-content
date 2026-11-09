@@ -21,6 +21,79 @@ public class JpaVersioningServiceImplTest {
     private TestEntity entity;
     private TestEntity successor;
 
+    private static class TestEntity {
+        @Id
+        private Long id;
+        @Version
+        private Long version;
+        @AncestorId
+        private Long ancestorId;
+        @AncestorRootId
+        private Long ancestorRootId;
+        @SuccessorId
+        private Long successorId;
+        @VersionNumber
+        private String versionNo;
+        @VersionLabel
+        private String versionLabel;
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+
+        public Long getVersion() {
+            return version;
+        }
+
+        public void setVersion(Long version) {
+            this.version = version;
+        }
+
+        public Long getAncestorId() {
+            return ancestorId;
+        }
+
+        public void setAncestorId(Long ancestorId) {
+            this.ancestorId = ancestorId;
+        }
+
+        public Long getAncestorRootId() {
+            return ancestorRootId;
+        }
+
+        public void setAncestorRootId(Long ancestorRootId) {
+            this.ancestorRootId = ancestorRootId;
+        }
+
+        public Long getSuccessorId() {
+            return successorId;
+        }
+
+        public void setSuccessorId(Long successorId) {
+            this.successorId = successorId;
+        }
+
+        public String getVersionNo() {
+            return versionNo;
+        }
+
+        public void setVersionNo(String versionNo) {
+            this.versionNo = versionNo;
+        }
+
+        public String getVersionLabel() {
+            return versionLabel;
+        }
+
+        public void setVersionLabel(String versionLabel) {
+            this.versionLabel = versionLabel;
+        }
+    }
+
     @Nested
     class JpaVersioningServiceImplCases {
         @Nested
@@ -120,79 +193,6 @@ public class JpaVersioningServiceImplTest {
             void shouldReturnTheEntity() {
                 assertThat(result).isEqualTo(successor);
             }
-        }
-    }
-
-    private static class TestEntity {
-        @Id
-        private Long id;
-        @Version
-        private Long version;
-        @AncestorId
-        private Long ancestorId;
-        @AncestorRootId
-        private Long ancestorRootId;
-        @SuccessorId
-        private Long successorId;
-        @VersionNumber
-        private String versionNo;
-        @VersionLabel
-        private String versionLabel;
-
-        public Long getId() {
-            return id;
-        }
-
-        public void setId(Long id) {
-            this.id = id;
-        }
-
-        public Long getVersion() {
-            return version;
-        }
-
-        public void setVersion(Long version) {
-            this.version = version;
-        }
-
-        public Long getAncestorId() {
-            return ancestorId;
-        }
-
-        public void setAncestorId(Long ancestorId) {
-            this.ancestorId = ancestorId;
-        }
-
-        public Long getAncestorRootId() {
-            return ancestorRootId;
-        }
-
-        public void setAncestorRootId(Long ancestorRootId) {
-            this.ancestorRootId = ancestorRootId;
-        }
-
-        public Long getSuccessorId() {
-            return successorId;
-        }
-
-        public void setSuccessorId(Long successorId) {
-            this.successorId = successorId;
-        }
-
-        public String getVersionNo() {
-            return versionNo;
-        }
-
-        public void setVersionNo(String versionNo) {
-            this.versionNo = versionNo;
-        }
-
-        public String getVersionLabel() {
-            return versionLabel;
-        }
-
-        public void setVersionLabel(String versionLabel) {
-            this.versionLabel = versionLabel;
         }
     }
 }

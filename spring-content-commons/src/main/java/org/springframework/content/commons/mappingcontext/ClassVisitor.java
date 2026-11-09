@@ -9,6 +9,7 @@ public interface ClassVisitor {
     default boolean visitFieldBefore(String path, Class<?> klazz, Field f) {
         return true;
     }
+
     boolean visitField(String path, Class<?> klazz, Field f);
 
     default boolean visitFieldAfter(String path, Class<?> klazz, Field f) {

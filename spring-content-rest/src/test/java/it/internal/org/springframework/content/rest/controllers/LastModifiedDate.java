@@ -33,6 +33,45 @@ public abstract class LastModifiedDate {
     private String etag;
     private String content;
 
+    public static Matcher<String> isWithinASecond(final Date expectedDate) {
+        return new TypeSafeMatcher<String>() {
+
+            @Override
+            protected void describeMismatchSafely(String foo, Description description) {
+                description.appendText("was ").appendValue(foo);
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("Date ").appendValue(expectedDate);
+            }
+
+            @Override
+            protected boolean matchesSafely(String actualDate) {
+                Instant instant = Instant.ofEpochMilli(expectedDate.getTime());
+                LocalDateTime expectedDateTime = LocalDateTime.ofInstant(instant, ZoneId.of("GMT"));
+
+                LocalDateTime actualDateTime = LocalDateTime.parse(actualDate, DateTimeFormatter.ofPattern("EEE, d MMM yyyy HH:mm:ss z", Locale.ENGLISH));
+
+                long diff = ChronoUnit.SECONDS.between(expectedDateTime, actualDateTime);
+                return diff <= 1;
+            }
+        };
+    }
+
+    private static String toHeaderDateFormat(Date dt) {
+        SimpleDateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
+        format.setTimeZone(TimeZone.getTimeZone("GMT"));
+        return format.format(dt);
+    }
+
+    private static Date addDays(Date dt, int n) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(dt);
+        cal.add(Calendar.DATE, n);
+        return cal.getTime();
+    }
+
     public void setMvc(MockMvc mvc) {
         this.mvc = mvc;
     }
@@ -100,8 +139,8 @@ public abstract class LastModifiedDate {
         @Test
         void shouldRespondWith304NotModified() throws Exception {
             mvc.perform(get(url)
-                    .accept("text/plain")
-                    .header("if-modified-since", toHeaderDateFormat(lastModifiedDate)))
+                            .accept("text/plain")
+                            .header("if-modified-since", toHeaderDateFormat(lastModifiedDate)))
                     .andExpect(status().isNotModified())
                     .andExpect(content().string(""));
         }
@@ -113,8 +152,8 @@ public abstract class LastModifiedDate {
         @Test
         void shouldRespondWith412PreconditionFailed() throws Exception {
             mvc.perform(get(url)
-                    .accept("text/plain")
-                    .header("if-unmodified-since", toHeaderDateFormat(addDays(lastModifiedDate, -1))))
+                            .accept("text/plain")
+                            .header("if-unmodified-since", toHeaderDateFormat(addDays(lastModifiedDate, -1))))
                     .andExpect(status().isPreconditionFailed())
                     .andReturn();
         }
@@ -126,8 +165,8 @@ public abstract class LastModifiedDate {
         @Test
         void shouldRespondWith200AndTheContent() throws Exception {
             mvc.perform(get(url)
-                    .accept("text/plain")
-                    .header("if-unmodified-since", isWithinASecond(lastModifiedDate)))
+                            .accept("text/plain")
+                            .header("if-unmodified-since", isWithinASecond(lastModifiedDate)))
                     .andExpect(status().isOk())
                     .andExpect(content().string(content));
         }
@@ -139,9 +178,9 @@ public abstract class LastModifiedDate {
         @Test
         void shouldRespondWith412PreconditionFailed() throws Exception {
             mvc.perform(put(url)
-                    .content("Hello Modified Spring Content World!")
-                    .contentType("text/plain")
-                    .header("if-unmodified-since", toHeaderDateFormat(addDays(lastModifiedDate, -1))))
+                            .content("Hello Modified Spring Content World!")
+                            .contentType("text/plain")
+                            .header("if-unmodified-since", toHeaderDateFormat(addDays(lastModifiedDate, -1))))
                     .andExpect(status().isPreconditionFailed());
         }
 
@@ -152,9 +191,9 @@ public abstract class LastModifiedDate {
         @Test
         void shouldUpdateTheContent() throws Exception {
             mvc.perform(put(url)
-                    .content("Hello Modified Spring Content World!")
-                    .contentType("text/plain")
-                    .header("if-unmodified-since", toHeaderDateFormat(lastModifiedDate)))
+                            .content("Hello Modified Spring Content World!")
+                            .contentType("text/plain")
+                            .header("if-unmodified-since", toHeaderDateFormat(lastModifiedDate)))
                     .andExpect(status().isOk());
         }
 
@@ -166,10 +205,10 @@ public abstract class LastModifiedDate {
         void shouldRespondWithA412PreconditionFailed() throws Exception {
             if (etag != null) {
                 mvc.perform(put(url)
-                        .content("Hello Modified Spring Content World!")
-                        .contentType("text/plain")
-                        .header("if-unmodified-since", toHeaderDateFormat(lastModifiedDate))
-                        .header("if-none-match", etag))
+                                .content("Hello Modified Spring Content World!")
+                                .contentType("text/plain")
+                                .header("if-unmodified-since", toHeaderDateFormat(lastModifiedDate))
+                                .header("if-none-match", etag))
                         .andExpect(status().isPreconditionFailed());
             }
         }
@@ -181,7 +220,7 @@ public abstract class LastModifiedDate {
         @Test
         void shouldRespondWith412PreconditionFailed() throws Exception {
             mvc.perform(delete(url)
-                    .header("if-unmodified-since", toHeaderDateFormat(addDays(lastModifiedDate, -1))))
+                            .header("if-unmodified-since", toHeaderDateFormat(addDays(lastModifiedDate, -1))))
                     .andExpect(status().isPreconditionFailed());
         }
 
@@ -192,48 +231,9 @@ public abstract class LastModifiedDate {
         @Test
         void shouldUpdateTheContent() throws Exception {
             mvc.perform(delete(url)
-                    .header("if-unmodified-since", toHeaderDateFormat(lastModifiedDate)))
+                            .header("if-unmodified-since", toHeaderDateFormat(lastModifiedDate)))
                     .andExpect(status().isNoContent());
         }
 
-    }
-
-    public static Matcher<String> isWithinASecond(final Date expectedDate) {
-        return new TypeSafeMatcher<String>() {
-
-            @Override
-            protected void describeMismatchSafely(String foo, Description description) {
-                description.appendText("was ").appendValue(foo);
-            }
-
-            @Override
-            public void describeTo(Description description) {
-                description.appendText("Date ").appendValue(expectedDate);
-            }
-
-            @Override
-            protected boolean matchesSafely(String actualDate) {
-                Instant instant = Instant.ofEpochMilli(expectedDate.getTime());
-                LocalDateTime expectedDateTime = LocalDateTime.ofInstant(instant, ZoneId.of("GMT"));
-
-                LocalDateTime actualDateTime = LocalDateTime.parse(actualDate, DateTimeFormatter.ofPattern("EEE, d MMM yyyy HH:mm:ss z", Locale.ENGLISH));
-
-                long diff = ChronoUnit.SECONDS.between(expectedDateTime, actualDateTime);
-                return diff <= 1;
-            }
-        };
-    }
-
-    private static String toHeaderDateFormat(Date dt) {
-        SimpleDateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
-        format.setTimeZone(TimeZone.getTimeZone("GMT"));
-        return format.format(dt);
-    }
-
-    private static Date addDays(Date dt, int n) {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(dt);
-        cal.add(Calendar.DATE, n);
-        return cal.getTime();
     }
 }

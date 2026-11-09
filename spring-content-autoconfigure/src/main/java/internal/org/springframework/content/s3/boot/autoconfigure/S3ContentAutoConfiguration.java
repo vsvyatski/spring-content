@@ -30,12 +30,6 @@ import java.net.URI;
         havingValue = "s3", matchIfMissing = true)
 public class S3ContentAutoConfiguration {
 
-    @Configuration
-    @ConditionalOnMissingBean(S3StoreFactoryBean.class)
-    @Import({S3StoreConfiguration.class, S3ContentAutoConfigureRegistrar.class})
-    public static class EnableS3StoresConfig {
-    }
-
     @Bean
     @ConditionalOnMissingBean()
     public S3Client amazonS3(S3Properties props) {
@@ -56,6 +50,12 @@ public class S3ContentAutoConfiguration {
         }
 
         return builder.build();
+    }
+
+    @Configuration
+    @ConditionalOnMissingBean(S3StoreFactoryBean.class)
+    @Import({S3StoreConfiguration.class, S3ContentAutoConfigureRegistrar.class})
+    public static class EnableS3StoresConfig {
     }
 
     @Component

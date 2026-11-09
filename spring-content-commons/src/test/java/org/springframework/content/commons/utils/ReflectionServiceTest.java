@@ -10,10 +10,14 @@ import static org.mockito.Mockito.verify;
 
 public class ReflectionServiceTest {
 
-	private ReflectionService reflectionService;
+    private ReflectionService reflectionService;
 
-	// mocks
-	private HelloWorldService service;
+    // mocks
+    private HelloWorldService service;
+
+    public interface HelloWorldService {
+        void helloWorld();
+    }
 
     @Nested
     class ReflectionServiceCases {
@@ -25,8 +29,8 @@ public class ReflectionServiceTest {
 
                 reflectionService = new ReflectionServiceImpl();
                 reflectionService.invokeMethod(ReflectionUtils
-                		.findMethod(HelloWorldService.class, "helloWorld"), service,
-                		new Object[] {});
+                                .findMethod(HelloWorldService.class, "helloWorld"), service,
+                        new Object[]{});
             }
 
             @Test
@@ -37,8 +41,4 @@ public class ReflectionServiceTest {
         }
 
     }
-
-	public interface HelloWorldService {
-		void helloWorld();
-	}
 }

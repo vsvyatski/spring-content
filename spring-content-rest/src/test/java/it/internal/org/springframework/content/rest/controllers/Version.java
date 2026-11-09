@@ -73,177 +73,189 @@ public class Version {
         @Test
         void shouldAlwaysEvaluateIfMatchHeaderEvenAfterContentDeletion() throws Exception, JsonProcessingException {
             String entityUrl = mvc.perform(post(collectionUrl).content("{}"))
-                                    .andExpect(status().is2xxSuccessful()).andReturn().getResponse().getHeader("Location");
-                            assertThat(entityUrl).isNotNull();
+                    .andExpect(status().is2xxSuccessful()).andReturn().getResponse().getHeader("Location");
+            assertThat(entityUrl).isNotNull();
 
-                            String body = mvc.perform(get(entityUrl).accept("application/json"))
-                                    .andExpect(status().is2xxSuccessful()).andReturn().getResponse().getContentAsString();
+            String body = mvc.perform(get(entityUrl).accept("application/json"))
+                    .andExpect(status().is2xxSuccessful()).andReturn().getResponse().getContentAsString();
 
-                            ObjectMapper objectMapper = new ObjectMapper();
-                            JsonNode responseJson = objectMapper.readTree(body);
-                            JsonNode linksNode = responseJson.get("_links");
-                            JsonNode contentNode = linksNode.get(contentLinkRel);
-                            String contentHref = contentNode.get("href").asText();
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode responseJson = objectMapper.readTree(body);
+            JsonNode linksNode = responseJson.get("_links");
+            JsonNode contentNode = linksNode.get(contentLinkRel);
+            String contentHref = contentNode.get("href").asText();
 
-                            mvc.perform(put(contentHref).header("If-Match", "\"0\"").contentType("text/plain").content("Hello world!"))
-                                    .andExpect(status().is2xxSuccessful());  // Content created
-                            mvc.perform(delete(contentHref).header("If-Match", "\"1\""))
-                                    .andExpect(status().is2xxSuccessful());  // User A
-                            mvc.perform(put(contentHref).header("If-Match", "\"1\"").contentType("text/plain").content("foo bar"))
-                                    .andExpect(status().isPreconditionFailed());  // User B
+            mvc.perform(put(contentHref).header("If-Match", "\"0\"").contentType("text/plain").content("Hello world!"))
+                    .andExpect(status().is2xxSuccessful());  // Content created
+            mvc.perform(delete(contentHref).header("If-Match", "\"1\""))
+                    .andExpect(status().is2xxSuccessful());  // User A
+            mvc.perform(put(contentHref).header("If-Match", "\"1\"").contentType("text/plain").content("foo bar"))
+                    .andExpect(status().isPreconditionFailed());  // User B
         }
     }
+
     @Nested
     class AGETRequestToStoreId {
         @Test
         void shouldReturnAnEtagHeader() throws Exception {
             MockHttpServletResponse response = mvc
-                                    .perform(get(url)
-                                            .accept("text/plain"))
-                                    .andExpect(status().isOk())
-                                    .andExpect(header().string("etag", is(etag)))
-                                    .andReturn().getResponse();
+                    .perform(get(url)
+                            .accept("text/plain"))
+                    .andExpect(status().isOk())
+                    .andExpect(header().string("etag", is(etag)))
+                    .andReturn().getResponse();
 
-                            assertThat(response).isNotNull();
-                            assertThat(response.getContentAsString()).isEqualTo("Hello Spring Content World!");
+            assertThat(response).isNotNull();
+            assertThat(response.getContentAsString()).isEqualTo("Hello Spring Content World!");
         }
     }
+
     @Nested
     class AGETRequestToStoreIdWithAMatchingIfNoneMatchHeader {
         @Test
         void shouldRespondWithA304NotModified() throws Exception {
             mvc.perform(get(url)
-                                    .accept("text/plain")
-                                    .header("if-none-match", etag))
-                                    .andExpect(status().isNotModified());
+                            .accept("text/plain")
+                            .header("if-none-match", etag))
+                    .andExpect(status().isNotModified());
         }
     }
+
     @Nested
     class AGETRequestToStoreIdWithAnNonMatchingIfNoneMatchHeader {
         @Test
         void shouldRespondWithTheContent() throws Exception {
             MockHttpServletResponse response = mvc
-                                    .perform(get(url)
-                                            .accept("text/plain")
-                                            .header("if-none-match", "\"999\""))
-                                    .andExpect(status().isOk())
-                                    .andExpect(header().string("etag", is(etag)))
-                                    .andReturn().getResponse();
+                    .perform(get(url)
+                            .accept("text/plain")
+                            .header("if-none-match", "\"999\""))
+                    .andExpect(status().isOk())
+                    .andExpect(header().string("etag", is(etag)))
+                    .andReturn().getResponse();
 
-                            assertThat(response).isNotNull();
-                            assertThat(response.getContentAsString()).isEqualTo("Hello Spring Content World!");
+            assertThat(response).isNotNull();
+            assertThat(response.getContentAsString()).isEqualTo("Hello Spring Content World!");
         }
     }
+
     @Nested
     class APUTToStoreIdWithAMatchingIfMatchHeader {
         @Test
         void shouldUpdateTheContent() throws Exception {
             mvc.perform(put(url)
-                                    .content("Hello Modified Spring Content World!")
-                                    .contentType("text/other")
-                                    .header("if-match", etag))
-                                    .andExpect(status().isOk());
+                            .content("Hello Modified Spring Content World!")
+                            .contentType("text/other")
+                            .header("if-match", etag))
+                    .andExpect(status().isOk());
         }
+
         @Test
         void shouldUpdateTheContentAttributes() throws Exception {
             mvc.perform(multipart(url)
-                                    .file(new MockMultipartFile("file",
-                                            "test-file-modified.txt",
-                                            "text/other", "Hello Modified Spring Content World!".getBytes()))
-                                    .header("if-match", etag))
-                                    .andExpect(status().isOk());
+                            .file(new MockMultipartFile("file",
+                                    "test-file-modified.txt",
+                                    "text/other", "Hello Modified Spring Content World!".getBytes()))
+                            .header("if-match", etag))
+                    .andExpect(status().isOk());
 
-                            if (entity != null) {
-                                Optional<ContentEntity> fetched = repo.findById(entity.getId());
-                                assertThat(fetched.isPresent()).isTrue();
-                                assertThat(fetched.get().getLen()).isEqualTo(36L);
-                                assertThat(fetched.get().getMimeType()).isEqualTo("text/other");
-                                assertThat(fetched.get().getOriginalFileName()).isEqualTo("test-file-modified.txt");
-                            }
+            if (entity != null) {
+                Optional<ContentEntity> fetched = repo.findById(entity.getId());
+                assertThat(fetched.isPresent()).isTrue();
+                assertThat(fetched.get().getLen()).isEqualTo(36L);
+                assertThat(fetched.get().getMimeType()).isEqualTo("text/other");
+                assertThat(fetched.get().getOriginalFileName()).isEqualTo("test-file-modified.txt");
+            }
         }
     }
+
     @Nested
     class ADELETEToStoreIdWithAMatchingIfMatchHeader {
         @Test
         void shouldDeleteTheContentAttributesAndReturnA200Response() throws Exception {
             mvc.perform(delete(url)
-                                    .contentType("text/plain"))
-                                    .andExpect(status().isNoContent());
+                            .contentType("text/plain"))
+                    .andExpect(status().isNoContent());
 
-                            if (entity != null) {
-                                Optional<ContentEntity> fetched = repo.findById(entity.getId());
-                                assertThat(fetched.isPresent()).isTrue();
-                                assertThat(fetched.get().getContentId()).isNull();
-                                assertThat(fetched.get().getLen()).isNull();
-                                assertThat(fetched.get().getMimeType()).isNull();
-                                assertThat(((ContentStore)store).getContent(fetched.get())).isNull();
-                            }
+            if (entity != null) {
+                Optional<ContentEntity> fetched = repo.findById(entity.getId());
+                assertThat(fetched.isPresent()).isTrue();
+                assertThat(fetched.get().getContentId()).isNull();
+                assertThat(fetched.get().getLen()).isNull();
+                assertThat(fetched.get().getMimeType()).isNull();
+                assertThat(((ContentStore) store).getContent(fetched.get())).isNull();
+            }
         }
     }
+
     @Nested
     class APUTToStoreIdWithANonMatchingIfMatchHeader {
         @Test
         void shouldRespondWith412PreconditionFailed() throws Exception {
             mvc.perform(put(url)
-                                    .content("Hello Modified Spring Content World!")
-                                    .contentType("text/plain")
-                                    .header("if-match", "\"999\""))
-                                    .andExpect(status().isPreconditionFailed());
+                            .content("Hello Modified Spring Content World!")
+                            .contentType("text/plain")
+                            .header("if-match", "\"999\""))
+                    .andExpect(status().isPreconditionFailed());
         }
     }
+
     @Nested
     class APUTToStoreIdWithAMatchingIfNoneMatchHeader {
         @Test
         void shouldRespondWithA412PreconditionFailed() throws Exception {
             mvc.perform(put(url)
-                                    .content("Hello Modified Spring Content World!")
-                                    .contentType("text/plain")
-                                    .header("if-none-match", etag))
-                                    .andExpect(status().isPreconditionFailed());
+                            .content("Hello Modified Spring Content World!")
+                            .contentType("text/plain")
+                            .header("if-none-match", etag))
+                    .andExpect(status().isPreconditionFailed());
         }
     }
+
     @Nested
     class APUTToStoreIdWithANonMatchingIfNoneMatchHeader {
         @Test
         void shouldRespondWith200OKAndSetTheContent() throws Exception {
             mvc.perform(put(url)
-                                    .content("Hello Modified Spring Content World!")
-                                    .contentType("text/plain")
-                                    .header("if-none-match", "\"999\""))
-                                    .andExpect(status().isOk());
+                            .content("Hello Modified Spring Content World!")
+                            .contentType("text/plain")
+                            .header("if-none-match", "\"999\""))
+                    .andExpect(status().isOk());
         }
     }
+
     @Nested
     class APUTToStoreIdWithAMatchingIfMatchHeaderAndAMatchingIfNoneMatchHeader {
         @Test
         void shouldRespondWithA412PreconditionFailed() throws Exception {
             mvc.perform(put(url)
-                                    .content("Hello Modified Spring Content World!")
-                                    .contentType("text/plain")
-                                    .header("if-match", etag)
-                                    .header("if-none-match", etag))
-                                    .andExpect(status().isPreconditionFailed());
+                            .content("Hello Modified Spring Content World!")
+                            .contentType("text/plain")
+                            .header("if-match", etag)
+                            .header("if-none-match", etag))
+                    .andExpect(status().isPreconditionFailed());
         }
     }
+
     @Nested
     class APOSTToStoreIdWithANonMatchingIfMatchHeader {
         @Test
         void shouldRespondWith412PreconditionFailed() throws Exception {
             mvc.perform(multipart(url)
-                                    .file(new MockMultipartFile("file",
-                                            "tests-file-modified.txt",
-                                            "text/plain", "Hello Spring Content World!".getBytes()))
-                                    .header("if-match", "\"999\""))
-                                    .andExpect(status().isPreconditionFailed());
+                            .file(new MockMultipartFile("file",
+                                    "tests-file-modified.txt",
+                                    "text/plain", "Hello Spring Content World!".getBytes()))
+                            .header("if-match", "\"999\""))
+                    .andExpect(status().isPreconditionFailed());
         }
     }
+
     @Nested
     class ADELETEToStoreIdWithANonMatchingIfMatchHeader {
         @Test
         void shouldRespondWith412PreconditionFailed() throws Exception {
             mvc.perform(delete(url)
-                                    .header("if-match", "\"999\""))
-                                    .andExpect(status().isPreconditionFailed());
+                            .header("if-match", "\"999\""))
+                    .andExpect(status().isPreconditionFailed());
         }
     }
 

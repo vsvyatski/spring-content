@@ -38,6 +38,21 @@ public class GridFSResourceTest {
     @Nested
     class Resource {
 
+        @Test
+        void isOpenShouldReturnTrue() {
+            assertThat(r.isOpen()).isTrue();
+        }
+
+        @Test
+        void getDescriptionShouldReturnSomething() {
+            assertThat(r.getDescription()).isNotNull();
+        }
+
+        @Test
+        void isReadableShouldReturnTrue() {
+            assertThat(r.isReadable()).isTrue();
+        }
+
         @Nested
         class ContentLength {
             @BeforeEach
@@ -135,11 +150,6 @@ public class GridFSResourceTest {
             }
         }
 
-        @Test
-        void isOpenShouldReturnTrue() {
-            assertThat(r.isOpen()).isTrue();
-        }
-
         @Nested
         class GetInputStream {
             @Nested
@@ -166,16 +176,6 @@ public class GridFSResourceTest {
                     verify(gridfs, never()).getResource(location);
                 }
             }
-        }
-
-        @Test
-        void getDescriptionShouldReturnSomething() {
-            assertThat(r.getDescription()).isNotNull();
-        }
-
-        @Test
-        void isReadableShouldReturnTrue() {
-            assertThat(r.isReadable()).isTrue();
         }
 
         @Nested
@@ -224,7 +224,7 @@ public class GridFSResourceTest {
             @Test
             void shouldStoreTheContentAndDeleteExistingContent() throws Exception {
                 OutputStream out = r.getOutputStream();
-                out.write(new byte[] { 32 }, 0, 1);
+                out.write(new byte[]{32}, 0, 1);
                 IOUtils.closeQuietly(out);
 
                 verify(gridfs).store(any(InputStream.class), eq(location));

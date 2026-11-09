@@ -32,56 +32,59 @@ public class StoreImplTest {
             @BeforeEach
             void setUp() throws IOException {
                 store = mock();
-                                publisher = mock(ApplicationEventPublisher.class);
+                publisher = mock(ApplicationEventPublisher.class);
 
                 when(store.setContent(any(), any(InputStream.class))).thenReturn(new Object());
 
                 contentCopyPathRoot = Files.createTempDirectory("storeImplTest");
 
-                                for (File f : Objects.requireNonNull(contentCopyPathRoot.toFile().listFiles())) {
-                                    if (f.getName().endsWith(".tmp")) {
-                                        f.delete(); // may fail mysteriously - returns boolean you may want to check
-                                    }
-                                }
+                for (File f : Objects.requireNonNull(contentCopyPathRoot.toFile().listFiles())) {
+                    if (f.getName().endsWith(".tmp")) {
+                        f.delete(); // may fail mysteriously - returns boolean you may want to check
+                    }
+                }
 
-                                stores = new StoreImpl(store, publisher, contentCopyPathRoot);
+                stores = new StoreImpl(store, publisher, contentCopyPathRoot);
 
                 stores.setContent(new Object(), new ByteArrayInputStream("foo".getBytes()));
             }
+
             @Test
             void shouldDeleteTheContentCopyFile() {
                 for (File f : Objects.requireNonNull(contentCopyPathRoot.toFile().listFiles())) {
-                                        if (f.getName().endsWith(".tmp")) {
-                                            fail("Found orphaned content copy path");
-                                        }
-                                    }
+                    if (f.getName().endsWith(".tmp")) {
+                        fail("Found orphaned content copy path");
+                    }
+                }
             }
         }
+
         @Nested
         class GetContent {
             @BeforeEach
             void setUp() throws IOException {
                 store = mock();
-                                publisher = mock(ApplicationEventPublisher.class);
+                publisher = mock(ApplicationEventPublisher.class);
 
                 contentCopyPathRoot = Files.createTempDirectory("storeImplTest");
 
-                                for (File f : Objects.requireNonNull(contentCopyPathRoot.toFile().listFiles())) {
-                                    if (f.getName().endsWith(".tmp")) {
-                                        f.delete(); // may fail mysteriously - returns boolean you may want to check
-                                    }
-                                }
+                for (File f : Objects.requireNonNull(contentCopyPathRoot.toFile().listFiles())) {
+                    if (f.getName().endsWith(".tmp")) {
+                        f.delete(); // may fail mysteriously - returns boolean you may want to check
+                    }
+                }
 
-                                stores = new StoreImpl(store, publisher, contentCopyPathRoot);
+                stores = new StoreImpl(store, publisher, contentCopyPathRoot);
             }
+
             @Test
             void shouldPropagateStoreAccessException() throws IOException {
                 when(store.getContent(any())).thenThrow(new StoreAccessException("missing property"));
-                                    try {
-                                        stores.getContent(new Object());
-                                        fail("expected StoreAccessException");
-                                    } catch (StoreAccessException expected) {
-                                    }
+                try {
+                    stores.getContent(new Object());
+                    fail("expected StoreAccessException");
+                } catch (StoreAccessException expected) {
+                }
             }
         }
     }

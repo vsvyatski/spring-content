@@ -2,7 +2,7 @@ package org.springframework.content.rest;
 
 import java.lang.annotation.*;
 
-@Target({ ElementType.FIELD, ElementType.METHOD, ElementType.TYPE })
+@Target({ElementType.FIELD, ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 public @interface RestResource {
@@ -17,21 +17,21 @@ public @interface RestResource {
     /**
      * The set of paths that are governed by this export when exported=false
      *
-     * @return  an array of paths
+     * @return an array of paths
      */
     String[] paths() default {"*"};
 
     /**
      * The name of the path element to be exported
      *
-     * @return  the path element
+     * @return the path element
      */
     String path() default "";
 
     /**
      * The name of the linkrel element to be exported
      *
-     * @return  the linkrel element
+     * @return the linkrel element
      */
     String linkRel() default "";
 }

@@ -36,23 +36,11 @@ public class BeforeSetEventIT {
     @Autowired
     private TestEntityContentStore store;
 
-    @Nested
-    class BeforeSetEventInputStreamAccessCases {
-        @Nested
-        class WhenTheContentInputStreamIsConsumedByABeforeSetEvent {
-            @Test
-            void shouldStillSetTheContentInTheStore() throws IOException {
-                TestEntity te = new TestEntity();
-                                    ByteArrayInputStream bais = new ByteArrayInputStream("Still here!".getBytes());
-                                    te = store.setContent(te, bais);
-                                    IOUtils.closeQuietly(bais);
-                                    try (InputStream foo = store.getContent(te)) {
-                                        assertThat("Still here!").isEqualTo(IOUtils.toString(foo, Charset.defaultCharset()));
-                                    }
+    @Test
+    public void noop() {
+    }
 
-                                    verify(ev, times(1));
-            }
-        }
+    public interface TestEntityContentStore extends ContentStore<TestEntity, String> {
     }
 
     @Configuration
@@ -94,10 +82,22 @@ public class BeforeSetEventIT {
         }
     }
 
-    public interface TestEntityContentStore extends ContentStore<TestEntity, String> {
-    }
+    @Nested
+    class BeforeSetEventInputStreamAccessCases {
+        @Nested
+        class WhenTheContentInputStreamIsConsumedByABeforeSetEvent {
+            @Test
+            void shouldStillSetTheContentInTheStore() throws IOException {
+                TestEntity te = new TestEntity();
+                ByteArrayInputStream bais = new ByteArrayInputStream("Still here!".getBytes());
+                te = store.setContent(te, bais);
+                IOUtils.closeQuietly(bais);
+                try (InputStream foo = store.getContent(te)) {
+                    assertThat("Still here!").isEqualTo(IOUtils.toString(foo, Charset.defaultCharset()));
+                }
 
-    @Test
-    public void noop() {
+                verify(ev, times(1));
+            }
+        }
     }
 }

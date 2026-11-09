@@ -26,15 +26,17 @@ public class HeaderUtils {
 
     /**
      * Pattern matching ETag multiple field values in headers such as "If-Match", "If-None-Match".
+     *
      * @see <a href="https://tools.ietf.org/html/rfc7232#section-2.3">Section 2.3 of RFC 7232</a>
      */
     private static final Pattern ETAG_HEADER_VALUE_PATTERN = Pattern.compile("\\*|\\s*((W\\/)?(\"[^\"]*\"))\\s*,?");
 
     /**
      * Date formats as specified in the HTTP RFC.
+     *
      * @see <a href="https://tools.ietf.org/html/rfc7231#section-7.1.1.1">Section 7.1.1.1 of RFC 7231</a>
      */
-    private static final String[] DATE_FORMATS = new String[] {
+    private static final String[] DATE_FORMATS = new String[]{
             "EEE, dd MMM yyyy HH:mm:ss zzz",
             "EEE, dd-MMM-yy HH:mm:ss zzz",
             "EEE MMM dd HH:mm:ss yyyy"
@@ -47,39 +49,39 @@ public class HeaderUtils {
     }
 
     public static void evaluateHeaderConditions(HttpHeaders headers, String resourceETag, Object resourceLastModified) {
-		if (ifMatchPresent(headers)) {
-			boolean matches = checkIfMatchCondition(headers, resourceETag);
-			if (!matches) {
-				throw new ResponseStatusException(HttpStatus.PRECONDITION_FAILED, format("Entity If-Match %s failed", headers.getIfMatch().get(0)));
-			}
-		} else {
-			if (isIfUnmodifiedSincePresent(headers)) {
-				if (resourceLastModified != null) {
-					Long lastModified = Stream.of(resourceLastModified)
-							.filter(it -> it != null)
-							.map(it -> conversionService.convert(it, Date.class))//
-							.map(it -> conversionService.convert(it, Instant.class))//
-							.map(it -> it.toEpochMilli())
-							.findFirst().orElse(-1L);
-					boolean unmodified = checkIfUnmodifiedSinceCondition(headers, lastModified);
-					if (!unmodified) {
-						throw new ResponseStatusException(HttpStatus.PRECONDITION_FAILED, format("Entity modified since %s", headers.get("If-Unmodified-Since").get(0)));
-					}
-				}
-			}
-		}
+        if (ifMatchPresent(headers)) {
+            boolean matches = checkIfMatchCondition(headers, resourceETag);
+            if (!matches) {
+                throw new ResponseStatusException(HttpStatus.PRECONDITION_FAILED, format("Entity If-Match %s failed", headers.getIfMatch().get(0)));
+            }
+        } else {
+            if (isIfUnmodifiedSincePresent(headers)) {
+                if (resourceLastModified != null) {
+                    Long lastModified = Stream.of(resourceLastModified)
+                            .filter(it -> it != null)
+                            .map(it -> conversionService.convert(it, Date.class))//
+                            .map(it -> conversionService.convert(it, Instant.class))//
+                            .map(it -> it.toEpochMilli())
+                            .findFirst().orElse(-1L);
+                    boolean unmodified = checkIfUnmodifiedSinceCondition(headers, lastModified);
+                    if (!unmodified) {
+                        throw new ResponseStatusException(HttpStatus.PRECONDITION_FAILED, format("Entity modified since %s", headers.get("If-Unmodified-Since").get(0)));
+                    }
+                }
+            }
+        }
 
-		boolean noneMatch = checkIfNoneMatchCondition(headers, resourceETag);
-		if (!noneMatch) {
-			throw new ResponseStatusException(HttpStatus.PRECONDITION_FAILED, format("Entity If-None-Match %s failed", StringUtils.collectionToCommaDelimitedString(headers.get("If-None-Match"))));
-		}
-	}
+        boolean noneMatch = checkIfNoneMatchCondition(headers, resourceETag);
+        if (!noneMatch) {
+            throw new ResponseStatusException(HttpStatus.PRECONDITION_FAILED, format("Entity If-None-Match %s failed", StringUtils.collectionToCommaDelimitedString(headers.get("If-None-Match"))));
+        }
+    }
 
     public static boolean ifMatchPresent(HttpHeaders headers) {
         return headers.getIfMatch().size() > 0;
     }
 
-    public static  boolean checkIfMatchCondition(HttpHeaders headers, String resourceETag) {
+    public static boolean checkIfMatchCondition(HttpHeaders headers, String resourceETag) {
         if (resourceETag == null) {
             return true;
         }
@@ -104,7 +106,7 @@ public class HeaderUtils {
         return matches;
     }
 
-    public static  boolean checkIfNoneMatchCondition(HttpHeaders headers, String resourceETag) {
+    public static boolean checkIfNoneMatchCondition(HttpHeaders headers, String resourceETag) {
         boolean matches = false;
         Iterator<String> ifNoneMatch = headers.getIfNoneMatch().iterator();
 
@@ -125,11 +127,11 @@ public class HeaderUtils {
         return !matches;
     }
 
-    public static  boolean isIfUnmodifiedSincePresent(HttpHeaders headers) {
+    public static boolean isIfUnmodifiedSincePresent(HttpHeaders headers) {
         return headers.getIfUnmodifiedSince() != -1;
     }
 
-    public static  boolean checkIfUnmodifiedSinceCondition(HttpHeaders headers, long lastModifiedTimestamp) {
+    public static boolean checkIfUnmodifiedSinceCondition(HttpHeaders headers, long lastModifiedTimestamp) {
         if (lastModifiedTimestamp < 0) {
             return false;
         }
@@ -141,7 +143,7 @@ public class HeaderUtils {
         return !(ifUnmodifiedSince < (lastModifiedTimestamp / 1000 * 1000));
     }
 
-    public static  String padEtagIfNecessary(String etag) {
+    public static String padEtagIfNecessary(String etag) {
         if (!StringUtils.hasLength(etag)) {
             return etag;
         }
@@ -151,12 +153,11 @@ public class HeaderUtils {
         return "\"" + etag + "\"";
     }
 
-    public static  long parseDateHeader(HttpHeaders headers, String headerName) {
+    public static long parseDateHeader(HttpHeaders headers, String headerName) {
         long dateValue = -1;
         try {
             dateValue = headers.getIfUnmodifiedSince();
-        }
-        catch (IllegalArgumentException ex) {
+        } catch (IllegalArgumentException ex) {
             String headerValue = headers.getFirst(headerName);
             // Possibly an IE 10 style value: "Wed, 09 Apr 2014 09:57:42 GMT; length=13774"
             if (headerValue != null) {
@@ -170,7 +171,7 @@ public class HeaderUtils {
         return dateValue;
     }
 
-    public static  long parseDateValue(@Nullable String headerValue) {
+    public static long parseDateValue(@Nullable String headerValue) {
         if (headerValue == null) {
             // No header value sent at all
             return -1;
@@ -183,8 +184,7 @@ public class HeaderUtils {
                 simpleDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
                 try {
                     return simpleDateFormat.parse(headerValue).getTime();
-                }
-                catch (ParseException ex) {
+                } catch (ParseException ex) {
                     // ignore
                 }
             }

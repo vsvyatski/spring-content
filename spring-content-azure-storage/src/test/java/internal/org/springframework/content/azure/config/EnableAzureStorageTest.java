@@ -26,6 +26,8 @@ public class EnableAzureStorageTest {
 
     private static final BlobServiceClientBuilder builder = Azurite.getBlobServiceClientBuilder();
     private static final BlobContainerClient client = builder.buildClient().getBlobContainerClient("test");
+    // mocks
+    static AzureStorageConfigurer configurer;
 
     static {
         if (!client.exists()) {
@@ -37,8 +39,66 @@ public class EnableAzureStorageTest {
 
     private AnnotationConfigApplicationContext context;
 
-    // mocks
-    static AzureStorageConfigurer configurer;
+    public interface TestEntityContentStore extends ContentStore<TestEntity, String> {
+    }
+
+    @Configuration
+    @EnableAzureStorage(basePackages = "contains.no.fs.repositores")
+    @Import(InfrastructureConfig.class)
+    public static class EmptyConfig {
+    }
+
+    @Configuration
+    @EnableAzureStorage
+    @Import(InfrastructureConfig.class)
+    public static class TestConfig {
+    }
+
+    @Configuration
+    @EnableAzureStorage
+    @Import(InfrastructureConfig.class)
+    public static class ConverterConfig {
+        @Bean
+        public AzureStorageConfigurer configurer() {
+            return configurer;
+        }
+    }
+
+    @Configuration
+    @EnableAzureStorage
+    @Import(InfrastructureConfig.class)
+    public static class TestConverterConfig {
+        @Bean
+        public AzureStorageConfigurer configurer() {
+            return new AzureStorageConfigurer() {
+
+                @Override
+                public void configureAzureStorageConverters(ConverterRegistry registry) {
+                }
+            };
+        }
+    }
+
+    @Configuration
+    public static class InfrastructureConfig {
+        @Bean
+        public BlobServiceClientBuilder builder() {
+            return builder;
+        }
+    }
+
+    public static class TestEntity {
+        @ContentId
+        private String contentId;
+
+        public String getContentId() {
+            return contentId;
+        }
+
+        public void setContentId(String contentId) {
+            this.contentId = contentId;
+        }
+    }
 
     @Nested
     class EnableAzureStorageCases {
@@ -112,66 +172,5 @@ public class EnableAzureStorageTest {
 
         }
 
-    }
-
-    @Configuration
-    @EnableAzureStorage(basePackages = "contains.no.fs.repositores")
-    @Import(InfrastructureConfig.class)
-    public static class EmptyConfig {
-    }
-
-    @Configuration
-    @EnableAzureStorage
-    @Import(InfrastructureConfig.class)
-    public static class TestConfig {
-    }
-
-    @Configuration
-    @EnableAzureStorage
-    @Import(InfrastructureConfig.class)
-    public static class ConverterConfig {
-        @Bean
-        public AzureStorageConfigurer configurer() {
-            return configurer;
-        }
-    }
-
-    @Configuration
-    @EnableAzureStorage
-    @Import(InfrastructureConfig.class)
-    public static class TestConverterConfig {
-        @Bean
-        public AzureStorageConfigurer configurer() {
-            return new AzureStorageConfigurer() {
-
-                @Override
-                public void configureAzureStorageConverters(ConverterRegistry registry) {
-                }
-            };
-        }
-    }
-
-    @Configuration
-    public static class InfrastructureConfig {
-        @Bean
-        public BlobServiceClientBuilder builder() {
-            return builder;
-        }
-    }
-
-    public static class TestEntity {
-        @ContentId
-        private String contentId;
-
-        public String getContentId() {
-            return contentId;
-        }
-
-        public void setContentId(String contentId) {
-            this.contentId = contentId;
-        }
-    }
-
-    public interface TestEntityContentStore extends ContentStore<TestEntity, String> {
     }
 }

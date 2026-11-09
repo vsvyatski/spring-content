@@ -19,47 +19,46 @@ import static java.lang.String.format;
 @Service
 public class WordToTextRenditionProvider implements RenditionProvider {
 
-	private static final Log logger = LogFactory.getLog(WordToTextRenditionProvider.class);
+    private static final Log logger = LogFactory.getLog(WordToTextRenditionProvider.class);
 
-	@Override
-	public String consumes() {
-		return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-	}
+    @Override
+    public String consumes() {
+        return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+    }
 
-	@Override
-	public String[] produces() {
-		return new String[] { "text/plain" };
-	}
+    @Override
+    public String[] produces() {
+        return new String[]{"text/plain"};
+    }
 
-	@Override
-	public InputStream convert(InputStream fromInputSource, String toMimeType) {
-		try {
-			WordprocessingMLPackage pkg = WordprocessingMLPackage.load(fromInputSource);
+    @Override
+    public InputStream convert(InputStream fromInputSource, String toMimeType) {
+        try {
+            WordprocessingMLPackage pkg = WordprocessingMLPackage.load(fromInputSource);
 
-			MainDocumentPart documentPart = pkg.getMainDocumentPart();
+            MainDocumentPart documentPart = pkg.getMainDocumentPart();
 
-			org.docx4j.wml.Document wmlDocumentEl = (org.docx4j.wml.Document) documentPart.getJaxbElement();
+            org.docx4j.wml.Document wmlDocumentEl = (org.docx4j.wml.Document) documentPart.getJaxbElement();
 
-			File tmpFile = Files.createTempFile(null, null, new FileAttribute<?>[]{}).toFile();
-			OutputStream os = new FileOutputStream(tmpFile);
-			Writer out = new OutputStreamWriter(os);
+            File tmpFile = Files.createTempFile(null, null, new FileAttribute<?>[]{}).toFile();
+            OutputStream os = new FileOutputStream(tmpFile);
+            Writer out = new OutputStreamWriter(os);
 
-			TextUtils.extractText(wmlDocumentEl, out);
-			out.close();
+            TextUtils.extractText(wmlDocumentEl, out);
+            out.close();
 
-			if (pkg.getMainDocumentPart().getFontTablePart() != null) {
-				pkg.getMainDocumentPart().getFontTablePart().deleteEmbeddedFontTempFiles();
-			}
+            if (pkg.getMainDocumentPart().getFontTablePart() != null) {
+                pkg.getMainDocumentPart().getFontTablePart().deleteEmbeddedFontTempFiles();
+            }
 
-			pkg = null;
+            pkg = null;
 
-			return new ObservableInputStream(new FileInputStream(tmpFile), new FileRemover(tmpFile));
-		}
-		catch (Exception e) {
-			logger.warn(format("%s rendition failed", toMimeType), e);
-		}
+            return new ObservableInputStream(new FileInputStream(tmpFile), new FileRemover(tmpFile));
+        } catch (Exception e) {
+            logger.warn(format("%s rendition failed", toMimeType), e);
+        }
 
-		return null;
-	}
+        return null;
+    }
 
 }

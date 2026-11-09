@@ -4,5 +4,5 @@ import org.springframework.core.convert.converter.ConverterRegistry;
 
 public interface GCPStorageConfigurer {
 
-	void configureGCPStorageConverters(ConverterRegistry registry);
+    void configureGCPStorageConverters(ConverterRegistry registry);
 }

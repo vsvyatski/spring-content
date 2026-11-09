@@ -26,10 +26,30 @@ import static org.mockito.Mockito.verify;
 
 public class RestConfigurationTest {
 
-   private AnnotationConfigWebApplicationContext context;
+    // mocks
+    private static ContentRestConfigurer configurer;
+    private AnnotationConfigWebApplicationContext context;
 
-   // mocks
-   private static ContentRestConfigurer configurer;
+    public interface TestEntityRepository extends MongoRepository<TestEntity, String> {
+    }
+
+    public interface TestEntityContentRepository extends FileSystemContentStore<TestEntity, String> {
+    }
+
+    @Configuration
+    @EnableFileSystemStores
+    public static class TestConfig {
+
+        @Bean
+        public FileSystemResourceLoader filesystemRoot() throws IOException {
+            return new FileSystemResourceLoader(Files.createTempDirectory("").toFile().getAbsolutePath());
+        }
+
+        @Bean
+        public ContentRestConfigurer configurer() {
+            return configurer;
+        }
+    }
 
     @Nested
     class RestConfigurationCases {
@@ -42,9 +62,9 @@ public class RestConfigurationTest {
                 context = new AnnotationConfigWebApplicationContext();
                 context.setServletContext(new MockServletContext());
                 context.register(TestConfig.class,
-                      DelegatingWebMvcConfiguration.class,
-                      RepositoryRestMvcConfiguration.class,
-                      RestConfiguration.class);
+                        DelegatingWebMvcConfiguration.class,
+                        RepositoryRestMvcConfiguration.class,
+                        RestConfiguration.class);
                 context.refresh();
             }
 
@@ -70,32 +90,11 @@ public class RestConfigurationTest {
 
     }
 
-   @Configuration
-   @EnableFileSystemStores
-   public static class TestConfig {
-
-      @Bean
-      public FileSystemResourceLoader filesystemRoot() throws IOException {
-         return new FileSystemResourceLoader(Files.createTempDirectory("").toFile().getAbsolutePath());
-      }
-
-      @Bean
-      public ContentRestConfigurer configurer() {
-         return configurer;
-      }
-   }
-
-   @Document
-   public class TestEntity {
-      @Id
-      private String id;
-      @ContentId
-      private String contentId;
-   }
-
-   public interface TestEntityRepository extends MongoRepository<TestEntity, String> {
-   }
-
-   public interface TestEntityContentRepository extends FileSystemContentStore<TestEntity, String> {
-   }
+    @Document
+    public class TestEntity {
+        @Id
+        private String id;
+        @ContentId
+        private String contentId;
+    }
 }

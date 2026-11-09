@@ -53,6 +53,62 @@ public class PostgresBlobResourceIT {
 
     private PostgresBlobResource r = null;
 
+    @Configuration
+    @EnableTransactionManagement
+    public static class PostgresConfig {
+
+        @Value("/org/springframework/content/jpa/schema-drop-postgresql.sql")
+        private Resource dropStoreTables;
+
+        @Value("/org/springframework/content/jpa/schema-postgresql.sql")
+        private Resource dataStoreSchema;
+
+        @Bean
+        DataSourceInitializer datasourceInitializer(DataSource dataSource) {
+            ResourceDatabasePopulator databasePopulator = new ResourceDatabasePopulator();
+
+            databasePopulator.addScript(dropStoreTables);
+            databasePopulator.addScript(dataStoreSchema);
+            databasePopulator.setIgnoreFailedDrops(true);
+
+            DataSourceInitializer initializer = new DataSourceInitializer();
+            initializer.setDataSource(dataSource);
+            initializer.setDatabasePopulator(databasePopulator);
+
+            return initializer;
+        }
+
+        @Bean
+        public DataSource dataSource() {
+            DriverManagerDataSource ds = new DriverManagerDataSource();
+            ds.setUrl("jdbc:tc:postgresql:12:///databasename?TC_TMPFS=/testtmpfs:rw&TC_DAEMON=true");
+            ds.setUsername("test");
+            ds.setPassword("test");
+            return ds;
+        }
+
+        @Bean
+        public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+            HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+            vendorAdapter.setDatabase(Database.POSTGRESQL);
+            vendorAdapter.setGenerateDdl(true);
+
+            LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
+            factory.setJpaVendorAdapter(vendorAdapter);
+            factory.setPackagesToScan(getClass().getPackage().getName());
+            factory.setDataSource(dataSource());
+
+            return factory;
+        }
+
+        @Bean
+        public PlatformTransactionManager transactionManager() {
+            JpaTransactionManager txManager = new JpaTransactionManager();
+            txManager.setEntityManagerFactory(entityManagerFactory().getObject());
+            return txManager;
+        }
+    }
+
     @Nested
     class PostgresBlobResourceCases {
         @Nested
@@ -132,62 +188,6 @@ public class PostgresBlobResourceIT {
 
         }
 
-    }
-
-    @Configuration
-    @EnableTransactionManagement
-    public static class PostgresConfig {
-
-        @Value("/org/springframework/content/jpa/schema-drop-postgresql.sql")
-        private Resource dropStoreTables;
-
-        @Value("/org/springframework/content/jpa/schema-postgresql.sql")
-        private Resource dataStoreSchema;
-
-        @Bean
-        DataSourceInitializer datasourceInitializer(DataSource dataSource) {
-            ResourceDatabasePopulator databasePopulator = new ResourceDatabasePopulator();
-
-            databasePopulator.addScript(dropStoreTables);
-            databasePopulator.addScript(dataStoreSchema);
-            databasePopulator.setIgnoreFailedDrops(true);
-
-            DataSourceInitializer initializer = new DataSourceInitializer();
-            initializer.setDataSource(dataSource);
-            initializer.setDatabasePopulator(databasePopulator);
-
-            return initializer;
-        }
-
-        @Bean
-        public DataSource dataSource() {
-            DriverManagerDataSource ds = new DriverManagerDataSource();
-            ds.setUrl("jdbc:tc:postgresql:12:///databasename?TC_TMPFS=/testtmpfs:rw&TC_DAEMON=true");
-            ds.setUsername("test");
-            ds.setPassword("test");
-            return ds;
-        }
-
-        @Bean
-        public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-            HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-            vendorAdapter.setDatabase(Database.POSTGRESQL);
-            vendorAdapter.setGenerateDdl(true);
-
-            LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
-            factory.setJpaVendorAdapter(vendorAdapter);
-            factory.setPackagesToScan(getClass().getPackage().getName());
-            factory.setDataSource(dataSource());
-
-            return factory;
-        }
-
-        @Bean
-        public PlatformTransactionManager transactionManager() {
-            JpaTransactionManager txManager = new JpaTransactionManager();
-            txManager.setEntityManagerFactory(entityManagerFactory().getObject());
-            return txManager;
-        }
     }
 
 }

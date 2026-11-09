@@ -29,79 +29,79 @@ import java.util.List;
 @Import(AzureStorageBlobProtocolResolver.class)
 public class AzureStorageConfiguration implements InitializingBean {
 
-	private static Log logger = LogFactory.getLog(AzureStorageConfiguration.class);
+    private static Log logger = LogFactory.getLog(AzureStorageConfiguration.class);
 
-	@Autowired(required = false)
-	private List<AzureStorageConfigurer> configurers;
+    @Autowired(required = false)
+    private List<AzureStorageConfigurer> configurers;
 
-	private String bucket;
-	
-	private PlacementService conversion = new PlacementServiceImpl();
+    private String bucket;
 
-	@Autowired
-	public AzureStorageConfiguration(@Value("${spring.content.azure.bucket:#{environment.AZURE_STORAGE_BUCKET}}") String bucket) {
-		this.bucket = bucket;
-	}
+    private PlacementService conversion = new PlacementServiceImpl();
 
-	@Bean
-	public PlacementService azureStoragePlacementService() {
-		return conversion;
-	}
+    @Autowired
+    public AzureStorageConfiguration(@Value("${spring.content.azure.bucket:#{environment.AZURE_STORAGE_BUCKET}}") String bucket) {
+        this.bucket = bucket;
+    }
 
-	@Bean
-	public BlobServiceClient blobServiceClient(BlobServiceClientBuilder builder) {
-		return builder.buildClient();
-	}
+    public static void addDefaultConverters(PlacementService conversion, String bucket) {
 
-	public static void addDefaultConverters(PlacementService conversion, String bucket) {
+        // Serializable -> BlobId
+        logger.info("Adding Serializable->BlobId converter");
+        conversion.addConverter(new BlobIdResolverConverter(bucket));
 
-		// Serializable -> BlobId
-		logger.info("Adding Serializable->BlobId converter");
-		conversion.addConverter(new BlobIdResolverConverter(bucket));
+        // ContentPropertyInfo -> BlobId
+        logger.info("Adding ContentPropertyInfo->BlobId converter");
+        Converter converter = new Converter<ContentPropertyInfo<Object, Serializable>, BlobId>() {
 
-		// ContentPropertyInfo -> BlobId
-		logger.info("Adding ContentPropertyInfo->BlobId converter");
-		Converter converter = new Converter<ContentPropertyInfo<Object, Serializable>, BlobId>() {
+            private String defaultBucket = bucket;
 
-			private String defaultBucket = bucket;
+            @Override
+            public BlobId convert(ContentPropertyInfo<Object, Serializable> info) {
 
-			@Override
-			public BlobId convert(ContentPropertyInfo<Object, Serializable> info) {
+                String strBucket = null;
+                // @Bucket can be only on entity level, not per content property
+                Object bucket = BeanUtils.getFieldWithAnnotation(info.entity(), Bucket.class);
+                if (bucket == null) {
+                    bucket = defaultBucket;
+                }
+                if (bucket == null) {
+                    throw new StoreAccessException("Bucket not set");
+                } else {
+                    strBucket = bucket.toString();
+                }
 
-				String strBucket = null;
-				// @Bucket can be only on entity level, not per content property
-				Object bucket = BeanUtils.getFieldWithAnnotation(info.entity(), Bucket.class);
-				if (bucket == null) {
-					bucket = defaultBucket;
-				}
-				if (bucket == null) {
-					throw new StoreAccessException("Bucket not set");
-				} else {
-					strBucket = bucket.toString();
-				}
+                Serializable key = info.contentId();
 
-				Serializable key = info.contentId();
+                return (key != null) ? new BlobId(strBucket, key.toString()) : null;
+            }
 
-				return (key != null) ? new BlobId(strBucket, key.toString()) : null;
-			}
+        };
+        conversion.addConverter(converter);
+    }
 
-		};
-		conversion.addConverter(converter);
-	}
+    @Bean
+    public PlacementService azureStoragePlacementService() {
+        return conversion;
+    }
 
-	private void addConverters(ConverterRegistry registry) {
-		if (configurers == null)
-			return;
+    @Bean
+    public BlobServiceClient blobServiceClient(BlobServiceClientBuilder builder) {
+        return builder.buildClient();
+    }
 
-		for (AzureStorageConfigurer configurer : configurers) {
-			configurer.configureAzureStorageConverters(registry);
-		}
-	}
+    private void addConverters(ConverterRegistry registry) {
+        if (configurers == null)
+            return;
 
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		addDefaultConverters(conversion, bucket);
-		addConverters(conversion);
-		logger.info(conversion.toString());
-	}
+        for (AzureStorageConfigurer configurer : configurers) {
+            configurer.configureAzureStorageConverters(registry);
+        }
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        addDefaultConverters(conversion, bucket);
+        addConverters(conversion);
+        logger.info(conversion.toString());
+    }
 }

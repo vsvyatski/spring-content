@@ -31,6 +31,34 @@ public class ContentS3AutoConfigurationTest {
 
     private ApplicationContextRunner contextRunner;
 
+    public interface TestEntityContentRepository extends S3ContentStore<TestEntity, String> {
+    }
+
+    @SpringBootApplication(exclude = {FileSystemContentAutoConfiguration.class, MongoContentAutoConfiguration.class, SolrAutoConfiguration.class, SolrExtensionAutoConfiguration.class})
+    public static class TestConfig {
+
+        @Bean
+        public S3Client s3Client() {
+            return client;
+        }
+    }
+
+    @SpringBootApplication
+    public static class TestConfigWithoutBeans {
+        // will be supplied by autoconfiguration
+    }
+
+    @SpringBootApplication
+    @EnableS3Stores
+    public static class TestConfigWithExplicitEnableS3Stores {
+        // will be supplied by autoconfiguration
+    }
+
+    @SpringBootApplication
+    public static class TestConfigWithProperties {
+        // will be supplied by autoconfiguration
+    }
+
     @Nested
     class S3ContentAutoConfigurationCases {
         @Nested
@@ -110,33 +138,5 @@ public class ContentS3AutoConfigurationTest {
                 contextRunner.withUserConfiguration(TestConfigWithProperties.class).run((context) -> Assertions.assertThat(context).hasSingleBean(S3Client.class));
             }
         }
-    }
-
-    @SpringBootApplication(exclude = {FileSystemContentAutoConfiguration.class, MongoContentAutoConfiguration.class, SolrAutoConfiguration.class, SolrExtensionAutoConfiguration.class})
-    public static class TestConfig {
-
-        @Bean
-        public S3Client s3Client() {
-            return client;
-        }
-    }
-
-    @SpringBootApplication
-    public static class TestConfigWithoutBeans {
-        // will be supplied by autoconfiguration
-    }
-
-    @SpringBootApplication
-    @EnableS3Stores
-    public static class TestConfigWithExplicitEnableS3Stores {
-        // will be supplied by autoconfiguration
-    }
-
-    @SpringBootApplication
-    public static class TestConfigWithProperties {
-        // will be supplied by autoconfiguration
-    }
-
-    public interface TestEntityContentRepository extends S3ContentStore<TestEntity, String> {
     }
 }

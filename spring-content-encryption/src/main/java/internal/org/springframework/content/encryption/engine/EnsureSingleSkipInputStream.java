@@ -18,12 +18,12 @@ class EnsureSingleSkipInputStream extends FilterInputStream {
     @Override
     public long skip(long n) throws IOException {
         long totalSkipped = 0;
-        while(totalSkipped < n) {
-            var skipAmount = super.skip(n-totalSkipped);
-            totalSkipped+=skipAmount;
-            if(skipAmount == 0) { // no bytes were skipped
+        while (totalSkipped < n) {
+            var skipAmount = super.skip(n - totalSkipped);
+            totalSkipped += skipAmount;
+            if (skipAmount == 0) { // no bytes were skipped
                 // Read one byte to check for EOF
-                if(read() == -1) {
+                if (read() == -1) {
                     return totalSkipped;
                 }
                 totalSkipped++; // We skipped the byte we read above

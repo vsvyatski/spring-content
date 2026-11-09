@@ -16,10 +16,10 @@ import static org.assertj.core.api.Assertions.fail;
 
 public class FileServiceTest {
 
-	private FileService fileService;
-	private File file;
-	private File parent;
-	private Exception ex;
+    private FileService fileService;
+    private File file;
+    private File parent;
+    private Exception ex;
 
     @Nested
     class Mkdirs {
@@ -34,10 +34,9 @@ public class FileServiceTest {
 
                 fileService = new FileServiceImpl();
                 try {
-                	fileService.mkdirs(file);
-                }
-                catch (Exception e) {
-                	ex = e;
+                    fileService.mkdirs(file);
+                } catch (Exception e) {
+                    ex = e;
                 }
             }
 
@@ -64,10 +63,9 @@ public class FileServiceTest {
 
                 fileService = new FileServiceImpl();
                 try {
-                	fileService.mkdirs(file);
-                }
-                catch (Exception e) {
-                	ex = e;
+                    fileService.mkdirs(file);
+                } catch (Exception e) {
+                    ex = e;
                 }
             }
 
@@ -100,10 +98,9 @@ public class FileServiceTest {
 
                 fileService = new FileServiceImpl();
                 try {
-                	fileService.mkdirs(file);
-                }
-                catch (Exception e) {
-                	ex = e;
+                    fileService.mkdirs(file);
+                } catch (Exception e) {
+                    ex = e;
                 }
             }
 
@@ -131,10 +128,9 @@ public class FileServiceTest {
 
                 fileService = new FileServiceImpl();
                 try {
-                	fileService.mkdirs(file);
-                }
-                catch (Exception e) {
-                	ex = e;
+                    fileService.mkdirs(file);
+                } catch (Exception e) {
+                    ex = e;
                 }
             }
 
@@ -160,10 +156,9 @@ public class FileServiceTest {
                 file = null;
                 fileService = new FileServiceImpl();
                 try {
-                	fileService.mkdirs(file);
-                }
-                catch (Exception e) {
-                	ex = e;
+                    fileService.mkdirs(file);
+                } catch (Exception e) {
+                    ex = e;
                 }
             }
 
@@ -202,10 +197,10 @@ public class FileServiceTest {
             Path tempFile = Files.createTempFile(null, null);
 
             try {
-            	fileService.rmdirs(tempFile.toFile(), null);
-            	fail("unexpected");
+                fileService.rmdirs(tempFile.toFile(), null);
+                fail("unexpected");
             } catch (IOException e) {
-            	assertThat(e).isNotNull();
+                assertThat(e).isNotNull();
             }
         }
 

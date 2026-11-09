@@ -32,7 +32,7 @@ public class PartialContentInputStreamTest {
             void setUp() {
                 inputStream = PartialContentInputStream.fromContentRange(
                         new ByteArrayInputStream(FULL_DATA, 0, 4),
-                        "bytes 0-3/"+FULL_DATA.length // bytes in the range description are *inclusive*
+                        "bytes 0-3/" + FULL_DATA.length // bytes in the range description are *inclusive*
                 );
             }
 
@@ -44,14 +44,14 @@ public class PartialContentInputStreamTest {
             @Test
             void readsFullyFromStartToFinish() throws IOException {
                 var readData = new byte[FULL_DATA.length];
-                Arrays.fill(readData, (byte)0xba); // Fill array to detect that it is properly filled with NUL bytes by the read function
+                Arrays.fill(readData, (byte) 0xba); // Fill array to detect that it is properly filled with NUL bytes by the read function
                 IOUtils.readFully(inputStream, readData);
 
                 assertThat(readData[0]).isEqualTo(FULL_DATA[0]);
                 assertThat(readData[1]).isEqualTo(FULL_DATA[1]);
                 assertThat(readData[2]).isEqualTo(FULL_DATA[2]);
                 assertThat(readData[3]).isEqualTo(FULL_DATA[3]);
-                for(int i = 4; i < FULL_DATA.length; i++) {
+                for (int i = 4; i < FULL_DATA.length; i++) {
                     assertThat(readData[i]).isEqualTo(NUL);
                 }
 
@@ -64,7 +64,7 @@ public class PartialContentInputStreamTest {
                 inputStream.skipNBytes(2);
 
                 var readData = new byte[6];
-                Arrays.fill(readData, (byte)0xba); // Fill array to detect that it is properly filled with NUL bytes by the read function
+                Arrays.fill(readData, (byte) 0xba); // Fill array to detect that it is properly filled with NUL bytes by the read function
                 IOUtils.readFully(inputStream, readData);
                 assertThat(readData[0]).isEqualTo(FULL_DATA[2]);
                 assertThat(readData[1]).isEqualTo(FULL_DATA[3]);
@@ -91,7 +91,7 @@ public class PartialContentInputStreamTest {
             void skipsBytesAfterTheEndOfTheRange() throws IOException {
                 inputStream.skipNBytes(4); // Skip right up to the end of the range
 
-                assertThat(inputStream.skip(Long.MAX_VALUE)).isEqualTo((long)FULL_DATA.length - 4); // All the rest of the bytes can be skipped at once
+                assertThat(inputStream.skip(Long.MAX_VALUE)).isEqualTo((long) FULL_DATA.length - 4); // All the rest of the bytes can be skipped at once
             }
 
         }
@@ -101,8 +101,8 @@ public class PartialContentInputStreamTest {
             @BeforeEach
             void setUp() {
                 inputStream = PartialContentInputStream.fromContentRange(
-                        new ByteArrayInputStream(FULL_DATA, 10, FULL_DATA.length-10),
-                        "bytes 10-"+FULL_DATA.length+"/*"
+                        new ByteArrayInputStream(FULL_DATA, 10, FULL_DATA.length - 10),
+                        "bytes 10-" + FULL_DATA.length + "/*"
                 );
             }
 
@@ -114,13 +114,13 @@ public class PartialContentInputStreamTest {
             @Test
             void readsFullyFromStartToFinish() throws IOException {
                 var readData = new byte[FULL_DATA.length];
-                Arrays.fill(readData, (byte)0xba); // Fill array to detect that it is properly filled with NUL bytes by the read function
+                Arrays.fill(readData, (byte) 0xba); // Fill array to detect that it is properly filled with NUL bytes by the read function
                 IOUtils.readFully(inputStream, readData);
 
-                for(int i = 0; i < 10; i++) {
+                for (int i = 0; i < 10; i++) {
                     assertThat(readData[i]).isEqualTo(NUL);
                 }
-                for(int i = 10; i < FULL_DATA.length; i++) {
+                for (int i = 10; i < FULL_DATA.length; i++) {
                     assertThat(readData[i]).isEqualTo(FULL_DATA[i]);
                 }
                 // Stream is at EOF after reading all the bytes
@@ -132,13 +132,13 @@ public class PartialContentInputStreamTest {
                 assertThat(inputStream.skip(5)).isEqualTo(5L); // Can skip bytes before start of range
 
                 // Check that read data skips the 5 bytes that were skipped
-                var readData = new byte[FULL_DATA.length-5];
-                Arrays.fill(readData, (byte)0xba); // Fill array to detect that it is properly filled with NUL bytes by the read function
+                var readData = new byte[FULL_DATA.length - 5];
+                Arrays.fill(readData, (byte) 0xba); // Fill array to detect that it is properly filled with NUL bytes by the read function
                 IOUtils.readFully(inputStream, readData);
                 assertThat(readData[0]).isEqualTo(NUL);
                 assertThat(readData[4]).isEqualTo(NUL);
-                for(int i = 5; i < readData.length; i++) {
-                    assertThat(readData[i]).isEqualTo(FULL_DATA[5+i]);
+                for (int i = 5; i < readData.length; i++) {
+                    assertThat(readData[i]).isEqualTo(FULL_DATA[5 + i]);
                 }
 
                 assertThat(inputStream.read()).isEqualTo(-1); // EOF
@@ -150,8 +150,8 @@ public class PartialContentInputStreamTest {
 
                 var readData = new byte[6];
                 IOUtils.readFully(inputStream, readData);
-                for(int i = 0; i < 6; i++) {
-                    assertThat(readData[i]).isEqualTo(FULL_DATA[15+i]);
+                for (int i = 0; i < 6; i++) {
+                    assertThat(readData[i]).isEqualTo(FULL_DATA[15 + i]);
                 }
             }
 
@@ -181,7 +181,7 @@ public class PartialContentInputStreamTest {
             void setUp() {
                 inputStream = PartialContentInputStream.fromContentRange(
                         new ByteArrayInputStream(FULL_DATA, 3, 4),
-                        "bytes 3-6/"+FULL_DATA.length // bytes in the range description are *inclusive*
+                        "bytes 3-6/" + FULL_DATA.length // bytes in the range description are *inclusive*
                 );
             }
 
@@ -193,17 +193,17 @@ public class PartialContentInputStreamTest {
             @Test
             void readsFullyFromStartToFinish() throws IOException {
                 var readData = new byte[FULL_DATA.length];
-                Arrays.fill(readData, (byte)0xba); // Fill array to detect that it is properly filled with NUL bytes by the read function
+                Arrays.fill(readData, (byte) 0xba); // Fill array to detect that it is properly filled with NUL bytes by the read function
                 IOUtils.readFully(inputStream, readData);
 
-                for(int i = 0; i < 3; i++) {
+                for (int i = 0; i < 3; i++) {
                     assertThat(readData[i]).isEqualTo(NUL);
                 }
                 assertThat(readData[3]).isEqualTo(FULL_DATA[3]);
                 assertThat(readData[4]).isEqualTo(FULL_DATA[4]);
                 assertThat(readData[5]).isEqualTo(FULL_DATA[5]);
                 assertThat(readData[6]).isEqualTo(FULL_DATA[6]);
-                for(int i = 7; i < FULL_DATA.length; i++) {
+                for (int i = 7; i < FULL_DATA.length; i++) {
                     assertThat(readData[i]).isEqualTo(NUL);
                 }
 
@@ -217,7 +217,7 @@ public class PartialContentInputStreamTest {
 
                 // Check that read data skips the 2 bytes that were skipped
                 var readData = new byte[6];
-                Arrays.fill(readData, (byte)0xba); // Fill array to detect that it is properly filled with NUL bytes by the read function
+                Arrays.fill(readData, (byte) 0xba); // Fill array to detect that it is properly filled with NUL bytes by the read function
                 IOUtils.readFully(inputStream, readData);
                 assertThat(readData[0]).isEqualTo(NUL);
                 assertThat(readData[1]).isEqualTo(FULL_DATA[3]);
@@ -232,7 +232,7 @@ public class PartialContentInputStreamTest {
                 inputStream.skipNBytes(4);
 
                 var readData = new byte[6];
-                Arrays.fill(readData, (byte)0xba); // Fill array to detect that it is properly filled with NUL bytes by the read function
+                Arrays.fill(readData, (byte) 0xba); // Fill array to detect that it is properly filled with NUL bytes by the read function
                 IOUtils.readFully(inputStream, readData);
                 assertThat(readData[0]).isEqualTo(FULL_DATA[4]);
                 assertThat(readData[1]).isEqualTo(FULL_DATA[5]);
@@ -263,7 +263,7 @@ public class PartialContentInputStreamTest {
             void skipsBytesAfterTheEndOfTheRange() throws IOException {
                 inputStream.skipNBytes(7); // Skip right up to the end of the range
 
-                assertThat(inputStream.skip(Long.MAX_VALUE)).isEqualTo((long)FULL_DATA.length - 7); // All the rest of the bytes can be skipped at once
+                assertThat(inputStream.skip(Long.MAX_VALUE)).isEqualTo((long) FULL_DATA.length - 7); // All the rest of the bytes can be skipped at once
             }
 
         }

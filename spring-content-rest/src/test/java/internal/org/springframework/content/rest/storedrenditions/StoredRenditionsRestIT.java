@@ -49,7 +49,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebAppConfiguration
-@ContextConfiguration(classes = { StoredRenditionsRestIT.StoredRenditionsConfig.class, StoreConfig.class, DelegatingWebMvcConfiguration.class, RepositoryRestMvcConfiguration.class, RestConfiguration.class })
+@ContextConfiguration(classes = {StoredRenditionsRestIT.StoredRenditionsConfig.class, StoreConfig.class, DelegatingWebMvcConfiguration.class, RepositoryRestMvcConfiguration.class, RestConfiguration.class})
 @Transactional
 @ActiveProfiles("store")
 @ExtendWith(SpringExtension.class)
@@ -69,6 +69,91 @@ public class StoredRenditionsRestIT {
     private TestEventHandler eventHandler;
 
     private MockMvc mvc;
+
+    @Configuration
+    public static class StoredRenditionsConfig {
+
+        @Bean
+        public TestEventHandler eventHandler() {
+            return new TestEventHandler();
+        }
+
+        // a dynamic renderer helps prove the stored rendition was returned
+        @Bean
+        public RenditionProvider textToHtml() {
+            return new RenditionProvider() {
+
+                @Override
+                public String consumes() {
+                    return "text/plain";
+                }
+
+                @Override
+                public String[] produces() {
+                    return new String[]{"text/html"};
+                }
+
+                @Override
+                public InputStream convert(InputStream fromInputSource, String toMimeType) {
+                    String input = null;
+                    try {
+                        input = IOUtils.toString(fromInputSource, StandardCharsets.UTF_8);
+                    } catch (IOException e) {
+                    }
+                    return new ByteArrayInputStream(
+                            String.format("\"<html><head><title>Dynamic Rendition</title></head><body>%s</body></html>\"", input).getBytes());
+                }
+            };
+        }
+    }
+
+    @StoreEventHandler
+    public static class TestEventHandler {
+
+        @Autowired
+        private TestEntity5Repository repo;
+
+        @Autowired
+        private TestEntity5Store store;
+
+        @HandleAfterSetContent
+        public void onAfterSetContent(AfterSetContentEvent event) throws IOException {
+
+            TestEntity5 entity = (TestEntity5) event.getSource();
+
+            long renderedLength = 0;
+            try (InputStream inputStream = store.getContent(entity, PropertyPath.from("content"))) {
+
+                String renderedContent = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
+
+                // create and associate resource
+                UUID resourceId = UUID.randomUUID();
+                Resource r = store.getResource(resourceId);
+                store.associate(entity, PropertyPath.from("rendition"), resourceId);
+
+                try (OutputStream stream = ((WritableResource) store.getResource(entity, PropertyPath.from("rendition"))).getOutputStream()) {
+                    renderedLength = IOUtils.copyLarge(
+                            new ByteArrayInputStream(String.format("<html><head><title>Stored Rendition</title></head><body>%s</body></html>", renderedContent).getBytes()),
+                            stream);
+                }
+            }
+
+            entity.setRenditionLen(renderedLength);
+            entity.setRenditionMimeType("text/html");
+        }
+
+        @HandleBeforeUnsetContent
+        public void onBeforeUnsetContent(BeforeUnsetContentEvent event) throws IOException {
+
+            TestEntity5 entity = (TestEntity5) event.getSource();
+
+            ((DeletableResource) store.getResource(entity, PropertyPath.from("rendition"))).delete();
+
+            entity.setRenditionId(null);
+            entity.setRenditionLen(0L);
+            entity.setRenditionMimeType(null);
+        }
+    }
 
     @Nested
     class StoredRenditions {
@@ -115,11 +200,11 @@ public class StoredRenditionsRestIT {
                         Long id = testEntity5.getId();
 
                         mvc.perform(
-                                get("/testEntity5s/" + testEntity5.getId() + "/content")
-                                .accept("text/html"))
-                            .andExpect(status().isOk())
-                            .andExpect(content().string(not("<html><head><title>Dynamic Rendition</title></head><body>foo</body></html>")))
-                            .andExpect(content().string("<html><head><title>Stored Rendition</title></head><body>foo</body></html>"));
+                                        get("/testEntity5s/" + testEntity5.getId() + "/content")
+                                                .accept("text/html"))
+                                .andExpect(status().isOk())
+                                .andExpect(content().string(not("<html><head><title>Dynamic Rendition</title></head><body>foo</body></html>")))
+                                .andExpect(content().string("<html><head><title>Stored Rendition</title></head><body>foo</body></html>"));
                     }
 
                 }
@@ -140,9 +225,9 @@ public class StoredRenditionsRestIT {
                         Long id = testEntity5.getId();
 
                         mvc.perform(
-                                get("/testEntity5s/" + testEntity5.getId() + "/rendition")
-                                .accept("text/html"))
-                            .andExpect(status().isMethodNotAllowed());
+                                        get("/testEntity5s/" + testEntity5.getId() + "/rendition")
+                                                .accept("text/html"))
+                                .andExpect(status().isMethodNotAllowed());
                     }
 
                 }
@@ -181,91 +266,5 @@ public class StoredRenditionsRestIT {
 
         }
 
-    }
-
-    @Configuration
-    public static class StoredRenditionsConfig {
-
-        @Bean
-        public TestEventHandler eventHandler() {
-            return new TestEventHandler();
-        }
-
-        // a dynamic renderer helps prove the stored rendition was returned
-        @Bean
-        public RenditionProvider textToHtml() {
-            return new RenditionProvider() {
-
-                @Override
-                public String consumes() {
-                    return "text/plain";
-                }
-
-                @Override
-                public String[] produces() {
-                    return new String[] { "text/html" };
-                }
-
-                @Override
-                public InputStream convert(InputStream fromInputSource, String toMimeType) {
-                    String input = null;
-                    try {
-                        input = IOUtils.toString(fromInputSource, StandardCharsets.UTF_8);
-                    }
-                    catch (IOException e) {
-                    }
-                    return new ByteArrayInputStream(
-                        String.format("\"<html><head><title>Dynamic Rendition</title></head><body>%s</body></html>\"", input).getBytes());
-                }
-            };
-        }
-    }
-
-    @StoreEventHandler
-    public static class TestEventHandler {
-
-        @Autowired
-        private TestEntity5Repository repo;
-
-        @Autowired
-        private TestEntity5Store store;
-
-        @HandleAfterSetContent
-        public void onAfterSetContent(AfterSetContentEvent event) throws IOException {
-
-            TestEntity5 entity = (TestEntity5)event.getSource();
-
-            long renderedLength = 0;
-            try (InputStream inputStream = store.getContent(entity, PropertyPath.from("content"))) {
-
-                String renderedContent = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
-
-                // create and associate resource
-                UUID resourceId = UUID.randomUUID();
-                Resource r = store.getResource(resourceId);
-                store.associate(entity, PropertyPath.from("rendition"), resourceId);
-
-                try (OutputStream stream = ((WritableResource)store.getResource(entity, PropertyPath.from("rendition"))).getOutputStream()) {
-                    renderedLength = IOUtils.copyLarge(
-                            new ByteArrayInputStream(String.format("<html><head><title>Stored Rendition</title></head><body>%s</body></html>", renderedContent).getBytes()),
-                            stream);
-                }
-            }
-
-            entity.setRenditionLen(renderedLength);
-            entity.setRenditionMimeType("text/html");
-        }
-
-        @HandleBeforeUnsetContent
-        public void onBeforeUnsetContent(BeforeUnsetContentEvent event) throws IOException {
-
-            TestEntity5 entity = (TestEntity5) event.getSource();
-
-            ((DeletableResource)store.getResource(entity, PropertyPath.from("rendition"))).delete();
-
-            entity.setRenditionId(null);
-            entity.setRenditionLen(0L);
-            entity.setRenditionMimeType(null);
-        }
     }
 }

@@ -9,14 +9,14 @@ import org.springframework.content.commons.annotations.MimeType;
 @Embeddable
 public class ClaimForm {
 
-	@ContentId
-	private String contentId;
+    @ContentId
+    private String contentId;
 
-	@ContentLength
-	private Long contentLength = 0L;
+    @ContentLength
+    private Long contentLength = 0L;
 
-	@MimeType
-	private String contentMimeType = "text/plain";
+    @MimeType
+    private String contentMimeType = "text/plain";
 
     @ContentId
     private String renditionId;
@@ -24,49 +24,49 @@ public class ClaimForm {
     @ContentLength
     private long renditionLen;
 
-	public String getContentId() {
-		return contentId;
-	}
+    public String getContentId() {
+        return contentId;
+    }
 
-	public void setContentId(String contentId) {
-		this.contentId = contentId;
-	}
+    public void setContentId(String contentId) {
+        this.contentId = contentId;
+    }
 
-	public Long getContentLength() {
-		return contentLength;
-	}
+    public Long getContentLength() {
+        return contentLength;
+    }
 
-	public void setContentLength(Long contentLength) {
-		this.contentLength = contentLength;
-	}
+    public void setContentLength(Long contentLength) {
+        this.contentLength = contentLength;
+    }
 
-	public String getContentMimeType() {
-		return contentMimeType;
-	}
+    public String getContentMimeType() {
+        return contentMimeType;
+    }
 
-	public void setContentMimeType(String contentMimeType) {
-		this.contentMimeType = contentMimeType;
-	}
+    public void setContentMimeType(String contentMimeType) {
+        this.contentMimeType = contentMimeType;
+    }
 
-	public String getRenditionId() {
-		return renditionId;
-	}
+    public String getRenditionId() {
+        return renditionId;
+    }
 
-	public void setRenditionId(String renditionId) {
-		this.renditionId = renditionId;
-	}
+    public void setRenditionId(String renditionId) {
+        this.renditionId = renditionId;
+    }
 
-	public long getRenditionLen() {
-		return renditionLen;
-	}
+    public long getRenditionLen() {
+        return renditionLen;
+    }
 
-	public void setRenditionLen(long renditionLen) {
-		this.renditionLen = renditionLen;
-	}
+    public void setRenditionLen(long renditionLen) {
+        this.renditionLen = renditionLen;
+    }
 
-	// Ensure we can handle entities with "computed" getters; i.e. getters that
-	// dont have an associated field
-	public boolean getIsActive() {
-		return true;
-	}
+    // Ensure we can handle entities with "computed" getters; i.e. getters that
+    // dont have an associated field
+    public boolean getIsActive() {
+        return true;
+    }
 }

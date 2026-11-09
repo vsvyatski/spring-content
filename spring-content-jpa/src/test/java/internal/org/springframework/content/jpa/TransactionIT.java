@@ -36,16 +36,47 @@ public class TransactionIT {
 //            StoreIT.OracleConfig.class
     };
 
-	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+    private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
-	// for postgres (large object api operations must be in a transaction)
-	private PlatformTransactionManager ptm;
+    // for postgres (large object api operations must be in a transaction)
+    private PlatformTransactionManager ptm;
 
-	private TestEntityRepository repo = null;
-	private TestEntityContentRepository store = null;
-	private DbService dbService = null;
+    private TestEntityRepository repo = null;
+    private TestEntityContentRepository store = null;
+    private DbService dbService = null;
 
-	private TestEntity te = null;
+    private TestEntity te = null;
+
+    private static String getContextName(Class<?> configClass) {
+        return configClass.getSimpleName().replaceAll("Config", "");
+    }
+
+    public interface TestEntityRepository extends JpaRepository<TestEntity, String> {
+    }
+
+    public interface TestEntityContentRepository extends ContentStore<TestEntity, String> {
+    }
+
+    @Configuration
+    @EnableJpaRepositories(considerNestedRepositories = true)
+    @EnableJpaStores
+    public static class TestConfig {
+
+        @Bean
+        public DbService dbService() {
+            return new DbService();
+        }
+    }
+
+    @Component
+    public static class DbService {
+
+        @Transactional
+        public TestEntity doSomeDbStuff(TestEntityContentRepository store, TestEntity te) {
+            te = store.setContent(te, new ByteArrayInputStream("Spring Content World!".getBytes()));
+            throw new RuntimeException("badness");
+        }
+    }
 
     @Nested
     class TransactionTest {
@@ -71,14 +102,15 @@ public class TransactionIT {
 
                     try {
                         try {
-                        	te = dbService.doSomeDbStuff(store, te);
+                            te = dbService.doSomeDbStuff(store, te);
                         } catch (Exception e) {
-                        	ContentStoreIT.doInTransaction(ptm, () -> {
-                        		try (InputStream result = store.getContent(te)) {
-                        			assertThat(result).isNull();
-                        		} catch (IOException e1) {}
-                        		return null;
-                        	});
+                            ContentStoreIT.doInTransaction(ptm, () -> {
+                                try (InputStream result = store.getContent(te)) {
+                                    assertThat(result).isNull();
+                                } catch (IOException e1) {
+                                }
+                                return null;
+                            });
                         }
 
                     } finally {
@@ -92,65 +124,34 @@ public class TransactionIT {
 
     }
 
-	private static String getContextName(Class<?> configClass) {
-		return configClass.getSimpleName().replaceAll("Config", "");
-	}
+    @Entity
+    @Table(name = "test_entities")
+    public class TestEntity {
 
-	@Configuration
-	@EnableJpaRepositories(considerNestedRepositories=true)
-	@EnableJpaStores
-	public static class TestConfig {
+        @Id
+        @GeneratedValue(strategy = GenerationType.AUTO)
+        private Long id;
 
-		@Bean
-		public DbService dbService() {
-			return new DbService();
-		}
-	}
+        @ContentId
+        private String contentId;
 
-	@Component
-	public static class DbService {
+        public TestEntity() {
+        }
 
-		@Transactional
-		public TestEntity doSomeDbStuff(TestEntityContentRepository store, TestEntity te) {
-			te = store.setContent(te, new ByteArrayInputStream("Spring Content World!".getBytes()));
-			throw new RuntimeException("badness");
-		}
-	}
+        public Long getId() {
+            return id;
+        }
 
-	@Entity
-	@Table(name="test_entities")
-	public class TestEntity {
+        public void setId(Long id) {
+            this.id = id;
+        }
 
-		@Id
-		@GeneratedValue(strategy = GenerationType.AUTO)
-		private Long id;
+        public String getContentId() {
+            return contentId;
+        }
 
-		@ContentId
-		private String contentId;
-
-		public TestEntity() {
-		}
-
-		public Long getId() {
-			return id;
-		}
-
-		public void setId(Long id) {
-			this.id = id;
-		}
-
-		public String getContentId() {
-			return contentId;
-		}
-
-		public void setContentId(String contentId) {
-			this.contentId = contentId;
-		}
-	}
-
-	public interface TestEntityRepository extends JpaRepository<TestEntity, String> {
-	}
-
-	public interface TestEntityContentRepository extends ContentStore<TestEntity, String> {
-	}
+        public void setContentId(String contentId) {
+            this.contentId = contentId;
+        }
+    }
 }

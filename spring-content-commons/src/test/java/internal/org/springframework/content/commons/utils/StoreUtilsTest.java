@@ -29,6 +29,18 @@ public class StoreUtilsTest {
     private GenericBeanDefinition def1;
     private GenericBeanDefinition def2;
 
+    interface StoreType1 {
+    }
+
+    interface StoreType2 {
+    }
+
+    interface StoreBean1 extends StoreType1 {
+    }
+
+    interface StoreBean2 extends StoreType2 {
+    }
+
     @Nested
     class GetStoreCandidates {
         @Nested
@@ -39,8 +51,8 @@ public class StoreUtilsTest {
                 void setUp() {
                     env = mock(Environment.class);
                     loader = new FileSystemResourceLoader();
-                    ((FileSystemResourceLoader)loader).setClassLoader(this.getClass().getClassLoader());
-                    basePackages = new String[] {StoreUtilsTest.class.getPackage().getName()};
+                    ((FileSystemResourceLoader) loader).setClassLoader(this.getClass().getClassLoader());
+                    basePackages = new String[]{StoreUtilsTest.class.getPackage().getName()};
                     registrarId = "test";
 
                     def1 = new GenericBeanDefinition();
@@ -55,7 +67,7 @@ public class StoreUtilsTest {
                     scanner = mock(StoreCandidateComponentProvider.class);
                     when(scanner.findCandidateComponents(org.mockito.ArgumentMatchers.any())).thenReturn(defs);
 
-                    identifyingTypes = new Class<?>[] {StoreUtilsTest.StoreType1.class };
+                    identifyingTypes = new Class<?>[]{StoreUtilsTest.StoreType1.class};
 
                     multiStoreMode = true;
                 }
@@ -73,8 +85,8 @@ public class StoreUtilsTest {
                     void setUp() {
                         env = mock(Environment.class);
                         loader = new FileSystemResourceLoader();
-                        ((FileSystemResourceLoader)loader).setClassLoader(this.getClass().getClassLoader());
-                        basePackages = new String[] {StoreUtilsTest.class.getPackage().getName()};
+                        ((FileSystemResourceLoader) loader).setClassLoader(this.getClass().getClassLoader());
+                        basePackages = new String[]{StoreUtilsTest.class.getPackage().getName()};
                         registrarId = "test";
 
                         def1 = new GenericBeanDefinition();
@@ -89,13 +101,13 @@ public class StoreUtilsTest {
                         scanner = mock(StoreCandidateComponentProvider.class);
                         when(scanner.findCandidateComponents(org.mockito.ArgumentMatchers.any())).thenReturn(defs);
 
-                        identifyingTypes = new Class<?>[] {StoreUtilsTest.StoreType1.class };
+                        identifyingTypes = new Class<?>[]{StoreUtilsTest.StoreType1.class};
 
                         multiStoreMode = true;
 
                         multiStoreMode = true;
 
-                        identifyingTypes = new Class<?>[] {};
+                        identifyingTypes = new Class<?>[]{};
 
                         when(env.getProperty("spring.content.storage.type.default")).thenReturn("test");
                     }
@@ -115,8 +127,8 @@ public class StoreUtilsTest {
                     void setUp() {
                         env = mock(Environment.class);
                         loader = new FileSystemResourceLoader();
-                        ((FileSystemResourceLoader)loader).setClassLoader(this.getClass().getClassLoader());
-                        basePackages = new String[] {StoreUtilsTest.class.getPackage().getName()};
+                        ((FileSystemResourceLoader) loader).setClassLoader(this.getClass().getClassLoader());
+                        basePackages = new String[]{StoreUtilsTest.class.getPackage().getName()};
                         registrarId = "test";
 
                         def1 = new GenericBeanDefinition();
@@ -131,13 +143,13 @@ public class StoreUtilsTest {
                         scanner = mock(StoreCandidateComponentProvider.class);
                         when(scanner.findCandidateComponents(org.mockito.ArgumentMatchers.any())).thenReturn(defs);
 
-                        identifyingTypes = new Class<?>[] {StoreUtilsTest.StoreType1.class };
+                        identifyingTypes = new Class<?>[]{StoreUtilsTest.StoreType1.class};
 
                         multiStoreMode = true;
 
                         multiStoreMode = true;
 
-                        identifyingTypes = new Class<?>[] {};
+                        identifyingTypes = new Class<?>[]{};
                         registrarId = "other-id";
 
                         when(env.getProperty("spring.content.storage.type.default")).thenReturn("test");
@@ -160,8 +172,8 @@ public class StoreUtilsTest {
                 void setUp() {
                     env = mock(Environment.class);
                     loader = new FileSystemResourceLoader();
-                    ((FileSystemResourceLoader)loader).setClassLoader(this.getClass().getClassLoader());
-                    basePackages = new String[] {StoreUtilsTest.class.getPackage().getName()};
+                    ((FileSystemResourceLoader) loader).setClassLoader(this.getClass().getClassLoader());
+                    basePackages = new String[]{StoreUtilsTest.class.getPackage().getName()};
                     registrarId = "test";
 
                     def1 = new GenericBeanDefinition();
@@ -176,7 +188,7 @@ public class StoreUtilsTest {
                     scanner = mock(StoreCandidateComponentProvider.class);
                     when(scanner.findCandidateComponents(org.mockito.ArgumentMatchers.any())).thenReturn(defs);
 
-                    identifyingTypes = new Class<?>[] {StoreUtilsTest.StoreType1.class };
+                    identifyingTypes = new Class<?>[]{StoreUtilsTest.StoreType1.class};
 
                     multiStoreMode = false;
                 }
@@ -193,13 +205,4 @@ public class StoreUtilsTest {
         }
 
     }
-
-    interface StoreType1 {
-    }
-
-    interface StoreType2 {
-    }
-
-    interface StoreBean1 extends StoreType1 {}
-    interface StoreBean2 extends StoreType2 {}
 }

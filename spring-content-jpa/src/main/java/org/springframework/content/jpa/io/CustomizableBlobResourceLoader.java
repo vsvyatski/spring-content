@@ -9,37 +9,39 @@ import org.springframework.util.ClassUtils;
 
 public class CustomizableBlobResourceLoader implements BlobResourceLoader {
 
-	private JdbcTemplate template;
-	private PlatformTransactionManager txnMgr;
-	private String databaseName;
-	private ResourceProvider resourceProvider;
+    private JdbcTemplate template;
+    private PlatformTransactionManager txnMgr;
+    private String databaseName;
+    private ResourceProvider resourceProvider;
 
-	public CustomizableBlobResourceLoader(JdbcTemplate template, PlatformTransactionManager txnMgr) {
-		this.template = template;
-		this.txnMgr = txnMgr;
-		this.databaseName = "GENERIC";
-		this.resourceProvider = (l, t, txn) -> { return new GenericBlobResource(l, t, txn);};
-	}
+    public CustomizableBlobResourceLoader(JdbcTemplate template, PlatformTransactionManager txnMgr) {
+        this.template = template;
+        this.txnMgr = txnMgr;
+        this.databaseName = "GENERIC";
+        this.resourceProvider = (l, t, txn) -> {
+            return new GenericBlobResource(l, t, txn);
+        };
+    }
 
-	public CustomizableBlobResourceLoader(JdbcTemplate template, PlatformTransactionManager txnMgr, String databaseName, ResourceProvider resourceProvider) {
-		this.template = template;
-		this.txnMgr = txnMgr;
-		this.databaseName = databaseName;
-		this.resourceProvider = resourceProvider;
-	}
+    public CustomizableBlobResourceLoader(JdbcTemplate template, PlatformTransactionManager txnMgr, String databaseName, ResourceProvider resourceProvider) {
+        this.template = template;
+        this.txnMgr = txnMgr;
+        this.databaseName = databaseName;
+        this.resourceProvider = resourceProvider;
+    }
 
-	@Override
-	public String getDatabaseName() {
-		return databaseName;
-	}
+    @Override
+    public String getDatabaseName() {
+        return databaseName;
+    }
 
-	@Override
-	public Resource getResource(String location) {
-		return resourceProvider.getResource(location, template, txnMgr);
-	}
+    @Override
+    public Resource getResource(String location) {
+        return resourceProvider.getResource(location, template, txnMgr);
+    }
 
-	@Override
-	public ClassLoader getClassLoader() {
-		return ClassUtils.getDefaultClassLoader();
-	}
+    @Override
+    public ClassLoader getClassLoader() {
+        return ClassUtils.getDefaultClassLoader();
+    }
 }

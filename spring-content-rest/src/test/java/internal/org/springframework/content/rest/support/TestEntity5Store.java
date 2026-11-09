@@ -11,7 +11,7 @@ import java.util.UUID;
 @StoreRestResource
 public interface TestEntity5Store extends FileSystemContentStore<TestEntity5, UUID> {
 
-    @RestResource(exported=false, paths={"rendition"})
+    @RestResource(exported = false, paths = {"rendition"})
     @Override
     InputStream getContent(TestEntity5 entity, PropertyPath propertyPath);
 }

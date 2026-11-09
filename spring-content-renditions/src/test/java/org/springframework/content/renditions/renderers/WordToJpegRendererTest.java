@@ -21,10 +21,9 @@ import static org.mockito.Mockito.*;
 
 public class WordToJpegRendererTest {
 
+    POIXMLProperties props;
     private POIService poi;
     private XWPFDocument doc;
-    POIXMLProperties props;
-
     private RenditionProvider renderer;
 
     private InputStream input;

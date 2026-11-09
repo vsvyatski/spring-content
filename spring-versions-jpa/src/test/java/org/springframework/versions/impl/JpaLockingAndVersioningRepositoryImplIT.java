@@ -49,7 +49,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
-@ContextConfiguration(classes={JpaLockingAndVersioningRepositoryImplIT.TestConfig.class})
+@ContextConfiguration(classes = {JpaLockingAndVersioningRepositoryImplIT.TestConfig.class})
 @ExtendWith(SpringExtension.class)
 public class JpaLockingAndVersioningRepositoryImplIT {
 
@@ -65,10 +65,240 @@ public class JpaLockingAndVersioningRepositoryImplIT {
 
     private Exception e;
 
-    //////////////////////////////////////////////////
+    /// ///////////////////////////////////////////////
     // this entity and repository ensure that multiple repositories can implement LockingAndVersioningRepository at the same time
     @Autowired
     private OtherTestRepository otherRepo;
+
+    private static void setupSecurityContext(String principal, boolean isAuthenticated) {
+        SecurityContext sc = new SecurityContext() {
+            @Override
+            public Authentication getAuthentication() {
+                return new MockAuthentication(principal, isAuthenticated);
+            }
+
+            @Override
+            public void setAuthentication(Authentication authentication) {
+            }
+        };
+
+        SecurityContextHolder.setContext(sc);
+    }
+
+    public interface TestRepository extends JpaRepository<TestEntity, Long>, LockingAndVersioningRepository<TestEntity> {
+    }
+
+    public interface OtherTestRepository extends JpaRepository<OtherTestEntity, Long>, LockingAndVersioningRepository<OtherTestEntity> {
+    }
+
+    @Configuration
+    @EnableJpaRepositories(considerNestedRepositories = true)
+    @Import({H2Config.class, JpaLockingAndVersioningConfig.class})
+    public static class TestConfig {
+    }
+
+    @Configuration
+    @EnableTransactionManagement
+    public static class H2Config {
+
+        @Value("/org/springframework/versions/jpa/schema-drop-h2.sql")
+        private ClassPathResource dropVersionSchema;
+        @Value("/org/springframework/versions/jpa/schema-h2.sql")
+        private ClassPathResource createVersionSchema;
+
+        @Bean
+        public DataSource dataSource() {
+            EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
+            return builder.setType(EmbeddedDatabaseType.H2).build();
+        }
+
+        @Bean
+        public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+            HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+            vendorAdapter.setDatabase(Database.H2);
+            vendorAdapter.setGenerateDdl(true);
+
+            LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
+            factory.setJpaVendorAdapter(vendorAdapter);
+            factory.setPackagesToScan(getClass().getPackage().getName());
+            factory.setDataSource(dataSource());
+
+            return factory;
+        }
+
+        @Bean
+        public PlatformTransactionManager transactionManager() {
+            JpaTransactionManager txManager = new JpaTransactionManager();
+            txManager.setEntityManagerFactory(entityManagerFactory().getObject());
+            return txManager;
+        }
+
+        @Bean
+        public DataSourceInitializer datasourceInitializer() {
+            ResourceDatabasePopulator databasePopulator = new ResourceDatabasePopulator();
+
+            databasePopulator.addScript(dropVersionSchema);
+            databasePopulator.addScript(createVersionSchema);
+            databasePopulator.setIgnoreFailedDrops(true);
+
+            DataSourceInitializer initializer = new DataSourceInitializer();
+            initializer.setDataSource(dataSource());
+            initializer.setDatabasePopulator(databasePopulator);
+
+            return initializer;
+        }
+    }
+
+    @Entity
+    public static class TestEntity {
+        @Id
+        @GeneratedValue
+        private Long xid;
+        @Version
+        private Long version;
+        @AncestorId
+        private Long xAncestorId;
+        @AncestorRootId
+        private Long xAncestorRootId;
+        @SuccessorId
+        private Long xSuccessorId;
+        @LockOwner
+        private String xLockOwner;
+        @VersionNumber
+        private String versionNo;
+        @VersionLabel
+        private String versionLabel;
+
+        public TestEntity() {
+        }
+
+        public TestEntity(TestEntity entity) {
+        }
+
+        public Long getXid() {
+            return xid;
+        }
+
+        public void setXid(Long xid) {
+            this.xid = xid;
+        }
+
+        public Long getVersion() {
+            return version;
+        }
+
+        public void setVersion(Long version) {
+            this.version = version;
+        }
+
+        public Long getXAncestorId() {
+            return xAncestorId;
+        }
+
+        public void setXAncestorId(Long xAncestorId) {
+            this.xAncestorId = xAncestorId;
+        }
+
+        public Long getXAncestorRootId() {
+            return xAncestorRootId;
+        }
+
+        public void setXAncestorRootId(Long xAncestorRootId) {
+            this.xAncestorRootId = xAncestorRootId;
+        }
+
+        public Long getXSuccessorId() {
+            return xSuccessorId;
+        }
+
+        public void setXSuccessorId(Long xSuccessorId) {
+            this.xSuccessorId = xSuccessorId;
+        }
+
+        public String getXLockOwner() {
+            return xLockOwner;
+        }
+
+        public void setXLockOwner(String xLockOwner) {
+            this.xLockOwner = xLockOwner;
+        }
+
+        public String getVersionNo() {
+            return versionNo;
+        }
+
+        public void setVersionNo(String versionNo) {
+            this.versionNo = versionNo;
+        }
+
+        public String getVersionLabel() {
+            return versionLabel;
+        }
+
+        public void setVersionLabel(String versionLabel) {
+            this.versionLabel = versionLabel;
+        }
+    }
+
+    @Entity
+    public static class OtherTestEntity {
+        @Id
+        @GeneratedValue
+        private Long id;
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+    }
+
+    private static class MockAuthentication implements Authentication {
+
+        private final String principal;
+        private final boolean isAuthenticated;
+
+        public MockAuthentication(String principal, boolean isAuthenticated) {
+            this.principal = principal;
+            this.isAuthenticated = isAuthenticated;
+        }
+
+        @Override
+        public String getName() {
+            return principal;
+        }
+
+        @Override
+        public Collection<? extends GrantedAuthority> getAuthorities() {
+            return null;
+        }
+
+        @Override
+        public Object getCredentials() {
+            return null;
+        }
+
+        @Override
+        public Object getDetails() {
+            return null;
+        }
+
+        @Override
+        public Object getPrincipal() {
+            return principal;
+        }
+
+        @Override
+        public boolean isAuthenticated() {
+            return isAuthenticated;
+        }
+
+        @Override
+        public void setAuthenticated(boolean isAuthenticated) throws IllegalArgumentException {
+        }
+    }
 
     @Nested
     class GivenALockingAndVersioningRepositoryAndASecurityContext {
@@ -1588,221 +1818,6 @@ public class JpaLockingAndVersioningRepositoryImplIT {
 
         }
 
-    }
-
-    @Configuration
-    @EnableJpaRepositories(considerNestedRepositories=true)
-    @Import({H2Config.class, JpaLockingAndVersioningConfig.class})
-    public static class TestConfig {
-    }
-
-    @Configuration
-    @EnableTransactionManagement
-    public static class H2Config {
-
-        @Bean
-        public DataSource dataSource() {
-            EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
-            return builder.setType(EmbeddedDatabaseType.H2).build();
-        }
-
-        @Bean
-        public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-            HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-            vendorAdapter.setDatabase(Database.H2);
-            vendorAdapter.setGenerateDdl(true);
-
-            LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
-            factory.setJpaVendorAdapter(vendorAdapter);
-            factory.setPackagesToScan(getClass().getPackage().getName());
-            factory.setDataSource(dataSource());
-
-            return factory;
-        }
-
-        @Bean
-        public PlatformTransactionManager transactionManager() {
-            JpaTransactionManager txManager = new JpaTransactionManager();
-            txManager.setEntityManagerFactory(entityManagerFactory().getObject());
-            return txManager;
-        }
-
-        @Value("/org/springframework/versions/jpa/schema-drop-h2.sql")
-        private ClassPathResource dropVersionSchema;
-
-        @Value("/org/springframework/versions/jpa/schema-h2.sql")
-        private ClassPathResource createVersionSchema;
-
-        @Bean
-        public DataSourceInitializer datasourceInitializer() {
-            ResourceDatabasePopulator databasePopulator = new ResourceDatabasePopulator();
-
-            databasePopulator.addScript(dropVersionSchema);
-            databasePopulator.addScript(createVersionSchema);
-            databasePopulator.setIgnoreFailedDrops(true);
-
-            DataSourceInitializer initializer = new DataSourceInitializer();
-            initializer.setDataSource(dataSource());
-            initializer.setDatabasePopulator(databasePopulator);
-
-            return initializer;
-        }
-    }
-
-    @Entity
-    public static class TestEntity {
-        @Id @GeneratedValue private Long xid;
-        @Version private Long version;
-        @AncestorId private Long xAncestorId;
-        @AncestorRootId private Long xAncestorRootId;
-        @SuccessorId private Long xSuccessorId;
-        @LockOwner private String xLockOwner;
-        @VersionNumber private String versionNo;
-        @VersionLabel private String versionLabel;
-
-        public TestEntity() {}
-        public TestEntity(TestEntity entity) {}
-
-        public Long getXid() {
-            return xid;
-        }
-
-        public void setXid(Long xid) {
-            this.xid = xid;
-        }
-
-        public Long getVersion() {
-            return version;
-        }
-
-        public void setVersion(Long version) {
-            this.version = version;
-        }
-
-        public Long getXAncestorId() {
-            return xAncestorId;
-        }
-
-        public void setXAncestorId(Long xAncestorId) {
-            this.xAncestorId = xAncestorId;
-        }
-
-        public Long getXAncestorRootId() {
-            return xAncestorRootId;
-        }
-
-        public void setXAncestorRootId(Long xAncestorRootId) {
-            this.xAncestorRootId = xAncestorRootId;
-        }
-
-        public Long getXSuccessorId() {
-            return xSuccessorId;
-        }
-
-        public void setXSuccessorId(Long xSuccessorId) {
-            this.xSuccessorId = xSuccessorId;
-        }
-
-        public String getXLockOwner() {
-            return xLockOwner;
-        }
-
-        public void setXLockOwner(String xLockOwner) {
-            this.xLockOwner = xLockOwner;
-        }
-
-        public String getVersionNo() {
-            return versionNo;
-        }
-
-        public void setVersionNo(String versionNo) {
-            this.versionNo = versionNo;
-        }
-
-        public String getVersionLabel() {
-            return versionLabel;
-        }
-
-        public void setVersionLabel(String versionLabel) {
-            this.versionLabel = versionLabel;
-        }
-    }
-
-    public interface TestRepository extends JpaRepository<TestEntity, Long>, LockingAndVersioningRepository<TestEntity> {}
-
-    @Entity
-    public static class OtherTestEntity {
-        @Id @GeneratedValue private Long id;
-
-        public Long getId() {
-            return id;
-        }
-
-        public void setId(Long id) {
-            this.id = id;
-        }
-    }
-
-    public interface OtherTestRepository extends JpaRepository<OtherTestEntity, Long>, LockingAndVersioningRepository<OtherTestEntity> {}
-
-    private static void setupSecurityContext(String principal, boolean isAuthenticated) {
-        SecurityContext sc = new SecurityContext() {
-            @Override
-            public Authentication getAuthentication() {
-                return new MockAuthentication(principal, isAuthenticated);
-            }
-
-            @Override
-            public void setAuthentication(Authentication authentication) {
-            }
-        };
-
-        SecurityContextHolder.setContext(sc);
-    }
-
-    private static class MockAuthentication implements Authentication {
-
-        private final String principal;
-        private final boolean isAuthenticated;
-
-        public MockAuthentication(String principal, boolean isAuthenticated) {
-            this.principal = principal;
-            this.isAuthenticated = isAuthenticated;
-        }
-
-        @Override
-        public String getName() {
-            return principal;
-        }
-
-        @Override
-        public Collection<? extends GrantedAuthority> getAuthorities() {
-            return null;
-        }
-
-        @Override
-        public Object getCredentials() {
-            return null;
-        }
-
-        @Override
-        public Object getDetails() {
-            return null;
-        }
-
-        @Override
-        public Object getPrincipal() {
-            return principal;
-        }
-
-        @Override
-        public boolean isAuthenticated() {
-            return isAuthenticated;
-        }
-
-        @Override
-        public void setAuthenticated(boolean isAuthenticated) throws IllegalArgumentException {
-        }
     }
 
 }

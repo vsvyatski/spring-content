@@ -48,6 +48,116 @@ public class ElasticsearchIT {
 
     private String indexName;
 
+    @SuppressWarnings("unchecked")
+    private static IndexService<Document> indexService(AnnotationConfigApplicationContext context) {
+        return (IndexService<Document>) context.getBean(IndexService.class);
+    }
+
+    public interface DocumentRepository extends CrudRepository<Document, Long> {
+    }
+
+    public interface DocumentContentStore extends ContentStore<Document, UUID>, Searchable<UUID>, Renderable<Document> {
+    }
+
+    public interface DocumentStoreSearchable extends ContentStore<Document, UUID>, Searchable<FulltextInfo> {
+    }
+
+    @Entity
+    public static class Document {
+
+        @Id
+        @GeneratedValue(strategy = GenerationType.AUTO)
+        private Long id;
+
+        @ContentId
+        private UUID contentId;
+
+        @MimeType
+        private String mimeType;
+
+        private String title;
+        private String author;
+
+        public Document() {
+        }
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+
+        public UUID getContentId() {
+            return contentId;
+        }
+
+        public void setContentId(UUID contentId) {
+            this.contentId = contentId;
+        }
+
+        public String getMimeType() {
+            return mimeType;
+        }
+
+        public void setMimeType(String mimeType) {
+            this.mimeType = mimeType;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public void setTitle(String title) {
+            this.title = title;
+        }
+
+        public String getAuthor() {
+            return author;
+        }
+
+        public void setAuthor(String author) {
+            this.author = author;
+        }
+    }
+
+    public static class FulltextInfo {
+
+        @ContentId
+        private UUID contentId;
+
+        @Highlight
+        private String highlight;
+
+        @Attribute(name = "author")
+        private String author;
+
+        public UUID getContentId() {
+            return contentId;
+        }
+
+        public void setContentId(UUID contentId) {
+            this.contentId = contentId;
+        }
+
+        public String getHighlight() {
+            return highlight;
+        }
+
+        public void setHighlight(String highlight) {
+            this.highlight = highlight;
+        }
+
+        public String getAuthor() {
+            return author;
+        }
+
+        public void setAuthor(String author) {
+            this.author = author;
+        }
+    }
+
     @Nested
     class GlobalIndexingStrategyCases {
 
@@ -399,116 +509,6 @@ public class ElasticsearchIT {
                 assertThat(info).extracting("author").asString().contains("Buck Rogers");
                 assertThat(iterator.hasNext()).isFalse();
             });
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    private static IndexService<Document> indexService(AnnotationConfigApplicationContext context) {
-        return (IndexService<Document>) context.getBean(IndexService.class);
-    }
-
-    public interface DocumentRepository extends CrudRepository<Document, Long> {
-    }
-
-    public interface DocumentContentStore extends ContentStore<Document, UUID>, Searchable<UUID>, Renderable<Document> {
-    }
-
-    public interface DocumentStoreSearchable extends ContentStore<Document, UUID>, Searchable<FulltextInfo> {
-    }
-
-    @Entity
-    public static class Document {
-
-        @Id
-        @GeneratedValue(strategy = GenerationType.AUTO)
-        private Long id;
-
-        @ContentId
-        private UUID contentId;
-
-        @MimeType
-        private String mimeType;
-
-        private String title;
-        private String author;
-
-        public Document() {
-        }
-
-        public Long getId() {
-            return id;
-        }
-
-        public void setId(Long id) {
-            this.id = id;
-        }
-
-        public UUID getContentId() {
-            return contentId;
-        }
-
-        public void setContentId(UUID contentId) {
-            this.contentId = contentId;
-        }
-
-        public String getMimeType() {
-            return mimeType;
-        }
-
-        public void setMimeType(String mimeType) {
-            this.mimeType = mimeType;
-        }
-
-        public String getTitle() {
-            return title;
-        }
-
-        public void setTitle(String title) {
-            this.title = title;
-        }
-
-        public String getAuthor() {
-            return author;
-        }
-
-        public void setAuthor(String author) {
-            this.author = author;
-        }
-    }
-
-    public static class FulltextInfo {
-
-        @ContentId
-        private UUID contentId;
-
-        @Highlight
-        private String highlight;
-
-        @Attribute(name = "author")
-        private String author;
-
-        public UUID getContentId() {
-            return contentId;
-        }
-
-        public void setContentId(UUID contentId) {
-            this.contentId = contentId;
-        }
-
-        public String getHighlight() {
-            return highlight;
-        }
-
-        public void setHighlight(String highlight) {
-            this.highlight = highlight;
-        }
-
-        public String getAuthor() {
-            return author;
-        }
-
-        public void setAuthor(String author) {
-            this.author = author;
         }
     }
 }

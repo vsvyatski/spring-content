@@ -23,26 +23,6 @@ public class StoreRestExceptionHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(StoreRestExceptionHandler.class);
 
-    /**
-	 * Send a {@code 409 Conflict} in case of concurrent modification.
-	 *
-     * @param e the exception to handle.
-	 * @return
-     */
-    @ExceptionHandler({ LockOwnerException.class,
-                        OptimisticLockException.class,
-                        OptimisticLockingFailureException.class,
-                        PessimisticLockException.class,
-                        PessimisticLockingFailureException.class})
-    ResponseEntity<ExceptionMessage> handleConflict(Exception e) {
-        return errorResponse(HttpStatus.CONFLICT, new HttpHeaders(), e);
-    }
-
-    @ExceptionHandler(MethodNotAllowedException.class)
-    public ResponseEntity<Object> handle(Exception ex, HttpServletRequest request, HttpServletResponse response) {
-        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).build();
-    }
-
     private static ResponseEntity<ExceptionMessage> errorResponse(HttpStatus status, HttpHeaders headers, Exception exception) {
         if (exception != null) {
             String message = exception.getMessage();
@@ -64,7 +44,27 @@ public class StoreRestExceptionHandler {
         return new ResponseEntity<T>(body, headers, status);
     }
 
-    public static  class ExceptionMessage {
+    /**
+     * Send a {@code 409 Conflict} in case of concurrent modification.
+     *
+     * @param e the exception to handle.
+     * @return
+     */
+    @ExceptionHandler({LockOwnerException.class,
+            OptimisticLockException.class,
+            OptimisticLockingFailureException.class,
+            PessimisticLockException.class,
+            PessimisticLockingFailureException.class})
+    ResponseEntity<ExceptionMessage> handleConflict(Exception e) {
+        return errorResponse(HttpStatus.CONFLICT, new HttpHeaders(), e);
+    }
+
+    @ExceptionHandler(MethodNotAllowedException.class)
+    public ResponseEntity<Object> handle(Exception ex, HttpServletRequest request, HttpServletResponse response) {
+        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).build();
+    }
+
+    public static class ExceptionMessage {
 
         private final Throwable throwable;
 

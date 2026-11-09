@@ -104,7 +104,7 @@ final class SimpleStorageNameUtils {
     }
 
     static String getLocationForBucketAndObjectAndVersionId(String bucketName,
-            String objectName, String versionId) {
+                                                            String objectName, String versionId) {
         String location = getLocationForBucketAndObject(bucketName, objectName);
         return new StringBuffer(location).append(VERSION_DELIMITER).append(versionId)
                 .toString();

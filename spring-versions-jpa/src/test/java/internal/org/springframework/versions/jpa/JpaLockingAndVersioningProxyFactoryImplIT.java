@@ -35,7 +35,7 @@ public class JpaLockingAndVersioningProxyFactoryImplIT {
 
     private JpaLockingAndVersioningProxyFactoryImpl factory;
 
-	private AnnotationConfigApplicationContext context;
+    private AnnotationConfigApplicationContext context;
 
     private PlatformTransactionManager txn;
     private EntityManager em;
@@ -43,6 +43,44 @@ public class JpaLockingAndVersioningProxyFactoryImplIT {
     private AuthenticationFacade auth;
 
     private ProxyFactory proxyFactory;
+
+    @Configuration
+    @EnableJpaRepositories
+    @Import({H2Config.class, JpaLockingAndVersioningConfig.class})
+    public static class TestConfig {
+    }
+
+    @Configuration
+    @EnableTransactionManagement
+    public static class H2Config {
+
+        @Bean
+        public DataSource dataSource() {
+            EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
+            return builder.setType(EmbeddedDatabaseType.H2).build();
+        }
+
+        @Bean
+        public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+            HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+            vendorAdapter.setDatabase(Database.H2);
+            vendorAdapter.setGenerateDdl(true);
+
+            LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
+            factory.setJpaVendorAdapter(vendorAdapter);
+            factory.setPackagesToScan(getClass().getPackage().getName());
+            factory.setDataSource(dataSource());
+
+            return factory;
+        }
+
+        @Bean
+        public PlatformTransactionManager transactionManager() {
+            JpaTransactionManager txManager = new JpaTransactionManager();
+            txManager.setEntityManagerFactory(entityManagerFactory().getObject());
+            return txManager;
+        }
+    }
 
     @Nested
     class JpaLockingAndVersioningProxyFactoryImplCases {
@@ -115,42 +153,4 @@ public class JpaLockingAndVersioningProxyFactoryImplIT {
             }
         }
     }
-
-	@Configuration
-	@EnableJpaRepositories
-	@Import({H2Config.class, JpaLockingAndVersioningConfig.class})
-	public static class TestConfig {
-	}
-
-	@Configuration
-	@EnableTransactionManagement
-	public static class H2Config {
-
-		@Bean
-		public DataSource dataSource() {
-			EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
-			return builder.setType(EmbeddedDatabaseType.H2).build();
-		}
-
-		@Bean
-		public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-			HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-			vendorAdapter.setDatabase(Database.H2);
-			vendorAdapter.setGenerateDdl(true);
-
-			LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
-			factory.setJpaVendorAdapter(vendorAdapter);
-			factory.setPackagesToScan(getClass().getPackage().getName());
-			factory.setDataSource(dataSource());
-
-			return factory;
-		}
-
-		@Bean
-		public PlatformTransactionManager transactionManager() {
-			JpaTransactionManager txManager = new JpaTransactionManager();
-			txManager.setEntityManagerFactory(entityManagerFactory().getObject());
-			return txManager;
-		}
-	}
 }
