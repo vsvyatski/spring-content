@@ -37,7 +37,7 @@ public class Azurite extends GenericContainer<Azurite> implements Serializable {
     }
 
     public static BlobServiceClientBuilder getBlobServiceClientBuilder() {
-        final String host = Singleton.INSTANCE.getContainerIpAddress();
+        final String host = Singleton.INSTANCE.getHost();
         final Integer mappedPort = Singleton.INSTANCE.getMappedPort(BLOB_SERVICE_PORT);
         final String endpoint = String.format(ENDPOINT, host, mappedPort, DEV_ACC_NAME);
 

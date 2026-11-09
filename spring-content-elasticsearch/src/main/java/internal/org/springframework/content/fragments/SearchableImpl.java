@@ -154,7 +154,7 @@ public class SearchableImpl implements Searchable<Object> {
                 if (ContentPropertyUtils.isPrimitiveContentPropertyClass(resultType)) {
                     contents.add(conversionService.convert(hit.id(), TypeDescriptor.valueOf(String.class), TypeDescriptor.valueOf(this.idClass)));
                 } else {
-                    Object row = resultType.newInstance();
+                    Object row = resultType.getDeclaredConstructor().newInstance();
                     BeanWrapper wrapper = new BeanWrapperImpl(row);
 
                     Field contentIdField = BeanUtils.findFieldWithAnnotation(resultType, ContentId.class);
@@ -174,7 +174,8 @@ public class SearchableImpl implements Searchable<Object> {
 
                     contents.add(row);
                 }
-            } catch (InstantiationException | IllegalAccessException e) {
+            } catch (InstantiationException | IllegalAccessException | NoSuchMethodException
+                    | java.lang.reflect.InvocationTargetException e) {
                 e.printStackTrace();
             }
         }

@@ -18,7 +18,7 @@ public class EntityConfig {
 
         @RequestMapping(value = "/testEntity3s/{id}/softDelete", method = RequestMethod.DELETE)
         public void softDelete(@PathVariable("id") Long id) {
-            TestEntity3 te3 = repo.getById(id);
+            TestEntity3 te3 = repo.findById(id).orElseThrow();
             // set delete flag
             int i = 0;
         }

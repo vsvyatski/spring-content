@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.io.ByteArrayInputStream;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -179,7 +180,8 @@ public class Content {
                         .andExpect(status().isOk()).andReturn().getResponse();
 
                 assertThat(response).isNotNull();
-                assertThat(response.getHeader("Content-Disposition")).contains("filename*=UTF-8''" + URLEncoder.encode("表单ID及字段.txt"));
+                assertThat(response.getHeader("Content-Disposition")).contains(
+                        "filename*=UTF-8''" + URLEncoder.encode("表单ID及字段.txt", StandardCharsets.UTF_8));
                 assertThat(response.getContentAsString()).isEqualTo("Hello Spring Content World!");
             }
         }

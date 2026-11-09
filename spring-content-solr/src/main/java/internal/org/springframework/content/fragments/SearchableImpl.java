@@ -153,8 +153,9 @@ public class SearchableImpl implements Searchable<Object>, ContentStoreAware {
             } else {
                 Object result = null;
                 try {
-                    result = searchType.newInstance();
-                } catch (InstantiationException | IllegalAccessException e) {
+                    result = searchType.getDeclaredConstructor().newInstance();
+                } catch (InstantiationException | IllegalAccessException | NoSuchMethodException
+                        | java.lang.reflect.InvocationTargetException e) {
                     e.printStackTrace(System.err);
                 }
 

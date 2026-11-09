@@ -58,8 +58,9 @@ public class JpaLockingAndVersioningProxyFactoryImpl implements LockingAndVersio
     }
 
     protected Advice transactionInterceptor() {
-        TransactionInterceptor transactionInterceptor =
-                new TransactionInterceptor(this.ptm, new AnnotationTransactionAttributeSource());
+        TransactionInterceptor transactionInterceptor = new TransactionInterceptor();
+        transactionInterceptor.setTransactionManager(this.ptm);
+        transactionInterceptor.setTransactionAttributeSource(new AnnotationTransactionAttributeSource());
         transactionInterceptor.setBeanFactory(beanFactory);
         transactionInterceptor.afterPropertiesSet();
         return transactionInterceptor;

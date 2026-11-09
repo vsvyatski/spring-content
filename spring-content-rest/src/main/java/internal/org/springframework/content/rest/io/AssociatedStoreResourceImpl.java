@@ -18,7 +18,7 @@ import org.springframework.data.convert.Jsr310Converters;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.lang.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.resource.HttpResource;
 

@@ -47,7 +47,9 @@ public class JpaStoreFactoryBean extends AbstractStoreFactoryBean {
     }
 
     protected Advice transactionInterceptor(PlatformTransactionManager ptm, BeanFactory beanFactory) {
-        TransactionInterceptor transactionInterceptor = new TransactionInterceptor(this.ptm, new AnnotationTransactionAttributeSource());
+        TransactionInterceptor transactionInterceptor = new TransactionInterceptor();
+        transactionInterceptor.setTransactionManager(this.ptm);
+        transactionInterceptor.setTransactionAttributeSource(new AnnotationTransactionAttributeSource());
         transactionInterceptor.setBeanFactory(beanFactory);
         transactionInterceptor.afterPropertiesSet();
         return transactionInterceptor;

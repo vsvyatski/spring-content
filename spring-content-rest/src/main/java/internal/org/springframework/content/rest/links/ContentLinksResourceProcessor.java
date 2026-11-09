@@ -140,7 +140,7 @@ public class ContentLinksResourceProcessor implements RepresentationModelProcess
 
         Class<?> storeIface = storeInfo.getInterface();
         StoreRestResource exportSpec = storeIface.getAnnotation(StoreRestResource.class);
-        if (exportSpec != null && !StringUtils.isEmpty(exportSpec.linkRel())) {
+        if (exportSpec != null && StringUtils.hasLength(exportSpec.linkRel())) {
             linkrel = exportSpec.linkRel() + "/" + linkrel;
         }
 
@@ -151,7 +151,7 @@ public class ContentLinksResourceProcessor implements RepresentationModelProcess
         String entityLinkRel = defaultLinkRel;
         Class<?> storeIface = storeInfo.getInterface();
         StoreRestResource exportSpec = storeIface.getAnnotation(StoreRestResource.class);
-        if (exportSpec != null && !StringUtils.isEmpty(exportSpec.linkRel())) {
+        if (exportSpec != null && StringUtils.hasLength(exportSpec.linkRel())) {
             entityLinkRel = exportSpec.linkRel();
         }
         return entityLinkRel;

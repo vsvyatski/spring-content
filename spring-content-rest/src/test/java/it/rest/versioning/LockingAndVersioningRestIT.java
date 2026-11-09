@@ -178,10 +178,9 @@ public class LockingAndVersioningRestIT {
         @Autowired
         public void configureGlobalSecurity(AuthenticationManagerBuilder auth) {
             // Enable if spring-doc apps supports user accounts in the future
-            auth.inMemoryAuthentication().
-                    withUser(User.withDefaultPasswordEncoder().username("paul123").password("password").roles("USER")).
-                    withUser(User.withDefaultPasswordEncoder().username("john123").password("password").roles("USER").
-                            build());
+            auth.inMemoryAuthentication()
+                    .withUser(User.withUsername("paul123").password("{noop}password").roles("USER"))
+                    .withUser(User.withUsername("john123").password("{noop}password").roles("USER"));
         }
 
         @Bean

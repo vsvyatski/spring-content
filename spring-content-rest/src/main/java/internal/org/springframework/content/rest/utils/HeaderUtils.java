@@ -5,7 +5,7 @@ import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.data.convert.Jsr310Converters;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.lang.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
 

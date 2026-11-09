@@ -311,6 +311,7 @@ public abstract class AbstractStoreBeanDefinitionRegistrar
         registry.registerBeanDefinition(fragmentBeanName, ParsingUtils.getSourceBeanDefinition(fragmentBuilder, source));
     }
 
+    @SuppressWarnings("deprecation")
     protected boolean multipleStoreImplementationsDetected() {
 
         boolean multipleModulesFound = SpringFactoriesLoader

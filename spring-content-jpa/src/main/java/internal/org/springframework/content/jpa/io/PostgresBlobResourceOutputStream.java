@@ -81,7 +81,7 @@ public class PostgresBlobResourceOutputStream extends BlobResourceOutputStream {
                 oidToBeRemoved = rs.getLong(2);
             }
 
-            rs.updateLong(2, lo.getOID());
+            rs.updateLong(2, lo.getLongOID());
 
             if (!insert) {
                 rs.updateRow();
