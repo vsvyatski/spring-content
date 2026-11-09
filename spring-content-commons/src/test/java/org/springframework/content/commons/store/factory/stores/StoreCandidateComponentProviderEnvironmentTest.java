@@ -32,14 +32,17 @@ public class StoreCandidateComponentProviderEnvironmentTest {
     @Autowired(required = false)
     private TestContentStore contentStore;
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestStore extends Store<URI> {
     }
 
     @Profile("b")
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestAssociativeStore extends AssociativeStore<Object, URI> {
     }
 
     @Profile("c")
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestContentStore extends ContentStore<Object, URI> {
     }
 

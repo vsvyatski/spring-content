@@ -30,9 +30,11 @@ public class RestConfigurationTest {
     private static ContentRestConfigurer configurer;
     private AnnotationConfigWebApplicationContext context;
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntityRepository extends MongoRepository<TestEntity, String> {
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntityContentRepository extends FileSystemContentStore<TestEntity, String> {
     }
 

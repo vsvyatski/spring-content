@@ -79,10 +79,12 @@ public class StoreMethodInterceptorTest {
         doAnswer(action::doAction).when(publisher).publishEvent(isA(BeforeSetContentEvent.class));
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface PublishEventAction {
         Object doAction(InvocationOnMock invocationOnMock) throws Exception;
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestContentStore extends ContentStore<TEntity, UUID> {
         @Override
         TEntity setContent(TEntity property, InputStream content);

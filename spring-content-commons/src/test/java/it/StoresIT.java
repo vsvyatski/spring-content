@@ -32,16 +32,17 @@ public class StoresIT {
     private List<StoreFactory> factories = new ArrayList<>();
     private StoreResolver resolver;
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface RightStore extends TestContentStore<Object, Serializable> {
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface WrongStore extends TestContentStore<Object, Serializable> {
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface RuntimeExceptionThrowingStore extends TestContentStore<Object, Serializable> {
     }
-
-    ;
 
     @Nested
     class GetStoreCases {
@@ -147,8 +148,6 @@ public class StoresIT {
         }
     }
 
-    ;
-
     @Nested
     class StoreExceptionTranslatorInterceptorCases {
         @Nested
@@ -241,6 +240,4 @@ public class StoresIT {
             }
         }
     }
-
-    ;
 }

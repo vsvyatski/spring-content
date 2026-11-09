@@ -53,10 +53,6 @@ public class AesCtrEncryptionEngineTest {
         return new ZeroPrefixedInputStream(new SkippingInputStream(inputStream, params.startByteOffset()), params.startByteOffset());
     }
 
-    @Test
-    void noop() {
-    }
-
     @Nested
     class AESCTREncryptionCases {
         @Nested
@@ -216,7 +212,7 @@ public class AesCtrEncryptionEngineTest {
 
                 try (var decrypted = engine.decrypt(req -> {
                             assertThat(req.startByteOffset()).isEqualTo(0L);
-                            assertThat(req.endByteOffset()).isLessThan((long) CIPHERTEXT.length); // We don't need to read the full ciphertext
+                            assertThat(req.endByteOffset()).isLessThan(CIPHERTEXT.length); // We don't need to read the full ciphertext
                             return onlyByteRange(new ByteArrayInputStream(CIPHERTEXT), req);
                         }, PARAMS, new InputStreamRequestParameters(0, (long) offsetEnd)
                 )) {
@@ -234,7 +230,7 @@ public class AesCtrEncryptionEngineTest {
 
                 try (var decrypted = engine.decrypt(req -> {
                             assertThat(req.startByteOffset()).isEqualTo(0L);
-                            assertThat(req.endByteOffset()).isLessThan((long) CIPHERTEXT.length); // We don't need to read the full ciphertext
+                            assertThat(req.endByteOffset()).isLessThan(CIPHERTEXT.length); // We don't need to read the full ciphertext
                             return onlyByteRange(new ByteArrayInputStream(CIPHERTEXT), req);
                         }, PARAMS, new InputStreamRequestParameters(0, (long) offsetEnd)
                 )) {

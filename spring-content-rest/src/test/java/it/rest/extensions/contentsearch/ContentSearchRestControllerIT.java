@@ -27,7 +27,6 @@ import org.springframework.content.rest.FulltextEntityLookupQuery;
 import org.springframework.content.rest.config.RestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
@@ -66,7 +65,7 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-// because the controller bean is shared and we need to instruct the reflection service
+// because the controller bean is shared, and we need to instruct the reflection service
 // to behave differently in each tests
 @WebAppConfiguration
 @ContextConfiguration(classes = {
@@ -94,64 +93,67 @@ public class ContentSearchRestControllerIT {
     @Autowired
     private WebApplicationContext context;
     private MockMvc mvc;
-    private RepresentationFactory representationFactory = new StandardRepresentationFactory();
-    private TestEntityWithSharedId entity;
+    private final RepresentationFactory representationFactory = new StandardRepresentationFactory();
     private TestEntityWithSharedId entity2;
     private List<String> sharedIds;
     private TestEntityWithSeparateId entity3;
-    private TestEntityWithSeparateId entity4;
     private List<String> contentIds;
-    private TestEntity2 entity5;
-    private TestEntity2 entity6;
     private List<InternalResult> internalResults;
 
-    @Test
-    public void noop() {
-    }
-
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntityNoContentRepository extends CrudRepository<TestEntityNoContent, String> {
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntityNotSearchableRepository extends CrudRepository<TestEntityNotSearchable, String> {
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntityNotSearchableStore extends FileSystemContentStore<TestEntityNotSearchable, String> {
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntityWithSharedIdsRepository extends CrudRepository<TestEntityWithSharedId, String> {
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntityWithSharedIdsSearchableStore extends FileSystemContentStore<TestEntityWithSharedId, String>, Searchable<String> {
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntityWithSeparateIdsRepository
             extends CrudRepository<TestEntityWithSeparateId, String> {
 
-        @Query("select e from it.rest.extensions.contentsearch.ContentSearchRestControllerIT$TestEntityWithSeparateId e")
+        @Query("select e from testEntitySeparateId e")
         List<TestEntityWithSeparateId> randomQueryMethod();
 
         @FulltextEntityLookupQuery
         List<TestEntityWithSeparateId> findAllByContentIdIn(@Param("contentIds") List<String> contentIds);
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntityWithSeparateIdsSearchableStore
             extends FileSystemContentStore<TestEntityWithSeparateId, String>, Searchable<String> {
     }
 
     @RepositoryRestResource(path = "repoWithNoLookupStrategy")
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface RepositoryWithNoLookupStrategy
             extends CrudRepository<TestEntity2, String> {
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntity2SearchableStore
             extends FileSystemContentStore<TestEntity2, String>, Searchable<String> {
     }
 
     @RepositoryRestResource(path = "repoWithCustomSearchReturnType")
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface RepositoryWithCustomSearchReturnType
             extends CrudRepository<TestEntity3, String> {
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntity3SearchableStore
             extends FileSystemContentStore<TestEntity3, String>, Searchable<CustomResult> {
     }
@@ -207,35 +209,19 @@ public class ContentSearchRestControllerIT {
         }
     }
 
-    @Entity(name = "testentitynocontent")
+    @Entity(name = "testEntityNoContent")
     public static class TestEntityNoContent extends AbstractTestEntity {
     }
 
-    @Entity(name = "testentitynotsearchable")
+    @Entity(name = "testEntityNotSearchable")
     public static class TestEntityNotSearchable extends AbstractTestEntity {
     }
 
-    @Entity(name = "testentitysharedid")
+    @Entity(name = "testEntitySharedId")
     public static class TestEntityWithSharedId extends AbstractTestEntity {
     }
 
-    // stub out a Searchable implementation so that the content store can be instantiated
-    // this wont actually get called because the test intercepts calls to the Searchable by mocking the reflection
-    // service
-    public static class SearchableImpl implements Searchable<String> {
-
-        @Override
-        public Iterable<String> search(String queryString) {
-            return null;
-        }
-
-        @Override
-        public Page<String> search(String queryString, Pageable pageable) {
-            return null;
-        }
-    }
-
-    @Entity(name = "testentityseparateid")
+    @Entity(name = "testEntitySeparateId")
     public static class TestEntityWithSeparateId {
         @Id
         private String id = UUID.randomUUID().toString();
@@ -389,7 +375,7 @@ public class ContentSearchRestControllerIT {
 
                 @Test
                 void shouldReturnAResourceNotFoundException() throws Exception {
-                    MvcResult result = mvc.perform(get(
+                    mvc.perform(get(
                                     "/testEntityWithSharedIds/searchContent/invalidSearchMethod?keyword=one")
                                     .accept("application/hal+json"))
                             .andExpect(status().isNotFound()).andReturn();
@@ -438,12 +424,11 @@ public class ContentSearchRestControllerIT {
 
                 @Test
                 void shouldInvokeSearchWithThePageRequest() throws Exception {
-                    MvcResult result = mvc.perform(get(
-                                    "/testEntityWithSeparateIds/searchContent?queryString=else&page=1&size=1")
+                    mvc.perform(get("/testEntityWithSeparateIds/searchContent?queryString=else&page=1&size=1")
                                     .accept("application/hal+json"))
                             .andExpect(status().isOk()).andReturn();
 
-                    Method m = ReflectionUtils.findMethod(Searchable.class, "search", new Class<?>[]{String.class, Pageable.class});
+                    Method m = ReflectionUtils.findMethod(Searchable.class, "search", String.class, Pageable.class);
                     PageRequest pageable = PageRequest.of(1, 1);
 
                     verify(reflectionService).invokeMethod(eq(m), any(), eq("else"), eq(pageable));
@@ -501,7 +486,7 @@ public class ContentSearchRestControllerIT {
                         queryMethodsLookupStrategy = spy(new QueryMethodsEntityLookupStrategy());
                         controller.setQueryMethodsEntityLookupStrategy(queryMethodsLookupStrategy);
 
-                        entity = new TestEntityWithSharedId();
+                        TestEntityWithSharedId entity = new TestEntityWithSharedId();
                         repository.save(entity);
 
                         entity2 = new TestEntityWithSharedId();
@@ -654,7 +639,7 @@ public class ContentSearchRestControllerIT {
                         entity3 = new TestEntityWithSeparateId();
                         entityWithSeparateRepository.save(entity3);
 
-                        entity4 = new TestEntityWithSeparateId();
+                        TestEntityWithSeparateId entity4 = new TestEntityWithSeparateId();
                         entityWithSeparateRepository.save(entity4);
 
                         internalResults = new ArrayList<>();
@@ -871,10 +856,10 @@ public class ContentSearchRestControllerIT {
                     queryMethodsLookupStrategy = spy(new QueryMethodsEntityLookupStrategy());
                     controller.setQueryMethodsEntityLookupStrategy(queryMethodsLookupStrategy);
 
-                    entity5 = new TestEntity2();
+                    TestEntity2 entity5 = new TestEntity2();
                     repoWithNoLookupStrategy.save(entity5);
 
-                    entity6 = new TestEntity2();
+                    TestEntity2 entity6 = new TestEntity2();
                     repoWithNoLookupStrategy.save(entity6);
 
                     internalResults = new ArrayList<>();
@@ -882,11 +867,10 @@ public class ContentSearchRestControllerIT {
                     internalResults.add(new InternalResult(entity6.getId(), entity6.getContentId()));
 
                     contentIds = new ArrayList<>();
-                    contentIds.add(entity5.getContentId().toString());
-                    contentIds.add(entity6.getContentId().toString());
+                    contentIds.add(entity5.getContentId());
+                    contentIds.add(entity6.getContentId());
 
-                    when(reflectionService.invokeMethod(any(), any(),
-                            eq("else"))).thenReturn(internalResults);
+                    when(reflectionService.invokeMethod(any(), any(), eq("else"))).thenReturn(internalResults);
                 }
 
                 @Test
@@ -956,7 +940,7 @@ public class ContentSearchRestControllerIT {
         }
     }
 
-    public class CustomResult {
+    public static class CustomResult {
 
         @ContentId
         private String contentId;

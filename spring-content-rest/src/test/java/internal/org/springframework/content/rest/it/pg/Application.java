@@ -45,17 +45,17 @@ public class Application {
     public static class AppConfig {
 
         @Value("/org/springframework/content/jpa/schema-drop-postgresql.sql")
-        private ClassPathResource dropReopsitoryTables;
+        private ClassPathResource dropRepositoryTables;
 
         @Value("/org/springframework/content/jpa/schema-postgresql.sql")
-        private ClassPathResource dataReopsitorySchema;
+        private ClassPathResource dataRepositorySchema;
 
         @Bean
         DataSourceInitializer datasourceInitializer(DataSource dataSource) {
             ResourceDatabasePopulator databasePopulator = new ResourceDatabasePopulator();
 
-            databasePopulator.addScript(dropReopsitoryTables);
-            databasePopulator.addScript(dataReopsitorySchema);
+            databasePopulator.addScript(dropRepositoryTables);
+            databasePopulator.addScript(dataRepositorySchema);
             databasePopulator.setIgnoreFailedDrops(true);
 
             DataSourceInitializer initializer = new DataSourceInitializer();

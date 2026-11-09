@@ -23,7 +23,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.annotations.MimeType;
-import org.springframework.content.encryption.config.EncryptingContentStoreConfiguration;
 import org.springframework.content.encryption.config.EncryptingContentStoreConfigurer;
 import org.springframework.content.encryption.store.EncryptingContentStore;
 import org.springframework.content.fs.config.EnableFileSystemStores;
@@ -65,13 +64,11 @@ public class EncryptionIT {
 
     private FsFile f;
 
-    @Test
-    public void noop() {
-    }
-
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface FileRepository extends CrudRepository<FsFile, Long> {
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface FileContentStore3 extends FileSystemContentStore<FsFile, UUID>, EncryptingContentStore<FsFile, UUID> {
     }
 
@@ -103,12 +100,7 @@ public class EncryptionIT {
 
             @Bean
             public EncryptingContentStoreConfigurer<FileContentStore3> config() {
-                return new EncryptingContentStoreConfigurer<FileContentStore3>() {
-                    @Override
-                    public void configure(EncryptingContentStoreConfiguration<FileContentStore3> config) {
-                        config.encryptionKeyContentProperty("key");
-                    }
-                };
+                return config -> config.encryptionKeyContentProperty("key");
             }
         }
     }

@@ -26,7 +26,6 @@ import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.annotations.MimeType;
 import org.springframework.content.encryption.LocalStack;
 import org.springframework.content.encryption.VaultContainerSupport;
-import org.springframework.content.encryption.config.EncryptingContentStoreConfiguration;
 import org.springframework.content.encryption.config.EncryptingContentStoreConfigurer;
 import org.springframework.content.encryption.engine.ContentEncryptionEngine.EncryptionParameters;
 import org.springframework.content.encryption.keys.DataEncryptionKeyWrapper;
@@ -87,13 +86,11 @@ public class EncryptionIT {
     private VaultTemplate vaultTemplate;
     private File f;
 
-    @Test
-    public void noop() {
-    }
-
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface FileRepository extends CrudRepository<File, Long> {
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface FileContentStore extends S3ContentStore<File, UUID>, EncryptingContentStore<File, UUID> {
     }
 
@@ -132,19 +129,14 @@ public class EncryptionIT {
 
             @Bean
             public EncryptingContentStoreConfigurer config() {
-                return new EncryptingContentStoreConfigurer<FileContentStore>() {
-                    @Override
-                    public void configure(EncryptingContentStoreConfiguration<FileContentStore> config) {
-                        config.encryptionKeyContentProperty("key")
-                                .dataEncryptionKeyWrappers(List.of(
-                                        new EncryptingOnlyKeyWrapper(), // A fake wrapper that only supports encrypt operation
-                                        new VaultTransitDataEncryptionKeyWrapper(
-                                                vaultTemplate().opsForTransit(),
-                                                "my-key"
-                                        )
-                                ));
-                    }
-                };
+                return (EncryptingContentStoreConfigurer<FileContentStore>) config -> config.encryptionKeyContentProperty("key")
+                        .dataEncryptionKeyWrappers(List.of(
+                                new EncryptingOnlyKeyWrapper(), // A fake wrapper that only supports encrypt operation
+                                new VaultTransitDataEncryptionKeyWrapper(
+                                        vaultTemplate().opsForTransit(),
+                                        "my-key"
+                                )
+                        ));
             }
         }
     }

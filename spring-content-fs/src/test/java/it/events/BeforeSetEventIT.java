@@ -36,10 +36,7 @@ public class BeforeSetEventIT {
     @Autowired
     private TestEntityContentStore store;
 
-    @Test
-    public void noop() {
-    }
-
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntityContentStore extends ContentStore<TestEntity, String> {
     }
 

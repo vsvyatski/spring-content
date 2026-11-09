@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.http.HttpStatus;
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -82,10 +83,12 @@ public class LockingAndVersioningRestIT {
 
     private VersionedDocument doc;
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface VersionedDocumentAndVersioningRepository extends JpaRepository<VersionedDocument, Long>, LockingAndVersioningRepository<VersionedDocument> {
     }
 
     @StoreRestResource(path = "versionedDocumentsContent")
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface VersionedDocumentStore extends FileSystemContentStore<VersionedDocument, UUID> {
     }
 
@@ -101,7 +104,7 @@ public class LockingAndVersioningRestIT {
             SpringApplication.run(Application.class, args);
         }
 
-        public class VersioningConfig {
+        public static class VersioningConfig {
 
             @Value("/org/springframework/versions/jpa/schema-drop-hsqldb.sql")
             private ClassPathResource dropRepositoryTables;
@@ -112,7 +115,7 @@ public class LockingAndVersioningRestIT {
             File filesystemRoot() {
                 try {
                     return Files.createTempDirectory("").toFile();
-                } catch (IOException ioe) {
+                } catch (IOException ignored) {
                 }
                 return null;
             }
@@ -207,10 +210,10 @@ public class LockingAndVersioningRestIT {
     public static class AuthenticationEntryPoint extends BasicAuthenticationEntryPoint {
 
         @Override
-        public void commence(final HttpServletRequest request, final HttpServletResponse response,
+        public void commence(final @NonNull HttpServletRequest request, final HttpServletResponse response,
                              final AuthenticationException authException) throws IOException {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.addHeader("WWW-Authenticate", "Basic realm=" + getRealmName() + "");
+            response.addHeader("WWW-Authenticate", "Basic realm=" + getRealmName());
 
             PrintWriter writer = response.getWriter();
             writer.println("HTTP Status 401 : " + authException.getMessage());
@@ -231,7 +234,7 @@ public class LockingAndVersioningRestIT {
         @GeneratedValue
         private Long id;
         @Version
-        private Long vstamp;
+        private Long versionStamp;
         @ContentId
         private UUID contentId;
         @ContentLength
@@ -255,14 +258,6 @@ public class LockingAndVersioningRestIT {
         public VersionedDocument() {
         }
 
-        public VersionedDocument(VersionedDocument doc) {
-            this.setContentId(doc.getContentId());
-            this.setContentLen(doc.getContentLen());
-            this.setMimeType(doc.getMimeType());
-            this.setLockOwner(doc.getLockOwner());
-            this.setData(doc.getData());
-        }
-
         public Long getId() {
             return id;
         }
@@ -271,12 +266,12 @@ public class LockingAndVersioningRestIT {
             this.id = id;
         }
 
-        public Long getVstamp() {
-            return vstamp;
+        public Long getVersionStamp() {
+            return versionStamp;
         }
 
-        public void setVstamp(Long vstamp) {
-            this.vstamp = vstamp;
+        public void setVersionStamp(Long versionStamp) {
+            this.versionStamp = versionStamp;
         }
 
         public UUID getContentId() {

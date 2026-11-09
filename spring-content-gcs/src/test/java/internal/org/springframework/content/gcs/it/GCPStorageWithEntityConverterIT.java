@@ -1,7 +1,6 @@
 package internal.org.springframework.content.gcs.it;
 
 import com.google.cloud.storage.Blob;
-import com.google.cloud.storage.Blob.BlobSourceOption;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.contrib.nio.testing.LocalStorageHelper;
@@ -9,8 +8,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestFactory;
+import org.jspecify.annotations.NonNull;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.annotations.MimeType;
@@ -25,7 +26,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.convert.converter.Converter;
-import org.springframework.core.convert.converter.ConverterRegistry;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
@@ -39,6 +39,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import javax.sql.DataSource;
 import java.io.ByteArrayInputStream;
 import java.io.Serializable;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -48,7 +49,7 @@ public class GCPStorageWithEntityConverterIT {
     private static final String OTHER_BUCKET = "other-bucket";
     private static final String OTHER_OTHER_BUCKET = "other-other-bucket";
 
-    private static TestData[] testDataSets = null;
+    private static final TestData[] testDataSets;
 
     static {
         System.setProperty("spring.content.gcp.storage.bucket", BUCKET);
@@ -61,137 +62,100 @@ public class GCPStorageWithEntityConverterIT {
     }
 
     private TestEntity entity;
-    private Exception e;
     private AnnotationConfigApplicationContext context;
     private TestEntityRepository repo;
     private TestEntityStore store;
     private Storage storage;
-    private String resourceLocation;
 
-    @TestFactory
-    java.util.stream.Stream<org.junit.jupiter.api.DynamicNode> generatedCases() {
-        java.util.List<org.junit.jupiter.api.DynamicNode> tests = new java.util.ArrayList<>();
-        for (TestData testDataSet : testDataSets) {
-            {
-                java.util.List<org.junit.jupiter.api.DynamicNode> nodes3 = new java.util.ArrayList<>();
-                {
-                    java.util.List<org.junit.jupiter.api.DynamicNode> nodes2 = new java.util.ArrayList<>();
-                    nodes2.add(org.junit.jupiter.api.DynamicTest.dynamicTest("should store new content in bucket '", () -> {
-                        try {
-                            context = new AnnotationConfigApplicationContext();
-                            context.register(testDataSet.getConfig());
-                            context.refresh();
+    static Stream<TestData> converterConfigs() {
+        return Stream.of(testDataSets);
+    }
 
-                            repo = context.getBean(TestEntityRepository.class);
-                            store = context.getBean(TestEntityStore.class);
-                            storage = context.getBean(Storage.class);
+    private void boot(TestData testDataSet) {
+        context = new AnnotationConfigApplicationContext();
+        context.register(testDataSet.config());
+        context.refresh();
 
-                            entity = new TestEntity();
-                            entity.setContentType("text/plain");
-                            entity = repo.save(entity);
+        repo = context.getBean(TestEntityRepository.class);
+        store = context.getBean(TestEntityStore.class);
+        storage = context.getBean(Storage.class);
+    }
 
-                            store.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-                            Blob blob = storage.get(BlobId.of(testDataSet.getBucket(), entity.getContentId()));
-                            assertThat(blob.exists(new BlobSourceOption[]{})).isTrue();
-                        } finally {
-                            context.close();
-                        }
-                    }));
-                    nodes2.add(org.junit.jupiter.api.DynamicTest.dynamicTest("should have content metadata", () -> {
-                        try {
-                            context = new AnnotationConfigApplicationContext();
-                            context.register(testDataSet.getConfig());
-                            context.refresh();
+    private void saveEntityWithContent() {
+        entity = new TestEntity();
+        entity.setContentType("text/plain");
+        entity = repo.save(entity);
 
-                            repo = context.getBean(TestEntityRepository.class);
-                            store = context.getBean(TestEntityStore.class);
-                            storage = context.getBean(Storage.class);
+        store.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+    }
 
-                            entity = new TestEntity();
-                            entity.setContentType("text/plain");
-                            entity = repo.save(entity);
-
-                            store.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-                            // content
-                            assertThat(entity.getContentId()).isNotNull();
-                            assertThat(entity.getContentId().toString().trim().length()).isGreaterThan(0);
-                            assertThat(entity.getContentLen()).isEqualTo(27L);
-                        } finally {
-                            context.close();
-                        }
-                    }));
-                    {
-                        java.util.List<org.junit.jupiter.api.DynamicNode> nodes1 = new java.util.ArrayList<>();
-                        nodes1.add(org.junit.jupiter.api.DynamicTest.dynamicTest("should delete content from bucket '", () -> {
-                            try {
-                                context = new AnnotationConfigApplicationContext();
-                                context.register(testDataSet.getConfig());
-                                context.refresh();
-
-                                repo = context.getBean(TestEntityRepository.class);
-                                store = context.getBean(TestEntityStore.class);
-                                storage = context.getBean(Storage.class);
-
-                                entity = new TestEntity();
-                                entity.setContentType("text/plain");
-                                entity = repo.save(entity);
-
-                                store.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-
-                                resourceLocation = entity.getContentId().toString();
-                                entity = store.unsetContent(entity, PropertyPath.from("content"));
-                                entity = repo.save(entity);
-                                Blob blob = storage.get(BlobId.of(testDataSet.getBucket(), resourceLocation));
-                                System.out.println(resourceLocation);
-                                assertThat(blob).isNull();
-                            } finally {
-                                context.close();
-                            }
-                        }));
-                        nodes1.add(org.junit.jupiter.api.DynamicContainer.dynamicContainer("when content is deleted", nodes1.stream()));
-                    }
-                    nodes2.add(org.junit.jupiter.api.DynamicContainer.dynamicContainer("given an entity with content", nodes2.stream()));
-                }
-                tests.add(org.junit.jupiter.api.DynamicContainer.dynamicContainer(testDataSet.getName(), nodes3.stream()));
+    @Nested
+    class GivenAnEntityWithContent {
+        @ParameterizedTest(name = "{0}")
+        @MethodSource("internal.org.springframework.content.gcs.it.GCPStorageWithEntityConverterIT#converterConfigs")
+        void shouldStoreNewContentInBucket(TestData testDataSet) {
+            try {
+                boot(testDataSet);
+                saveEntityWithContent();
+                Blob blob = storage.get(BlobId.of(testDataSet.bucket(), entity.getContentId()));
+                assertThat(blob.exists()).isTrue();
+            } finally {
+                context.close();
             }
         }
-        return tests.stream();
+
+        @ParameterizedTest(name = "{0}")
+        @MethodSource("internal.org.springframework.content.gcs.it.GCPStorageWithEntityConverterIT#converterConfigs")
+        void shouldHaveContentMetadata(TestData testDataSet) {
+            try {
+                boot(testDataSet);
+                saveEntityWithContent();
+                // content
+                assertThat(entity.getContentId()).isNotNull();
+                assertThat(entity.getContentId().trim().length()).isGreaterThan(0);
+                assertThat(entity.getContentLen()).isEqualTo(27L);
+            } finally {
+                context.close();
+            }
+        }
+
+        @Nested
+        class WhenContentIsDeleted {
+            @ParameterizedTest(name = "{0}")
+            @MethodSource("internal.org.springframework.content.gcs.it.GCPStorageWithEntityConverterIT#converterConfigs")
+            void shouldDeleteContentFromBucket(TestData testDataSet) {
+                try {
+                    boot(testDataSet);
+                    saveEntityWithContent();
+
+                    String resourceLocation = entity.getContentId();
+                    entity = store.unsetContent(entity, PropertyPath.from("content"));
+                    entity = repo.save(entity);
+                    Blob blob = storage.get(BlobId.of(testDataSet.bucket(), resourceLocation));
+                    System.out.println(resourceLocation);
+                    assertThat(blob).isNull();
+                } finally {
+                    context.close();
+                }
+            }
+        }
     }
 
-    @Test
-    public void test() {
-        // noop
-    }
-
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntityRepository extends JpaRepository<TestEntity, Long> {
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntityStore extends ContentStore<TestEntity, String> {
     }
 
-    private static class TestData {
-        private String name;
-        private Class[] config;
-        private String bucket;
+    private record TestData(String name, Class[] config, String bucket) {
 
-        public TestData(String name, Class[] config, String bucket) {
-            this.name = name;
-            this.config = config;
-            this.bucket = bucket;
+        @Override
+            public @NonNull String toString() {
+                return name;
+            }
         }
-
-        public String getName() {
-            return name;
-        }
-
-        public Class[] getConfig() {
-            return config;
-        }
-
-        public String getBucket() {
-            return bucket;
-        }
-    }
 
     @Configuration
     @EnableJpaRepositories(basePackages = "internal.org.springframework.content.gcs.it", considerNestedRepositories = true)
@@ -210,25 +174,13 @@ public class GCPStorageWithEntityConverterIT {
 
         @Bean
         public GCPStorageConfigurer configurer() {
-            return new GCPStorageConfigurer() {
+            return registry -> {
 
-                @Override
-                public void configureGCPStorageConverters(ConverterRegistry registry) {
+                registry.addConverter((Converter<ContentPropertyInfo<TestEntity, Serializable>, BlobId>) info -> BlobId.of(OTHER_OTHER_BUCKET, info.contentId().toString()));
 
-                    registry.addConverter(new Converter<ContentPropertyInfo<TestEntity, Serializable>, BlobId>() {
-                        @Override
-                        public BlobId convert(ContentPropertyInfo<TestEntity, Serializable> info) {
-                            return BlobId.of(OTHER_OTHER_BUCKET, info.contentId().toString());
-                        }
-                    });
-
-                    registry.addConverter(new Converter<ContentPropertyInfo<FakeEntity, Serializable>, BlobId>() {
-                        @Override
-                        public BlobId convert(ContentPropertyInfo<FakeEntity, Serializable> info) {
-                            throw new IllegalStateException("wrong converter called");
-                        }
-                    });
-                }
+                registry.addConverter((Converter<ContentPropertyInfo<FakeEntity, Serializable>, BlobId>) info -> {
+                    throw new IllegalStateException("wrong converter called");
+                });
             };
         }
     }
@@ -298,10 +250,6 @@ public class GCPStorageWithEntityConverterIT {
         private String renditionContentType;
 
         public TestEntity() {
-        }
-
-        public TestEntity(String contentId) {
-            this.contentId = contentId;
         }
 
         public Long getId() {

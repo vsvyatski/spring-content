@@ -84,21 +84,27 @@ public class FileSystemStoreIT {
         void setContentLen(Long contentLen);
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntityRepository extends JpaRepository<TEntity, String> {
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntityStore extends ContentStore<TEntity, String> {
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface SharedIdRepository extends JpaRepository<SharedIdContentIdEntity, String> {
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface SharedIdStore extends ContentStore<SharedIdContentIdEntity, String> {
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface EmbeddedRepository extends JpaRepository<EntityWithEmbeddedContent, String> {
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface EmbeddedStore extends ContentStore<EntityWithEmbeddedContent, String> {
     }
 
@@ -157,7 +163,7 @@ public class FileSystemStoreIT {
     }
 
     @Entity
-    @Table(name = "tentity")
+    @Table(name = "tEntity")
     public static class TEntity implements ContentProperty {
 
         @Id

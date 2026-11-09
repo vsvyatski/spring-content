@@ -53,12 +53,15 @@ public class Application {
         SpringApplication.run(Application.class, args);
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TEntityRepository extends JpaRepository<TEntity, Long> {
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TEntityFsStore extends FileSystemContentStore<TEntity, String> {
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TEntityJpaStore extends JpaContentStore<TEntity, String> {
     }
 

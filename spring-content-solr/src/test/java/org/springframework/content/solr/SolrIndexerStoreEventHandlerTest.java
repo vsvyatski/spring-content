@@ -38,10 +38,6 @@ public class SolrIndexerStoreEventHandlerTest {
     private StoreAccessException sae;
     private Throwable e;
 
-    @Test
-    public void test() {
-    }
-
     public static class ContentEntity {
         @ContentId
         public String contentId;

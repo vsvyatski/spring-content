@@ -59,10 +59,6 @@ public class ContentLinksResourceProcessorIT {
 
     private PersistentEntityResource resource;
 
-    @Test
-    public void noop() {
-    }
-
     @Nested
     class GivenTheSpringContentBaseUriPropertyIsSetToContentApiCases {
         @Nested

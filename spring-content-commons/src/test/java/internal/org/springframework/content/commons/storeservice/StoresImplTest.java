@@ -25,25 +25,32 @@ public class StoresImplTest {
     private ApplicationContext context;
     private StoreFactory mockFactory;
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface StoreInterface extends Store<String> {
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface AssociativeStoreInterface extends AssociativeStore<Object, String> {
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface ContentRepositoryInterface extends ContentStore<Object, String> {
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface EntityStoreInterface extends AssociativeStore<Entity, String> {
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface OtherEntityStoreInterface
             extends AssociativeStore<OtherEntity, String> {
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface FsEntityStoreInterface extends ContentStore<Entity, String> {
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface JpaEntityStoreInterface extends ContentStore<Entity, String> {
     }
 

@@ -45,17 +45,17 @@ public class Application {
     @EnableJpaStores(basePackages = "internal.org.springframework.content.rest.support")
     public static class AppConfig {
         @Value("/org/springframework/content/jpa/schema-drop-h2.sql")
-        private ClassPathResource dropReopsitoryTables;
+        private ClassPathResource dropRepositoryTables;
 
         @Value("/org/springframework/content/jpa/schema-h2.sql")
-        private ClassPathResource dataReopsitorySchema;
+        private ClassPathResource dataRepositorySchema;
 
         @Bean
         DataSourceInitializer datasourceInitializer(DataSource dataSource) {
             ResourceDatabasePopulator databasePopulator = new ResourceDatabasePopulator();
 
-            databasePopulator.addScript(dropReopsitoryTables);
-            databasePopulator.addScript(dataReopsitorySchema);
+            databasePopulator.addScript(dropRepositoryTables);
+            databasePopulator.addScript(dataRepositorySchema);
             databasePopulator.setIgnoreFailedDrops(true);
 
             DataSourceInitializer initializer = new DataSourceInitializer();

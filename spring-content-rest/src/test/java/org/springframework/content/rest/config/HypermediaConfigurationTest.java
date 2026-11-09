@@ -26,9 +26,11 @@ public class HypermediaConfigurationTest {
 
     private AnnotationConfigWebApplicationContext context;
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntityRepository extends MongoRepository<TestEntity, String> {
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntityContentStore extends FileSystemContentStore<TestEntity, String> {
     }
 

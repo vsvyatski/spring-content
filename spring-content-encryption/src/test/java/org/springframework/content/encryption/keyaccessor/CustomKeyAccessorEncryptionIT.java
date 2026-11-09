@@ -23,7 +23,6 @@ import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.annotations.MimeType;
 import org.springframework.content.commons.mappingcontext.ContentProperty;
-import org.springframework.content.encryption.config.EncryptingContentStoreConfiguration;
 import org.springframework.content.encryption.config.EncryptingContentStoreConfigurer;
 import org.springframework.content.encryption.keys.DataEncryptionKeyAccessor;
 import org.springframework.content.encryption.keys.StoredDataEncryptionKey.UnencryptedSymmetricDataEncryptionKey;
@@ -71,16 +70,15 @@ public class CustomKeyAccessorEncryptionIT {
 
     private FsFile f;
 
-    @Test
-    public void noop() {
-    }
-
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface FileRepository extends CrudRepository<FsFile, Long> {
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface FileContentStore3 extends FileSystemContentStore<FsFile, UUID>, EncryptingContentStore<FsFile, UUID> {
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface ContentEncryptionKeyRepository extends CrudRepository<ContentEncryptionKey, UUID> {
     }
 
@@ -112,12 +110,7 @@ public class CustomKeyAccessorEncryptionIT {
 
             @Bean
             public EncryptingContentStoreConfigurer<FileContentStore3> config(ContentEncryptionKeyRepository encryptionKeyRepository) {
-                return new EncryptingContentStoreConfigurer<FileContentStore3>() {
-                    @Override
-                    public void configure(EncryptingContentStoreConfiguration<FileContentStore3> config) {
-                        config.dataEncryptionKeyAccessor(new EntityStorageDataEncryptionKeyAccessor<>(encryptionKeyRepository));
-                    }
-                };
+                return config -> config.dataEncryptionKeyAccessor(new EntityStorageDataEncryptionKeyAccessor<>(encryptionKeyRepository));
             }
         }
     }

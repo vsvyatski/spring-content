@@ -66,13 +66,11 @@ public class EmbeddedIdTest {
 
     private MockMvc mvc;
 
-    @Test
-    public void noop() {
-    }
-
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntityRepository extends JpaRepository<TestEntity, TestEntityId> {
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntityContentRepository extends FileSystemContentStore<TestEntity, TestEntityId> {
     }
 
@@ -93,20 +91,10 @@ public class EmbeddedIdTest {
 
         @Bean
         public ContentRestConfigurer configureConversionService() {
-            return new ContentRestConfigurer() {
-
-                @Override
-                public void configure(RestConfiguration config) {
-
-                    config.converters().addConverter(new Converter<String, TestEntityId>() {
-                        @Override
-                        public TestEntityId convert(String source) {
-                            String[] segments = source.split("_");
-                            return new TestEntityId(segments[0], segments[1]);
-                        }
-                    });
-                }
-            };
+            return config -> config.converters().addConverter((Converter<String, TestEntityId>) source -> {
+                String[] segments = source.split("_");
+                return new TestEntityId(segments[0], segments[1]);
+            });
         }
     }
 
@@ -171,9 +159,9 @@ public class EmbeddedIdTest {
         @Serial
         private static final long serialVersionUID = -1710555467685181030L;
 
-        private String first;
+        private final String first;
 
-        private String last;
+        private final String last;
 
         public TestEntityId() {
             this.first = UUID.randomUUID().toString();
@@ -205,14 +193,6 @@ public class EmbeddedIdTest {
             TestEntity entity = repo.save(new TestEntity());
             entity = store.setContent(entity, new ByteArrayInputStream(content.getBytes()));
             entity = repo.save(entity);
-
-            //                String command = "curl -H 'Accept: text/plain' http://localhost:" + serverPort + "/testEntities/" + entity.getId().toString();
-            //                Process process = Runtime.getRuntime().exec(command);
-            //                while (process.isAlive() == true) {
-            //                    Thread.sleep(1000);
-            //                }
-            //                assertThat(process.exitValue()).isEqualTo(0);
-            //                assertThat(IOUtils.toString(process.getInputStream())).isEqualTo(content);
 
             MockHttpServletResponse response =
                     mvc.perform(

@@ -80,25 +80,27 @@ public class S3StoreIT {
     @Autowired
     private EmbeddedStore embeddedStore;
 
-    @Test
-    public void noop() {
-    }
-
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntityRepository extends JpaRepository<TestEntity, Long> {
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntityStore extends ContentStore<TestEntity, String> {
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface SharedIdRepository extends JpaRepository<SharedIdContentIdEntity, String> {
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface SharedIdStore extends ContentStore<SharedIdContentIdEntity, String> {
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface EmbeddedRepository extends JpaRepository<EntityWithEmbeddedContent, String> {
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface EmbeddedStore extends ContentStore<EntityWithEmbeddedContent, String> {
     }
 

@@ -57,14 +57,11 @@ public class FileSystemStorePropertyPathAccessorsIT {
 
     private String resourceLocation;
 
-    @Test
-    public void test() {
-        // noop
-    }
-
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntityRepository extends JpaRepository<TEntity, UUID> {
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntityStore extends ContentStore<TEntity, String> {
     }
 
@@ -130,7 +127,7 @@ public class FileSystemStorePropertyPathAccessorsIT {
     }
 
     @Entity
-    @Table(name = "tentity_content")
+    @Table(name = "tEntity_content")
     public static class TEntity {
 
         @Id

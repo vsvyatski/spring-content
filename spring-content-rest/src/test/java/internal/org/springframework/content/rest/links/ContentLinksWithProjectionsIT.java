@@ -79,25 +79,22 @@ public class ContentLinksWithProjectionsIT {
 
     private TEntity testEntity;
 
-    @Test
-    public void noop() {
-    }
-
     @Projection(
             name = "customTEntity",
             types = {TEntity.class})
+    @SuppressWarnings("unused") // Spring Data REST projection
     public interface CustomTEntity {
 
         String getName();
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TEntityRepository extends JpaRepository<TEntity, Long> {
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TEntityStore extends FileSystemContentStore<TEntity, UUID> {
     }
-
-    ;
 
     @Entity
     public static class TEntity {
@@ -154,8 +151,6 @@ public class ContentLinksWithProjectionsIT {
         }
     }
 
-    ;
-
     @Configuration
     @EnableJpaRepositories(basePackages = "internal.org.springframework.content.rest.links", considerNestedRepositories = true)
     @EnableTransactionManagement
@@ -197,32 +192,6 @@ public class ContentLinksWithProjectionsIT {
             return new JpaTransactionManager();
         }
 
-//        @Bean
-//        RepositoryRestConfigurer repositoryRestConfigurer() {
-//
-//            return RepositoryRestConfigurer.withConfig(config -> {
-//
-//                config.getCorsRegistry().addMapping("/**") //
-//                        .allowedMethods("GET", "PUT", "POST") //
-//                        .allowedOrigins("http://far.far.away");
-//
-//                config.withEntityLookup().forRepository(TestEntity7Repository.class, TestEntity7::getName, TestEntity7Repository::findByName);
-//            });
-//        }
-
-//        @Bean
-//        ContentRestConfigurer contentRestConfigurer() {
-//
-//            return new ContentRestConfigurer() {
-//                @Override
-//                public void configure(RestConfiguration config) {
-//                    config.getCorsRegistry().addMapping("/**") //
-//                            .allowedMethods("GET", "PUT", "POST") //
-//                            .allowedOrigins("http://far.far.away");
-//                }
-//            };
-//        }
-
         @Bean
         FileSystemResourceLoader fileSystemResourceLoader() {
             return new FileSystemResourceLoader(filesystemRoot().getAbsolutePath());
@@ -235,62 +204,6 @@ public class ContentLinksWithProjectionsIT {
             filesystemRoot.mkdirs();
             return filesystemRoot;
         }
-
-//        @Bean
-//        public RenditionProvider textToHtml() {
-//            return new RenditionProvider() {
-//
-//                @Override
-//                public String consumes() {
-//                    return "text/plain";
-//                }
-//
-//                @Override
-//                public String[] produces() {
-//                    return new String[] { "text/html" };
-//                }
-//
-//                @Override
-//                public InputStream convert(InputStream fromInputSource, String toMimeType) {
-//                    String input = null;
-//                    try {
-//                        input = IOUtils.toString(fromInputSource);
-//                    }
-//                    catch (IOException e) {
-//                    }
-//                    return new ByteArrayInputStream(
-//                            String.format("<html><body>%s</body></html>", input).getBytes());
-//                }
-//            };
-//        }
-
-//        @Bean
-//        public RenditionProvider htmlToHtml() {
-//            return new RenditionProvider() {
-//
-//                @Override
-//                public String consumes() {
-//                    return "text/html";
-//                }
-//
-//                @Override
-//                public String[] produces() {
-//                    return new String[] { "text/html" };
-//                }
-//
-//                @Override
-//                public InputStream convert(InputStream fromInputSource, String toMimeType) {
-//                    String input = null;
-//                    try {
-//                        input = IOUtils.toString(fromInputSource);
-//                    }
-//                    catch (IOException e) {
-//                    }
-//                    return new ByteArrayInputStream(
-//                            String.format("<html><body>Hello Spring Content World!</body></html>", input).getBytes());
-//                }
-//            };
-//        }
     }
 
     @Nested

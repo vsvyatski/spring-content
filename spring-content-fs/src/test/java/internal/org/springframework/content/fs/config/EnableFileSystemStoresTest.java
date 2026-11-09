@@ -29,10 +29,7 @@ public class EnableFileSystemStoresTest {
     static FileSystemStoreConfigurer configurer;
     private AnnotationConfigApplicationContext context;
 
-    @Test
-    public void noop() {
-    }
-
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntityContentRepository extends ContentStore<TestEntity, String> {
     }
 
@@ -66,7 +63,7 @@ public class EnableFileSystemStoresTest {
 
         @Bean
         public FileSystemStoreConverter<UUID, String> uuidConverter() {
-            return source -> String.format("/%s", source.toString().replaceAll("-", "/"));
+            return source -> String.format("/%s", source.toString().replace("-", "/"));
         }
 
         @Bean

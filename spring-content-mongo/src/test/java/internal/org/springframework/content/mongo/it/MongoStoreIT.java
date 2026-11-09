@@ -61,11 +61,6 @@ public class MongoStoreIT {
 
     private String resourceLocation;
 
-    @Test
-    public void test() {
-        // noop
-    }
-
     public interface ContentProperty {
         String getContentId();
 
@@ -76,21 +71,27 @@ public class MongoStoreIT {
         void setContentLen(Long contentLen);
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntityRepository extends MongoRepository<TestEntity, String> {
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntityStore extends ContentStore<TestEntity, String> {
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface SharedIdRepository extends MongoRepository<SharedIdContentIdEntity, String> {
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface SharedIdStore extends ContentStore<SharedIdContentIdEntity, String> {
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface SharedSpringIdRepository extends MongoRepository<SharedSpringIdContentIdEntity, String> {
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface SharedSpringIdStore extends ContentStore<SharedSpringIdContentIdEntity, String> {
     }
 
@@ -761,13 +762,13 @@ public class MongoStoreIT {
                     // content
                     try (InputStream content = store.getContent(entity)) {
                         assertThat(IOUtils.contentEquals(new ByteArrayInputStream("Hello Spring Content World!".getBytes()), content)).isTrue();
-                    } catch (IOException ioe) {
+                    } catch (IOException ignored) {
                     }
 
                     //rendition
                     try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
                         assertThat(IOUtils.contentEquals(new ByteArrayInputStream("Hello Spring Content World!".getBytes()), content)).isTrue();
-                    } catch (IOException ioe) {
+                    } catch (IOException ignored) {
                     }
                 }
 

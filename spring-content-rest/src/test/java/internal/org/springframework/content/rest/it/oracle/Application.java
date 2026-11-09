@@ -68,7 +68,7 @@ public class Application {
 
         @Bean
         public DataSource dataSource() {
-            // Timezone is not set in github containers, need this for connections to work
+            // Timezone is not set in GitHub containers, need this for connections to work
             TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
 
             DriverManagerDataSource ds = new DriverManagerDataSource();

@@ -14,10 +14,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class AbstractStoreFactoryBeanTest {
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestStore extends Serializable, ContentStore<String, UUID> {
     }
 
-    public interface ContentStoreNotFirstIntefaceStore
+    @SuppressWarnings("unused") // classpath / store component scan
+    public interface ContentStoreNotFirstInterfaceStore
             extends Serializable, ContentStore<String, UUID> {
     }
 
@@ -141,16 +143,14 @@ public class AbstractStoreFactoryBeanTest {
         class GetDomainClass {
             @Test
             void getsTheDomainClass() {
-                TestContentStoreFactory factory = new TestContentStoreFactory(TestStore.class);
-                Class<?> domainClass = factory.getDomainClass(TestStore.class);
+                Class<?> domainClass = AbstractStoreFactoryBean.getDomainClass(TestStore.class);
                 assertThat(domainClass).isEqualTo(String.class);
             }
 
             @Test
             void whenContentStoreIsnTTheFirstExtendedInterfaceItStillGetTheDomainType() {
-                TestContentStoreFactory factory = new TestContentStoreFactory(TestStore.class);
-                Class<?> domainClass = factory.getDomainClass(
-                        ContentStoreNotFirstIntefaceStore.class);
+                Class<?> domainClass = AbstractStoreFactoryBean.getDomainClass(
+                        ContentStoreNotFirstInterfaceStore.class);
                 assertThat(domainClass).isEqualTo(String.class);
             }
         }
@@ -159,9 +159,7 @@ public class AbstractStoreFactoryBeanTest {
         class GetContentIdClass {
             @Test
             void getsTheDomainId() {
-                TestContentStoreFactory factory = new TestContentStoreFactory(TestStore.class);
-                Class<? extends Serializable> domainId = factory
-                        .getContentIdClass(TestStore.class);
+                Class<? extends Serializable> domainId = AbstractStoreFactoryBean.getContentIdClass(TestStore.class);
                 assertThat(domainId).isEqualTo(UUID.class);
             }
         }

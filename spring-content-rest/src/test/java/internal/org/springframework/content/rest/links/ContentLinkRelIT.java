@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import jakarta.transaction.Transactional;
 import org.apache.commons.io.IOUtils;
 import org.hibernate.annotations.Formula;
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -88,7 +89,7 @@ public class ContentLinkRelIT {
     @Autowired
     TestEntity5Repository repository5;
     @Autowired
-    TestEntity5LinkrelStore store5;
+    TestEntity5LinkRelStore store5;
 
     @Autowired
     TestEntity2Repository repository2;
@@ -102,6 +103,7 @@ public class ContentLinkRelIT {
 
     @Autowired
     TestEntity3Repository repository3;
+
     @Autowired
     TestEntity3ContentRepository contentRepository3;
 
@@ -110,56 +112,62 @@ public class ContentLinkRelIT {
 
     private MockMvc mvc;
 
-    private TestEntity testEntity;
     private TestEntity3 testEntity3;
-    private TestEntity5 testEntity5;
-    private TestEntity2 testEntity2;
-    private TestEntity10 testEntity10;
 
     private ContentLinkTests contentLinkTests;
 
     @StoreRestResource(linkRel = "foo")
-    public interface TestEntity5LinkrelStore extends FileSystemContentStore<TestEntity5, UUID> {
+    @SuppressWarnings("unused") // classpath / store component scan
+    public interface TestEntity5LinkRelStore extends FileSystemContentStore<TestEntity5, UUID> {
 
         @RestResource(paths = {"rendition"}, exported = false)
         @Override
         InputStream getContent(TestEntity5 entity, PropertyPath propertyPath);
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntity5Repository extends JpaRepository<TestEntity5, Long> {
     }
 
     @CrossOrigin(origins = "http://www.someurl.com")
     @RepositoryRestResource(path = "testEntities")
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntityRepository extends JpaRepository<TestEntity, Long> {
     }
 
     @CrossOrigin(origins = "http://www.someurl.com")
     @StoreRestResource(path = "testEntitiesContent", linkRel = "foo")
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntityContentRepository extends FileSystemContentStore<TestEntity, Long>, Renderable<TestEntity> {
     }
 
     @StoreRestResource(path = "files", linkRel = "foo")
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntity2Store extends FileSystemContentStore<TestEntity2, UUID> {
     }
 
     @RepositoryRestResource(path = "files")
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntity2Repository extends JpaRepository<TestEntity2, Long> {
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntity10Repository extends CrudRepository<TestEntity10, Long> {
     }
 
     @StoreRestResource(linkRel = "foo")
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntity10Store extends FileSystemContentStore<TestEntity10, UUID>, Renderable<TestEntity10> {
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntity3ContentRepository extends FileSystemContentStore<TestEntity3, Long>, Renderable<TestEntity3> {
         @RestResource(exported = false)
         @Override
         TestEntity3 setContent(TestEntity3 property, InputStream content);
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntity3Repository extends JpaRepository<TestEntity3, Long> {
     }
 
@@ -566,7 +574,7 @@ public class ContentLinkRelIT {
             return new RepositoryRestConfigurer() {
 
                 @Override
-                public void configureRepositoryRestConfiguration(RepositoryRestConfiguration config, CorsRegistry cors) {
+                public void configureRepositoryRestConfiguration(@NonNull RepositoryRestConfiguration config, @NonNull CorsRegistry cors) {
                     config.setBasePath("/api");
                 }
             };
@@ -574,12 +582,7 @@ public class ContentLinkRelIT {
 
         @Bean
         public ContentRestConfigurer configurer() {
-            return new ContentRestConfigurer() {
-                @Override
-                public void configure(RestConfiguration config) {
-                    config.setBaseUri(URI.create("/contentApi"));
-                }
-            };
+            return config -> config.setBaseUri(URI.create("/contentApi"));
         }
 
         @Bean
@@ -647,14 +650,14 @@ public class ContentLinkRelIT {
     @Nested
     class GivenAnExportingStoreSpecifyingALinkRelOfFoo {
         @Nested
-        class Linkrel {
+        class LinkRel {
             @Nested
             @DisplayName("given a store specifying a linkRel and an entity with a top-level uncorrelated content property")
             class GivenAStoreSpecifyingALinkRelAndAnEntityWithATopLevelUncorrelatedContentProperty extends ContentLinkTests {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
-                    testEntity = new TestEntity();
+                    TestEntity testEntity = new TestEntity();
                     contentRepository.setContent(testEntity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
                     testEntity = repository.save(testEntity);
                     this.setMvc(mvc);
@@ -673,7 +676,7 @@ public class ContentLinkRelIT {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
-                    testEntity5 = new TestEntity5();
+                    TestEntity5 testEntity5 = new TestEntity5();
                     store5.setContent(testEntity5, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
                     testEntity5 = repository5.save(testEntity5);
                     this.setMvc(mvc);
@@ -687,12 +690,12 @@ public class ContentLinkRelIT {
             }
 
             @Nested
-            @DisplayName("given a store specifying a linkrel and an entity a nested content property")
+            @DisplayName("given a store specifying a linkRel and an entity a nested content property")
             class GivenAStoreSpecifyingALinkrelAndAnEntityANestedContentPropertyContentLinkTests extends ContentLinkTests {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
-                    testEntity2 = new TestEntity2();
+                    TestEntity2 testEntity2 = new TestEntity2();
                     testEntity2.getChild().setMimeType("text/plain");
                     store2.setContent(testEntity2, PropertyPath.from("child"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
                     testEntity2 = repository2.save(testEntity2);
@@ -707,12 +710,12 @@ public class ContentLinkRelIT {
             }
 
             @Nested
-            @DisplayName("given a store specifying a linkrel and an entity with nested content properties")
-            class GivenAStoreSpecifyingALinkrelAndAnEntityWithNestedContentPropertiesContentLinkTe extends ContentLinkTests {
+            @DisplayName("given a store specifying a linkRel and an entity with nested content properties")
+            class GivenStoreSpecifyingLinkRelAndEntityWithNestedContentPropertiesContentLink extends ContentLinkTests {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
-                    testEntity10 = new TestEntity10();
+                    TestEntity10 testEntity10 = new TestEntity10();
                     testEntity10.getChild().setContentMimeType("text/plain");
                     testEntity10.getChild().setContentFileName("test");
                     store10.setContent(testEntity10, PropertyPath.from("child/content"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
@@ -732,7 +735,7 @@ public class ContentLinkRelIT {
     }
 
     @Entity
-    public class TestEntity3 {
+    public static class TestEntity3 {
         public @Id
         @GeneratedValue Long id;
         public String name;

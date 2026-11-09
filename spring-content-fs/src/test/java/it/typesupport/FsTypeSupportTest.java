@@ -38,10 +38,6 @@ public class FsTypeSupportTest {
     Object entity;
     Object id;
 
-    @Test
-    public void noop() throws IOException {
-    }
-
     @Nested
     class JavaUtilUUID {
         @Nested

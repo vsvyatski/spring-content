@@ -43,13 +43,11 @@ public class EnableS3StoresTest {
 
     private AnnotationConfigApplicationContext context;
 
-    @Test
-    public void noop() {
-    }
-
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntityStore extends AssociativeStore<TestEntity, S3ObjectId> {
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntityContentRepository
             extends ContentStore<TestEntity, String> {
     }
@@ -82,11 +80,7 @@ public class EnableS3StoresTest {
     public static class TestConverterConfig {
         @Bean
         public S3StoreConfigurer configurer() {
-            return new S3StoreConfigurer() {
-
-                @Override
-                public void configureS3StoreConverters(ConverterRegistry registry) {
-                }
+            return registry -> {
             };
         }
     }
@@ -97,12 +91,7 @@ public class EnableS3StoresTest {
     public static class MultiTenantConfig {
         @Bean
         public MultiTenantS3ClientProvider s3Provider() {
-            return new MultiTenantS3ClientProvider() {
-                @Override
-                public S3Client getS3Client() {
-                    return client;
-                }
-            };
+            return () -> client;
         }
     }
 
@@ -191,7 +180,6 @@ public class EnableS3StoresTest {
         class GivenAContextWithAMultiTenantConfiguration {
             @BeforeEach
             void setUp() {
-                // noinspection resource
                 client = mock(S3Client.class);
 
                 context = new AnnotationConfigApplicationContext();
@@ -207,15 +195,15 @@ public class EnableS3StoresTest {
             @Test
             void shouldUseTheCorrectClient() {
                 TestEntityContentRepository repo = context.getBean(TestEntityContentRepository.class);
-                TestEntity tentity = new TestEntity();
-                tentity.setContentId("12345");
-                Resource r = repo.getResource(tentity);
+                TestEntity entity = new TestEntity();
+                entity.setContentId("12345");
+                Resource r = repo.getResource(entity);
                 assertThat(((S3StoreResource) r).getClient()).isEqualTo(client);
             }
         }
     }
 
-    public class TestEntity {
+    public static class TestEntity {
         @ContentId
         private String contentId;
 

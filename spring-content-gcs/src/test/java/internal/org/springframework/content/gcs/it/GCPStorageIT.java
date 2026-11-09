@@ -61,26 +61,27 @@ public class GCPStorageIT {
     private EmbeddedStore embeddedStore;
     private String resourceLocation;
 
-    @Test
-    public void test() {
-        // noop
-    }
-
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntityRepository extends JpaRepository<TestEntity, Long> {
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntityStore extends ContentStore<TestEntity, String> {
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface SharedIdRepository extends JpaRepository<SharedIdContentIdEntity, String> {
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface SharedIdStore extends ContentStore<SharedIdContentIdEntity, String> {
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface EmbeddedRepository extends JpaRepository<EntityWithEmbeddedContent, String> {
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface EmbeddedStore extends ContentStore<EntityWithEmbeddedContent, String> {
     }
 
@@ -149,10 +150,6 @@ public class GCPStorageIT {
         private long renditionLen;
 
         public TestEntity() {
-        }
-
-        public TestEntity(String contentId) {
-            this.contentId = contentId;
         }
 
         public Long getId() {
@@ -862,7 +859,7 @@ public class GCPStorageIT {
                     //rendition
                     assertThat(entity.getRenditionId()).isNotNull();
                     assertThat(entity.getRenditionId().trim().length()).isGreaterThan(0);
-                    assertThat(40L).isEqualTo((long) entity.getRenditionLen());
+                    assertThat(40L).isEqualTo(entity.getRenditionLen());
                 }
             }
 
@@ -1044,7 +1041,7 @@ public class GCPStorageIT {
                     store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
                     entity = repo.save(entity);
 
-                    resourceLocation = entity.getContentId().toString();
+                    resourceLocation = entity.getContentId();
                     entity = store.unsetContent(entity);
                     entity = store.unsetContent(entity, PropertyPath.from("rendition"));
                     entity = repo.save(entity);
@@ -1101,7 +1098,7 @@ public class GCPStorageIT {
                     store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
                     entity = repo.save(entity);
 
-                    resourceLocation = entity.getContentId().toString();
+                    resourceLocation = entity.getContentId();
                     entity = store.unsetContent(entity, PropertyPath.from("content"), new UnsetContentParams(UnsetContentParams.Disposition.Keep));
                     entity = repo.save(entity);
                 }

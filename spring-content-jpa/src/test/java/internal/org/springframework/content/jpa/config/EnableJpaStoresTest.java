@@ -32,6 +32,7 @@ public class EnableJpaStoresTest {
 
     private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntityContentRepository
             extends ContentStore<TestEntity, String> {
     }
@@ -147,7 +148,7 @@ public class EnableJpaStoresTest {
         }
     }
 
-    public class TestEntity {
+    public static class TestEntity {
         @Id
         private String id;
         @ContentId

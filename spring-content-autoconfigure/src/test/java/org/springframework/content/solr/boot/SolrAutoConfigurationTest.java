@@ -17,10 +17,6 @@ public class SolrAutoConfigurationTest {
 
     private ApplicationContextRunner contextRunner;
 
-    @Test
-    public void test() {
-    }
-
     @SpringBootApplication(exclude = ElasticsearchAutoConfiguration.class)
     public static class TestConfig {
     }

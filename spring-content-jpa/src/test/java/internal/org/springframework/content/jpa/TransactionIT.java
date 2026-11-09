@@ -7,7 +7,8 @@ import internal.org.springframework.content.jpa.StoreIT.PostgresConfig;
 import jakarta.persistence.*;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.TestFactory;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.jpa.config.EnableJpaStores;
@@ -22,6 +23,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -51,9 +53,11 @@ public class TransactionIT {
         return configClass.getSimpleName().replaceAll("Config", "");
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntityRepository extends JpaRepository<TestEntity, String> {
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntityContentRepository extends ContentStore<TestEntity, String> {
     }
 
@@ -78,47 +82,45 @@ public class TransactionIT {
         }
     }
 
+    static Stream<Class<?>> databaseConfigs() {
+        return Stream.of(CONFIG_CLASSES);
+    }
+
     @Nested
     class TransactionTest {
-        @TestFactory
-        java.util.stream.Stream<org.junit.jupiter.api.DynamicNode> generatedCases() {
-            java.util.List<org.junit.jupiter.api.DynamicNode> tests = new java.util.ArrayList<>();
-            for (Class<?> configClass : CONFIG_CLASSES) {
-                tests.add(org.junit.jupiter.api.DynamicTest.dynamicTest("should not commit changes to content", () -> {
-                    context = new AnnotationConfigApplicationContext();
-                    context.register(TestConfig.class);
-                    context.register(configClass);
-                    context.refresh();
+        @ParameterizedTest(name = "{0}")
+        @MethodSource("internal.org.springframework.content.jpa.TransactionIT#databaseConfigs")
+        void shouldNotCommitChangesToContent(Class<?> configClass) {
+            context = new AnnotationConfigApplicationContext();
+            context.register(TestConfig.class);
+            context.register(configClass);
+            context.refresh();
 
-                    repo = context.getBean(TestEntityRepository.class);
-                    store = context.getBean(TestEntityContentRepository.class);
-                    dbService = context.getBean(DbService.class);
-                    ptm = context.getBean(PlatformTransactionManager.class);
+            repo = context.getBean(TestEntityRepository.class);
+            store = context.getBean(TestEntityContentRepository.class);
+            dbService = context.getBean(DbService.class);
+            ptm = context.getBean(PlatformTransactionManager.class);
 
-                    te = new TestEntity();
-                    te = repo.save(te);
-                    assertThat(te.getId()).isNotNull();
-                    assertThat(te.getContentId()).isNull();
+            te = new TestEntity();
+            te = repo.save(te);
+            assertThat(te.getId()).isNotNull();
+            assertThat(te.getContentId()).isNull();
 
-                    try {
-                        try {
-                            te = dbService.doSomeDbStuff(store, te);
-                        } catch (Exception e) {
-                            ContentStoreIT.doInTransaction(ptm, () -> {
-                                try (InputStream result = store.getContent(te)) {
-                                    assertThat(result).isNull();
-                                } catch (IOException e1) {
-                                }
-                                return null;
-                            });
+            try {
+                try {
+                    te = dbService.doSomeDbStuff(store, te);
+                } catch (Exception e) {
+                    ContentStoreIT.doInTransaction(ptm, () -> {
+                        try (InputStream result = store.getContent(te)) {
+                            assertThat(result).isNull();
+                        } catch (IOException e1) {
                         }
-                    } finally {
-                        context.close();
-
-                    }
-                }));
+                        return null;
+                    });
+                }
+            } finally {
+                context.close();
             }
-            return tests.stream();
         }
     }
 

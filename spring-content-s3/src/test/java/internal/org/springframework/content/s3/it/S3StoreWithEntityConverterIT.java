@@ -5,8 +5,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import net.bytebuddy.utility.RandomString;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestFactory;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.annotations.ContentLength;
@@ -42,6 +43,7 @@ import javax.sql.DataSource;
 import java.io.ByteArrayInputStream;
 import java.io.Serializable;
 import java.net.URISyntaxException;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
@@ -79,174 +81,116 @@ public class S3StoreWithEntityConverterIT {
     private S3Client client;
     private String resourceLocation;
 
-    @TestFactory
-    java.util.stream.Stream<org.junit.jupiter.api.DynamicNode> generatedCases() {
-        java.util.List<org.junit.jupiter.api.DynamicNode> tests = new java.util.ArrayList<>();
-        for (TestData testDataSet : testDataSets) {
-            {
-                java.util.List<org.junit.jupiter.api.DynamicNode> nodes3 = new java.util.ArrayList<>();
-                {
-                    java.util.List<org.junit.jupiter.api.DynamicNode> nodes2 = new java.util.ArrayList<>();
-                    nodes2.add(org.junit.jupiter.api.DynamicTest.dynamicTest("should store new content in bucket '", () -> {
-                        try {
-                            context = new AnnotationConfigApplicationContext();
-                            context.register(testDataSet.getConfig());
-                            context.refresh();
+    static Stream<TestData> converterConfigs() {
+        return Stream.of(testDataSets);
+    }
 
-                            repo = context.getBean(TestEntityRepository.class);
-                            store = context.getBean(TestEntityStore.class);
-                            client = context.getBean(S3Client.class);
+    private void boot(TestData testDataSet) {
+        context = new AnnotationConfigApplicationContext();
+        context.register(testDataSet.getConfig());
+        context.refresh();
 
-                            try {
-                                HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                                        .bucket(testDataSet.getBucket())
-                                        .build();
+        repo = context.getBean(TestEntityRepository.class);
+        store = context.getBean(TestEntityStore.class);
+        client = context.getBean(S3Client.class);
 
-                                client.headBucket(headBucketRequest);
-                            } catch (NoSuchBucketException e) {
+        try {
+            HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
+                    .bucket(testDataSet.getBucket())
+                    .build();
 
-                                CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                        .bucket(testDataSet.getBucket())
-                                        .build();
-                                client.createBucket(bucketRequest);
-                            }
+            client.headBucket(headBucketRequest);
+        } catch (NoSuchBucketException e) {
 
-                            RandomString random = new RandomString(5);
-                            resourceLocation = random.nextString();
+            CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
+                    .bucket(testDataSet.getBucket())
+                    .build();
+            client.createBucket(bucketRequest);
+        }
 
-                            entity = new TestEntity();
-                            entity.setContentType("text/plain");
-                            entity = repo.save(entity);
+        RandomString random = new RandomString(5);
+        resourceLocation = random.nextString();
 
-                            store.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-                            ArgumentCaptor<PutObjectRequest> captor = ArgumentCaptor.forClass(PutObjectRequest.class);
-                            verify(s3ClientSpy).putObject(captor.capture(), any(RequestBody.class));
-                            assertThat(captor.getValue().bucket()).isEqualTo(testDataSet.getBucket());
+        entity = new TestEntity();
+        entity.setContentType("text/plain");
+        entity = repo.save(entity);
 
-                            HeadObjectRequest headObjectRequest = HeadObjectRequest.builder()
-                                    .bucket(testDataSet.getBucket())
-                                    .key(entity.getContentId().toString())
-                                    .build();
+        store.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+    }
 
-                            client.headObject(headObjectRequest);
-                        } finally {
-                            context.close();
-                        }
-                    }));
-                    nodes2.add(org.junit.jupiter.api.DynamicTest.dynamicTest("should have content metadata", () -> {
-                        try {
-                            context = new AnnotationConfigApplicationContext();
-                            context.register(testDataSet.getConfig());
-                            context.refresh();
+    @Nested
+    class GivenAnEntityWithContent {
+        @ParameterizedTest(name = "{0}")
+        @MethodSource("internal.org.springframework.content.s3.it.S3StoreWithEntityConverterIT#converterConfigs")
+        void shouldStoreNewContentInBucket(TestData testDataSet) {
+            try {
+                boot(testDataSet);
+                ArgumentCaptor<PutObjectRequest> captor = ArgumentCaptor.forClass(PutObjectRequest.class);
+                verify(s3ClientSpy).putObject(captor.capture(), any(RequestBody.class));
+                assertThat(captor.getValue().bucket()).isEqualTo(testDataSet.getBucket());
 
-                            repo = context.getBean(TestEntityRepository.class);
-                            store = context.getBean(TestEntityStore.class);
-                            client = context.getBean(S3Client.class);
+                HeadObjectRequest headObjectRequest = HeadObjectRequest.builder()
+                        .bucket(testDataSet.getBucket())
+                        .key(entity.getContentId().toString())
+                        .build();
 
-                            try {
-                                HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                                        .bucket(testDataSet.getBucket())
-                                        .build();
-
-                                client.headBucket(headBucketRequest);
-                            } catch (NoSuchBucketException e) {
-
-                                CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                        .bucket(testDataSet.getBucket())
-                                        .build();
-                                client.createBucket(bucketRequest);
-                            }
-
-                            RandomString random = new RandomString(5);
-                            resourceLocation = random.nextString();
-
-                            entity = new TestEntity();
-                            entity.setContentType("text/plain");
-                            entity = repo.save(entity);
-
-                            store.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-                            // content
-                            assertThat(entity.getContentId()).isNotNull();
-                            assertThat(entity.getContentId().toString().trim().length()).isGreaterThan(0);
-                            assertThat(entity.getContentLen()).isEqualTo(27L);
-                        } finally {
-                            context.close();
-                        }
-                    }));
-                    {
-                        java.util.List<org.junit.jupiter.api.DynamicNode> nodes1 = new java.util.ArrayList<>();
-                        nodes1.add(org.junit.jupiter.api.DynamicTest.dynamicTest("should delete content from bucket '", () -> {
-                            try {
-                                context = new AnnotationConfigApplicationContext();
-                                context.register(testDataSet.getConfig());
-                                context.refresh();
-
-                                repo = context.getBean(TestEntityRepository.class);
-                                store = context.getBean(TestEntityStore.class);
-                                client = context.getBean(S3Client.class);
-
-                                try {
-                                    HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                                            .bucket(testDataSet.getBucket())
-                                            .build();
-
-                                    client.headBucket(headBucketRequest);
-                                } catch (NoSuchBucketException e) {
-
-                                    CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                            .bucket(testDataSet.getBucket())
-                                            .build();
-                                    client.createBucket(bucketRequest);
-                                }
-
-                                RandomString random = new RandomString(5);
-                                resourceLocation = random.nextString();
-
-                                entity = new TestEntity();
-                                entity.setContentType("text/plain");
-                                entity = repo.save(entity);
-
-                                store.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-
-                                resourceLocation = entity.getContentId().toString();
-                                entity = store.unsetContent(entity, PropertyPath.from("content"));
-                                entity = repo.save(entity);
-                                ArgumentCaptor<DeleteObjectRequest> captor = ArgumentCaptor.forClass(DeleteObjectRequest.class);
-                                verify(s3ClientSpy).deleteObject(captor.capture());
-                                assertThat(captor.getValue().bucket()).isEqualTo(testDataSet.getBucket());
-
-                                HeadObjectRequest headObjectRequest = HeadObjectRequest.builder()
-                                        .bucket(testDataSet.getBucket())
-                                        .key(resourceLocation)
-                                        .build();
-
-                                try {
-                                    client.headObject(headObjectRequest);
-                                    fail("expected object not to exist");
-                                } catch (NoSuchKeyException e) {
-                                }
-                            } finally {
-                                context.close();
-                            }
-                        }));
-                        nodes1.add(org.junit.jupiter.api.DynamicContainer.dynamicContainer("when content is deleted", nodes1.stream()));
-                    }
-                    nodes2.add(org.junit.jupiter.api.DynamicContainer.dynamicContainer("given an entity with content", nodes2.stream()));
-                }
-                tests.add(org.junit.jupiter.api.DynamicContainer.dynamicContainer(testDataSet.getName(), nodes3.stream()));
+                client.headObject(headObjectRequest);
+            } finally {
+                context.close();
             }
         }
-        return tests.stream();
+
+        @ParameterizedTest(name = "{0}")
+        @MethodSource("internal.org.springframework.content.s3.it.S3StoreWithEntityConverterIT#converterConfigs")
+        void shouldHaveContentMetadata(TestData testDataSet) {
+            try {
+                boot(testDataSet);
+                // content
+                assertThat(entity.getContentId()).isNotNull();
+                assertThat(entity.getContentId().toString().trim().length()).isGreaterThan(0);
+                assertThat(entity.getContentLen()).isEqualTo(27L);
+            } finally {
+                context.close();
+            }
+        }
+
+        @Nested
+        class WhenContentIsDeleted {
+            @ParameterizedTest(name = "{0}")
+            @MethodSource("internal.org.springframework.content.s3.it.S3StoreWithEntityConverterIT#converterConfigs")
+            void shouldDeleteContentFromBucket(TestData testDataSet) {
+                try {
+                    boot(testDataSet);
+
+                    resourceLocation = entity.getContentId().toString();
+                    entity = store.unsetContent(entity, PropertyPath.from("content"));
+                    entity = repo.save(entity);
+                    ArgumentCaptor<DeleteObjectRequest> captor = ArgumentCaptor.forClass(DeleteObjectRequest.class);
+                    verify(s3ClientSpy).deleteObject(captor.capture());
+                    assertThat(captor.getValue().bucket()).isEqualTo(testDataSet.getBucket());
+
+                    HeadObjectRequest headObjectRequest = HeadObjectRequest.builder()
+                            .bucket(testDataSet.getBucket())
+                            .key(resourceLocation)
+                            .build();
+
+                    try {
+                        client.headObject(headObjectRequest);
+                        fail("expected object not to exist");
+                    } catch (NoSuchKeyException e) {
+                    }
+                } finally {
+                    context.close();
+                }
+            }
+        }
     }
 
-    @Test
-    public void test() {
-        // noop
-    }
-
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntityRepository extends JpaRepository<TestEntity, Long> {
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntityStore extends ContentStore<TestEntity, String> {
     }
 
@@ -271,6 +215,11 @@ public class S3StoreWithEntityConverterIT {
 
         public String getBucket() {
             return bucket;
+        }
+
+        @Override
+        public String toString() {
+            return name;
         }
     }
 

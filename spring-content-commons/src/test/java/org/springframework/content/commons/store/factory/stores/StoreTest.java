@@ -26,15 +26,19 @@ public class StoreTest {
     @Autowired
     private ApplicationContext context;
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestContentRepository extends ContentStore<Object, Serializable> {
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestStore extends Store<URI> {
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestAssociativeStore extends AssociativeStore<Object, URI> {
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestAssociativeAndContentStore extends ContentStore<Object, URI> {
     }
 

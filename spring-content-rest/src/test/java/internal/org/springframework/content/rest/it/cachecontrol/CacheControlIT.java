@@ -66,6 +66,7 @@ public class CacheControlIT {
     @Autowired
     private WebApplicationContext webApplicationContext;
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface CacheControlRepository extends CrudRepository<TestEntity, Long> {
     }
 
@@ -90,17 +91,17 @@ public class CacheControlIT {
         public static class AppConfig {
 
             @Value("/org/springframework/content/jpa/schema-drop-h2.sql")
-            private ClassPathResource dropReopsitoryTables;
+            private ClassPathResource dropRepositoryTables;
 
             @Value("/org/springframework/content/jpa/schema-h2.sql")
-            private ClassPathResource dataReopsitorySchema;
+            private ClassPathResource dataRepositorySchema;
 
             @Bean
             DataSourceInitializer datasourceInitializer(DataSource dataSource) {
                 ResourceDatabasePopulator databasePopulator = new ResourceDatabasePopulator();
 
-                databasePopulator.addScript(dropReopsitoryTables);
-                databasePopulator.addScript(dataReopsitorySchema);
+                databasePopulator.addScript(dropRepositoryTables);
+                databasePopulator.addScript(dataRepositorySchema);
                 databasePopulator.setIgnoreFailedDrops(true);
 
                 DataSourceInitializer initializer = new DataSourceInitializer();
@@ -145,14 +146,9 @@ public class CacheControlIT {
             @Bean
             public ContentRestConfigurer configurer() {
 
-                return new ContentRestConfigurer() {
-                    @Override
-                    public void configure(RestConfiguration config) {
-                        config
-                                .cacheControl()
-                                .antMatcher("/testEntities/*", CacheControl.maxAge(Duration.ofSeconds(60)));
-                    }
-                };
+                return config -> config
+                        .cacheControl()
+                        .antMatcher("/testEntities/*", CacheControl.maxAge(Duration.ofSeconds(60)));
             }
         }
     }
@@ -166,33 +162,33 @@ public class CacheControlIT {
 
         @Test
         void givenThePatternMatchesItShouldApplyTheConfiguredCacheSettings() {
-            TestEntity tentity = new TestEntity();
-            tentity = repo.save(tentity);
-            tentity = store.setContent(tentity, new ByteArrayInputStream("some content".getBytes()));
-            tentity.setMimeType("text/plain");
-            tentity = repo.save(tentity);
+            TestEntity entity = new TestEntity();
+            entity = repo.save(entity);
+            entity = store.setContent(entity, new ByteArrayInputStream("some content".getBytes()));
+            entity.setMimeType("text/plain");
+            entity = repo.save(entity);
 
             given()
                     .accept("text/plain")
                     .when()
-                    .get("/testEntities/" + tentity.getId())
+                    .get("/testEntities/" + entity.getId())
                     .then()
                     .statusCode(200)
                     .header("Cache-Control", "max-age=60");
         }
 
         @Test
-        void givenThePatternDoesnTMatchItShouldNotApplyTheConfiguredCacheSettings() {
-            TestEntity tentity = new TestEntity();
-            tentity = repo.save(tentity);
-            tentity = store.setContent(tentity, new ByteArrayInputStream("some content".getBytes()));
-            tentity.setMimeType("text/plain");
-            tentity = repo.save(tentity);
+        void givenThePatternDoesntMatchItShouldNotApplyTheConfiguredCacheSettings() {
+            TestEntity entity = new TestEntity();
+            entity = repo.save(entity);
+            entity = store.setContent(entity, new ByteArrayInputStream("some content".getBytes()));
+            entity.setMimeType("text/plain");
+            entity = repo.save(entity);
 
             given()
                     .accept("text/plain")
                     .when()
-                    .get("/testEntities/" + tentity.getId() + "/content")
+                    .get("/testEntities/" + entity.getId() + "/content")
                     .then()
                     .statusCode(200)
                     .header("Cache-Control", "no-cache, no-store, max-age=0, must-revalidate");

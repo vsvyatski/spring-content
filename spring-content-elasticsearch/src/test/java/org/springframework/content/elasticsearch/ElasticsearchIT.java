@@ -53,12 +53,15 @@ public class ElasticsearchIT {
         return (IndexService<Document>) context.getBean(IndexService.class);
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface DocumentRepository extends CrudRepository<Document, Long> {
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface DocumentContentStore extends ContentStore<Document, UUID>, Searchable<UUID>, Renderable<Document> {
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface DocumentStoreSearchable extends ContentStore<Document, UUID>, Searchable<FulltextInfo> {
     }
 
@@ -171,8 +174,8 @@ public class ElasticsearchIT {
             repo = context.getBean(DocumentRepository.class);
             store = context.getBean(DocumentContentStore.class);
             client = context.getBean(ElasticsearchClient.class);
-            ((IndexingStrategy) context.getBean(GlobalIndexingStrategy.class)).setup();
-            indexName = ((IndexingStrategy) context.getBean(GlobalIndexingStrategy.class)).indexName();
+            context.getBean(GlobalIndexingStrategy.class).setup();
+            indexName = context.getBean(GlobalIndexingStrategy.class).indexName();
         }
 
         @AfterEach
@@ -458,11 +461,9 @@ public class ElasticsearchIT {
 
             @Test
             void shouldReturnTheSpecifiedAttributes() {
-                org.awaitility.Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
-                    assertThat(store.search("one", PageRequest.of(0, 10)))
-                            .contains(doc1.getContentId())
-                            .doesNotContain(doc2.getContentId());
-                });
+                org.awaitility.Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> assertThat(store.search("one", PageRequest.of(0, 10)))
+                        .contains(doc1.getContentId())
+                        .doesNotContain(doc2.getContentId()));
             }
         }
     }

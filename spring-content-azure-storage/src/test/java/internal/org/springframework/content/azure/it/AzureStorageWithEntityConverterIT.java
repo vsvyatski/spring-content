@@ -4,8 +4,9 @@ import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.BlobServiceClientBuilder;
 import jakarta.persistence.*;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestFactory;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.content.azure.Bucket;
 import org.springframework.content.azure.config.AzureStorageConfigurer;
 import org.springframework.content.azure.config.BlobId;
@@ -21,7 +22,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.convert.converter.Converter;
-import org.springframework.core.convert.converter.ConverterRegistry;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
@@ -35,6 +35,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import javax.sql.DataSource;
 import java.io.ByteArrayInputStream;
 import java.io.Serializable;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -47,7 +48,7 @@ public class AzureStorageWithEntityConverterIT {
     private static final String OTHER_BUCKET = "other-bucket";
     private static final String OTHER_OTHER_BUCKET = "other-other-bucket";
 
-    private static TestData[] testDataSets = null;
+    private static final TestData[] testDataSets;
 
     static {
         if (!containerClient.exists()) {
@@ -58,136 +59,106 @@ public class AzureStorageWithEntityConverterIT {
 
         testDataSets = new TestData[]{
                 new TestData("Default Converter", new Class[]{TestConfig.class}, OTHER_BUCKET),
-                new TestData("Custom Converter", new Class[]{CustomConverterConfig.class, TestConfig.class}, OTHER_OTHER_BUCKET),
-
+                new TestData("Custom Converter", new Class[]{CustomConverterConfig.class, TestConfig.class}, OTHER_OTHER_BUCKET)
         };
     }
 
     private TestEntity entity;
-    private Exception e;
     private AnnotationConfigApplicationContext context;
     private TestEntityRepository repo;
     private TestEntityStore store;
-    private String resourceLocation;
 
-    @TestFactory
-    java.util.stream.Stream<org.junit.jupiter.api.DynamicNode> generatedCases() {
-        java.util.List<org.junit.jupiter.api.DynamicNode> tests = new java.util.ArrayList<>();
-        for (TestData testDataSet : testDataSets) {
-            {
-                java.util.List<org.junit.jupiter.api.DynamicNode> nodes3 = new java.util.ArrayList<>();
-                {
-                    java.util.List<org.junit.jupiter.api.DynamicNode> nodes2 = new java.util.ArrayList<>();
-                    nodes2.add(org.junit.jupiter.api.DynamicTest.dynamicTest("should store new content in bucket '", () -> {
-                        try {
-                            context = new AnnotationConfigApplicationContext();
-                            context.register(testDataSet.getConfig());
-                            context.refresh();
+    private void bootContext(TestData testDataSet) {
+        context = new AnnotationConfigApplicationContext();
+        context.register(testDataSet.config());
+        context.refresh();
 
-                            repo = context.getBean(TestEntityRepository.class);
-                            store = context.getBean(TestEntityStore.class);
+        repo = context.getBean(TestEntityRepository.class);
+        store = context.getBean(TestEntityStore.class);
+    }
 
-                            entity = new TestEntity();
-                            entity.setContentType("text/plain");
-                            entity = repo.save(entity);
+    static Stream<TestData> converterTestData() {
+        return Stream.of(testDataSets);
+    }
 
-                            store.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-                            BlobClient blobClient = builder.buildClient().getBlobContainerClient(testDataSet.getBucket()).getBlobClient(entity.getContentId().toString());
-                            assertThat(blobClient.exists()).isTrue();
-                        } finally {
-                            context.close();
-                        }
-                    }));
-                    nodes2.add(org.junit.jupiter.api.DynamicTest.dynamicTest("should have content metadata", () -> {
-                        try {
-                            context = new AnnotationConfigApplicationContext();
-                            context.register(testDataSet.getConfig());
-                            context.refresh();
+    @Nested
+    class GivenAnEntityWithContent {
+        @ParameterizedTest(name = "{0}")
+        @MethodSource("internal.org.springframework.content.azure.it.AzureStorageWithEntityConverterIT#converterTestData")
+        void shouldStoreNewContentInBucket(TestData data) {
+            try {
+                bootContext(data);
 
-                            repo = context.getBean(TestEntityRepository.class);
-                            store = context.getBean(TestEntityStore.class);
+                entity = new TestEntity();
+                entity.setContentType("text/plain");
+                entity = repo.save(entity);
 
-                            entity = new TestEntity();
-                            entity.setContentType("text/plain");
-                            entity = repo.save(entity);
-
-                            store.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-                            // content
-                            assertThat(entity.getContentId()).isNotNull();
-                            assertThat(entity.getContentId().toString().trim().length()).isGreaterThan(0);
-                            assertThat(entity.getContentLen()).isEqualTo(27L);
-                        } finally {
-                            context.close();
-                        }
-                    }));
-                    {
-                        java.util.List<org.junit.jupiter.api.DynamicNode> nodes1 = new java.util.ArrayList<>();
-                        nodes1.add(org.junit.jupiter.api.DynamicTest.dynamicTest("should delete content from bucket '", () -> {
-                            try {
-                                context = new AnnotationConfigApplicationContext();
-                                context.register(testDataSet.getConfig());
-                                context.refresh();
-
-                                repo = context.getBean(TestEntityRepository.class);
-                                store = context.getBean(TestEntityStore.class);
-
-                                entity = new TestEntity();
-                                entity.setContentType("text/plain");
-                                entity = repo.save(entity);
-
-                                store.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-
-                                resourceLocation = entity.getContentId().toString();
-                                entity = store.unsetContent(entity, PropertyPath.from("content"));
-                                entity = repo.save(entity);
-                                BlobClient blobClient = builder.buildClient().getBlobContainerClient(testDataSet.getBucket()).getBlobClient(resourceLocation);
-                                assertThat(blobClient.exists()).isFalse();
-                            } finally {
-                                context.close();
-                            }
-                        }));
-                        nodes1.add(org.junit.jupiter.api.DynamicContainer.dynamicContainer("when content is deleted", nodes1.stream()));
-                    }
-                    nodes2.add(org.junit.jupiter.api.DynamicContainer.dynamicContainer("given an entity with content", nodes2.stream()));
-                }
-                tests.add(org.junit.jupiter.api.DynamicContainer.dynamicContainer(testDataSet.getName(), nodes3.stream()));
+                store.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                BlobClient blobClient = builder.buildClient().getBlobContainerClient(data.bucket()).getBlobClient(entity.getContentId());
+                assertThat(blobClient.exists()).isTrue();
+            } finally {
+                context.close();
             }
         }
-        return tests.stream();
+
+        @ParameterizedTest(name = "{0}")
+        @MethodSource("internal.org.springframework.content.azure.it.AzureStorageWithEntityConverterIT#converterTestData")
+        void shouldHaveContentMetadata(TestData data) {
+            try {
+                bootContext(data);
+
+                entity = new TestEntity();
+                entity.setContentType("text/plain");
+                entity = repo.save(entity);
+
+                store.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                // content
+                assertThat(entity.getContentId()).isNotNull();
+                assertThat(entity.getContentId().trim().length()).isGreaterThan(0);
+                assertThat(entity.getContentLen()).isEqualTo(27L);
+            } finally {
+                context.close();
+            }
+        }
+
+        @Nested
+        class WhenContentIsDeleted {
+            @ParameterizedTest(name = "{0}")
+            @MethodSource("internal.org.springframework.content.azure.it.AzureStorageWithEntityConverterIT#converterTestData")
+            void shouldDeleteContentFromBucket(TestData data) {
+                try {
+                    bootContext(data);
+
+                    entity = new TestEntity();
+                    entity.setContentType("text/plain");
+                    entity = repo.save(entity);
+
+                    store.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+
+                    String resourceLocation = entity.getContentId();
+                    entity = store.unsetContent(entity, PropertyPath.from("content"));
+                    entity = repo.save(entity);
+                    BlobClient blobClient = builder.buildClient().getBlobContainerClient(data.bucket()).getBlobClient(resourceLocation);
+                    assertThat(blobClient.exists()).isFalse();
+                } finally {
+                    context.close();
+                }
+            }
+        }
     }
 
-    @Test
-    public void test() {
-        // noop
-    }
-
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntityRepository extends JpaRepository<TestEntity, Long> {
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntityStore extends ContentStore<TestEntity, String> {
     }
 
-    private static class TestData {
-        private String name;
-        private Class[] config;
-        private String bucket;
-
-        public TestData(String name, Class[] config, String bucket) {
-            this.name = name;
-            this.config = config;
-            this.bucket = bucket;
-        }
-
-        public String getName() {
+    private record TestData(String name, Class[] config, String bucket) {
+        @Override
+        public String toString() {
             return name;
-        }
-
-        public Class[] getConfig() {
-            return config;
-        }
-
-        public String getBucket() {
-            return bucket;
         }
     }
 
@@ -207,25 +178,12 @@ public class AzureStorageWithEntityConverterIT {
 
         @Bean
         public AzureStorageConfigurer configurer() {
-            return new AzureStorageConfigurer() {
+            return registry -> {
+                registry.addConverter((Converter<ContentPropertyInfo<TestEntity, Serializable>, BlobId>) info -> new BlobId(OTHER_OTHER_BUCKET, info.contentId().toString()));
 
-                @Override
-                public void configureAzureStorageConverters(ConverterRegistry registry) {
-
-                    registry.addConverter(new Converter<ContentPropertyInfo<TestEntity, Serializable>, BlobId>() {
-                        @Override
-                        public BlobId convert(ContentPropertyInfo<TestEntity, Serializable> info) {
-                            return new BlobId(OTHER_OTHER_BUCKET, info.contentId().toString());
-                        }
-                    });
-
-                    registry.addConverter(new Converter<ContentPropertyInfo<FakeEntity, Serializable>, BlobId>() {
-                        @Override
-                        public BlobId convert(ContentPropertyInfo<FakeEntity, Serializable> info) {
-                            throw new IllegalStateException("wrong converter called");
-                        }
-                    });
-                }
+                registry.addConverter((Converter<ContentPropertyInfo<FakeEntity, Serializable>, BlobId>) info -> {
+                    throw new IllegalStateException("wrong converter called");
+                });
             };
         }
     }
@@ -256,7 +214,6 @@ public class AzureStorageWithEntityConverterIT {
 
         @Bean
         public PlatformTransactionManager transactionManager() {
-
             JpaTransactionManager txManager = new JpaTransactionManager();
             txManager.setEntityManagerFactory(entityManagerFactory().getObject());
             return txManager;
@@ -296,10 +253,6 @@ public class AzureStorageWithEntityConverterIT {
         private String renditionContentType;
 
         public TestEntity() {
-        }
-
-        public TestEntity(String contentId) {
-            this.contentId = contentId;
         }
 
         public Long getId() {

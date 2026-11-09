@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.http.HttpStatus;
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -84,10 +85,12 @@ public class LockingAndVersioningRestIT {
 
     private VersionedDocument doc;
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface VersionedDocumentAndVersioningRepository extends JpaRepository<VersionedDocument, Long>, LockingAndVersioningRepository<VersionedDocument> {
     }
 
     @StoreRestResource(path = "versionedDocumentsContent")
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface VersionedDocumentStore extends MongoContentStore<VersionedDocument, UUID> {
     }
 
@@ -104,20 +107,20 @@ public class LockingAndVersioningRestIT {
         }
 
         @Configuration
-        public class VersioningConfig extends AbstractMongoClientConfiguration {
+        public static class VersioningConfig extends AbstractMongoClientConfiguration {
             @Value("/org/springframework/versions/jpa/schema-drop-hsqldb.sql")
             private ClassPathResource dropRepositoryTables;
             @Value("/org/springframework/versions/jpa/schema-hsqldb.sql")
             private ClassPathResource dataRepositorySchema;
 
             @Override
-            protected String getDatabaseName() {
+            protected @NonNull String getDatabaseName() {
                 return MongoTestContainer.getTestDbName();
             }
 
             @Override
             @Bean
-            public MongoClient mongoClient() {
+            public @NonNull MongoClient mongoClient() {
                 return MongoTestContainer.getMongoClient();
             }
 
@@ -128,7 +131,7 @@ public class LockingAndVersioningRestIT {
 
             @Override
             @Bean
-            public MongoDatabaseFactory mongoDbFactory() {
+            public @NonNull MongoDatabaseFactory mongoDbFactory() {
                 return new SimpleMongoClientDatabaseFactory(mongoClient(), getDatabaseName());
             }
 
@@ -217,10 +220,10 @@ public class LockingAndVersioningRestIT {
     public static class AuthenticationEntryPoint extends BasicAuthenticationEntryPoint {
 
         @Override
-        public void commence(final HttpServletRequest request, final HttpServletResponse response,
+        public void commence(final @NonNull HttpServletRequest request, final HttpServletResponse response,
                              final AuthenticationException authException) throws IOException {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.addHeader("WWW-Authenticate", "Basic realm=" + getRealmName() + "");
+            response.addHeader("WWW-Authenticate", "Basic realm=" + getRealmName());
 
             PrintWriter writer = response.getWriter();
             writer.println("HTTP Status 401 : " + authException.getMessage());
@@ -241,7 +244,7 @@ public class LockingAndVersioningRestIT {
         @GeneratedValue
         private Long id;
         @Version
-        private Long vstamp;
+        private Long versionStamp;
         @ContentId
         private UUID contentId;
         @ContentLength
@@ -281,12 +284,12 @@ public class LockingAndVersioningRestIT {
             this.id = id;
         }
 
-        public Long getVstamp() {
-            return vstamp;
+        public Long getVersionStamp() {
+            return versionStamp;
         }
 
-        public void setVstamp(Long vstamp) {
-            this.vstamp = vstamp;
+        public void setVersionStamp(Long versionStamp) {
+            this.versionStamp = versionStamp;
         }
 
         public UUID getContentId() {

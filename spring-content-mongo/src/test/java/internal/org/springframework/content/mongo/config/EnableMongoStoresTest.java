@@ -30,11 +30,7 @@ public class EnableMongoStoresTest {
 
     private AnnotationConfigApplicationContext context;
 
-    @Test
-    public void noop() {
-        // noop
-    }
-
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntityContentRepository
             extends ContentStore<TestEntity, String> {
     }
@@ -43,7 +39,6 @@ public class EnableMongoStoresTest {
     @EnableMongoStores(basePackages = "contains.no.mongo.repositores")
     @Import(InfrastructureConfig.class)
     public static class EmptyConfig {
-        //
     }
 
     @Configuration
@@ -59,13 +54,7 @@ public class EnableMongoStoresTest {
     public static class ConverterConfig {
         @Bean
         public MongoStoreConverter<UUID, String> uuidConverter() {
-            return new MongoStoreConverter<UUID, String>() {
-
-                @Override
-                public String convert(UUID source) {
-                    return String.format("/%s", source.toString().replaceAll("-", "/"));
-                }
-            };
+            return source -> String.format("/%s", source.toString().replace("-", "/"));
         }
     }
 
@@ -79,12 +68,11 @@ public class EnableMongoStoresTest {
 
         @Bean
         public MongoClient mongoClient() {
-            // noinspection resource
             return MongoClients.create("mongodb://localhost:27017");
         }
 
         @Bean
-        public GridFsTemplate gridFsTemplate(MappingMongoConverter mongoConverter) throws Exception {
+        public GridFsTemplate gridFsTemplate(MappingMongoConverter mongoConverter) {
             return new GridFsTemplate(mongoDbFactory(), mongoConverter);
         }
 
@@ -167,7 +155,7 @@ public class EnableMongoStoresTest {
         }
     }
 
-    public class TestEntity {
+    public static class TestEntity {
         @Id
         private String id;
         @ContentId

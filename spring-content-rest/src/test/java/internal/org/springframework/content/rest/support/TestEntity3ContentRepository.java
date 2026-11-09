@@ -6,6 +6,7 @@ import org.springframework.content.rest.RestResource;
 
 import java.io.InputStream;
 
+@SuppressWarnings("unused") // classpath / store component scan
 public interface TestEntity3ContentRepository extends FileSystemContentStore<TestEntity3, Long>, Renderable<TestEntity3> {
 
     @RestResource(exported = false)

@@ -15,7 +15,6 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.convert.converter.ConverterRegistry;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -39,6 +38,7 @@ public class EnableAzureStorageTest {
 
     private AnnotationConfigApplicationContext context;
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntityContentStore extends ContentStore<TestEntity, String> {
     }
 
@@ -70,11 +70,7 @@ public class EnableAzureStorageTest {
     public static class TestConverterConfig {
         @Bean
         public AzureStorageConfigurer configurer() {
-            return new AzureStorageConfigurer() {
-
-                @Override
-                public void configureAzureStorageConverters(ConverterRegistry registry) {
-                }
+            return registry -> {
             };
         }
     }

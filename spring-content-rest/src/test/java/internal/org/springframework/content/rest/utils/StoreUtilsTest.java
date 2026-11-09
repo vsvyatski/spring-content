@@ -21,25 +21,31 @@ public class StoreUtilsTest {
     private StoreInfo info;
     private String storePath;
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestStore extends Store<String> {
     }
 
     @StoreRestResource
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestStoreWithAnnotation extends Store<String> {
     }
 
     @StoreRestResource(path = "foo")
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestStoreWithPath extends Store<String> {
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestContentStore extends ContentStore<TestEntity, UUID> {
     }
 
     @StoreRestResource
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface ContentStoreWithAnnotation extends ContentStore<TestEntity, UUID> {
     }
 
     @StoreRestResource(path = "some-other-path")
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface ContentStoreWithAnotherPath extends ContentStore<TestEntity, UUID> {
     }
 

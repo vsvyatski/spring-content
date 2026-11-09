@@ -25,6 +25,7 @@ public class ContentFileSystemAutoConfigurationTest {
 
     private ApplicationContextRunner contextRunner;
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntityContentRepository extends FileSystemContentStore<TestEntity, String> {
     }
 

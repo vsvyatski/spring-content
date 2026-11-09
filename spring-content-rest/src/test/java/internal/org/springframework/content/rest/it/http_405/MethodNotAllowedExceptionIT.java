@@ -75,39 +75,39 @@ public class MethodNotAllowedExceptionIT {
     @Autowired
     private WebApplicationContext webApplicationContext;
 
-    @Test
-    public void noop() {
-    }
-
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface PreferResourceForPutsAndPostsRepository extends CrudRepository<TEntity, Long> {
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface UnexportedContentStore extends FileSystemContentStore<TEntity, UUID> {
 
         @RestResource(exported = false)
         @Override
-        public InputStream getContent(TEntity property, PropertyPath path);
+        InputStream getContent(TEntity property, PropertyPath path);
 
         @RestResource(exported = false)
         @Override
-        public TEntity setContent(TEntity property, PropertyPath path, InputStream content);
+        TEntity setContent(TEntity property, PropertyPath path, InputStream content);
 
         @RestResource(exported = false)
         @Override
-        public TEntity setContent(TEntity property, PropertyPath path, InputStream content, SetContentParams params);
+        TEntity setContent(TEntity property, PropertyPath path, InputStream content, SetContentParams params);
 
         @RestResource(exported = false)
         @Override
-        public TEntity setContent(TEntity property, PropertyPath path, Resource resourceContent);
+        TEntity setContent(TEntity property, PropertyPath path, Resource resourceContent);
 
         @RestResource(exported = false)
         @Override
-        public TEntity unsetContent(TEntity property, PropertyPath path, UnsetContentParams params);
+        TEntity unsetContent(TEntity property, PropertyPath path, UnsetContentParams params);
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntity2Repo extends CrudRepository<TEntity2, Long> {
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntity2Store extends FileSystemContentStore<TEntity2, UUID> {
     }
 
@@ -214,20 +214,20 @@ public class MethodNotAllowedExceptionIT {
         @Import({RestConfiguration.class, SecurityConfiguration.class})
         @EnableJpaRepositories(basePackages = "internal.org.springframework.content.rest.it.http_405", considerNestedRepositories = true)
         @EnableFileSystemStores(basePackages = "internal.org.springframework.content.rest.it.http_405")
-        public class TestConfig {
+        public static class TestConfig {
 
             @Value("/org/springframework/content/jpa/schema-drop-h2.sql")
-            private ClassPathResource dropReopsitoryTables;
+            private ClassPathResource dropRepositoryTables;
 
             @Value("/org/springframework/content/jpa/schema-h2.sql")
-            private ClassPathResource dataReopsitorySchema;
+            private ClassPathResource dataRepositorySchema;
 
             @Bean
             DataSourceInitializer datasourceInitializer(DataSource dataSource) {
                 ResourceDatabasePopulator databasePopulator = new ResourceDatabasePopulator();
 
-                databasePopulator.addScript(dropReopsitoryTables);
-                databasePopulator.addScript(dataReopsitorySchema);
+                databasePopulator.addScript(dropRepositoryTables);
+                databasePopulator.addScript(dataRepositorySchema);
                 databasePopulator.setIgnoreFailedDrops(true);
 
                 DataSourceInitializer initializer = new DataSourceInitializer();
@@ -346,14 +346,14 @@ public class MethodNotAllowedExceptionIT {
 
         @Test
         void shouldThrowA405NotAllowedForAllRequests() {
-            TEntity2 tentity = new TEntity2();
-            tentity = store2.setContent(tentity, new ByteArrayInputStream("some content".getBytes()));
-            tentity = repo2.save(tentity);
+            TEntity2 entity = new TEntity2();
+            entity = store2.setContent(entity, new ByteArrayInputStream("some content".getBytes()));
+            entity = repo2.save(entity);
 
             given()
                     .accept("text/plain")
                     .when()
-                    .get("/tEntity2s/" + tentity.getId() + "/content")
+                    .get("/tEntity2s/" + entity.getId() + "/content")
                     .then()
                     .statusCode(405);
 
@@ -361,14 +361,14 @@ public class MethodNotAllowedExceptionIT {
                     .contentType("text/plain")
                     .body("some content".getBytes())
                     .when()
-                    .post("/tEntity2s/" + tentity.getId() + "/content")
+                    .post("/tEntity2s/" + entity.getId() + "/content")
                     .then()
                     .statusCode(405);
 
             given()
                     .accept("text/plain")
                     .when()
-                    .delete("/tEntity2s/" + tentity.getId() + "/content")
+                    .delete("/tEntity2s/" + entity.getId() + "/content")
                     .then()
                     .statusCode(405);
         }

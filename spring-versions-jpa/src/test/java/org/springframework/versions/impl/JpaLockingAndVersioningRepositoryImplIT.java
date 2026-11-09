@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Version;
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -41,10 +42,7 @@ import org.springframework.versions.*;
 import org.springframework.versions.jpa.config.JpaLockingAndVersioningConfig;
 
 import javax.sql.DataSource;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
@@ -85,9 +83,11 @@ public class JpaLockingAndVersioningRepositoryImplIT {
         SecurityContextHolder.setContext(sc);
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestRepository extends JpaRepository<TestEntity, Long>, LockingAndVersioningRepository<TestEntity> {
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface OtherTestRepository extends JpaRepository<OtherTestEntity, Long>, LockingAndVersioningRepository<OtherTestEntity> {
     }
 
@@ -172,9 +172,6 @@ public class JpaLockingAndVersioningRepositoryImplIT {
         public TestEntity() {
         }
 
-        public TestEntity(TestEntity entity) {
-        }
-
         public Long getXid() {
             return xid;
         }
@@ -255,15 +252,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
         }
     }
 
-    private static class MockAuthentication implements Authentication {
-
-        private final String principal;
-        private final boolean isAuthenticated;
-
-        public MockAuthentication(String principal, boolean isAuthenticated) {
-            this.principal = principal;
-            this.isAuthenticated = isAuthenticated;
-        }
+    private record MockAuthentication(String principal, boolean isAuthenticated) implements Authentication {
 
         @Override
         public String getName() {
@@ -271,8 +260,9 @@ public class JpaLockingAndVersioningRepositoryImplIT {
         }
 
         @Override
+        @NonNull
         public Collection<? extends GrantedAuthority> getAuthorities() {
-            return null;
+            return Collections.emptyList();
         }
 
         @Override
@@ -288,11 +278,6 @@ public class JpaLockingAndVersioningRepositoryImplIT {
         @Override
         public Object getPrincipal() {
             return principal;
-        }
-
-        @Override
-        public boolean isAuthenticated() {
-            return isAuthenticated;
         }
 
         @Override
@@ -316,7 +301,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         e2 = new TestEntity();
 
                         // ensure the other instantiate fragment is valid
-                        OtherTestEntity ote = otherRepo.save(new OtherTestEntity());
+                        otherRepo.save(new OtherTestEntity());
 
                         setupSecurityContext("some-principal", true);
 
@@ -345,7 +330,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         e2 = new TestEntity();
 
                         // ensure the other instantiate fragment is valid
-                        OtherTestEntity ote = otherRepo.save(new OtherTestEntity());
+                        otherRepo.save(new OtherTestEntity());
 
                         setupSecurityContext("some-principal", true);
 
@@ -374,7 +359,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                             e2 = new TestEntity();
 
                             // ensure the other instantiate fragment is valid
-                            OtherTestEntity ote = otherRepo.save(new OtherTestEntity());
+                            otherRepo.save(new OtherTestEntity());
 
                             setupSecurityContext("some-principal", true);
 
@@ -409,7 +394,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                             e2 = new TestEntity();
 
                             // ensure the other instantiate fragment is valid
-                            OtherTestEntity ote = otherRepo.save(new OtherTestEntity());
+                            otherRepo.save(new OtherTestEntity());
 
                             setupSecurityContext("some-principal", true);
 
@@ -443,7 +428,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                             e2 = new TestEntity();
 
                             // ensure the other instantiate fragment is valid
-                            OtherTestEntity ote = otherRepo.save(new OtherTestEntity());
+                            otherRepo.save(new OtherTestEntity());
 
                             setupSecurityContext("some-principal", true);
 
@@ -477,7 +462,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                             e2 = new TestEntity();
 
                             // ensure the other instantiate fragment is valid
-                            OtherTestEntity ote = otherRepo.save(new OtherTestEntity());
+                            otherRepo.save(new OtherTestEntity());
 
                             setupSecurityContext("some-principal", true);
 
@@ -512,7 +497,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         e2 = new TestEntity();
 
                         // ensure the other instantiate fragment is valid
-                        OtherTestEntity ote = otherRepo.save(new OtherTestEntity());
+                        otherRepo.save(new OtherTestEntity());
 
                         setupSecurityContext("some-principal", true);
 
@@ -541,7 +526,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         e2 = new TestEntity();
 
                         // ensure the other instantiate fragment is valid
-                        OtherTestEntity ote = otherRepo.save(new OtherTestEntity());
+                        otherRepo.save(new OtherTestEntity());
 
                         setupSecurityContext("some-principal", true);
 
@@ -570,7 +555,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                             e2 = new TestEntity();
 
                             // ensure the other instantiate fragment is valid
-                            OtherTestEntity ote = otherRepo.save(new OtherTestEntity());
+                            otherRepo.save(new OtherTestEntity());
 
                             setupSecurityContext("some-principal", true);
 
@@ -608,7 +593,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                             e2 = new TestEntity();
 
                             // ensure the other instantiate fragment is valid
-                            OtherTestEntity ote = otherRepo.save(new OtherTestEntity());
+                            otherRepo.save(new OtherTestEntity());
 
                             setupSecurityContext("some-principal", true);
 
@@ -642,7 +627,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                             e2 = new TestEntity();
 
                             // ensure the other instantiate fragment is valid
-                            OtherTestEntity ote = otherRepo.save(new OtherTestEntity());
+                            otherRepo.save(new OtherTestEntity());
 
                             setupSecurityContext("some-principal", true);
 
@@ -681,7 +666,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                                 e2 = new TestEntity();
 
                                 // ensure the other instantiate fragment is valid
-                                OtherTestEntity ote = otherRepo.save(new OtherTestEntity());
+                                otherRepo.save(new OtherTestEntity());
 
                                 e3 = new TestEntity();
 
@@ -714,7 +699,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                                 e2 = new TestEntity();
 
                                 // ensure the other instantiate fragment is valid
-                                OtherTestEntity ote = otherRepo.save(new OtherTestEntity());
+                                otherRepo.save(new OtherTestEntity());
 
                                 e3 = new TestEntity();
 
@@ -748,7 +733,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                                 e2 = new TestEntity();
 
                                 // ensure the other instantiate fragment is valid
-                                OtherTestEntity ote = otherRepo.save(new OtherTestEntity());
+                                otherRepo.save(new OtherTestEntity());
 
                                 e3 = new TestEntity();
 
@@ -782,7 +767,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                                 e2 = new TestEntity();
 
                                 // ensure the other instantiate fragment is valid
-                                OtherTestEntity ote = otherRepo.save(new OtherTestEntity());
+                                otherRepo.save(new OtherTestEntity());
 
                                 e3 = new TestEntity();
 
@@ -820,7 +805,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                                 e2 = new TestEntity();
 
                                 // ensure the other instantiate fragment is valid
-                                OtherTestEntity ote = otherRepo.save(new OtherTestEntity());
+                                otherRepo.save(new OtherTestEntity());
 
                                 e3 = new TestEntity();
 
@@ -853,7 +838,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                                 e2 = new TestEntity();
 
                                 // ensure the other instantiate fragment is valid
-                                OtherTestEntity ote = otherRepo.save(new OtherTestEntity());
+                                otherRepo.save(new OtherTestEntity());
 
                                 e3 = new TestEntity();
 
@@ -891,7 +876,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                                 e2 = new TestEntity();
 
                                 // ensure the other instantiate fragment is valid
-                                OtherTestEntity ote = otherRepo.save(new OtherTestEntity());
+                                otherRepo.save(new OtherTestEntity());
 
                                 e3 = new TestEntity();
 
@@ -922,7 +907,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     e2 = new TestEntity();
 
                     // ensure the other instantiate fragment is valid
-                    OtherTestEntity ote = otherRepo.save(new OtherTestEntity());
+                    otherRepo.save(new OtherTestEntity());
 
                     setupSecurityContext("some-principal", true);
 
@@ -962,7 +947,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     e2 = new TestEntity();
 
                     // ensure the other instantiate fragment is valid
-                    OtherTestEntity ote = otherRepo.save(new OtherTestEntity());
+                    otherRepo.save(new OtherTestEntity());
 
                     setupSecurityContext("some-principal", true);
 
@@ -1002,7 +987,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         e2 = new TestEntity();
 
                         // ensure the other instantiate fragment is valid
-                        OtherTestEntity ote = otherRepo.save(new OtherTestEntity());
+                        otherRepo.save(new OtherTestEntity());
 
                         setupSecurityContext("some-principal", true);
 
@@ -1033,7 +1018,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                                 e2 = new TestEntity();
 
                                 // ensure the other instantiate fragment is valid
-                                OtherTestEntity ote = otherRepo.save(new OtherTestEntity());
+                                otherRepo.save(new OtherTestEntity());
 
                                 setupSecurityContext("some-principal", true);
 
@@ -1070,7 +1055,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                             e2 = new TestEntity();
 
                             // ensure the other instantiate fragment is valid
-                            OtherTestEntity ote = otherRepo.save(new OtherTestEntity());
+                            otherRepo.save(new OtherTestEntity());
 
                             setupSecurityContext("some-principal", true);
 
@@ -1103,7 +1088,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                             e2 = new TestEntity();
 
                             // ensure the other instantiate fragment is valid
-                            OtherTestEntity ote = otherRepo.save(new OtherTestEntity());
+                            otherRepo.save(new OtherTestEntity());
 
                             setupSecurityContext("some-principal", true);
 
@@ -1135,7 +1120,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                             e2 = new TestEntity();
 
                             // ensure the other instantiate fragment is valid
-                            OtherTestEntity ote = otherRepo.save(new OtherTestEntity());
+                            otherRepo.save(new OtherTestEntity());
 
                             setupSecurityContext("some-principal", true);
 
@@ -1171,7 +1156,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     e2 = new TestEntity();
 
                     // ensure the other instantiate fragment is valid
-                    OtherTestEntity ote = otherRepo.save(new OtherTestEntity());
+                    otherRepo.save(new OtherTestEntity());
 
                     setupSecurityContext("some-principal", true);
                 }
@@ -1200,7 +1185,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     e2 = new TestEntity();
 
                     // ensure the other instantiate fragment is valid
-                    OtherTestEntity ote = otherRepo.save(new OtherTestEntity());
+                    otherRepo.save(new OtherTestEntity());
 
                     setupSecurityContext("some-principal", true);
                 }
@@ -1226,7 +1211,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         e2 = new TestEntity();
 
                         // ensure the other instantiate fragment is valid
-                        OtherTestEntity ote = otherRepo.save(new OtherTestEntity());
+                        otherRepo.save(new OtherTestEntity());
 
                         setupSecurityContext(null, false);
                         entityForDeletion = e1;
@@ -1254,7 +1239,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         e2 = new TestEntity();
 
                         // ensure the other instantiate fragment is valid
-                        OtherTestEntity ote = otherRepo.save(new OtherTestEntity());
+                        otherRepo.save(new OtherTestEntity());
 
                         setupSecurityContext("some-principal", false);
                         entityForDeletion = e1;
@@ -1286,7 +1271,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                                 e2 = new TestEntity();
 
                                 // ensure the other instantiate fragment is valid
-                                OtherTestEntity ote = otherRepo.save(new OtherTestEntity());
+                                otherRepo.save(new OtherTestEntity());
 
                                 setupSecurityContext("some-principal", true);
 
@@ -1318,7 +1303,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                                 e2 = new TestEntity();
 
                                 // ensure the other instantiate fragment is valid
-                                OtherTestEntity ote = otherRepo.save(new OtherTestEntity());
+                                otherRepo.save(new OtherTestEntity());
 
                                 setupSecurityContext("some-principal", true);
 
@@ -1351,7 +1336,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                                 e2 = new TestEntity();
 
                                 // ensure the other instantiate fragment is valid
-                                OtherTestEntity ote = otherRepo.save(new OtherTestEntity());
+                                otherRepo.save(new OtherTestEntity());
 
                                 setupSecurityContext("some-principal", true);
 
@@ -1383,7 +1368,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                             e2 = new TestEntity();
 
                             // ensure the other instantiate fragment is valid
-                            OtherTestEntity ote = otherRepo.save(new OtherTestEntity());
+                            otherRepo.save(new OtherTestEntity());
 
                             setupSecurityContext("some-principal", true);
 
@@ -1416,7 +1401,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                             e2 = new TestEntity();
 
                             // ensure the other instantiate fragment is valid
-                            OtherTestEntity ote = otherRepo.save(new OtherTestEntity());
+                            otherRepo.save(new OtherTestEntity());
 
                             setupSecurityContext("some-principal", true);
 
@@ -1465,7 +1450,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                             e2 = new TestEntity();
 
                             // ensure the other instantiate fragment is valid
-                            OtherTestEntity ote = otherRepo.save(new OtherTestEntity());
+                            otherRepo.save(new OtherTestEntity());
 
                             setupSecurityContext("some-principal", true);
 
@@ -1508,7 +1493,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         e2 = new TestEntity();
 
                         // ensure the other instantiate fragment is valid
-                        OtherTestEntity ote = otherRepo.save(new OtherTestEntity());
+                        otherRepo.save(new OtherTestEntity());
 
                         setupSecurityContext("some-principal", true);
 
@@ -1541,7 +1526,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         e2 = new TestEntity();
 
                         // ensure the other instantiate fragment is valid
-                        OtherTestEntity ote = otherRepo.save(new OtherTestEntity());
+                        otherRepo.save(new OtherTestEntity());
 
                         setupSecurityContext("some-principal", true);
 
@@ -1578,7 +1563,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                                 e2 = new TestEntity();
 
                                 // ensure the other instantiate fragment is valid
-                                OtherTestEntity ote = otherRepo.save(new OtherTestEntity());
+                                otherRepo.save(new OtherTestEntity());
 
                                 setupSecurityContext("some-principal", true);
 
@@ -1595,15 +1580,11 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                                 e1v11 = repo.lock(e1v11);
 
                                 List<Long> ids = new ArrayList<>();
-                                repo.findAllVersions(e1v11).forEach((doc) -> {
-                                    ids.add(doc.getXid());
-                                });
+                                repo.findAllVersions(e1v11).forEach((doc) -> ids.add(doc.getXid()));
 
                                 repo.deleteAllVersions(e1v11);
 
-                                ids.forEach((id) -> {
-                                    assertThat(repo.existsById(id)).isFalse();
-                                });
+                                ids.forEach((id) -> assertThat(repo.existsById(id)).isFalse());
                             }
                         }
 
@@ -1617,7 +1598,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                                 e2 = new TestEntity();
 
                                 // ensure the other instantiate fragment is valid
-                                OtherTestEntity ote = otherRepo.save(new OtherTestEntity());
+                                otherRepo.save(new OtherTestEntity());
 
                                 setupSecurityContext("some-principal", true);
 
@@ -1654,7 +1635,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                                 e2 = new TestEntity();
 
                                 // ensure the other instantiate fragment is valid
-                                OtherTestEntity ote = otherRepo.save(new OtherTestEntity());
+                                otherRepo.save(new OtherTestEntity());
 
                                 setupSecurityContext("some-principal", true);
 
@@ -1669,15 +1650,11 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                             @Test
                             void shouldDeleteVersionSeries() {
                                 List<Long> ids = new ArrayList<>();
-                                repo.findAllVersions(e1).forEach((doc) -> {
-                                    ids.add(doc.getXid());
-                                });
+                                repo.findAllVersions(e1).forEach((doc) -> ids.add(doc.getXid()));
 
                                 repo.deleteAllVersions(e1v11);
 
-                                ids.forEach((id) -> {
-                                    assertThat(repo.existsById(id)).isFalse();
-                                });
+                                ids.forEach((id) -> assertThat(repo.existsById(id)).isFalse());
                             }
                         }
                     }
@@ -1692,7 +1669,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                             e2 = new TestEntity();
 
                             // ensure the other instantiate fragment is valid
-                            OtherTestEntity ote = otherRepo.save(new OtherTestEntity());
+                            otherRepo.save(new OtherTestEntity());
 
                             setupSecurityContext("some-principal", true);
 
@@ -1728,7 +1705,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     e2 = new TestEntity();
 
                     // ensure the other instantiate fragment is valid
-                    OtherTestEntity ote = otherRepo.save(new OtherTestEntity());
+                    otherRepo.save(new OtherTestEntity());
 
                     setupSecurityContext("some-principal", true);
 
