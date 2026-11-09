@@ -27,6 +27,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import static internal.org.springframework.content.jpa.StoreIT.getContextName;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
@@ -43,7 +44,7 @@ public class ContentStoreIT {
     protected Claim claim;
     protected Object id;
     private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-    // for postgres (large object api operations must be in a transaction)
+    // for Postgres (large object api operations must be in a transaction)
     private PlatformTransactionManager ptm;
     private EmbeddedRepository embeddedRepo;
     private EmbeddedStore embeddedStore;
@@ -254,13 +255,13 @@ public class ContentStoreIT {
                                 claimFormStore.setContent(claim, PropertyPath.from("claimForm/rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
                                 // content
                                 assertThat(claim.getClaimForm().getContentId()).isNotNull();
-                                assertThat(claim.getClaimForm().getContentId().trim().length() > 0).isTrue();
+                                assertThat(!claim.getClaimForm().getContentId().trim().isEmpty()).isTrue();
                                 assertThat(27L).isEqualTo((long) claim.getClaimForm().getContentLength());
 
                                 // rendition
                                 assertThat(claim.getClaimForm().getRenditionId()).isNotNull();
-                                assertThat(claim.getClaimForm().getRenditionId().trim().length() > 0).isTrue();
-                                assertThat(40L).isEqualTo((long) claim.getClaimForm().getRenditionLen());
+                                assertThat(!claim.getClaimForm().getRenditionId().trim().isEmpty()).isTrue();
+                                assertThat(40L).isEqualTo(claim.getClaimForm().getRenditionLen());
                             } finally {
                                 deleteAllClaimFormsContent();
                                 deleteAllClaims();
