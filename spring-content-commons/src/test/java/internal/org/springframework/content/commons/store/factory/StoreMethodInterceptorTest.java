@@ -83,10 +83,6 @@ public class StoreMethodInterceptorTest {
         Object doAction(InvocationOnMock invocationOnMock) throws Exception;
     }
 
-    public interface AContentRepositoryExtension<S> {
-        void getCustomContent(S property);
-    }
-
     public interface TestContentStore extends ContentStore<TEntity, UUID> {
         @Override
         TEntity setContent(TEntity property, InputStream content);

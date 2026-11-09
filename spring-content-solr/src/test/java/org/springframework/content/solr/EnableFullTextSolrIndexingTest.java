@@ -10,7 +10,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.content.commons.search.IndexService;
 import org.springframework.content.commons.search.Searchable;
-import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.fs.config.EnableFileSystemStores;
 import org.springframework.content.fs.io.FileSystemResourceLoader;
 import org.springframework.context.ApplicationContext;
@@ -21,7 +20,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.nio.file.Files;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -33,9 +31,6 @@ public class EnableFullTextSolrIndexingTest {
 
     @Autowired
     private ApplicationContext context;
-
-    public interface TContentStore extends ContentStore<Object, Serializable>, Searchable<Serializable> {
-    }
 
     @Configuration
     @EnableFileSystemStores

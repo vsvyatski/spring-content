@@ -3,25 +3,18 @@ package internal.org.springframework.content.jpa.config;
 import internal.org.springframework.content.jpa.io.DelegatingBlobResourceLoader;
 import internal.org.springframework.content.jpa.io.MySQLBlobResource;
 import internal.org.springframework.content.jpa.io.SQLServerBlobResource;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.content.commons.annotations.ContentId;
-import org.springframework.content.commons.property.PropertyPath;
 import org.springframework.content.commons.store.ContentStore;
-import org.springframework.content.commons.store.GetResourceParams;
-import org.springframework.content.commons.store.SetContentParams;
-import org.springframework.content.commons.store.UnsetContentParams;
 import org.springframework.content.jpa.config.EnableJpaStores;
 import org.springframework.content.jpa.io.BlobResourceLoader;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.io.Resource;
 import org.springframework.data.annotation.Id;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
@@ -29,22 +22,15 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.Database;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
-import org.springframework.stereotype.Repository;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
-import java.io.InputStream;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class EnableJpaStoresTest {
 
     private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-
-    @Test
-    public void noop() {
-    }
 
     public interface TestEntityContentRepository
             extends ContentStore<TestEntity, String> {
@@ -166,111 +152,5 @@ public class EnableJpaStoresTest {
         private String id;
         @ContentId
         private String contentId;
-    }
-
-    @Repository
-    public class JpaTestContentRepository implements TestEntityContentRepository {
-
-        @PersistenceContext
-        private EntityManager em;
-
-        @Override
-        public TestEntity setContent(TestEntity property, InputStream content) {
-            return null;
-        }
-
-        @Override
-        public TestEntity setContent(TestEntity property, Resource resourceContent) {
-            return null;
-        }
-
-        @Override
-        public TestEntity unsetContent(TestEntity property) {
-            return null;
-        }
-
-        @Override
-        public InputStream getContent(TestEntity property) {
-            return null;
-        }
-
-        @Override
-        public Resource getResource(TestEntity entity) {
-            return null;
-        }
-
-        @Override
-        public void associate(TestEntity entity, String id) {
-        }
-
-        @Override
-        public void unassociate(TestEntity entity) {
-        }
-
-        @Override
-        public Resource getResource(String id) {
-            return null;
-        }
-
-        @Override
-        public Resource getResource(TestEntity entity, PropertyPath propertyPath) {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
-        @Override
-        public Resource getResource(TestEntity entity, PropertyPath propertyPath, GetResourceParams params) {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
-        @Override
-        public void associate(TestEntity entity, PropertyPath propertyPath, String id) {
-            // TODO Auto-generated method stub
-        }
-
-        @Override
-        public void unassociate(TestEntity entity, PropertyPath propertyPath) {
-            // TODO Auto-generated method stub
-        }
-
-        @Override
-        public TestEntity setContent(TestEntity property, PropertyPath propertyPath, InputStream contentm) {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
-        @Override
-        public TestEntity setContent(TestEntity entity, PropertyPath propertyPath, InputStream content, long contentLen) {
-            return null;
-        }
-
-        @Override
-        public TestEntity setContent(TestEntity entity, PropertyPath propertyPath, InputStream content, SetContentParams params) {
-            return null;
-        }
-
-        @Override
-        public TestEntity setContent(TestEntity property, PropertyPath propertyPath, Resource resourceContent) {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
-        @Override
-        public TestEntity unsetContent(TestEntity property, PropertyPath propertyPath) {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
-        @Override
-        public TestEntity unsetContent(TestEntity entity, PropertyPath propertyPath, UnsetContentParams params) {
-            return null;
-        }
-
-        @Override
-        public InputStream getContent(TestEntity property, PropertyPath propertyPath) {
-            // TODO Auto-generated method stub
-            return null;
-        }
     }
 }

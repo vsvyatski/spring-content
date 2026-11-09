@@ -5,7 +5,6 @@ import internal.org.springframework.content.rest.support.TestEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.content.commons.renditions.Renderable;
 import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.commons.store.Store;
 import org.springframework.content.commons.storeservice.StoreInfo;
@@ -42,9 +41,6 @@ public class StoreUtilsTest {
 
     @StoreRestResource(path = "some-other-path")
     public interface ContentStoreWithAnotherPath extends ContentStore<TestEntity, UUID> {
-    }
-
-    public interface StoreWithRenderable extends ContentStore<TestEntity, UUID>, Store<UUID>, Renderable<TestEntity> {
     }
 
     @Nested

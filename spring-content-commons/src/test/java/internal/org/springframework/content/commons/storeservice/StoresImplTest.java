@@ -25,10 +25,6 @@ public class StoresImplTest {
     private ApplicationContext context;
     private StoreFactory mockFactory;
 
-    @Test
-    public void test() {
-    }
-
     public interface StoreInterface extends Store<String> {
     }
 
@@ -45,12 +41,8 @@ public class StoresImplTest {
             extends AssociativeStore<OtherEntity, String> {
     }
 
-    ;
-
     public interface FsEntityStoreInterface extends ContentStore<Entity, String> {
     }
-
-    ;
 
     public interface JpaEntityStoreInterface extends ContentStore<Entity, String> {
     }
