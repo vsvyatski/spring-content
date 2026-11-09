@@ -10,5 +10,4 @@ public class GenericBlobResource extends AbstractBlobResource {
                                PlatformTransactionManager txnMgr) {
         super(id, template, txnMgr);
     }
-
 }

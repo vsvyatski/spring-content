@@ -73,7 +73,5 @@ public class BaseUriContentLinksIT {
                 this.setExpectedLinkRegex(format("http://localhost/contentApi/testEntity3s/%s/content", testEntity3.getId()));
             }
         }
-
     }
-
 }

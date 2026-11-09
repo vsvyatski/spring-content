@@ -183,11 +183,7 @@ public class PostgresBlobResourceIT {
                     rs.close();
                     stmt.close();
                 }
-
             }
-
         }
-
     }
-
 }

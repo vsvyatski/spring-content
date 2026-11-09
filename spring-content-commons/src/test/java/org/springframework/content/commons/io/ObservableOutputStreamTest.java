@@ -41,7 +41,6 @@ public class ObservableOutputStreamTest {
             void shouldReturnThem() {
                 assertThat(observable.getObservers()).contains(observer1);
             }
-
         }
 
         @Nested
@@ -63,7 +62,6 @@ public class ObservableOutputStreamTest {
             void shouldDelegateToTheUnderlyingInputStream() throws IOException {
                 verify(os).write(32);
             }
-
         }
 
         @Nested
@@ -88,7 +86,6 @@ public class ObservableOutputStreamTest {
                 verify(observer2).closed();
                 verifyNoMoreInteractions(observer1, observer2);
             }
-
         }
 
         @Nested
@@ -117,9 +114,6 @@ public class ObservableOutputStreamTest {
                 verify(observer1).closed();
                 assertThat(exception).isNotNull();
             }
-
         }
-
     }
-
 }

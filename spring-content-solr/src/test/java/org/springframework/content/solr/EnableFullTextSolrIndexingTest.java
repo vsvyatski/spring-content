@@ -81,7 +81,5 @@ public class EnableFullTextSolrIndexingTest {
         void shouldHaveASolrBasedFulltextIndexServiceBean() {
             assertThat(context.getBean(IndexService.class)).isInstanceOf(SolrFulltextIndexServiceImpl.class);
         }
-
     }
-
 }

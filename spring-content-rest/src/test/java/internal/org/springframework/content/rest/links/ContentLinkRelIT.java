@@ -728,9 +728,7 @@ public class ContentLinkRelIT {
                     this.setExpectedLinkRegex(format("http://localhost/contentApi/testEntity10s/%s/child/content", testEntity10.getId()));
                 }
             }
-
         }
-
     }
 
     @Entity

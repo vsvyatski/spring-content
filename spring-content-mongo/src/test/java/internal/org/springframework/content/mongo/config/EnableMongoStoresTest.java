@@ -65,7 +65,6 @@ public class EnableMongoStoresTest {
                 public String convert(UUID source) {
                     return String.format("/%s", source.toString().replaceAll("-", "/"));
                 }
-
             };
         }
     }

@@ -138,7 +138,6 @@ public class BeanUtilsTest {
                         fail("should not fail");
                     }
                 }
-
             }
 
             @Nested
@@ -171,9 +170,7 @@ public class BeanUtilsTest {
                         fail("should not fail");
                     }
                 }
-
             }
-
         }
 
         @Nested
@@ -227,7 +224,6 @@ public class BeanUtilsTest {
                         fail("should not fail");
                     }
                 }
-
             }
 
             @Nested
@@ -279,9 +275,7 @@ public class BeanUtilsTest {
                         fail("should not fail");
                     }
                 }
-
             }
-
         }
 
         @Nested
@@ -317,7 +311,6 @@ public class BeanUtilsTest {
                         fail("should not fail");
                     }
                 }
-
             }
 
             @Nested
@@ -351,9 +344,7 @@ public class BeanUtilsTest {
                         fail("should not fail");
                     }
                 }
-
             }
-
         }
 
         @Nested
@@ -385,7 +376,6 @@ public class BeanUtilsTest {
                         fail("should not fail");
                     }
                 }
-
             }
 
             @Nested
@@ -415,9 +405,7 @@ public class BeanUtilsTest {
                         fail("should not fail");
                     }
                 }
-
             }
-
         }
 
         @Nested
@@ -450,7 +438,6 @@ public class BeanUtilsTest {
                         fail("should not fail");
                     }
                 }
-
             }
 
             @Nested
@@ -481,9 +468,7 @@ public class BeanUtilsTest {
                         fail("should not fail");
                     }
                 }
-
             }
-
         }
 
         @Nested
@@ -515,7 +500,6 @@ public class BeanUtilsTest {
                         fail("should not fail");
                     }
                 }
-
             }
 
             @Nested
@@ -545,9 +529,7 @@ public class BeanUtilsTest {
                         fail("should not fail");
                     }
                 }
-
             }
-
         }
 
         @Nested
@@ -556,7 +538,6 @@ public class BeanUtilsTest {
             void shouldFindFields() {
                 assertThat(BeanUtils.findFieldsWithAnnotation(TestEntity2.class, MimeType.class, new BeanWrapperImpl(new TestEntity2())).length).isEqualTo(1);
             }
-
         }
 
         @Nested
@@ -569,8 +550,6 @@ public class BeanUtilsTest {
 
                 assertThat(BeanUtils.getFieldsWithAnnotation(t, ContentId.class)).isEqualTo(new Object[]{"100", "200"});
             }
-
         }
-
     }
 }

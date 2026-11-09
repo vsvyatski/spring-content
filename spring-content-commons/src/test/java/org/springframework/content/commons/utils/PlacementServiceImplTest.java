@@ -23,9 +23,6 @@ public class PlacementServiceImplTest {
             void shouldHaveRemovedTheFallbackObjectToStringConverter() {
                 assertThat(placer.canConvert(Object.class, String.class)).isFalse();
             }
-
         }
-
     }
-
 }

@@ -584,6 +584,5 @@ public class StoreIT {
             }
             return tests.stream();
         }
-
     }
 }

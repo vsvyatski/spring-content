@@ -103,7 +103,6 @@ public class PostgresBlobResourceOutputStream extends BlobResourceOutputStream {
             } catch (SQLException e) {
                 logger.error(String.format("finalizing large object for resource %s", rid));
             }
-
         }
     }
 

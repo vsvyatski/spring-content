@@ -240,7 +240,6 @@ public class AbstractStoreEventListenerTest {
                     verify(consumer)
                             .onBeforeGetResource(org.mockito.ArgumentMatchers.eq(event.getSource()));
                 }
-
             }
 
             @Nested
@@ -272,7 +271,6 @@ public class AbstractStoreEventListenerTest {
                     verify(consumer)
                             .onAfterGetResource(org.mockito.ArgumentMatchers.eq(event.getSource()));
                 }
-
             }
 
             @Nested
@@ -304,7 +302,6 @@ public class AbstractStoreEventListenerTest {
                     verify(consumer)
                             .onBeforeAssociate(org.mockito.ArgumentMatchers.eq(event.getSource()));
                 }
-
             }
 
             @Nested
@@ -336,7 +333,6 @@ public class AbstractStoreEventListenerTest {
                     verify(consumer)
                             .onAfterAssociate(org.mockito.ArgumentMatchers.eq(event.getSource()));
                 }
-
             }
 
             @Nested
@@ -368,7 +364,6 @@ public class AbstractStoreEventListenerTest {
                     verify(consumer)
                             .onBeforeUnassociate(org.mockito.ArgumentMatchers.eq(event.getSource()));
                 }
-
             }
 
             @Nested
@@ -400,7 +395,6 @@ public class AbstractStoreEventListenerTest {
                     verify(consumer)
                             .onAfterUnassociate(org.mockito.ArgumentMatchers.eq(event.getSource()));
                 }
-
             }
 
             @Nested
@@ -432,7 +426,6 @@ public class AbstractStoreEventListenerTest {
                     verify(consumer)
                             .onBeforeGetContent(org.mockito.ArgumentMatchers.eq(event.getSource()));
                 }
-
             }
 
             @Nested
@@ -464,7 +457,6 @@ public class AbstractStoreEventListenerTest {
                     verify(consumer)
                             .onAfterGetContent(org.mockito.ArgumentMatchers.eq(event.getSource()));
                 }
-
             }
 
             @Nested
@@ -496,7 +488,6 @@ public class AbstractStoreEventListenerTest {
                     verify(consumer)
                             .onBeforeSetContent(org.mockito.ArgumentMatchers.eq(event.getSource()));
                 }
-
             }
 
             @Nested
@@ -528,7 +519,6 @@ public class AbstractStoreEventListenerTest {
                     verify(consumer)
                             .onAfterSetContent(org.mockito.ArgumentMatchers.eq(event.getSource()));
                 }
-
             }
 
             @Nested
@@ -560,7 +550,6 @@ public class AbstractStoreEventListenerTest {
                     verify(consumer)
                             .onBeforeUnsetContent(org.mockito.ArgumentMatchers.eq(event.getSource()));
                 }
-
             }
 
             @Nested
@@ -592,10 +581,7 @@ public class AbstractStoreEventListenerTest {
                     verify(consumer)
                             .onAfterUnsetContent(org.mockito.ArgumentMatchers.eq(event.getSource()));
                 }
-
             }
-
         }
-
     }
 }

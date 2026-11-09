@@ -216,7 +216,6 @@ public class ClassWalkerTest {
             expectedOtherCamelCaseProperty.setOriginalFileNamePropertyPath("otherCamelCaseProperty.camelCasePropertyFilenames");
             assertThat(visitor.getProperties()).containsEntry("otherCamelCaseProperty", expectedOtherCamelCaseProperty);
         }
-
     }
 
     @Nested
@@ -237,7 +236,6 @@ public class ClassWalkerTest {
             expectedProperty2.setOriginalFileNamePropertyPath("originalFileName");
             assertThat(visitor.getProperties()).containsEntry("content", expectedProperty2);
         }
-
     }
 
     @Nested
@@ -258,7 +256,6 @@ public class ClassWalkerTest {
             expectedProperty2.setOriginalFileNamePropertyPath("contentOriginalFileName");
             assertThat(visitor.getProperties()).containsEntry("content", expectedProperty2);
         }
-
     }
 
     @Nested
@@ -279,7 +276,6 @@ public class ClassWalkerTest {
             expectedProperty.setOriginalFileNamePropertyPath("child.originalFileName");
             assertThat(visitor.getProperties()).containsEntry("child", expectedProperty);
         }
-
     }
 
     @Nested
@@ -292,7 +288,6 @@ public class ClassWalkerTest {
 
             assertThat(visitor.getProperties().size()).isEqualTo(0);
         }
-
     }
 
     @Nested
@@ -313,7 +308,6 @@ public class ClassWalkerTest {
             expectedProperty.setOriginalFileNamePropertyPath("contentOriginalFileName");
             assertThat(visitor.getProperties()).containsEntry("content", expectedProperty);
         }
-
     }
 
     @Nested
@@ -344,7 +338,6 @@ public class ClassWalkerTest {
             expectedProperty3.setOriginalFileNamePropertyPath("child2.originalFileName");
             assertThat(visitor.getProperties()).containsEntry("child2", expectedProperty3);
         }
-
     }
 
     @Nested
@@ -375,7 +368,6 @@ public class ClassWalkerTest {
             expectedProperty3.setOriginalFileNamePropertyPath("child.previewOriginalFileName");
             assertThat(visitor.getProperties()).containsEntry("child/preview", expectedProperty3);
         }
-
     }
 
     @Nested
@@ -406,6 +398,5 @@ public class ClassWalkerTest {
             expectedProperty2.setOriginalFileNamePropertyPath("child.child.previewOriginalFileName");
             assertThat(visitor.getProperties()).containsEntry("child/child/preview", expectedProperty2);
         }
-
     }
 }

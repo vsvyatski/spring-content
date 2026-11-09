@@ -63,9 +63,7 @@ public class GenericBlobResourceTest {
                 void shouldReturnFalse() {
                     assertThat(result).isEqualTo(false);
                 }
-
             }
-
         }
 
         @Nested
@@ -95,11 +93,7 @@ public class GenericBlobResourceTest {
                 void shouldReturnNull() {
                     assertThat(result).isNull();
                 }
-
             }
-
         }
-
     }
-
 }

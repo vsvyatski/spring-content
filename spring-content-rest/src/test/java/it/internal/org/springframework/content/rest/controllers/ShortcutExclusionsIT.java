@@ -117,8 +117,6 @@ public class ShortcutExclusionsIT {
                 assertThat(halResponse.getLinks().size()).isGreaterThan(2);
                 assertThat(halResponse.getLinksByRel("testEntity3")).isNotNull();
             }
-
         }
-
     }
 }

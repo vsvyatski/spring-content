@@ -30,5 +30,4 @@ public class JpaCloningServiceImpl implements CloningService {
         }
         return newInstance;
     }
-
 }

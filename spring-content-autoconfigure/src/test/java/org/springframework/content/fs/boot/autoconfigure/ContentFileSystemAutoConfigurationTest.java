@@ -60,7 +60,6 @@ public class ContentFileSystemAutoConfigurationTest {
             void shouldLoadTheContext() {
                 contextRunner.withUserConfiguration(TestConfig.class).run((context) -> Assertions.assertThat(context).hasSingleBean(TestEntityContentRepository.class));
             }
-
         }
 
         @Nested
@@ -84,7 +83,6 @@ public class ContentFileSystemAutoConfigurationTest {
                     Assertions.assertThat(context).getBean(FileSystemContentAutoConfiguration.FileSystemProperties.class).extracting("fileSystemRoot").matches((val) -> val.toString().endsWith("/UPPERCASE/NOTATION/"));
                 });
             }
-
         }
 
         @Nested
@@ -112,7 +110,6 @@ public class ContentFileSystemAutoConfigurationTest {
                     Assertions.assertThat(context).getBean(FileSystemResourceLoader.class).extracting("root").matches((val) -> val.toString().matches("(?s).*([A-Za-z]:)?\\\\some\\\\random\\\\path.*"));
                 });
             }
-
         }
 
         @Nested

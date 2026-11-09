@@ -119,9 +119,7 @@ public class SolrIndexerStoreEventHandlerTest {
                     void shouldReThrowThatException() {
                         assertThat(e).isEqualTo(sae);
                     }
-
                 }
-
             }
 
             @Nested
@@ -147,7 +145,6 @@ public class SolrIndexerStoreEventHandlerTest {
                     assertThat(e).isNull();
                     verify(indexer, never()).index(any(), any());
                 }
-
             }
 
             @Nested
@@ -173,9 +170,7 @@ public class SolrIndexerStoreEventHandlerTest {
                     assertThat(e).isNull();
                     verify(indexer, never()).index(any(), any());
                 }
-
             }
-
         }
 
         @Nested
@@ -237,9 +232,7 @@ public class SolrIndexerStoreEventHandlerTest {
                     void shouldThrowAContextAccessException() {
                         assertThat(e).isEqualTo(sae);
                     }
-
                 }
-
             }
 
             @Nested
@@ -265,7 +258,6 @@ public class SolrIndexerStoreEventHandlerTest {
                     assertThat(e).isNull();
                     verify(indexer, never()).unindex(any());
                 }
-
             }
 
             @Nested
@@ -291,10 +283,7 @@ public class SolrIndexerStoreEventHandlerTest {
                     assertThat(e).isNull();
                     verify(indexer, never()).unindex(any());
                 }
-
             }
-
         }
-
     }
 }

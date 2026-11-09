@@ -53,5 +53,4 @@ public class StoredDataEncryptionKeyGenericConverterTest {
 
         assertThat(conversionResult).isEqualTo(key);
     }
-
 }

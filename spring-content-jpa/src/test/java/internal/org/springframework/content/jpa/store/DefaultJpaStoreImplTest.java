@@ -69,7 +69,6 @@ public class DefaultJpaStoreImplTest {
         public void setContentLen(long contentLen) {
             this.contentLen = contentLen;
         }
-
     }
 
     public static class JakartaTestEntity {
@@ -125,11 +124,8 @@ public class DefaultJpaStoreImplTest {
                     void shouldUseTheBlobResourceLoaderToLoadABlobResource() {
                         verify(blobResourceLoader).getResource(id);
                     }
-
                 }
-
             }
-
         }
 
         @Nested
@@ -152,7 +148,6 @@ public class DefaultJpaStoreImplTest {
                         verify(blobResourceLoader, never()).getResource(any());
                         assertThat(resource).isNull();
                     }
-
                 }
 
                 @Nested
@@ -172,9 +167,7 @@ public class DefaultJpaStoreImplTest {
                     void shouldLoadANewResource() {
                         verify(blobResourceLoader).getResource(eq("12345"));
                     }
-
                 }
-
             }
 
             @Nested
@@ -200,7 +193,6 @@ public class DefaultJpaStoreImplTest {
                 void shouldSetTheEntitySContentIDAttribute() {
                     assertThat(entity.getContentId()).isEqualTo("12345");
                 }
-
             }
 
             @Nested
@@ -223,9 +215,7 @@ public class DefaultJpaStoreImplTest {
                 void shouldResetTheContentId() {
                     assertThat(entity.getContentId()).isNull();
                 }
-
             }
-
         }
 
         @Nested
@@ -267,7 +257,6 @@ public class DefaultJpaStoreImplTest {
                     void shouldReturnAnInputStream() {
                         assertThat(inputStream).isNotNull();
                     }
-
                 }
 
                 @Nested
@@ -299,9 +288,7 @@ public class DefaultJpaStoreImplTest {
                         assertThat(e).isInstanceOf(StoreAccessException.class);
                         assertThat(e.getCause().getMessage()).isEqualTo("get-ioexception");
                     }
-
                 }
-
             }
 
             @Nested
@@ -384,9 +371,7 @@ public class DefaultJpaStoreImplTest {
                         assertThat(e).isInstanceOf(StoreAccessException.class);
                         assertThat(e.getCause().getMessage()).isEqualTo("set-ioexception");
                     }
-
                 }
-
             }
 
             @Nested
@@ -436,9 +421,7 @@ public class DefaultJpaStoreImplTest {
                         assertThat(e).isInstanceOf(StoreAccessException.class);
                         assertThat(e.getCause().getMessage()).contains("setContent badness");
                     }
-
                 }
-
             }
 
             @Nested
@@ -494,13 +477,9 @@ public class DefaultJpaStoreImplTest {
                         assertThat(e).isInstanceOf(StoreAccessException.class);
                         assertThat(e.getCause().getMessage()).isEqualTo("unset-ioexception");
                     }
-
                 }
-
             }
-
         }
-
     }
 
     @Nested
@@ -524,11 +503,8 @@ public class DefaultJpaStoreImplTest {
                     void shouldUseTheBlobResourceLoaderToLoadABlobResource() {
                         verify(blobResourceLoader).getResource(id);
                     }
-
                 }
-
             }
-
         }
 
         @Nested
@@ -553,10 +529,7 @@ public class DefaultJpaStoreImplTest {
                 void shouldNOTResetTheContentId() {
                     assertThat(jakartaAnnotatedEntity.getContentId()).isEqualTo(id);
                 }
-
             }
-
         }
-
     }
 }

@@ -50,7 +50,6 @@ public class FileServiceTest {
                 assertThat(ex).isNotNull();
                 assertThat(ex).isInstanceOf(IOException.class);
             }
-
         }
 
         @Nested
@@ -84,7 +83,6 @@ public class FileServiceTest {
                 assertThat(file.isDirectory()).isTrue();
                 assertThat(file.exists()).isTrue();
             }
-
         }
 
         @Nested
@@ -115,7 +113,6 @@ public class FileServiceTest {
                 assertThat(file.exists()).isTrue();
                 assertThat(file.isDirectory()).isTrue();
             }
-
         }
 
         @Nested
@@ -145,7 +142,6 @@ public class FileServiceTest {
                 assertThat(file.exists()).isTrue();
                 assertThat(file.isDirectory()).isTrue();
             }
-
         }
 
         @Nested
@@ -167,9 +163,7 @@ public class FileServiceTest {
                 assertThat(ex).isNotNull();
                 assertThat(ex).isInstanceOf(IllegalArgumentException.class);
             }
-
         }
-
     }
 
     @Nested
@@ -227,7 +221,5 @@ public class FileServiceTest {
 
             assertThat(p0.toFile().exists()).isTrue();
         }
-
     }
-
 }

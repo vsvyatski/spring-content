@@ -333,7 +333,6 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     void shouldThrowASecurityException() {
                         assertThat(e).isInstanceOf(SecurityException.class);
                     }
-
                 }
 
                 @Nested
@@ -361,7 +360,6 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     void shouldFail() {
                         assertThat(e).isInstanceOf(InvalidDataAccessApiUsageException.class);
                     }
-
                 }
 
                 @Nested
@@ -399,7 +397,6 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                             assertThat(e).isNull();
                             assertThat(result.getXid()).isEqualTo(e1.getXid());
                         }
-
                     }
 
                     @Nested
@@ -434,7 +431,6 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                             assertThat(e).isInstanceOf(LockOwnerException.class);
                             assertThat(result).isNull();
                         }
-
                     }
 
                     @Nested
@@ -469,7 +465,6 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                             assertThat(e).isNull();
                             assertThat(result).isNotNull();
                         }
-
                     }
 
                     @Nested
@@ -501,11 +496,8 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         void shouldReturnSecurityException() {
                             assertThat(e).isInstanceOf(SecurityException.class);
                         }
-
                     }
-
                 }
-
             }
 
             @Nested
@@ -537,7 +529,6 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     void shouldThrowASecurityException() {
                         assertThat(e).isInstanceOf(SecurityException.class);
                     }
-
                 }
 
                 @Nested
@@ -565,7 +556,6 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     void shouldFail() {
                         assertThat(e).isInstanceOf(InvalidDataAccessApiUsageException.class);
                     }
-
                 }
 
                 @Nested
@@ -606,7 +596,6 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                             assertThat(e).isNull();
                             assertThat(result.getXid()).isEqualTo(e1.getXid());
                         }
-
                     }
 
                     @Nested
@@ -641,7 +630,6 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                             assertThat(e).isInstanceOf(LockOwnerException.class);
                             assertThat(e.getMessage()).contains("not lock owner");
                         }
-
                     }
 
                     @Nested
@@ -673,11 +661,8 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         void shouldASecurityException() {
                             assertThat(e).isInstanceOf(SecurityException.class);
                         }
-
                     }
-
                 }
-
             }
 
             @Nested
@@ -714,9 +699,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                                 assertThat(e).isNull();
                                 assertThat(result.getXid()).isEqualTo(e3.getXid());
                             }
-
                         }
-
                     }
 
                     @Nested
@@ -753,7 +736,6 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                                 assertThat(e).isNull();
                                 assertThat(result.getXid()).isEqualTo(e3.getXid());
                             }
-
                         }
 
                         @Nested
@@ -788,7 +770,6 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                             void shouldThrowALockOwnerException() {
                                 assertThat(e).isInstanceOf(LockOwnerException.class);
                             }
-
                         }
 
                         @Nested
@@ -821,11 +802,8 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                                 assertThat(e).isNull();
                                 assertThat(result.getXid()).isEqualTo(e3.getXid());
                             }
-
                         }
-
                     }
-
                 }
 
                 @Nested
@@ -860,9 +838,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                                 assertThat(e).isNull();
                                 assertThat(result.getXid()).isEqualTo(e3.getXid());
                             }
-
                         }
-
                     }
 
                     @Nested
@@ -897,11 +873,8 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                                 assertThat(e).isNull();
                                 assertThat(result.getXid()).isEqualTo(e3.getXid());
                             }
-
                         }
-
                     }
-
                 }
 
                 @Nested
@@ -934,13 +907,9 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                                 assertThat(e).isNull();
                                 assertThat(result.getXid()).isEqualTo(e3.getXid());
                             }
-
                         }
-
                     }
-
                 }
-
             }
 
             @Nested
@@ -981,7 +950,6 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     assertThat(results.size()).isEqualTo(2);
                     assertThat(results).extracting("xid").containsExactly(e1v11.getXid(), e1.getXid());
                 }
-
             }
 
             @Nested
@@ -1020,7 +988,6 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     results = repo.findAllVersionsLatest(TestEntity.class);
                     assertThat(results).extracting("xid").contains(e1v11.getXid(), e2v2.getXid()).doesNotContain(e3wc.getXid());
                 }
-
             }
 
             @Nested
@@ -1050,7 +1017,6 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     void shouldFail() {
                         assertThat(e).isInstanceOf(InvalidDataAccessApiUsageException.class);
                     }
-
                 }
 
                 @Nested
@@ -1091,9 +1057,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                                 assertThat(result.getXAncestorRootId()).isEqualTo(e1.getXid());
                                 assertThat(result.getXSuccessorId()).isNull();
                             }
-
                         }
-
                     }
 
                     @Nested
@@ -1127,7 +1091,6 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         void shouldCreateThePwcWithANewId() {
                             assertThat(e).isInstanceOf(LockOwnerException.class);
                         }
-
                     }
 
                     @Nested
@@ -1160,7 +1123,6 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                             assertThat(e).isInstanceOf(SecurityException.class);
                             assertThat(e.getMessage()).contains("no principal");
                         }
-
                     }
 
                     @Nested
@@ -1195,11 +1157,8 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                             assertThat(e).isInstanceOf(LockingAndVersioningException.class);
                             assertThat(e.getMessage()).contains("not head");
                         }
-
                     }
-
                 }
-
             }
 
             @Nested
@@ -1229,7 +1188,6 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     TestEntity wc = repo.workingCopy(e1);
                     assertThat(repo.isPrivateWorkingCopy(wc)).isTrue();
                 }
-
             }
 
             @Nested
@@ -1254,7 +1212,6 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     TestEntity wc = repo.workingCopy(e1);
                     assertThat(repo.findWorkingCopy(wc)).hasFieldOrPropertyWithValue("xid", wc.getXid());
                 }
-
             }
 
             @Nested
@@ -1285,7 +1242,6 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     void shouldThrowASecurityException() {
                         assertThat(e).isInstanceOf(SecurityException.class);
                     }
-
                 }
 
                 @Nested
@@ -1314,7 +1270,6 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     void shouldThrowASecurityException() {
                         assertThat(e).isInstanceOf(SecurityException.class);
                     }
-
                 }
 
                 @Nested
@@ -1351,7 +1306,6 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                                 assertThat(e).isNull();
                                 assertThat(repo.findById(e1.getXid())).isEqualTo(Optional.empty());
                             }
-
                         }
 
                         @Nested
@@ -1385,7 +1339,6 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                                 assertThat(e).isInstanceOf(LockOwnerException.class);
                                 assertThat(e.getMessage()).contains("not lock owner");
                             }
-
                         }
 
                         @Nested
@@ -1417,9 +1370,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                                 assertThat(e).isNull();
                                 assertThat(repo.findById(e1.getXid())).isEqualTo(Optional.empty());
                             }
-
                         }
-
                     }
 
                     @Nested
@@ -1453,7 +1404,6 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                             assertThat(e).isInstanceOf(LockingAndVersioningException.class);
                             assertThat(e.getMessage()).contains("not head");
                         }
-
                     }
 
                     @Nested
@@ -1503,7 +1453,6 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         void shouldReInstateTheLockOnTheNewHead() {
                             assertThat(lockingService.lockOwner(e1v11.getXid())).isNotNull();
                         }
-
                     }
 
                     @Nested
@@ -1543,11 +1492,8 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                             e1 = repo.findById(e1.getXid()).get();
                             assertThat(e1.getXSuccessorId()).isNull();
                         }
-
                     }
-
                 }
-
             }
 
             @Nested
@@ -1583,7 +1529,6 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                             assertThat(e).isInstanceOf(SecurityException.class);
                         }
                     }
-
                 }
 
                 @Nested
@@ -1617,7 +1562,6 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                             assertThat(e).isInstanceOf(SecurityException.class);
                         }
                     }
-
                 }
 
                 @Nested
@@ -1661,7 +1605,6 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                                     assertThat(repo.existsById(id)).isFalse();
                                 });
                             }
-
                         }
 
                         @Nested
@@ -1699,7 +1642,6 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                                     assertThat(e.getMessage()).contains("not lock owner");
                                 }
                             }
-
                         }
 
                         @Nested
@@ -1737,9 +1679,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                                     assertThat(repo.existsById(id)).isFalse();
                                 });
                             }
-
                         }
-
                     }
 
                     @Nested
@@ -1774,11 +1714,8 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                                 assertThat(e.getMessage()).contains("not head");
                             }
                         }
-
                     }
-
                 }
-
             }
 
             @Nested
@@ -1813,11 +1750,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     Optional<TestEntity> fetched = repo.findById(e1.getXid());
                     assertThat(fetched.isPresent()).isFalse();
                 }
-
             }
-
         }
-
     }
-
 }

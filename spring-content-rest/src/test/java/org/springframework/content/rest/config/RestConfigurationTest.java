@@ -85,9 +85,7 @@ public class RestConfigurationTest {
 
                 verify(configurer).configure(config);
             }
-
         }
-
     }
 
     @Document

@@ -197,7 +197,5 @@ public class CacheControlIT {
                     .statusCode(200)
                     .header("Cache-Control", "no-cache, no-store, max-age=0, must-revalidate");
         }
-
     }
-
 }

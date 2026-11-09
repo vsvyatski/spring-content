@@ -57,5 +57,4 @@ public class SimpleStorageProtocolResolver implements ProtocolResolver, Initiali
     public S3Client getAmazonS3() {
         return this.amazonS3;
     }
-
 }

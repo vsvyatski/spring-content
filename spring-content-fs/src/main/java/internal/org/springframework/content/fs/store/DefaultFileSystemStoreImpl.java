@@ -166,7 +166,6 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable>
                 os = ((WritableResource) resource).getOutputStream();
                 IOUtils.copy(content, os);
             }
-
         } catch (IOException e) {
             logger.error(format("Unexpected io error setting content for entity %s", entity), e);
             throw new StoreAccessException(format("Setting content for entity %s", entity), e);

@@ -71,9 +71,6 @@ public class StoreTest {
             void shouldHaveAnTestAssociativeAndContentStoreBean() {
                 assertThat(context.getBean(TestAssociativeAndContentStore.class)).isNotNull();
             }
-
         }
-
     }
-
 }

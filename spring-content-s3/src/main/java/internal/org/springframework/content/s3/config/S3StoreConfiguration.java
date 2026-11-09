@@ -42,7 +42,6 @@ public class S3StoreConfiguration implements InitializingBean {
             public S3ObjectId convert(Serializable id) {
                 return new S3ObjectId(defaultBucket, Objects.requireNonNull(id, "ContentId must not be null").toString());
             }
-
         });
 
         // Object -> S3ObjectId
@@ -77,7 +76,6 @@ public class S3StoreConfiguration implements InitializingBean {
 
                 return (key != null) ? new S3ObjectId(strBucket, key) : null;
             }
-
         });
 
         // ContentPropertyInfo -> S3ObjectId
@@ -104,7 +102,6 @@ public class S3StoreConfiguration implements InitializingBean {
 
                 return (key != null) ? new S3ObjectId(strBucket, key.toString()) : null;
             }
-
         });
     }
 

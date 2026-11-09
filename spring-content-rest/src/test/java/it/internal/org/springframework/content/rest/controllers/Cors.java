@@ -55,5 +55,4 @@ public class Cors {
                     .andExpect(status().isForbidden());
         }
     }
-
 }

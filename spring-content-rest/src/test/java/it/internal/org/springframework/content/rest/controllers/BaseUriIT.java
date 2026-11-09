@@ -179,9 +179,6 @@ public class BaseUriIT {
                     this.setContent(content);
                 }
             }
-
         }
-
     }
-
 }

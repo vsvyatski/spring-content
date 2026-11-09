@@ -42,5 +42,4 @@ public class EventListenerConfig {
             return afterCreate;
         }
     }
-
 }

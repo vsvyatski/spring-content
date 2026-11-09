@@ -254,5 +254,4 @@ public class AssociativeStoreIT {
             return tests.stream();
         }
     }
-
 }

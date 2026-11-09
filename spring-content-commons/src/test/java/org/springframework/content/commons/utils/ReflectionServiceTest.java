@@ -37,8 +37,6 @@ public class ReflectionServiceTest {
             void shouldInvokeTheMethod() {
                 verify(service).helloWorld();
             }
-
         }
-
     }
 }

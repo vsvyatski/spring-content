@@ -81,9 +81,6 @@ public class StoreResolverRestConfigurationIT {
                     assertThat(is).isNull();
                 }
             }
-
         }
-
     }
-
 }

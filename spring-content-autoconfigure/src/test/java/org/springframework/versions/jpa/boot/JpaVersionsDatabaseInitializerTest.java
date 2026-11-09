@@ -55,7 +55,6 @@ public class JpaVersionsDatabaseInitializerTest {
                 void shouldExecuteCREATETABLEStatementsOnTheDatabase() throws SQLException {
                     verify(stmt, atLeastOnce()).execute(org.mockito.ArgumentMatchers.argThat(v -> String.valueOf(v).contains("CREATE TABLE")));
                 }
-
             }
 
             @Nested

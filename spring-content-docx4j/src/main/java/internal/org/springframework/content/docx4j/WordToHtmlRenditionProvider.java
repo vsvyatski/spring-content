@@ -64,5 +64,4 @@ public class WordToHtmlRenditionProvider implements RenditionProvider {
 
         return null;
     }
-
 }

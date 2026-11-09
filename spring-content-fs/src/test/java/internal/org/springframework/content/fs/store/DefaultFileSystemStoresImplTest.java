@@ -477,9 +477,7 @@ public class DefaultFileSystemStoresImplTest {
                         void shouldChangeTheContentLength() {
                             assertThat(entity.getContentLen()).isEqualTo(20L);
                         }
-
                     }
-
                 }
 
                 @Nested

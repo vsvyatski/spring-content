@@ -45,5 +45,4 @@ public class ByteArrayToListConverterTest {
 
         assertThat(decodedList).isEqualTo(data);
     }
-
 }

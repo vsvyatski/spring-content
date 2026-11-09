@@ -47,7 +47,6 @@ public class SpringBootContentRestConfigurerTest {
                 void shouldSetThePropertyOnTheRestConfiguration() {
                     verify(restConfig).setBaseUri(eq(properties.getBaseUri()));
                 }
-
             }
 
             @Nested
@@ -69,7 +68,6 @@ public class SpringBootContentRestConfigurerTest {
                 void shouldSetThePropertyOnTheRestConfiguration() {
                     verify(restConfig).setFullyQualifiedLinks(eq(true));
                 }
-
             }
 
             @Nested

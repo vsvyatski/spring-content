@@ -36,7 +36,6 @@ public class ObservableInputStreamTest {
                 void shouldReturnThem() {
                     assertThat(ois.getObservers()).contains(observer);
                 }
-
             }
 
             @Nested
@@ -55,7 +54,6 @@ public class ObservableInputStreamTest {
                 void shouldDelegateToTheUnderlyingInputStream() throws IOException {
                     verify(fis).read();
                 }
-
             }
 
             @Nested
@@ -74,11 +72,7 @@ public class ObservableInputStreamTest {
                 void shouldCallListenersOnClosedEventHandler() {
                     verify(observer).closed();
                 }
-
             }
-
         }
-
     }
-
 }

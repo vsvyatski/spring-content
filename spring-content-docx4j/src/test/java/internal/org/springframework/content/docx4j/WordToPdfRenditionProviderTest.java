@@ -44,5 +44,4 @@ public class WordToPdfRenditionProviderTest {
             return new PDFTextStripper().getText(doc);
         }
     }
-
 }

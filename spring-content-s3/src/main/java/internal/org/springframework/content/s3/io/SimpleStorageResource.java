@@ -427,9 +427,6 @@ public class SimpleStorageResource extends AbstractResource implements WritableR
                     this.content = null;
                 }
             }
-
         }
-
     }
-
 }

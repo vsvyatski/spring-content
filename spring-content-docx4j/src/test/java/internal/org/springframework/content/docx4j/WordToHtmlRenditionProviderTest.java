@@ -37,5 +37,4 @@ public class WordToHtmlRenditionProviderTest {
         Document doc = Jsoup.parse(converted, "UTF8", "http://example.com");
         assertThat(doc.getElementsByTag("html")).hasSize(1);
     }
-
 }

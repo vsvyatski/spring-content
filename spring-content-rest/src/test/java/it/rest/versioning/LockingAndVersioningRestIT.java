@@ -457,9 +457,6 @@ public class LockingAndVersioningRestIT {
                 assertThat((Object) response.get("_embedded.versionedDocuments[1].version")).isEqualTo("1.1");
                 assertThat((Object) response.get("_embedded.versionedDocuments[1].successorId")).isNull();
             }
-
         }
-
     }
-
 }

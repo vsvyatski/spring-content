@@ -48,7 +48,6 @@ public class CustomizableBlobResourceLoaderTest {
             void shouldReturnGENERIC() {
                 assertThat(result.toString()).isEqualTo("GENERIC");
             }
-
         }
 
         @Nested
@@ -73,7 +72,6 @@ public class CustomizableBlobResourceLoaderTest {
             void shouldReturnAGenericBlobResource() {
                 assertThat(result).isInstanceOf(GenericBlobResource.class);
             }
-
         }
 
         @Nested
@@ -89,7 +87,6 @@ public class CustomizableBlobResourceLoaderTest {
             void shouldReturnAClassLoader() {
                 assertThat(result).isInstanceOf(ClassLoader.class);
             }
-
         }
 
         @Nested
@@ -117,11 +114,7 @@ public class CustomizableBlobResourceLoaderTest {
                 void shouldReturnTheResourceProvidersCustomResource() {
                     assertThat(result).isEqualTo(customDBResource);
                 }
-
             }
-
         }
-
     }
-
 }

@@ -106,7 +106,6 @@ public abstract class LastModifiedDate {
             assertThat(response.getContentAsString()).isEqualTo(content);
             assertThat(isWithinASecond(lastModifiedDate).matches(response.getHeader("last-modified"))).isTrue();
         }
-
     }
 
     @Nested
@@ -131,7 +130,6 @@ public abstract class LastModifiedDate {
             assertThat(response.getContentAsString()).isEqualTo(content);
             assertThat(isWithinASecond(lastModifiedDate).matches(response.getHeader("last-modified"))).isTrue();
         }
-
     }
 
     @Nested
@@ -144,7 +142,6 @@ public abstract class LastModifiedDate {
                     .andExpect(status().isNotModified())
                     .andExpect(content().string(""));
         }
-
     }
 
     @Nested
@@ -157,7 +154,6 @@ public abstract class LastModifiedDate {
                     .andExpect(status().isPreconditionFailed())
                     .andReturn();
         }
-
     }
 
     @Nested
@@ -170,7 +166,6 @@ public abstract class LastModifiedDate {
                     .andExpect(status().isOk())
                     .andExpect(content().string(content));
         }
-
     }
 
     @Nested
@@ -183,7 +178,6 @@ public abstract class LastModifiedDate {
                             .header("if-unmodified-since", toHeaderDateFormat(addDays(lastModifiedDate, -1))))
                     .andExpect(status().isPreconditionFailed());
         }
-
     }
 
     @Nested
@@ -196,7 +190,6 @@ public abstract class LastModifiedDate {
                             .header("if-unmodified-since", toHeaderDateFormat(lastModifiedDate)))
                     .andExpect(status().isOk());
         }
-
     }
 
     @Nested
@@ -212,7 +205,6 @@ public abstract class LastModifiedDate {
                         .andExpect(status().isPreconditionFailed());
             }
         }
-
     }
 
     @Nested
@@ -223,7 +215,6 @@ public abstract class LastModifiedDate {
                             .header("if-unmodified-since", toHeaderDateFormat(addDays(lastModifiedDate, -1))))
                     .andExpect(status().isPreconditionFailed());
         }
-
     }
 
     @Nested
@@ -234,6 +225,5 @@ public abstract class LastModifiedDate {
                             .header("if-unmodified-since", toHeaderDateFormat(lastModifiedDate)))
                     .andExpect(status().isNoContent());
         }
-
     }
 }

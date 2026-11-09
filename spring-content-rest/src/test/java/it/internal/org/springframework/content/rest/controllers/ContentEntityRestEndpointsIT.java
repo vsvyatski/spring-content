@@ -145,9 +145,7 @@ public class ContentEntityRestEndpointsIT {
                         mvc.perform(delete("/testEntity3s/" + testEntity3.id + "/softDelete"))
                                 .andExpect(status().is2xxSuccessful());
                     }
-
                 }
-
             }
 
             @Nested
@@ -176,9 +174,7 @@ public class ContentEntityRestEndpointsIT {
                                 .andExpect(status().isOk())
                                 .andExpect(header().string("Access-Control-Allow-Origin", "http://www.someurl.com"));
                     }
-
                 }
-
             }
 
             @Nested
@@ -239,9 +235,7 @@ public class ContentEntityRestEndpointsIT {
                                     .accept("text/plain"))
                             .andExpect(status().isNotFound());
                 }
-
             }
-
         }
 
         @Nested
@@ -292,7 +286,6 @@ public class ContentEntityRestEndpointsIT {
 
                 assertThat(response.getContentAsString()).isEqualTo(newContent);
             }
-
         }
 
         @Nested
@@ -339,7 +332,6 @@ public class ContentEntityRestEndpointsIT {
 
                     assertThat(response.getContentAsString()).isEqualTo(newContent);
                 }
-
             }
 
             @Nested
@@ -370,9 +362,7 @@ public class ContentEntityRestEndpointsIT {
                     assertThat(fetchedEntity.get().getLen()).isNull();
                     assertThat(fetchedEntity.get().getOriginalFileName()).isNull();
                 }
-
             }
-
         }
 
         @Nested
@@ -410,7 +400,6 @@ public class ContentEntityRestEndpointsIT {
                 assertThat(response).isNotNull();
                 assertThat(response.getContentAsString()).isEqualTo("Hello Spring Content World!");
             }
-
         }
 
         @Nested
@@ -451,7 +440,6 @@ public class ContentEntityRestEndpointsIT {
                         .andReturn().getResponse();
                 assertThat(response.getContentAsString()).isEqualTo(newContent);
             }
-
         }
 
         @Nested
@@ -488,7 +476,6 @@ public class ContentEntityRestEndpointsIT {
                 assertThat(fetchedEntity.get().getLen()).isNull();
                 assertThat(fetchedEntity.get().getOriginalFileName()).isNull();
             }
-
         }
 
         @Nested
@@ -517,7 +504,6 @@ public class ContentEntityRestEndpointsIT {
                 assertThat(((TestEntity3) eventListener.getBeforeCreate().get(0)).getName()).isEqualTo("foo foo");
                 assertThat(((TestEntity3) eventListener.getAfterCreate().get(0)).getName()).isEqualTo("foo foo");
             }
-
         }
 
         @Nested
@@ -549,7 +535,6 @@ public class ContentEntityRestEndpointsIT {
 
                 assertThat(repo3.count()).isEqualTo(before);
             }
-
         }
 
         @Nested
@@ -588,9 +573,6 @@ public class ContentEntityRestEndpointsIT {
                         .andReturn().getResponse();
                 assertThat(response.getContentAsString()).isEqualTo(newContent);
             }
-
         }
-
     }
-
 }

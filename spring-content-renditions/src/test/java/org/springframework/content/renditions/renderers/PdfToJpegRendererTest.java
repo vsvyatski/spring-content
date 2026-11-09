@@ -46,7 +46,6 @@ public class PdfToJpegRendererTest {
             void shouldReturnWordMlMimetype() {
                 assertThat(renderer.consumes()).isEqualTo("application/pdf");
             }
-
         }
 
         @Nested
@@ -61,7 +60,6 @@ public class PdfToJpegRendererTest {
             void shouldReturnJpegMimetype() {
                 assertThat(renderer.produces()).contains("image/jpg");
             }
-
         }
 
         @Nested
@@ -134,9 +132,7 @@ public class PdfToJpegRendererTest {
                         void shouldCloseTheDocument() throws IOException {
                             verify(doc).close();
                         }
-
                     }
-
                 }
 
                 @Nested
@@ -166,9 +162,7 @@ public class PdfToJpegRendererTest {
                         assertThat(e).isNotNull();
                         assertThat(e).isInstanceOf(RenditionException.class);
                     }
-
                 }
-
             }
 
             @Nested
@@ -189,11 +183,7 @@ public class PdfToJpegRendererTest {
                 void shouldGetTheEmbeddedThumbnailFromTheXWPFDocumentSProperties() {
                     assertThat(e).isNotNull();
                 }
-
             }
-
         }
-
     }
-
 }

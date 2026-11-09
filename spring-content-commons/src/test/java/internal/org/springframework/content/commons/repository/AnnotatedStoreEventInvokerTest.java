@@ -204,11 +204,8 @@ public class AnnotatedStoreEventInvokerTest {
 
                     assertThat(invoker.getHandlers().get(BeforeGetResourceEvent.class).get(0).handler).isEqualTo(priorityHandler);
                 }
-
             }
-
         }
-
     }
 
     @Nested
@@ -238,7 +235,6 @@ public class AnnotatedStoreEventInvokerTest {
                         org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
                         org.mockito.ArgumentMatchers.eq(event.getSource()));
             }
-
         }
 
         @Nested
@@ -266,7 +262,6 @@ public class AnnotatedStoreEventInvokerTest {
                         org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
                         org.mockito.ArgumentMatchers.eq(event));
             }
-
         }
 
         @Nested
@@ -294,7 +289,6 @@ public class AnnotatedStoreEventInvokerTest {
                         org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
                         org.mockito.ArgumentMatchers.eq(event.getSource()));
             }
-
         }
 
         @Nested
@@ -322,7 +316,6 @@ public class AnnotatedStoreEventInvokerTest {
                         org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
                         org.mockito.ArgumentMatchers.eq(event));
             }
-
         }
 
         @Nested
@@ -350,7 +343,6 @@ public class AnnotatedStoreEventInvokerTest {
                         org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
                         org.mockito.ArgumentMatchers.eq(event.getSource()));
             }
-
         }
 
         @Nested
@@ -378,7 +370,6 @@ public class AnnotatedStoreEventInvokerTest {
                         org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
                         org.mockito.ArgumentMatchers.eq(event));
             }
-
         }
 
         @Nested
@@ -406,7 +397,6 @@ public class AnnotatedStoreEventInvokerTest {
                         org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
                         org.mockito.ArgumentMatchers.eq(event.getSource()));
             }
-
         }
 
         @Nested
@@ -434,7 +424,6 @@ public class AnnotatedStoreEventInvokerTest {
                         org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
                         org.mockito.ArgumentMatchers.eq(event));
             }
-
         }
 
         @Nested
@@ -462,7 +451,6 @@ public class AnnotatedStoreEventInvokerTest {
                         org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
                         org.mockito.ArgumentMatchers.eq(event.getSource()));
             }
-
         }
 
         @Nested
@@ -490,7 +478,6 @@ public class AnnotatedStoreEventInvokerTest {
                         org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
                         org.mockito.ArgumentMatchers.eq(event));
             }
-
         }
 
         @Nested
@@ -518,7 +505,6 @@ public class AnnotatedStoreEventInvokerTest {
                         org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
                         org.mockito.ArgumentMatchers.eq(event.getSource()));
             }
-
         }
 
         @Nested
@@ -546,7 +532,6 @@ public class AnnotatedStoreEventInvokerTest {
                         org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
                         org.mockito.ArgumentMatchers.eq(event));
             }
-
         }
 
         @Nested
@@ -574,7 +559,6 @@ public class AnnotatedStoreEventInvokerTest {
                         org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
                         org.mockito.ArgumentMatchers.eq(event.getSource()));
             }
-
         }
 
         @Nested
@@ -602,7 +586,6 @@ public class AnnotatedStoreEventInvokerTest {
                         org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
                         org.mockito.ArgumentMatchers.eq(event));
             }
-
         }
 
         @Nested
@@ -630,7 +613,6 @@ public class AnnotatedStoreEventInvokerTest {
                         org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
                         org.mockito.ArgumentMatchers.eq(event.getSource()));
             }
-
         }
 
         @Nested
@@ -658,7 +640,6 @@ public class AnnotatedStoreEventInvokerTest {
                         org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
                         org.mockito.ArgumentMatchers.eq(event));
             }
-
         }
 
         @Nested
@@ -686,7 +667,6 @@ public class AnnotatedStoreEventInvokerTest {
                         org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
                         org.mockito.ArgumentMatchers.eq(event.getSource()));
             }
-
         }
 
         @Nested
@@ -714,7 +694,6 @@ public class AnnotatedStoreEventInvokerTest {
                         org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
                         org.mockito.ArgumentMatchers.eq(event));
             }
-
         }
 
         @Nested
@@ -742,7 +721,6 @@ public class AnnotatedStoreEventInvokerTest {
                         org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
                         org.mockito.ArgumentMatchers.eq(event.getSource()));
             }
-
         }
 
         @Nested
@@ -770,7 +748,6 @@ public class AnnotatedStoreEventInvokerTest {
                         org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
                         org.mockito.ArgumentMatchers.eq(event));
             }
-
         }
 
         @Nested
@@ -798,7 +775,6 @@ public class AnnotatedStoreEventInvokerTest {
                         org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
                         org.mockito.ArgumentMatchers.eq(event.getSource()));
             }
-
         }
 
         @Nested
@@ -826,7 +802,6 @@ public class AnnotatedStoreEventInvokerTest {
                         org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
                         org.mockito.ArgumentMatchers.eq(event));
             }
-
         }
 
         @Nested
@@ -854,7 +829,6 @@ public class AnnotatedStoreEventInvokerTest {
                         org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
                         org.mockito.ArgumentMatchers.eq(event.getSource()));
             }
-
         }
 
         @Nested
@@ -882,7 +856,6 @@ public class AnnotatedStoreEventInvokerTest {
                         org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
                         org.mockito.ArgumentMatchers.eq(event));
             }
-
         }
 
         @Nested
@@ -908,8 +881,6 @@ public class AnnotatedStoreEventInvokerTest {
 
                 verify(reflectionService, never()).invokeMethod(any(), any(), any());
             }
-
         }
-
     }
 }

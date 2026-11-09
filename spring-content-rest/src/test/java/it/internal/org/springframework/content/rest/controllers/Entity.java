@@ -135,5 +135,4 @@ public class Entity {
                     .andExpect(status().is2xxSuccessful());
         }
     }
-
 }

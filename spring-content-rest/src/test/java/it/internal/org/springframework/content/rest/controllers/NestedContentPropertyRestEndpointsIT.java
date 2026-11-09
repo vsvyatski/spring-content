@@ -94,7 +94,6 @@ public class NestedContentPropertyRestEndpointsIT {
                                     get("/testEntity8s/9999999/foo"))
                             .andExpect(status().isNotFound());
                 }
-
             }
 
             @Nested
@@ -134,7 +133,6 @@ public class NestedContentPropertyRestEndpointsIT {
 
                     assertThat(response.getContentAsString()).isEqualTo(newContent);
                 }
-
             }
 
             @Nested
@@ -152,7 +150,6 @@ public class NestedContentPropertyRestEndpointsIT {
                                     get("/testEntity8s/" + testEntity8.getId() + "/doesnotexist"))
                             .andExpect(status().isNotFound());
                 }
-
             }
 
             @Nested
@@ -172,7 +169,6 @@ public class NestedContentPropertyRestEndpointsIT {
                                         get("/testEntity8s/" + testEntity8.getId() + "/child"))
                                 .andExpect(status().isNotFound());
                     }
-
                 }
 
                 @Nested
@@ -201,7 +197,6 @@ public class NestedContentPropertyRestEndpointsIT {
                             IOUtils.contentEquals(actual, new ByteArrayInputStream("Hello New Spring Content World!".getBytes()));
                         }
                     }
-
                 }
 
                 @Nested
@@ -231,9 +226,7 @@ public class NestedContentPropertyRestEndpointsIT {
                             IOUtils.contentEquals(actual, new ByteArrayInputStream(content.getBytes()));
                         }
                     }
-
                 }
-
             }
 
             @Nested
@@ -283,7 +276,6 @@ public class NestedContentPropertyRestEndpointsIT {
                         assertThat(response).isNotNull();
                         assertThat(response.getContentAsString()).isEqualTo("Hello Spring Content World!");
                     }
-
                 }
 
                 @Nested
@@ -330,7 +322,6 @@ public class NestedContentPropertyRestEndpointsIT {
                         assertThat(response).isNotNull();
                         assertThat(response.getContentAsString()).isEqualTo("<html><body>Hello Spring Content World!</body></html>");
                     }
-
                 }
 
                 @Nested
@@ -378,7 +369,6 @@ public class NestedContentPropertyRestEndpointsIT {
                         assertThat(response).isNotNull();
                         assertThat(response.getContentAsString()).isEqualTo("Hello Spring Content World!");
                     }
-
                 }
 
                 @Nested
@@ -427,7 +417,6 @@ public class NestedContentPropertyRestEndpointsIT {
                         assertThat(fetched.get().getChild().contentLen).isEqualTo(31L);
                         assertThat(fetched.get().getChild().contentMimeType).isEqualTo("text/plain");
                     }
-
                 }
 
                 @Nested
@@ -473,13 +462,8 @@ public class NestedContentPropertyRestEndpointsIT {
                         assertThat(fetched.get().getChild().contentLen).isNull();
                         assertThat(fetched.get().getChild().contentMimeType).isNull();
                     }
-
                 }
-
             }
-
         }
-
     }
-
 }

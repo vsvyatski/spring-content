@@ -172,7 +172,5 @@ public class PreferResourceForPutsAndPostsIT {
 
             verify(storeFactory.getMock()).setContent(org.mockito.ArgumentMatchers.isA(TestEntity.class), org.mockito.ArgumentMatchers.isA(PropertyPath.class), (Resource) org.mockito.ArgumentMatchers.isA(Resource.class));
         }
-
     }
-
 }

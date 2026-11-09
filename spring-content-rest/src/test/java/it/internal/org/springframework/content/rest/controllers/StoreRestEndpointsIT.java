@@ -69,7 +69,6 @@ public class StoreRestEndpointsIT {
                 void shouldReturn404() throws Exception {
                     mvc.perform(get(request)).andExpect(status().isNotFound());
                 }
-
             }
 
             @Nested
@@ -96,7 +95,6 @@ public class StoreRestEndpointsIT {
                             r.getInputStream())).isTrue();
                     assertThat(r.contentLength()).isEqualTo(Long.valueOf(content.length()));
                 }
-
             }
 
             @Nested
@@ -113,9 +111,7 @@ public class StoreRestEndpointsIT {
                 void shouldReturnA404() throws Exception {
                     mvc.perform(delete(request)).andExpect(status().isNotFound());
                 }
-
             }
-
         }
 
         @Nested
@@ -214,9 +210,7 @@ public class StoreRestEndpointsIT {
                             r.getInputStream())).isTrue();
                     assertThat(r.contentLength()).isEqualTo(Long.valueOf(content.length()));
                 }
-
             }
-
         }
 
         @Nested
@@ -301,7 +295,6 @@ public class StoreRestEndpointsIT {
                     assertThat(response).isNotNull();
                     assertThat(response.getContentAsString()).isEqualTo("Existing content");
                 }
-
             }
 
             @Nested
@@ -335,11 +328,7 @@ public class StoreRestEndpointsIT {
                             r.getInputStream())).isTrue();
                     assertThat(r.contentLength()).isEqualTo(Long.valueOf(content.length()));
                 }
-
             }
-
         }
-
     }
-
 }

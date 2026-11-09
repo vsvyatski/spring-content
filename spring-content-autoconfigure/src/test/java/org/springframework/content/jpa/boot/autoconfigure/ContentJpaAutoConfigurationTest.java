@@ -139,7 +139,6 @@ public class ContentJpaAutoConfigurationTest {
                     Assertions.assertThat(context).getBean("copyBufferSize").isEqualTo(16192);
                 });
             }
-
         }
 
         @Nested

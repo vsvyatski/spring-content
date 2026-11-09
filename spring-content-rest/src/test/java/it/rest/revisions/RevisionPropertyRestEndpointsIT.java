@@ -168,7 +168,6 @@ public class RevisionPropertyRestEndpointsIT {
                                             accept("text/plain")).
                             andExpect(status().isNotFound());
                 }
-
             }
 
             @Nested
@@ -200,10 +199,7 @@ public class RevisionPropertyRestEndpointsIT {
                     assertThat(response).isNotNull();
                     assertThat(response.getContentAsString()).isEqualTo("Hello Spring Content World!");
                 }
-
             }
-
         }
-
     }
 }

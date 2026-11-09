@@ -85,6 +85,5 @@ public class ContentMongoAutoConfigurationTest {
                     .run((context) ->
                             Assertions.assertThat(context).hasSingleBean(TestEntityContentRepository.class));
         }
-
     }
 }

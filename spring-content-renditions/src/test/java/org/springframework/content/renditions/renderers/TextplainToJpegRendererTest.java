@@ -33,7 +33,6 @@ public class TextplainToJpegRendererTest {
             void shouldReturnTextPlain() {
                 assertThat(renderer.consumes()).isEqualTo("text/plain");
             }
-
         }
 
         @Nested
@@ -48,7 +47,6 @@ public class TextplainToJpegRendererTest {
                 assertThat(renderer.produces()).contains("image/jpg");
                 assertThat(renderer.produces()).contains("image/jpeg");
             }
-
         }
 
         @Nested
@@ -83,7 +81,6 @@ public class TextplainToJpegRendererTest {
                         // assertThat(IOUtils.contentEquals(expected, result),
                         // is(true));
                     }
-
                 }
 
                 @Nested
@@ -108,7 +105,6 @@ public class TextplainToJpegRendererTest {
                         // assertThat(IOUtils.contentEquals(this.getClass().getResourceAsStream("/textplaintorenderer/multi-line.jpeg"),
                         // result)).isTrue();
                     }
-
                 }
 
                 @Nested
@@ -135,7 +131,6 @@ public class TextplainToJpegRendererTest {
                         // assertThat(IOUtils.contentEquals(this.getClass().getResourceAsStream("/textplaintorenderer/wrapped-line.jpeg"),
                         // result)).isTrue();
                     }
-
                 }
 
                 @Nested
@@ -161,7 +156,6 @@ public class TextplainToJpegRendererTest {
                         // assertThat(IOUtils.contentEquals(this.getClass().getResourceAsStream("/textplaintorenderer/overflowed-line.jpeg"),
                         // result)).isTrue();
                     }
-
                 }
 
                 @Nested
@@ -187,9 +181,7 @@ public class TextplainToJpegRendererTest {
                         // assertThat(IOUtils.contentEquals(this.getClass().getResourceAsStream("/textplaintorenderer/overflowed-image.jpeg"),
                         // result)).isTrue();
                     }
-
                 }
-
             }
 
             @Nested
@@ -211,7 +203,6 @@ public class TextplainToJpegRendererTest {
                 void shouldNotError() {
                     assertThat(e).isNull();
                 }
-
             }
 
             @Nested
@@ -231,11 +222,7 @@ public class TextplainToJpegRendererTest {
                 void shouldReturnAnError() {
                     assertThat(e).isNotNull();
                 }
-
             }
-
         }
-
     }
-
 }

@@ -95,7 +95,6 @@ public class NestedContentPropertiesRestEndpointsIT {
                                     get("/testEntity10s/9999999/foo"))
                             .andExpect(status().isNotFound());
                 }
-
             }
 
             @Nested
@@ -113,7 +112,6 @@ public class NestedContentPropertiesRestEndpointsIT {
                                     get("/testEntity10s/" + testEntity10.getId() + "/doesnotexist"))
                             .andExpect(status().isNotFound());
                 }
-
             }
 
             @Nested
@@ -133,7 +131,6 @@ public class NestedContentPropertiesRestEndpointsIT {
                                         get("/testEntity10s/" + testEntity10.getId() + "/child"))
                                 .andExpect(status().isNotFound());
                     }
-
                 }
 
                 @Nested
@@ -177,7 +174,6 @@ public class NestedContentPropertiesRestEndpointsIT {
                             IOUtils.contentEquals(actual, new ByteArrayInputStream("Hello New Spring Content Preview World!".getBytes()));
                         }
                     }
-
                 }
 
                 @Nested
@@ -207,9 +203,7 @@ public class NestedContentPropertiesRestEndpointsIT {
                             IOUtils.contentEquals(actual, new ByteArrayInputStream(content.getBytes()));
                         }
                     }
-
                 }
-
             }
 
             @Nested
@@ -259,7 +253,6 @@ public class NestedContentPropertiesRestEndpointsIT {
                         assertThat(response).isNotNull();
                         assertThat(response.getContentAsString()).isEqualTo("Hello Spring Content World!");
                     }
-
                 }
 
                 @Nested
@@ -306,7 +299,6 @@ public class NestedContentPropertiesRestEndpointsIT {
                         assertThat(response).isNotNull();
                         assertThat(response.getContentAsString()).isEqualTo("<html><body>Hello Spring Content World!</body></html>");
                     }
-
                 }
 
                 @Nested
@@ -354,7 +346,6 @@ public class NestedContentPropertiesRestEndpointsIT {
                         assertThat(response).isNotNull();
                         assertThat(response.getContentAsString()).isEqualTo("Hello Spring Content World!");
                     }
-
                 }
 
                 @Nested
@@ -403,7 +394,6 @@ public class NestedContentPropertiesRestEndpointsIT {
                         assertThat(fetched.get().getChild().contentLen).isEqualTo(31L);
                         assertThat(fetched.get().getChild().contentMimeType).isEqualTo("text/plain");
                     }
-
                 }
 
                 @Nested
@@ -449,11 +439,8 @@ public class NestedContentPropertiesRestEndpointsIT {
                         assertThat(fetched.get().getChild().contentLen).isNull();
                         assertThat(fetched.get().getChild().contentMimeType).isNull();
                     }
-
                 }
-
             }
-
         }
 
         @Nested
@@ -501,9 +488,6 @@ public class NestedContentPropertiesRestEndpointsIT {
 
                 assertThat(response.getContentAsString()).isEqualTo(previewContent);
             }
-
         }
-
     }
-
 }

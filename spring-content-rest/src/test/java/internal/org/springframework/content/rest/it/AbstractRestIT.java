@@ -178,13 +178,8 @@ public abstract class AbstractRestIT {
                                 .assertThat()
                                 .statusCode(HttpStatus.SC_NOT_FOUND);
                     }
-
                 }
-
             }
-
         }
-
     }
-
 }

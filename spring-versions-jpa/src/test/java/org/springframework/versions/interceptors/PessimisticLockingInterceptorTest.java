@@ -106,7 +106,6 @@ public class PessimisticLockingInterceptorTest {
                             verify(locker).lockOwner(0L);
                             verify(mi).proceed();
                         }
-
                     }
 
                     @Nested
@@ -143,7 +142,6 @@ public class PessimisticLockingInterceptorTest {
                             verify(locker).isLockOwner(0L, principal);
                             verify(mi).proceed();
                         }
-
                     }
 
                     @Nested
@@ -179,7 +177,6 @@ public class PessimisticLockingInterceptorTest {
                         void shouldProceed() {
                             assertThat(e).isInstanceOf(LockOwnerException.class);
                         }
-
                     }
 
                     @Nested
@@ -211,14 +208,9 @@ public class PessimisticLockingInterceptorTest {
                         void shouldProceed() throws Throwable {
                             verify(mi).proceed();
                         }
-
                     }
-
                 }
-
             }
-
         }
-
     }
 }

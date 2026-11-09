@@ -72,7 +72,5 @@ public class EntityContentLinksIT {
                 this.setExpectedLinkRegex(String.format("http://localhost/testEntity3s/%s/content", testEntity3.getId()));
             }
         }
-
     }
-
 }

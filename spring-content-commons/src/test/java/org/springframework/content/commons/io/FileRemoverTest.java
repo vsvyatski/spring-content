@@ -31,9 +31,6 @@ public class FileRemoverTest {
             void shouldDeleteTheUnderlyingFile() {
                 verify(file).delete();
             }
-
         }
-
     }
-
 }

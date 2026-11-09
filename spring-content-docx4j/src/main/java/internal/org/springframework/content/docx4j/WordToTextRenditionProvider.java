@@ -51,5 +51,4 @@ public class WordToTextRenditionProvider implements RenditionProvider {
 
         return null;
     }
-
 }

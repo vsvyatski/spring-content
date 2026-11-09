@@ -44,7 +44,6 @@ public class FileSystemAutoConfigurationTest {
                         .withUserConfiguration(TestConfig.class).run((context) ->
                                 Assertions.assertThat(context).hasSingleBean(FileSystemResourceLoader.class));
             }
-
         }
 
         @Nested

@@ -233,7 +233,6 @@ public class DefaultS3StoreImplTest {
                         assertThat(((S3StoreResource) r).getClient()).isEqualTo(client);
                         assertThat(r.getDescription()).isEqualTo(format("Amazon s3 resource [bucket='%s' and object='%s']", "some-defaultBucket", "some/object/id"));
                     }
-
                 }
 
                 @Nested
@@ -300,11 +299,8 @@ public class DefaultS3StoreImplTest {
                                     assertThat(((S3StoreResource) r).getClient()).isEqualTo(client);
                                     assertThat(r.getDescription()).isEqualTo(format("Amazon s3 resource [bucket='%s' and object='%s']", "some-customer", "some-object-id"));
                                 }
-
                             }
-
                         }
-
                     }
 
                     @Nested
@@ -352,13 +348,9 @@ public class DefaultS3StoreImplTest {
                                 void shouldThrowAnError() {
                                     assertThat(e).isInstanceOf(ConversionFailedException.class);
                                 }
-
                             }
-
                         }
-
                     }
-
                 }
 
                 @Nested
@@ -411,11 +403,8 @@ public class DefaultS3StoreImplTest {
                         assertThat(((S3StoreResource) r).getClient()).isEqualTo(client2);
                         assertThat(r.getDescription()).isEqualTo(format("Amazon s3 resource [bucket='%s' and object='%s']", "some-bucket", "some-object-id"));
                     }
-
                 }
-
             }
-
         }
 
         @Nested
@@ -481,7 +470,6 @@ public class DefaultS3StoreImplTest {
                                 assertThat(((S3StoreResource) r).getClient()).isEqualTo(client);
                                 assertThat(r.getDescription()).isEqualTo(format("Amazon s3 resource [bucket='%s' and object='%s']", "default-defaultBucket", "12345/67890"));
                             }
-
                         }
 
                         @Nested
@@ -535,7 +523,6 @@ public class DefaultS3StoreImplTest {
                                 assertThat(((S3StoreResource) r).getClient()).isEqualTo(client);
                                 assertThat(r.getDescription()).isEqualTo(format("Amazon s3 resource [bucket='%s' and object='%s']", "some-other-bucket", "12345-67890"));
                             }
-
                         }
 
                         @Nested
@@ -577,11 +564,8 @@ public class DefaultS3StoreImplTest {
                                 assertThat(r).isNull();
                                 assertThat(e).isNull();
                             }
-
                         }
-
                     }
-
                 }
 
                 @Nested
@@ -643,11 +627,8 @@ public class DefaultS3StoreImplTest {
                                 assertThat(((S3StoreResource) r).getClient()).isEqualTo(client);
                                 assertThat(r.getDescription()).isEqualTo(format("Amazon s3 resource [bucket='%s' and object='%s']", "custom-bucket", "custom-object-id"));
                             }
-
                         }
-
                     }
-
                 }
 
                 @Nested
@@ -701,13 +682,9 @@ public class DefaultS3StoreImplTest {
                             void shouldThrowAnException() {
                                 assertThat(e).isInstanceOf(ConversionFailedException.class);
                             }
-
                         }
-
                     }
-
                 }
-
             }
 
             @Nested
@@ -771,7 +748,6 @@ public class DefaultS3StoreImplTest {
                                 assertThat(((S3StoreResource) r).getClient()).isEqualTo(client);
                                 assertThat(r.getDescription()).isEqualTo(format("Amazon s3 resource [bucket='%s' and object='%s']", "default-defaultBucket", "12345/67890"));
                             }
-
                         }
 
                         @Nested
@@ -825,7 +801,6 @@ public class DefaultS3StoreImplTest {
                                 assertThat(((S3StoreResource) r).getClient()).isEqualTo(client);
                                 assertThat(r.getDescription()).isEqualTo(format("Amazon s3 resource [bucket='%s' and object='%s']", "some-other-bucket", "12345-67890"));
                             }
-
                         }
 
                         @Nested
@@ -867,11 +842,8 @@ public class DefaultS3StoreImplTest {
                                 assertThat(r).isNull();
                                 assertThat(e).isNull();
                             }
-
                         }
-
                     }
-
                 }
 
                 @Nested
@@ -951,11 +923,8 @@ public class DefaultS3StoreImplTest {
                                 assertThat(((S3StoreResource) r).getClient()).isEqualTo(client);
                                 assertThat(r.getDescription()).isEqualTo(format("Amazon s3 resource [bucket='%s' and object='%s']", "custom-bucket", "test-entity/custom-object-id-string-based"));
                             }
-
                         }
-
                     }
-
                 }
 
                 @Nested
@@ -1009,13 +978,9 @@ public class DefaultS3StoreImplTest {
                             void shouldThrowAnException() {
                                 assertThat(e).isInstanceOf(ConversionFailedException.class);
                             }
-
                         }
-
                     }
-
                 }
-
             }
 
             @Nested
@@ -1051,7 +1016,6 @@ public class DefaultS3StoreImplTest {
                 void shouldSetTheEntitySContentIDAttribute() {
                     assertThat(entity.getContentId()).isEqualTo("12345-67890");
                 }
-
             }
 
             @Nested
@@ -1087,9 +1051,7 @@ public class DefaultS3StoreImplTest {
                 void shouldResetTheEntitySContentIDAttribute() {
                     assertThat(entity.getContentId()).isNull();
                 }
-
             }
-
         }
 
         @Nested
@@ -1222,9 +1184,7 @@ public class DefaultS3StoreImplTest {
                                     assertThat(e).isInstanceOf(StoreAccessException.class);
                                     assertThat(e.getCause().getMessage()).isEqualTo("set-ioexception");
                                 }
-
                             }
-
                         }
 
                         @Nested
@@ -1296,7 +1256,6 @@ public class DefaultS3StoreImplTest {
                                 verify(output, times(1)).write(any(byte[].class),
                                         eq(0), eq(20));
                             }
-
                         }
 
                         @Nested
@@ -1350,13 +1309,9 @@ public class DefaultS3StoreImplTest {
                             void shouldDoSomething() {
                                 assertThat(e).isInstanceOf(S3Exception.class);
                             }
-
                         }
-
                     }
-
                 }
-
             }
 
             @Nested
@@ -1440,9 +1395,7 @@ public class DefaultS3StoreImplTest {
                         assertThat(e).isInstanceOf(StoreAccessException.class);
                         assertThat(e.getCause().getMessage()).contains("setContent badness");
                     }
-
                 }
-
             }
 
             @Nested
@@ -1558,9 +1511,7 @@ public class DefaultS3StoreImplTest {
                                         assertThat(e).isInstanceOf(StoreAccessException.class);
                                         assertThat(e.getCause().getMessage()).isEqualTo("get-ioexception");
                                     }
-
                                 }
-
                             }
 
                             @Nested
@@ -1619,7 +1570,6 @@ public class DefaultS3StoreImplTest {
                                 void shouldNotFindTheContent() {
                                     assertThat(result).isNull();
                                 }
-
                             }
 
                             @Nested
@@ -1671,15 +1621,10 @@ public class DefaultS3StoreImplTest {
                                     assertThat(result).isNull();
                                     assertThat(e).isNull();
                                 }
-
                             }
-
                         }
-
                     }
-
                 }
-
             }
 
             @Nested
@@ -1786,7 +1731,6 @@ public class DefaultS3StoreImplTest {
                                         assertThat(entity.getContentId()).isNull();
                                         assertThat(entity.getContentLen()).isEqualTo(0L);
                                     }
-
                                 }
 
                                 @Nested
@@ -1840,7 +1784,6 @@ public class DefaultS3StoreImplTest {
                                         assertThat(entity.getContentId()).isEqualTo("abcd-efgh");
                                         assertThat(entity.getContentLen()).isEqualTo(0L);
                                     }
-
                                 }
 
                                 @Nested
@@ -1894,9 +1837,7 @@ public class DefaultS3StoreImplTest {
                                         assertThat(entity.getContentId()).isEqualTo("abcd-efgh");
                                         assertThat(entity.getContentLen()).isEqualTo(0L);
                                     }
-
                                 }
-
                             }
 
                             @Nested
@@ -1954,19 +1895,12 @@ public class DefaultS3StoreImplTest {
                                     assertThat(entity.getContentId()).isNull();
                                     assertThat(entity.getContentLen()).isEqualTo(0L);
                                 }
-
                             }
-
                         }
-
                     }
-
                 }
-
             }
-
         }
-
     }
 
     public class TestEntityWithBucketAnnotation extends TestEntity {

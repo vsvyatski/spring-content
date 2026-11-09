@@ -83,7 +83,5 @@ public class JpaLockingAndVersioningConfigTest {
         void shouldHaveALockingAndVersioningProxyFactoryBean() {
             assertThat(context.getBean(LockingAndVersioningProxyFactory.class)).isNotNull();
         }
-
     }
-
 }

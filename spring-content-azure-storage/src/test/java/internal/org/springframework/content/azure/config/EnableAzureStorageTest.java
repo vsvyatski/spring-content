@@ -125,7 +125,6 @@ public class EnableAzureStorageTest {
             void shouldHaveAnPlacementService() {
                 assertThat(context.getBean("azureStoragePlacementService")).isNotNull();
             }
-
         }
 
         @Nested
@@ -148,7 +147,6 @@ public class EnableAzureStorageTest {
             void shouldCallThatConfigurerToHelpSetupTheStore() {
                 verify(configurer).configureAzureStorageConverters(any());
             }
-
         }
 
         @Nested
@@ -169,8 +167,6 @@ public class EnableAzureStorageTest {
             void shouldNotContainsAnyAzureStorageBeans() {
                 assertThat(context.getBeanNamesForType(TestEntityContentStore.class)).isEmpty();
             }
-
         }
-
     }
 }

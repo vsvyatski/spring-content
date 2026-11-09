@@ -62,7 +62,5 @@ public class FullyQualifiedLinksIT {
                 this.setStore(store3);
             }
         }
-
     }
-
 }

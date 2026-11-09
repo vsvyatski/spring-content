@@ -96,6 +96,5 @@ public class RestResourceMappingBuilderTest {
             assertThat(visitor.getInverseMappings()).containsEntry("childWithout/childWithout/thumbnail", "childWithout/childWithout/thumbnail");
             assertThat(visitor.getInverseMappings()).containsEntry("childWithout/childWithout/idcard-front", "childWithout/childWithout/idcardFront");
         }
-
     }
 }

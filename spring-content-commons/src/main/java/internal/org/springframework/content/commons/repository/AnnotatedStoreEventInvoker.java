@@ -84,7 +84,6 @@ public class AnnotatedStoreEventInvoker
                 findHandler(bean, method, HandleBeforeUnsetContent.class, BeforeUnsetContentEvent.class);
                 findHandler(bean, method, HandleAfterUnsetContent.class, AfterUnsetContentEvent.class);
             }
-
         });
 
         return bean;

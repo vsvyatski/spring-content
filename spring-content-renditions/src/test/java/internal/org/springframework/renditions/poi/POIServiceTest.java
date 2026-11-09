@@ -36,7 +36,6 @@ public class POIServiceTest {
                 void shouldReturnAnInstanceOfAnXPWFDocument() throws IOException {
                     assertThat(poi.xwpfDocument(stream)).isNotNull();
                 }
-
             }
 
             @Nested
@@ -56,7 +55,6 @@ public class POIServiceTest {
                         assertThat(e).isInstanceOf(IllegalArgumentException.class);
                     }
                 }
-
             }
 
             @Nested
@@ -78,11 +76,7 @@ public class POIServiceTest {
                         assertThat(e).isInstanceOf(NotOfficeXmlFileException.class);
                     }
                 }
-
             }
-
         }
-
     }
-
 }

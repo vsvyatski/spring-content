@@ -93,7 +93,6 @@ public class PartialContentInputStreamTest {
 
                 assertThat(inputStream.skip(Long.MAX_VALUE)).isEqualTo((long) FULL_DATA.length - 4); // All the rest of the bytes can be skipped at once
             }
-
         }
 
         @Nested
@@ -172,7 +171,6 @@ public class PartialContentInputStreamTest {
 
                 assertThat(inputStream.read()).isEqualTo(-1); // EOF
             }
-
         }
 
         @Nested
@@ -265,9 +263,6 @@ public class PartialContentInputStreamTest {
 
                 assertThat(inputStream.skip(Long.MAX_VALUE)).isEqualTo((long) FULL_DATA.length - 7); // All the rest of the bytes can be skipped at once
             }
-
         }
-
     }
-
 }

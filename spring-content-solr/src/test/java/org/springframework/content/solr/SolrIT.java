@@ -241,7 +241,6 @@ public class SolrIT {
                 Iterable<UUID> content = docContentRepo.search("one");
                 assertThat(content).contains(doc.getContentId());
             }
-
         }
 
         @Nested
@@ -292,7 +291,6 @@ public class SolrIT {
                     assertThat(response.getResults()).hasSize(1);
                 });
             }
-
         }
 
         @Nested
@@ -346,9 +344,7 @@ public class SolrIT {
 
                 assertThat(results.size()).isEqualTo(0);
             }
-
         }
-
     }
 
     @Nested
@@ -423,9 +419,7 @@ public class SolrIT {
 
                 });
             }
-
         }
-
     }
 
     @Nested
@@ -476,7 +470,6 @@ public class SolrIT {
             assertThat(results).contains(doc.getContentId());
             assertThat(results).doesNotContain(doc2.getContentId());
         }
-
     }
 
     @Nested
@@ -525,6 +518,5 @@ public class SolrIT {
 
             });
         }
-
     }
 }

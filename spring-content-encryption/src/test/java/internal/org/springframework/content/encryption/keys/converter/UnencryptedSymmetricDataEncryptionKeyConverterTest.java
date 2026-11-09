@@ -55,5 +55,4 @@ public class UnencryptedSymmetricDataEncryptionKeyConverterTest {
 
         assertThat(decoded).isNull();
     }
-
 }

@@ -98,7 +98,6 @@ public class RestResourceMappedRestEndpointsIT {
                                     get("/testEntity11s/9999999/package/content"))
                             .andExpect(status().isNotFound());
                 }
-
             }
 
             @Nested
@@ -116,7 +115,6 @@ public class RestResourceMappedRestEndpointsIT {
                                     get("/testEntity11s/" + testEntity11.getId() + "/doesnotexist"))
                             .andExpect(status().isNotFound());
                 }
-
             }
 
             @Nested
@@ -136,7 +134,6 @@ public class RestResourceMappedRestEndpointsIT {
                                         get("/testEntity11s/" + testEntity11.getId() + "/package/content"))
                                 .andExpect(status().isNotFound());
                     }
-
                 }
 
                 @Nested
@@ -165,7 +162,6 @@ public class RestResourceMappedRestEndpointsIT {
                             IOUtils.contentEquals(actual, new ByteArrayInputStream("Hello New Spring Content World!".getBytes()));
                         }
                     }
-
                 }
 
                 @Nested
@@ -195,9 +191,7 @@ public class RestResourceMappedRestEndpointsIT {
                             IOUtils.contentEquals(actual, new ByteArrayInputStream(content.getBytes()));
                         }
                     }
-
                 }
-
             }
 
             @Nested
@@ -248,7 +242,6 @@ public class RestResourceMappedRestEndpointsIT {
                         assertThat(val).isNotNull();
                         assertThat(val.toString()).matches("http://localhost/testEntity11s/.*/package/content");
                     }
-
                 }
 
                 @Nested
@@ -296,7 +289,6 @@ public class RestResourceMappedRestEndpointsIT {
                         assertThat(response).isNotNull();
                         assertThat(response.getContentAsString()).isEqualTo("Hello Spring Content World!");
                     }
-
                 }
 
                 @Nested
@@ -342,7 +334,6 @@ public class RestResourceMappedRestEndpointsIT {
                         assertThat(response).isNotNull();
                         assertThat(response.getContentAsString()).isEqualTo("<html><body>Hello Spring Content World!</body></html>");
                     }
-
                 }
 
                 @Nested
@@ -388,7 +379,6 @@ public class RestResourceMappedRestEndpointsIT {
                         assertThat(response).isNotNull();
                         assertThat(response.getContentAsString()).isEqualTo("Hello Spring Content World!");
                     }
-
                 }
 
                 @Nested
@@ -436,7 +426,6 @@ public class RestResourceMappedRestEndpointsIT {
                         assertThat(fetched.get().get_package().contentLen).isEqualTo(31L);
                         assertThat(fetched.get().get_package().contentMimeType).isEqualTo("text/plain");
                     }
-
                 }
 
                 @Nested
@@ -482,13 +471,8 @@ public class RestResourceMappedRestEndpointsIT {
                         assertThat(fetched.get().get_package().contentLen).isNull();
                         assertThat(fetched.get().get_package().contentMimeType).isNull();
                     }
-
                 }
-
             }
-
         }
-
     }
-
 }

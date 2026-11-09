@@ -207,7 +207,6 @@ public class StoredRenditionsRestIT {
                                 .andExpect(content().string(not("<html><head><title>Dynamic Rendition</title></head><body>foo</body></html>")))
                                 .andExpect(content().string("<html><head><title>Stored Rendition</title></head><body>foo</body></html>"));
                     }
-
                 }
 
                 @Nested
@@ -230,7 +229,6 @@ public class StoredRenditionsRestIT {
                                                 .accept("text/html"))
                                 .andExpect(status().isMethodNotAllowed());
                     }
-
                 }
 
                 @Nested
@@ -260,12 +258,8 @@ public class StoredRenditionsRestIT {
                         assertThat(fetched.get().getRenditionLen()).isEqualTo(0L);
                         assertThat(fetched.get().getRenditionMimeType()).isNull();
                     }
-
                 }
-
             }
-
         }
-
     }
 }

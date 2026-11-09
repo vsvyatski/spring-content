@@ -118,7 +118,6 @@ public class StoreUtilsTest {
                         assertThat(beans).contains(def1);
                         assertThat(beans).contains(def2);
                     }
-
                 }
 
                 @Nested
@@ -161,9 +160,7 @@ public class StoreUtilsTest {
                         assertThat(beans).doesNotContain(def1);
                         assertThat(beans).doesNotContain(def2);
                     }
-
                 }
-
             }
 
             @Nested
@@ -199,10 +196,7 @@ public class StoreUtilsTest {
                     assertThat(beans).contains(def1);
                     assertThat(beans).contains(def2);
                 }
-
             }
-
         }
-
     }
 }

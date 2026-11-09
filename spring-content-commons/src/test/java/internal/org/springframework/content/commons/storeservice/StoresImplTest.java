@@ -79,7 +79,6 @@ public class StoresImplTest {
             void shouldAlwaysReturnEmpty() {
                 assertThat(contentRepoService.getStores(Store.class)).isEqualTo(new StoreInfo[]{});
             }
-
         }
 
         @Nested
@@ -125,7 +124,6 @@ public class StoresImplTest {
                 StoreInfo[] infos = contentRepoService.getStores(ContentStore.class);
                 assertThat(infos.length).isEqualTo(1);
             }
-
         }
 
         @Nested
@@ -172,7 +170,6 @@ public class StoresImplTest {
                 StoreInfo[] infos = contentRepoService.getStores(ContentStore.class);
                 assertThat(infos.length).isEqualTo(0);
             }
-
         }
 
         @Nested
@@ -219,7 +216,6 @@ public class StoresImplTest {
                         .getStores(AssociativeStore.class);
                 assertThat(infos.length).isEqualTo(1);
             }
-
         }
 
         @Nested
@@ -284,7 +280,6 @@ public class StoresImplTest {
                         });
                 assertThat(infos.length).isEqualTo(0);
             }
-
         }
 
         @Nested
@@ -331,8 +326,6 @@ public class StoresImplTest {
                 StoreInfo[] infos = contentRepoService.getStores(ContentStore.class, Stores.MATCH_ALL);
                 assertThat(infos.length).isEqualTo(2);
             }
-
         }
-
     }
 }

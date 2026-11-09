@@ -153,7 +153,6 @@ public class AbstractStoreFactoryBeanTest {
                         ContentStoreNotFirstIntefaceStore.class);
                 assertThat(domainClass).isEqualTo(String.class);
             }
-
         }
 
         @Nested
@@ -165,8 +164,6 @@ public class AbstractStoreFactoryBeanTest {
                         .getContentIdClass(TestStore.class);
                 assertThat(domainId).isEqualTo(UUID.class);
             }
-
         }
-
     }
 }

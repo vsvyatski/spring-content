@@ -45,7 +45,6 @@ public class WordToJpegRendererTest {
             void shouldReturnWordMlMimetype() {
                 assertThat(renderer.consumes()).isEqualTo("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
             }
-
         }
 
         @Nested
@@ -60,7 +59,6 @@ public class WordToJpegRendererTest {
             void shouldReturnJpegMimetype() {
                 assertThat(renderer.produces()).contains("image/jpg");
             }
-
         }
 
         @Nested
@@ -121,7 +119,6 @@ public class WordToJpegRendererTest {
                         assertThat(e).isNotNull();
                         assertThat(e).isInstanceOf(RenditionException.class);
                     }
-
                 }
 
                 @Nested
@@ -155,7 +152,6 @@ public class WordToJpegRendererTest {
                         assertThat(e).isNotNull();
                         assertThat(e).isInstanceOf(RenditionException.class);
                     }
-
                 }
 
                 @Nested
@@ -190,9 +186,7 @@ public class WordToJpegRendererTest {
                         assertThat(e).isNotNull();
                         assertThat(e).isInstanceOf(RenditionException.class);
                     }
-
                 }
-
             }
 
             @Nested
@@ -213,11 +207,7 @@ public class WordToJpegRendererTest {
                 void shouldGetTheEmbeddedThumbnailFromTheXWPFDocumentSProperties() {
                     assertThat(e).isNotNull();
                 }
-
             }
-
         }
-
     }
-
 }

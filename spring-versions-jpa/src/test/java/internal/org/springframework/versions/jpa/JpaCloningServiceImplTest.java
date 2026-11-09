@@ -62,7 +62,6 @@ public class JpaCloningServiceImplTest {
                     assertThat(result).isNotNull();
                     assertThat(result).isNotEqualTo(entity);
                 }
-
             }
 
             @Nested
@@ -85,7 +84,6 @@ public class JpaCloningServiceImplTest {
                     assertThat(e).isInstanceOf(LockingAndVersioningException.class);
                     assertThat(e.getMessage()).contains("no copy constructor");
                 }
-
             }
 
             @Nested
@@ -108,10 +106,7 @@ public class JpaCloningServiceImplTest {
                     assertThat(e).isInstanceOf(LockingAndVersioningException.class);
                     assertThat(e.getMessage()).contains("copy constructor failed");
                 }
-
             }
-
         }
-
     }
 }

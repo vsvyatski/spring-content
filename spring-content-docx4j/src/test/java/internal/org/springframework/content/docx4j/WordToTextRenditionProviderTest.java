@@ -37,5 +37,4 @@ public class WordToTextRenditionProviderTest {
         assertThat(IOUtils.toString(converted, StandardCharsets.UTF_8))
                 .isEqualTo("This is the Document Title\n\n and this is the document body.\n\n\n");
     }
-
 }

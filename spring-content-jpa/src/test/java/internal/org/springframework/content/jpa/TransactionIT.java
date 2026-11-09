@@ -112,7 +112,6 @@ public class TransactionIT {
                                 return null;
                             });
                         }
-
                     } finally {
                         context.close();
 
@@ -121,7 +120,6 @@ public class TransactionIT {
             }
             return tests.stream();
         }
-
     }
 
     @Entity

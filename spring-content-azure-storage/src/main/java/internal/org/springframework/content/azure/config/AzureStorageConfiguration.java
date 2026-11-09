@@ -74,7 +74,6 @@ public class AzureStorageConfiguration implements InitializingBean {
 
                 return (key != null) ? new BlobId(strBucket, key.toString()) : null;
             }
-
         };
         conversion.addConverter(converter);
     }

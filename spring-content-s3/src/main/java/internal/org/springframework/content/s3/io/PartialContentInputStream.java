@@ -182,6 +182,5 @@ class PartialContentInputStream extends InputStream {
         public int intLength() {
             return (int) Math.min(length(), Integer.MAX_VALUE);
         }
-
     }
 }

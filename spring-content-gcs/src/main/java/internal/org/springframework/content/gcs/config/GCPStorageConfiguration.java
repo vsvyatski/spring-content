@@ -62,7 +62,6 @@ public class GCPStorageConfiguration implements InitializingBean {
 
                 return (key != null) ? BlobId.of(strBucket, key.toString()) : null;
             }
-
         });
     }
 

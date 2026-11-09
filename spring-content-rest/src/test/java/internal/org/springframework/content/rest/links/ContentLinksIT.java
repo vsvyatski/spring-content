@@ -156,7 +156,5 @@ public class ContentLinksIT {
                 this.setExpectedLinkRegex(format("http://localhost/contentApi/testEntity10s/%s/child/content", testEntity10.getId()));
             }
         }
-
     }
-
 }
