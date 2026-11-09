@@ -32,7 +32,6 @@ public class EnableJpaStoresTest {
 
     private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
-    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntityContentRepository
             extends ContentStore<TestEntity, String> {
     }

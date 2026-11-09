@@ -32,7 +32,6 @@ public class EnableGCPStorageTest {
     public interface TestEntityStore extends AssociativeStore<TestEntity, BlobId> {
     }
 
-    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntityContentStore extends ContentStore<TestEntity, String> {
     }
 

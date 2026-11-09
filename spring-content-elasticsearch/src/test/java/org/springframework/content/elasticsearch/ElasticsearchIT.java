@@ -53,15 +53,12 @@ public class ElasticsearchIT {
         return (IndexService<Document>) context.getBean(IndexService.class);
     }
 
-    @SuppressWarnings("unused") // classpath / store component scan
     public interface DocumentRepository extends CrudRepository<Document, Long> {
     }
 
-    @SuppressWarnings("unused") // classpath / store component scan
     public interface DocumentContentStore extends ContentStore<Document, UUID>, Searchable<UUID>, Renderable<Document> {
     }
 
-    @SuppressWarnings("unused") // classpath / store component scan
     public interface DocumentStoreSearchable extends ContentStore<Document, UUID>, Searchable<FulltextInfo> {
     }
 

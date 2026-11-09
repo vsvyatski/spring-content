@@ -40,7 +40,6 @@ public class ContentJpaAutoConfigurationTest {
 
     private ApplicationContextRunner contextRunner;
 
-    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntityContentRepository extends JpaContentStore<TestEntity, String> {
     }
 

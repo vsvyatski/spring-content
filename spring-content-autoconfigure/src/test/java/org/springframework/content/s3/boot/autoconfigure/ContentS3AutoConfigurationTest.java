@@ -31,7 +31,6 @@ public class ContentS3AutoConfigurationTest {
 
     private ApplicationContextRunner contextRunner;
 
-    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntityContentRepository extends S3ContentStore<TestEntity, String> {
     }
 

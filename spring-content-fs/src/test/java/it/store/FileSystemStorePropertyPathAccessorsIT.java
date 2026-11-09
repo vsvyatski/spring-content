@@ -57,11 +57,9 @@ public class FileSystemStorePropertyPathAccessorsIT {
 
     private String resourceLocation;
 
-    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntityRepository extends JpaRepository<TEntity, UUID> {
     }
 
-    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntityStore extends ContentStore<TEntity, String> {
     }
 

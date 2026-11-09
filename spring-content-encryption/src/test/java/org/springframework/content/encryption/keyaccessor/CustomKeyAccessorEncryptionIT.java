@@ -70,15 +70,12 @@ public class CustomKeyAccessorEncryptionIT {
 
     private FsFile f;
 
-    @SuppressWarnings("unused") // classpath / store component scan
     public interface FileRepository extends CrudRepository<FsFile, Long> {
     }
 
-    @SuppressWarnings("unused") // classpath / store component scan
     public interface FileContentStore3 extends FileSystemContentStore<FsFile, UUID>, EncryptingContentStore<FsFile, UUID> {
     }
 
-    @SuppressWarnings("unused") // classpath / store component scan
     public interface ContentEncryptionKeyRepository extends CrudRepository<ContentEncryptionKey, UUID> {
     }
 

@@ -85,7 +85,6 @@ public class LockingAndVersioningRestIT {
 
     private VersionedDocument doc;
 
-    @SuppressWarnings("unused") // classpath / store component scan
     public interface VersionedDocumentAndVersioningRepository extends JpaRepository<VersionedDocument, Long>, LockingAndVersioningRepository<VersionedDocument> {
     }
 

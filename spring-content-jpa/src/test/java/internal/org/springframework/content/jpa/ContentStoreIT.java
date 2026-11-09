@@ -110,11 +110,9 @@ public class ContentStoreIT {
         }
     }
 
-    @SuppressWarnings("unused") // classpath / store component scan
     public interface EmbeddedRepository extends JpaRepository<EntityWithEmbeddedContent, String> {
     }
 
-    @SuppressWarnings("unused") // classpath / store component scan
     public interface EmbeddedStore extends ContentStore<EntityWithEmbeddedContent, String> {
     }
 
@@ -244,7 +242,7 @@ public class ContentStoreIT {
                 // content
                 assertThat(claim.getClaimForm().getContentId()).isNotNull();
                 assertThat(!claim.getClaimForm().getContentId().trim().isEmpty()).isTrue();
-                assertThat(27L).isEqualTo((long) claim.getClaimForm().getContentLength());
+                assertThat(claim.getClaimForm().getContentLength()).isEqualTo(27L);
 
                 // rendition
                 assertThat(claim.getClaimForm().getRenditionId()).isNotNull();

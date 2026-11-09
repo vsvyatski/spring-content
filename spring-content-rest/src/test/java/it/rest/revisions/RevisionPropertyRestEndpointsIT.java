@@ -60,11 +60,9 @@ public class RevisionPropertyRestEndpointsIT {
 
     private TEntity testEntity;
 
-    @SuppressWarnings("unused") // classpath / store component scan
     public interface TEntityRepository extends JpaRepository<TEntity, Long>, RevisionRepository<TEntity, Long, Integer> {
     }
 
-    @SuppressWarnings("unused") // classpath / store component scan
     public interface TEntityContentStore extends FileSystemContentStore<TEntity, String> {
     }
 

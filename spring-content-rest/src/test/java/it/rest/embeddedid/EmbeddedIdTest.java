@@ -66,11 +66,9 @@ public class EmbeddedIdTest {
 
     private MockMvc mvc;
 
-    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntityRepository extends JpaRepository<TestEntity, TestEntityId> {
     }
 
-    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntityContentRepository extends FileSystemContentStore<TestEntity, TestEntityId> {
     }
 

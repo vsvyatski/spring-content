@@ -83,12 +83,10 @@ public class LockingAndVersioningRestIT {
 
     private VersionedDocument doc;
 
-    @SuppressWarnings("unused") // classpath / store component scan
     public interface VersionedDocumentAndVersioningRepository extends JpaRepository<VersionedDocument, Long>, LockingAndVersioningRepository<VersionedDocument> {
     }
 
     @StoreRestResource(path = "versionedDocumentsContent")
-    @SuppressWarnings("unused") // classpath / store component scan
     public interface VersionedDocumentStore extends FileSystemContentStore<VersionedDocument, UUID> {
     }
 

@@ -53,11 +53,9 @@ public class TransactionIT {
         return configClass.getSimpleName().replaceAll("Config", "");
     }
 
-    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntityRepository extends JpaRepository<TestEntity, String> {
     }
 
-    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntityContentRepository extends ContentStore<TestEntity, String> {
     }
 

@@ -83,11 +83,9 @@ public class JpaLockingAndVersioningRepositoryImplIT {
         SecurityContextHolder.setContext(sc);
     }
 
-    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestRepository extends JpaRepository<TestEntity, Long>, LockingAndVersioningRepository<TestEntity> {
     }
 
-    @SuppressWarnings("unused") // classpath / store component scan
     public interface OtherTestRepository extends JpaRepository<OtherTestEntity, Long>, LockingAndVersioningRepository<OtherTestEntity> {
     }
 

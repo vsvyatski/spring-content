@@ -88,11 +88,9 @@ public class ContentLinksWithProjectionsIT {
         String getName();
     }
 
-    @SuppressWarnings("unused") // classpath / store component scan
     public interface TEntityRepository extends JpaRepository<TEntity, Long> {
     }
 
-    @SuppressWarnings("unused") // classpath / store component scan
     public interface TEntityStore extends FileSystemContentStore<TEntity, UUID> {
     }
 

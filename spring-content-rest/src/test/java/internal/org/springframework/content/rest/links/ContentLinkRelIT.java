@@ -117,7 +117,6 @@ public class ContentLinkRelIT {
     private ContentLinkTests contentLinkTests;
 
     @StoreRestResource(linkRel = "foo")
-    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntity5LinkRelStore extends FileSystemContentStore<TestEntity5, UUID> {
 
         @RestResource(paths = {"rendition"}, exported = false)
@@ -125,49 +124,40 @@ public class ContentLinkRelIT {
         InputStream getContent(TestEntity5 entity, PropertyPath propertyPath);
     }
 
-    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntity5Repository extends JpaRepository<TestEntity5, Long> {
     }
 
     @CrossOrigin(origins = "http://www.someurl.com")
     @RepositoryRestResource(path = "testEntities")
-    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntityRepository extends JpaRepository<TestEntity, Long> {
     }
 
     @CrossOrigin(origins = "http://www.someurl.com")
     @StoreRestResource(path = "testEntitiesContent", linkRel = "foo")
-    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntityContentRepository extends FileSystemContentStore<TestEntity, Long>, Renderable<TestEntity> {
     }
 
     @StoreRestResource(path = "files", linkRel = "foo")
-    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntity2Store extends FileSystemContentStore<TestEntity2, UUID> {
     }
 
     @RepositoryRestResource(path = "files")
-    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntity2Repository extends JpaRepository<TestEntity2, Long> {
     }
 
-    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntity10Repository extends CrudRepository<TestEntity10, Long> {
     }
 
     @StoreRestResource(linkRel = "foo")
-    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntity10Store extends FileSystemContentStore<TestEntity10, UUID>, Renderable<TestEntity10> {
     }
 
-    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntity3ContentRepository extends FileSystemContentStore<TestEntity3, Long>, Renderable<TestEntity3> {
         @RestResource(exported = false)
         @Override
         TestEntity3 setContent(TestEntity3 property, InputStream content);
     }
 
-    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntity3Repository extends JpaRepository<TestEntity3, Long> {
     }
 

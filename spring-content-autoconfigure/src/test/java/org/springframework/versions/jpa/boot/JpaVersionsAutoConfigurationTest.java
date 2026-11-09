@@ -32,7 +32,6 @@ public class JpaVersionsAutoConfigurationTest {
 
     private ApplicationContextRunner contextRunner;
 
-    @SuppressWarnings("unused") // classpath / store component scan
     public interface NestedTestEntityRepository extends CrudRepository<TestEntityVersioned, Long>, LockingAndVersioningRepository<TestEntityVersioned> {
     }
 

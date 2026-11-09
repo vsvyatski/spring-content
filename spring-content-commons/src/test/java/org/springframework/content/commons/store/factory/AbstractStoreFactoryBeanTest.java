@@ -14,11 +14,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class AbstractStoreFactoryBeanTest {
 
-    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestStore extends Serializable, ContentStore<String, UUID> {
     }
 
-    @SuppressWarnings("unused") // classpath / store component scan
     public interface ContentStoreNotFirstInterfaceStore
             extends Serializable, ContentStore<String, UUID> {
     }

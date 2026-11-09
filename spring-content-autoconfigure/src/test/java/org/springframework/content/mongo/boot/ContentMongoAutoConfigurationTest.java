@@ -30,7 +30,6 @@ public class ContentMongoAutoConfigurationTest {
 
     private ApplicationContextRunner contextRunner;
 
-    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntityContentRepository extends MongoContentStore<TestEntity, String> {
     }
 

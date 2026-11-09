@@ -53,15 +53,12 @@ public class SolrIT {
     private Document doc, doc2, doc3;
     private UUID id = null;
 
-    @SuppressWarnings("unused") // classpath / store component scan
     public interface DocumentRepository extends CrudRepository<Document, Long> {
     }
 
-    @SuppressWarnings("unused") // classpath / store component scan
     public interface DocumentContentRepository extends ContentStore<Document, UUID>, Searchable<UUID> {
     }
 
-    @SuppressWarnings("unused") // classpath / store component scan
     public interface DocumentStoreSearchable extends ContentStore<Document, UUID>, Searchable<FulltextInfo> {
     }
 

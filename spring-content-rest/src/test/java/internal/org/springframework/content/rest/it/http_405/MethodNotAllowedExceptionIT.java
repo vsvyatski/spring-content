@@ -75,11 +75,9 @@ public class MethodNotAllowedExceptionIT {
     @Autowired
     private WebApplicationContext webApplicationContext;
 
-    @SuppressWarnings("unused") // classpath / store component scan
     public interface PreferResourceForPutsAndPostsRepository extends CrudRepository<TEntity, Long> {
     }
 
-    @SuppressWarnings("unused") // classpath / store component scan
     public interface UnexportedContentStore extends FileSystemContentStore<TEntity, UUID> {
 
         @RestResource(exported = false)
@@ -103,11 +101,9 @@ public class MethodNotAllowedExceptionIT {
         TEntity unsetContent(TEntity property, PropertyPath path, UnsetContentParams params);
     }
 
-    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntity2Repo extends CrudRepository<TEntity2, Long> {
     }
 
-    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntity2Store extends FileSystemContentStore<TEntity2, UUID> {
     }
 

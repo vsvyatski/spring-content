@@ -86,11 +86,9 @@ public class EncryptionIT {
     private VaultTemplate vaultTemplate;
     private File f;
 
-    @SuppressWarnings("unused") // classpath / store component scan
     public interface FileRepository extends CrudRepository<File, Long> {
     }
 
-    @SuppressWarnings("unused") // classpath / store component scan
     public interface FileContentStore extends S3ContentStore<File, UUID>, EncryptingContentStore<File, UUID> {
     }
 

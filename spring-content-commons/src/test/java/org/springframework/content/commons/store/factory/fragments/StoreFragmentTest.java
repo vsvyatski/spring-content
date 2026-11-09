@@ -23,7 +23,6 @@ public class StoreFragmentTest {
     @Autowired
     private ApplicationContext context;
 
-    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestContentStore extends ContentStore<Object, Serializable>, Customization {
     }
 

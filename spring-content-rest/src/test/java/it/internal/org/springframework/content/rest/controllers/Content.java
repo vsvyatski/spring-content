@@ -492,7 +492,7 @@ public class Content {
                 assertThat(fetched.get().getContentId()).isNotNull();
                 assertThat(fetched.get().getOriginalFileName()).isEqualTo("tests-file-modified.txt");
                 assertThat(fetched.get().getMimeType()).isEqualTo("text/plain");
-                assertThat(fetched.get().getLen()).isEqualTo((long) content.length());
+                assertThat(fetched.get().getLen()).isEqualTo(Long.valueOf(content.length()));
             }
         }
 
@@ -545,7 +545,7 @@ public class Content {
                 assertThat(fetched.get().getContentId()).isNotNull();
                 assertThat(fetched.get().getOriginalFileName()).isEqualTo("tests-file-modified.txt");
                 assertThat(fetched.get().getMimeType()).isEqualTo("text/plain");
-                assertThat(fetched.get().getLen()).isEqualTo((long) content.length());
+                assertThat(fetched.get().getLen()).isEqualTo(Long.valueOf(content.length()));
             }
         }
 

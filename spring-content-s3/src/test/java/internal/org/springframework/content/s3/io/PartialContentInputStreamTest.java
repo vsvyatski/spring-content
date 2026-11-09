@@ -91,7 +91,7 @@ public class PartialContentInputStreamTest {
             void skipsBytesAfterTheEndOfTheRange() throws IOException {
                 inputStream.skipNBytes(4); // Skip right up to the end of the range
 
-                assertThat(inputStream.skip(Long.MAX_VALUE)).isEqualTo((long) FULL_DATA.length - 4); // All the rest of the bytes can be skipped at once
+                assertThat(inputStream.skip(Long.MAX_VALUE)).isEqualTo(FULL_DATA.length - 4L); // All the rest of the bytes can be skipped at once
             }
         }
 
@@ -261,7 +261,7 @@ public class PartialContentInputStreamTest {
             void skipsBytesAfterTheEndOfTheRange() throws IOException {
                 inputStream.skipNBytes(7); // Skip right up to the end of the range
 
-                assertThat(inputStream.skip(Long.MAX_VALUE)).isEqualTo((long) FULL_DATA.length - 7); // All the rest of the bytes can be skipped at once
+                assertThat(inputStream.skip(Long.MAX_VALUE)).isEqualTo(FULL_DATA.length - 7L); // All the rest of the bytes can be skipped at once
             }
         }
     }

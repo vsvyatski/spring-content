@@ -30,7 +30,6 @@ public class EnableMongoStoresTest {
 
     private AnnotationConfigApplicationContext context;
 
-    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntityContentRepository
             extends ContentStore<TestEntity, String> {
     }

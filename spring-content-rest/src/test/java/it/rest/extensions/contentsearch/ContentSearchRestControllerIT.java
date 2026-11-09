@@ -112,7 +112,6 @@ public class ContentSearchRestControllerIT {
     public interface TestEntityNotSearchableStore extends FileSystemContentStore<TestEntityNotSearchable, String> {
     }
 
-    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntityWithSharedIdsRepository extends CrudRepository<TestEntityWithSharedId, String> {
     }
 
@@ -120,7 +119,6 @@ public class ContentSearchRestControllerIT {
     public interface TestEntityWithSharedIdsSearchableStore extends FileSystemContentStore<TestEntityWithSharedId, String>, Searchable<String> {
     }
 
-    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntityWithSeparateIdsRepository
             extends CrudRepository<TestEntityWithSeparateId, String> {
 
@@ -131,13 +129,11 @@ public class ContentSearchRestControllerIT {
         List<TestEntityWithSeparateId> findAllByContentIdIn(@Param("contentIds") List<String> contentIds);
     }
 
-    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntityWithSeparateIdsSearchableStore
             extends FileSystemContentStore<TestEntityWithSeparateId, String>, Searchable<String> {
     }
 
     @RepositoryRestResource(path = "repoWithNoLookupStrategy")
-    @SuppressWarnings("unused") // classpath / store component scan
     public interface RepositoryWithNoLookupStrategy
             extends CrudRepository<TestEntity2, String> {
     }

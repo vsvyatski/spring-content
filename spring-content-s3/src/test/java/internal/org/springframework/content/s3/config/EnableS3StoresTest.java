@@ -47,7 +47,6 @@ public class EnableS3StoresTest {
     public interface TestEntityStore extends AssociativeStore<TestEntity, S3ObjectId> {
     }
 
-    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntityContentRepository
             extends ContentStore<TestEntity, String> {
     }

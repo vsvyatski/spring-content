@@ -38,7 +38,6 @@ public class EnableAzureStorageTest {
 
     private AnnotationConfigApplicationContext context;
 
-    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntityContentStore extends ContentStore<TestEntity, String> {
     }
 

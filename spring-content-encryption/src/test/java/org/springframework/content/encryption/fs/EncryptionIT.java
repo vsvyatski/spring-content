@@ -64,11 +64,9 @@ public class EncryptionIT {
 
     private FsFile f;
 
-    @SuppressWarnings("unused") // classpath / store component scan
     public interface FileRepository extends CrudRepository<FsFile, Long> {
     }
 
-    @SuppressWarnings("unused") // classpath / store component scan
     public interface FileContentStore3 extends FileSystemContentStore<FsFile, UUID>, EncryptingContentStore<FsFile, UUID> {
     }
 

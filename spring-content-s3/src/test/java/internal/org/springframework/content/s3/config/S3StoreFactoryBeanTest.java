@@ -25,7 +25,6 @@ public class S3StoreFactoryBeanTest {
 
     private Store store;
 
-    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestStore extends Store<Serializable> {
     }
 

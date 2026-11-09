@@ -67,7 +67,6 @@ public class PreferResourceForPutsAndPostsIT {
 
     private TestEntity2 existingClaim;
 
-    @SuppressWarnings("unused") // classpath / store component scan
     public interface PreferResourceForPutsAndPostsRepository extends CrudRepository<TestEntity, Long> {
     }
 

@@ -66,7 +66,6 @@ public class CacheControlIT {
     @Autowired
     private WebApplicationContext webApplicationContext;
 
-    @SuppressWarnings("unused") // classpath / store component scan
     public interface CacheControlRepository extends CrudRepository<TestEntity, Long> {
     }
 
