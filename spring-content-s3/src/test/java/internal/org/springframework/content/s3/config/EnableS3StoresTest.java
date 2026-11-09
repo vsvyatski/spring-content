@@ -1,18 +1,11 @@
 package internal.org.springframework.content.s3.config;
 
+import internal.org.springframework.content.s3.io.S3StoreResource;
+import internal.org.springframework.content.s3.it.LocalStack;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.AfterEach;
-import static org.assertj.core.api.Assertions.assertThat;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-
-import java.net.URISyntaxException;
-
-import internal.org.springframework.content.s3.it.LocalStack;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.store.AssociativeStore;
@@ -28,13 +21,14 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.convert.converter.ConverterRegistry;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
-
-import internal.org.springframework.content.s3.io.S3StoreResource;
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
-import software.amazon.awssdk.auth.credentials.AwsCredentials;
-import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
-import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
+
+import java.net.URISyntaxException;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 public class EnableS3StoresTest {
 

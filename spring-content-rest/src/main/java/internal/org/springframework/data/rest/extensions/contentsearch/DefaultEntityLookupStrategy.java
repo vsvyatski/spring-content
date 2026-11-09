@@ -1,13 +1,13 @@
 package internal.org.springframework.data.rest.extensions.contentsearch;
 
-import java.util.List;
-
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.utils.BeanUtils;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.core.RepositoryInformation;
 import org.springframework.data.repository.support.RepositoryInvoker;
 import org.springframework.data.rest.webmvc.RootResourceInformation;
+
+import java.util.List;
 
 public class DefaultEntityLookupStrategy {
 

@@ -1,10 +1,10 @@
 package internal.org.springframework.content.commons.storeservice;
 
-import java.io.Serializable;
-import java.util.function.Supplier;
-
 import org.springframework.content.commons.store.Store;
 import org.springframework.content.commons.storeservice.StoreInfo;
+
+import java.io.Serializable;
+import java.util.function.Supplier;
 
 public class StoreInfoImpl implements StoreInfo {
 

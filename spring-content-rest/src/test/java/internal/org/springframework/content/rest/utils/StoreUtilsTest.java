@@ -1,13 +1,10 @@
 package internal.org.springframework.content.rest.utils;
 
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.AfterEach;
-import static org.assertj.core.api.Assertions.assertThat;
-
 import internal.org.springframework.content.commons.storeservice.StoreInfoImpl;
 import internal.org.springframework.content.rest.support.TestEntity;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.springframework.content.commons.renditions.Renderable;
 import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.commons.store.Store;
@@ -16,6 +13,7 @@ import org.springframework.content.rest.StoreRestResource;
 
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 @SuppressWarnings({ "deprecation", "rawtypes", "unchecked" })

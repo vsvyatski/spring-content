@@ -1,5 +1,8 @@
 package internal.org.springframework.content.s3.config;
 
+import internal.org.springframework.content.s3.io.SimpleStorageProtocolResolver;
+import internal.org.springframework.content.s3.store.DefaultReactiveS3StoreImpl;
+import internal.org.springframework.content.s3.store.DefaultS3StoreImpl;
 import org.apache.commons.lang3.ClassUtils;
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.beans.factory.BeanFactory;
@@ -15,10 +18,6 @@ import org.springframework.content.s3.config.MultiTenantS3ClientProvider;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.versions.LockingAndVersioningProxyFactory;
-
-import internal.org.springframework.content.s3.io.SimpleStorageProtocolResolver;
-import internal.org.springframework.content.s3.store.DefaultReactiveS3StoreImpl;
-import internal.org.springframework.content.s3.store.DefaultS3StoreImpl;
 import software.amazon.awssdk.services.s3.S3AsyncClient;
 import software.amazon.awssdk.services.s3.S3Client;
 

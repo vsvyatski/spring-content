@@ -1,19 +1,15 @@
 package it.rest.versioning;
 
-import org.junit.jupiter.api.extension.ExtendWith;
-
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
-import static org.assertj.core.api.Assertions.assertThat;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import io.restassured.path.json.JsonPath;
 import jakarta.persistence.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.http.HttpStatus;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
@@ -54,6 +50,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.versions.*;
@@ -68,6 +65,7 @@ import java.nio.file.Files;
 import java.util.UUID;
 
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(classes = {LockingAndVersioningRestIT.Application.class}, webEnvironment=WebEnvironment.RANDOM_PORT)
 @ExtendWith(SpringExtension.class)

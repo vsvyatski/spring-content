@@ -1,5 +1,7 @@
 package internal.org.springframework.content.jpa.config;
 
+import internal.org.springframework.content.jpa.io.DelegatingBlobResourceLoader;
+import internal.org.springframework.content.jpa.store.DefaultJpaStoreImpl;
 import org.aopalliance.aop.Advice;
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.beans.factory.BeanFactory;
@@ -11,9 +13,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.AnnotationTransactionAttributeSource;
 import org.springframework.transaction.interceptor.TransactionInterceptor;
 import org.springframework.util.Assert;
-
-import internal.org.springframework.content.jpa.io.DelegatingBlobResourceLoader;
-import internal.org.springframework.content.jpa.store.DefaultJpaStoreImpl;
 
 @SuppressWarnings("rawtypes")
 public class JpaStoreFactoryBean extends AbstractStoreFactoryBean {

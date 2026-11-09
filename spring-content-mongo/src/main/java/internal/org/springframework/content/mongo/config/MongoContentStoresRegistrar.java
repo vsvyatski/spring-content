@@ -1,10 +1,10 @@
 package internal.org.springframework.content.mongo.config;
 
-import java.lang.annotation.Annotation;
-
 import org.springframework.content.commons.config.AbstractStoreBeanDefinitionRegistrar;
 import org.springframework.content.mongo.config.EnableMongoStores;
 import org.springframework.content.mongo.store.MongoContentStore;
+
+import java.lang.annotation.Annotation;
 
 public class MongoContentStoresRegistrar extends AbstractStoreBeanDefinitionRegistrar {
 

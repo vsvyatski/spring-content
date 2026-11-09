@@ -1,7 +1,6 @@
 package org.springframework.data.rest.extensions.entitycontent;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import tools.jackson.databind.ObjectMapper;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.InvalidPropertyException;
@@ -13,6 +12,7 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.http.server.ServletServerHttpRequest;
+import tools.jackson.databind.ObjectMapper;
 
 import java.beans.PropertyDescriptor;
 import java.io.ByteArrayInputStream;

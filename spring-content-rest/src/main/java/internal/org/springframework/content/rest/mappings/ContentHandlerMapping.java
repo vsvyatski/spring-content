@@ -1,18 +1,11 @@
 package internal.org.springframework.content.rest.mappings;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import java.lang.reflect.Method;
-import java.net.URI;
-import java.util.List;
-
-import jakarta.servlet.http.HttpServletRequest;
-
+import internal.org.springframework.content.rest.annotations.ContentRestController;
+import internal.org.springframework.content.rest.controllers.resolvers.EntityResolvers;
 import internal.org.springframework.content.rest.mappingcontext.ContentPropertyRequest;
 import internal.org.springframework.content.rest.mappingcontext.ContentPropertyToRequestMappingContext;
+import internal.org.springframework.content.rest.utils.StoreUtils;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.content.commons.store.AssociativeStore;
 import org.springframework.content.commons.store.ContentStore;
@@ -30,11 +23,10 @@ import org.springframework.web.servlet.mvc.condition.RequestCondition;
 import org.springframework.web.util.ServletRequestPathUtils;
 import org.springframework.web.util.UrlPathHelper;
 
-import internal.org.springframework.content.rest.annotations.ContentRestController;
-import internal.org.springframework.content.rest.controllers.resolvers.EntityResolvers;
-import internal.org.springframework.content.rest.utils.StoreUtils;
-
-import static org.apache.commons.lang3.StringUtils.join;
+import java.lang.annotation.*;
+import java.lang.reflect.Method;
+import java.net.URI;
+import java.util.List;
 
 public class ContentHandlerMapping extends StoreAwareHandlerMapping {
 

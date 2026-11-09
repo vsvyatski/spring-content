@@ -1,9 +1,7 @@
 package internal.org.springframework.content.elasticsearch;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import internal.org.springframework.content.commons.renditions.RenditionServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.content.commons.renditions.RenditionProvider;
 import org.springframework.content.commons.renditions.RenditionService;
@@ -12,8 +10,9 @@ import org.springframework.content.elasticsearch.AttributeProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import co.elastic.clients.elasticsearch.ElasticsearchClient;
-import internal.org.springframework.content.commons.renditions.RenditionServiceImpl;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Configuration
 public class ElasticsearchConfig {

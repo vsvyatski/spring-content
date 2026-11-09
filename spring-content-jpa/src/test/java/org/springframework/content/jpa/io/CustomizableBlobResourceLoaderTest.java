@@ -1,12 +1,9 @@
 package org.springframework.content.jpa.io;
 
-import org.junit.jupiter.api.Test;
+import internal.org.springframework.content.jpa.io.GenericBlobResource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
-import static org.assertj.core.api.Assertions.assertThat;
-
-import internal.org.springframework.content.jpa.io.GenericBlobResource;
-import org.springframework.content.jpa.io.CustomizableBlobResourceLoader;
+import org.junit.jupiter.api.Test;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
@@ -17,6 +14,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 

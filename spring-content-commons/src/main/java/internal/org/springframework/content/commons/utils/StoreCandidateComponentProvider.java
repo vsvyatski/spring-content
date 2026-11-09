@@ -1,7 +1,5 @@
 package internal.org.springframework.content.commons.utils;
 
-import java.io.IOException;
-
 import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.content.commons.store.ReactiveContentStore;
@@ -11,6 +9,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.core.type.filter.AssignableTypeFilter;
+
+import java.io.IOException;
 
 public class StoreCandidateComponentProvider
         extends ClassPathScanningCandidateComponentProvider {

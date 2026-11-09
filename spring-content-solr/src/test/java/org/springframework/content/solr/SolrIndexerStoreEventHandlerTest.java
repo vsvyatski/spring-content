@@ -1,31 +1,25 @@
 package org.springframework.content.solr;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.Test;
+import org.springframework.content.commons.annotations.ContentId;
+import org.springframework.content.commons.annotations.ContentLength;
+import org.springframework.content.commons.annotations.MimeType;
+import org.springframework.content.commons.search.IndexService;
+import org.springframework.content.commons.store.ContentStore;
+import org.springframework.content.commons.store.StoreAccessException;
+import org.springframework.content.commons.store.events.AfterSetContentEvent;
+import org.springframework.content.commons.store.events.BeforeUnsetContentEvent;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.UUID;
 
-import org.springframework.content.commons.annotations.ContentId;
-import org.springframework.content.commons.annotations.ContentLength;
-import org.springframework.content.commons.annotations.MimeType;
-import org.springframework.content.commons.store.ContentStore;
-import org.springframework.content.commons.store.StoreAccessException;
-import org.springframework.content.commons.store.events.AfterSetContentEvent;
-import org.springframework.content.commons.store.events.BeforeUnsetContentEvent;
-import org.springframework.content.commons.search.IndexService;
-
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @SuppressWarnings("unchecked")
 public class SolrIndexerStoreEventHandlerTest {

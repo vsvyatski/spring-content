@@ -1,20 +1,16 @@
 package org.springframework.content.solr;
 
-import org.junit.jupiter.api.extension.ExtendWith;
-
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Nested;
-import static org.assertj.core.api.Assertions.assertThat;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-
 import internal.org.springframework.content.fragments.SearchableImpl;
 import internal.org.springframework.content.solr.SolrFulltextIndexServiceImpl;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.impl.HttpJdkSolrClient;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.commons.search.IndexService;
 import org.springframework.content.commons.search.Searchable;
+import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.fs.config.EnableFileSystemStores;
 import org.springframework.content.fs.io.FileSystemResourceLoader;
 import org.springframework.context.ApplicationContext;
@@ -22,11 +18,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.file.Files;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 @ContextConfiguration(classes = EnableFullTextSolrIndexingTest.TestConfiguration.class)

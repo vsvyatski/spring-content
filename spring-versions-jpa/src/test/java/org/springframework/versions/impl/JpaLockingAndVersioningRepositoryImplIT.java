@@ -1,25 +1,14 @@
 package org.springframework.versions.impl;
 
-import org.junit.jupiter.api.extension.ExtendWith;
-
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-
+import internal.org.springframework.versions.LockingService;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Version;
-import javax.sql.DataSource;
-
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
@@ -45,21 +34,20 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.versions.AncestorId;
-import org.springframework.versions.AncestorRootId;
-import org.springframework.versions.LockOwner;
-import org.springframework.versions.LockOwnerException;
-import org.springframework.versions.LockingAndVersioningException;
-import org.springframework.versions.LockingAndVersioningRepository;
-import org.springframework.versions.SuccessorId;
-import org.springframework.versions.VersionInfo;
-import org.springframework.versions.VersionLabel;
-import org.springframework.versions.VersionNumber;
+import org.springframework.versions.*;
 import org.springframework.versions.jpa.config.JpaLockingAndVersioningConfig;
 
-import internal.org.springframework.versions.LockingService;
+import javax.sql.DataSource;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 @ContextConfiguration(classes={JpaLockingAndVersioningRepositoryImplIT.TestConfig.class})
 @ExtendWith(SpringExtension.class)

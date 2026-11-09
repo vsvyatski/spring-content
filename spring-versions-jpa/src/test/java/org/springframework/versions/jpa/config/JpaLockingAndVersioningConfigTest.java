@@ -1,15 +1,14 @@
 package org.springframework.versions.jpa.config;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
-import static org.assertj.core.api.Assertions.assertThat;
-
 import internal.org.springframework.versions.AuthenticationFacade;
 import internal.org.springframework.versions.LockingService;
 import internal.org.springframework.versions.jpa.CloningService;
 import internal.org.springframework.versions.jpa.EntityInformationFacade;
 import internal.org.springframework.versions.jpa.VersioningService;
+import jakarta.persistence.EntityManager;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,9 +16,9 @@ import org.springframework.context.annotation.Import;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.versions.LockingAndVersioningProxyFactory;
 
-import jakarta.persistence.EntityManager;
 import javax.sql.DataSource;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 public class JpaLockingAndVersioningConfigTest {

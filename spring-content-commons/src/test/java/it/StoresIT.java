@@ -1,31 +1,28 @@
 package it;
 
+import internal.org.springframework.content.commons.store.factory.StoreFactory;
+import internal.org.springframework.content.commons.storeservice.StoresImpl;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.AfterEach;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
-
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.springframework.content.commons.store.Store;
-import internal.org.springframework.content.commons.store.factory.StoreFactory;
-import org.springframework.content.commons.store.factory.testsupport.TestContentStore;
-import org.springframework.content.commons.store.factory.testsupport.TestStoreFactoryBean;
 import org.springframework.content.commons.store.ContentStore;
+import org.springframework.content.commons.store.Store;
 import org.springframework.content.commons.store.StoreAccessException;
 import org.springframework.content.commons.store.StoreExceptionTranslator;
+import org.springframework.content.commons.store.factory.testsupport.TestContentStore;
+import org.springframework.content.commons.store.factory.testsupport.TestStoreFactoryBean;
 import org.springframework.content.commons.storeservice.StoreFilter;
 import org.springframework.content.commons.storeservice.StoreInfo;
 import org.springframework.content.commons.storeservice.StoreResolver;
 import org.springframework.context.support.GenericApplicationContext;
 
-import internal.org.springframework.content.commons.storeservice.StoresImpl;
+import java.io.ByteArrayInputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 public class StoresIT {
 

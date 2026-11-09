@@ -1,14 +1,9 @@
 package internal.org.springframework.content.solr;
 
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.TestFactory;
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrServerException;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.TestFactory;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.store.StoreAccessException;
 import org.springframework.content.solr.SolrProperties;
@@ -18,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import static java.lang.String.format;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;

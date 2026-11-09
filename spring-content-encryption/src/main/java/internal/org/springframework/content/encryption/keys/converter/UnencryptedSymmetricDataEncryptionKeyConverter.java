@@ -1,8 +1,9 @@
 package internal.org.springframework.content.encryption.keys.converter;
 
 import internal.org.springframework.content.encryption.keys.converter.ByteBufferCodec.Field;
-import java.util.List;
 import org.springframework.content.encryption.keys.StoredDataEncryptionKey.UnencryptedSymmetricDataEncryptionKey;
+
+import java.util.List;
 
 public final class UnencryptedSymmetricDataEncryptionKeyConverter {
 

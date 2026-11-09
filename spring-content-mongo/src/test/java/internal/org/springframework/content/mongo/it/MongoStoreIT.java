@@ -1,19 +1,15 @@
 package internal.org.springframework.content.mongo.it;
 
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.AfterEach;
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.io.ByteArrayInputStream;
-import java.nio.charset.StandardCharsets;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.gridfs.model.GridFSFile;
+import internal.org.springframework.content.mongo.store.DefaultMongoStoreImpl;
+import net.bytebuddy.utility.RandomString;
 import org.apache.commons.io.IOUtils;
 import org.bson.types.ObjectId;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.io.DeletableResource;
@@ -36,11 +32,13 @@ import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.gridfs.model.GridFSFile;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 
-import internal.org.springframework.content.mongo.store.DefaultMongoStoreImpl;
-import net.bytebuddy.utility.RandomString;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class MongoStoreIT {
 	private DefaultMongoStoreImpl<Object, String> mongoContentRepoImpl;

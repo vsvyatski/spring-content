@@ -1,22 +1,11 @@
 package internal.org.springframework.content.azure.it;
 
-import org.junit.jupiter.api.Nested;
+import com.azure.storage.blob.BlobClient;
+import com.azure.storage.blob.BlobContainerClient;
+import com.azure.storage.blob.BlobServiceClientBuilder;
+import jakarta.persistence.*;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.TestFactory;
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.io.ByteArrayInputStream;
-import java.io.Serializable;
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import javax.sql.DataSource;
-
 import org.springframework.content.azure.Bucket;
 import org.springframework.content.azure.config.AzureStorageConfigurer;
 import org.springframework.content.azure.config.BlobId;
@@ -43,9 +32,11 @@ import org.springframework.orm.jpa.vendor.Database;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import com.azure.storage.blob.BlobClient;
-import com.azure.storage.blob.BlobContainerClient;
-import com.azure.storage.blob.BlobServiceClientBuilder;
+import javax.sql.DataSource;
+import java.io.ByteArrayInputStream;
+import java.io.Serializable;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class AzureStorageWithEntityConverterIT {
 

@@ -1,14 +1,5 @@
 package internal.org.springframework.content.fragments;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.BiFunction;
-import java.util.function.Supplier;
-import java.util.regex.Pattern;
-
 import org.springframework.content.commons.io.RangeableResource;
 import org.springframework.content.commons.mappingcontext.ContentProperty;
 import org.springframework.content.commons.mappingcontext.MappingContext;
@@ -23,6 +14,15 @@ import org.springframework.content.encryption.keys.DataEncryptionKeyWrapper;
 import org.springframework.content.encryption.keys.StoredDataEncryptionKey;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.BiFunction;
+import java.util.function.Supplier;
+import java.util.regex.Pattern;
 
 /**
  * Encryption logic in support of {@link EncryptingContentStoreImpl}

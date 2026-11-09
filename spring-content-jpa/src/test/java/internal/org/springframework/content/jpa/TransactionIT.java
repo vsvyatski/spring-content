@@ -1,21 +1,13 @@
 package internal.org.springframework.content.jpa;
 
-import org.junit.jupiter.api.Test;
+import internal.org.springframework.content.jpa.StoreIT.H2Config;
+import internal.org.springframework.content.jpa.StoreIT.HSQLConfig;
+import internal.org.springframework.content.jpa.StoreIT.MySqlConfig;
+import internal.org.springframework.content.jpa.StoreIT.PostgresConfig;
+import jakarta.persistence.*;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.TestFactory;
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.transaction.Transactional;
-
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.jpa.config.EnableJpaStores;
@@ -27,11 +19,11 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import internal.org.springframework.content.jpa.StoreIT.H2Config;
-import internal.org.springframework.content.jpa.StoreIT.HSQLConfig;
-import internal.org.springframework.content.jpa.StoreIT.MySqlConfig;
-import internal.org.springframework.content.jpa.StoreIT.PostgresConfig;
-import internal.org.springframework.content.jpa.StoreIT.SqlServerConfig;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class TransactionIT {
 

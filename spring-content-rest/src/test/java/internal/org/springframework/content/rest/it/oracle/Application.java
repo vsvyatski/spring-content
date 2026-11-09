@@ -1,9 +1,6 @@
 package internal.org.springframework.content.rest.it.oracle;
 
-import java.util.TimeZone;
-
-import javax.sql.DataSource;
-
+import internal.org.springframework.content.rest.it.SecurityConfiguration;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -27,7 +24,8 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import internal.org.springframework.content.rest.it.SecurityConfiguration;
+import javax.sql.DataSource;
+import java.util.TimeZone;
 
 @SpringBootApplication(exclude = {
         MongoAutoConfiguration.class,

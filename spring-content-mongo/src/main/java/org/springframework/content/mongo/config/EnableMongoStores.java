@@ -1,19 +1,13 @@
 package org.springframework.content.mongo.config;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
+import internal.org.springframework.content.mongo.config.MongoContentStoresRegistrar;
+import internal.org.springframework.content.mongo.config.MongoStoreConfiguration;
+import internal.org.springframework.content.mongo.config.MongoStoreFactoryBean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.mongodb.repository.support.MongoRepositoryFactoryBean;
 
-import internal.org.springframework.content.mongo.config.MongoStoreFactoryBean;
-import internal.org.springframework.content.mongo.config.MongoContentStoresRegistrar;
-import internal.org.springframework.content.mongo.config.MongoStoreConfiguration;
+import java.lang.annotation.*;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

@@ -1,8 +1,8 @@
 package org.springframework.content.commons.io;
 
-import java.io.IOException;
-
 import org.springframework.core.io.Resource;
+
+import java.io.IOException;
 
 public interface DeletableResource extends Resource {
 

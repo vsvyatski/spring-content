@@ -1,21 +1,16 @@
 package it.typesupport;
 
-import org.junit.jupiter.api.extension.ExtendWith;
-
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Nested;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-
 import com.github.f4b6a3.uuid.UuidCreator;
 import it.typesupport.model.*;
 import org.apache.commons.io.IOUtils;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -24,6 +19,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.util.UUID;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ContextConfiguration(classes = {FsTypeSupportConfig.class})
 @ExtendWith(SpringExtension.class)

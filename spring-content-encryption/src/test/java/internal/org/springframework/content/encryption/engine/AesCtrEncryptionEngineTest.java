@@ -1,21 +1,20 @@
 package internal.org.springframework.content.encryption.engine;
 
+import jakarta.xml.bind.DatatypeConverter;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.AfterEach;
-import static org.assertj.core.api.Assertions.assertThat;
+import org.springframework.content.encryption.engine.ContentEncryptionEngine.EncryptionParameters;
+import org.springframework.content.encryption.engine.ContentEncryptionEngine.InputStreamRequestParameters;
+import org.springframework.util.StreamUtils;
 
-import jakarta.xml.bind.DatatypeConverter;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
-import javax.crypto.spec.SecretKeySpec;
-import org.springframework.content.encryption.engine.ContentEncryptionEngine.EncryptionParameters;
-import org.springframework.content.encryption.engine.ContentEncryptionEngine.InputStreamRequestParameters;
-import org.springframework.util.StreamUtils;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class AesCtrEncryptionEngineTest {
 

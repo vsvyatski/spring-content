@@ -1,28 +1,10 @@
 package internal.org.springframework.content.rest.controllers.resolvers;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Method;
-import java.security.Principal;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.Locale;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-
+import internal.org.springframework.content.rest.controllers.ResourceNotFoundException;
+import internal.org.springframework.content.rest.utils.RepositoryUtils;
+import internal.org.springframework.content.rest.utils.StoreUtils;
 import jakarta.servlet.*;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import jakarta.servlet.http.HttpUpgradeHandler;
-import jakarta.servlet.http.Part;
-
+import jakarta.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.content.commons.mappingcontext.ContentProperty;
@@ -53,9 +35,13 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
-import internal.org.springframework.content.rest.controllers.ResourceNotFoundException;
-import internal.org.springframework.content.rest.utils.RepositoryUtils;
-import internal.org.springframework.content.rest.utils.StoreUtils;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Method;
+import java.security.Principal;
+import java.util.*;
 
 public class DefaultEntityResolver implements EntityResolver {
     private static final Logger logger = LoggerFactory.getLogger(DefaultEntityResolver.class);

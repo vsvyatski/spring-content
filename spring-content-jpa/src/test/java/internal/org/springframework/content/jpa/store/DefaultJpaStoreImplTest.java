@@ -1,12 +1,10 @@
 package internal.org.springframework.content.jpa.store;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
-import static org.assertj.core.api.Assertions.assertThat;
-
 import internal.org.springframework.content.jpa.io.GenericBlobResource;
 import jakarta.persistence.Id;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.store.StoreAccessException;
@@ -21,8 +19,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Random;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 public class DefaultJpaStoreImplTest {

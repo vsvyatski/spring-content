@@ -1,20 +1,19 @@
 package internal.org.springframework.content.s3.io;
 
+import org.springframework.content.commons.io.DeletableResource;
+import org.springframework.content.commons.io.RangeableResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.WritableResource;
+import org.springframework.util.Assert;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URL;
-
-import org.springframework.content.commons.io.DeletableResource;
-import org.springframework.content.commons.io.RangeableResource;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.WritableResource;
-import org.springframework.util.Assert;
-
-import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 
 public class S3StoreResource implements WritableResource, DeletableResource, RangeableResource {
 

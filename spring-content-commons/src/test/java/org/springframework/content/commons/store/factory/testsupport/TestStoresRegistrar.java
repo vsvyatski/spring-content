@@ -1,8 +1,8 @@
 package org.springframework.content.commons.store.factory.testsupport;
 
-import java.lang.annotation.Annotation;
-
 import org.springframework.content.commons.config.AbstractStoreBeanDefinitionRegistrar;
+
+import java.lang.annotation.Annotation;
 
 public class TestStoresRegistrar extends AbstractStoreBeanDefinitionRegistrar {
 

@@ -1,17 +1,14 @@
 package internal.org.springframework.content.jpa.config;
 
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.AfterEach;
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.io.InputStream;
-
+import internal.org.springframework.content.jpa.io.DelegatingBlobResourceLoader;
+import internal.org.springframework.content.jpa.io.MySQLBlobResource;
+import internal.org.springframework.content.jpa.io.SQLServerBlobResource;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import javax.sql.DataSource;
-
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.property.PropertyPath;
 import org.springframework.content.commons.store.ContentStore;
@@ -36,9 +33,10 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import internal.org.springframework.content.jpa.io.DelegatingBlobResourceLoader;
-import internal.org.springframework.content.jpa.io.MySQLBlobResource;
-import internal.org.springframework.content.jpa.io.SQLServerBlobResource;
+import javax.sql.DataSource;
+import java.io.InputStream;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class EnableJpaStoresTest {
 

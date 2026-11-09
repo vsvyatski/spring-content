@@ -1,11 +1,11 @@
 package internal.org.springframework.versions.jpa;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
-import static org.assertj.core.api.Assertions.assertThat;
-
+import org.junit.jupiter.api.Test;
 import org.springframework.versions.LockingAndVersioningException;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class JpaCloningServiceImplTest {
 

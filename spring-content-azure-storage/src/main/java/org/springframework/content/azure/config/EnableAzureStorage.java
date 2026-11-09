@@ -1,18 +1,12 @@
 package org.springframework.content.azure.config;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-import org.springframework.beans.factory.FactoryBean;
-import org.springframework.context.annotation.Import;
-
 import internal.org.springframework.content.azure.config.AzureStorageConfiguration;
 import internal.org.springframework.content.azure.config.AzureStorageFactoryBean;
 import internal.org.springframework.content.azure.config.AzureStorageRegistrar;
+import org.springframework.beans.factory.FactoryBean;
+import org.springframework.context.annotation.Import;
+
+import java.lang.annotation.*;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

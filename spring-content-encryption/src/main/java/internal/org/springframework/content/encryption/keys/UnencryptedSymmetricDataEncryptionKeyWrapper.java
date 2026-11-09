@@ -1,11 +1,11 @@
 package internal.org.springframework.content.encryption.keys;
 
-import javax.crypto.spec.SecretKeySpec;
-
 import org.springframework.content.encryption.engine.ContentEncryptionEngine.EncryptionParameters;
 import org.springframework.content.encryption.keys.DataEncryptionKeyWrapper;
 import org.springframework.content.encryption.keys.StoredDataEncryptionKey;
 import org.springframework.content.encryption.keys.StoredDataEncryptionKey.UnencryptedSymmetricDataEncryptionKey;
+
+import javax.crypto.spec.SecretKeySpec;
 
 public class UnencryptedSymmetricDataEncryptionKeyWrapper implements
         DataEncryptionKeyWrapper<UnencryptedSymmetricDataEncryptionKey> {

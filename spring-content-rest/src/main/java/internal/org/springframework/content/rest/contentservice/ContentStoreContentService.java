@@ -18,7 +18,6 @@ import org.springframework.content.commons.mappingcontext.MappingContext;
 import org.springframework.content.commons.property.PropertyPath;
 import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.commons.store.SetContentParams;
-import org.springframework.content.commons.store.Store;
 import org.springframework.content.commons.store.UnsetContentParams;
 import org.springframework.content.commons.utils.StoreInterfaceUtils;
 import org.springframework.content.rest.RestResource;

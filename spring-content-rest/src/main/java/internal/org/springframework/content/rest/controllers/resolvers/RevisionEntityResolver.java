@@ -1,11 +1,7 @@
 package internal.org.springframework.content.rest.controllers.resolvers;
 
-import static java.lang.String.format;
-
-import java.lang.reflect.Method;
-import java.util.Map;
-import java.util.Optional;
-
+import internal.org.springframework.content.rest.controllers.ResourceNotFoundException;
+import internal.org.springframework.content.rest.utils.StoreUtils;
 import org.springframework.content.commons.mappingcontext.MappingContext;
 import org.springframework.content.commons.property.PropertyPath;
 import org.springframework.content.commons.store.Store;
@@ -18,8 +14,11 @@ import org.springframework.util.AntPathMatcher;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
-import internal.org.springframework.content.rest.controllers.ResourceNotFoundException;
-import internal.org.springframework.content.rest.utils.StoreUtils;
+import java.lang.reflect.Method;
+import java.util.Map;
+import java.util.Optional;
+
+import static java.lang.String.format;
 
 public class RevisionEntityResolver implements EntityResolver {
 

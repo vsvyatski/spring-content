@@ -1,6 +1,9 @@
 package internal.org.springframework.content.rest.contentservice;
 
+import internal.org.springframework.content.rest.io.AssociatedStoreResource;
+import internal.org.springframework.content.rest.io.StoreResource;
 import internal.org.springframework.content.rest.mappingcontext.ContentPropertyToExportedContext;
+import internal.org.springframework.content.rest.mappings.StoreByteRangeHttpRequestHandler;
 import org.springframework.content.commons.mappingcontext.MappingContext;
 import org.springframework.content.commons.store.AssociativeStore;
 import org.springframework.content.commons.store.ContentStore;
@@ -8,10 +11,6 @@ import org.springframework.content.commons.storeservice.Stores;
 import org.springframework.content.rest.config.RestConfiguration;
 import org.springframework.data.repository.support.Repositories;
 import org.springframework.data.repository.support.RepositoryInvokerFactory;
-
-import internal.org.springframework.content.rest.io.AssociatedStoreResource;
-import internal.org.springframework.content.rest.io.StoreResource;
-import internal.org.springframework.content.rest.mappings.StoreByteRangeHttpRequestHandler;
 
 public class ContentServiceFactory {
 

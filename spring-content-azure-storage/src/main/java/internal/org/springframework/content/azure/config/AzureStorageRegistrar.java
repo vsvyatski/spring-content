@@ -1,10 +1,10 @@
 package internal.org.springframework.content.azure.config;
 
-import java.lang.annotation.Annotation;
-
 import org.springframework.content.azure.config.EnableAzureStorage;
 import org.springframework.content.azure.store.AzureStorageContentStore;
 import org.springframework.content.commons.config.AbstractStoreBeanDefinitionRegistrar;
+
+import java.lang.annotation.Annotation;
 
 public class AzureStorageRegistrar extends AbstractStoreBeanDefinitionRegistrar {
 

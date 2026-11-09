@@ -1,8 +1,8 @@
 package org.springframework.content.commons.utils;
 
-import java.lang.reflect.Method;
-
 import org.springframework.util.ReflectionUtils;
+
+import java.lang.reflect.Method;
 
 public class ReflectionServiceImpl implements ReflectionService {
 

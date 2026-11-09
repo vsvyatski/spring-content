@@ -1,8 +1,8 @@
 package org.springframework.content.commons.io;
 
-import java.io.Serializable;
-
 import org.springframework.core.io.Resource;
+
+import java.io.Serializable;
 
 public interface IdentifiableResource extends Resource {
 

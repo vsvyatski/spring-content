@@ -1,7 +1,11 @@
 package internal.org.springframework.content.elasticsearch.boot.autoconfigure;
 
-import java.net.URI;
-
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.json.jackson.JacksonJsonpMapper;
+import co.elastic.clients.transport.rest5_client.Rest5ClientTransport;
+import co.elastic.clients.transport.rest5_client.low_level.Rest5Client;
+import internal.org.springframework.content.elasticsearch.ElasticsearchConfig;
+import internal.org.springframework.content.elasticsearch.ElasticsearchIndexer;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -15,12 +19,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Component;
 
-import co.elastic.clients.elasticsearch.ElasticsearchClient;
-import co.elastic.clients.json.jackson.JacksonJsonpMapper;
-import co.elastic.clients.transport.rest5_client.Rest5ClientTransport;
-import co.elastic.clients.transport.rest5_client.low_level.Rest5Client;
-import internal.org.springframework.content.elasticsearch.ElasticsearchConfig;
-import internal.org.springframework.content.elasticsearch.ElasticsearchIndexer;
+import java.net.URI;
 
 @AutoConfiguration
 @AutoConfigureAfter(ElasticsearchClientAutoConfiguration.class)

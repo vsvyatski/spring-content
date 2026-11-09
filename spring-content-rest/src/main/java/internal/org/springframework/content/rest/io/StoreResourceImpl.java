@@ -1,5 +1,13 @@
 package internal.org.springframework.content.rest.io;
 
+import org.springframework.content.commons.io.DeletableResource;
+import org.springframework.content.commons.storeservice.StoreInfo;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.WritableResource;
+import org.springframework.http.MediaType;
+import org.springframework.util.Assert;
+import org.springframework.util.MimeType;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,18 +17,7 @@ import java.net.URL;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-
-import jakarta.activation.MimetypesFileTypeMap;
-
-import org.springframework.content.commons.io.DeletableResource;
-import org.springframework.content.commons.storeservice.StoreInfo;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.WritableResource;
-import org.springframework.http.MediaType;
-import org.springframework.util.Assert;
-import org.springframework.util.MimeType;
 
 public class StoreResourceImpl implements Resource, StoreResource {
 

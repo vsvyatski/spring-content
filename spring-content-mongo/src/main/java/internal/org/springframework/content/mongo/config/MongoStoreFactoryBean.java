@@ -1,5 +1,6 @@
 package internal.org.springframework.content.mongo.config;
 
+import internal.org.springframework.content.mongo.store.DefaultMongoStoreImpl;
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,8 +10,6 @@ import org.springframework.content.commons.store.factory.AbstractStoreFactoryBea
 import org.springframework.content.commons.utils.PlacementService;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.versions.LockingAndVersioningProxyFactory;
-
-import internal.org.springframework.content.mongo.store.DefaultMongoStoreImpl;
 
 public class MongoStoreFactoryBean extends AbstractStoreFactoryBean {
 

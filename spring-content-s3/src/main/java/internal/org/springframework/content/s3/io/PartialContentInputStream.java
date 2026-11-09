@@ -1,11 +1,12 @@
 package internal.org.springframework.content.s3.io;
 
+import org.springframework.util.Assert;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.regex.Pattern;
-import org.springframework.util.Assert;
 
 /**
  * A partial content input stream wrapper around a delegate {@link InputStream}.

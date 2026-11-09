@@ -1,12 +1,11 @@
 package org.springframework.versions.jpa.boot;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Disabled;
-
 import internal.org.springframework.versions.jpa.boot.autoconfigure.JpaVersionsDatabaseInitializer;
 import internal.org.springframework.versions.jpa.boot.autoconfigure.JpaVersionsProperties;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.sql.init.DatabaseInitializationMode;
 
 import javax.sql.DataSource;

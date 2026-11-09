@@ -1,9 +1,5 @@
 package internal.org.springframework.content.docx4j;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.io.InputStream;
-
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,6 +7,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.content.commons.io.FileRemover;
 import org.springframework.content.commons.io.ObservableInputStream;
 import org.springframework.content.commons.renditions.RenditionProvider;
+
+import java.io.InputStream;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class WordToHtmlRenditionProviderTest {
 

@@ -1,12 +1,5 @@
 package internal.org.springframework.content.jpa;
 
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.TestFactory;
-import static org.assertj.core.api.Assertions.assertThat;
-
 import com.github.f4b6a3.uuid.UuidCreator;
 import internal.org.springframework.content.jpa.StoreIT.H2Config;
 import internal.org.springframework.content.jpa.StoreIT.HSQLConfig;
@@ -16,6 +9,8 @@ import internal.org.springframework.content.jpa.testsupport.models.Document;
 import internal.org.springframework.content.jpa.testsupport.repositories.DocumentRepository;
 import internal.org.springframework.content.jpa.testsupport.stores.DocumentAssociativeStore;
 import org.apache.commons.io.IOUtils;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.TestFactory;
 import org.springframework.content.commons.property.PropertyPath;
 import org.springframework.content.commons.store.GetResourceParams;
 import org.springframework.content.commons.store.StoreAccessException;
@@ -31,6 +26,7 @@ import java.io.OutputStream;
 import java.nio.charset.Charset;
 
 import static internal.org.springframework.content.jpa.StoreIT.getContextName;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class AssociativeStoreIT {
 

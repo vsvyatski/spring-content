@@ -1,8 +1,8 @@
 package org.springframework.versions;
 
-import java.util.List;
-
 import org.springframework.data.domain.Sort;
+
+import java.util.List;
 
 public interface LockingAndVersioningRepository<T> {
 

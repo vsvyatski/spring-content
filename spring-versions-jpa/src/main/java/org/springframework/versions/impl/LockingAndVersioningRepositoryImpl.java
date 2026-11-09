@@ -1,19 +1,12 @@
 package org.springframework.versions.impl;
 
-import static java.lang.String.format;
-
-import java.io.Serializable;
-import java.lang.reflect.Field;
-import java.security.Principal;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.Id;
-import jakarta.persistence.NoResultException;
-import jakarta.persistence.Query;
-import jakarta.persistence.TypedQuery;
-
+import internal.org.springframework.versions.AuthenticationFacade;
+import internal.org.springframework.versions.LockingService;
+import internal.org.springframework.versions.jpa.CloningService;
+import internal.org.springframework.versions.jpa.EntityInformationFacade;
+import internal.org.springframework.versions.jpa.JpaCloningServiceImpl;
+import internal.org.springframework.versions.jpa.VersioningService;
+import jakarta.persistence.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.text.StringSubstitutor;
@@ -26,23 +19,15 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
-import org.springframework.versions.AncestorId;
-import org.springframework.versions.AncestorRootId;
-import org.springframework.versions.LockOwner;
-import org.springframework.versions.LockOwnerException;
-import org.springframework.versions.LockingAndVersioningException;
-import org.springframework.versions.LockingAndVersioningRepository;
-import org.springframework.versions.SuccessorId;
-import org.springframework.versions.VersionInfo;
-import org.springframework.versions.VersionLabel;
-import org.springframework.versions.VersionNumber;
+import org.springframework.versions.*;
 
-import internal.org.springframework.versions.AuthenticationFacade;
-import internal.org.springframework.versions.LockingService;
-import internal.org.springframework.versions.jpa.CloningService;
-import internal.org.springframework.versions.jpa.EntityInformationFacade;
-import internal.org.springframework.versions.jpa.JpaCloningServiceImpl;
-import internal.org.springframework.versions.jpa.VersioningService;
+import java.io.Serializable;
+import java.lang.reflect.Field;
+import java.security.Principal;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+
+import static java.lang.String.format;
 
 @Repository
 public class LockingAndVersioningRepositoryImpl<T, ID extends Serializable> implements LockingAndVersioningRepository<T> {

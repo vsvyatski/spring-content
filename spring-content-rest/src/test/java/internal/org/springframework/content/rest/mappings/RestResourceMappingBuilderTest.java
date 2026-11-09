@@ -1,10 +1,8 @@
 package internal.org.springframework.content.rest.mappings;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Nested;
-import static org.assertj.core.api.Assertions.assertThat;
-
 import internal.org.springframework.content.rest.mappingcontext.RestResourceMappingBuilder;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.annotations.MimeType;
@@ -13,6 +11,8 @@ import org.springframework.content.commons.mappingcontext.ClassWalker;
 import org.springframework.content.rest.RestResource;
 
 import java.util.UUID;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class RestResourceMappingBuilderTest {
 

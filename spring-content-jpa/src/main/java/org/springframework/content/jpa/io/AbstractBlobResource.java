@@ -1,22 +1,6 @@
 package org.springframework.content.jpa.io;
 
-import static java.lang.String.format;
-
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URI;
-import java.net.URL;
-import java.sql.Blob;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-
-import javax.sql.DataSource;
-
+import internal.org.springframework.content.jpa.io.BlobResourceOutputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.core.io.Resource;
@@ -26,7 +10,13 @@ import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 
-import internal.org.springframework.content.jpa.io.BlobResourceOutputStream;
+import javax.sql.DataSource;
+import java.io.*;
+import java.net.URI;
+import java.net.URL;
+import java.sql.*;
+
+import static java.lang.String.format;
 
 public abstract class AbstractBlobResource implements BlobResource {
 

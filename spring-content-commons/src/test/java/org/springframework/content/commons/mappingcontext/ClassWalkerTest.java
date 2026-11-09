@@ -1,10 +1,8 @@
 package org.springframework.content.commons.mappingcontext;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Nested;
-import static org.assertj.core.api.Assertions.assertThat;
-
 import jakarta.persistence.*;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.annotations.MimeType;
@@ -15,6 +13,8 @@ import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
 import java.util.UUID;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ClassWalkerTest {
 

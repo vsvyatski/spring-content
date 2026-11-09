@@ -1,6 +1,5 @@
 package it.store;
 
-import internal.org.springframework.content.fs.store.DefaultFileSystemStoreImpl;
 import jakarta.persistence.*;
 import net.bytebuddy.utility.RandomString;
 import org.apache.commons.io.IOUtils;

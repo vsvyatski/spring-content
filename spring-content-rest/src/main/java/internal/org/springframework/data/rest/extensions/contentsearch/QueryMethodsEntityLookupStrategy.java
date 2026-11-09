@@ -1,11 +1,5 @@
 package internal.org.springframework.data.rest.extensions.contentsearch;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
 import org.springframework.content.rest.FulltextEntityLookupQuery;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -13,6 +7,8 @@ import org.springframework.data.repository.core.RepositoryInformation;
 import org.springframework.data.rest.webmvc.RootResourceInformation;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+
+import java.util.*;
 
 public class QueryMethodsEntityLookupStrategy {
 

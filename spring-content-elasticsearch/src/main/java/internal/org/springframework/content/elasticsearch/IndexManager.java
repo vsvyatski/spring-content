@@ -1,10 +1,9 @@
 package internal.org.springframework.content.elasticsearch;
 
-import java.io.IOException;
-
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import org.springframework.content.commons.store.StoreAccessException;
 
-import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import java.io.IOException;
 
 public class IndexManager {
 

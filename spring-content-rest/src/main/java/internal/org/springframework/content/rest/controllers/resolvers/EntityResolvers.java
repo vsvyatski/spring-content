@@ -1,10 +1,10 @@
 package internal.org.springframework.content.rest.controllers.resolvers;
 
+import org.springframework.util.AntPathMatcher;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-
-import org.springframework.util.AntPathMatcher;
 
 public class EntityResolvers extends ArrayList<EntityResolver> {
 

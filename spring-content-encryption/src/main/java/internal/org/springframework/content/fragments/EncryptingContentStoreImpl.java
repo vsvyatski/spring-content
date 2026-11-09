@@ -1,14 +1,5 @@
 package internal.org.springframework.content.fragments;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Serializable;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.content.commons.fragments.ContentStoreAware;
 import org.springframework.content.commons.mappingcontext.ContentProperty;
@@ -22,6 +13,15 @@ import org.springframework.content.encryption.config.EncryptingContentStoreConfi
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Serializable;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
 public class EncryptingContentStoreImpl<S, SID extends Serializable> implements
         org.springframework.content.commons.store.ContentStore<S, SID>,

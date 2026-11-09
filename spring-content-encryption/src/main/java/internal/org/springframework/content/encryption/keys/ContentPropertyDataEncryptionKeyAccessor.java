@@ -1,7 +1,5 @@
 package internal.org.springframework.content.encryption.keys;
 
-import java.util.Collection;
-
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.content.commons.mappingcontext.ContentProperty;
 import org.springframework.content.encryption.keys.DataEncryptionKeyAccessor;
@@ -9,6 +7,8 @@ import org.springframework.content.encryption.keys.StoredDataEncryptionKey;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
+
+import java.util.Collection;
 
 public class ContentPropertyDataEncryptionKeyAccessor<S, T extends StoredDataEncryptionKey> implements DataEncryptionKeyAccessor<S, T> {
 

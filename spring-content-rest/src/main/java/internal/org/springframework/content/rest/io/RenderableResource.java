@@ -1,8 +1,8 @@
 package internal.org.springframework.content.rest.io;
 
-import java.io.InputStream;
-
 import org.springframework.util.MimeType;
+
+import java.io.InputStream;
 
 public interface RenderableResource {
 

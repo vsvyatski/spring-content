@@ -1,15 +1,14 @@
 package org.springframework.content.fs.boot.autoconfigure;
 
-import org.junit.jupiter.api.Test;
+import internal.org.springframework.content.fs.boot.autoconfigure.FileSystemContentAutoConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.condition.EnabledOnOs;
 import org.junit.jupiter.api.condition.OS;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
-import internal.org.springframework.content.fs.boot.autoconfigure.FileSystemContentAutoConfiguration;
 
 public class FileSystemPropertiesTest {
 

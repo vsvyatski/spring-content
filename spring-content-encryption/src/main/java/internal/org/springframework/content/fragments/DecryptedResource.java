@@ -1,10 +1,11 @@
 package internal.org.springframework.content.fragments;
 
-import java.io.IOException;
-import java.io.InputStream;
 import org.springframework.core.io.AbstractResource;
 import org.springframework.core.io.InputStreamSource;
 import org.springframework.core.io.Resource;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * A resource that will be decrypted on-demand

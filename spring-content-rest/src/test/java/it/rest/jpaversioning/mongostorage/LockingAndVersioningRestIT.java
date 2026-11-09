@@ -1,30 +1,16 @@
 package it.rest.jpaversioning.mongostorage;
 
-import org.junit.jupiter.api.extension.ExtendWith;
-
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
-import static org.assertj.core.api.Assertions.assertThat;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.UUID;
-
+import com.mongodb.client.MongoClient;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import io.restassured.path.json.JsonPath;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.Version;
+import jakarta.persistence.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
-import javax.sql.DataSource;
-
 import org.apache.http.HttpStatus;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
@@ -70,22 +56,20 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.versions.AncestorId;
-import org.springframework.versions.AncestorRootId;
-import org.springframework.versions.LockOwner;
-import org.springframework.versions.LockingAndVersioningRepository;
-import org.springframework.versions.SuccessorId;
-import org.springframework.versions.VersionLabel;
-import org.springframework.versions.VersionNumber;
+import org.springframework.versions.*;
 import org.springframework.versions.jpa.config.JpaLockingAndVersioningConfig;
-
-import com.mongodb.client.MongoClient;
-
 import org.springframework.web.context.WebApplicationContext;
 
-import static io.restassured.module.mockmvc.RestAssuredMockMvc.*;
+import javax.sql.DataSource;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.UUID;
+
+import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(classes = {LockingAndVersioningRestIT.Application.class}, webEnvironment = WebEnvironment.RANDOM_PORT)
 @ExtendWith(SpringExtension.class)

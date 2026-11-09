@@ -1,9 +1,7 @@
 package org.springframework.data.rest.versioning;
 
-import java.lang.reflect.Method;
-import java.security.Principal;
-import java.util.List;
-
+import internal.org.springframework.content.rest.utils.ControllerUtils;
+import internal.org.springframework.content.rest.utils.RepositoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.content.commons.utils.ReflectionService;
 import org.springframework.content.commons.utils.ReflectionServiceImpl;
@@ -24,14 +22,11 @@ import org.springframework.util.ReflectionUtils;
 import org.springframework.versions.LockingAndVersioningRepository;
 import org.springframework.versions.VersionInfo;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
-import internal.org.springframework.content.rest.utils.ControllerUtils;
-import internal.org.springframework.content.rest.utils.RepositoryUtils;
+import java.lang.reflect.Method;
+import java.security.Principal;
+import java.util.List;
 
 @RepositoryRestController
 public class LockingAndVersioningRestController {

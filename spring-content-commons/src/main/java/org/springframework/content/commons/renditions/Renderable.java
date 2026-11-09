@@ -1,8 +1,8 @@
 package org.springframework.content.commons.renditions;
 
-import java.io.InputStream;
-
 import org.springframework.content.commons.property.PropertyPath;
+
+import java.io.InputStream;
 
 public interface Renderable<S> {
 

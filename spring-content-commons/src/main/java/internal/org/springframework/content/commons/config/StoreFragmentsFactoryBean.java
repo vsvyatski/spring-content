@@ -1,8 +1,5 @@
 package internal.org.springframework.content.commons.config;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.jspecify.annotations.NonNull;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
@@ -10,6 +7,9 @@ import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class StoreFragmentsFactoryBean implements FactoryBean<StoreFragments>, BeanFactoryAware, InitializingBean {
 

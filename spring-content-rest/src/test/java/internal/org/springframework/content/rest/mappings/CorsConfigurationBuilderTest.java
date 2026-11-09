@@ -1,17 +1,16 @@
 package internal.org.springframework.content.rest.mappings;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.AfterEach;
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.UUID;
-
 import org.springframework.content.commons.store.Store;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.cors.CorsConfiguration;
+
+import java.util.UUID;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class CorsConfigurationBuilderTest {
 

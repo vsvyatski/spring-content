@@ -1,10 +1,11 @@
 package internal.org.springframework.content.rest.support;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.rest.core.event.AbstractRepositoryEventListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Configuration
 public class EventListenerConfig {

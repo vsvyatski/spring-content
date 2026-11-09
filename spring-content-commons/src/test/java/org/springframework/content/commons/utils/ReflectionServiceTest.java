@@ -1,15 +1,12 @@
 package org.springframework.content.commons.utils;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.springframework.util.ReflectionUtils;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-
-import org.springframework.content.commons.utils.ReflectionService;
-import org.springframework.content.commons.utils.ReflectionServiceImpl;
-import org.springframework.util.ReflectionUtils;
 
 public class ReflectionServiceTest {
 

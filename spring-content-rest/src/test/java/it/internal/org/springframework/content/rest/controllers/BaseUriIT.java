@@ -1,23 +1,17 @@
 package it.internal.org.springframework.content.rest.controllers;
 
-import org.junit.jupiter.api.extension.ExtendWith;
-
-import org.junit.jupiter.api.Test;
+import internal.org.springframework.content.rest.support.*;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.DisplayName;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import static java.lang.String.format;
-
-import java.io.ByteArrayInputStream;
-
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.content.rest.config.HypermediaConfiguration;
 import org.springframework.content.rest.config.RestConfiguration;
 import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -25,18 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfiguration;
 
-import internal.org.springframework.content.rest.support.BaseUriConfig;
-import internal.org.springframework.content.rest.support.EntityConfig;
-import internal.org.springframework.content.rest.support.TestEntity;
-import internal.org.springframework.content.rest.support.TestEntity3;
-import internal.org.springframework.content.rest.support.TestEntity3ContentRepository;
-import internal.org.springframework.content.rest.support.TestEntity3Repository;
-import internal.org.springframework.content.rest.support.TestEntity4;
-import internal.org.springframework.content.rest.support.TestEntity4ContentRepository;
-import internal.org.springframework.content.rest.support.TestEntity4Repository;
-import internal.org.springframework.content.rest.support.TestEntityContentRepository;
-import internal.org.springframework.content.rest.support.TestEntityRepository;
-import internal.org.springframework.content.rest.support.TestStore;
+import java.io.ByteArrayInputStream;
+
+import static java.lang.String.format;
 
 @WebAppConfiguration
 @ContextConfiguration(classes = {

@@ -1,15 +1,9 @@
 package internal.org.springframework.versions.jpa;
 
-import org.springframework.content.commons.utils.BeanUtils;
-import org.springframework.util.Assert;
-import org.springframework.versions.AncestorId;
-import org.springframework.versions.AncestorRootId;
-import org.springframework.versions.SuccessorId;
-import org.springframework.versions.VersionLabel;
-import org.springframework.versions.VersionNumber;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Id;
+import org.springframework.content.commons.utils.BeanUtils;
+import org.springframework.versions.*;
 
 public class JpaVersioningServiceImpl implements VersioningService {
 

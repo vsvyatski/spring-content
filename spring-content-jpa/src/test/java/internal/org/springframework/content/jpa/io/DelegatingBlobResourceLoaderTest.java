@@ -1,10 +1,8 @@
 package internal.org.springframework.content.jpa.io;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
-import static org.assertj.core.api.Assertions.assertThat;
-
+import org.junit.jupiter.api.Test;
 import org.springframework.content.jpa.io.BlobResourceLoader;
 import org.springframework.content.jpa.io.CustomizableBlobResourceLoader;
 import org.springframework.core.io.Resource;
@@ -18,6 +16,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 

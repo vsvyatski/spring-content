@@ -1,32 +1,18 @@
 package internal.org.springframework.content.commons.repository.events;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
-import static org.assertj.core.api.Assertions.assertThat;
-
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.springframework.content.commons.store.ContentStore;
+import org.springframework.content.commons.store.events.*;
 
 import java.io.InputStream;
 import java.io.Serializable;
 
-import org.mockito.ArgumentCaptor;
-import org.springframework.content.commons.store.ContentStore;
-import org.springframework.content.commons.store.events.StoreEvent;
-import org.springframework.content.commons.store.events.AbstractStoreEventListener;
-import org.springframework.content.commons.store.events.AfterAssociateEvent;
-import org.springframework.content.commons.store.events.AfterGetContentEvent;
-import org.springframework.content.commons.store.events.AfterGetResourceEvent;
-import org.springframework.content.commons.store.events.AfterSetContentEvent;
-import org.springframework.content.commons.store.events.AfterUnassociateEvent;
-import org.springframework.content.commons.store.events.AfterUnsetContentEvent;
-import org.springframework.content.commons.store.events.BeforeAssociateEvent;
-import org.springframework.content.commons.store.events.BeforeGetContentEvent;
-import org.springframework.content.commons.store.events.BeforeGetResourceEvent;
-import org.springframework.content.commons.store.events.BeforeSetContentEvent;
-import org.springframework.content.commons.store.events.BeforeUnassociateEvent;
-import org.springframework.content.commons.store.events.BeforeUnsetContentEvent;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 @SuppressWarnings("unchecked")
 public class AbstractStoreEventListenerTest {

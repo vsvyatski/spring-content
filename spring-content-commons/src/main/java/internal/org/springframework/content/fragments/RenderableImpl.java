@@ -1,11 +1,6 @@
 package internal.org.springframework.content.fragments;
 
-import java.io.InputStream;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
+import internal.org.springframework.content.commons.renditions.RenditionServiceImpl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +15,11 @@ import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.commons.utils.BeanUtils;
 import org.springframework.core.io.Resource;
 
-import internal.org.springframework.content.commons.renditions.RenditionServiceImpl;
+import java.io.InputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class RenderableImpl implements Renderable<Object>, ContentStoreAware {
 

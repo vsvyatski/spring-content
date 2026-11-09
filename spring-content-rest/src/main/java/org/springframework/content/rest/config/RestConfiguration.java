@@ -1,16 +1,15 @@
 package org.springframework.content.rest.config;
 
-import java.io.InputStream;
-import java.lang.reflect.Method;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import internal.org.springframework.content.commons.storeservice.StoresImpl;
+import internal.org.springframework.content.rest.controllers.ResourceHandlerMethodArgumentResolver;
+import internal.org.springframework.content.rest.controllers.resolvers.DefaultEntityResolver;
+import internal.org.springframework.content.rest.controllers.resolvers.EntityResolvers;
+import internal.org.springframework.content.rest.controllers.resolvers.RevisionEntityResolver;
 import internal.org.springframework.content.rest.mappingcontext.ContentPropertyToExportedContext;
-import internal.org.springframework.content.rest.mappingcontext.ContentPropertyToRequestMappingContext;
 import internal.org.springframework.content.rest.mappingcontext.ContentPropertyToLinkrelMappingContext;
+import internal.org.springframework.content.rest.mappingcontext.ContentPropertyToRequestMappingContext;
+import internal.org.springframework.content.rest.mappings.ContentHandlerMapping;
+import internal.org.springframework.content.rest.mappings.StoreByteRangeHttpRequestHandler;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,13 +36,13 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
-import internal.org.springframework.content.commons.storeservice.StoresImpl;
-import internal.org.springframework.content.rest.controllers.ResourceHandlerMethodArgumentResolver;
-import internal.org.springframework.content.rest.controllers.resolvers.DefaultEntityResolver;
-import internal.org.springframework.content.rest.controllers.resolvers.EntityResolvers;
-import internal.org.springframework.content.rest.controllers.resolvers.RevisionEntityResolver;
-import internal.org.springframework.content.rest.mappings.ContentHandlerMapping;
-import internal.org.springframework.content.rest.mappings.StoreByteRangeHttpRequestHandler;
+import java.io.InputStream;
+import java.lang.reflect.Method;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Configuration
 @ComponentScan("internal.org.springframework.content.rest.controllers, org.springframework.data.rest.extensions, org.springframework.data.rest.versioning")

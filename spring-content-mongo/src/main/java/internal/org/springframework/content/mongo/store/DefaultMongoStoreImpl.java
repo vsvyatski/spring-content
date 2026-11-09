@@ -1,16 +1,6 @@
 package internal.org.springframework.content.mongo.store;
 
-import static java.lang.String.format;
-import static org.springframework.data.mongodb.core.query.Query.query;
-import static org.springframework.data.mongodb.gridfs.GridFsCriteria.whereFilename;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Serializable;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.util.UUID;
-
+import internal.org.springframework.content.mongo.io.GridFsStoreResource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bson.types.ObjectId;
@@ -19,9 +9,6 @@ import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.mappingcontext.ContentProperty;
 import org.springframework.content.commons.mappingcontext.MappingContext;
 import org.springframework.content.commons.property.PropertyPath;
-import org.springframework.content.commons.store.SetContentParams;
-import org.springframework.content.commons.store.UnsetContentParams;
-import org.springframework.content.commons.store.AssociativeStore;
 import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.commons.store.GetResourceParams;
 import org.springframework.content.commons.store.StoreAccessException;
@@ -34,7 +21,16 @@ import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
-import internal.org.springframework.content.mongo.io.GridFsStoreResource;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Serializable;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.util.UUID;
+
+import static java.lang.String.format;
+import static org.springframework.data.mongodb.core.query.Query.query;
+import static org.springframework.data.mongodb.gridfs.GridFsCriteria.whereFilename;
 
 public class DefaultMongoStoreImpl<S, SID extends Serializable>
 		implements ContentStore<S, SID> {

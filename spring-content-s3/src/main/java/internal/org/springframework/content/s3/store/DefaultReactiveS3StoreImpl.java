@@ -1,12 +1,6 @@
 package internal.org.springframework.content.s3.store;
 
-import java.io.File;
-import java.io.Serializable;
-import java.lang.annotation.Annotation;
-import java.nio.ByteBuffer;
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-
+import internal.org.springframework.content.commons.utils.ContentPropertyInfoTypeDescriptor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.content.commons.config.ContentPropertyInfo;
@@ -24,20 +18,20 @@ import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
-
-import internal.org.springframework.content.commons.utils.ContentPropertyInfoTypeDescriptor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import software.amazon.awssdk.core.async.AsyncRequestBody;
 import software.amazon.awssdk.core.async.AsyncResponseTransformer;
 import software.amazon.awssdk.core.async.ResponsePublisher;
 import software.amazon.awssdk.services.s3.S3AsyncClient;
-import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
-import software.amazon.awssdk.services.s3.model.DeleteObjectResponse;
-import software.amazon.awssdk.services.s3.model.GetObjectRequest;
-import software.amazon.awssdk.services.s3.model.GetObjectResponse;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
-import software.amazon.awssdk.services.s3.model.PutObjectResponse;
+import software.amazon.awssdk.services.s3.model.*;
+
+import java.io.File;
+import java.io.Serializable;
+import java.lang.annotation.Annotation;
+import java.nio.ByteBuffer;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 @Transactional
 public class DefaultReactiveS3StoreImpl<S, SID extends Serializable>

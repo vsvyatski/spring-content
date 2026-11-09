@@ -1,8 +1,8 @@
 package org.springframework.content.rest.config;
 
 import internal.org.springframework.content.rest.links.ContentLinksResourceProcessor;
-import internal.org.springframework.content.rest.mappingcontext.ContentPropertyToRequestMappingContext;
 import internal.org.springframework.content.rest.mappingcontext.ContentPropertyToLinkrelMappingContext;
+import internal.org.springframework.content.rest.mappingcontext.ContentPropertyToRequestMappingContext;
 import org.springframework.content.commons.mappingcontext.MappingContext;
 import org.springframework.content.commons.storeservice.Stores;
 import org.springframework.context.annotation.Bean;

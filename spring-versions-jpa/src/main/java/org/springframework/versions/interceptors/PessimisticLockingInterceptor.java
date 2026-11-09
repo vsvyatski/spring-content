@@ -2,6 +2,7 @@ package org.springframework.versions.interceptors;
 
 import internal.org.springframework.versions.AuthenticationFacade;
 import internal.org.springframework.versions.LockingService;
+import jakarta.persistence.Id;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.springframework.data.util.ReflectionUtils;
@@ -9,10 +10,7 @@ import org.springframework.util.Assert;
 import org.springframework.versions.LockOwnerException;
 import org.springframework.versions.LockParticipant;
 
-import jakarta.persistence.Id;
 import java.lang.reflect.Field;
-
-import static java.lang.String.format;
 
 public class PessimisticLockingInterceptor implements MethodInterceptor {
 

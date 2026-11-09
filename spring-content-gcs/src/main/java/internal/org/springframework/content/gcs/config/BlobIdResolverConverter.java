@@ -1,11 +1,6 @@
 package internal.org.springframework.content.gcs.config;
 
-import static java.lang.String.format;
-
-import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
-
+import com.google.cloud.storage.BlobId;
 import org.springframework.content.commons.store.StoreAccessException;
 import org.springframework.content.commons.utils.BeanUtils;
 import org.springframework.content.gcs.Bucket;
@@ -13,7 +8,11 @@ import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.util.Assert;
 
-import com.google.cloud.storage.BlobId;
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
+
+import static java.lang.String.format;
 
 public class BlobIdResolverConverter implements GenericConverter {
 

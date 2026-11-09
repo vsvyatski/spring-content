@@ -1,5 +1,8 @@
 package internal.org.springframework.content.azure.config;
 
+import com.azure.spring.cloud.core.resource.AzureStorageBlobProtocolResolver;
+import com.azure.storage.blob.BlobServiceClient;
+import internal.org.springframework.content.azure.store.DefaultAzureStorageImpl;
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,11 +13,6 @@ import org.springframework.content.commons.utils.PlacementService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.versions.LockingAndVersioningProxyFactory;
-
-import com.azure.spring.cloud.core.resource.AzureStorageBlobProtocolResolver;
-import com.azure.storage.blob.BlobServiceClient;
-
-import internal.org.springframework.content.azure.store.DefaultAzureStorageImpl;
 
 @SuppressWarnings("rawtypes")
 public class AzureStorageFactoryBean extends AbstractStoreFactoryBean {

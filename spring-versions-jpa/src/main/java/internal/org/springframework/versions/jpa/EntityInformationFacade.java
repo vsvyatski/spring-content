@@ -1,9 +1,8 @@
 package internal.org.springframework.versions.jpa;
 
+import jakarta.persistence.EntityManager;
 import org.springframework.data.jpa.repository.support.JpaEntityInformationSupport;
 import org.springframework.data.repository.core.EntityInformation;
-
-import jakarta.persistence.EntityManager;
 
 public class EntityInformationFacade {
     public EntityInformation getEntityInformation(Class<?> entityClass, EntityManager em) {

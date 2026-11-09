@@ -1,29 +1,21 @@
 package org.springframework.data.rest.extensions.contentsearch;
 
-import static java.lang.String.format;
-
-import java.io.Serializable;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.*;
-
+import internal.org.springframework.content.rest.controllers.BadRequestException;
+import internal.org.springframework.content.rest.mappings.ContentHandlerMapping.StoreType;
+import internal.org.springframework.content.rest.utils.ControllerUtils;
+import internal.org.springframework.content.rest.utils.RepositoryUtils;
+import internal.org.springframework.data.rest.extensions.contentsearch.DefaultEntityLookupStrategy;
+import internal.org.springframework.data.rest.extensions.contentsearch.QueryMethodsEntityLookupStrategy;
 import jakarta.persistence.Id;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.fragments.ParameterTypeAware;
-import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.commons.search.Searchable;
+import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.commons.storeservice.StoreFilter;
 import org.springframework.content.commons.storeservice.StoreInfo;
 import org.springframework.content.commons.storeservice.Stores;
-import org.springframework.content.commons.utils.BeanUtils;
-import org.springframework.content.commons.utils.ContentPropertyUtils;
-import org.springframework.content.commons.utils.DomainObjectUtils;
-import org.springframework.content.commons.utils.ReflectionService;
-import org.springframework.content.commons.utils.ReflectionServiceImpl;
+import org.springframework.content.commons.utils.*;
 import org.springframework.content.rest.FulltextEntityLookupQuery;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -39,18 +31,16 @@ import org.springframework.data.rest.webmvc.support.DefaultedPageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.util.ReflectionUtils;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
-import internal.org.springframework.content.rest.controllers.BadRequestException;
-import internal.org.springframework.content.rest.mappings.ContentHandlerMapping.StoreType;
-import internal.org.springframework.content.rest.utils.ControllerUtils;
-import internal.org.springframework.content.rest.utils.RepositoryUtils;
-import internal.org.springframework.data.rest.extensions.contentsearch.DefaultEntityLookupStrategy;
-import internal.org.springframework.data.rest.extensions.contentsearch.QueryMethodsEntityLookupStrategy;
+import java.io.Serializable;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.*;
+
+import static java.lang.String.format;
 
 @RepositoryRestController
 public class ContentSearchRestController {

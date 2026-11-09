@@ -1,19 +1,17 @@
 package internal.org.springframework.renditions.poi;
 
-import org.junit.jupiter.api.Test;
+import org.apache.poi.openxml4j.exceptions.NotOfficeXmlFileException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
-
-import org.apache.poi.openxml4j.exceptions.NotOfficeXmlFileException;
-import org.springframework.content.commons.renditions.RenditionProvider;
-import org.springframework.content.renditions.renderers.WordToJpegRenderer;
+import org.junit.jupiter.api.Test;
 import org.springframework.renditions.poi.POIService;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 public class POIServiceTest {
 

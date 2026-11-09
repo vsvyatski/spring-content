@@ -1,7 +1,5 @@
 package internal.org.springframework.content.encryption.keys.converter;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.junit.jupiter.api.Test;
 import org.springframework.content.encryption.keys.StoredDataEncryptionKey;
 import org.springframework.content.encryption.keys.StoredDataEncryptionKey.EncryptedSymmetricDataEncryptionKey;
@@ -9,6 +7,8 @@ import org.springframework.content.encryption.keys.StoredDataEncryptionKey.Unenc
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.support.ConfigurableConversionService;
 import org.springframework.core.convert.support.DefaultConversionService;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class StoredDataEncryptionKeyGenericConverterTest {
     private static final ConfigurableConversionService conversionService = new DefaultConversionService();

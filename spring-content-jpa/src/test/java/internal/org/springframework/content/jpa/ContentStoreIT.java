@@ -1,12 +1,5 @@
 package internal.org.springframework.content.jpa;
 
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.TestFactory;
-import static org.assertj.core.api.Assertions.assertThat;
-
 import com.github.f4b6a3.uuid.UuidCreator;
 import internal.org.springframework.content.jpa.StoreIT.*;
 import internal.org.springframework.content.jpa.testsupport.models.Claim;
@@ -15,6 +8,8 @@ import internal.org.springframework.content.jpa.testsupport.repositories.ClaimRe
 import internal.org.springframework.content.jpa.testsupport.stores.ClaimStore;
 import jakarta.persistence.*;
 import org.apache.commons.io.IOUtils;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.TestFactory;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.property.PropertyPath;
@@ -32,7 +27,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static internal.org.springframework.content.jpa.StoreIT.getContextName;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 public class ContentStoreIT {

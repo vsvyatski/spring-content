@@ -1,14 +1,13 @@
 package internal.org.springframework.content.rest.mappings;
 
-import java.io.IOException;
-
 import jakarta.servlet.http.HttpServletRequest;
-
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.ResourceHttpMessageConverter;
 import org.springframework.http.converter.ResourceRegionHttpMessageConverter;
 import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
+
+import java.io.IOException;
 
 public class StoreByteRangeHttpRequestHandler extends ResourceHttpRequestHandler {
 

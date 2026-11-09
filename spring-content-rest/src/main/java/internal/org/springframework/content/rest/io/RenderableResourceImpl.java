@@ -1,14 +1,5 @@
 package internal.org.springframework.content.rest.io;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URI;
-import java.net.URL;
-import java.nio.channels.ReadableByteChannel;
-import java.time.ZonedDateTime;
-
 import org.springframework.content.commons.io.DeletableResource;
 import org.springframework.content.commons.renditions.Renderable;
 import org.springframework.core.io.Resource;
@@ -18,6 +9,15 @@ import org.springframework.http.MediaType;
 import org.springframework.lang.Nullable;
 import org.springframework.util.MimeType;
 import org.springframework.web.servlet.resource.HttpResource;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URI;
+import java.net.URL;
+import java.nio.channels.ReadableByteChannel;
+import java.time.ZonedDateTime;
 
 /**
  * Represents an input stream provided by a renderer as a resource.

@@ -1,28 +1,23 @@
 package internal.org.springframework.content.commons.storeservice;
 
-import java.io.Serializable;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Supplier;
-
+import internal.org.springframework.content.commons.store.factory.StoreFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.commons.store.Store;
-import internal.org.springframework.content.commons.store.factory.StoreFactory;
 import org.springframework.content.commons.storeservice.StoreFilter;
 import org.springframework.content.commons.storeservice.StoreInfo;
 import org.springframework.content.commons.storeservice.StoreResolver;
 import org.springframework.content.commons.storeservice.Stores;
 import org.springframework.data.core.TypeInformation;
 import org.springframework.util.Assert;
+
+import java.io.Serializable;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.*;
+import java.util.function.Supplier;
 
 public class StoresImpl implements Stores, InitializingBean {
 

@@ -1,11 +1,6 @@
 package internal.org.springframework.content.rest.support;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-
+import internal.org.springframework.content.rest.support.config.JpaInfrastructureConfig;
 import org.apache.commons.io.IOUtils;
 import org.springframework.content.commons.renditions.RenditionProvider;
 import org.springframework.content.fs.config.EnableFileSystemStores;
@@ -19,7 +14,11 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurer;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import internal.org.springframework.content.rest.support.config.JpaInfrastructureConfig;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 @Configuration
 @EnableJpaRepositories(basePackages = "internal.org.springframework.content.rest.support")

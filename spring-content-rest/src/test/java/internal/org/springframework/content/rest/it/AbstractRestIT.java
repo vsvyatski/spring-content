@@ -1,10 +1,5 @@
 package internal.org.springframework.content.rest.it;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
-import static org.assertj.core.api.Assertions.assertThat;
-
 import internal.org.springframework.content.rest.support.TestEntity2;
 import internal.org.springframework.content.rest.support.TestEntity2JpaStore;
 import internal.org.springframework.content.rest.support.TestEntity2Repository;
@@ -12,6 +7,9 @@ import internal.org.springframework.content.rest.support.TestEntityChild;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import net.bytebuddy.utility.RandomString;
 import org.apache.http.HttpStatus;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.content.commons.property.PropertyPath;
@@ -21,6 +19,7 @@ import java.io.ByteArrayInputStream;
 
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.when;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public abstract class AbstractRestIT {
 

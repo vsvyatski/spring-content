@@ -1,10 +1,9 @@
 package internal.org.springframework.content.azure.it;
 
-import java.io.Serializable;
-
+import com.azure.storage.blob.BlobServiceClientBuilder;
 import org.testcontainers.containers.GenericContainer;
 
-import com.azure.storage.blob.BlobServiceClientBuilder;
+import java.io.Serializable;
 
 /**
  * This class provides a TestContainers implementation of Azure storage via

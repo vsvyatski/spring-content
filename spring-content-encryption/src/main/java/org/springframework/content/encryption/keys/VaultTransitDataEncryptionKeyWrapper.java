@@ -1,14 +1,14 @@
 package org.springframework.content.encryption.keys;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Objects;
-import javax.crypto.spec.SecretKeySpec;
-
 import org.springframework.content.encryption.engine.ContentEncryptionEngine.EncryptionParameters;
 import org.springframework.content.encryption.keys.StoredDataEncryptionKey.EncryptedSymmetricDataEncryptionKey;
 import org.springframework.vault.core.VaultTransitOperations;
 import org.springframework.vault.support.Ciphertext;
 import org.springframework.vault.support.Plaintext;
+
+import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 public class VaultTransitDataEncryptionKeyWrapper implements DataEncryptionKeyWrapper<EncryptedSymmetricDataEncryptionKey> {
     private static final String WRAPPING_ALGORITHM = "vault-transit";

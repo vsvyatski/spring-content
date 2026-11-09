@@ -1,11 +1,11 @@
 package internal.org.springframework.content.jpa.config;
 
-import java.lang.annotation.Annotation;
-
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.content.commons.config.AbstractStoreBeanDefinitionRegistrar;
 import org.springframework.content.jpa.config.EnableJpaStores;
 import org.springframework.content.jpa.store.JpaContentStore;
+
+import java.lang.annotation.Annotation;
 
 public class JpaStoresRegistrar extends AbstractStoreBeanDefinitionRegistrar {
 

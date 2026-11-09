@@ -1,9 +1,5 @@
 package internal.org.springframework.content.docx4j;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.io.InputStream;
-
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
@@ -12,6 +8,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.content.commons.io.FileRemover;
 import org.springframework.content.commons.io.ObservableInputStream;
 import org.springframework.content.commons.renditions.RenditionProvider;
+
+import java.io.InputStream;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class WordToPdfRenditionProviderTest {
 

@@ -1,6 +1,10 @@
 package internal.org.springframework.content.rest.controllers;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.OptimisticLockException;
+import jakarta.persistence.PessimisticLockException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.OptimisticLockingFailureException;
@@ -13,11 +17,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.versions.LockOwnerException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-
-import jakarta.persistence.OptimisticLockException;
-import jakarta.persistence.PessimisticLockException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 
 @ControllerAdvice(basePackageClasses = StoreRestExceptionHandler.class)
 public class StoreRestExceptionHandler {

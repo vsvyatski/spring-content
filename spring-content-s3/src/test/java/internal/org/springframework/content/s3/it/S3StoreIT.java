@@ -1,18 +1,13 @@
 package internal.org.springframework.content.s3.it;
 
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.AfterEach;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-
 import jakarta.persistence.*;
-import java.util.Arrays;
 import net.bytebuddy.utility.RandomString;
 import org.apache.commons.io.IOUtils;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -23,9 +18,9 @@ import org.springframework.content.commons.annotations.MimeType;
 import org.springframework.content.commons.io.DeletableResource;
 import org.springframework.content.commons.io.RangeableResource;
 import org.springframework.content.commons.property.PropertyPath;
-import org.springframework.content.commons.store.StoreAccessException;
 import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.commons.store.SetContentParams;
+import org.springframework.content.commons.store.StoreAccessException;
 import org.springframework.content.commons.store.UnsetContentParams;
 import org.springframework.content.s3.config.EnableS3Stores;
 import org.springframework.context.annotation.Bean;
@@ -34,6 +29,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.WritableResource;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
 
@@ -42,7 +38,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.UUID;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 @SpringBootTest()
 @ExtendWith(SpringExtension.class)

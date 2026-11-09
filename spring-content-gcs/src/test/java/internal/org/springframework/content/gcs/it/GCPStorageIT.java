@@ -1,11 +1,5 @@
 package internal.org.springframework.content.gcs.it;
 
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.AfterEach;
-import static org.assertj.core.api.Assertions.assertThat;
-
 import com.github.f4b6a3.uuid.UuidCreator;
 import com.google.api.gax.paging.Page;
 import com.google.cloud.storage.Blob;
@@ -15,6 +9,10 @@ import com.google.cloud.storage.contrib.nio.testing.LocalStorageHelper;
 import jakarta.persistence.*;
 import net.bytebuddy.utility.RandomString;
 import org.apache.commons.io.IOUtils;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.io.DeletableResource;
@@ -43,6 +41,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class GCPStorageIT {
 

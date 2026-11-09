@@ -1,17 +1,14 @@
 package org.springframework.content.renditions.renderers;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.junit.jupiter.api.Test;
 import org.springframework.content.commons.renditions.RenditionProvider;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class TextplainToJpegRendererTest {
 

@@ -2,13 +2,10 @@ package org.springframework.content.jpa.io;
 
 import internal.org.springframework.content.jpa.io.GenericBlobResource;
 import internal.org.springframework.content.jpa.io.ResourceProvider;
-import org.springframework.content.jpa.io.BlobResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.util.ClassUtils;
-
-import java.util.function.Function;
 
 public class CustomizableBlobResourceLoader implements BlobResourceLoader {
 

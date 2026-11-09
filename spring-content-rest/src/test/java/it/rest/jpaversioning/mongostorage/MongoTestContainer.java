@@ -1,10 +1,9 @@
 package it.rest.jpaversioning.mongostorage;
 
-import org.apache.commons.lang3.StringUtils;
-import org.testcontainers.containers.MongoDBContainer;
-
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
+import org.apache.commons.lang3.StringUtils;
+import org.testcontainers.containers.MongoDBContainer;
 
 public class MongoTestContainer extends MongoDBContainer {
 

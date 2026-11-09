@@ -1,14 +1,11 @@
 package internal.org.springframework.content.rest.controllers;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-
-import jakarta.servlet.http.HttpServletRequest;
-
+import internal.org.springframework.content.rest.controllers.resolvers.*;
+import internal.org.springframework.content.rest.io.StoreResourceImpl;
 import internal.org.springframework.content.rest.mappingcontext.ContentPropertyRequest;
 import internal.org.springframework.content.rest.mappingcontext.ContentPropertyToRequestMappingContext;
+import internal.org.springframework.content.rest.utils.StoreUtils;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.content.commons.mappingcontext.MappingContext;
 import org.springframework.content.commons.store.AssociativeStore;
 import org.springframework.content.commons.store.Store;
@@ -27,13 +24,9 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import org.springframework.web.util.UriTemplate;
 import org.springframework.web.util.UrlPathHelper;
 
-import internal.org.springframework.content.rest.controllers.resolvers.AssociativeStoreResourceResolver;
-import internal.org.springframework.content.rest.controllers.resolvers.EntityResolution;
-import internal.org.springframework.content.rest.controllers.resolvers.EntityResolvers;
-import internal.org.springframework.content.rest.controllers.resolvers.ResourceResolver;
-import internal.org.springframework.content.rest.controllers.resolvers.StoreResourceResolver;
-import internal.org.springframework.content.rest.io.StoreResourceImpl;
-import internal.org.springframework.content.rest.utils.StoreUtils;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 public class ResourceHandlerMethodArgumentResolver implements HandlerMethodArgumentResolver {
 

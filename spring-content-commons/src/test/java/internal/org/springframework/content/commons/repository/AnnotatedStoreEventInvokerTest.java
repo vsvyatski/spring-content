@@ -1,14 +1,10 @@
 package internal.org.springframework.content.commons.repository;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
-
+import org.junit.jupiter.api.Test;
 import org.springframework.content.commons.annotations.*;
 import org.springframework.content.commons.store.ContentStore;
-import org.springframework.content.commons.store.events.StoreEvent;
 import org.springframework.content.commons.store.events.*;
 import org.springframework.content.commons.utils.ReflectionService;
 import org.springframework.core.Ordered;
@@ -20,6 +16,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 

@@ -1,19 +1,12 @@
 package internal.org.springframework.content.rest.links;
 
-import static java.lang.String.format;
-
-import java.lang.reflect.Method;
-import java.net.URI;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
+import internal.org.springframework.content.rest.controllers.StoreRestController;
 import internal.org.springframework.content.rest.io.StoreResource;
+import internal.org.springframework.content.rest.mappingcontext.ContentPropertyToLinkrelMappingContext;
+import internal.org.springframework.content.rest.mappingcontext.ContentPropertyToRequestMappingContext;
+import internal.org.springframework.content.rest.utils.StoreUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
-import internal.org.springframework.content.rest.mappingcontext.ContentPropertyToRequestMappingContext;
-import internal.org.springframework.content.rest.mappingcontext.ContentPropertyToLinkrelMappingContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.aop.support.AopUtils;
@@ -25,7 +18,6 @@ import org.springframework.content.commons.storeservice.Stores;
 import org.springframework.content.commons.utils.DomainObjectUtils;
 import org.springframework.content.rest.StoreRestResource;
 import org.springframework.content.rest.config.RestConfiguration;
-import org.springframework.core.io.Resource;
 import org.springframework.data.projection.TargetAware;
 import org.springframework.data.rest.webmvc.BaseUri;
 import org.springframework.data.rest.webmvc.PersistentEntityResource;
@@ -40,8 +32,13 @@ import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.util.UriComponents;
 
-import internal.org.springframework.content.rest.controllers.StoreRestController;
-import internal.org.springframework.content.rest.utils.StoreUtils;
+import java.lang.reflect.Method;
+import java.net.URI;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import static java.lang.String.format;
 
 /**
  * Adds content and content collection links to Spring Data REST Entity Resources.

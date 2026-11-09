@@ -1,13 +1,10 @@
 package internal.org.springframework.content.jpa;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.TestFactory;
-import static org.assertj.core.api.Assertions.assertThat;
-
 import internal.org.springframework.content.jpa.testsupport.stores.DocumentStore;
 import net.bytebuddy.utility.RandomString;
 import org.apache.commons.io.IOUtils;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.TestFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.content.commons.io.DeletableResource;
 import org.springframework.content.jpa.config.EnableJpaStores;
@@ -39,6 +36,7 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.TimeZone;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 public class StoreIT {

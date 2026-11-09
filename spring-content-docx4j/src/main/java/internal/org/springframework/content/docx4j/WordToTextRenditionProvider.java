@@ -1,9 +1,5 @@
 package internal.org.springframework.content.docx4j;
 
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.attribute.FileAttribute;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.docx4j.TextUtils;
@@ -13,6 +9,10 @@ import org.springframework.content.commons.io.FileRemover;
 import org.springframework.content.commons.io.ObservableInputStream;
 import org.springframework.content.commons.renditions.RenditionProvider;
 import org.springframework.stereotype.Service;
+
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.attribute.FileAttribute;
 
 import static java.lang.String.format;
 

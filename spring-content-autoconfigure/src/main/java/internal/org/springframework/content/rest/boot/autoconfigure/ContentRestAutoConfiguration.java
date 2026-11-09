@@ -1,7 +1,5 @@
 package internal.org.springframework.content.rest.boot.autoconfigure;
 
-import java.net.URI;
-
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -12,6 +10,8 @@ import org.springframework.content.rest.config.UnsetContentDisposition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Component;
+
+import java.net.URI;
 
 @AutoConfiguration
 @ConditionalOnWebApplication()

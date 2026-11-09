@@ -1,10 +1,9 @@
 package org.springframework.content.elasticsearch;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
-
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import internal.org.springframework.content.elasticsearch.IndexManager;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class GlobalIndexingStrategy implements IndexingStrategy {

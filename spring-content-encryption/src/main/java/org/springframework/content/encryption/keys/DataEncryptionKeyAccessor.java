@@ -1,9 +1,10 @@
 package org.springframework.content.encryption.keys;
 
+import org.springframework.content.commons.mappingcontext.ContentProperty;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import org.springframework.content.commons.mappingcontext.ContentProperty;
 
 /**
  * Reads and writes data encryption keys from the entity with content

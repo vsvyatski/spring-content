@@ -1,17 +1,10 @@
 package internal.org.springframework.content.jpa.config;
 
-import internal.org.springframework.content.jpa.io.MySQLBlobResource;
-import internal.org.springframework.content.jpa.io.PostgresBlobResource;
-import internal.org.springframework.content.jpa.io.SQLServerBlobResource;
-import org.springframework.content.jpa.io.CustomizableBlobResourceLoader;
-import internal.org.springframework.content.jpa.io.DelegatingBlobResourceLoader;
-import internal.org.springframework.content.jpa.io.GenericBlobResource;
-
+import internal.org.springframework.content.jpa.io.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.content.jpa.io.AbstractBlobResource;
 import org.springframework.content.jpa.io.BlobResourceLoader;
+import org.springframework.content.jpa.io.CustomizableBlobResourceLoader;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;

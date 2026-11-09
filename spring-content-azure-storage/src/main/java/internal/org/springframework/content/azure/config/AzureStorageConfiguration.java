@@ -1,8 +1,8 @@
 package internal.org.springframework.content.azure.config;
 
-import java.io.Serializable;
-import java.util.List;
-
+import com.azure.spring.cloud.core.resource.AzureStorageBlobProtocolResolver;
+import com.azure.storage.blob.BlobServiceClient;
+import com.azure.storage.blob.BlobServiceClientBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -22,9 +22,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.ConverterRegistry;
 
-import com.azure.spring.cloud.core.resource.AzureStorageBlobProtocolResolver;
-import com.azure.storage.blob.BlobServiceClient;
-import com.azure.storage.blob.BlobServiceClientBuilder;
+import java.io.Serializable;
+import java.util.List;
 
 @Configuration
 @Import(AzureStorageBlobProtocolResolver.class)

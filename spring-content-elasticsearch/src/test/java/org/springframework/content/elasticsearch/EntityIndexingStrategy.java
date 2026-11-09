@@ -1,11 +1,10 @@
 package org.springframework.content.elasticsearch;
 
+import internal.org.springframework.content.elasticsearch.IndexManager;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ContextRefreshedEvent;
-
-import internal.org.springframework.content.elasticsearch.IndexManager;
 
 @Configuration
 public class EntityIndexingStrategy implements IndexingStrategy, ApplicationListener {

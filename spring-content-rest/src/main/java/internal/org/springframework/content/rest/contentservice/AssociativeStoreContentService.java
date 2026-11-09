@@ -1,19 +1,12 @@
 package internal.org.springframework.content.rest.contentservice;
 
-import static java.lang.String.format;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import internal.org.springframework.content.rest.controllers.MethodNotAllowedException;
+import internal.org.springframework.content.rest.io.AssociatedStoreResource;
+import internal.org.springframework.content.rest.io.RenderedResource;
+import internal.org.springframework.content.rest.io.StoreResource;
+import internal.org.springframework.content.rest.mappings.StoreByteRangeHttpRequestHandler;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,11 +30,12 @@ import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
 
-import internal.org.springframework.content.rest.controllers.MethodNotAllowedException;
-import internal.org.springframework.content.rest.io.AssociatedStoreResource;
-import internal.org.springframework.content.rest.io.RenderedResource;
-import internal.org.springframework.content.rest.io.StoreResource;
-import internal.org.springframework.content.rest.mappings.StoreByteRangeHttpRequestHandler;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Method;
+import java.util.*;
+
+import static java.lang.String.format;
 
 public class AssociativeStoreContentService implements ContentService {
 

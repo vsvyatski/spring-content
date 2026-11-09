@@ -1,7 +1,6 @@
 package internal.org.springframework.content.rest.it.h2;
 
-import javax.sql.DataSource;
-
+import internal.org.springframework.content.rest.it.SecurityConfiguration;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -26,7 +25,7 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import internal.org.springframework.content.rest.it.SecurityConfiguration;
+import javax.sql.DataSource;
 
 @SpringBootApplication(exclude = {
         MongoAutoConfiguration.class,

@@ -1,12 +1,12 @@
 package internal.org.springframework.content.commons.renditions;
 
-import java.io.InputStream;
-import java.util.*;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.content.commons.renditions.RenditionProvider;
 import org.springframework.content.commons.renditions.RenditionService;
 import org.springframework.util.MimeType;
+
+import java.io.InputStream;
+import java.util.*;
 
 public class RenditionServiceImpl implements RenditionService {
 

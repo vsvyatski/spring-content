@@ -1,26 +1,21 @@
 package internal.org.springframework.content.commons.store.factory;
 
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.AfterEach;
-import static org.assertj.core.api.Assertions.assertThat;
-
 import internal.org.springframework.content.commons.config.StoreFragment;
 import internal.org.springframework.content.commons.config.StoreFragments;
 import org.aopalliance.intercept.MethodInvocation;
 import org.apache.commons.io.IOUtils;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.springframework.content.commons.annotations.MimeType;
-import org.springframework.content.commons.store.events.AfterStoreEvent;
-import org.springframework.content.commons.store.ContentStore;
-import org.springframework.content.commons.store.events.StoreEvent;
-import org.springframework.content.commons.store.events.*;
 import org.springframework.content.commons.store.AssociativeStore;
+import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.commons.store.Store;
+import org.springframework.content.commons.store.events.*;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -38,10 +33,9 @@ import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.UUID;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
-import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 @SuppressWarnings("unchecked")

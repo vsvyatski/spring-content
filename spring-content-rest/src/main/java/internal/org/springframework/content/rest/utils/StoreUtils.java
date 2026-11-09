@@ -1,20 +1,20 @@
 package internal.org.springframework.content.rest.utils;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URL;
-
 import org.atteo.evo.inflector.English;
-
-import org.springframework.content.commons.storeservice.*;
+import org.springframework.content.commons.storeservice.StoreFilter;
+import org.springframework.content.commons.storeservice.StoreInfo;
 import org.springframework.content.rest.StoreRestResource;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 import org.springframework.util.MimeType;
 import org.springframework.util.StringUtils;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URL;
 
 import static org.springframework.util.StringUtils.trimTrailingCharacter;
 

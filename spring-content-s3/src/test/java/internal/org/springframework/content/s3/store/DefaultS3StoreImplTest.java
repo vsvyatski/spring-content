@@ -1,26 +1,11 @@
 package internal.org.springframework.content.s3.store;
 
-import org.junit.jupiter.api.Test;
+import internal.org.springframework.content.s3.config.S3StoreConfiguration;
+import internal.org.springframework.content.s3.io.S3StoreResource;
+import internal.org.springframework.content.s3.io.SimpleStorageProtocolResolver;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
-import static org.assertj.core.api.Assertions.assertThat;
-
-import static java.lang.String.format;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.endsWith;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.matches;
-import static org.mockito.Mockito.*;
-
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Serializable;
-import java.util.UUID;
-import java.util.function.Supplier;
-
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.config.BeanDefinitionCustomizer;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.annotations.ContentLength;
@@ -36,18 +21,19 @@ import org.springframework.content.s3.config.MultiTenantS3ClientProvider;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.core.convert.converter.Converter;
-import org.springframework.core.io.DefaultResourceLoader;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
-import org.springframework.core.io.WritableResource;
-
-import internal.org.springframework.content.s3.config.S3StoreConfiguration;
-import internal.org.springframework.content.s3.io.S3StoreResource;
-import internal.org.springframework.content.s3.io.SimpleStorageProtocolResolver;
+import org.springframework.core.io.*;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Exception;
+
+import java.io.*;
+import java.util.UUID;
+import java.util.function.Supplier;
+
+import static java.lang.String.format;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 public class DefaultS3StoreImplTest {
 

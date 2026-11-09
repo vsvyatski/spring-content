@@ -1,29 +1,24 @@
 package org.springframework.versions.interceptors;
 
-import org.junit.jupiter.api.Test;
+import internal.org.springframework.versions.AuthenticationFacade;
+import internal.org.springframework.versions.LockingService;
+import jakarta.persistence.Id;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
-import static org.assertj.core.api.Assertions.assertThat;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-
-import jakarta.persistence.Id;
-
+import org.junit.jupiter.api.Test;
 import org.springframework.aop.ProxyMethodInvocation;
 import org.springframework.content.commons.store.ContentStore;
 import org.springframework.security.core.Authentication;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.versions.LockOwnerException;
 
-import internal.org.springframework.versions.AuthenticationFacade;
-import internal.org.springframework.versions.LockingService;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 
 public class PessimisticLockingInterceptorTest {
 

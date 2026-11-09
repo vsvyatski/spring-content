@@ -1,25 +1,25 @@
 package internal.org.springframework.content.s3.config;
 
-import java.io.Serializable;
-import java.util.List;
-import java.util.Objects;
-
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.content.commons.annotations.ContentId;
+import org.springframework.content.commons.config.ContentPropertyInfo;
 import org.springframework.content.commons.store.StoreAccessException;
 import org.springframework.content.commons.utils.BeanUtils;
 import org.springframework.content.commons.utils.PlacementService;
 import org.springframework.content.commons.utils.PlacementServiceImpl;
 import org.springframework.content.s3.Bucket;
 import org.springframework.content.s3.S3ObjectId;
-import org.springframework.content.commons.config.ContentPropertyInfo;
 import org.springframework.content.s3.config.S3StoreConfigurer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.ConverterRegistry;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Objects;
 
 @Configuration
 public class S3StoreConfiguration implements InitializingBean {

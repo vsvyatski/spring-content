@@ -1,5 +1,6 @@
 package internal.org.springframework.content.rest.controllers.resolvers;
 
+import internal.org.springframework.content.rest.io.AssociatedStoreResourceImpl;
 import org.springframework.content.commons.mappingcontext.MappingContext;
 import org.springframework.content.commons.property.PropertyPath;
 import org.springframework.content.commons.store.AssociativeStore;
@@ -7,8 +8,6 @@ import org.springframework.content.commons.store.GetResourceParams;
 import org.springframework.content.commons.storeservice.StoreInfo;
 import org.springframework.core.io.Resource;
 import org.springframework.web.context.request.NativeWebRequest;
-
-import internal.org.springframework.content.rest.io.AssociatedStoreResourceImpl;
 
 public class AssociativeStoreResourceResolver implements ResourceResolver {
 

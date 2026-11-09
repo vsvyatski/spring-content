@@ -1,16 +1,16 @@
 package org.springframework.content.commons.store.factory;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Nested;
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.Test;
+import org.springframework.content.commons.property.PropertyPath;
+import org.springframework.content.commons.store.*;
+import org.springframework.core.io.Resource;
 
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.UUID;
 
-import org.springframework.content.commons.property.PropertyPath;
-import org.springframework.content.commons.store.*;
-import org.springframework.core.io.Resource;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class AbstractStoreFactoryBeanTest {
 

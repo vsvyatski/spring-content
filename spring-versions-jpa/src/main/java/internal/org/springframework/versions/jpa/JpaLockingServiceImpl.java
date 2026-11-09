@@ -1,10 +1,6 @@
 package internal.org.springframework.versions.jpa;
 
-import java.security.Principal;
-import java.util.List;
-
-import javax.security.auth.Subject;
-
+import internal.org.springframework.versions.LockingService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +10,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Service;
 
-import internal.org.springframework.versions.LockingService;
+import javax.security.auth.Subject;
+import java.security.Principal;
+import java.util.List;
 
 @Service
 public class JpaLockingServiceImpl implements LockingService {

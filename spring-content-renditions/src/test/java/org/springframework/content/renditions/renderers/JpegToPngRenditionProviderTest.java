@@ -1,20 +1,19 @@
 package org.springframework.content.renditions.renderers;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.content.commons.io.FileRemover;
+import org.springframework.content.commons.io.ObservableInputStream;
+import org.springframework.content.commons.renditions.RenditionProvider;
 
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 
-import javax.imageio.ImageIO;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.content.commons.io.FileRemover;
-import org.springframework.content.commons.io.ObservableInputStream;
-import org.springframework.content.commons.renditions.RenditionProvider;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class JpegToPngRenditionProviderTest {
 

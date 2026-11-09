@@ -1,13 +1,15 @@
 package internal.org.springframework.content.rest.controllers;
 
-import java.io.IOException;
-import java.nio.file.FileSystemNotFoundException;
-import java.util.Date;
-
+import internal.org.springframework.content.rest.annotations.ContentRestController;
+import internal.org.springframework.content.rest.contentservice.ContentService;
+import internal.org.springframework.content.rest.contentservice.ContentServiceFactory;
+import internal.org.springframework.content.rest.io.InputStreamResource;
+import internal.org.springframework.content.rest.io.StoreResource;
+import internal.org.springframework.content.rest.mappingcontext.ContentPropertyToExportedContext;
+import internal.org.springframework.content.rest.mappings.StoreByteRangeHttpRequestHandler;
+import internal.org.springframework.content.rest.utils.HeaderUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
-import internal.org.springframework.content.rest.mappingcontext.ContentPropertyToExportedContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -24,21 +26,13 @@ import org.springframework.data.repository.support.RepositoryInvokerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.multipart.MultipartFile;
 
-import internal.org.springframework.content.rest.annotations.ContentRestController;
-import internal.org.springframework.content.rest.contentservice.ContentService;
-import internal.org.springframework.content.rest.contentservice.ContentServiceFactory;
-import internal.org.springframework.content.rest.io.InputStreamResource;
-import internal.org.springframework.content.rest.io.StoreResource;
-import internal.org.springframework.content.rest.mappings.StoreByteRangeHttpRequestHandler;
-import internal.org.springframework.content.rest.utils.HeaderUtils;
+import java.io.IOException;
+import java.nio.file.FileSystemNotFoundException;
+import java.util.Date;
 
 @ContentRestController
 public class StoreRestController implements InitializingBean  {

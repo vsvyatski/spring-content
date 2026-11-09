@@ -1,15 +1,11 @@
 package internal.org.springframework.content.rest.contentservice;
 
-import static java.lang.String.format;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.List;
-
+import internal.org.springframework.content.rest.controllers.MethodNotAllowedException;
+import internal.org.springframework.content.rest.io.RenderableResource;
+import internal.org.springframework.content.rest.io.RenderedResource;
+import internal.org.springframework.content.rest.mappings.StoreByteRangeHttpRequestHandler;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,10 +20,12 @@ import org.springframework.util.Assert;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.server.ResponseStatusException;
 
-import internal.org.springframework.content.rest.controllers.MethodNotAllowedException;
-import internal.org.springframework.content.rest.io.RenderableResource;
-import internal.org.springframework.content.rest.io.RenderedResource;
-import internal.org.springframework.content.rest.mappings.StoreByteRangeHttpRequestHandler;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.List;
+
+import static java.lang.String.format;
 
 public class StoreContentService implements ContentService {
 

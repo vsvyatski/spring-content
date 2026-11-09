@@ -1,15 +1,9 @@
 package org.springframework.content.commons.store.factory.stores;
 
-import org.junit.jupiter.api.extension.ExtendWith;
-
-import org.junit.jupiter.api.Test;
+import internal.org.springframework.content.commons.repository.AnnotatedStoreEventInvoker;
 import org.junit.jupiter.api.Nested;
-import static org.assertj.core.api.Assertions.assertThat;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import java.io.Serializable;
-import java.net.URI;
-
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.content.commons.store.AssociativeStore;
 import org.springframework.content.commons.store.ContentStore;
@@ -18,8 +12,12 @@ import org.springframework.content.commons.store.factory.testsupport.EnableTestS
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import internal.org.springframework.content.commons.repository.AnnotatedStoreEventInvoker;
+import java.io.Serializable;
+import java.net.URI;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ContextConfiguration(classes = StoreTest.StoreTestConfiguration.class)
 @ExtendWith(SpringExtension.class)

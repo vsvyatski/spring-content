@@ -6,7 +6,6 @@ import org.jspecify.annotations.NonNull;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.content.commons.annotations.*;
-import org.springframework.content.commons.store.events.StoreEvent;
 import org.springframework.content.commons.store.events.*;
 import org.springframework.content.commons.utils.ReflectionService;
 import org.springframework.content.commons.utils.ReflectionServiceImpl;

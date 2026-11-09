@@ -1,9 +1,9 @@
 package org.springframework.content.rest.config;
 
-import java.util.Map;
-
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+
+import java.util.Map;
 
 public class StoreCorsRegistry extends CorsRegistry {
 

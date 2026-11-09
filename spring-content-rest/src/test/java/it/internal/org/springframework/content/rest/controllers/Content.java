@@ -1,21 +1,10 @@
 package it.internal.org.springframework.content.rest.controllers;
 
+import internal.org.springframework.content.rest.support.ContentEntity;
+import org.apache.commons.io.IOUtils;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.AfterEach;
-import static org.assertj.core.api.Assertions.assertThat;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.io.ByteArrayInputStream;
-import java.net.URLEncoder;
-import java.nio.charset.Charset;
-import java.util.Optional;
-import java.util.UUID;
-
-import org.apache.commons.io.IOUtils;
 import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.commons.store.Store;
 import org.springframework.data.repository.CrudRepository;
@@ -24,7 +13,14 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 
-import internal.org.springframework.content.rest.support.ContentEntity;
+import java.io.ByteArrayInputStream;
+import java.net.URLEncoder;
+import java.nio.charset.Charset;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class Content {
 

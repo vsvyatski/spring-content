@@ -1,12 +1,13 @@
 package org.springframework.content.encryption.config;
 
-import java.util.List;
-import java.util.function.Consumer;
 import org.springframework.content.encryption.engine.ContentEncryptionEngine;
 import org.springframework.content.encryption.keys.DataEncryptionKeyAccessor;
 import org.springframework.content.encryption.keys.DataEncryptionKeyWrapper;
 import org.springframework.content.encryption.keys.StoredDataEncryptionKey;
 import org.springframework.core.convert.converter.ConverterRegistry;
+
+import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Configuration for encrypting content store

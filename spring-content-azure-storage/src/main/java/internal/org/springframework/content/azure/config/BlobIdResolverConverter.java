@@ -1,11 +1,5 @@
 package internal.org.springframework.content.azure.config;
 
-import static java.lang.String.format;
-
-import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.springframework.content.azure.Bucket;
 import org.springframework.content.azure.config.BlobId;
 import org.springframework.content.commons.store.StoreAccessException;
@@ -13,6 +7,12 @@ import org.springframework.content.commons.utils.BeanUtils;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.util.Assert;
+
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
+
+import static java.lang.String.format;
 
 public class BlobIdResolverConverter implements GenericConverter {
 

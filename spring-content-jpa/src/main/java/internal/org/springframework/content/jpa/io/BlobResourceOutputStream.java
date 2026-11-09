@@ -1,13 +1,5 @@
 package internal.org.springframework.content.jpa.io;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.sql.Blob;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -16,6 +8,10 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.datasource.DataSourceUtils;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.sql.*;
 
 public class BlobResourceOutputStream extends OutputStream {
 

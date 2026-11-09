@@ -1,11 +1,11 @@
 package org.springframework.content.solr;
 
-import java.io.IOException;
-
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.impl.HttpJdkSolrClient;
 import org.testcontainers.containers.SolrContainer;
 import org.testcontainers.utility.DockerImageName;
+
+import java.io.IOException;
 
 public class SolrTestContainer extends SolrContainer {
 

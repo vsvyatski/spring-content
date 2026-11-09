@@ -1,20 +1,19 @@
 package internal.org.springframework.content.rest.support.mockstore;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.io.InputStream;
-import java.io.Serializable;
-
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.springframework.content.commons.property.PropertyPath;
 import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.commons.store.Store;
 import org.springframework.content.commons.store.factory.AbstractStoreFactoryBean;
 import org.springframework.core.io.Resource;
 
-import org.springframework.content.commons.property.PropertyPath;
+import java.io.InputStream;
+import java.io.Serializable;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class MockStoreFactoryBean extends AbstractStoreFactoryBean {
 

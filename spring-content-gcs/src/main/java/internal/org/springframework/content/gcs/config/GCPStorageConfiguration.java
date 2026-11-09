@@ -1,8 +1,6 @@
 package internal.org.springframework.content.gcs.config;
 
-import java.io.Serializable;
-import java.util.List;
-
+import com.google.cloud.spring.storage.GoogleStorageProtocolResolver;
 import com.google.cloud.storage.BlobId;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +18,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.ConverterRegistry;
 
-import com.google.cloud.spring.storage.GoogleStorageProtocolResolver;
+import java.io.Serializable;
+import java.util.List;
 
 @Configuration
 @Import(GoogleStorageProtocolResolver.class)

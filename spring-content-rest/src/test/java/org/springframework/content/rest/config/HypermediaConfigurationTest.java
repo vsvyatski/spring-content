@@ -1,10 +1,8 @@
 package org.springframework.content.rest.config;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
-import static org.assertj.core.api.Assertions.assertThat;
-
+import org.junit.jupiter.api.Test;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.fs.config.EnableFileSystemStores;
 import org.springframework.content.fs.io.FileSystemResourceLoader;
@@ -21,6 +19,8 @@ import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfigu
 
 import java.io.IOException;
 import java.nio.file.Files;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class HypermediaConfigurationTest {
 
