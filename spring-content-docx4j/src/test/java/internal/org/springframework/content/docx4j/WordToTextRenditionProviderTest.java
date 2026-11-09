@@ -34,7 +34,8 @@ public class WordToTextRenditionProviderTest {
         assertThat(converted.available()).isGreaterThan(0);
         assertThat(((ObservableInputStream) converted).getObservers()).anyMatch(observer -> observer instanceof FileRemover);
 
-        assertThat(IOUtils.toString(converted, StandardCharsets.UTF_8)).isEqualTo("This is the Document Title and this is the document body.");
+        assertThat(IOUtils.toString(converted, StandardCharsets.UTF_8))
+                .isEqualTo("This is the Document Title\n\n and this is the document body.\n\n\n");
     }
 
 }

@@ -2,9 +2,9 @@ package internal.org.springframework.content.docx4j;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.docx4j.TextUtils;
+import org.docx4j.model.text.TextOptions;
+import org.docx4j.model.text.Texts;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
 import org.springframework.content.commons.io.FileRemover;
 import org.springframework.content.commons.io.ObservableInputStream;
 import org.springframework.content.commons.renditions.RenditionProvider;
@@ -36,16 +36,9 @@ public class WordToTextRenditionProvider implements RenditionProvider {
         try {
             WordprocessingMLPackage pkg = WordprocessingMLPackage.load(fromInputSource);
 
-            MainDocumentPart documentPart = pkg.getMainDocumentPart();
-
-            org.docx4j.wml.Document wmlDocumentEl = (org.docx4j.wml.Document) documentPart.getJaxbElement();
-
             File tmpFile = Files.createTempFile(null, null, new FileAttribute<?>[]{}).toFile();
-            OutputStream os = new FileOutputStream(tmpFile);
-            Writer out = new OutputStreamWriter(os);
-
-            TextUtils.extractText(wmlDocumentEl, out);
-            out.close();
+            String text = Texts.plainText(pkg, new TextOptions());
+            Files.writeString(tmpFile.toPath(), text);
 
             if (pkg.getMainDocumentPart().getFontTablePart() != null) {
                 pkg.getMainDocumentPart().getFontTablePart().deleteEmbeddedFontTempFiles();

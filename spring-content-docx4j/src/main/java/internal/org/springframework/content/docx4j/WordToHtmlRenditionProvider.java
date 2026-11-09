@@ -43,7 +43,7 @@ public class WordToHtmlRenditionProvider implements RenditionProvider {
             updater.update(true);
 
             HTMLSettings htmlSettings = Docx4J.createHTMLSettings();
-            htmlSettings.setWmlPackage(pkg);
+            htmlSettings.setOpcPackage(pkg);
 
             Docx4jProperties.setProperty("docx4j.Convert.Out.HTML.OutputMethodXML", true);
 
