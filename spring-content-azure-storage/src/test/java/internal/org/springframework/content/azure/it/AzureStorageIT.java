@@ -12,6 +12,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.content.azure.config.EnableAzureStorage;
+import org.springframework.content.test.support.TestSupportPackages;
+import org.springframework.content.test.support.jpa.*;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.io.DeletableResource;
@@ -56,32 +58,20 @@ public class AzureStorageIT {
         System.setProperty("spring.content.azure.bucket", "azure-test-bucket");
     }
 
-    private TestEntity entity;
+    private DualContentJpaLongIdEntity entity;
     private Resource genericResource;
 
     private Exception e;
 
     private AnnotationConfigApplicationContext context;
 
-    private TestEntityRepository repo;
-    private TestEntityStore store;
+    private DualContentJpaLongIdRepository repo;
+    private DualContentJpaLongIdStore store;
 
     private EmbeddedRepository embeddedRepo;
     private EmbeddedStore embeddedStore;
 
     private String resourceLocation;
-
-    public interface TestEntityRepository extends JpaRepository<TestEntity, Long> {
-    }
-
-    public interface TestEntityStore extends ContentStore<TestEntity, String> {
-    }
-
-    public interface SharedIdRepository extends JpaRepository<SharedIdContentIdEntity, String> {
-    }
-
-    public interface SharedIdStore extends ContentStore<SharedIdContentIdEntity, String> {
-    }
 
     public interface EmbeddedRepository extends JpaRepository<EntityWithEmbeddedContent, String> {
     }
@@ -90,8 +80,8 @@ public class AzureStorageIT {
     }
 
     @Configuration
-    @EnableJpaRepositories(basePackages = "internal.org.springframework.content.azure.it", considerNestedRepositories = true)
-    @EnableAzureStorage(basePackages = "internal.org.springframework.content.azure.it")
+    @EnableJpaRepositories(basePackages = {TestSupportPackages.JPA, "internal.org.springframework.content.azure.it"}, considerNestedRepositories = true)
+    @EnableAzureStorage(basePackages = {TestSupportPackages.JPA, "internal.org.springframework.content.azure.it"})
     @Import(InfrastructureConfig.class)
     public static class TestConfig {
         @Bean
@@ -118,7 +108,7 @@ public class AzureStorageIT {
 
             LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
             factory.setJpaVendorAdapter(vendorAdapter);
-            factory.setPackagesToScan("internal.org.springframework.content.azure.it");
+            factory.setPackagesToScan("internal.org.springframework.content.azure.it", TestSupportPackages.JPA);
             factory.setDataSource(dataSource());
 
             return factory;
@@ -130,103 +120,6 @@ public class AzureStorageIT {
             JpaTransactionManager txManager = new JpaTransactionManager();
             txManager.setEntityManagerFactory(entityManagerFactory().getObject());
             return txManager;
-        }
-    }
-
-    @Entity
-    public static class TestEntity {
-
-        @Id
-        @GeneratedValue(strategy = GenerationType.AUTO)
-        private Long id;
-
-        @ContentId
-        private String contentId;
-
-        @ContentLength
-        private Long contentLen;
-
-        @ContentId
-        private String renditionId;
-
-        @ContentLength
-        private long renditionLen;
-
-        public TestEntity() {
-        }
-
-        public TestEntity(String contentId) {
-            this.contentId = contentId;
-        }
-
-        public Long getId() {
-            return id;
-        }
-
-        public void setId(Long id) {
-            this.id = id;
-        }
-
-        public String getContentId() {
-            return contentId;
-        }
-
-        public void setContentId(String contentId) {
-            this.contentId = contentId;
-        }
-
-        public Long getContentLen() {
-            return contentLen;
-        }
-
-        public void setContentLen(Long contentLen) {
-            this.contentLen = contentLen;
-        }
-
-        public String getRenditionId() {
-            return renditionId;
-        }
-
-        public void setRenditionId(String renditionId) {
-            this.renditionId = renditionId;
-        }
-
-        public long getRenditionLen() {
-            return renditionLen;
-        }
-
-        public void setRenditionLen(long renditionLen) {
-            this.renditionLen = renditionLen;
-        }
-    }
-
-    @Entity
-    public static class SharedIdContentIdEntity {
-
-        @jakarta.persistence.Id
-        @ContentId
-        private String contentId = UUID.randomUUID().toString();
-
-        @ContentLength
-        private long contentLen;
-
-        public SharedIdContentIdEntity() {
-        }
-
-        public String getContentId() {
-            return contentId;
-        }
-
-        public void setContentId(String contentId) {
-            this.contentId = contentId;
-        }
-
-        public long getContentLen() {
-            return contentLen;
-        }
-
-        public void setContentLen(long contentLen) {
-            this.contentLen = contentLen;
         }
     }
 
@@ -297,8 +190,8 @@ public class AzureStorageIT {
                         context.register(TestConfig.class);
                         context.refresh();
 
-                        repo = context.getBean(TestEntityRepository.class);
-                        store = context.getBean(TestEntityStore.class);
+                        repo = context.getBean(DualContentJpaLongIdRepository.class);
+                        store = context.getBean(DualContentJpaLongIdStore.class);
 
                         embeddedRepo = context.getBean(EmbeddedRepository.class);
                         embeddedStore = context.getBean(EmbeddedStore.class);
@@ -344,8 +237,8 @@ public class AzureStorageIT {
                             context.register(TestConfig.class);
                             context.refresh();
 
-                            repo = context.getBean(TestEntityRepository.class);
-                            store = context.getBean(TestEntityStore.class);
+                            repo = context.getBean(DualContentJpaLongIdRepository.class);
+                            store = context.getBean(DualContentJpaLongIdStore.class);
 
                             embeddedRepo = context.getBean(EmbeddedRepository.class);
                             embeddedStore = context.getBean(EmbeddedStore.class);
@@ -397,8 +290,8 @@ public class AzureStorageIT {
                             context.register(TestConfig.class);
                             context.refresh();
 
-                            repo = context.getBean(TestEntityRepository.class);
-                            store = context.getBean(TestEntityStore.class);
+                            repo = context.getBean(DualContentJpaLongIdRepository.class);
+                            store = context.getBean(DualContentJpaLongIdStore.class);
 
                             embeddedRepo = context.getBean(EmbeddedRepository.class);
                             embeddedStore = context.getBean(EmbeddedStore.class);
@@ -455,8 +348,8 @@ public class AzureStorageIT {
                             context.register(TestConfig.class);
                             context.refresh();
 
-                            repo = context.getBean(TestEntityRepository.class);
-                            store = context.getBean(TestEntityStore.class);
+                            repo = context.getBean(DualContentJpaLongIdRepository.class);
+                            store = context.getBean(DualContentJpaLongIdStore.class);
 
                             embeddedRepo = context.getBean(EmbeddedRepository.class);
                             embeddedStore = context.getBean(EmbeddedStore.class);
@@ -515,8 +408,8 @@ public class AzureStorageIT {
                         context.register(TestConfig.class);
                         context.refresh();
 
-                        repo = context.getBean(TestEntityRepository.class);
-                        store = context.getBean(TestEntityStore.class);
+                        repo = context.getBean(DualContentJpaLongIdRepository.class);
+                        store = context.getBean(DualContentJpaLongIdStore.class);
 
                         embeddedRepo = context.getBean(EmbeddedRepository.class);
                         embeddedStore = context.getBean(EmbeddedStore.class);
@@ -524,7 +417,7 @@ public class AzureStorageIT {
                         RandomString random = new RandomString(5);
                         resourceLocation = random.nextString();
 
-                        entity = new TestEntity();
+                        entity = new DualContentJpaLongIdEntity();
                         entity = repo.save(entity);
                     }
 
@@ -552,8 +445,8 @@ public class AzureStorageIT {
                                 context.register(TestConfig.class);
                                 context.refresh();
 
-                                repo = context.getBean(TestEntityRepository.class);
-                                store = context.getBean(TestEntityStore.class);
+                                repo = context.getBean(DualContentJpaLongIdRepository.class);
+                                store = context.getBean(DualContentJpaLongIdStore.class);
 
                                 embeddedRepo = context.getBean(EmbeddedRepository.class);
                                 embeddedStore = context.getBean(EmbeddedStore.class);
@@ -561,7 +454,7 @@ public class AzureStorageIT {
                                 RandomString random = new RandomString(5);
                                 resourceLocation = random.nextString();
 
-                                entity = new TestEntity();
+                                entity = new DualContentJpaLongIdEntity();
                                 entity = repo.save(entity);
 
                                 genericResource = store.getResource(resourceLocation);
@@ -590,8 +483,8 @@ public class AzureStorageIT {
                                 context.register(TestConfig.class);
                                 context.refresh();
 
-                                repo = context.getBean(TestEntityRepository.class);
-                                store = context.getBean(TestEntityStore.class);
+                                repo = context.getBean(DualContentJpaLongIdRepository.class);
+                                store = context.getBean(DualContentJpaLongIdStore.class);
 
                                 embeddedRepo = context.getBean(EmbeddedRepository.class);
                                 embeddedStore = context.getBean(EmbeddedStore.class);
@@ -599,7 +492,7 @@ public class AzureStorageIT {
                                 RandomString random = new RandomString(5);
                                 resourceLocation = random.nextString();
 
-                                entity = new TestEntity();
+                                entity = new DualContentJpaLongIdEntity();
                                 entity = repo.save(entity);
 
                                 genericResource = store.getResource(resourceLocation);
@@ -635,8 +528,8 @@ public class AzureStorageIT {
                                 context.register(TestConfig.class);
                                 context.refresh();
 
-                                repo = context.getBean(TestEntityRepository.class);
-                                store = context.getBean(TestEntityStore.class);
+                                repo = context.getBean(DualContentJpaLongIdRepository.class);
+                                store = context.getBean(DualContentJpaLongIdStore.class);
 
                                 embeddedRepo = context.getBean(EmbeddedRepository.class);
                                 embeddedStore = context.getBean(EmbeddedStore.class);
@@ -644,7 +537,7 @@ public class AzureStorageIT {
                                 RandomString random = new RandomString(5);
                                 resourceLocation = random.nextString();
 
-                                entity = new TestEntity();
+                                entity = new DualContentJpaLongIdEntity();
                                 entity = repo.save(entity);
 
                                 genericResource = store.getResource(resourceLocation);
@@ -676,8 +569,8 @@ public class AzureStorageIT {
                                 context.register(TestConfig.class);
                                 context.refresh();
 
-                                repo = context.getBean(TestEntityRepository.class);
-                                store = context.getBean(TestEntityStore.class);
+                                repo = context.getBean(DualContentJpaLongIdRepository.class);
+                                store = context.getBean(DualContentJpaLongIdStore.class);
 
                                 embeddedRepo = context.getBean(EmbeddedRepository.class);
                                 embeddedStore = context.getBean(EmbeddedStore.class);
@@ -685,7 +578,7 @@ public class AzureStorageIT {
                                 RandomString random = new RandomString(5);
                                 resourceLocation = random.nextString();
 
-                                entity = new TestEntity();
+                                entity = new DualContentJpaLongIdEntity();
                                 entity = repo.save(entity);
 
                                 genericResource = store.getResource(resourceLocation);
@@ -718,8 +611,8 @@ public class AzureStorageIT {
                                 context.register(TestConfig.class);
                                 context.refresh();
 
-                                repo = context.getBean(TestEntityRepository.class);
-                                store = context.getBean(TestEntityStore.class);
+                                repo = context.getBean(DualContentJpaLongIdRepository.class);
+                                store = context.getBean(DualContentJpaLongIdStore.class);
 
                                 embeddedRepo = context.getBean(EmbeddedRepository.class);
                                 embeddedStore = context.getBean(EmbeddedStore.class);
@@ -727,7 +620,7 @@ public class AzureStorageIT {
                                 RandomString random = new RandomString(5);
                                 resourceLocation = random.nextString();
 
-                                entity = new TestEntity();
+                                entity = new DualContentJpaLongIdEntity();
                                 entity = repo.save(entity);
 
                                 genericResource = store.getResource(resourceLocation);
@@ -760,8 +653,8 @@ public class AzureStorageIT {
                                 context.register(TestConfig.class);
                                 context.refresh();
 
-                                repo = context.getBean(TestEntityRepository.class);
-                                store = context.getBean(TestEntityStore.class);
+                                repo = context.getBean(DualContentJpaLongIdRepository.class);
+                                store = context.getBean(DualContentJpaLongIdStore.class);
 
                                 embeddedRepo = context.getBean(EmbeddedRepository.class);
                                 embeddedStore = context.getBean(EmbeddedStore.class);
@@ -769,7 +662,7 @@ public class AzureStorageIT {
                                 RandomString random = new RandomString(5);
                                 resourceLocation = random.nextString();
 
-                                entity = new TestEntity();
+                                entity = new DualContentJpaLongIdEntity();
                                 entity = repo.save(entity);
 
                                 genericResource = store.getResource(resourceLocation);
@@ -808,8 +701,8 @@ public class AzureStorageIT {
                     context.register(TestConfig.class);
                     context.refresh();
 
-                    repo = context.getBean(TestEntityRepository.class);
-                    store = context.getBean(TestEntityStore.class);
+                    repo = context.getBean(DualContentJpaLongIdRepository.class);
+                    store = context.getBean(DualContentJpaLongIdStore.class);
 
                     embeddedRepo = context.getBean(EmbeddedRepository.class);
                     embeddedStore = context.getBean(EmbeddedStore.class);
@@ -817,7 +710,7 @@ public class AzureStorageIT {
                     RandomString random = new RandomString(5);
                     resourceLocation = random.nextString();
 
-                    entity = new TestEntity();
+                    entity = new DualContentJpaLongIdEntity();
                     entity = repo.save(entity);
 
                     store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
@@ -866,8 +759,8 @@ public class AzureStorageIT {
                     context.register(TestConfig.class);
                     context.refresh();
 
-                    repo = context.getBean(TestEntityRepository.class);
-                    store = context.getBean(TestEntityStore.class);
+                    repo = context.getBean(DualContentJpaLongIdRepository.class);
+                    store = context.getBean(DualContentJpaLongIdStore.class);
 
                     embeddedRepo = context.getBean(EmbeddedRepository.class);
                     embeddedStore = context.getBean(EmbeddedStore.class);
@@ -875,7 +768,7 @@ public class AzureStorageIT {
                     RandomString random = new RandomString(5);
                     resourceLocation = random.nextString();
 
-                    entity = new TestEntity();
+                    entity = new DualContentJpaLongIdEntity();
                     entity = repo.save(entity);
 
                     store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
@@ -915,8 +808,8 @@ public class AzureStorageIT {
                     context.register(TestConfig.class);
                     context.refresh();
 
-                    repo = context.getBean(TestEntityRepository.class);
-                    store = context.getBean(TestEntityStore.class);
+                    repo = context.getBean(DualContentJpaLongIdRepository.class);
+                    store = context.getBean(DualContentJpaLongIdStore.class);
 
                     embeddedRepo = context.getBean(EmbeddedRepository.class);
                     embeddedStore = context.getBean(EmbeddedStore.class);
@@ -924,7 +817,7 @@ public class AzureStorageIT {
                     RandomString random = new RandomString(5);
                     resourceLocation = random.nextString();
 
-                    entity = new TestEntity();
+                    entity = new DualContentJpaLongIdEntity();
                     entity = repo.save(entity);
 
                     store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
@@ -964,8 +857,8 @@ public class AzureStorageIT {
                     context.register(TestConfig.class);
                     context.refresh();
 
-                    repo = context.getBean(TestEntityRepository.class);
-                    store = context.getBean(TestEntityStore.class);
+                    repo = context.getBean(DualContentJpaLongIdRepository.class);
+                    store = context.getBean(DualContentJpaLongIdStore.class);
 
                     embeddedRepo = context.getBean(EmbeddedRepository.class);
                     embeddedStore = context.getBean(EmbeddedStore.class);
@@ -973,7 +866,7 @@ public class AzureStorageIT {
                     RandomString random = new RandomString(5);
                     resourceLocation = random.nextString();
 
-                    entity = new TestEntity();
+                    entity = new DualContentJpaLongIdEntity();
                     entity = repo.save(entity);
 
                     store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
@@ -1016,8 +909,8 @@ public class AzureStorageIT {
                     context.register(TestConfig.class);
                     context.refresh();
 
-                    repo = context.getBean(TestEntityRepository.class);
-                    store = context.getBean(TestEntityStore.class);
+                    repo = context.getBean(DualContentJpaLongIdRepository.class);
+                    store = context.getBean(DualContentJpaLongIdStore.class);
 
                     embeddedRepo = context.getBean(EmbeddedRepository.class);
                     embeddedStore = context.getBean(EmbeddedStore.class);
@@ -1025,7 +918,7 @@ public class AzureStorageIT {
                     RandomString random = new RandomString(5);
                     resourceLocation = random.nextString();
 
-                    entity = new TestEntity();
+                    entity = new DualContentJpaLongIdEntity();
                     entity = repo.save(entity);
 
                     store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
@@ -1061,7 +954,7 @@ public class AzureStorageIT {
                     }
 
                     assertThat(entity.getRenditionId()).isNull();
-                    assertThat(entity.getRenditionLen()).isEqualTo(0);
+                    assertThat(entity.getRenditionLen()).isNull();
                 }
             }
 
@@ -1073,8 +966,8 @@ public class AzureStorageIT {
                     context.register(TestConfig.class);
                     context.refresh();
 
-                    repo = context.getBean(TestEntityRepository.class);
-                    store = context.getBean(TestEntityStore.class);
+                    repo = context.getBean(DualContentJpaLongIdRepository.class);
+                    store = context.getBean(DualContentJpaLongIdStore.class);
 
                     embeddedRepo = context.getBean(EmbeddedRepository.class);
                     embeddedStore = context.getBean(EmbeddedStore.class);
@@ -1082,7 +975,7 @@ public class AzureStorageIT {
                     RandomString random = new RandomString(5);
                     resourceLocation = random.nextString();
 
-                    entity = new TestEntity();
+                    entity = new DualContentJpaLongIdEntity();
                     entity = repo.save(entity);
 
                     store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
@@ -1121,8 +1014,8 @@ public class AzureStorageIT {
                     context.register(TestConfig.class);
                     context.refresh();
 
-                    repo = context.getBean(TestEntityRepository.class);
-                    store = context.getBean(TestEntityStore.class);
+                    repo = context.getBean(DualContentJpaLongIdRepository.class);
+                    store = context.getBean(DualContentJpaLongIdStore.class);
 
                     embeddedRepo = context.getBean(EmbeddedRepository.class);
                     embeddedStore = context.getBean(EmbeddedStore.class);
@@ -1130,7 +1023,7 @@ public class AzureStorageIT {
                     RandomString random = new RandomString(5);
                     resourceLocation = random.nextString();
 
-                    entity = new TestEntity();
+                    entity = new DualContentJpaLongIdEntity();
                     entity = repo.save(entity);
 
                     store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
@@ -1161,8 +1054,8 @@ public class AzureStorageIT {
                     context.register(TestConfig.class);
                     context.refresh();
 
-                    repo = context.getBean(TestEntityRepository.class);
-                    store = context.getBean(TestEntityStore.class);
+                    repo = context.getBean(DualContentJpaLongIdRepository.class);
+                    store = context.getBean(DualContentJpaLongIdStore.class);
 
                     embeddedRepo = context.getBean(EmbeddedRepository.class);
                     embeddedStore = context.getBean(EmbeddedStore.class);
@@ -1170,7 +1063,7 @@ public class AzureStorageIT {
                     RandomString random = new RandomString(5);
                     resourceLocation = random.nextString();
 
-                    entity = new TestEntity();
+                    entity = new DualContentJpaLongIdEntity();
                     entity = repo.save(entity);
 
                     store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
@@ -1201,8 +1094,8 @@ public class AzureStorageIT {
                     context.register(TestConfig.class);
                     context.refresh();
 
-                    repo = context.getBean(TestEntityRepository.class);
-                    store = context.getBean(TestEntityStore.class);
+                    repo = context.getBean(DualContentJpaLongIdRepository.class);
+                    store = context.getBean(DualContentJpaLongIdStore.class);
 
                     embeddedRepo = context.getBean(EmbeddedRepository.class);
                     embeddedStore = context.getBean(EmbeddedStore.class);
@@ -1210,7 +1103,7 @@ public class AzureStorageIT {
                     RandomString random = new RandomString(5);
                     resourceLocation = random.nextString();
 
-                    entity = new TestEntity();
+                    entity = new DualContentJpaLongIdEntity();
                     entity = repo.save(entity);
 
                     store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
@@ -1241,8 +1134,8 @@ public class AzureStorageIT {
                     context.register(TestConfig.class);
                     context.refresh();
 
-                    repo = context.getBean(TestEntityRepository.class);
-                    store = context.getBean(TestEntityStore.class);
+                    repo = context.getBean(DualContentJpaLongIdRepository.class);
+                    store = context.getBean(DualContentJpaLongIdStore.class);
 
                     embeddedRepo = context.getBean(EmbeddedRepository.class);
                     embeddedStore = context.getBean(EmbeddedStore.class);
@@ -1250,7 +1143,7 @@ public class AzureStorageIT {
                     RandomString random = new RandomString(5);
                     resourceLocation = random.nextString();
 
-                    entity = new TestEntity();
+                    entity = new DualContentJpaLongIdEntity();
                     entity = repo.save(entity);
 
                     store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
@@ -1264,17 +1157,17 @@ public class AzureStorageIT {
 
                 @Test
                 void shouldNotResetTheIdField() {
-                    SharedIdRepository sharedIdRepository = context.getBean(SharedIdRepository.class);
-                    SharedIdStore sharedIdStore = context.getBean(SharedIdStore.class);
+                    SharedIdJakartaJpaRepository sharedIdRepository = context.getBean(SharedIdJakartaJpaRepository.class);
+                    SharedIdJakartaJpaStore sharedIdStore = context.getBean(SharedIdJakartaJpaStore.class);
 
-                    SharedIdContentIdEntity sharedIdContentIdEntity = sharedIdRepository.save(new SharedIdContentIdEntity());
+                    SharedIdJakartaJpaEntity sharedIdContentIdEntity = sharedIdRepository.save(new SharedIdJakartaJpaEntity());
 
                     sharedIdContentIdEntity = sharedIdStore.setContent(sharedIdContentIdEntity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
                     sharedIdContentIdEntity = sharedIdRepository.save(sharedIdContentIdEntity);
                     String id = sharedIdContentIdEntity.getContentId();
                     sharedIdContentIdEntity = sharedIdStore.unsetContent(sharedIdContentIdEntity);
                     assertThat(sharedIdContentIdEntity.getContentId()).isEqualTo(id);
-                    assertThat(sharedIdContentIdEntity.getContentLen()).isEqualTo(0L);
+                    assertThat(sharedIdContentIdEntity.getContentLen()).isNull();
                 }
             }
 
@@ -1288,8 +1181,8 @@ public class AzureStorageIT {
                         context.register(TestConfig.class);
                         context.refresh();
 
-                        repo = context.getBean(TestEntityRepository.class);
-                        store = context.getBean(TestEntityStore.class);
+                        repo = context.getBean(DualContentJpaLongIdRepository.class);
+                        store = context.getBean(DualContentJpaLongIdStore.class);
 
                         embeddedRepo = context.getBean(EmbeddedRepository.class);
                         embeddedStore = context.getBean(EmbeddedStore.class);
@@ -1297,7 +1190,7 @@ public class AzureStorageIT {
                         RandomString random = new RandomString(5);
                         resourceLocation = random.nextString();
 
-                        entity = new TestEntity();
+                        entity = new DualContentJpaLongIdEntity();
                         entity = repo.save(entity);
 
                         store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));

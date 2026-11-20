@@ -19,6 +19,8 @@ import org.springframework.content.commons.io.DeletableResource;
 import org.springframework.content.commons.property.PropertyPath;
 import org.springframework.content.commons.store.*;
 import org.springframework.content.gcs.config.EnableGCPStorage;
+import org.springframework.content.test.support.TestSupportPackages;
+import org.springframework.content.test.support.jpa.*;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -50,28 +52,16 @@ public class GCPStorageIT {
         System.setProperty("spring.content.gcp.storage.bucket", "test-bucket");
     }
 
-    private TestEntity entity;
+    private DualContentJpaLongIdEntity entity;
     private Resource genericResource;
     private Exception e;
     private AnnotationConfigApplicationContext context;
-    private TestEntityRepository repo;
-    private TestEntityStore store;
+    private DualContentJpaLongIdRepository repo;
+    private DualContentJpaLongIdStore store;
     private Storage storage;
     private EmbeddedRepository embeddedRepo;
     private EmbeddedStore embeddedStore;
     private String resourceLocation;
-
-    public interface TestEntityRepository extends JpaRepository<TestEntity, Long> {
-    }
-
-    public interface TestEntityStore extends ContentStore<TestEntity, String> {
-    }
-
-    public interface SharedIdRepository extends JpaRepository<SharedIdContentIdEntity, String> {
-    }
-
-    public interface SharedIdStore extends ContentStore<SharedIdContentIdEntity, String> {
-    }
 
     public interface EmbeddedRepository extends JpaRepository<EntityWithEmbeddedContent, String> {
     }
@@ -80,8 +70,8 @@ public class GCPStorageIT {
     }
 
     @Configuration
-    @EnableJpaRepositories(basePackages = "internal.org.springframework.content.gcs.it", considerNestedRepositories = true)
-    @EnableGCPStorage(basePackages = "internal.org.springframework.content.gcs.it")
+    @EnableJpaRepositories(basePackages = {TestSupportPackages.JPA, "internal.org.springframework.content.gcs.it"}, considerNestedRepositories = true)
+    @EnableGCPStorage(basePackages = {TestSupportPackages.JPA, "internal.org.springframework.content.gcs.it"})
     @Import(InfrastructureConfig.class)
     public static class TestConfig {
 
@@ -109,7 +99,7 @@ public class GCPStorageIT {
 
             LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
             factory.setJpaVendorAdapter(vendorAdapter);
-            factory.setPackagesToScan("internal.org.springframework.content.gcs.it");
+            factory.setPackagesToScan("internal.org.springframework.content.gcs.it", TestSupportPackages.JPA);
             factory.setDataSource(dataSource());
 
             return factory;
@@ -121,99 +111,6 @@ public class GCPStorageIT {
             JpaTransactionManager txManager = new JpaTransactionManager();
             txManager.setEntityManagerFactory(entityManagerFactory().getObject());
             return txManager;
-        }
-    }
-
-    @Entity
-    public static class TestEntity {
-
-        @Id
-        @GeneratedValue(strategy = GenerationType.AUTO)
-        private Long id;
-
-        @ContentId
-        private String contentId;
-
-        @ContentLength
-        private Long contentLen;
-
-        @ContentId
-        private String renditionId;
-
-        @ContentLength
-        private long renditionLen;
-
-        public TestEntity() {
-        }
-
-        public Long getId() {
-            return id;
-        }
-
-        public void setId(Long id) {
-            this.id = id;
-        }
-
-        public String getContentId() {
-            return contentId;
-        }
-
-        public void setContentId(String contentId) {
-            this.contentId = contentId;
-        }
-
-        public Long getContentLen() {
-            return contentLen;
-        }
-
-        public void setContentLen(Long contentLen) {
-            this.contentLen = contentLen;
-        }
-
-        public String getRenditionId() {
-            return renditionId;
-        }
-
-        public void setRenditionId(String renditionId) {
-            this.renditionId = renditionId;
-        }
-
-        public long getRenditionLen() {
-            return renditionLen;
-        }
-
-        public void setRenditionLen(long renditionLen) {
-            this.renditionLen = renditionLen;
-        }
-    }
-
-    @Entity
-    public static class SharedIdContentIdEntity {
-
-        @jakarta.persistence.Id
-        @ContentId
-        private String contentId = UuidCreator.getTimeOrdered().toString();
-
-        @ContentLength
-        private long contentLen;
-
-        public SharedIdContentIdEntity() {
-        }
-
-        public String getContentId() {
-            return contentId;
-        }
-
-        public void setContentId(String contentId) {
-            this.contentId = contentId;
-        }
-
-        public long getContentLen() {
-            return contentLen;
-        }
-
-        public void setContentLen(long contentLen) {
-            this.contentLen = contentLen;
         }
     }
 
@@ -284,8 +181,8 @@ public class GCPStorageIT {
                         context.register(TestConfig.class);
                         context.refresh();
 
-                        repo = context.getBean(TestEntityRepository.class);
-                        store = context.getBean(TestEntityStore.class);
+                        repo = context.getBean(DualContentJpaLongIdRepository.class);
+                        store = context.getBean(DualContentJpaLongIdStore.class);
                         storage = context.getBean(Storage.class);
 
                         embeddedRepo = context.getBean(EmbeddedRepository.class);
@@ -332,8 +229,8 @@ public class GCPStorageIT {
                             context.register(TestConfig.class);
                             context.refresh();
 
-                            repo = context.getBean(TestEntityRepository.class);
-                            store = context.getBean(TestEntityStore.class);
+                            repo = context.getBean(DualContentJpaLongIdRepository.class);
+                            store = context.getBean(DualContentJpaLongIdStore.class);
                             storage = context.getBean(Storage.class);
 
                             embeddedRepo = context.getBean(EmbeddedRepository.class);
@@ -386,8 +283,8 @@ public class GCPStorageIT {
                             context.register(TestConfig.class);
                             context.refresh();
 
-                            repo = context.getBean(TestEntityRepository.class);
-                            store = context.getBean(TestEntityStore.class);
+                            repo = context.getBean(DualContentJpaLongIdRepository.class);
+                            store = context.getBean(DualContentJpaLongIdStore.class);
                             storage = context.getBean(Storage.class);
 
                             embeddedRepo = context.getBean(EmbeddedRepository.class);
@@ -445,8 +342,8 @@ public class GCPStorageIT {
                             context.register(TestConfig.class);
                             context.refresh();
 
-                            repo = context.getBean(TestEntityRepository.class);
-                            store = context.getBean(TestEntityStore.class);
+                            repo = context.getBean(DualContentJpaLongIdRepository.class);
+                            store = context.getBean(DualContentJpaLongIdStore.class);
                             storage = context.getBean(Storage.class);
 
                             embeddedRepo = context.getBean(EmbeddedRepository.class);
@@ -505,8 +402,8 @@ public class GCPStorageIT {
                         context.register(TestConfig.class);
                         context.refresh();
 
-                        repo = context.getBean(TestEntityRepository.class);
-                        store = context.getBean(TestEntityStore.class);
+                        repo = context.getBean(DualContentJpaLongIdRepository.class);
+                        store = context.getBean(DualContentJpaLongIdStore.class);
                         storage = context.getBean(Storage.class);
 
                         embeddedRepo = context.getBean(EmbeddedRepository.class);
@@ -515,7 +412,7 @@ public class GCPStorageIT {
                         RandomString random = new RandomString(5);
                         resourceLocation = random.nextString();
 
-                        entity = new TestEntity();
+                        entity = new DualContentJpaLongIdEntity();
                         entity = repo.save(entity);
                     }
 
@@ -543,8 +440,8 @@ public class GCPStorageIT {
                                 context.register(TestConfig.class);
                                 context.refresh();
 
-                                repo = context.getBean(TestEntityRepository.class);
-                                store = context.getBean(TestEntityStore.class);
+                                repo = context.getBean(DualContentJpaLongIdRepository.class);
+                                store = context.getBean(DualContentJpaLongIdStore.class);
                                 storage = context.getBean(Storage.class);
 
                                 embeddedRepo = context.getBean(EmbeddedRepository.class);
@@ -553,7 +450,7 @@ public class GCPStorageIT {
                                 RandomString random = new RandomString(5);
                                 resourceLocation = random.nextString();
 
-                                entity = new TestEntity();
+                                entity = new DualContentJpaLongIdEntity();
                                 entity = repo.save(entity);
 
                                 genericResource = store.getResource(resourceLocation);
@@ -582,8 +479,8 @@ public class GCPStorageIT {
                                 context.register(TestConfig.class);
                                 context.refresh();
 
-                                repo = context.getBean(TestEntityRepository.class);
-                                store = context.getBean(TestEntityStore.class);
+                                repo = context.getBean(DualContentJpaLongIdRepository.class);
+                                store = context.getBean(DualContentJpaLongIdStore.class);
                                 storage = context.getBean(Storage.class);
 
                                 embeddedRepo = context.getBean(EmbeddedRepository.class);
@@ -592,7 +489,7 @@ public class GCPStorageIT {
                                 RandomString random = new RandomString(5);
                                 resourceLocation = random.nextString();
 
-                                entity = new TestEntity();
+                                entity = new DualContentJpaLongIdEntity();
                                 entity = repo.save(entity);
 
                                 genericResource = store.getResource(resourceLocation);
@@ -628,8 +525,8 @@ public class GCPStorageIT {
                                 context.register(TestConfig.class);
                                 context.refresh();
 
-                                repo = context.getBean(TestEntityRepository.class);
-                                store = context.getBean(TestEntityStore.class);
+                                repo = context.getBean(DualContentJpaLongIdRepository.class);
+                                store = context.getBean(DualContentJpaLongIdStore.class);
                                 storage = context.getBean(Storage.class);
 
                                 embeddedRepo = context.getBean(EmbeddedRepository.class);
@@ -638,7 +535,7 @@ public class GCPStorageIT {
                                 RandomString random = new RandomString(5);
                                 resourceLocation = random.nextString();
 
-                                entity = new TestEntity();
+                                entity = new DualContentJpaLongIdEntity();
                                 entity = repo.save(entity);
 
                                 genericResource = store.getResource(resourceLocation);
@@ -670,8 +567,8 @@ public class GCPStorageIT {
                                 context.register(TestConfig.class);
                                 context.refresh();
 
-                                repo = context.getBean(TestEntityRepository.class);
-                                store = context.getBean(TestEntityStore.class);
+                                repo = context.getBean(DualContentJpaLongIdRepository.class);
+                                store = context.getBean(DualContentJpaLongIdStore.class);
                                 storage = context.getBean(Storage.class);
 
                                 embeddedRepo = context.getBean(EmbeddedRepository.class);
@@ -680,7 +577,7 @@ public class GCPStorageIT {
                                 RandomString random = new RandomString(5);
                                 resourceLocation = random.nextString();
 
-                                entity = new TestEntity();
+                                entity = new DualContentJpaLongIdEntity();
                                 entity = repo.save(entity);
 
                                 genericResource = store.getResource(resourceLocation);
@@ -713,8 +610,8 @@ public class GCPStorageIT {
                                 context.register(TestConfig.class);
                                 context.refresh();
 
-                                repo = context.getBean(TestEntityRepository.class);
-                                store = context.getBean(TestEntityStore.class);
+                                repo = context.getBean(DualContentJpaLongIdRepository.class);
+                                store = context.getBean(DualContentJpaLongIdStore.class);
                                 storage = context.getBean(Storage.class);
 
                                 embeddedRepo = context.getBean(EmbeddedRepository.class);
@@ -723,7 +620,7 @@ public class GCPStorageIT {
                                 RandomString random = new RandomString(5);
                                 resourceLocation = random.nextString();
 
-                                entity = new TestEntity();
+                                entity = new DualContentJpaLongIdEntity();
                                 entity = repo.save(entity);
 
                                 genericResource = store.getResource(resourceLocation);
@@ -756,8 +653,8 @@ public class GCPStorageIT {
                                 context.register(TestConfig.class);
                                 context.refresh();
 
-                                repo = context.getBean(TestEntityRepository.class);
-                                store = context.getBean(TestEntityStore.class);
+                                repo = context.getBean(DualContentJpaLongIdRepository.class);
+                                store = context.getBean(DualContentJpaLongIdStore.class);
                                 storage = context.getBean(Storage.class);
 
                                 embeddedRepo = context.getBean(EmbeddedRepository.class);
@@ -766,7 +663,7 @@ public class GCPStorageIT {
                                 RandomString random = new RandomString(5);
                                 resourceLocation = random.nextString();
 
-                                entity = new TestEntity();
+                                entity = new DualContentJpaLongIdEntity();
                                 entity = repo.save(entity);
 
                                 genericResource = store.getResource(resourceLocation);
@@ -805,8 +702,8 @@ public class GCPStorageIT {
                     context.register(TestConfig.class);
                     context.refresh();
 
-                    repo = context.getBean(TestEntityRepository.class);
-                    store = context.getBean(TestEntityStore.class);
+                    repo = context.getBean(DualContentJpaLongIdRepository.class);
+                    store = context.getBean(DualContentJpaLongIdStore.class);
                     storage = context.getBean(Storage.class);
 
                     embeddedRepo = context.getBean(EmbeddedRepository.class);
@@ -815,7 +712,7 @@ public class GCPStorageIT {
                     RandomString random = new RandomString(5);
                     resourceLocation = random.nextString();
 
-                    entity = new TestEntity();
+                    entity = new DualContentJpaLongIdEntity();
                     entity = repo.save(entity);
 
                     store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
@@ -865,8 +762,8 @@ public class GCPStorageIT {
                     context.register(TestConfig.class);
                     context.refresh();
 
-                    repo = context.getBean(TestEntityRepository.class);
-                    store = context.getBean(TestEntityStore.class);
+                    repo = context.getBean(DualContentJpaLongIdRepository.class);
+                    store = context.getBean(DualContentJpaLongIdStore.class);
                     storage = context.getBean(Storage.class);
 
                     embeddedRepo = context.getBean(EmbeddedRepository.class);
@@ -875,7 +772,7 @@ public class GCPStorageIT {
                     RandomString random = new RandomString(5);
                     resourceLocation = random.nextString();
 
-                    entity = new TestEntity();
+                    entity = new DualContentJpaLongIdEntity();
                     entity = repo.save(entity);
 
                     store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
@@ -916,8 +813,8 @@ public class GCPStorageIT {
                     context.register(TestConfig.class);
                     context.refresh();
 
-                    repo = context.getBean(TestEntityRepository.class);
-                    store = context.getBean(TestEntityStore.class);
+                    repo = context.getBean(DualContentJpaLongIdRepository.class);
+                    store = context.getBean(DualContentJpaLongIdStore.class);
                     storage = context.getBean(Storage.class);
 
                     embeddedRepo = context.getBean(EmbeddedRepository.class);
@@ -926,7 +823,7 @@ public class GCPStorageIT {
                     RandomString random = new RandomString(5);
                     resourceLocation = random.nextString();
 
-                    entity = new TestEntity();
+                    entity = new DualContentJpaLongIdEntity();
                     entity = repo.save(entity);
 
                     store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
@@ -967,8 +864,8 @@ public class GCPStorageIT {
                     context.register(TestConfig.class);
                     context.refresh();
 
-                    repo = context.getBean(TestEntityRepository.class);
-                    store = context.getBean(TestEntityStore.class);
+                    repo = context.getBean(DualContentJpaLongIdRepository.class);
+                    store = context.getBean(DualContentJpaLongIdStore.class);
                     storage = context.getBean(Storage.class);
 
                     embeddedRepo = context.getBean(EmbeddedRepository.class);
@@ -977,7 +874,7 @@ public class GCPStorageIT {
                     RandomString random = new RandomString(5);
                     resourceLocation = random.nextString();
 
-                    entity = new TestEntity();
+                    entity = new DualContentJpaLongIdEntity();
                     entity = repo.save(entity);
 
                     store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
@@ -1018,8 +915,8 @@ public class GCPStorageIT {
                     context.register(TestConfig.class);
                     context.refresh();
 
-                    repo = context.getBean(TestEntityRepository.class);
-                    store = context.getBean(TestEntityStore.class);
+                    repo = context.getBean(DualContentJpaLongIdRepository.class);
+                    store = context.getBean(DualContentJpaLongIdStore.class);
                     storage = context.getBean(Storage.class);
 
                     embeddedRepo = context.getBean(EmbeddedRepository.class);
@@ -1028,7 +925,7 @@ public class GCPStorageIT {
                     RandomString random = new RandomString(5);
                     resourceLocation = random.nextString();
 
-                    entity = new TestEntity();
+                    entity = new DualContentJpaLongIdEntity();
                     entity = repo.save(entity);
 
                     store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
@@ -1063,7 +960,7 @@ public class GCPStorageIT {
                     }
 
                     assertThat(entity.getRenditionId()).isNull();
-                    assertThat(entity.getRenditionLen()).isEqualTo(0L);
+                    assertThat(entity.getRenditionLen()).isNull();
                 }
             }
 
@@ -1075,8 +972,8 @@ public class GCPStorageIT {
                     context.register(TestConfig.class);
                     context.refresh();
 
-                    repo = context.getBean(TestEntityRepository.class);
-                    store = context.getBean(TestEntityStore.class);
+                    repo = context.getBean(DualContentJpaLongIdRepository.class);
+                    store = context.getBean(DualContentJpaLongIdStore.class);
                     storage = context.getBean(Storage.class);
 
                     embeddedRepo = context.getBean(EmbeddedRepository.class);
@@ -1085,7 +982,7 @@ public class GCPStorageIT {
                     RandomString random = new RandomString(5);
                     resourceLocation = random.nextString();
 
-                    entity = new TestEntity();
+                    entity = new DualContentJpaLongIdEntity();
                     entity = repo.save(entity);
 
                     store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
@@ -1123,8 +1020,8 @@ public class GCPStorageIT {
                     context.register(TestConfig.class);
                     context.refresh();
 
-                    repo = context.getBean(TestEntityRepository.class);
-                    store = context.getBean(TestEntityStore.class);
+                    repo = context.getBean(DualContentJpaLongIdRepository.class);
+                    store = context.getBean(DualContentJpaLongIdStore.class);
                     storage = context.getBean(Storage.class);
 
                     embeddedRepo = context.getBean(EmbeddedRepository.class);
@@ -1133,7 +1030,7 @@ public class GCPStorageIT {
                     RandomString random = new RandomString(5);
                     resourceLocation = random.nextString();
 
-                    entity = new TestEntity();
+                    entity = new DualContentJpaLongIdEntity();
                     entity = repo.save(entity);
 
                     store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
@@ -1165,8 +1062,8 @@ public class GCPStorageIT {
                     context.register(TestConfig.class);
                     context.refresh();
 
-                    repo = context.getBean(TestEntityRepository.class);
-                    store = context.getBean(TestEntityStore.class);
+                    repo = context.getBean(DualContentJpaLongIdRepository.class);
+                    store = context.getBean(DualContentJpaLongIdStore.class);
                     storage = context.getBean(Storage.class);
 
                     embeddedRepo = context.getBean(EmbeddedRepository.class);
@@ -1175,7 +1072,7 @@ public class GCPStorageIT {
                     RandomString random = new RandomString(5);
                     resourceLocation = random.nextString();
 
-                    entity = new TestEntity();
+                    entity = new DualContentJpaLongIdEntity();
                     entity = repo.save(entity);
 
                     store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
@@ -1207,8 +1104,8 @@ public class GCPStorageIT {
                     context.register(TestConfig.class);
                     context.refresh();
 
-                    repo = context.getBean(TestEntityRepository.class);
-                    store = context.getBean(TestEntityStore.class);
+                    repo = context.getBean(DualContentJpaLongIdRepository.class);
+                    store = context.getBean(DualContentJpaLongIdStore.class);
                     storage = context.getBean(Storage.class);
 
                     embeddedRepo = context.getBean(EmbeddedRepository.class);
@@ -1217,7 +1114,7 @@ public class GCPStorageIT {
                     RandomString random = new RandomString(5);
                     resourceLocation = random.nextString();
 
-                    entity = new TestEntity();
+                    entity = new DualContentJpaLongIdEntity();
                     entity = repo.save(entity);
 
                     store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
@@ -1249,8 +1146,8 @@ public class GCPStorageIT {
                     context.register(TestConfig.class);
                     context.refresh();
 
-                    repo = context.getBean(TestEntityRepository.class);
-                    store = context.getBean(TestEntityStore.class);
+                    repo = context.getBean(DualContentJpaLongIdRepository.class);
+                    store = context.getBean(DualContentJpaLongIdStore.class);
                     storage = context.getBean(Storage.class);
 
                     embeddedRepo = context.getBean(EmbeddedRepository.class);
@@ -1259,7 +1156,7 @@ public class GCPStorageIT {
                     RandomString random = new RandomString(5);
                     resourceLocation = random.nextString();
 
-                    entity = new TestEntity();
+                    entity = new DualContentJpaLongIdEntity();
                     entity = repo.save(entity);
 
                     store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
@@ -1274,17 +1171,17 @@ public class GCPStorageIT {
 
                 @Test
                 void shouldNotResetTheIdField() {
-                    SharedIdRepository sharedIdRepository = context.getBean(SharedIdRepository.class);
-                    SharedIdStore sharedIdStore = context.getBean(SharedIdStore.class);
+                    SharedIdJakartaJpaRepository sharedIdRepository = context.getBean(SharedIdJakartaJpaRepository.class);
+                    SharedIdJakartaJpaStore sharedIdStore = context.getBean(SharedIdJakartaJpaStore.class);
 
-                    SharedIdContentIdEntity sharedIdContentIdEntity = sharedIdRepository.save(new SharedIdContentIdEntity());
+                    SharedIdJakartaJpaEntity sharedIdContentIdEntity = sharedIdRepository.save(new SharedIdJakartaJpaEntity());
 
                     sharedIdContentIdEntity = sharedIdStore.setContent(sharedIdContentIdEntity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
                     sharedIdContentIdEntity = sharedIdRepository.save(sharedIdContentIdEntity);
                     String id = sharedIdContentIdEntity.getContentId();
                     sharedIdContentIdEntity = sharedIdStore.unsetContent(sharedIdContentIdEntity);
                     assertThat(sharedIdContentIdEntity.getContentId()).isEqualTo(id);
-                    assertThat(sharedIdContentIdEntity.getContentLen()).isEqualTo(0L);
+                    assertThat(sharedIdContentIdEntity.getContentLen()).isNull();
                 }
             }
 
@@ -1298,8 +1195,8 @@ public class GCPStorageIT {
                         context.register(TestConfig.class);
                         context.refresh();
 
-                        repo = context.getBean(TestEntityRepository.class);
-                        store = context.getBean(TestEntityStore.class);
+                        repo = context.getBean(DualContentJpaLongIdRepository.class);
+                        store = context.getBean(DualContentJpaLongIdStore.class);
                         storage = context.getBean(Storage.class);
 
                         embeddedRepo = context.getBean(EmbeddedRepository.class);
@@ -1308,7 +1205,7 @@ public class GCPStorageIT {
                         RandomString random = new RandomString(5);
                         resourceLocation = random.nextString();
 
-                        entity = new TestEntity();
+                        entity = new DualContentJpaLongIdEntity();
                         entity = repo.save(entity);
 
                         store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));

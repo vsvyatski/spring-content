@@ -23,6 +23,9 @@ import org.springframework.content.commons.store.SetContentParams;
 import org.springframework.content.commons.store.StoreAccessException;
 import org.springframework.content.commons.store.UnsetContentParams;
 import org.springframework.content.s3.config.EnableS3Stores;
+import org.springframework.content.test.support.TestSupportPackages;
+import org.springframework.content.test.support.jpa.*;
+import org.springframework.boot.persistence.autoconfigure.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
@@ -60,37 +63,25 @@ public class S3StoreIT {
     }
 
     @Autowired
-    private TestEntityRepository repo;
+    private DualContentJpaLongIdMimeRepository repo;
     @Autowired
-    private TestEntityStore store;
+    private DualContentJpaLongIdMimeStore store;
     @Autowired
     private S3Client client;
     private String resourceLocation;
     private Resource genericResource;
-    private TestEntity entity;
+    private DualContentJpaLongIdMimeEntity entity;
     private Exception e;
     // Shared id tests
     @Autowired
-    private SharedIdRepository sharedIdRepository;
+    private SharedIdJakartaJpaRepository sharedIdRepository;
     @Autowired
-    private SharedIdStore sharedIdStore;
+    private SharedIdJakartaJpaStore sharedIdStore;
     // Embedded content tests
     @Autowired
     private EmbeddedRepository embeddedRepo;
     @Autowired
     private EmbeddedStore embeddedStore;
-
-    public interface TestEntityRepository extends JpaRepository<TestEntity, Long> {
-    }
-
-    public interface TestEntityStore extends ContentStore<TestEntity, String> {
-    }
-
-    public interface SharedIdRepository extends JpaRepository<SharedIdContentIdEntity, String> {
-    }
-
-    public interface SharedIdStore extends ContentStore<SharedIdContentIdEntity, String> {
-    }
 
     public interface EmbeddedRepository extends JpaRepository<EntityWithEmbeddedContent, String> {
     }
@@ -98,9 +89,10 @@ public class S3StoreIT {
     public interface EmbeddedStore extends ContentStore<EntityWithEmbeddedContent, String> {
     }
 
-    @SpringBootApplication()
-    @EnableJpaRepositories(considerNestedRepositories = true)
-    @EnableS3Stores
+    @SpringBootApplication(scanBasePackages = {"internal.org.springframework.content.s3.it", TestSupportPackages.JPA})
+    @EntityScan(basePackages = {TestSupportPackages.JPA, "internal.org.springframework.content.s3.it"})
+    @EnableJpaRepositories(basePackages = {TestSupportPackages.JPA, "internal.org.springframework.content.s3.it"}, considerNestedRepositories = true)
+    @EnableS3Stores(basePackages = {TestSupportPackages.JPA, "internal.org.springframework.content.s3.it"})
     static class Application {
         public static void main(String[] args) {
             SpringApplication.run(Application.class, args);
@@ -113,125 +105,6 @@ public class S3StoreIT {
             public S3Client amazonS3() throws URISyntaxException {
                 return LocalStack.getAmazonS3Client();
             }
-        }
-    }
-
-    @Entity
-    public static class TestEntity {
-
-        @Id
-        @GeneratedValue(strategy = GenerationType.AUTO)
-        private Long id;
-
-        @ContentId
-        private String contentId;
-
-        @ContentLength
-        private Long contentLen;
-
-        @MimeType
-        private String contentType;
-
-        @ContentId
-        private String renditionId;
-
-        @ContentLength
-        private long renditionLen;
-
-        @MimeType
-        private String renditionType;
-
-        public TestEntity() {
-        }
-
-        public TestEntity(String contentId) {
-            this.contentId = new String(contentId);
-        }
-
-        public Long getId() {
-            return id;
-        }
-
-        public void setId(Long id) {
-            this.id = id;
-        }
-
-        public String getContentId() {
-            return contentId;
-        }
-
-        public void setContentId(String contentId) {
-            this.contentId = contentId;
-        }
-
-        public Long getContentLen() {
-            return contentLen;
-        }
-
-        public void setContentLen(Long contentLen) {
-            this.contentLen = contentLen;
-        }
-
-        public String getContentType() {
-            return contentType;
-        }
-
-        public void setContentType(String contentType) {
-            this.contentType = contentType;
-        }
-
-        public String getRenditionId() {
-            return renditionId;
-        }
-
-        public void setRenditionId(String renditionId) {
-            this.renditionId = renditionId;
-        }
-
-        public long getRenditionLen() {
-            return renditionLen;
-        }
-
-        public void setRenditionLen(long renditionLen) {
-            this.renditionLen = renditionLen;
-        }
-
-        public String getRenditionType() {
-            return renditionType;
-        }
-
-        public void setRenditionType(String renditionType) {
-            this.renditionType = renditionType;
-        }
-    }
-
-    @Entity
-    public static class SharedIdContentIdEntity {
-
-        @jakarta.persistence.Id
-        @ContentId
-        private String contentId = UUID.randomUUID().toString();
-
-        @ContentLength
-        private long contentLen;
-
-        public SharedIdContentIdEntity() {
-        }
-
-        public String getContentId() {
-            return contentId;
-        }
-
-        public void setContentId(String contentId) {
-            this.contentId = contentId;
-        }
-
-        public long getContentLen() {
-            return contentLen;
-        }
-
-        public void setContentLen(long contentLen) {
-            this.contentLen = contentLen;
         }
     }
 
@@ -676,7 +549,7 @@ public class S3StoreIT {
                         RandomString random = new RandomString(5);
                         resourceLocation = random.nextString();
 
-                        entity = new TestEntity();
+                        entity = new DualContentJpaLongIdMimeEntity();
                         entity = repo.save(entity);
                     }
 
@@ -730,7 +603,7 @@ public class S3StoreIT {
                                 RandomString random = new RandomString(5);
                                 resourceLocation = random.nextString();
 
-                                entity = new TestEntity();
+                                entity = new DualContentJpaLongIdMimeEntity();
                                 entity = repo.save(entity);
 
                                 genericResource = store.getResource(resourceLocation);
@@ -785,7 +658,7 @@ public class S3StoreIT {
                                 RandomString random = new RandomString(5);
                                 resourceLocation = random.nextString();
 
-                                entity = new TestEntity();
+                                entity = new DualContentJpaLongIdMimeEntity();
                                 entity = repo.save(entity);
 
                                 genericResource = store.getResource(resourceLocation);
@@ -843,7 +716,7 @@ public class S3StoreIT {
                                 RandomString random = new RandomString(5);
                                 resourceLocation = random.nextString();
 
-                                entity = new TestEntity();
+                                entity = new DualContentJpaLongIdMimeEntity();
                                 entity = repo.save(entity);
 
                                 genericResource = store.getResource(resourceLocation);
@@ -902,7 +775,7 @@ public class S3StoreIT {
                                 RandomString random = new RandomString(5);
                                 resourceLocation = random.nextString();
 
-                                entity = new TestEntity();
+                                entity = new DualContentJpaLongIdMimeEntity();
                                 entity = repo.save(entity);
 
                                 genericResource = store.getResource(resourceLocation);
@@ -961,7 +834,7 @@ public class S3StoreIT {
                                 RandomString random = new RandomString(5);
                                 resourceLocation = random.nextString();
 
-                                entity = new TestEntity();
+                                entity = new DualContentJpaLongIdMimeEntity();
                                 entity = repo.save(entity);
 
                                 genericResource = store.getResource(resourceLocation);
@@ -1026,7 +899,7 @@ public class S3StoreIT {
                     RandomString random = new RandomString(5);
                     resourceLocation = random.nextString();
 
-                    entity = new TestEntity();
+                    entity = new DualContentJpaLongIdMimeEntity();
                     //                    entity.setContentType("text/plain");
                     //                    entity.setContentType("text/html");
                     entity = repo.save(entity);
@@ -1103,7 +976,7 @@ public class S3StoreIT {
                     RandomString random = new RandomString(5);
                     resourceLocation = random.nextString();
 
-                    entity = new TestEntity();
+                    entity = new DualContentJpaLongIdMimeEntity();
                     //                    entity.setContentType("text/plain");
                     //                    entity.setContentType("text/html");
                     entity = repo.save(entity);
@@ -1173,7 +1046,7 @@ public class S3StoreIT {
                     RandomString random = new RandomString(5);
                     resourceLocation = random.nextString();
 
-                    entity = new TestEntity();
+                    entity = new DualContentJpaLongIdMimeEntity();
                     //                    entity.setContentType("text/plain");
                     //                    entity.setContentType("text/html");
                     entity = repo.save(entity);
@@ -1243,7 +1116,7 @@ public class S3StoreIT {
                     RandomString random = new RandomString(5);
                     resourceLocation = random.nextString();
 
-                    entity = new TestEntity();
+                    entity = new DualContentJpaLongIdMimeEntity();
                     //                    entity.setContentType("text/plain");
                     //                    entity.setContentType("text/html");
                     entity = repo.save(entity);
@@ -1310,7 +1183,7 @@ public class S3StoreIT {
                     RandomString random = new RandomString(5);
                     resourceLocation = random.nextString();
 
-                    entity = new TestEntity();
+                    entity = new DualContentJpaLongIdMimeEntity();
                     //                    entity.setContentType("text/plain");
                     //                    entity.setContentType("text/html");
                     entity = repo.save(entity);
@@ -1346,7 +1219,7 @@ public class S3StoreIT {
                     }
 
                     assertThat(entity.getRenditionId()).isNull();
-                    assertThat(entity.getRenditionLen()).isEqualTo(0L);
+                    assertThat(entity.getRenditionLen()).isNull();
                 }
             }
 
@@ -1389,7 +1262,7 @@ public class S3StoreIT {
                     RandomString random = new RandomString(5);
                     resourceLocation = random.nextString();
 
-                    entity = new TestEntity();
+                    entity = new DualContentJpaLongIdMimeEntity();
                     //                    entity.setContentType("text/plain");
                     //                    entity.setContentType("text/html");
                     entity = repo.save(entity);
@@ -1455,7 +1328,7 @@ public class S3StoreIT {
                     RandomString random = new RandomString(5);
                     resourceLocation = random.nextString();
 
-                    entity = new TestEntity();
+                    entity = new DualContentJpaLongIdMimeEntity();
                     //                    entity.setContentType("text/plain");
                     //                    entity.setContentType("text/html");
                     entity = repo.save(entity);
@@ -1514,7 +1387,7 @@ public class S3StoreIT {
                     RandomString random = new RandomString(5);
                     resourceLocation = random.nextString();
 
-                    entity = new TestEntity();
+                    entity = new DualContentJpaLongIdMimeEntity();
                     //                    entity.setContentType("text/plain");
                     //                    entity.setContentType("text/html");
                     entity = repo.save(entity);
@@ -1573,7 +1446,7 @@ public class S3StoreIT {
                     RandomString random = new RandomString(5);
                     resourceLocation = random.nextString();
 
-                    entity = new TestEntity();
+                    entity = new DualContentJpaLongIdMimeEntity();
                     //                    entity.setContentType("text/plain");
                     //                    entity.setContentType("text/html");
                     entity = repo.save(entity);
@@ -1632,7 +1505,7 @@ public class S3StoreIT {
                     RandomString random = new RandomString(5);
                     resourceLocation = random.nextString();
 
-                    entity = new TestEntity();
+                    entity = new DualContentJpaLongIdMimeEntity();
                     //                    entity.setContentType("text/plain");
                     //                    entity.setContentType("text/html");
                     entity = repo.save(entity);
@@ -1643,14 +1516,14 @@ public class S3StoreIT {
 
                 @Test
                 void shouldNotResetTheIdField() {
-                    SharedIdContentIdEntity sharedIdContentIdEntity = sharedIdRepository.save(new SharedIdContentIdEntity());
+                    SharedIdJakartaJpaEntity sharedIdContentIdEntity = sharedIdRepository.save(new SharedIdJakartaJpaEntity());
 
                     sharedIdContentIdEntity = sharedIdStore.setContent(sharedIdContentIdEntity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
                     sharedIdContentIdEntity = sharedIdRepository.save(sharedIdContentIdEntity);
                     String id = sharedIdContentIdEntity.getContentId();
                     sharedIdContentIdEntity = sharedIdStore.unsetContent(sharedIdContentIdEntity);
                     assertThat(sharedIdContentIdEntity.getContentId()).isEqualTo(id);
-                    assertThat(sharedIdContentIdEntity.getContentLen()).isEqualTo(0L);
+                    assertThat(sharedIdContentIdEntity.getContentLen()).isNull();
                 }
             }
 
@@ -1695,7 +1568,7 @@ public class S3StoreIT {
                         RandomString random = new RandomString(5);
                         resourceLocation = random.nextString();
 
-                        entity = new TestEntity();
+                        entity = new DualContentJpaLongIdMimeEntity();
                         //                    entity.setContentType("text/plain");
                         //                    entity.setContentType("text/html");
                         entity = repo.save(entity);
