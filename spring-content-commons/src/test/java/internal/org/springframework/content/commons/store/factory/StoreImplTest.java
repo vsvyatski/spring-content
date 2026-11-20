@@ -7,16 +7,14 @@ import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.commons.store.StoreAccessException;
 import org.springframework.context.ApplicationEventPublisher;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Serializable;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.Objects;
 
-import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -55,11 +53,9 @@ public class StoreImplTest {
 
             @Test
             void shouldDeleteTheContentCopyFile() {
-                for (File f : Objects.requireNonNull(contentCopyPathRoot.toFile().listFiles())) {
-                    if (f.getName().endsWith(".tmp")) {
-                        fail("Found orphaned content copy path");
-                    }
-                }
+                assertThat(Arrays.asList(Objects.requireNonNull(contentCopyPathRoot.toFile().listFiles())))
+                    .filteredOn(f -> f.getName().endsWith(".tmp"))
+                    .isEmpty();
             }
         }
 
@@ -84,11 +80,9 @@ public class StoreImplTest {
             @Test
             void shouldPropagateStoreAccessException() throws IOException {
                 when(store.getContent(any())).thenThrow(new StoreAccessException("missing property"));
-                try {
-                    stores.getContent(new Object());
-                    fail("expected StoreAccessException");
-                } catch (StoreAccessException expected) {
-                }
+                assertThatThrownBy(() -> stores.getContent(new Object()))
+                    .isInstanceOf(StoreAccessException.class)
+                    .hasMessage("missing property");
             }
         }
     }

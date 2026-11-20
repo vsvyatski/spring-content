@@ -46,7 +46,7 @@ import java.net.URISyntaxException;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -174,11 +174,8 @@ public class S3StoreWithEntityConverterIT {
                             .key(resourceLocation)
                             .build();
 
-                    try {
-                        client.headObject(headObjectRequest);
-                        fail("expected object not to exist");
-                    } catch (NoSuchKeyException e) {
-                    }
+                    assertThatThrownBy(() -> client.headObject(headObjectRequest))
+                            .isInstanceOf(NoSuchKeyException.class);
                 } finally {
                     context.close();
                 }

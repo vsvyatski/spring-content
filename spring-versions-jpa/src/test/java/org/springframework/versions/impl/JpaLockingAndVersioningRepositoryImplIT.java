@@ -45,7 +45,7 @@ import javax.sql.DataSource;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @ContextConfiguration(classes = {JpaLockingAndVersioningRepositoryImplIT.TestConfig.class})
 @ExtendWith(SpringExtension.class)
@@ -1505,12 +1505,8 @@ public class JpaLockingAndVersioningRepositoryImplIT {
 
                     @Test
                     void shouldThrowASecurityException() {
-                        try {
-                            repo.deleteAllVersions(e1v11);
-                            fail("expected security exception");
-                        } catch (Exception e) {
-                            assertThat(e).isInstanceOf(SecurityException.class);
-                        }
+                        assertThatThrownBy(() -> repo.deleteAllVersions(e1v11))
+                                .isInstanceOf(SecurityException.class);
                     }
                 }
 
@@ -1538,12 +1534,8 @@ public class JpaLockingAndVersioningRepositoryImplIT {
 
                     @Test
                     void shouldThrowASecurityException() {
-                        try {
-                            repo.deleteAllVersions(e1v11);
-                            fail("expected security exception");
-                        } catch (Exception e) {
-                            assertThat(e).isInstanceOf(SecurityException.class);
-                        }
+                        assertThatThrownBy(() -> repo.deleteAllVersions(e1v11))
+                                .isInstanceOf(SecurityException.class);
                     }
                 }
 
@@ -1613,13 +1605,9 @@ public class JpaLockingAndVersioningRepositoryImplIT {
 
                             @Test
                             void shouldFailToDeleteTheEntity() {
-                                try {
-                                    repo.deleteAllVersions(e1v11);
-                                    fail("expected lockownerexception");
-                                } catch (Exception e) {
-                                    assertThat(e).isInstanceOf(LockOwnerException.class);
-                                    assertThat(e.getMessage()).contains("not lock owner");
-                                }
+                                assertThatThrownBy(() -> repo.deleteAllVersions(e1v11))
+                                        .isInstanceOf(LockOwnerException.class)
+                                        .hasMessageContaining("not lock owner");
                             }
                         }
 
@@ -1681,13 +1669,9 @@ public class JpaLockingAndVersioningRepositoryImplIT {
 
                         @Test
                         void shouldFail() {
-                            try {
-                                repo.deleteAllVersions(e1);
-                                fail("expected lockingandversioningexception");
-                            } catch (Exception e) {
-                                assertThat(e).isInstanceOf(LockingAndVersioningException.class);
-                                assertThat(e.getMessage()).contains("not head");
-                            }
+                            assertThatThrownBy(() -> repo.deleteAllVersions(e1))
+                                    .isInstanceOf(LockingAndVersioningException.class)
+                                    .hasMessageContaining("not head");
                         }
                     }
                 }

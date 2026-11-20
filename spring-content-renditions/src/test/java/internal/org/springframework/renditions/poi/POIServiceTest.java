@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class POIServiceTest {
 
@@ -47,13 +47,8 @@ public class POIServiceTest {
 
                 @Test
                 void shouldThrowAnException() {
-                    try {
-                        poi.xwpfDocument(stream);
-                        fail("no exception thrown");
-                    } catch (Exception e) {
-                        assertThat(e).isNotNull();
-                        assertThat(e).isInstanceOf(IllegalArgumentException.class);
-                    }
+                    assertThatThrownBy(() -> poi.xwpfDocument(stream))
+                            .isInstanceOf(IllegalArgumentException.class);
                 }
             }
 
@@ -68,13 +63,8 @@ public class POIServiceTest {
 
                 @Test
                 void shouldThrowAnException() {
-                    try {
-                        poi.xwpfDocument(stream);
-                        fail("no exception thrown");
-                    } catch (Exception e) {
-                        assertThat(e).isNotNull();
-                        assertThat(e).isInstanceOf(NotOfficeXmlFileException.class);
-                    }
+                    assertThatThrownBy(() -> poi.xwpfDocument(stream))
+                            .isInstanceOf(NotOfficeXmlFileException.class);
                 }
             }
         }

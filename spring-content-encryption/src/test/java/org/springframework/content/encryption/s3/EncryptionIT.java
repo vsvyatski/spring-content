@@ -59,7 +59,7 @@ import java.util.UUID;
 
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest(classes = EncryptionIT.Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ExtendWith(SpringExtension.class)
@@ -423,11 +423,8 @@ public class EncryptionIT {
                             .key(contentId)
                             .build();
 
-                    try {
-                        client.headObject(getObjectRequest);
-                        fail("expected object not to exist");
-                    } catch (NoSuchKeyException ignored) {
-                    }
+                    assertThatThrownBy(() -> client.headObject(getObjectRequest))
+                            .isInstanceOf(NoSuchKeyException.class);
                 }
             }
         }

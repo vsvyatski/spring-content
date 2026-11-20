@@ -12,7 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class FileServiceTest {
 
@@ -186,12 +186,8 @@ public class FileServiceTest {
         void shouldRejectFiles() throws IOException {
             Path tempFile = Files.createTempFile(null, null);
 
-            try {
-                fileService.rmdirs(tempFile.toFile(), null);
-                fail("unexpected");
-            } catch (IOException e) {
-                assertThat(e).isNotNull();
-            }
+            assertThatThrownBy(() -> fileService.rmdirs(tempFile.toFile(), null))
+                    .isInstanceOf(IOException.class);
         }
 
         @Test

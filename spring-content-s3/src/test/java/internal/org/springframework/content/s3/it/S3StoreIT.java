@@ -45,7 +45,7 @@ import java.util.Arrays;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest()
 @ExtendWith(SpringExtension.class)
@@ -1207,11 +1207,9 @@ public class S3StoreIT {
                     assertThat(entity.getContentId()).isNull();
                     assertThat(entity.getContentLen()).isNull();
 
-                    try {
-                        client.headObject(HeadObjectRequest.builder().bucket(BUCKET).key(resourceLocation).build());
-                        fail("expected content to be removed but is still exists");
-                    } catch (NoSuchKeyException nske) {
-                    }
+                    assertThatThrownBy(() -> client.headObject(
+                            HeadObjectRequest.builder().bucket(BUCKET).key(resourceLocation).build()))
+                            .isInstanceOf(NoSuchKeyException.class);
 
                     //rendition
                     try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
