@@ -39,7 +39,7 @@ public class StoresImplTest {
     }
 
     public interface OtherEntityStoreInterface
-            extends AssociativeStore<OtherEntity, String> {
+        extends AssociativeStore<OtherEntity, String> {
     }
 
     public interface FsEntityStoreInterface extends ContentStore<Entity, String> {
@@ -84,12 +84,12 @@ public class StoresImplTest {
                 Store store = CommonsTestStores.mockContentStore();
                 when(mockFactory.getStore()).thenReturn(store);
                 when(mockFactory.getStoreInterface())
-                        .thenAnswer(new Answer<Object>() {
-                            @Override
-                            public Object answer(InvocationOnMock invocation) {
-                                return ContentRepositoryInterface.class;
-                            }
-                        });
+                    .thenAnswer(new Answer<Object>() {
+                        @Override
+                        public Object answer(InvocationOnMock invocation) {
+                            return ContentRepositoryInterface.class;
+                        }
+                    });
 
                 when(context.getBeanNamesForType(StoreFactory.class)).thenReturn(new String[]{"&testStoreFactory"});
                 when(context.getBean("&testStoreFactory", StoreFactory.class)).thenReturn(mockFactory);
@@ -108,7 +108,7 @@ public class StoresImplTest {
             @Test
             void shouldReturnNoAssociativestoreInfo() {
                 StoreInfo[] infos = contentRepoService
-                        .getStores(AssociativeStore.class);
+                    .getStores(AssociativeStore.class);
                 assertThat(infos.length).isEqualTo(1);
             }
 
@@ -129,12 +129,12 @@ public class StoresImplTest {
                 Store store = CommonsTestStores.mockStore();
                 when(mockFactory.getStore()).thenReturn(store);
                 when(mockFactory.getStoreInterface())
-                        .thenAnswer(new Answer<Object>() {
-                            @Override
-                            public Object answer(InvocationOnMock invocation) {
-                                return StoreInterface.class;
-                            }
-                        });
+                    .thenAnswer(new Answer<Object>() {
+                        @Override
+                        public Object answer(InvocationOnMock invocation) {
+                            return StoreInterface.class;
+                        }
+                    });
 
                 context = mock(ApplicationContext.class);
                 when(context.getBeanNamesForType(StoreFactory.class)).thenReturn(new String[]{"&testStoreFactory"});
@@ -154,7 +154,7 @@ public class StoresImplTest {
             @Test
             void shouldReturnAssociativestoreInfo() {
                 StoreInfo[] infos = contentRepoService
-                        .getStores(AssociativeStore.class);
+                    .getStores(AssociativeStore.class);
                 assertThat(infos.length).isEqualTo(0);
             }
 
@@ -175,12 +175,12 @@ public class StoresImplTest {
                 Store store = CommonsTestStores.mockAssociativeStore();
                 when(mockFactory.getStore()).thenReturn(store);
                 when(mockFactory.getStoreInterface())
-                        .thenAnswer(new Answer<Object>() {
-                            @Override
-                            public Object answer(InvocationOnMock invocation) {
-                                return AssociativeStoreInterface.class;
-                            }
-                        });
+                    .thenAnswer(new Answer<Object>() {
+                        @Override
+                        public Object answer(InvocationOnMock invocation) {
+                            return AssociativeStoreInterface.class;
+                        }
+                    });
 
                 context = mock(ApplicationContext.class);
                 when(context.getBeanNamesForType(StoreFactory.class)).thenReturn(new String[]{"&testStoreFactory"});
@@ -206,7 +206,7 @@ public class StoresImplTest {
             @Test
             void shouldReturnAssociativestoreInfo() {
                 StoreInfo[] infos = contentRepoService
-                        .getStores(AssociativeStore.class);
+                    .getStores(AssociativeStore.class);
                 assertThat(infos.length).isEqualTo(1);
             }
         }
@@ -221,23 +221,23 @@ public class StoresImplTest {
                 Store store = CommonsTestStores.mockAssociativeStore();
                 when(mockFactory.getStore()).thenReturn(store);
                 when(mockFactory.getStoreInterface())
-                        .thenAnswer(new Answer<Object>() {
-                            @Override
-                            public Object answer(InvocationOnMock invocation) {
-                                return EntityStoreInterface.class;
-                            }
-                        });
+                    .thenAnswer(new Answer<Object>() {
+                        @Override
+                        public Object answer(InvocationOnMock invocation) {
+                            return EntityStoreInterface.class;
+                        }
+                    });
 
                 StoreFactory mockFactory2 = mock(StoreFactory.class);
                 Store store2 = CommonsTestStores.mockAssociativeStore();
                 when(mockFactory2.getStore()).thenReturn(store2);
                 when(mockFactory2.getStoreInterface())
-                        .thenAnswer(new Answer<Object>() {
-                            @Override
-                            public Object answer(InvocationOnMock invocation) {
-                                return OtherEntityStoreInterface.class;
-                            }
-                        });
+                    .thenAnswer(new Answer<Object>() {
+                        @Override
+                        public Object answer(InvocationOnMock invocation) {
+                            return OtherEntityStoreInterface.class;
+                        }
+                    });
 
                 context = mock(ApplicationContext.class);
                 when(context.getBeanNamesForType(StoreFactory.class)).thenReturn(new String[]{"&testStoreFactory1", "&testStoreFactory2"});
@@ -253,24 +253,24 @@ public class StoresImplTest {
             @Test
             void shouldReturnStoresThatMatchTheFilter() {
                 StoreInfo[] infos = contentRepoService.getStores(
-                        AssociativeStore.class, Stores.MATCH_ALL);
+                    AssociativeStore.class, Stores.MATCH_ALL);
                 assertThat(infos.length).isEqualTo(2);
             }
 
             @Test
             void shouldNotReturnStoresThatDontMatchTheFilter() {
                 StoreInfo[] infos = contentRepoService
-                        .getStores(AssociativeStore.class, new StoreFilter() {
-                            @Override
-                            public String name() {
-                                return "test";
-                            }
+                    .getStores(AssociativeStore.class, new StoreFilter() {
+                        @Override
+                        public String name() {
+                            return "test";
+                        }
 
-                            @Override
-                            public boolean matches(StoreInfo info) {
-                                return false;
-                            }
-                        });
+                        @Override
+                        public boolean matches(StoreInfo info) {
+                            return false;
+                        }
+                    });
                 assertThat(infos.length).isEqualTo(0);
             }
         }
@@ -285,23 +285,23 @@ public class StoresImplTest {
                 Store store = CommonsTestStores.mockContentStore();
                 when(mockFactory.getStore()).thenReturn(store);
                 when(mockFactory.getStoreInterface())
-                        .thenAnswer(new Answer<Object>() {
-                            @Override
-                            public Object answer(InvocationOnMock invocation) {
-                                return FsEntityStoreInterface.class;
-                            }
-                        });
+                    .thenAnswer(new Answer<Object>() {
+                        @Override
+                        public Object answer(InvocationOnMock invocation) {
+                            return FsEntityStoreInterface.class;
+                        }
+                    });
 
                 StoreFactory mockFactory2 = mock(StoreFactory.class);
                 Store store2 = CommonsTestStores.mockContentStore();
                 when(mockFactory2.getStore()).thenReturn(store2);
                 when(mockFactory2.getStoreInterface())
-                        .thenAnswer(new Answer<Object>() {
-                            @Override
-                            public Object answer(InvocationOnMock invocation) {
-                                return JpaEntityStoreInterface.class;
-                            }
-                        });
+                    .thenAnswer(new Answer<Object>() {
+                        @Override
+                        public Object answer(InvocationOnMock invocation) {
+                            return JpaEntityStoreInterface.class;
+                        }
+                    });
 
                 context = mock(ApplicationContext.class);
                 when(context.getBeanNamesForType(StoreFactory.class)).thenReturn(new String[]{"&testStoreFactory1", "&testStoreFactory2"});
