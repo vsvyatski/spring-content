@@ -9,7 +9,12 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 public class ObservableOutputStreamTest {
 
@@ -20,7 +25,7 @@ public class ObservableOutputStreamTest {
 
     private OutputStream os;
 
-    private Exception exception;
+    private Throwable exception;
 
     @Nested
     class ObservableOutputStreamCases {
@@ -102,11 +107,7 @@ public class ObservableOutputStreamTest {
                 observable.addObservers(observer1);
                 observable.addObservers(observer2);
 
-                try {
-                    observable.close();
-                } catch (Exception e) {
-                    exception = e;
-                }
+                exception = catchThrowable(observable::close);
             }
 
             @Test

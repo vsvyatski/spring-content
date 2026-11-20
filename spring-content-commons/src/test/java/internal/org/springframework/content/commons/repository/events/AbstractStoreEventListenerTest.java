@@ -5,17 +5,31 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.content.commons.store.ContentStore;
-import org.springframework.content.commons.store.events.*;
+import org.springframework.content.commons.store.events.AbstractStoreEventListener;
+import org.springframework.content.commons.store.events.AfterAssociateEvent;
+import org.springframework.content.commons.store.events.AfterGetContentEvent;
+import org.springframework.content.commons.store.events.AfterGetResourceEvent;
+import org.springframework.content.commons.store.events.AfterSetContentEvent;
+import org.springframework.content.commons.store.events.AfterUnassociateEvent;
+import org.springframework.content.commons.store.events.AfterUnsetContentEvent;
+import org.springframework.content.commons.store.events.BeforeAssociateEvent;
+import org.springframework.content.commons.store.events.BeforeGetContentEvent;
+import org.springframework.content.commons.store.events.BeforeGetResourceEvent;
+import org.springframework.content.commons.store.events.BeforeSetContentEvent;
+import org.springframework.content.commons.store.events.BeforeUnassociateEvent;
+import org.springframework.content.commons.store.events.BeforeUnsetContentEvent;
+import org.springframework.content.commons.store.events.StoreEvent;
 import org.springframework.content.commons.store.events.testsupport.StoreEventSource;
+import org.springframework.content.commons.testsupport.CommonsTestStores;
 
 import java.io.InputStream;
 import java.io.Serializable;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-@SuppressWarnings("unchecked")
 public class AbstractStoreEventListenerTest {
 
     private AbstractStoreEventListener<Object> listener;
@@ -77,7 +91,7 @@ public class AbstractStoreEventListenerTest {
 
     public static class TestContentEventListener
             extends AbstractStoreEventListener<Object> {
-        final private TestContentEventConsumer consumer;
+        private final TestContentEventConsumer consumer;
 
         public TestContentEventListener(TestContentEventConsumer consumer) {
             super();
@@ -214,7 +228,7 @@ public class AbstractStoreEventListenerTest {
                 @BeforeEach
                 void setUp() {
                     consumer = mock(TestContentEventConsumer.class);
-                    store = (ContentStore<Object, Serializable>) mock(ContentStore.class);
+                    store = CommonsTestStores.mockContentStore();
 
                     listener = new TestContentEventListener(consumer);
 
@@ -236,7 +250,7 @@ public class AbstractStoreEventListenerTest {
                 @Test
                 void shouldCallTheEventSourceConsumer() {
                     verify(consumer)
-                            .onBeforeGetResource(org.mockito.ArgumentMatchers.eq(event.getSource()));
+                            .onBeforeGetResource(eq(event.getSource()));
                 }
             }
 
@@ -245,7 +259,7 @@ public class AbstractStoreEventListenerTest {
                 @BeforeEach
                 void setUp() {
                     consumer = mock(TestContentEventConsumer.class);
-                    store = (ContentStore<Object, Serializable>) mock(ContentStore.class);
+                    store = CommonsTestStores.mockContentStore();
 
                     listener = new TestContentEventListener(consumer);
 
@@ -267,7 +281,7 @@ public class AbstractStoreEventListenerTest {
                 @Test
                 void shouldCallTheEventSourceConsumer() {
                     verify(consumer)
-                            .onAfterGetResource(org.mockito.ArgumentMatchers.eq(event.getSource()));
+                            .onAfterGetResource(eq(event.getSource()));
                 }
             }
 
@@ -276,7 +290,7 @@ public class AbstractStoreEventListenerTest {
                 @BeforeEach
                 void setUp() {
                     consumer = mock(TestContentEventConsumer.class);
-                    store = (ContentStore<Object, Serializable>) mock(ContentStore.class);
+                    store = CommonsTestStores.mockContentStore();
 
                     listener = new TestContentEventListener(consumer);
 
@@ -298,7 +312,7 @@ public class AbstractStoreEventListenerTest {
                 @Test
                 void shouldCallTheEventSourceConsumer() {
                     verify(consumer)
-                            .onBeforeAssociate(org.mockito.ArgumentMatchers.eq(event.getSource()));
+                            .onBeforeAssociate(eq(event.getSource()));
                 }
             }
 
@@ -307,7 +321,7 @@ public class AbstractStoreEventListenerTest {
                 @BeforeEach
                 void setUp() {
                     consumer = mock(TestContentEventConsumer.class);
-                    store = (ContentStore<Object, Serializable>) mock(ContentStore.class);
+                    store = CommonsTestStores.mockContentStore();
 
                     listener = new TestContentEventListener(consumer);
 
@@ -329,7 +343,7 @@ public class AbstractStoreEventListenerTest {
                 @Test
                 void shouldCallTheEventSourceConsumer() {
                     verify(consumer)
-                            .onAfterAssociate(org.mockito.ArgumentMatchers.eq(event.getSource()));
+                            .onAfterAssociate(eq(event.getSource()));
                 }
             }
 
@@ -338,7 +352,7 @@ public class AbstractStoreEventListenerTest {
                 @BeforeEach
                 void setUp() {
                     consumer = mock(TestContentEventConsumer.class);
-                    store = (ContentStore<Object, Serializable>) mock(ContentStore.class);
+                    store = CommonsTestStores.mockContentStore();
 
                     listener = new TestContentEventListener(consumer);
 
@@ -360,7 +374,7 @@ public class AbstractStoreEventListenerTest {
                 @Test
                 void shouldCallTheEventSourceConsumer() {
                     verify(consumer)
-                            .onBeforeUnassociate(org.mockito.ArgumentMatchers.eq(event.getSource()));
+                            .onBeforeUnassociate(eq(event.getSource()));
                 }
             }
 
@@ -369,7 +383,7 @@ public class AbstractStoreEventListenerTest {
                 @BeforeEach
                 void setUp() {
                     consumer = mock(TestContentEventConsumer.class);
-                    store = (ContentStore<Object, Serializable>) mock(ContentStore.class);
+                    store = CommonsTestStores.mockContentStore();
 
                     listener = new TestContentEventListener(consumer);
 
@@ -391,7 +405,7 @@ public class AbstractStoreEventListenerTest {
                 @Test
                 void shouldCallTheEventSourceConsumer() {
                     verify(consumer)
-                            .onAfterUnassociate(org.mockito.ArgumentMatchers.eq(event.getSource()));
+                            .onAfterUnassociate(eq(event.getSource()));
                 }
             }
 
@@ -400,7 +414,7 @@ public class AbstractStoreEventListenerTest {
                 @BeforeEach
                 void setUp() {
                     consumer = mock(TestContentEventConsumer.class);
-                    store = (ContentStore<Object, Serializable>) mock(ContentStore.class);
+                    store = CommonsTestStores.mockContentStore();
 
                     listener = new TestContentEventListener(consumer);
 
@@ -422,7 +436,7 @@ public class AbstractStoreEventListenerTest {
                 @Test
                 void shouldCallTheEventSourceConsumer() {
                     verify(consumer)
-                            .onBeforeGetContent(org.mockito.ArgumentMatchers.eq(event.getSource()));
+                            .onBeforeGetContent(eq(event.getSource()));
                 }
             }
 
@@ -431,7 +445,7 @@ public class AbstractStoreEventListenerTest {
                 @BeforeEach
                 void setUp() {
                     consumer = mock(TestContentEventConsumer.class);
-                    store = (ContentStore<Object, Serializable>) mock(ContentStore.class);
+                    store = CommonsTestStores.mockContentStore();
 
                     listener = new TestContentEventListener(consumer);
 
@@ -453,7 +467,7 @@ public class AbstractStoreEventListenerTest {
                 @Test
                 void shouldCallTheEventSourceConsumer() {
                     verify(consumer)
-                            .onAfterGetContent(org.mockito.ArgumentMatchers.eq(event.getSource()));
+                            .onAfterGetContent(eq(event.getSource()));
                 }
             }
 
@@ -462,7 +476,7 @@ public class AbstractStoreEventListenerTest {
                 @BeforeEach
                 void setUp() {
                     consumer = mock(TestContentEventConsumer.class);
-                    store = (ContentStore<Object, Serializable>) mock(ContentStore.class);
+                    store = CommonsTestStores.mockContentStore();
 
                     listener = new TestContentEventListener(consumer);
 
@@ -484,7 +498,7 @@ public class AbstractStoreEventListenerTest {
                 @Test
                 void shouldCallTheEventSourceConsumer() {
                     verify(consumer)
-                            .onBeforeSetContent(org.mockito.ArgumentMatchers.eq(event.getSource()));
+                            .onBeforeSetContent(eq(event.getSource()));
                 }
             }
 
@@ -493,7 +507,7 @@ public class AbstractStoreEventListenerTest {
                 @BeforeEach
                 void setUp() {
                     consumer = mock(TestContentEventConsumer.class);
-                    store = (ContentStore<Object, Serializable>) mock(ContentStore.class);
+                    store = CommonsTestStores.mockContentStore();
 
                     listener = new TestContentEventListener(consumer);
 
@@ -515,7 +529,7 @@ public class AbstractStoreEventListenerTest {
                 @Test
                 void shouldCallTheEventSourceConsumer() {
                     verify(consumer)
-                            .onAfterSetContent(org.mockito.ArgumentMatchers.eq(event.getSource()));
+                            .onAfterSetContent(eq(event.getSource()));
                 }
             }
 
@@ -524,7 +538,7 @@ public class AbstractStoreEventListenerTest {
                 @BeforeEach
                 void setUp() {
                     consumer = mock(TestContentEventConsumer.class);
-                    store = (ContentStore<Object, Serializable>) mock(ContentStore.class);
+                    store = CommonsTestStores.mockContentStore();
 
                     listener = new TestContentEventListener(consumer);
 
@@ -546,7 +560,7 @@ public class AbstractStoreEventListenerTest {
                 @Test
                 void shouldCallTheEventSourceConsumer() {
                     verify(consumer)
-                            .onBeforeUnsetContent(org.mockito.ArgumentMatchers.eq(event.getSource()));
+                            .onBeforeUnsetContent(eq(event.getSource()));
                 }
             }
 
@@ -555,7 +569,7 @@ public class AbstractStoreEventListenerTest {
                 @BeforeEach
                 void setUp() {
                     consumer = mock(TestContentEventConsumer.class);
-                    store = (ContentStore<Object, Serializable>) mock(ContentStore.class);
+                    store = CommonsTestStores.mockContentStore();
 
                     listener = new TestContentEventListener(consumer);
 
@@ -577,7 +591,7 @@ public class AbstractStoreEventListenerTest {
                 @Test
                 void shouldCallTheEventSourceConsumer() {
                     verify(consumer)
-                            .onAfterUnsetContent(org.mockito.ArgumentMatchers.eq(event.getSource()));
+                            .onAfterUnsetContent(eq(event.getSource()));
                 }
             }
         }

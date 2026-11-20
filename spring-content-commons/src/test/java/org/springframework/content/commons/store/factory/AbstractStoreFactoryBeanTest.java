@@ -3,7 +3,11 @@ package org.springframework.content.commons.store.factory;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.content.commons.property.PropertyPath;
-import org.springframework.content.commons.store.*;
+import org.springframework.content.commons.store.ContentStore;
+import org.springframework.content.commons.store.GetResourceParams;
+import org.springframework.content.commons.store.SetContentParams;
+import org.springframework.content.commons.store.Store;
+import org.springframework.content.commons.store.UnsetContentParams;
 import org.springframework.core.io.Resource;
 
 import java.io.InputStream;

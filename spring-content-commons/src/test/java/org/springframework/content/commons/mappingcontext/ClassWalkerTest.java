@@ -1,6 +1,11 @@
 package org.springframework.content.commons.mappingcontext;
 
-import jakarta.persistence.*;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.content.commons.annotations.ContentId;
@@ -31,6 +36,7 @@ public class ClassWalkerTest {
         A, B, C, D
     }
 
+    @SuppressWarnings("unused") // fixture shape for ClassWalker hierarchy tests
     public static class TestClass {
 
         private TestEnum enums;

@@ -21,6 +21,16 @@ public class FileServiceTest {
     private File parent;
     private Exception ex;
 
+    @SuppressWarnings("OverlyBroadCatchBlock")
+    private void mkdirsAndCaptureException() {
+        ex = null;
+        try {
+            fileService.mkdirs(file);
+        } catch (Exception caught) {
+            ex = caught;
+        }
+    }
+
     @Nested
     class Mkdirs {
         @Nested
@@ -33,11 +43,7 @@ public class FileServiceTest {
                 assertThat(file.exists()).isTrue();
 
                 fileService = new FileServiceImpl();
-                try {
-                    fileService.mkdirs(file);
-                } catch (Exception e) {
-                    ex = e;
-                }
+                mkdirsAndCaptureException();
             }
 
             @AfterEach
@@ -61,11 +67,7 @@ public class FileServiceTest {
                 assertThat(file.exists()).isFalse();
 
                 fileService = new FileServiceImpl();
-                try {
-                    fileService.mkdirs(file);
-                } catch (Exception e) {
-                    ex = e;
-                }
+                mkdirsAndCaptureException();
             }
 
             @AfterEach
@@ -95,11 +97,7 @@ public class FileServiceTest {
                 assertThat(file.exists()).isTrue();
 
                 fileService = new FileServiceImpl();
-                try {
-                    fileService.mkdirs(file);
-                } catch (Exception e) {
-                    ex = e;
-                }
+                mkdirsAndCaptureException();
             }
 
             @AfterEach
@@ -124,11 +122,7 @@ public class FileServiceTest {
                 assertThat(file.exists()).isFalse();
 
                 fileService = new FileServiceImpl();
-                try {
-                    fileService.mkdirs(file);
-                } catch (Exception e) {
-                    ex = e;
-                }
+                mkdirsAndCaptureException();
             }
 
             @AfterEach
@@ -151,11 +145,7 @@ public class FileServiceTest {
                 parent = Files.createTempDirectory("commons-").toFile();
                 file = null;
                 fileService = new FileServiceImpl();
-                try {
-                    fileService.mkdirs(file);
-                } catch (Exception e) {
-                    ex = e;
-                }
+                mkdirsAndCaptureException();
             }
 
             @Test

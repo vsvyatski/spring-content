@@ -15,6 +15,7 @@ import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.commons.utils.BeanUtils;
 import org.springframework.core.io.Resource;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -80,7 +81,7 @@ public class RenderableImpl implements Renderable<Object>, ContentStoreAware {
                 if (content != null) {
                     return this.getRenditionService().convert(fromMimeType, content, mimeType);
                 }
-            } catch (Exception e) {
+            } catch (IOException | RuntimeException e) {
                 LOGGER.error(String.format("Failed to get rendition from %s to %s", fromMimeType, mimeType), e);
             }
         }
@@ -114,7 +115,7 @@ public class RenderableImpl implements Renderable<Object>, ContentStoreAware {
                         return this.getRenditionService().convert(fromMimeType.toString(), content, mimeType);
                     }
                 }
-            } catch (Exception e) {
+            } catch (IOException | RuntimeException e) {
                 LOGGER.error(String.format("Failed to get rendition from %s to %s", fromMimeType, mimeType), e);
             }
         }

@@ -12,6 +12,7 @@ import org.springframework.content.commons.store.Store;
 import org.springframework.content.commons.storeservice.StoreFilter;
 import org.springframework.content.commons.storeservice.StoreInfo;
 import org.springframework.content.commons.storeservice.Stores;
+import org.springframework.content.commons.testsupport.CommonsTestStores;
 import org.springframework.context.ApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -80,7 +81,7 @@ public class StoresImplTest {
                 context = mock(ApplicationContext.class);
 
                 mockFactory = mock(StoreFactory.class);
-                Store store = mock(ContentStore.class);
+                Store store = CommonsTestStores.mockContentStore();
                 when(mockFactory.getStore()).thenReturn(store);
                 when(mockFactory.getStoreInterface())
                         .thenAnswer(new Answer<Object>() {
@@ -125,7 +126,7 @@ public class StoresImplTest {
                 context = mock(ApplicationContext.class);
 
                 mockFactory = mock(StoreFactory.class);
-                Store store = mock(Store.class);
+                Store store = CommonsTestStores.mockStore();
                 when(mockFactory.getStore()).thenReturn(store);
                 when(mockFactory.getStoreInterface())
                         .thenAnswer(new Answer<Object>() {
@@ -171,7 +172,7 @@ public class StoresImplTest {
                 context = mock(ApplicationContext.class);
 
                 mockFactory = mock(StoreFactory.class);
-                Store store = mock(AssociativeStore.class);
+                Store store = CommonsTestStores.mockAssociativeStore();
                 when(mockFactory.getStore()).thenReturn(store);
                 when(mockFactory.getStoreInterface())
                         .thenAnswer(new Answer<Object>() {
@@ -217,7 +218,7 @@ public class StoresImplTest {
                 context = mock(ApplicationContext.class);
 
                 mockFactory = mock(StoreFactory.class);
-                Store store = mock(AssociativeStore.class);
+                Store store = CommonsTestStores.mockAssociativeStore();
                 when(mockFactory.getStore()).thenReturn(store);
                 when(mockFactory.getStoreInterface())
                         .thenAnswer(new Answer<Object>() {
@@ -228,7 +229,7 @@ public class StoresImplTest {
                         });
 
                 StoreFactory mockFactory2 = mock(StoreFactory.class);
-                Store store2 = mock(AssociativeStore.class);
+                Store store2 = CommonsTestStores.mockAssociativeStore();
                 when(mockFactory2.getStore()).thenReturn(store2);
                 when(mockFactory2.getStoreInterface())
                         .thenAnswer(new Answer<Object>() {
@@ -281,7 +282,7 @@ public class StoresImplTest {
                 context = mock(ApplicationContext.class);
 
                 mockFactory = mock(StoreFactory.class);
-                Store store = mock(ContentStore.class);
+                Store store = CommonsTestStores.mockContentStore();
                 when(mockFactory.getStore()).thenReturn(store);
                 when(mockFactory.getStoreInterface())
                         .thenAnswer(new Answer<Object>() {
@@ -292,7 +293,7 @@ public class StoresImplTest {
                         });
 
                 StoreFactory mockFactory2 = mock(StoreFactory.class);
-                Store store2 = mock(ContentStore.class);
+                Store store2 = CommonsTestStores.mockContentStore();
                 when(mockFactory2.getStore()).thenReturn(store2);
                 when(mockFactory2.getStoreInterface())
                         .thenAnswer(new Answer<Object>() {

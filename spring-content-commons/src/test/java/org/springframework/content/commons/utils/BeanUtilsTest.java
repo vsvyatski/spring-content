@@ -11,7 +11,7 @@ import org.springframework.content.commons.annotations.MimeType;
 import java.lang.reflect.Field;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThatCode;
 
 public class BeanUtilsTest {
 
@@ -131,12 +131,8 @@ public class BeanUtilsTest {
 
                 @Test
                 void shouldNotFailWhenToldToSetOnAMissingField() {
-                    try {
-                        BeanUtils.setFieldWithAnnotation(testEntity, Override.class,
-                                "value");
-                    } catch (Exception e) {
-                        fail("should not fail");
-                    }
+                    assertThatCode(() -> BeanUtils.setFieldWithAnnotation(testEntity, Override.class, "value"))
+                            .doesNotThrowAnyException();
                 }
             }
 
@@ -163,12 +159,8 @@ public class BeanUtilsTest {
 
                 @Test
                 void shouldNotFailWhenToldToSetOnAMissingField() {
-                    try {
-                        BeanUtils.setFieldWithAnnotation(testEntity, Override.class,
-                                "value");
-                    } catch (Exception e) {
-                        fail("should not fail");
-                    }
+                    assertThatCode(() -> BeanUtils.setFieldWithAnnotation(testEntity, Override.class, "value"))
+                            .doesNotThrowAnyException();
                 }
             }
         }
@@ -217,12 +209,8 @@ public class BeanUtilsTest {
 
                 @Test
                 void shouldNotFailWhenToldToSetOnAMissingField() {
-                    try {
-                        BeanUtils.setFieldWithAnnotation(testEntity, Override.class,
-                                "value");
-                    } catch (Exception e) {
-                        fail("should not fail");
-                    }
+                    assertThatCode(() -> BeanUtils.setFieldWithAnnotation(testEntity, Override.class, "value"))
+                            .doesNotThrowAnyException();
                 }
             }
 
@@ -268,12 +256,8 @@ public class BeanUtilsTest {
 
                 @Test
                 void shouldNotFailWhenToldToSetOnAMissingField() {
-                    try {
-                        BeanUtils.setFieldWithAnnotation(testEntity, Override.class,
-                                "value");
-                    } catch (Exception e) {
-                        fail("should not fail");
-                    }
+                    assertThatCode(() -> BeanUtils.setFieldWithAnnotation(testEntity, Override.class, "value"))
+                            .doesNotThrowAnyException();
                 }
             }
         }
@@ -305,11 +289,8 @@ public class BeanUtilsTest {
 
                 @Test
                 void shouldNotFailWhenToldToGetOnAMissingField() {
-                    try {
-                        BeanUtils.getFieldWithAnnotation(testEntity, Override.class);
-                    } catch (Exception e) {
-                        fail("should not fail");
-                    }
+                    assertThatCode(() -> BeanUtils.getFieldWithAnnotation(testEntity, Override.class))
+                            .doesNotThrowAnyException();
                 }
             }
 
@@ -338,11 +319,8 @@ public class BeanUtilsTest {
 
                 @Test
                 void shouldNotFailWhenToldToGetOnAMissingField() {
-                    try {
-                        BeanUtils.getFieldWithAnnotation(testEntity, Override.class);
-                    } catch (Exception e) {
-                        fail("should not fail");
-                    }
+                    assertThatCode(() -> BeanUtils.getFieldWithAnnotation(testEntity, Override.class))
+                            .doesNotThrowAnyException();
                 }
             }
         }
@@ -370,11 +348,8 @@ public class BeanUtilsTest {
 
                 @Test
                 void shouldNotFailWhenAboutAMissingField() {
-                    try {
-                        BeanUtils.hasFieldWithAnnotation(testEntity, Override.class);
-                    } catch (Exception e) {
-                        fail("should not fail");
-                    }
+                    assertThatCode(() -> BeanUtils.hasFieldWithAnnotation(testEntity, Override.class))
+                            .doesNotThrowAnyException();
                 }
             }
 
@@ -399,11 +374,8 @@ public class BeanUtilsTest {
 
                 @Test
                 void shouldNotFailWhenAboutAMissingField() {
-                    try {
-                        BeanUtils.hasFieldWithAnnotation(testEntity, Override.class);
-                    } catch (Exception e) {
-                        fail("should not fail");
-                    }
+                    assertThatCode(() -> BeanUtils.hasFieldWithAnnotation(testEntity, Override.class))
+                            .doesNotThrowAnyException();
                 }
             }
         }
@@ -431,12 +403,8 @@ public class BeanUtilsTest {
 
                 @Test
                 void shouldNotFailWhenAskedAboutAMissingField() {
-                    try {
-                        BeanUtils.getFieldWithAnnotationType(testEntity,
-                                Override.class);
-                    } catch (Exception e) {
-                        fail("should not fail");
-                    }
+                    assertThatCode(() -> BeanUtils.getFieldWithAnnotationType(testEntity, Override.class))
+                            .doesNotThrowAnyException();
                 }
             }
 
@@ -461,12 +429,8 @@ public class BeanUtilsTest {
 
                 @Test
                 void shouldNotFailWhenAskedAboutAMissingField() {
-                    try {
-                        BeanUtils.getFieldWithAnnotationType(testEntity,
-                                Override.class);
-                    } catch (Exception e) {
-                        fail("should not fail");
-                    }
+                    assertThatCode(() -> BeanUtils.getFieldWithAnnotationType(testEntity, Override.class))
+                            .doesNotThrowAnyException();
                 }
             }
         }
@@ -494,11 +458,8 @@ public class BeanUtilsTest {
 
                 @Test
                 void shouldNotFailWhenAboutAMissingField() {
-                    try {
-                        BeanUtils.findFieldWithAnnotation(testEntity, Override.class);
-                    } catch (Exception e) {
-                        fail("should not fail");
-                    }
+                    assertThatCode(() -> BeanUtils.findFieldWithAnnotation(testEntity, Override.class))
+                            .doesNotThrowAnyException();
                 }
             }
 
@@ -523,11 +484,8 @@ public class BeanUtilsTest {
 
                 @Test
                 void shouldNotFailWhenAboutAMissingField() {
-                    try {
-                        BeanUtils.findFieldWithAnnotation(testEntity, Override.class);
-                    } catch (Exception e) {
-                        fail("should not fail");
-                    }
+                    assertThatCode(() -> BeanUtils.findFieldWithAnnotation(testEntity, Override.class))
+                            .doesNotThrowAnyException();
                 }
             }
         }

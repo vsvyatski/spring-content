@@ -7,7 +7,11 @@ import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.commons.store.StoreAccessException;
 import org.springframework.context.ApplicationEventPublisher;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;

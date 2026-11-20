@@ -15,7 +15,16 @@ import org.springframework.content.commons.annotations.MimeType;
 import org.springframework.content.commons.store.AssociativeStore;
 import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.commons.store.Store;
-import org.springframework.content.commons.store.events.*;
+import org.springframework.content.commons.store.events.AfterAssociateEvent;
+import org.springframework.content.commons.store.events.AfterStoreEvent;
+import org.springframework.content.commons.store.events.AfterUnassociateEvent;
+import org.springframework.content.commons.store.events.AfterUnsetContentEvent;
+import org.springframework.content.commons.store.events.BeforeAssociateEvent;
+import org.springframework.content.commons.store.events.BeforeUnassociateEvent;
+import org.springframework.content.commons.store.events.BeforeGetResourceEvent;
+import org.springframework.content.commons.store.events.BeforeSetContentEvent;
+import org.springframework.content.commons.store.events.BeforeUnsetContentEvent;
+import org.springframework.content.commons.store.events.StoreEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -34,8 +43,14 @@ import java.util.Collections;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 @SuppressWarnings("unchecked")
@@ -71,9 +86,18 @@ public class StoreMethodInterceptorTest {
     private ApplicationEventPublisher publisher;
 
     private Object result;
-    private Exception e;
+    private Throwable e;
 
     private ByteArrayInputStream modifiedStream = null;
+
+    private void invokeInterceptor() {
+        e = null;
+        try {
+            interceptor.invoke(invocation);
+        } catch (Throwable invokeException) {
+            e = invokeException;
+        }
+    }
 
     private void onBeforeSetContentPublishEvent(PublishEventAction action) {
         doAnswer(action::doAction).when(publisher).publishEvent(isA(BeforeSetContentEvent.class));
@@ -127,27 +151,22 @@ public class StoreMethodInterceptorTest {
         @Nested
         class GetContentCases {
             @Nested
-            class Tests {
+            class WhenGetContentIsInvokedSuccessfully {
                 @BeforeEach
-                void setUp() throws Throwable {
-                    store = mock(ContentStore.class);
+                void setUp() throws Exception {
                     publisher = mock(ApplicationEventPublisher.class);
 
                     result = new ByteArrayInputStream(new byte[]{});
 
                     store = mock(ContentStore.class);
-                    when(store.getContent(any())).thenReturn((InputStream) result);
+                    doAnswer(invocation -> (InputStream) result).when(store).getContent(any());
 
                     invocation = new TestMethodInvocation(store, getContentMethod, new Object());
 
                     interceptor = new StoreMethodInterceptor();
                     StoreFragments fragments = new StoreFragments(Collections.singletonList(new StoreFragment(TestContentStore.class, new StoreImpl(store, publisher, Paths.get(System.getProperty("java.io.tmpdir"))))));
                     interceptor.setStoreFragments(fragments);
-                    try {
-                        interceptor.invoke(invocation);
-                    } catch (Exception invokeException) {
-                        e = invokeException;
-                    }
+                    invokeInterceptor();
                 }
 
                 @Test
@@ -167,14 +186,13 @@ public class StoreMethodInterceptorTest {
             @Nested
             class WhenGetContentIsInvokedWithIllegalArguments {
                 @BeforeEach
-                void setUp() throws Throwable {
-                    store = mock(ContentStore.class);
+                void setUp() throws Exception {
                     publisher = mock(ApplicationEventPublisher.class);
 
                     result = new ByteArrayInputStream(new byte[]{});
 
                     store = mock(ContentStore.class);
-                    when(store.getContent(any())).thenReturn((InputStream) result);
+                    doAnswer(invocation -> (InputStream) result).when(store).getContent(any());
 
                     invocation = new TestMethodInvocation(store, getContentMethod, new Object());
 
@@ -183,11 +201,7 @@ public class StoreMethodInterceptorTest {
                     interceptor = new StoreMethodInterceptor();
                     StoreFragments fragments = new StoreFragments(Collections.singletonList(new StoreFragment(TestContentStore.class, new StoreImpl(store, publisher, Paths.get(System.getProperty("java.io.tmpdir"))))));
                     interceptor.setStoreFragments(fragments);
-                    try {
-                        interceptor.invoke(invocation);
-                    } catch (Exception invokeException) {
-                        e = invokeException;
-                    }
+                    invokeInterceptor();
                 }
 
                 @Test
@@ -200,10 +214,9 @@ public class StoreMethodInterceptorTest {
         @Nested
         class SetContentCases {
             @Nested
-            class Tests {
+            class WhenSetContentIsInvokedSuccessfully {
                 @BeforeEach
-                void setUp() throws Throwable {
-                    store = mock(ContentStore.class);
+                void setUp() {
                     publisher = mock(ApplicationEventPublisher.class);
 
                     result = new Object();
@@ -216,11 +229,7 @@ public class StoreMethodInterceptorTest {
                     interceptor = new StoreMethodInterceptor();
                     StoreFragments fragments = new StoreFragments(Collections.singletonList(new StoreFragment(TestContentStore.class, new StoreImpl(store, publisher, Paths.get(System.getProperty("java.io.tmpdir"))))));
                     interceptor.setStoreFragments(fragments);
-                    try {
-                        interceptor.invoke(invocation);
-                    } catch (Exception invokeException) {
-                        e = invokeException;
-                    }
+                    invokeInterceptor();
                 }
 
                 @Test
@@ -249,8 +258,7 @@ public class StoreMethodInterceptorTest {
             @Nested
             class WhenTheBeforeSetContentEventConsumesTheEntireInputStream {
                 @BeforeEach
-                void setUp() throws Throwable {
-                    store = mock(ContentStore.class);
+                void setUp() {
                     publisher = mock(ApplicationEventPublisher.class);
 
                     result = new Object();
@@ -270,11 +278,7 @@ public class StoreMethodInterceptorTest {
                     interceptor = new StoreMethodInterceptor();
                     StoreFragments fragments = new StoreFragments(Collections.singletonList(new StoreFragment(TestContentStore.class, new StoreImpl(store, publisher, Paths.get(System.getProperty("java.io.tmpdir"))))));
                     interceptor.setStoreFragments(fragments);
-                    try {
-                        interceptor.invoke(invocation);
-                    } catch (Exception invokeException) {
-                        e = invokeException;
-                    }
+                    invokeInterceptor();
                 }
 
                 @Test
@@ -300,8 +304,7 @@ public class StoreMethodInterceptorTest {
             @Nested
             class WhenTheBeforeSetContentEventConsumesPartialInputStream {
                 @BeforeEach
-                void setUp() throws Throwable {
-                    store = mock(ContentStore.class);
+                void setUp() {
                     publisher = mock(ApplicationEventPublisher.class);
 
                     result = new Object();
@@ -321,11 +324,7 @@ public class StoreMethodInterceptorTest {
                     interceptor = new StoreMethodInterceptor();
                     StoreFragments fragments = new StoreFragments(Collections.singletonList(new StoreFragment(TestContentStore.class, new StoreImpl(store, publisher, Paths.get(System.getProperty("java.io.tmpdir"))))));
                     interceptor.setStoreFragments(fragments);
-                    try {
-                        interceptor.invoke(invocation);
-                    } catch (Exception invokeException) {
-                        e = invokeException;
-                    }
+                    invokeInterceptor();
                 }
 
                 @Test
@@ -353,8 +352,7 @@ public class StoreMethodInterceptorTest {
             @Nested
             class WhenTheBeforeSetContentEventDoesNotConsumeAnyOfTheInputStream {
                 @BeforeEach
-                void setUp() throws Throwable {
-                    store = mock(ContentStore.class);
+                void setUp() {
                     publisher = mock(ApplicationEventPublisher.class);
 
                     result = new Object();
@@ -369,11 +367,7 @@ public class StoreMethodInterceptorTest {
                     interceptor = new StoreMethodInterceptor();
                     StoreFragments fragments = new StoreFragments(Collections.singletonList(new StoreFragment(TestContentStore.class, new StoreImpl(store, publisher, Paths.get(System.getProperty("java.io.tmpdir"))))));
                     interceptor.setStoreFragments(fragments);
-                    try {
-                        interceptor.invoke(invocation);
-                    } catch (Exception invokeException) {
-                        e = invokeException;
-                    }
+                    invokeInterceptor();
                 }
 
                 @Test
@@ -401,8 +395,7 @@ public class StoreMethodInterceptorTest {
             @Nested
             class WhenTheBeforeSetContentEventReplacesTheInputStream {
                 @BeforeEach
-                void setUp() throws Throwable {
-                    store = mock(ContentStore.class);
+                void setUp() {
                     publisher = mock(ApplicationEventPublisher.class);
 
                     result = new Object();
@@ -421,11 +414,7 @@ public class StoreMethodInterceptorTest {
                     interceptor = new StoreMethodInterceptor();
                     StoreFragments fragments = new StoreFragments(Collections.singletonList(new StoreFragment(TestContentStore.class, new StoreImpl(store, publisher, Paths.get(System.getProperty("java.io.tmpdir"))))));
                     interceptor.setStoreFragments(fragments);
-                    try {
-                        interceptor.invoke(invocation);
-                    } catch (Exception invokeException) {
-                        e = invokeException;
-                    }
+                    invokeInterceptor();
                 }
 
                 @Test
@@ -453,8 +442,7 @@ public class StoreMethodInterceptorTest {
             @Nested
             class WhenSetContentIsInvokedWithIllegalArguments {
                 @BeforeEach
-                void setUp() throws Throwable {
-                    store = mock(ContentStore.class);
+                void setUp() {
                     publisher = mock(ApplicationEventPublisher.class);
 
                     result = new Object();
@@ -469,11 +457,7 @@ public class StoreMethodInterceptorTest {
                     interceptor = new StoreMethodInterceptor();
                     StoreFragments fragments = new StoreFragments(Collections.singletonList(new StoreFragment(TestContentStore.class, new StoreImpl(store, publisher, Paths.get(System.getProperty("java.io.tmpdir"))))));
                     interceptor.setStoreFragments(fragments);
-                    try {
-                        interceptor.invoke(invocation);
-                    } catch (Exception invokeException) {
-                        e = invokeException;
-                    }
+                    invokeInterceptor();
                 }
 
                 @Test
@@ -486,7 +470,7 @@ public class StoreMethodInterceptorTest {
         @Nested
         class SetContentFromResourceCases {
             @BeforeEach
-            void setUp() throws Throwable {
+            void setUp() {
                 store = mock(ContentStore.class);
                 publisher = mock(ApplicationEventPublisher.class);
 
@@ -500,11 +484,7 @@ public class StoreMethodInterceptorTest {
                 interceptor = new StoreMethodInterceptor();
                 StoreFragments fragments = new StoreFragments(Collections.singletonList(new StoreFragment(TestContentStore.class, new StoreImpl(store, publisher, Paths.get(System.getProperty("java.io.tmpdir"))))));
                 interceptor.setStoreFragments(fragments);
-                try {
-                    interceptor.invoke(invocation);
-                } catch (Exception invokeException) {
-                    e = invokeException;
-                }
+                invokeInterceptor();
             }
 
             @Test
@@ -535,7 +515,7 @@ public class StoreMethodInterceptorTest {
             @Nested
             class WhenUnsetContentIsInvoked {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     store = mock(ContentStore.class);
                     publisher = mock(ApplicationEventPublisher.class);
 
@@ -548,11 +528,7 @@ public class StoreMethodInterceptorTest {
                     interceptor = new StoreMethodInterceptor();
                     StoreFragments fragments = new StoreFragments(Collections.singletonList(new StoreFragment(TestContentStore.class, new StoreImpl(store, publisher, Paths.get(System.getProperty("java.io.tmpdir"))))));
                     interceptor.setStoreFragments(fragments);
-                    try {
-                        interceptor.invoke(invocation);
-                    } catch (Exception invokeException) {
-                        e = invokeException;
-                    }
+                    invokeInterceptor();
                 }
 
                 @Test
@@ -573,7 +549,7 @@ public class StoreMethodInterceptorTest {
             @Nested
             class WhenUnsetContentIsInvokedWithIllegalArguments {
                 @BeforeEach
-                void setUp() throws Throwable {
+                void setUp() {
                     store = mock(ContentStore.class);
                     publisher = mock(ApplicationEventPublisher.class);
 
@@ -588,11 +564,7 @@ public class StoreMethodInterceptorTest {
                     interceptor = new StoreMethodInterceptor();
                     StoreFragments fragments = new StoreFragments(Collections.singletonList(new StoreFragment(TestContentStore.class, new StoreImpl(store, publisher, Paths.get(System.getProperty("java.io.tmpdir"))))));
                     interceptor.setStoreFragments(fragments);
-                    try {
-                        interceptor.invoke(invocation);
-                    } catch (Exception invokeException) {
-                        e = invokeException;
-                    }
+                    invokeInterceptor();
                 }
 
                 @Test
@@ -607,8 +579,7 @@ public class StoreMethodInterceptorTest {
             @Nested
             class WhenGetResourceIsInvoked {
                 @BeforeEach
-                void setUp() throws Throwable {
-                    store = mock(ContentStore.class);
+                void setUp() {
                     publisher = mock(ApplicationEventPublisher.class);
 
                     result = mock(Resource.class);
@@ -622,11 +593,7 @@ public class StoreMethodInterceptorTest {
                     interceptor = new StoreMethodInterceptor();
                     StoreFragments fragments = new StoreFragments(Collections.singletonList(new StoreFragment(TestContentStore.class, new StoreImpl(store, publisher, Paths.get(System.getProperty("java.io.tmpdir"))))));
                     interceptor.setStoreFragments(fragments);
-                    try {
-                        interceptor.invoke(invocation);
-                    } catch (Exception invokeException) {
-                        e = invokeException;
-                    }
+                    invokeInterceptor();
                 }
 
                 @Test
@@ -646,8 +613,7 @@ public class StoreMethodInterceptorTest {
             @Nested
             class WhenGetResourceEntityIsInvoked {
                 @BeforeEach
-                void setUp() throws Throwable {
-                    store = mock(ContentStore.class);
+                void setUp() {
                     publisher = mock(ApplicationEventPublisher.class);
 
                     result = mock(Resource.class);
@@ -660,11 +626,7 @@ public class StoreMethodInterceptorTest {
                     interceptor = new StoreMethodInterceptor();
                     StoreFragments fragments = new StoreFragments(Collections.singletonList(new StoreFragment(TestContentStore.class, new StoreImpl(store, publisher, Paths.get(System.getProperty("java.io.tmpdir"))))));
                     interceptor.setStoreFragments(fragments);
-                    try {
-                        interceptor.invoke(invocation);
-                    } catch (Exception invokeException) {
-                        e = invokeException;
-                    }
+                    invokeInterceptor();
                 }
 
                 @Test
@@ -688,8 +650,7 @@ public class StoreMethodInterceptorTest {
             @Nested
             class WhenAssociateIsInvoked {
                 @BeforeEach
-                void setUp() throws Throwable {
-                    store = mock(ContentStore.class);
+                void setUp() {
                     publisher = mock(ApplicationEventPublisher.class);
 
                     result = mock(Resource.class);
@@ -701,11 +662,7 @@ public class StoreMethodInterceptorTest {
                     interceptor = new StoreMethodInterceptor();
                     StoreFragments fragments = new StoreFragments(Collections.singletonList(new StoreFragment(TestContentStore.class, new StoreImpl(store, publisher, Paths.get(System.getProperty("java.io.tmpdir"))))));
                     interceptor.setStoreFragments(fragments);
-                    try {
-                        interceptor.invoke(invocation);
-                    } catch (Exception invokeException) {
-                        e = invokeException;
-                    }
+                    invokeInterceptor();
                 }
 
                 @Test
@@ -725,8 +682,7 @@ public class StoreMethodInterceptorTest {
             @Nested
             class WhenUnassociateIsInvoked {
                 @BeforeEach
-                void setUp() throws Throwable {
-                    store = mock(ContentStore.class);
+                void setUp() {
                     publisher = mock(ApplicationEventPublisher.class);
 
                     result = mock(Resource.class);
@@ -738,11 +694,7 @@ public class StoreMethodInterceptorTest {
                     interceptor = new StoreMethodInterceptor();
                     StoreFragments fragments = new StoreFragments(Collections.singletonList(new StoreFragment(TestContentStore.class, new StoreImpl(store, publisher, Paths.get(System.getProperty("java.io.tmpdir"))))));
                     interceptor.setStoreFragments(fragments);
-                    try {
-                        interceptor.invoke(invocation);
-                    } catch (Exception invokeException) {
-                        e = invokeException;
-                    }
+                    invokeInterceptor();
                 }
 
                 @Test
@@ -762,8 +714,7 @@ public class StoreMethodInterceptorTest {
             @Nested
             class WhenToStringIsInvoked {
                 @BeforeEach
-                void setUp() throws Throwable {
-                    store = mock(ContentStore.class);
+                void setUp() {
                     publisher = mock(ApplicationEventPublisher.class);
 
                     result = mock(Resource.class);
@@ -775,11 +726,7 @@ public class StoreMethodInterceptorTest {
                     interceptor = new StoreMethodInterceptor();
                     StoreFragments fragments = new StoreFragments(Collections.singletonList(new StoreFragment(TestContentStore.class, new StoreImpl(store, publisher, Paths.get(System.getProperty("java.io.tmpdir"))))));
                     interceptor.setStoreFragments(fragments);
-                    try {
-                        interceptor.invoke(invocation);
-                    } catch (Exception invokeException) {
-                        e = invokeException;
-                    }
+                    invokeInterceptor();
                 }
 
                 @Test
@@ -797,14 +744,10 @@ public class StoreMethodInterceptorTest {
             store = mock(ContentStore.class);
             publisher = mock(ApplicationEventPublisher.class);
             interceptor = new StoreMethodInterceptor();
-            try {
-                Method m = ReflectionUtils.findMethod(TestContentStore.class, "unsetContent", Object.class);
-                assertThat(m).isNotNull();
-                Method actual = interceptor.getMethod(m, new StoreFragment(TestContentStore.class, new StoreImpl(store, publisher, Paths.get(System.getProperty("java.io.tmpdir")))));
-                assertThat(actual).isEqualTo(ReflectionUtils.findMethod(StoreImpl.class, "unsetContent", Object.class));
-            } catch (Exception invokeException) {
-                e = invokeException;
-            }
+            Method m = ReflectionUtils.findMethod(TestContentStore.class, "unsetContent", Object.class);
+            assertThat(m).isNotNull();
+            Method actual = interceptor.getMethod(m, new StoreFragment(TestContentStore.class, new StoreImpl(store, publisher, Paths.get(System.getProperty("java.io.tmpdir")))));
+            assertThat(actual).isEqualTo(ReflectionUtils.findMethod(StoreImpl.class, "unsetContent", Object.class));
         }
 
         @Test
@@ -812,14 +755,10 @@ public class StoreMethodInterceptorTest {
             store = mock(ContentStore.class);
             publisher = mock(ApplicationEventPublisher.class);
             interceptor = new StoreMethodInterceptor();
-            try {
-                Method m = ReflectionUtils.findMethod(TestContentStore.class, "setContent", TEntity.class, InputStream.class);
-                assertThat(m).isNotNull();
-                Method actual = interceptor.getMethod(m, new StoreFragment(TestContentStore.class, new StoreImpl(store, publisher, Paths.get(System.getProperty("java.io.tmpdir")))));
-                assertThat(actual).isEqualTo(ReflectionUtils.findMethod(StoreImpl.class, "setContent", Object.class, InputStream.class));
-            } catch (Exception invokeException) {
-                e = invokeException;
-            }
+            Method m = ReflectionUtils.findMethod(TestContentStore.class, "setContent", TEntity.class, InputStream.class);
+            assertThat(m).isNotNull();
+            Method actual = interceptor.getMethod(m, new StoreFragment(TestContentStore.class, new StoreImpl(store, publisher, Paths.get(System.getProperty("java.io.tmpdir")))));
+            assertThat(actual).isEqualTo(ReflectionUtils.findMethod(StoreImpl.class, "setContent", Object.class, InputStream.class));
         }
     }
 }
