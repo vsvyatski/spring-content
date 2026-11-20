@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.commons.store.events.*;
+import org.springframework.content.commons.store.events.testsupport.StoreEventSource;
 
 import java.io.InputStream;
 import java.io.Serializable;
@@ -204,9 +205,6 @@ public class AbstractStoreEventListenerTest {
         }
     }
 
-    public static class EventSource {
-    }
-
     @Nested
     class OnApplicationEvent {
         @Nested
@@ -220,7 +218,7 @@ public class AbstractStoreEventListenerTest {
 
                     listener = new TestContentEventListener(consumer);
 
-                    event = new BeforeGetResourceEvent(new EventSource(), store);
+                    event = new BeforeGetResourceEvent(new StoreEventSource(), store);
 
                     listener.onApplicationEvent(event);
                 }
@@ -251,7 +249,7 @@ public class AbstractStoreEventListenerTest {
 
                     listener = new TestContentEventListener(consumer);
 
-                    event = new AfterGetResourceEvent(new EventSource(), store);
+                    event = new AfterGetResourceEvent(new StoreEventSource(), store);
 
                     listener.onApplicationEvent(event);
                 }
@@ -282,7 +280,7 @@ public class AbstractStoreEventListenerTest {
 
                     listener = new TestContentEventListener(consumer);
 
-                    event = new BeforeAssociateEvent(new EventSource(), store);
+                    event = new BeforeAssociateEvent(new StoreEventSource(), store);
 
                     listener.onApplicationEvent(event);
                 }
@@ -313,7 +311,7 @@ public class AbstractStoreEventListenerTest {
 
                     listener = new TestContentEventListener(consumer);
 
-                    event = new AfterAssociateEvent(new EventSource(), store);
+                    event = new AfterAssociateEvent(new StoreEventSource(), store);
 
                     listener.onApplicationEvent(event);
                 }
@@ -344,7 +342,7 @@ public class AbstractStoreEventListenerTest {
 
                     listener = new TestContentEventListener(consumer);
 
-                    event = new BeforeUnassociateEvent(new EventSource(), store);
+                    event = new BeforeUnassociateEvent(new StoreEventSource(), store);
 
                     listener.onApplicationEvent(event);
                 }
@@ -375,7 +373,7 @@ public class AbstractStoreEventListenerTest {
 
                     listener = new TestContentEventListener(consumer);
 
-                    event = new AfterUnassociateEvent(new EventSource(), store);
+                    event = new AfterUnassociateEvent(new StoreEventSource(), store);
 
                     listener.onApplicationEvent(event);
                 }
@@ -406,7 +404,7 @@ public class AbstractStoreEventListenerTest {
 
                     listener = new TestContentEventListener(consumer);
 
-                    event = new BeforeGetContentEvent(new EventSource(), store);
+                    event = new BeforeGetContentEvent(new StoreEventSource(), store);
 
                     listener.onApplicationEvent(event);
                 }
@@ -437,7 +435,7 @@ public class AbstractStoreEventListenerTest {
 
                     listener = new TestContentEventListener(consumer);
 
-                    event = new AfterGetContentEvent(new EventSource(), store);
+                    event = new AfterGetContentEvent(new StoreEventSource(), store);
 
                     listener.onApplicationEvent(event);
                 }
@@ -468,7 +466,7 @@ public class AbstractStoreEventListenerTest {
 
                     listener = new TestContentEventListener(consumer);
 
-                    event = new BeforeSetContentEvent(new EventSource(), store, (InputStream) null);
+                    event = new BeforeSetContentEvent(new StoreEventSource(), store, (InputStream) null);
 
                     listener.onApplicationEvent(event);
                 }
@@ -499,7 +497,7 @@ public class AbstractStoreEventListenerTest {
 
                     listener = new TestContentEventListener(consumer);
 
-                    event = new AfterSetContentEvent(new EventSource(), store);
+                    event = new AfterSetContentEvent(new StoreEventSource(), store);
 
                     listener.onApplicationEvent(event);
                 }
@@ -530,7 +528,7 @@ public class AbstractStoreEventListenerTest {
 
                     listener = new TestContentEventListener(consumer);
 
-                    event = new BeforeUnsetContentEvent(new EventSource(), store);
+                    event = new BeforeUnsetContentEvent(new StoreEventSource(), store);
 
                     listener.onApplicationEvent(event);
                 }
@@ -561,7 +559,7 @@ public class AbstractStoreEventListenerTest {
 
                     listener = new TestContentEventListener(consumer);
 
-                    event = new AfterUnsetContentEvent(new EventSource(), store);
+                    event = new AfterUnsetContentEvent(new StoreEventSource(), store);
 
                     listener.onApplicationEvent(event);
                 }

@@ -32,6 +32,7 @@ import org.springframework.content.commons.store.events.BeforeSetContentEvent;
 import org.springframework.content.commons.store.events.BeforeUnassociateEvent;
 import org.springframework.content.commons.store.events.BeforeUnsetContentEvent;
 import org.springframework.content.commons.store.events.StoreEvent;
+import org.springframework.content.commons.store.events.testsupport.StoreEventSource;
 import org.springframework.content.commons.utils.ReflectionService;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -171,9 +172,6 @@ public class AnnotatedStoreEventInvokerTest {
         }
     }
 
-    public static class EventSource {
-    }
-
     public static class UnknownContentEvent extends StoreEvent {
 
         @Serial
@@ -187,7 +185,7 @@ public class AnnotatedStoreEventInvokerTest {
     private record HandlerInvocationCase(
             String handlerMethodName,
             Class<?> handlerParameterType,
-            BiFunction<EventSource, ContentStore<Object, Serializable>, StoreEvent> eventFactory,
+            BiFunction<StoreEventSource, ContentStore<Object, Serializable>, StoreEvent> eventFactory,
             Function<StoreEvent, Object> expectedArgument) {
     }
 
@@ -221,13 +219,13 @@ public class AnnotatedStoreEventInvokerTest {
     }
 
     private static HandlerInvocationCase caseForSource(
-            BiFunction<EventSource, ContentStore<Object, Serializable>, StoreEvent> eventFactory,
+            BiFunction<StoreEventSource, ContentStore<Object, Serializable>, StoreEvent> eventFactory,
             String handlerMethodName) {
         return new HandlerInvocationCase(handlerMethodName, Object.class, eventFactory, StoreEvent::getSource);
     }
 
     private static HandlerInvocationCase caseForEvent(
-            BiFunction<EventSource, ContentStore<Object, Serializable>, StoreEvent> eventFactory,
+            BiFunction<StoreEventSource, ContentStore<Object, Serializable>, StoreEvent> eventFactory,
             String handlerMethodName,
             Class<?> handlerParameterType) {
         return new HandlerInvocationCase(handlerMethodName, handlerParameterType, eventFactory, event -> event);
@@ -292,7 +290,7 @@ public class AnnotatedStoreEventInvokerTest {
 
             @SuppressWarnings("unchecked")
             ContentStore<Object, Serializable> store = mock(ContentStore.class);
-            EventSource source = new EventSource();
+            StoreEventSource source = new StoreEventSource();
             StoreEvent event = handlerCase.eventFactory().apply(source, store);
 
             invoker.postProcessAfterInitialization(new CustomEventHandler(), CUSTOM_HANDLER_BEAN);
@@ -315,7 +313,7 @@ public class AnnotatedStoreEventInvokerTest {
 
                 @SuppressWarnings("unchecked")
                 ContentStore<Object, Serializable> store = mock(ContentStore.class);
-                EventSource source = new EventSource();
+                StoreEventSource source = new StoreEventSource();
                 StoreEvent event = new UnknownContentEvent(source, store);
 
                 invoker.postProcessAfterInitialization(new CustomEventHandler(), CUSTOM_HANDLER_BEAN);
