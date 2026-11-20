@@ -21,6 +21,12 @@ public class FileServiceTest {
     private File parent;
     private Exception ex;
 
+    private void deleteFixture() {
+        if (parent != null) {
+            FileUtils.deleteQuietly(parent);
+        }
+    }
+
     @SuppressWarnings("OverlyBroadCatchBlock")
     private void mkdirsAndCaptureException() {
         ex = null;
@@ -48,7 +54,7 @@ public class FileServiceTest {
 
             @AfterEach
             void tearDown() {
-                file.delete();
+                deleteFixture();
             }
 
             @Test
@@ -72,7 +78,7 @@ public class FileServiceTest {
 
             @AfterEach
             void tearDown() {
-                file.delete();
+                deleteFixture();
             }
 
             @Test
@@ -102,7 +108,7 @@ public class FileServiceTest {
 
             @AfterEach
             void tearDown() {
-                file.delete();
+                deleteFixture();
             }
 
             @Test
@@ -127,7 +133,7 @@ public class FileServiceTest {
 
             @AfterEach
             void tearDown() {
-                file.delete();
+                deleteFixture();
             }
 
             @Test

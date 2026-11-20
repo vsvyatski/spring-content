@@ -44,7 +44,7 @@ public class StoreImplTest {
 
                 for (File f : Objects.requireNonNull(contentCopyPathRoot.toFile().listFiles())) {
                     if (f.getName().endsWith(".tmp")) {
-                        f.delete(); // may fail mysteriously - returns boolean you may want to check
+                        Files.deleteIfExists(f.toPath());
                     }
                 }
 
@@ -74,7 +74,7 @@ public class StoreImplTest {
 
                 for (File f : Objects.requireNonNull(contentCopyPathRoot.toFile().listFiles())) {
                     if (f.getName().endsWith(".tmp")) {
-                        f.delete(); // may fail mysteriously - returns boolean you may want to check
+                        Files.deleteIfExists(f.toPath());
                     }
                 }
 
