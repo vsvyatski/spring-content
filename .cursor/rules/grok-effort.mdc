@@ -1,0 +1,20 @@
+---
+description: Grok capped at Medium effort and non-Fast unless Vladimir asks otherwise
+alwaysApply: true
+---
+
+# Grok effort
+
+For this repository, Grok **must not run above Medium effort** unless Vladimir explicitly requests High or Extra
+High (or names a higher effort in the model picker).
+
+- **Default:** Medium or Low — everyday edits, includes cleanup, local builds when asked, reviews of small diffs.
+- **Forbidden without explicit ask:** High, Extra High, or any wording that bumps Grok past Medium for this repo.
+- **Task subagents on Grok:** Use a Low or Medium Grok variant only. Do not spawn High/XHigh Grok subagents unless he
+  authorized it in that thread. Composer review subagents follow `agent-review.mdc` (not Grok).
+- **Fast mode:** Off by default. Do not use Grok **Fast** in the picker, frontmatter (`fast=true`), or Task `model`
+  unless Vladimir explicitly requests it.
+- **Picker:** Prefer **Grok Medium** or **Low**, **not Fast**, for chats in this repo so subagent model allowlists
+  match.
+
+If the work clearly needs more reasoning or Fast, say so once and wait for him to authorize — do not self-escalate.

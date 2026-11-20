@@ -17,7 +17,7 @@ After you finish a task that changed code (not Q&A, not docs-only unless asked),
 
 - `description`: `Composer review`
 - `subagent_type`: `generalPurpose`
-- `model`: `composer-2.5-fast`
+- `model`: `composer-2.5` (not Fast — see `agent-review.mdc` and `agent-models.mdc`)
 - `run_in_background`: `false`
 
 Prompt the reviewer with: repo root, what changed, `git diff` / branch vs `main`, and `AGENTS.md`. Ask for findings only (bugs, regressions, API breaks, test gaps, over-build). No extra files, no drive-by refactors.

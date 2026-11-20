@@ -1,0 +1,14 @@
+---
+description: PowerShell means modern pwsh (7+), not Windows PowerShell 5.1
+alwaysApply: true
+---
+
+# PowerShell
+
+When Vladimir says **PowerShell**, he means **modern PowerShell** (`pwsh`, PowerShell 7+), not **Windows PowerShell**
+5.1 (`powershell.exe`). If he wants the classic shell, he will say so explicitly (e.g. Windows PowerShell 5.1).
+
+- Run scripts and examples with **`pwsh`** unless he asked for 5.1.
+- Use **`Get-Verb`** on **pwsh** for approved verbs (e.g. **Build** is Lifecycle on 7+; it is not in the 5.1
+  list).
+- Prefer `#Requires -Version 6.2` (or higher) as the baseline when writing or reviewing his PowerShell scripts.

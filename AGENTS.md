@@ -179,8 +179,8 @@ Per-module AsciiDoc lives under `src/main/asciidoc/`. High-level notes in `READM
 ## Agent roles (this repo)
 
 - **Implement:** Grok in the parent chat. Pick Grok in the model picker.
-- **Review:** Composer (`composer-2.5-fast` subagent) after code changes, or when asked. See
-  `.cursor/rules/grok-dev-composer-review.mdc`.
+- **Review:** Composer (`composer-2.5` subagent, not Fast) after code changes, or when asked. See
+  `.cursor/rules/grok-dev-composer-review.mdc`, `agent-review.mdc`, and `agent-models.mdc`.
 
 ## Agent do / don’t
 
