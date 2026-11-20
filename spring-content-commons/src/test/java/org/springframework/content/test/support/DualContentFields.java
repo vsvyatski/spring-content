@@ -9,13 +9,7 @@ import org.springframework.content.commons.annotations.ContentLength;
  *
  * @author Vladimir Svyatski
  */
-public class DualContentFields implements DualContentAccessor {
-
-    @ContentId
-    private String contentId;
-
-    @ContentLength
-    private Long contentLen;
+public class DualContentFields extends SingleContentFields implements DualContentAccessor {
 
     @ContentId
     private String renditionId;
@@ -24,31 +18,10 @@ public class DualContentFields implements DualContentAccessor {
     private Long renditionLen;
 
     public DualContentFields() {
-        this.contentId = null;
     }
 
     public DualContentFields(String contentId) {
-        this.contentId = contentId;
-    }
-
-    @Override
-    public String getContentId() {
-        return contentId;
-    }
-
-    @Override
-    public void setContentId(String contentId) {
-        this.contentId = contentId;
-    }
-
-    @Override
-    public Long getContentLen() {
-        return contentLen;
-    }
-
-    @Override
-    public void setContentLen(Long contentLen) {
-        this.contentLen = contentLen;
+        super(contentId);
     }
 
     @Override
