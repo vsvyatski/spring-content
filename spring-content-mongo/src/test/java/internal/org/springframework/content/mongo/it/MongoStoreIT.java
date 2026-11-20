@@ -1,11 +1,9 @@
 package internal.org.springframework.content.mongo.it;
 
 import com.mongodb.client.MongoClient;
-import com.mongodb.client.gridfs.model.GridFSFile;
-import internal.org.springframework.content.mongo.store.DefaultMongoStoreImpl;
 import net.bytebuddy.utility.RandomString;
 import org.apache.commons.io.IOUtils;
-import org.bson.types.ObjectId;
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -15,7 +13,6 @@ import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.io.DeletableResource;
 import org.springframework.content.commons.property.PropertyPath;
 import org.springframework.content.commons.store.*;
-import org.springframework.content.commons.utils.PlacementService;
 import org.springframework.content.mongo.config.EnableMongoStores;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -27,7 +24,6 @@ import org.springframework.data.mongodb.MongoDatabaseFactory;
 import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration;
 import org.springframework.data.mongodb.core.SimpleMongoClientDatabaseFactory;
 import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
-import org.springframework.data.mongodb.gridfs.GridFsResource;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
@@ -41,17 +37,10 @@ import java.nio.charset.StandardCharsets;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class MongoStoreIT {
-    private DefaultMongoStoreImpl<Object, String> mongoContentRepoImpl;
     private GridFsTemplate gridFsTemplate;
-    private GridFSFile gridFSFile;
-    private ObjectId gridFSId;
     private TestEntity entity;
-    private GridFsResource resource;
     private Resource genericResource;
-    private PlacementService placer;
 
-    private InputStream content;
-    private InputStream result;
     private Exception e;
 
     private AnnotationConfigApplicationContext context;
@@ -94,19 +83,18 @@ public class MongoStoreIT {
     @EnableMongoStores
     @Import(InfrastructureConfig.class)
     public static class TestConfig {
-        //
     }
 
     @Configuration
     public static class InfrastructureConfig extends AbstractMongoClientConfiguration {
         @Override
-        protected String getDatabaseName() {
+        protected @NonNull String getDatabaseName() {
             return MongoTestContainer.getTestDbName();
         }
 
         @Override
         @Bean
-        public MongoClient mongoClient() {
+        public @NonNull MongoClient mongoClient() {
             return MongoTestContainer.getMongoClient();
         }
 
@@ -117,7 +105,7 @@ public class MongoStoreIT {
 
         @Override
         @Bean
-        public MongoDatabaseFactory mongoDbFactory() {
+        public @NonNull MongoDatabaseFactory mongoDbFactory() {
             return new SimpleMongoClientDatabaseFactory(mongoClient(), getDatabaseName());
         }
     }
@@ -141,7 +129,7 @@ public class MongoStoreIT {
         }
 
         public TestEntity(String contentId) {
-            this.contentId = new String(contentId);
+            this.contentId = contentId;
         }
 
         public String getContentId() {
@@ -326,10 +314,9 @@ public class MongoStoreIT {
                         void shouldStoreThatContent() throws IOException {
                             assertThat(genericResource.exists()).isTrue();
 
-                            boolean matches = false;
                             try (InputStream expected = new ByteArrayInputStream("Hello Spring Content World!".getBytes())) {
                                 try (InputStream actual = genericResource.getInputStream()) {
-                                    matches = IOUtils.contentEquals(expected, actual);
+                                    boolean matches = IOUtils.contentEquals(expected, actual);
                                     assertThat(matches).isTrue();
                                 }
                             }
@@ -815,16 +802,14 @@ public class MongoStoreIT {
                 @Test
                 void shouldHaveTheUpdatedContent() throws IOException {
                     //content
-                    boolean matches = false;
                     try (InputStream content = store.getContent(entity)) {
-                        matches = IOUtils.contentEquals(new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), content);
+                        boolean matches = IOUtils.contentEquals(new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), content);
                         assertThat(matches).isTrue();
                     }
 
                     //rendition
-                    matches = false;
                     try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
-                        matches = IOUtils.contentEquals(new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), content);
+                        boolean matches = IOUtils.contentEquals(new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), content);
                         assertThat(matches).isTrue();
                     }
                 }
@@ -865,16 +850,14 @@ public class MongoStoreIT {
                 @Test
                 void shouldStoreOnlyTheNewContent() throws IOException {
                     //content
-                    boolean matches = false;
                     try (InputStream content = store.getContent(entity)) {
-                        matches = IOUtils.contentEquals(new ByteArrayInputStream("Hello Spring World!".getBytes()), content);
+                        boolean matches = IOUtils.contentEquals(new ByteArrayInputStream("Hello Spring World!".getBytes()), content);
                         assertThat(matches).isTrue();
                     }
 
                     //rendition
-                    matches = false;
                     try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
-                        matches = IOUtils.contentEquals(new ByteArrayInputStream("Hello Spring World!".getBytes()), content);
+                        boolean matches = IOUtils.contentEquals(new ByteArrayInputStream("Hello Spring World!".getBytes()), content);
                         assertThat(matches).isTrue();
                     }
                 }
@@ -916,9 +899,8 @@ public class MongoStoreIT {
                     store.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), new SetContentParams(-1, true, SetContentParams.ContentDisposition.CreateNew));
                     entity = repo.save(entity);
 
-                    boolean matches = false;
                     try (InputStream content = store.getContent(entity)) {
-                        matches = IOUtils.contentEquals(new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), content);
+                        boolean matches = IOUtils.contentEquals(new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), content);
                         assertThat(matches).isTrue();
                     }
 
@@ -952,7 +934,7 @@ public class MongoStoreIT {
                     store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
                     store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
 
-                    resourceLocation = entity.getContentId().toString();
+                    resourceLocation = entity.getContentId();
                     entity = store.unsetContent(entity);
                     entity = store.unsetContent(entity, PropertyPath.from("rendition"));
                     entity = repo.save(entity);
@@ -1007,7 +989,7 @@ public class MongoStoreIT {
                     store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
                     store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
 
-                    resourceLocation = entity.getContentId().toString();
+                    resourceLocation = entity.getContentId();
                     entity = store.unsetContent(entity, PropertyPath.from("content"), new UnsetContentParams(UnsetContentParams.Disposition.Keep));
                     entity = repo.save(entity);
                 }
