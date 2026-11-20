@@ -15,16 +15,7 @@ import org.springframework.content.commons.annotations.MimeType;
 import org.springframework.content.commons.store.AssociativeStore;
 import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.commons.store.Store;
-import org.springframework.content.commons.store.events.AfterAssociateEvent;
-import org.springframework.content.commons.store.events.AfterStoreEvent;
-import org.springframework.content.commons.store.events.AfterUnassociateEvent;
-import org.springframework.content.commons.store.events.AfterUnsetContentEvent;
-import org.springframework.content.commons.store.events.BeforeAssociateEvent;
-import org.springframework.content.commons.store.events.BeforeUnassociateEvent;
-import org.springframework.content.commons.store.events.BeforeGetResourceEvent;
-import org.springframework.content.commons.store.events.BeforeSetContentEvent;
-import org.springframework.content.commons.store.events.BeforeUnsetContentEvent;
-import org.springframework.content.commons.store.events.StoreEvent;
+import org.springframework.content.commons.store.events.*;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -43,14 +34,8 @@ import java.util.Collections;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isA;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 @SuppressWarnings("unchecked")

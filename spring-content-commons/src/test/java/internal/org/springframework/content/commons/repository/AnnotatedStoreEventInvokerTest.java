@@ -5,33 +5,9 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.springframework.content.commons.annotations.HandleAfterAssociate;
-import org.springframework.content.commons.annotations.HandleAfterGetContent;
-import org.springframework.content.commons.annotations.HandleAfterGetResource;
-import org.springframework.content.commons.annotations.HandleAfterSetContent;
-import org.springframework.content.commons.annotations.HandleAfterUnassociate;
-import org.springframework.content.commons.annotations.HandleAfterUnsetContent;
-import org.springframework.content.commons.annotations.HandleBeforeAssociate;
-import org.springframework.content.commons.annotations.HandleBeforeGetContent;
-import org.springframework.content.commons.annotations.HandleBeforeGetResource;
-import org.springframework.content.commons.annotations.HandleBeforeSetContent;
-import org.springframework.content.commons.annotations.HandleBeforeUnassociate;
-import org.springframework.content.commons.annotations.HandleBeforeUnsetContent;
-import org.springframework.content.commons.annotations.StoreEventHandler;
+import org.springframework.content.commons.annotations.*;
 import org.springframework.content.commons.store.ContentStore;
-import org.springframework.content.commons.store.events.AfterAssociateEvent;
-import org.springframework.content.commons.store.events.AfterGetContentEvent;
-import org.springframework.content.commons.store.events.AfterGetResourceEvent;
-import org.springframework.content.commons.store.events.AfterSetContentEvent;
-import org.springframework.content.commons.store.events.AfterUnassociateEvent;
-import org.springframework.content.commons.store.events.AfterUnsetContentEvent;
-import org.springframework.content.commons.store.events.BeforeAssociateEvent;
-import org.springframework.content.commons.store.events.BeforeGetContentEvent;
-import org.springframework.content.commons.store.events.BeforeGetResourceEvent;
-import org.springframework.content.commons.store.events.BeforeSetContentEvent;
-import org.springframework.content.commons.store.events.BeforeUnassociateEvent;
-import org.springframework.content.commons.store.events.BeforeUnsetContentEvent;
-import org.springframework.content.commons.store.events.StoreEvent;
+import org.springframework.content.commons.store.events.*;
 import org.springframework.content.commons.store.events.testsupport.StoreEventSource;
 import org.springframework.content.commons.utils.ReflectionService;
 import org.springframework.core.Ordered;
@@ -47,12 +23,8 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isA;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 public class AnnotatedStoreEventInvokerTest {
 
@@ -60,6 +32,48 @@ public class AnnotatedStoreEventInvokerTest {
 
     private AnnotatedStoreEventInvoker invoker;
     private ReflectionService reflectionService;
+
+    static Stream<HandlerInvocationCase> handlerInvocationCases() {
+        return Stream.of(
+            caseForSource(BeforeGetResourceEvent::new, "beforeGetResource"),
+            caseForEvent(BeforeGetResourceEvent::new, "beforeGetResource", BeforeGetResourceEvent.class),
+            caseForSource(AfterGetResourceEvent::new, "afterGetResource"),
+            caseForEvent(AfterGetResourceEvent::new, "afterGetResource", AfterGetResourceEvent.class),
+            caseForSource(BeforeAssociateEvent::new, "beforeAssociate"),
+            caseForEvent(BeforeAssociateEvent::new, "beforeAssociate", BeforeAssociateEvent.class),
+            caseForSource(AfterAssociateEvent::new, "afterAssociate"),
+            caseForEvent(AfterAssociateEvent::new, "afterAssociate", AfterAssociateEvent.class),
+            caseForSource(BeforeUnassociateEvent::new, "beforeUnassociate"),
+            caseForEvent(BeforeUnassociateEvent::new, "beforeUnassociate", BeforeUnassociateEvent.class),
+            caseForSource(AfterUnassociateEvent::new, "afterUnassociate"),
+            caseForEvent(AfterUnassociateEvent::new, "afterUnassociate", AfterUnassociateEvent.class),
+            caseForSource(BeforeGetContentEvent::new, "beforeGetContent"),
+            caseForEvent(BeforeGetContentEvent::new, "beforeGetContent", BeforeGetContentEvent.class),
+            caseForSource(AfterGetContentEvent::new, "afterGetContent"),
+            caseForEvent(AfterGetContentEvent::new, "afterGetContent", AfterGetContentEvent.class),
+            caseForSource((source, store) -> new BeforeSetContentEvent(source, store, (InputStream) null), "beforeSetContent"),
+            caseForEvent((source, store) -> new BeforeSetContentEvent(source, store, (InputStream) null), "beforeSetContent", BeforeSetContentEvent.class),
+            caseForSource(AfterSetContentEvent::new, "afterSetContent"),
+            caseForEvent(AfterSetContentEvent::new, "afterSetContent", AfterSetContentEvent.class),
+            caseForSource(BeforeUnsetContentEvent::new, "beforeUnsetContent"),
+            caseForEvent(BeforeUnsetContentEvent::new, "beforeUnsetContent", BeforeUnsetContentEvent.class),
+            caseForSource(AfterUnsetContentEvent::new, "afterUnsetContent"),
+            caseForEvent(AfterUnsetContentEvent::new, "afterUnsetContent", AfterUnsetContentEvent.class)
+        );
+    }
+
+    private static HandlerInvocationCase caseForSource(
+        BiFunction<StoreEventSource, ContentStore<Object, Serializable>, StoreEvent> eventFactory,
+        String handlerMethodName) {
+        return new HandlerInvocationCase(handlerMethodName, Object.class, eventFactory, StoreEvent::getSource);
+    }
+
+    private static HandlerInvocationCase caseForEvent(
+        BiFunction<StoreEventSource, ContentStore<Object, Serializable>, StoreEvent> eventFactory,
+        String handlerMethodName,
+        Class<?> handlerParameterType) {
+        return new HandlerInvocationCase(handlerMethodName, handlerParameterType, eventFactory, event -> event);
+    }
 
     @SuppressWarnings("unused") // handler methods registered via reflection
     @StoreEventHandler
@@ -183,52 +197,10 @@ public class AnnotatedStoreEventInvokerTest {
     }
 
     private record HandlerInvocationCase(
-            String handlerMethodName,
-            Class<?> handlerParameterType,
-            BiFunction<StoreEventSource, ContentStore<Object, Serializable>, StoreEvent> eventFactory,
-            Function<StoreEvent, Object> expectedArgument) {
-    }
-
-    static Stream<HandlerInvocationCase> handlerInvocationCases() {
-        return Stream.of(
-                caseForSource(BeforeGetResourceEvent::new, "beforeGetResource"),
-                caseForEvent(BeforeGetResourceEvent::new, "beforeGetResource", BeforeGetResourceEvent.class),
-                caseForSource(AfterGetResourceEvent::new, "afterGetResource"),
-                caseForEvent(AfterGetResourceEvent::new, "afterGetResource", AfterGetResourceEvent.class),
-                caseForSource(BeforeAssociateEvent::new, "beforeAssociate"),
-                caseForEvent(BeforeAssociateEvent::new, "beforeAssociate", BeforeAssociateEvent.class),
-                caseForSource(AfterAssociateEvent::new, "afterAssociate"),
-                caseForEvent(AfterAssociateEvent::new, "afterAssociate", AfterAssociateEvent.class),
-                caseForSource(BeforeUnassociateEvent::new, "beforeUnassociate"),
-                caseForEvent(BeforeUnassociateEvent::new, "beforeUnassociate", BeforeUnassociateEvent.class),
-                caseForSource(AfterUnassociateEvent::new, "afterUnassociate"),
-                caseForEvent(AfterUnassociateEvent::new, "afterUnassociate", AfterUnassociateEvent.class),
-                caseForSource(BeforeGetContentEvent::new, "beforeGetContent"),
-                caseForEvent(BeforeGetContentEvent::new, "beforeGetContent", BeforeGetContentEvent.class),
-                caseForSource(AfterGetContentEvent::new, "afterGetContent"),
-                caseForEvent(AfterGetContentEvent::new, "afterGetContent", AfterGetContentEvent.class),
-                caseForSource((source, store) -> new BeforeSetContentEvent(source, store, (InputStream) null), "beforeSetContent"),
-                caseForEvent((source, store) -> new BeforeSetContentEvent(source, store, (InputStream) null), "beforeSetContent", BeforeSetContentEvent.class),
-                caseForSource(AfterSetContentEvent::new, "afterSetContent"),
-                caseForEvent(AfterSetContentEvent::new, "afterSetContent", AfterSetContentEvent.class),
-                caseForSource(BeforeUnsetContentEvent::new, "beforeUnsetContent"),
-                caseForEvent(BeforeUnsetContentEvent::new, "beforeUnsetContent", BeforeUnsetContentEvent.class),
-                caseForSource(AfterUnsetContentEvent::new, "afterUnsetContent"),
-                caseForEvent(AfterUnsetContentEvent::new, "afterUnsetContent", AfterUnsetContentEvent.class)
-        );
-    }
-
-    private static HandlerInvocationCase caseForSource(
-            BiFunction<StoreEventSource, ContentStore<Object, Serializable>, StoreEvent> eventFactory,
-            String handlerMethodName) {
-        return new HandlerInvocationCase(handlerMethodName, Object.class, eventFactory, StoreEvent::getSource);
-    }
-
-    private static HandlerInvocationCase caseForEvent(
-            BiFunction<StoreEventSource, ContentStore<Object, Serializable>, StoreEvent> eventFactory,
-            String handlerMethodName,
-            Class<?> handlerParameterType) {
-        return new HandlerInvocationCase(handlerMethodName, handlerParameterType, eventFactory, event -> event);
+        String handlerMethodName,
+        Class<?> handlerParameterType,
+        BiFunction<StoreEventSource, ContentStore<Object, Serializable>, StoreEvent> eventFactory,
+        Function<StoreEvent, Object> expectedArgument) {
     }
 
     @Nested
@@ -297,7 +269,7 @@ public class AnnotatedStoreEventInvokerTest {
             invoker.onApplicationEvent(event);
 
             Method handler = ReflectionUtils.findMethod(CustomEventHandler.class,
-                    handlerCase.handlerMethodName(), handlerCase.handlerParameterType());
+                handlerCase.handlerMethodName(), handlerCase.handlerParameterType());
             assertThat(handler).isNotNull();
 
             Object expectedArgument = handlerCase.expectedArgument().apply(event);

@@ -1,6 +1,6 @@
 package internal.org.springframework.content.rest.utils;
 
-import internal.org.springframework.content.commons.storeservice.StoreInfoImpl;
+import internal.org.springframework.content.commons.store.service.StoreInfoImpl;
 import internal.org.springframework.content.rest.support.TestEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;

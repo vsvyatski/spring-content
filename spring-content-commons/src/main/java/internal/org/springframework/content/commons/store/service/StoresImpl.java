@@ -1,4 +1,4 @@
-package internal.org.springframework.content.commons.storeservice;
+package internal.org.springframework.content.commons.store.service;
 
 import internal.org.springframework.content.commons.store.factory.StoreFactory;
 import org.springframework.beans.factory.InitializingBean;

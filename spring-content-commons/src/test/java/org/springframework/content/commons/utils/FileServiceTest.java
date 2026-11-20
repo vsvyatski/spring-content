@@ -187,7 +187,7 @@ public class FileServiceTest {
             Path tempFile = Files.createTempFile(null, null);
 
             assertThatThrownBy(() -> fileService.rmdirs(tempFile.toFile(), null))
-                    .isInstanceOf(IOException.class);
+                .isInstanceOf(IOException.class);
         }
 
         @Test

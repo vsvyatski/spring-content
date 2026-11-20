@@ -1,12 +1,7 @@
 package org.springframework.content.commons.store.factory.testsupport;
 
 import org.springframework.content.commons.property.PropertyPath;
-import org.springframework.content.commons.store.AssociativeStore;
-import org.springframework.content.commons.store.ContentStore;
-import org.springframework.content.commons.store.GetResourceParams;
-import org.springframework.content.commons.store.SetContentParams;
-import org.springframework.content.commons.store.Store;
-import org.springframework.content.commons.store.UnsetContentParams;
+import org.springframework.content.commons.store.*;
 import org.springframework.content.commons.store.factory.AbstractStoreFactoryBean;
 import org.springframework.core.io.Resource;
 

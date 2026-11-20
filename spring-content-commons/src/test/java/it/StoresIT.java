@@ -1,7 +1,7 @@
 package it;
 
 import internal.org.springframework.content.commons.store.factory.StoreFactory;
-import internal.org.springframework.content.commons.storeservice.StoresImpl;
+import internal.org.springframework.content.commons.store.service.StoresImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -73,7 +73,7 @@ public class StoresIT {
             @Test
             void shouldReturnTheRightStore() {
                 assertThatThrownBy(() -> stores.getStore(Store.class, testStoreFilter()))
-                        .hasMessageContaining("unable to resolve store");
+                    .hasMessageContaining("unable to resolve store");
             }
         }
 
@@ -137,7 +137,7 @@ public class StoresIT {
                 StoreInfo storeInfo = stores.getStore(Store.class, testStoreFilter());
                 RuntimeExceptionThrowingStore store = storeInfo.getImplementation(RuntimeExceptionThrowingStore.class);
                 assertThatThrownBy(() -> store.setContent(new Object(), new ByteArrayInputStream("".getBytes())))
-                        .isInstanceOf(UnsupportedOperationException.class);
+                    .isInstanceOf(UnsupportedOperationException.class);
             }
         }
 
@@ -153,7 +153,7 @@ public class StoresIT {
                 context.registerBean("factory", StoreFactory.class, () -> factory);
 
                 context.registerBean("translator", StoreExceptionTranslator.class,
-                        () -> re -> new StoreAccessException(re.getMessage(), re));
+                    () -> re -> new StoreAccessException(re.getMessage(), re));
                 context.refresh();
                 stores = new StoresImpl(context);
                 stores.afterPropertiesSet();
@@ -164,7 +164,7 @@ public class StoresIT {
                 StoreInfo storeInfo = stores.getStore(Store.class, testStoreFilter());
                 RuntimeExceptionThrowingStore store = storeInfo.getImplementation(RuntimeExceptionThrowingStore.class);
                 assertThatThrownBy(() -> store.setContent(new Object(), new ByteArrayInputStream("".getBytes())))
-                        .isInstanceOf(StoreAccessException.class);
+                    .isInstanceOf(StoreAccessException.class);
             }
         }
     }

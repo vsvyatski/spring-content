@@ -29,8 +29,8 @@ public class ReflectionServiceTest {
 
                 reflectionService = new ReflectionServiceImpl();
                 reflectionService.invokeMethod(ReflectionUtils
-                                .findMethod(HelloWorldService.class, "helloWorld"), service,
-                        new Object[]{});
+                        .findMethod(HelloWorldService.class, "helloWorld"), service,
+                    new Object[]{});
             }
 
             @Test

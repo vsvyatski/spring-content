@@ -1,4 +1,4 @@
-package internal.org.springframework.content.commons.storeservice;
+package internal.org.springframework.content.commons.store.service;
 
 import org.springframework.content.commons.store.Store;
 import org.springframework.content.commons.storeservice.StoreInfo;

@@ -3,11 +3,7 @@ package org.springframework.content.commons.store.factory;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.content.commons.property.PropertyPath;
-import org.springframework.content.commons.store.ContentStore;
-import org.springframework.content.commons.store.GetResourceParams;
-import org.springframework.content.commons.store.SetContentParams;
-import org.springframework.content.commons.store.Store;
-import org.springframework.content.commons.store.UnsetContentParams;
+import org.springframework.content.commons.store.*;
 import org.springframework.core.io.Resource;
 
 import java.io.InputStream;
@@ -22,7 +18,7 @@ public class AbstractStoreFactoryBeanTest {
     }
 
     public interface ContentStoreNotFirstInterfaceStore
-            extends Serializable, ContentStore<String, UUID> {
+        extends Serializable, ContentStore<String, UUID> {
     }
 
     public static class TestContentStoreFactory extends org.springframework.content.commons.store.factory.AbstractStoreFactoryBean {
@@ -37,7 +33,7 @@ public class AbstractStoreFactoryBeanTest {
     }
 
     public static class TestConfigStoreImpl
-            implements ContentStore<Object, Serializable> {
+        implements ContentStore<Object, Serializable> {
 
         @Override
         public Object setContent(Object property, InputStream content) {
@@ -152,7 +148,7 @@ public class AbstractStoreFactoryBeanTest {
             @Test
             void whenContentStoreIsnTTheFirstExtendedInterfaceItStillGetTheDomainType() {
                 Class<?> domainClass = AbstractStoreFactoryBean.getDomainClass(
-                        ContentStoreNotFirstInterfaceStore.class);
+                    ContentStoreNotFirstInterfaceStore.class);
                 assertThat(domainClass).isEqualTo(String.class);
             }
         }

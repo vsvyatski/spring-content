@@ -1,25 +1,13 @@
 package internal.org.springframework.content.commons.repository.events;
 
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.springframework.content.commons.store.ContentStore;
-import org.springframework.content.commons.store.events.AbstractStoreEventListener;
-import org.springframework.content.commons.store.events.AfterAssociateEvent;
-import org.springframework.content.commons.store.events.AfterGetContentEvent;
-import org.springframework.content.commons.store.events.AfterGetResourceEvent;
-import org.springframework.content.commons.store.events.AfterSetContentEvent;
-import org.springframework.content.commons.store.events.AfterUnassociateEvent;
-import org.springframework.content.commons.store.events.AfterUnsetContentEvent;
-import org.springframework.content.commons.store.events.BeforeAssociateEvent;
-import org.springframework.content.commons.store.events.BeforeGetContentEvent;
-import org.springframework.content.commons.store.events.BeforeGetResourceEvent;
-import org.springframework.content.commons.store.events.BeforeSetContentEvent;
-import org.springframework.content.commons.store.events.BeforeUnassociateEvent;
-import org.springframework.content.commons.store.events.BeforeUnsetContentEvent;
-import org.springframework.content.commons.store.events.StoreEvent;
+import org.springframework.content.commons.store.events.*;
 import org.springframework.content.commons.store.events.testsupport.StoreEventSource;
 import org.springframework.content.commons.testsupport.CommonsTestStores;
 
@@ -40,6 +28,130 @@ public class AbstractStoreEventListenerTest {
     private StoreEvent event;
     private TestContentEventConsumer consumer;
     private ContentStore<Object, Serializable> store;
+
+    static Stream<StoreListenerCase> storeListenerCases() {
+        return Stream.of(
+            caseForEvent("BeforeGetResource", BeforeGetResourceEvent::new, BeforeGetResourceEvent.class,
+                (consumer, ev) -> {
+                    ArgumentCaptor<BeforeGetResourceEvent> captor = ArgumentCaptor.forClass(BeforeGetResourceEvent.class);
+                    verify(consumer).onBeforeGetResource(captor.capture());
+                    assertThat(captor.getValue()).isEqualTo(ev);
+                    assertThat(captor.getValue().getSource()).isEqualTo(ev.getSource());
+                    assertThat(captor.getValue().getStore()).isEqualTo(ev.getStore());
+                },
+                (consumer, source) -> verify(consumer).onBeforeGetResource(eq(source))),
+            caseForEvent("AfterGetResource", AfterGetResourceEvent::new, AfterGetResourceEvent.class,
+                (consumer, ev) -> {
+                    ArgumentCaptor<AfterGetResourceEvent> captor = ArgumentCaptor.forClass(AfterGetResourceEvent.class);
+                    verify(consumer).onAfterGetResource(captor.capture());
+                    assertThat(captor.getValue()).isEqualTo(ev);
+                    assertThat(captor.getValue().getSource()).isEqualTo(ev.getSource());
+                    assertThat(captor.getValue().getStore()).isEqualTo(ev.getStore());
+                },
+                (consumer, source) -> verify(consumer).onAfterGetResource(eq(source))),
+            caseForEvent("BeforeAssociate", BeforeAssociateEvent::new, BeforeAssociateEvent.class,
+                (consumer, ev) -> {
+                    ArgumentCaptor<BeforeAssociateEvent> captor = ArgumentCaptor.forClass(BeforeAssociateEvent.class);
+                    verify(consumer).onBeforeAssociate(captor.capture());
+                    assertThat(captor.getValue()).isEqualTo(ev);
+                    assertThat(captor.getValue().getSource()).isEqualTo(ev.getSource());
+                    assertThat(captor.getValue().getStore()).isEqualTo(ev.getStore());
+                },
+                (consumer, source) -> verify(consumer).onBeforeAssociate(eq(source))),
+            caseForEvent("AfterAssociate", AfterAssociateEvent::new, AfterAssociateEvent.class,
+                (consumer, ev) -> {
+                    ArgumentCaptor<AfterAssociateEvent> captor = ArgumentCaptor.forClass(AfterAssociateEvent.class);
+                    verify(consumer).onAfterAssociate(captor.capture());
+                    assertThat(captor.getValue()).isEqualTo(ev);
+                    assertThat(captor.getValue().getSource()).isEqualTo(ev.getSource());
+                    assertThat(captor.getValue().getStore()).isEqualTo(ev.getStore());
+                },
+                (consumer, source) -> verify(consumer).onAfterAssociate(eq(source))),
+            caseForEvent("BeforeUnassociate", BeforeUnassociateEvent::new, BeforeUnassociateEvent.class,
+                (consumer, ev) -> {
+                    ArgumentCaptor<BeforeUnassociateEvent> captor = ArgumentCaptor.forClass(BeforeUnassociateEvent.class);
+                    verify(consumer).onBeforeUnassociate(captor.capture());
+                    assertThat(captor.getValue()).isEqualTo(ev);
+                    assertThat(captor.getValue().getSource()).isEqualTo(ev.getSource());
+                    assertThat(captor.getValue().getStore()).isEqualTo(ev.getStore());
+                },
+                (consumer, source) -> verify(consumer).onBeforeUnassociate(eq(source))),
+            caseForEvent("AfterUnassociate", AfterUnassociateEvent::new, AfterUnassociateEvent.class,
+                (consumer, ev) -> {
+                    ArgumentCaptor<AfterUnassociateEvent> captor = ArgumentCaptor.forClass(AfterUnassociateEvent.class);
+                    verify(consumer).onAfterUnassociate(captor.capture());
+                    assertThat(captor.getValue()).isEqualTo(ev);
+                    assertThat(captor.getValue().getSource()).isEqualTo(ev.getSource());
+                    assertThat(captor.getValue().getStore()).isEqualTo(ev.getStore());
+                },
+                (consumer, source) -> verify(consumer).onAfterUnassociate(eq(source))),
+            caseForEvent("BeforeGetContent", BeforeGetContentEvent::new, BeforeGetContentEvent.class,
+                (consumer, ev) -> {
+                    ArgumentCaptor<BeforeGetContentEvent> captor = ArgumentCaptor.forClass(BeforeGetContentEvent.class);
+                    verify(consumer).onBeforeGetContent(captor.capture());
+                    assertThat(captor.getValue()).isEqualTo(ev);
+                    assertThat(captor.getValue().getSource()).isEqualTo(ev.getSource());
+                    assertThat(captor.getValue().getStore()).isEqualTo(ev.getStore());
+                },
+                (consumer, source) -> verify(consumer).onBeforeGetContent(eq(source))),
+            caseForEvent("AfterGetContent", AfterGetContentEvent::new, AfterGetContentEvent.class,
+                (consumer, ev) -> {
+                    ArgumentCaptor<AfterGetContentEvent> captor = ArgumentCaptor.forClass(AfterGetContentEvent.class);
+                    verify(consumer).onAfterGetContent(captor.capture());
+                    assertThat(captor.getValue()).isEqualTo(ev);
+                    assertThat(captor.getValue().getSource()).isEqualTo(ev.getSource());
+                    assertThat(captor.getValue().getStore()).isEqualTo(ev.getStore());
+                },
+                (consumer, source) -> verify(consumer).onAfterGetContent(eq(source))),
+            caseForEvent("BeforeSetContent",
+                (source, contentStore) -> new BeforeSetContentEvent(source, contentStore, (InputStream) null),
+                BeforeSetContentEvent.class,
+                (consumer, ev) -> {
+                    ArgumentCaptor<BeforeSetContentEvent> captor = ArgumentCaptor.forClass(BeforeSetContentEvent.class);
+                    verify(consumer).onBeforeSetContent(captor.capture());
+                    assertThat(captor.getValue()).isEqualTo(ev);
+                    assertThat(captor.getValue().getSource()).isEqualTo(ev.getSource());
+                    assertThat(captor.getValue().getStore()).isEqualTo(ev.getStore());
+                },
+                (consumer, source) -> verify(consumer).onBeforeSetContent(eq(source))),
+            caseForEvent("AfterSetContent", AfterSetContentEvent::new, AfterSetContentEvent.class,
+                (consumer, ev) -> {
+                    ArgumentCaptor<AfterSetContentEvent> captor = ArgumentCaptor.forClass(AfterSetContentEvent.class);
+                    verify(consumer).onAfterSetContent(captor.capture());
+                    assertThat(captor.getValue()).isEqualTo(ev);
+                    assertThat(captor.getValue().getSource()).isEqualTo(ev.getSource());
+                    assertThat(captor.getValue().getStore()).isEqualTo(ev.getStore());
+                },
+                (consumer, source) -> verify(consumer).onAfterSetContent(eq(source))),
+            caseForEvent("BeforeUnsetContent", BeforeUnsetContentEvent::new, BeforeUnsetContentEvent.class,
+                (consumer, ev) -> {
+                    ArgumentCaptor<BeforeUnsetContentEvent> captor = ArgumentCaptor.forClass(BeforeUnsetContentEvent.class);
+                    verify(consumer).onBeforeUnsetContent(captor.capture());
+                    assertThat(captor.getValue()).isEqualTo(ev);
+                    assertThat(captor.getValue().getSource()).isEqualTo(ev.getSource());
+                    assertThat(captor.getValue().getStore()).isEqualTo(ev.getStore());
+                },
+                (consumer, source) -> verify(consumer).onBeforeUnsetContent(eq(source))),
+            caseForEvent("AfterUnsetContent", AfterUnsetContentEvent::new, AfterUnsetContentEvent.class,
+                (consumer, ev) -> {
+                    ArgumentCaptor<AfterUnsetContentEvent> captor = ArgumentCaptor.forClass(AfterUnsetContentEvent.class);
+                    verify(consumer).onAfterUnsetContent(captor.capture());
+                    assertThat(captor.getValue()).isEqualTo(ev);
+                    assertThat(captor.getValue().getSource()).isEqualTo(ev.getSource());
+                    assertThat(captor.getValue().getStore()).isEqualTo(ev.getStore());
+                },
+                (consumer, source) -> verify(consumer).onAfterUnsetContent(eq(source)))
+        );
+    }
+
+    private static StoreListenerCase caseForEvent(
+        String label,
+        BiFunction<StoreEventSource, ContentStore<Object, Serializable>, StoreEvent> eventFactory,
+        Class<? extends StoreEvent> eventType,
+        BiConsumer<TestContentEventConsumer, StoreEvent> verifyEventHandler,
+        BiConsumer<TestContentEventConsumer, Object> verifySourceHandler) {
+        return new StoreListenerCase(label, eventFactory, eventType, verifyEventHandler, verifySourceHandler);
+    }
 
     public interface TestContentEventConsumer {
         void onBeforeGetResource(BeforeGetResourceEvent event);
@@ -92,139 +204,15 @@ public class AbstractStoreEventListenerTest {
     }
 
     private record StoreListenerCase(
-            String label,
-            BiFunction<StoreEventSource, ContentStore<Object, Serializable>, StoreEvent> eventFactory,
-            Class<? extends StoreEvent> eventType,
-            BiConsumer<TestContentEventConsumer, StoreEvent> verifyEventHandler,
-            BiConsumer<TestContentEventConsumer, Object> verifySourceHandler) {
+        String label,
+        BiFunction<StoreEventSource, ContentStore<Object, Serializable>, StoreEvent> eventFactory,
+        Class<? extends StoreEvent> eventType,
+        BiConsumer<TestContentEventConsumer, StoreEvent> verifyEventHandler,
+        BiConsumer<TestContentEventConsumer, Object> verifySourceHandler) {
         @Override
-        public String toString() {
+        public @NonNull String toString() {
             return label;
         }
-    }
-
-    static Stream<StoreListenerCase> storeListenerCases() {
-        return Stream.of(
-                caseForEvent("BeforeGetResource", BeforeGetResourceEvent::new, BeforeGetResourceEvent.class,
-                        (consumer, ev) -> {
-                            ArgumentCaptor<BeforeGetResourceEvent> captor = ArgumentCaptor.forClass(BeforeGetResourceEvent.class);
-                            verify(consumer).onBeforeGetResource(captor.capture());
-                            assertThat(captor.getValue()).isEqualTo(ev);
-                            assertThat(captor.getValue().getSource()).isEqualTo(ev.getSource());
-                            assertThat(captor.getValue().getStore()).isEqualTo(ev.getStore());
-                        },
-                        (consumer, source) -> verify(consumer).onBeforeGetResource(eq(source))),
-                caseForEvent("AfterGetResource", AfterGetResourceEvent::new, AfterGetResourceEvent.class,
-                        (consumer, ev) -> {
-                            ArgumentCaptor<AfterGetResourceEvent> captor = ArgumentCaptor.forClass(AfterGetResourceEvent.class);
-                            verify(consumer).onAfterGetResource(captor.capture());
-                            assertThat(captor.getValue()).isEqualTo(ev);
-                            assertThat(captor.getValue().getSource()).isEqualTo(ev.getSource());
-                            assertThat(captor.getValue().getStore()).isEqualTo(ev.getStore());
-                        },
-                        (consumer, source) -> verify(consumer).onAfterGetResource(eq(source))),
-                caseForEvent("BeforeAssociate", BeforeAssociateEvent::new, BeforeAssociateEvent.class,
-                        (consumer, ev) -> {
-                            ArgumentCaptor<BeforeAssociateEvent> captor = ArgumentCaptor.forClass(BeforeAssociateEvent.class);
-                            verify(consumer).onBeforeAssociate(captor.capture());
-                            assertThat(captor.getValue()).isEqualTo(ev);
-                            assertThat(captor.getValue().getSource()).isEqualTo(ev.getSource());
-                            assertThat(captor.getValue().getStore()).isEqualTo(ev.getStore());
-                        },
-                        (consumer, source) -> verify(consumer).onBeforeAssociate(eq(source))),
-                caseForEvent("AfterAssociate", AfterAssociateEvent::new, AfterAssociateEvent.class,
-                        (consumer, ev) -> {
-                            ArgumentCaptor<AfterAssociateEvent> captor = ArgumentCaptor.forClass(AfterAssociateEvent.class);
-                            verify(consumer).onAfterAssociate(captor.capture());
-                            assertThat(captor.getValue()).isEqualTo(ev);
-                            assertThat(captor.getValue().getSource()).isEqualTo(ev.getSource());
-                            assertThat(captor.getValue().getStore()).isEqualTo(ev.getStore());
-                        },
-                        (consumer, source) -> verify(consumer).onAfterAssociate(eq(source))),
-                caseForEvent("BeforeUnassociate", BeforeUnassociateEvent::new, BeforeUnassociateEvent.class,
-                        (consumer, ev) -> {
-                            ArgumentCaptor<BeforeUnassociateEvent> captor = ArgumentCaptor.forClass(BeforeUnassociateEvent.class);
-                            verify(consumer).onBeforeUnassociate(captor.capture());
-                            assertThat(captor.getValue()).isEqualTo(ev);
-                            assertThat(captor.getValue().getSource()).isEqualTo(ev.getSource());
-                            assertThat(captor.getValue().getStore()).isEqualTo(ev.getStore());
-                        },
-                        (consumer, source) -> verify(consumer).onBeforeUnassociate(eq(source))),
-                caseForEvent("AfterUnassociate", AfterUnassociateEvent::new, AfterUnassociateEvent.class,
-                        (consumer, ev) -> {
-                            ArgumentCaptor<AfterUnassociateEvent> captor = ArgumentCaptor.forClass(AfterUnassociateEvent.class);
-                            verify(consumer).onAfterUnassociate(captor.capture());
-                            assertThat(captor.getValue()).isEqualTo(ev);
-                            assertThat(captor.getValue().getSource()).isEqualTo(ev.getSource());
-                            assertThat(captor.getValue().getStore()).isEqualTo(ev.getStore());
-                        },
-                        (consumer, source) -> verify(consumer).onAfterUnassociate(eq(source))),
-                caseForEvent("BeforeGetContent", BeforeGetContentEvent::new, BeforeGetContentEvent.class,
-                        (consumer, ev) -> {
-                            ArgumentCaptor<BeforeGetContentEvent> captor = ArgumentCaptor.forClass(BeforeGetContentEvent.class);
-                            verify(consumer).onBeforeGetContent(captor.capture());
-                            assertThat(captor.getValue()).isEqualTo(ev);
-                            assertThat(captor.getValue().getSource()).isEqualTo(ev.getSource());
-                            assertThat(captor.getValue().getStore()).isEqualTo(ev.getStore());
-                        },
-                        (consumer, source) -> verify(consumer).onBeforeGetContent(eq(source))),
-                caseForEvent("AfterGetContent", AfterGetContentEvent::new, AfterGetContentEvent.class,
-                        (consumer, ev) -> {
-                            ArgumentCaptor<AfterGetContentEvent> captor = ArgumentCaptor.forClass(AfterGetContentEvent.class);
-                            verify(consumer).onAfterGetContent(captor.capture());
-                            assertThat(captor.getValue()).isEqualTo(ev);
-                            assertThat(captor.getValue().getSource()).isEqualTo(ev.getSource());
-                            assertThat(captor.getValue().getStore()).isEqualTo(ev.getStore());
-                        },
-                        (consumer, source) -> verify(consumer).onAfterGetContent(eq(source))),
-                caseForEvent("BeforeSetContent",
-                        (source, contentStore) -> new BeforeSetContentEvent(source, contentStore, (InputStream) null),
-                        BeforeSetContentEvent.class,
-                        (consumer, ev) -> {
-                            ArgumentCaptor<BeforeSetContentEvent> captor = ArgumentCaptor.forClass(BeforeSetContentEvent.class);
-                            verify(consumer).onBeforeSetContent(captor.capture());
-                            assertThat(captor.getValue()).isEqualTo(ev);
-                            assertThat(captor.getValue().getSource()).isEqualTo(ev.getSource());
-                            assertThat(captor.getValue().getStore()).isEqualTo(ev.getStore());
-                        },
-                        (consumer, source) -> verify(consumer).onBeforeSetContent(eq(source))),
-                caseForEvent("AfterSetContent", AfterSetContentEvent::new, AfterSetContentEvent.class,
-                        (consumer, ev) -> {
-                            ArgumentCaptor<AfterSetContentEvent> captor = ArgumentCaptor.forClass(AfterSetContentEvent.class);
-                            verify(consumer).onAfterSetContent(captor.capture());
-                            assertThat(captor.getValue()).isEqualTo(ev);
-                            assertThat(captor.getValue().getSource()).isEqualTo(ev.getSource());
-                            assertThat(captor.getValue().getStore()).isEqualTo(ev.getStore());
-                        },
-                        (consumer, source) -> verify(consumer).onAfterSetContent(eq(source))),
-                caseForEvent("BeforeUnsetContent", BeforeUnsetContentEvent::new, BeforeUnsetContentEvent.class,
-                        (consumer, ev) -> {
-                            ArgumentCaptor<BeforeUnsetContentEvent> captor = ArgumentCaptor.forClass(BeforeUnsetContentEvent.class);
-                            verify(consumer).onBeforeUnsetContent(captor.capture());
-                            assertThat(captor.getValue()).isEqualTo(ev);
-                            assertThat(captor.getValue().getSource()).isEqualTo(ev.getSource());
-                            assertThat(captor.getValue().getStore()).isEqualTo(ev.getStore());
-                        },
-                        (consumer, source) -> verify(consumer).onBeforeUnsetContent(eq(source))),
-                caseForEvent("AfterUnsetContent", AfterUnsetContentEvent::new, AfterUnsetContentEvent.class,
-                        (consumer, ev) -> {
-                            ArgumentCaptor<AfterUnsetContentEvent> captor = ArgumentCaptor.forClass(AfterUnsetContentEvent.class);
-                            verify(consumer).onAfterUnsetContent(captor.capture());
-                            assertThat(captor.getValue()).isEqualTo(ev);
-                            assertThat(captor.getValue().getSource()).isEqualTo(ev.getSource());
-                            assertThat(captor.getValue().getStore()).isEqualTo(ev.getStore());
-                        },
-                        (consumer, source) -> verify(consumer).onAfterUnsetContent(eq(source)))
-        );
-    }
-
-    private static StoreListenerCase caseForEvent(
-            String label,
-            BiFunction<StoreEventSource, ContentStore<Object, Serializable>, StoreEvent> eventFactory,
-            Class<? extends StoreEvent> eventType,
-            BiConsumer<TestContentEventConsumer, StoreEvent> verifyEventHandler,
-            BiConsumer<TestContentEventConsumer, Object> verifySourceHandler) {
-        return new StoreListenerCase(label, eventFactory, eventType, verifyEventHandler, verifySourceHandler);
     }
 
     public static class TestContentEventListener extends AbstractStoreEventListener<Object> {

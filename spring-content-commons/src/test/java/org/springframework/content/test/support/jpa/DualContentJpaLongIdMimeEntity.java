@@ -11,18 +11,17 @@ import org.springframework.content.commons.annotations.MimeType;
 @Entity
 public class DualContentJpaLongIdMimeEntity extends DualContentJpaLongIdEntity {
 
+    @MimeType
+    private String contentType;
+    @MimeType
+    private String renditionType;
+
     public DualContentJpaLongIdMimeEntity() {
     }
 
     public DualContentJpaLongIdMimeEntity(String contentId) {
         super(contentId);
     }
-
-    @MimeType
-    private String contentType;
-
-    @MimeType
-    private String renditionType;
 
     public String getContentType() {
         return contentType;

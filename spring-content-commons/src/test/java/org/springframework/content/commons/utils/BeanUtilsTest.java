@@ -18,18 +18,18 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 
 public class BeanUtilsTest {
 
+    static Stream<EntityFixture> entityFixtures() {
+        return Stream.of(
+            new EntityFixture("plain", TestEntity::new),
+            new EntityFixture("inheriting", InheritingTestEntity::new)
+        );
+    }
+
     private record EntityFixture(String label, Supplier<TestEntity> factory) {
         @Override
         public String toString() {
             return label;
         }
-    }
-
-    static Stream<EntityFixture> entityFixtures() {
-        return Stream.of(
-                new EntityFixture("plain", TestEntity::new),
-                new EntityFixture("inheriting", InheritingTestEntity::new)
-        );
     }
 
     public static class TestEntity {
@@ -142,7 +142,7 @@ public class BeanUtilsTest {
             void shouldNotFailWhenToldToSetOnAMissingField(EntityFixture fixture) {
                 TestEntity testEntity = fixture.factory().get();
                 assertThatCode(() -> BeanUtils.setFieldWithAnnotation(testEntity, Override.class, "value"))
-                        .doesNotThrowAnyException();
+                    .doesNotThrowAnyException();
             }
         }
 
@@ -185,7 +185,7 @@ public class BeanUtilsTest {
             void shouldNotFailWhenToldToSetOnAMissingField(EntityFixture fixture) {
                 TestEntity testEntity = fixture.factory().get();
                 assertThatCode(() -> BeanUtils.setFieldWithAnnotationConditionally(testEntity, Override.class, "value", new MatchingCondition()))
-                        .doesNotThrowAnyException();
+                    .doesNotThrowAnyException();
             }
         }
 
@@ -218,7 +218,7 @@ public class BeanUtilsTest {
                 testEntity.fieldOnly = "a value";
                 testEntity.setFieldWithGetterSetter("b value");
                 assertThatCode(() -> BeanUtils.getFieldWithAnnotation(testEntity, Override.class))
-                        .doesNotThrowAnyException();
+                    .doesNotThrowAnyException();
             }
         }
 
@@ -243,7 +243,7 @@ public class BeanUtilsTest {
             void shouldNotFailWhenAboutAMissingField(EntityFixture fixture) {
                 TestEntity testEntity = fixture.factory().get();
                 assertThatCode(() -> BeanUtils.hasFieldWithAnnotation(testEntity, Override.class))
-                        .doesNotThrowAnyException();
+                    .doesNotThrowAnyException();
             }
         }
 
@@ -268,7 +268,7 @@ public class BeanUtilsTest {
             void shouldNotFailWhenAskedAboutAMissingField(EntityFixture fixture) {
                 TestEntity testEntity = fixture.factory().get();
                 assertThatCode(() -> BeanUtils.getFieldWithAnnotationType(testEntity, Override.class))
-                        .doesNotThrowAnyException();
+                    .doesNotThrowAnyException();
             }
         }
 
@@ -293,7 +293,7 @@ public class BeanUtilsTest {
             void shouldNotFailWhenAboutAMissingField(EntityFixture fixture) {
                 TestEntity testEntity = fixture.factory().get();
                 assertThatCode(() -> BeanUtils.findFieldWithAnnotation(testEntity, Override.class))
-                        .doesNotThrowAnyException();
+                    .doesNotThrowAnyException();
             }
         }
 

@@ -1,10 +1,11 @@
 package org.springframework.content.test.support.jpa;
 
 import jakarta.persistence.Entity;
-import java.util.UUID;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import org.springframework.content.test.support.DualContentFields;
+
+import java.util.UUID;
 
 /**
  * JPA entity with a string primary key and dual content properties (file-system IT shape).
