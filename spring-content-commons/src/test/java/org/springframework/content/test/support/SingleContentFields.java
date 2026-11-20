@@ -17,7 +17,7 @@ public class SingleContentFields implements ContentAccessor {
     private Long contentLen;
 
     public SingleContentFields() {
-        this.contentId = null;
+        this(null);
     }
 
     public SingleContentFields(String contentId) {

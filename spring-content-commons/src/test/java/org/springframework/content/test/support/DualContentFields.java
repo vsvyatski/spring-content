@@ -4,7 +4,8 @@ import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.annotations.ContentLength;
 
 /**
- * Two content properties (default and rendition) for {@link org.springframework.content.commons.property.PropertyPath} store tests.
+ * Two content properties (default and rendition) for {@link org.springframework.content.commons.property.PropertyPath}
+ * store tests.
  *
  * @author Vladimir Svyatski
  */

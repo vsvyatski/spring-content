@@ -29,8 +29,7 @@ public class StoresIT {
     private StoresImpl stores;
 
     private GenericApplicationContext context;
-    private List<StoreFactory> factories = new ArrayList<>();
-    private StoreResolver resolver;
+    private final List<StoreFactory> factories = new ArrayList<>();
 
     public interface RightStore extends TestContentStore<Object, Serializable> {
     }
@@ -56,12 +55,8 @@ public class StoresIT {
                 factories.add(factory2);
 
                 context = new GenericApplicationContext();
-                context.registerBean("factory1", StoreFactory.class, () -> {
-                    return factory1;
-                });
-                context.registerBean("factory2", StoreFactory.class, () -> {
-                    return factory2;
-                });
+                context.registerBean("factory1", StoreFactory.class, () -> factory1);
+                context.registerBean("factory2", StoreFactory.class, () -> factory2);
 
                 context.refresh();
                 stores = new StoresImpl(context);
@@ -102,12 +97,8 @@ public class StoresIT {
                 factories.add(factory2);
 
                 context = new GenericApplicationContext();
-                context.registerBean("factory1", StoreFactory.class, () -> {
-                    return factory1;
-                });
-                context.registerBean("factory2", StoreFactory.class, () -> {
-                    return factory2;
-                });
+                context.registerBean("factory1", StoreFactory.class, () -> factory1);
+                context.registerBean("factory2", StoreFactory.class, () -> factory2);
 
                 context.refresh();
                 stores = new StoresImpl(context);
@@ -179,7 +170,7 @@ public class StoresIT {
                         return true;
                     }
                 });
-                ContentStore store = storeInfo.getImplementation(ContentStore.class);
+                var store = storeInfo.getImplementation(ContentStore.class);
                 try {
                     store.setContent(new Object(), new ByteArrayInputStream("".getBytes()));
                 } catch (Exception e) {
@@ -198,9 +189,7 @@ public class StoresIT {
                 factories.add(factory);
 
                 context = new GenericApplicationContext();
-                context.registerBean("factory", StoreFactory.class, () -> {
-                    return factory;
-                });
+                context.registerBean("factory", StoreFactory.class, () -> factory);
 
                 context.registerBean("translator", StoreExceptionTranslator.class, () -> {
                     return new StoreExceptionTranslator() {
@@ -228,7 +217,7 @@ public class StoresIT {
                         return true;
                     }
                 });
-                ContentStore store = storeInfo.getImplementation(ContentStore.class);
+                var store = storeInfo.getImplementation(ContentStore.class);
                 try {
                     store.setContent(new Object(), new ByteArrayInputStream("".getBytes()));
                 } catch (Exception e) {
