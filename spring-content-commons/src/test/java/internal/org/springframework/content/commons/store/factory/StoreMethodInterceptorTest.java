@@ -4,6 +4,7 @@ import internal.org.springframework.content.commons.config.StoreFragment;
 import internal.org.springframework.content.commons.config.StoreFragments;
 import org.aopalliance.intercept.MethodInvocation;
 import org.apache.commons.io.IOUtils;
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -11,13 +12,14 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
-import org.jspecify.annotations.NonNull;
 import org.springframework.content.commons.annotations.MimeType;
 import org.springframework.content.commons.store.AssociativeStore;
 import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.commons.store.Store;
 import org.springframework.content.commons.store.events.*;
 import org.springframework.content.commons.testsupport.CommonsTestStores;
+import org.springframework.content.test.support.UuidSingleContentFields;
+import org.springframework.content.test.support.UuidSingleContentStore;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -34,7 +36,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
@@ -97,7 +98,7 @@ public class StoreMethodInterceptorTest {
         ContentStore<Object, Serializable> contentStore,
         ApplicationEventPublisher eventPublisher) {
         return new StoreFragment(
-            TestContentStore.class, new StoreImpl(contentStore, eventPublisher, CONTENT_COPY_ROOT));
+            UuidSingleContentStore.class, new StoreImpl(contentStore, eventPublisher, CONTENT_COPY_ROOT));
     }
 
     private void attachInterceptor(ContentStore<Object, Serializable> contentStore, ApplicationEventPublisher eventPublisher) {
@@ -112,11 +113,6 @@ public class StoreMethodInterceptorTest {
 
     public interface PublishEventAction {
         Object doAction(InvocationOnMock invocationOnMock) throws Exception;
-    }
-
-    public interface TestContentStore extends ContentStore<TEntity, UUID> {
-        @Override
-        TEntity setContent(TEntity property, InputStream content);
     }
 
     public static class TestMethodInvocation extends SimpleMethodInvocation {
@@ -148,19 +144,6 @@ public class StoreMethodInterceptorTest {
 
         public ContentObject(String mimeType) {
             this.mimeType = mimeType;
-        }
-    }
-
-    public static class TEntity {
-
-        private UUID contentId;
-
-        public UUID getContentId() {
-            return contentId;
-        }
-
-        public void setContentId(UUID contentId) {
-            this.contentId = contentId;
         }
     }
 
@@ -708,7 +691,7 @@ public class StoreMethodInterceptorTest {
             store = CommonsTestStores.mockContentStore();
             publisher = mock(ApplicationEventPublisher.class);
             interceptor = new StoreMethodInterceptor();
-            Method m = ReflectionUtils.findMethod(TestContentStore.class, "unsetContent", Object.class);
+            Method m = ReflectionUtils.findMethod(UuidSingleContentStore.class, "unsetContent", Object.class);
             assertThat(m).isNotNull();
             Method actual = interceptor.getMethod(m, contentStoreFragment(store, publisher));
             assertThat(actual).isEqualTo(ReflectionUtils.findMethod(StoreImpl.class, "unsetContent", Object.class));
@@ -719,7 +702,8 @@ public class StoreMethodInterceptorTest {
             store = CommonsTestStores.mockContentStore();
             publisher = mock(ApplicationEventPublisher.class);
             interceptor = new StoreMethodInterceptor();
-            Method m = ReflectionUtils.findMethod(TestContentStore.class, "setContent", TEntity.class, InputStream.class);
+            Method m = ReflectionUtils.findMethod(UuidSingleContentStore.class, "setContent",
+                UuidSingleContentFields.class, InputStream.class);
             assertThat(m).isNotNull();
             Method actual = interceptor.getMethod(m, contentStoreFragment(store, publisher));
             assertThat(actual).isEqualTo(ReflectionUtils.findMethod(StoreImpl.class, "setContent", Object.class, InputStream.class));
