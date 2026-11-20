@@ -22,6 +22,14 @@
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>
+            <groupId>io.github.vsvyatski</groupId>
+            <artifactId>spring-content-commons</artifactId>
+            <version>${project.parent.version}</version>
+            <type>test-jar</type>
+            <classifier>tests</classifier>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>com.google.cloud</groupId>
             <artifactId>spring-cloud-gcp-storage</artifactId>
             <version>6.2.3</version>
