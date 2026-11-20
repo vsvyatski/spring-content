@@ -5,7 +5,6 @@ import internal.org.springframework.content.commons.storeservice.StoresImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.commons.store.Store;
 import org.springframework.content.commons.store.StoreAccessException;
 import org.springframework.content.commons.store.StoreExceptionTranslator;
@@ -13,23 +12,33 @@ import org.springframework.content.commons.store.factory.testsupport.TestContent
 import org.springframework.content.commons.store.factory.testsupport.TestStoreFactoryBean;
 import org.springframework.content.commons.storeservice.StoreFilter;
 import org.springframework.content.commons.storeservice.StoreInfo;
-import org.springframework.content.commons.storeservice.StoreResolver;
 import org.springframework.context.support.GenericApplicationContext;
 
 import java.io.ByteArrayInputStream;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class StoresIT {
 
     private StoresImpl stores;
 
     private GenericApplicationContext context;
-    private final List<StoreFactory> factories = new ArrayList<>();
+
+    private static StoreFilter testStoreFilter() {
+        return new StoreFilter() {
+            @Override
+            public String name() {
+                return "test";
+            }
+
+            @Override
+            public boolean matches(StoreInfo info) {
+                return true;
+            }
+        };
+    }
 
     public interface RightStore extends TestContentStore<Object, Serializable> {
     }
@@ -48,11 +57,9 @@ public class StoresIT {
             void setUp() {
                 TestStoreFactoryBean factory1 = new TestStoreFactoryBean(WrongStore.class);
                 factory1.setBeanClassLoader(this.getClass().getClassLoader());
-                factories.add(factory1);
 
                 TestStoreFactoryBean factory2 = new TestStoreFactoryBean(RightStore.class);
                 factory2.setBeanClassLoader(this.getClass().getClassLoader());
-                factories.add(factory2);
 
                 context = new GenericApplicationContext();
                 context.registerBean("factory1", StoreFactory.class, () -> factory1);
@@ -65,22 +72,8 @@ public class StoresIT {
 
             @Test
             void shouldReturnTheRightStore() {
-                try {
-                    stores.getStore(Store.class, new StoreFilter() {
-                        @Override
-                        public String name() {
-                            return "test";
-                        }
-
-                        @Override
-                        public boolean matches(StoreInfo info) {
-                            return true;
-                        }
-                    });
-                    fail("exception not thrown");
-                } catch (Exception e) {
-                    assertThat(e.getMessage()).contains("unable to resolve store");
-                }
+                assertThatThrownBy(() -> stores.getStore(Store.class, testStoreFilter()))
+                        .hasMessageContaining("unable to resolve store");
             }
         }
 
@@ -90,11 +83,9 @@ public class StoresIT {
             void setUp() {
                 TestStoreFactoryBean factory1 = new TestStoreFactoryBean(WrongStore.class);
                 factory1.setBeanClassLoader(this.getClass().getClassLoader());
-                factories.add(factory1);
 
                 TestStoreFactoryBean factory2 = new TestStoreFactoryBean(RightStore.class);
                 factory2.setBeanClassLoader(this.getClass().getClassLoader());
-                factories.add(factory2);
 
                 context = new GenericApplicationContext();
                 context.registerBean("factory1", StoreFactory.class, () -> factory1);
@@ -104,32 +95,19 @@ public class StoresIT {
                 stores = new StoresImpl(context);
                 stores.afterPropertiesSet();
 
-                stores.addStoreResolver("test", new StoreResolver() {
-                    @Override
-                    public StoreInfo resolve(StoreInfo... stores) {
-                        for (StoreInfo info : stores) {
-                            if (info.getInterface().equals(RightStore.class)) {
-                                return info;
-                            }
+                stores.addStoreResolver("test", infos -> {
+                    for (StoreInfo info : infos) {
+                        if (info.getInterface().equals(RightStore.class)) {
+                            return info;
                         }
-                        return null;
                     }
+                    return null;
                 });
             }
 
             @Test
             void shouldReturnTheRightStore() {
-                StoreInfo info = stores.getStore(Store.class, new StoreFilter() {
-                    @Override
-                    public String name() {
-                        return "test";
-                    }
-
-                    @Override
-                    public boolean matches(StoreInfo info) {
-                        return true;
-                    }
-                });
+                StoreInfo info = stores.getStore(Store.class, testStoreFilter());
 
                 assertThat(info.getInterface()).isEqualTo(RightStore.class);
             }
@@ -145,12 +123,9 @@ public class StoresIT {
                 // All TestContentStore methods throw an UnsupportedOperationException, this test relies on this
                 TestStoreFactoryBean factory = new TestStoreFactoryBean(RuntimeExceptionThrowingStore.class);
                 factory.setBeanClassLoader(this.getClass().getClassLoader());
-                factories.add(factory);
 
                 context = new GenericApplicationContext();
-                context.registerBean("factory", StoreFactory.class, () -> {
-                    return factory;
-                });
+                context.registerBean("factory", StoreFactory.class, () -> factory);
 
                 context.refresh();
                 stores = new StoresImpl(context);
@@ -159,23 +134,10 @@ public class StoresIT {
 
             @Test
             void shouldReThrowRuntimeExceptionAsStoreAccessException() {
-                StoreInfo storeInfo = stores.getStore(Store.class, new StoreFilter() {
-                    @Override
-                    public String name() {
-                        return "test";
-                    }
-
-                    @Override
-                    public boolean matches(StoreInfo info) {
-                        return true;
-                    }
-                });
-                var store = storeInfo.getImplementation(ContentStore.class);
-                try {
-                    store.setContent(new Object(), new ByteArrayInputStream("".getBytes()));
-                } catch (Exception e) {
-                    assertThat(e).isInstanceOf(UnsupportedOperationException.class);
-                }
+                StoreInfo storeInfo = stores.getStore(Store.class, testStoreFilter());
+                RuntimeExceptionThrowingStore store = storeInfo.getImplementation(RuntimeExceptionThrowingStore.class);
+                assertThatThrownBy(() -> store.setContent(new Object(), new ByteArrayInputStream("".getBytes())))
+                        .isInstanceOf(UnsupportedOperationException.class);
             }
         }
 
@@ -186,19 +148,12 @@ public class StoresIT {
                 // All TestContentStore methods throw an UnsupportedOperationException, this test relies on this
                 TestStoreFactoryBean factory = new TestStoreFactoryBean(RuntimeExceptionThrowingStore.class);
                 factory.setBeanClassLoader(this.getClass().getClassLoader());
-                factories.add(factory);
 
                 context = new GenericApplicationContext();
                 context.registerBean("factory", StoreFactory.class, () -> factory);
 
-                context.registerBean("translator", StoreExceptionTranslator.class, () -> {
-                    return new StoreExceptionTranslator() {
-                        @Override
-                        public StoreAccessException translate(RuntimeException re) {
-                            return new StoreAccessException(re.getMessage(), re);
-                        }
-                    };
-                });
+                context.registerBean("translator", StoreExceptionTranslator.class,
+                        () -> re -> new StoreAccessException(re.getMessage(), re));
                 context.refresh();
                 stores = new StoresImpl(context);
                 stores.afterPropertiesSet();
@@ -206,23 +161,10 @@ public class StoresIT {
 
             @Test
             void shouldReThrowRuntimeExceptionAsStoreAccessException() {
-                StoreInfo storeInfo = stores.getStore(Store.class, new StoreFilter() {
-                    @Override
-                    public String name() {
-                        return "test";
-                    }
-
-                    @Override
-                    public boolean matches(StoreInfo info) {
-                        return true;
-                    }
-                });
-                var store = storeInfo.getImplementation(ContentStore.class);
-                try {
-                    store.setContent(new Object(), new ByteArrayInputStream("".getBytes()));
-                } catch (Exception e) {
-                    assertThat(e).isInstanceOf(StoreAccessException.class);
-                }
+                StoreInfo storeInfo = stores.getStore(Store.class, testStoreFilter());
+                RuntimeExceptionThrowingStore store = storeInfo.getImplementation(RuntimeExceptionThrowingStore.class);
+                assertThatThrownBy(() -> store.setContent(new Object(), new ByteArrayInputStream("".getBytes())))
+                        .isInstanceOf(StoreAccessException.class);
             }
         }
     }
