@@ -6,16 +6,15 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.content.commons.annotations.ContentId;
-import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.mongo.config.EnableMongoStores;
+import org.springframework.content.test.support.TestSupportPackages;
+import org.springframework.content.test.support.mongo.SingleContentMongoStore;
 import org.springframework.content.mongo.config.MongoStoreConverter;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.convert.ConversionService;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.MongoDatabaseFactory;
 import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration;
 import org.springframework.data.mongodb.core.SimpleMongoClientDatabaseFactory;
@@ -30,10 +29,6 @@ public class EnableMongoStoresTest {
 
     private AnnotationConfigApplicationContext context;
 
-    public interface TestEntityContentRepository
-            extends ContentStore<TestEntity, String> {
-    }
-
     @Configuration
     @EnableMongoStores(basePackages = "contains.no.mongo.repositores")
     @Import(InfrastructureConfig.class)
@@ -41,7 +36,7 @@ public class EnableMongoStoresTest {
     }
 
     @Configuration
-    @EnableMongoStores
+    @EnableMongoStores(basePackages = TestSupportPackages.MONGO)
     @Import(InfrastructureConfig.class)
     public static class TestConfig {
         //
@@ -53,7 +48,12 @@ public class EnableMongoStoresTest {
     public static class ConverterConfig {
         @Bean
         public MongoStoreConverter<UUID, String> uuidConverter() {
-            return source -> String.format("/%s", source.toString().replace("-", "/"));
+            return new MongoStoreConverter<>() {
+                @Override
+                public String convert(UUID source) {
+                    return String.format("/%s", source.toString().replace("-", "/"));
+                }
+            };
         }
     }
 
@@ -99,7 +99,7 @@ public class EnableMongoStoresTest {
 
             @Test
             void shouldHaveAMongoContentRepositoryBean() {
-                assertThat(context.getBean(TestEntityContentRepository.class)).isNotNull();
+                assertThat(context.getBean(SingleContentMongoStore.class)).isNotNull();
             }
 
             @Test
@@ -149,15 +149,9 @@ public class EnableMongoStoresTest {
 
             @Test
             void shouldLoadTheContextButHaveNoMongoRepositoryBeans() {
-                assertThat(context.getBeanNamesForType(TestEntityContentRepository.class)).isEmpty();
+                assertThat(context.getBeanNamesForType(SingleContentMongoStore.class)).isEmpty();
             }
         }
     }
 
-    public static class TestEntity {
-        @Id
-        private String id;
-        @ContentId
-        private String contentId;
-    }
 }

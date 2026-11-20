@@ -3,10 +3,11 @@ package internal.org.springframework.content.mongo.store;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.content.commons.annotations.ContentId;
-import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.store.StoreAccessException;
 import org.springframework.content.commons.utils.PlacementService;
+import org.springframework.content.test.support.ContentAccessor;
+import org.springframework.content.test.support.SingleContentFields;
+import org.springframework.content.test.support.mongo.SharedIdJakartaMongoDocument;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.mongodb.gridfs.GridFsResource;
@@ -24,7 +25,7 @@ public class DefaultMongoStoreImplTest {
 
     private DefaultMongoStoreImpl<Object, String> mongoContentRepoImpl;
     private GridFsTemplate gridFsTemplate;
-    private ContentProperty property;
+    private ContentAccessor property;
     private GridFsResource resource;
     private Resource inputResource;
     private PlacementService placer;
@@ -32,87 +33,6 @@ public class DefaultMongoStoreImplTest {
     private InputStream content;
     private InputStream result;
     private Exception e;
-
-    public interface ContentProperty {
-        String getContentId();
-
-        void setContentId(String contentId);
-
-        long getContentLen();
-
-        void setContentLen(long contentLen);
-    }
-
-    public static class TestEntity implements ContentProperty {
-
-        @ContentId
-        private String contentId;
-
-        @ContentLength
-        private long contentLen;
-
-        public TestEntity() {
-            this.contentId = null;
-        }
-
-        public TestEntity(String contentId) {
-            this.contentId = new String(contentId);
-        }
-
-        @Override
-        public String getContentId() {
-            return this.contentId;
-        }
-
-        @Override
-        public void setContentId(String contentId) {
-            this.contentId = contentId;
-        }
-
-        @Override
-        public long getContentLen() {
-            return contentLen;
-        }
-
-        @Override
-        public void setContentLen(long contentLen) {
-            this.contentLen = contentLen;
-        }
-    }
-
-    public static class SharedIdContentIdEntity implements ContentProperty {
-
-        @jakarta.persistence.Id
-        @ContentId
-        private String contentId;
-
-        @ContentLength
-        private long contentLen;
-
-        public SharedIdContentIdEntity() {
-            this.contentId = null;
-        }
-
-        @Override
-        public String getContentId() {
-            return this.contentId;
-        }
-
-        @Override
-        public void setContentId(String contentId) {
-            this.contentId = contentId;
-        }
-
-        @Override
-        public long getContentLen() {
-            return contentLen;
-        }
-
-        @Override
-        public void setContentLen(long contentLen) {
-            this.contentLen = contentLen;
-        }
-    }
 
     @Nested
     class AssociativeStore {
@@ -129,7 +49,7 @@ public class DefaultMongoStoreImplTest {
             @BeforeEach
             void entity() {
                 mongoContentRepoImpl = new DefaultMongoStoreImpl<>(gridFsTemplate, null, placer);
-                property = new TestEntity();
+                property = new SingleContentFields();
             }
 
             @Test
@@ -142,7 +62,7 @@ public class DefaultMongoStoreImplTest {
         class Unassociate {
             @BeforeEach
             void entity() {
-                property = new TestEntity();
+                property = new SingleContentFields();
                 property.setContentId("12345");
             }
 
@@ -150,7 +70,7 @@ public class DefaultMongoStoreImplTest {
             class WhenTheEntityHasASharedIdContentIdField {
                 @BeforeEach
                 void sharedId() {
-                    property = new SharedIdContentIdEntity();
+                    property = new SharedIdJakartaMongoDocument();
                     property.setContentId("12345");
                     mongoContentRepoImpl.unassociate(property);
                 }
@@ -177,7 +97,7 @@ public class DefaultMongoStoreImplTest {
         class SetContent {
             @BeforeEach
             void entity() {
-                property = new TestEntity();
+                property = new SingleContentFields();
                 content = mock(InputStream.class);
             }
 
@@ -217,7 +137,7 @@ public class DefaultMongoStoreImplTest {
         class SetContentFromResource {
             @BeforeEach
             void entity() {
-                property = new TestEntity();
+                property = new SingleContentFields();
                 content = new ByteArrayInputStream("Hello content world!".getBytes());
                 inputResource = new InputStreamResource(content);
             }
@@ -257,7 +177,7 @@ public class DefaultMongoStoreImplTest {
         class GetContent {
             @BeforeEach
             void entity() throws IOException {
-                property = new TestEntity();
+                property = new SingleContentFields();
                 property.setContentId("abcd");
                 content = mock(InputStream.class);
                 when(placer.convert(eq("abcd"), eq(String.class))).thenReturn("abcd");
@@ -297,7 +217,7 @@ public class DefaultMongoStoreImplTest {
         class UnsetContent {
             @BeforeEach
             void entity() {
-                property = new TestEntity();
+                property = new SingleContentFields();
                 property.setContentId("abcd");
                 when(placer.convert(eq("abcd"), eq(String.class))).thenReturn("abcd");
                 when(gridFsTemplate.getResource("abcd")).thenReturn(resource);

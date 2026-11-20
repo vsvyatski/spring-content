@@ -8,8 +8,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.content.commons.annotations.ContentId;
-import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.io.DeletableResource;
 import org.springframework.content.commons.property.PropertyPath;
 import org.springframework.content.commons.store.*;
@@ -25,7 +23,8 @@ import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration;
 import org.springframework.data.mongodb.core.SimpleMongoClientDatabaseFactory;
 import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
-import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.content.test.support.TestSupportPackages;
+import org.springframework.content.test.support.mongo.*;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
 import java.io.ByteArrayInputStream;
@@ -38,49 +37,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class MongoStoreIT {
     private GridFsTemplate gridFsTemplate;
-    private TestEntity entity;
+    private DualContentMongoDocument entity;
     private Resource genericResource;
 
     private Exception e;
 
     private AnnotationConfigApplicationContext context;
 
-    private TestEntityRepository repo;
-    private TestEntityStore store;
+    private DualContentMongoRepository repo;
+    private DualContentMongoStore store;
 
     private String resourceLocation;
 
-    public interface ContentProperty {
-        String getContentId();
-
-        void setContentId(String contentId);
-
-        Long getContentLen();
-
-        void setContentLen(Long contentLen);
-    }
-
-    public interface TestEntityRepository extends MongoRepository<TestEntity, String> {
-    }
-
-    public interface TestEntityStore extends ContentStore<TestEntity, String> {
-    }
-
-    public interface SharedIdRepository extends MongoRepository<SharedIdContentIdEntity, String> {
-    }
-
-    public interface SharedIdStore extends ContentStore<SharedIdContentIdEntity, String> {
-    }
-
-    public interface SharedSpringIdRepository extends MongoRepository<SharedSpringIdContentIdEntity, String> {
-    }
-
-    public interface SharedSpringIdStore extends ContentStore<SharedSpringIdContentIdEntity, String> {
-    }
-
     @Configuration
-    @EnableMongoRepositories(considerNestedRepositories = true)
-    @EnableMongoStores
+    @EnableMongoRepositories(basePackages = TestSupportPackages.MONGO, considerNestedRepositories = true)
+    @EnableMongoStores(basePackages = TestSupportPackages.MONGO)
     @Import(InfrastructureConfig.class)
     public static class TestConfig {
     }
@@ -110,129 +81,6 @@ public class MongoStoreIT {
         }
     }
 
-    public static class TestEntity implements ContentProperty {
-
-        @ContentId
-        private String contentId;
-
-        @ContentLength
-        private Long contentLen;
-
-        @ContentId
-        private String renditionId;
-
-        @ContentLength
-        private long renditionLen;
-
-        public TestEntity() {
-            this.contentId = null;
-        }
-
-        public TestEntity(String contentId) {
-            this.contentId = contentId;
-        }
-
-        public String getContentId() {
-            return contentId;
-        }
-
-        public void setContentId(String contentId) {
-            this.contentId = contentId;
-        }
-
-        public Long getContentLen() {
-            return contentLen;
-        }
-
-        public void setContentLen(Long contentLen) {
-            this.contentLen = contentLen;
-        }
-
-        public String getRenditionId() {
-            return renditionId;
-        }
-
-        public void setRenditionId(String renditionId) {
-            this.renditionId = renditionId;
-        }
-
-        public long getRenditionLen() {
-            return renditionLen;
-        }
-
-        public void setRenditionLen(long renditionLen) {
-            this.renditionLen = renditionLen;
-        }
-    }
-
-    public static class SharedIdContentIdEntity implements ContentProperty {
-
-        @jakarta.persistence.Id
-        @ContentId
-        private String contentId;
-
-        @ContentLength
-        private Long contentLen;
-
-        public SharedIdContentIdEntity() {
-            this.contentId = null;
-        }
-
-        @Override
-        public String getContentId() {
-            return contentId;
-        }
-
-        @Override
-        public void setContentId(String contentId) {
-            this.contentId = contentId;
-        }
-
-        @Override
-        public Long getContentLen() {
-            return contentLen;
-        }
-
-        @Override
-        public void setContentLen(Long contentLen) {
-            this.contentLen = contentLen;
-        }
-    }
-
-    public static class SharedSpringIdContentIdEntity implements ContentProperty {
-
-        @org.springframework.data.annotation.Id
-        @ContentId
-        private String contentId;
-
-        @ContentLength
-        private Long contentLen;
-
-        public SharedSpringIdContentIdEntity() {
-            this.contentId = null;
-        }
-
-        @Override
-        public String getContentId() {
-            return contentId;
-        }
-
-        @Override
-        public void setContentId(String contentId) {
-            this.contentId = contentId;
-        }
-
-        @Override
-        public Long getContentLen() {
-            return contentLen;
-        }
-
-        @Override
-        public void setContentLen(Long contentLen) {
-            this.contentLen = contentLen;
-        }
-    }
-
     @Nested
     class DefaultMongoStoreImplCases {
         @Nested
@@ -249,8 +97,8 @@ public class MongoStoreIT {
 
                         gridFsTemplate = context.getBean(GridFsTemplate.class);
 
-                        repo = context.getBean(TestEntityRepository.class);
-                        store = context.getBean(TestEntityStore.class);
+                        repo = context.getBean(DualContentMongoRepository.class);
+                        store = context.getBean(DualContentMongoStore.class);
 
                         RandomString random = new RandomString(5);
                         resourceLocation = random.nextString();
@@ -288,8 +136,8 @@ public class MongoStoreIT {
 
                             gridFsTemplate = context.getBean(GridFsTemplate.class);
 
-                            repo = context.getBean(TestEntityRepository.class);
-                            store = context.getBean(TestEntityStore.class);
+                            repo = context.getBean(DualContentMongoRepository.class);
+                            store = context.getBean(DualContentMongoStore.class);
 
                             RandomString random = new RandomString(5);
                             resourceLocation = random.nextString();
@@ -333,8 +181,8 @@ public class MongoStoreIT {
 
                             gridFsTemplate = context.getBean(GridFsTemplate.class);
 
-                            repo = context.getBean(TestEntityRepository.class);
-                            store = context.getBean(TestEntityStore.class);
+                            repo = context.getBean(DualContentMongoRepository.class);
+                            store = context.getBean(DualContentMongoStore.class);
 
                             RandomString random = new RandomString(5);
                             resourceLocation = random.nextString();
@@ -383,8 +231,8 @@ public class MongoStoreIT {
 
                             gridFsTemplate = context.getBean(GridFsTemplate.class);
 
-                            repo = context.getBean(TestEntityRepository.class);
-                            store = context.getBean(TestEntityStore.class);
+                            repo = context.getBean(DualContentMongoRepository.class);
+                            store = context.getBean(DualContentMongoStore.class);
 
                             RandomString random = new RandomString(5);
                             resourceLocation = random.nextString();
@@ -434,13 +282,13 @@ public class MongoStoreIT {
 
                         gridFsTemplate = context.getBean(GridFsTemplate.class);
 
-                        repo = context.getBean(TestEntityRepository.class);
-                        store = context.getBean(TestEntityStore.class);
+                        repo = context.getBean(DualContentMongoRepository.class);
+                        store = context.getBean(DualContentMongoStore.class);
 
                         RandomString random = new RandomString(5);
                         resourceLocation = random.nextString();
 
-                        entity = new TestEntity();
+                        entity = new DualContentMongoDocument();
                         entity = repo.save(entity);
                     }
 
@@ -470,13 +318,13 @@ public class MongoStoreIT {
 
                                 gridFsTemplate = context.getBean(GridFsTemplate.class);
 
-                                repo = context.getBean(TestEntityRepository.class);
-                                store = context.getBean(TestEntityStore.class);
+                                repo = context.getBean(DualContentMongoRepository.class);
+                                store = context.getBean(DualContentMongoStore.class);
 
                                 RandomString random = new RandomString(5);
                                 resourceLocation = random.nextString();
 
-                                entity = new TestEntity();
+                                entity = new DualContentMongoDocument();
                                 entity = repo.save(entity);
 
                                 genericResource = store.getResource(resourceLocation);
@@ -507,13 +355,13 @@ public class MongoStoreIT {
 
                                 gridFsTemplate = context.getBean(GridFsTemplate.class);
 
-                                repo = context.getBean(TestEntityRepository.class);
-                                store = context.getBean(TestEntityStore.class);
+                                repo = context.getBean(DualContentMongoRepository.class);
+                                store = context.getBean(DualContentMongoStore.class);
 
                                 RandomString random = new RandomString(5);
                                 resourceLocation = random.nextString();
 
-                                entity = new TestEntity();
+                                entity = new DualContentMongoDocument();
                                 entity = repo.save(entity);
 
                                 genericResource = store.getResource(resourceLocation);
@@ -551,13 +399,13 @@ public class MongoStoreIT {
 
                                 gridFsTemplate = context.getBean(GridFsTemplate.class);
 
-                                repo = context.getBean(TestEntityRepository.class);
-                                store = context.getBean(TestEntityStore.class);
+                                repo = context.getBean(DualContentMongoRepository.class);
+                                store = context.getBean(DualContentMongoStore.class);
 
                                 RandomString random = new RandomString(5);
                                 resourceLocation = random.nextString();
 
-                                entity = new TestEntity();
+                                entity = new DualContentMongoDocument();
                                 entity = repo.save(entity);
 
                                 genericResource = store.getResource(resourceLocation);
@@ -591,13 +439,13 @@ public class MongoStoreIT {
 
                                 gridFsTemplate = context.getBean(GridFsTemplate.class);
 
-                                repo = context.getBean(TestEntityRepository.class);
-                                store = context.getBean(TestEntityStore.class);
+                                repo = context.getBean(DualContentMongoRepository.class);
+                                store = context.getBean(DualContentMongoStore.class);
 
                                 RandomString random = new RandomString(5);
                                 resourceLocation = random.nextString();
 
-                                entity = new TestEntity();
+                                entity = new DualContentMongoDocument();
                                 entity = repo.save(entity);
 
                                 genericResource = store.getResource(resourceLocation);
@@ -632,13 +480,13 @@ public class MongoStoreIT {
 
                                 gridFsTemplate = context.getBean(GridFsTemplate.class);
 
-                                repo = context.getBean(TestEntityRepository.class);
-                                store = context.getBean(TestEntityStore.class);
+                                repo = context.getBean(DualContentMongoRepository.class);
+                                store = context.getBean(DualContentMongoStore.class);
 
                                 RandomString random = new RandomString(5);
                                 resourceLocation = random.nextString();
 
-                                entity = new TestEntity();
+                                entity = new DualContentMongoDocument();
                                 entity = repo.save(entity);
 
                                 genericResource = store.getResource(resourceLocation);
@@ -673,13 +521,13 @@ public class MongoStoreIT {
 
                                 gridFsTemplate = context.getBean(GridFsTemplate.class);
 
-                                repo = context.getBean(TestEntityRepository.class);
-                                store = context.getBean(TestEntityStore.class);
+                                repo = context.getBean(DualContentMongoRepository.class);
+                                store = context.getBean(DualContentMongoStore.class);
 
                                 RandomString random = new RandomString(5);
                                 resourceLocation = random.nextString();
 
-                                entity = new TestEntity();
+                                entity = new DualContentMongoDocument();
                                 entity = repo.save(entity);
 
                                 genericResource = store.getResource(resourceLocation);
@@ -720,13 +568,13 @@ public class MongoStoreIT {
 
                     gridFsTemplate = context.getBean(GridFsTemplate.class);
 
-                    repo = context.getBean(TestEntityRepository.class);
-                    store = context.getBean(TestEntityStore.class);
+                    repo = context.getBean(DualContentMongoRepository.class);
+                    store = context.getBean(DualContentMongoStore.class);
 
                     RandomString random = new RandomString(5);
                     resourceLocation = random.nextString();
 
-                    entity = new TestEntity();
+                    entity = new DualContentMongoDocument();
                     entity = repo.save(entity);
 
                     store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
@@ -777,13 +625,13 @@ public class MongoStoreIT {
 
                     gridFsTemplate = context.getBean(GridFsTemplate.class);
 
-                    repo = context.getBean(TestEntityRepository.class);
-                    store = context.getBean(TestEntityStore.class);
+                    repo = context.getBean(DualContentMongoRepository.class);
+                    store = context.getBean(DualContentMongoStore.class);
 
                     RandomString random = new RandomString(5);
                     resourceLocation = random.nextString();
 
-                    entity = new TestEntity();
+                    entity = new DualContentMongoDocument();
                     entity = repo.save(entity);
 
                     store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
@@ -825,13 +673,13 @@ public class MongoStoreIT {
 
                     gridFsTemplate = context.getBean(GridFsTemplate.class);
 
-                    repo = context.getBean(TestEntityRepository.class);
-                    store = context.getBean(TestEntityStore.class);
+                    repo = context.getBean(DualContentMongoRepository.class);
+                    store = context.getBean(DualContentMongoStore.class);
 
                     RandomString random = new RandomString(5);
                     resourceLocation = random.nextString();
 
-                    entity = new TestEntity();
+                    entity = new DualContentMongoDocument();
                     entity = repo.save(entity);
 
                     store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
@@ -873,13 +721,13 @@ public class MongoStoreIT {
 
                     gridFsTemplate = context.getBean(GridFsTemplate.class);
 
-                    repo = context.getBean(TestEntityRepository.class);
-                    store = context.getBean(TestEntityStore.class);
+                    repo = context.getBean(DualContentMongoRepository.class);
+                    store = context.getBean(DualContentMongoStore.class);
 
                     RandomString random = new RandomString(5);
                     resourceLocation = random.nextString();
 
-                    entity = new TestEntity();
+                    entity = new DualContentMongoDocument();
                     entity = repo.save(entity);
 
                     store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
@@ -922,13 +770,13 @@ public class MongoStoreIT {
 
                     gridFsTemplate = context.getBean(GridFsTemplate.class);
 
-                    repo = context.getBean(TestEntityRepository.class);
-                    store = context.getBean(TestEntityStore.class);
+                    repo = context.getBean(DualContentMongoRepository.class);
+                    store = context.getBean(DualContentMongoStore.class);
 
                     RandomString random = new RandomString(5);
                     resourceLocation = random.nextString();
 
-                    entity = new TestEntity();
+                    entity = new DualContentMongoDocument();
                     entity = repo.save(entity);
 
                     store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
@@ -963,7 +811,7 @@ public class MongoStoreIT {
                     }
 
                     assertThat(entity.getRenditionId()).isNull();
-                    assertThat(entity.getRenditionLen()).isEqualTo(0L);
+                    assertThat(entity.getRenditionLen()).isNull();
                 }
             }
 
@@ -977,13 +825,13 @@ public class MongoStoreIT {
 
                     gridFsTemplate = context.getBean(GridFsTemplate.class);
 
-                    repo = context.getBean(TestEntityRepository.class);
-                    store = context.getBean(TestEntityStore.class);
+                    repo = context.getBean(DualContentMongoRepository.class);
+                    store = context.getBean(DualContentMongoStore.class);
 
                     RandomString random = new RandomString(5);
                     resourceLocation = random.nextString();
 
-                    entity = new TestEntity();
+                    entity = new DualContentMongoDocument();
                     entity = repo.save(entity);
 
                     store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
@@ -1023,13 +871,13 @@ public class MongoStoreIT {
 
                     gridFsTemplate = context.getBean(GridFsTemplate.class);
 
-                    repo = context.getBean(TestEntityRepository.class);
-                    store = context.getBean(TestEntityStore.class);
+                    repo = context.getBean(DualContentMongoRepository.class);
+                    store = context.getBean(DualContentMongoStore.class);
 
                     RandomString random = new RandomString(5);
                     resourceLocation = random.nextString();
 
-                    entity = new TestEntity();
+                    entity = new DualContentMongoDocument();
                     entity = repo.save(entity);
 
                     store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
@@ -1062,13 +910,13 @@ public class MongoStoreIT {
 
                     gridFsTemplate = context.getBean(GridFsTemplate.class);
 
-                    repo = context.getBean(TestEntityRepository.class);
-                    store = context.getBean(TestEntityStore.class);
+                    repo = context.getBean(DualContentMongoRepository.class);
+                    store = context.getBean(DualContentMongoStore.class);
 
                     RandomString random = new RandomString(5);
                     resourceLocation = random.nextString();
 
-                    entity = new TestEntity();
+                    entity = new DualContentMongoDocument();
                     entity = repo.save(entity);
 
                     store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
@@ -1101,13 +949,13 @@ public class MongoStoreIT {
 
                     gridFsTemplate = context.getBean(GridFsTemplate.class);
 
-                    repo = context.getBean(TestEntityRepository.class);
-                    store = context.getBean(TestEntityStore.class);
+                    repo = context.getBean(DualContentMongoRepository.class);
+                    store = context.getBean(DualContentMongoStore.class);
 
                     RandomString random = new RandomString(5);
                     resourceLocation = random.nextString();
 
-                    entity = new TestEntity();
+                    entity = new DualContentMongoDocument();
                     entity = repo.save(entity);
 
                     store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
@@ -1140,13 +988,13 @@ public class MongoStoreIT {
 
                     gridFsTemplate = context.getBean(GridFsTemplate.class);
 
-                    repo = context.getBean(TestEntityRepository.class);
-                    store = context.getBean(TestEntityStore.class);
+                    repo = context.getBean(DualContentMongoRepository.class);
+                    store = context.getBean(DualContentMongoStore.class);
 
                     RandomString random = new RandomString(5);
                     resourceLocation = random.nextString();
 
-                    entity = new TestEntity();
+                    entity = new DualContentMongoDocument();
                     entity = repo.save(entity);
 
                     store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
@@ -1160,10 +1008,10 @@ public class MongoStoreIT {
 
                 @Test
                 void shouldNotResetTheIdField() {
-                    SharedIdRepository sharedIdRepository = context.getBean(SharedIdRepository.class);
-                    SharedIdStore sharedIdStore = context.getBean(SharedIdStore.class);
+                    SharedIdJakartaMongoRepository sharedIdRepository = context.getBean(SharedIdJakartaMongoRepository.class);
+                    SharedIdJakartaMongoStore sharedIdStore = context.getBean(SharedIdJakartaMongoStore.class);
 
-                    SharedIdContentIdEntity sharedIdContentIdEntity = sharedIdRepository.save(new SharedIdContentIdEntity());
+                    SharedIdJakartaMongoDocument sharedIdContentIdEntity = sharedIdRepository.save(new SharedIdJakartaMongoDocument());
 
                     sharedIdContentIdEntity = sharedIdStore.setContent(sharedIdContentIdEntity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
                     sharedIdContentIdEntity = sharedIdRepository.save(sharedIdContentIdEntity);
@@ -1184,13 +1032,13 @@ public class MongoStoreIT {
 
                     gridFsTemplate = context.getBean(GridFsTemplate.class);
 
-                    repo = context.getBean(TestEntityRepository.class);
-                    store = context.getBean(TestEntityStore.class);
+                    repo = context.getBean(DualContentMongoRepository.class);
+                    store = context.getBean(DualContentMongoStore.class);
 
                     RandomString random = new RandomString(5);
                     resourceLocation = random.nextString();
 
-                    entity = new TestEntity();
+                    entity = new DualContentMongoDocument();
                     entity = repo.save(entity);
 
                     store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
@@ -1204,17 +1052,17 @@ public class MongoStoreIT {
 
                 @Test
                 void shouldNotResetTheIdField() {
-                    SharedSpringIdRepository SharedSpringIdRepository = context.getBean(SharedSpringIdRepository.class);
-                    SharedSpringIdStore SharedSpringIdStore = context.getBean(SharedSpringIdStore.class);
+                    SharedIdSpringMongoRepository SharedIdSpringMongoRepository = context.getBean(SharedIdSpringMongoRepository.class);
+                    SharedIdSpringMongoStore SharedIdSpringMongoStore = context.getBean(SharedIdSpringMongoStore.class);
 
-                    SharedSpringIdContentIdEntity SharedSpringIdContentIdEntity = SharedSpringIdRepository.save(new SharedSpringIdContentIdEntity());
+                    SharedIdSpringMongoDocument SharedIdSpringMongoDocument = SharedIdSpringMongoRepository.save(new SharedIdSpringMongoDocument());
 
-                    SharedSpringIdContentIdEntity = SharedSpringIdStore.setContent(SharedSpringIdContentIdEntity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-                    SharedSpringIdContentIdEntity = SharedSpringIdRepository.save(SharedSpringIdContentIdEntity);
-                    String id = SharedSpringIdContentIdEntity.getContentId();
-                    SharedSpringIdContentIdEntity = SharedSpringIdStore.unsetContent(SharedSpringIdContentIdEntity);
-                    assertThat(SharedSpringIdContentIdEntity.getContentId()).isEqualTo(id);
-                    assertThat(SharedSpringIdContentIdEntity.getContentLen()).isNull();
+                    SharedIdSpringMongoDocument = SharedIdSpringMongoStore.setContent(SharedIdSpringMongoDocument, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                    SharedIdSpringMongoDocument = SharedIdSpringMongoRepository.save(SharedIdSpringMongoDocument);
+                    String id = SharedIdSpringMongoDocument.getContentId();
+                    SharedIdSpringMongoDocument = SharedIdSpringMongoStore.unsetContent(SharedIdSpringMongoDocument);
+                    assertThat(SharedIdSpringMongoDocument.getContentId()).isEqualTo(id);
+                    assertThat(SharedIdSpringMongoDocument.getContentLen()).isNull();
                 }
             }
         }
