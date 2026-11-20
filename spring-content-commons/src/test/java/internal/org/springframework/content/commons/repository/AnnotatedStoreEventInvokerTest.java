@@ -3,9 +3,35 @@ package internal.org.springframework.content.commons.repository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.content.commons.annotations.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.springframework.content.commons.annotations.HandleAfterAssociate;
+import org.springframework.content.commons.annotations.HandleAfterGetContent;
+import org.springframework.content.commons.annotations.HandleAfterGetResource;
+import org.springframework.content.commons.annotations.HandleAfterSetContent;
+import org.springframework.content.commons.annotations.HandleAfterUnassociate;
+import org.springframework.content.commons.annotations.HandleAfterUnsetContent;
+import org.springframework.content.commons.annotations.HandleBeforeAssociate;
+import org.springframework.content.commons.annotations.HandleBeforeGetContent;
+import org.springframework.content.commons.annotations.HandleBeforeGetResource;
+import org.springframework.content.commons.annotations.HandleBeforeSetContent;
+import org.springframework.content.commons.annotations.HandleBeforeUnassociate;
+import org.springframework.content.commons.annotations.HandleBeforeUnsetContent;
+import org.springframework.content.commons.annotations.StoreEventHandler;
 import org.springframework.content.commons.store.ContentStore;
-import org.springframework.content.commons.store.events.*;
+import org.springframework.content.commons.store.events.AfterAssociateEvent;
+import org.springframework.content.commons.store.events.AfterGetContentEvent;
+import org.springframework.content.commons.store.events.AfterGetResourceEvent;
+import org.springframework.content.commons.store.events.AfterSetContentEvent;
+import org.springframework.content.commons.store.events.AfterUnassociateEvent;
+import org.springframework.content.commons.store.events.AfterUnsetContentEvent;
+import org.springframework.content.commons.store.events.BeforeAssociateEvent;
+import org.springframework.content.commons.store.events.BeforeGetContentEvent;
+import org.springframework.content.commons.store.events.BeforeGetResourceEvent;
+import org.springframework.content.commons.store.events.BeforeSetContentEvent;
+import org.springframework.content.commons.store.events.BeforeUnassociateEvent;
+import org.springframework.content.commons.store.events.BeforeUnsetContentEvent;
+import org.springframework.content.commons.store.events.StoreEvent;
 import org.springframework.content.commons.utils.ReflectionService;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -15,22 +41,26 @@ import java.io.InputStream;
 import java.io.Serial;
 import java.io.Serializable;
 import java.lang.reflect.Method;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
-@SuppressWarnings("unchecked")
 public class AnnotatedStoreEventInvokerTest {
 
-    // event handlers
-    private final HighestPriorityCustomEventHandler priorityHandler = new HighestPriorityCustomEventHandler();
-    private AnnotatedStoreEventInvoker invoker;
-    private StoreEvent event;
-    // mocks
-    private ReflectionService reflectionService;
-    private ContentStore<Object, Serializable> store;
+    private static final String CUSTOM_HANDLER_BEAN = "custom-bean";
 
+    private AnnotatedStoreEventInvoker invoker;
+    private ReflectionService reflectionService;
+
+    @SuppressWarnings("unused") // handler methods registered via reflection
     @StoreEventHandler
     public static class CustomEventHandler {
 
@@ -131,6 +161,7 @@ public class AnnotatedStoreEventInvokerTest {
         }
     }
 
+    @SuppressWarnings("unused") // handler methods registered via reflection
     @StoreEventHandler
     public static class HighestPriorityCustomEventHandler {
 
@@ -148,10 +179,58 @@ public class AnnotatedStoreEventInvokerTest {
         @Serial
         private static final long serialVersionUID = 4393640168031790561L;
 
-        public UnknownContentEvent(Object source,
-                                   ContentStore<Object, Serializable> store) {
+        public UnknownContentEvent(Object source, ContentStore<Object, Serializable> store) {
             super(source, store);
         }
+    }
+
+    private record HandlerInvocationCase(
+            String handlerMethodName,
+            Class<?> handlerParameterType,
+            BiFunction<EventSource, ContentStore<Object, Serializable>, StoreEvent> eventFactory,
+            Function<StoreEvent, Object> expectedArgument) {
+    }
+
+    static Stream<HandlerInvocationCase> handlerInvocationCases() {
+        return Stream.of(
+                caseForSource(BeforeGetResourceEvent::new, "beforeGetResource"),
+                caseForEvent(BeforeGetResourceEvent::new, "beforeGetResource", BeforeGetResourceEvent.class),
+                caseForSource(AfterGetResourceEvent::new, "afterGetResource"),
+                caseForEvent(AfterGetResourceEvent::new, "afterGetResource", AfterGetResourceEvent.class),
+                caseForSource(BeforeAssociateEvent::new, "beforeAssociate"),
+                caseForEvent(BeforeAssociateEvent::new, "beforeAssociate", BeforeAssociateEvent.class),
+                caseForSource(AfterAssociateEvent::new, "afterAssociate"),
+                caseForEvent(AfterAssociateEvent::new, "afterAssociate", AfterAssociateEvent.class),
+                caseForSource(BeforeUnassociateEvent::new, "beforeUnassociate"),
+                caseForEvent(BeforeUnassociateEvent::new, "beforeUnassociate", BeforeUnassociateEvent.class),
+                caseForSource(AfterUnassociateEvent::new, "afterUnassociate"),
+                caseForEvent(AfterUnassociateEvent::new, "afterUnassociate", AfterUnassociateEvent.class),
+                caseForSource(BeforeGetContentEvent::new, "beforeGetContent"),
+                caseForEvent(BeforeGetContentEvent::new, "beforeGetContent", BeforeGetContentEvent.class),
+                caseForSource(AfterGetContentEvent::new, "afterGetContent"),
+                caseForEvent(AfterGetContentEvent::new, "afterGetContent", AfterGetContentEvent.class),
+                caseForSource((source, store) -> new BeforeSetContentEvent(source, store, (InputStream) null), "beforeSetContent"),
+                caseForEvent((source, store) -> new BeforeSetContentEvent(source, store, (InputStream) null), "beforeSetContent", BeforeSetContentEvent.class),
+                caseForSource(AfterSetContentEvent::new, "afterSetContent"),
+                caseForEvent(AfterSetContentEvent::new, "afterSetContent", AfterSetContentEvent.class),
+                caseForSource(BeforeUnsetContentEvent::new, "beforeUnsetContent"),
+                caseForEvent(BeforeUnsetContentEvent::new, "beforeUnsetContent", BeforeUnsetContentEvent.class),
+                caseForSource(AfterUnsetContentEvent::new, "afterUnsetContent"),
+                caseForEvent(AfterUnsetContentEvent::new, "afterUnsetContent", AfterUnsetContentEvent.class)
+        );
+    }
+
+    private static HandlerInvocationCase caseForSource(
+            BiFunction<EventSource, ContentStore<Object, Serializable>, StoreEvent> eventFactory,
+            String handlerMethodName) {
+        return new HandlerInvocationCase(handlerMethodName, Object.class, eventFactory, StoreEvent::getSource);
+    }
+
+    private static HandlerInvocationCase caseForEvent(
+            BiFunction<EventSource, ContentStore<Object, Serializable>, StoreEvent> eventFactory,
+            String handlerMethodName,
+            Class<?> handlerParameterType) {
+        return new HandlerInvocationCase(handlerMethodName, handlerParameterType, eventFactory, event -> event);
     }
 
     @Nested
@@ -160,11 +239,9 @@ public class AnnotatedStoreEventInvokerTest {
         class WhenInitializedWithAStoreEventHandlerBean {
             @BeforeEach
             void setUp() {
-                store = mock(ContentStore.class);
                 reflectionService = mock(ReflectionService.class);
                 invoker = new AnnotatedStoreEventInvoker(reflectionService);
-                invoker.postProcessAfterInitialization(new CustomEventHandler(),
-                        "custom-bean");
+                invoker.postProcessAfterInitialization(new CustomEventHandler(), CUSTOM_HANDLER_BEAN);
             }
 
             @Test
@@ -185,23 +262,19 @@ public class AnnotatedStoreEventInvokerTest {
 
             @Nested
             class WhenInitializedWithAnotherEventHandlerOfHighestPriority {
+                private final HighestPriorityCustomEventHandler priorityHandler = new HighestPriorityCustomEventHandler();
+
                 @BeforeEach
                 void setUp() {
-                    store = mock(ContentStore.class);
                     reflectionService = mock(ReflectionService.class);
                     invoker = new AnnotatedStoreEventInvoker(reflectionService);
-                    invoker.postProcessAfterInitialization(new CustomEventHandler(),
-                            "custom-bean");
-
-                    invoker.postProcessAfterInitialization(
-                            priorityHandler, "high-priority-custom-bean"
-                    );
+                    invoker.postProcessAfterInitialization(new CustomEventHandler(), CUSTOM_HANDLER_BEAN);
+                    invoker.postProcessAfterInitialization(priorityHandler, "high-priority-custom-bean");
                 }
 
                 @Test
                 void shouldOrderTheHandlersByPriority() {
                     assertThat(invoker.getHandlers().get(BeforeGetResourceEvent.class).size()).isEqualTo(3);
-
                     assertThat(invoker.getHandlers().get(BeforeGetResourceEvent.class).get(0).handler).isEqualTo(priorityHandler);
                 }
             }
@@ -210,674 +283,43 @@ public class AnnotatedStoreEventInvokerTest {
 
     @Nested
     class OnApplicationEvent {
-        @Nested
-        class GivenAnEventHandlerAndABeforeGetResourceEvent {
-            @BeforeEach
-            void setUp() {
-                reflectionService = mock(ReflectionService.class);
-                invoker = new AnnotatedStoreEventInvoker(reflectionService);
 
-                EventSource source = new EventSource();
-                event = new BeforeGetResourceEvent(source, store);
-
-                invoker.postProcessAfterInitialization(new CustomEventHandler(),
-                        "custom-bean");
-                invoker.onApplicationEvent(event);
-            }
-
-            @Test
-            void shouldCallThatCorrectHandlerMethod() {
-                Method handler = ReflectionUtils.findMethod(CustomEventHandler.class,
-                        "beforeGetResource", Object.class);
-                assertThat(handler).isNotNull();
-
-                verify(reflectionService).invokeMethod(org.mockito.ArgumentMatchers.eq(handler),
-                        org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
-                        org.mockito.ArgumentMatchers.eq(event.getSource()));
-            }
-        }
-
-        @Nested
-        class GivenAnEventHandlerAcceptingTheEventAndABeforeGetResourceEvent {
-            @BeforeEach
-            void setUp() {
-                reflectionService = mock(ReflectionService.class);
-                invoker = new AnnotatedStoreEventInvoker(reflectionService);
-
-                EventSource source = new EventSource();
-                event = new BeforeGetResourceEvent(source, store);
-
-                invoker.postProcessAfterInitialization(new CustomEventHandler(),
-                        "custom-bean");
-                invoker.onApplicationEvent(event);
-            }
-
-            @Test
-            void shouldCallThatCorrectHandlerMethod() {
-                Method handler = ReflectionUtils.findMethod(CustomEventHandler.class,
-                        "beforeGetResource", BeforeGetResourceEvent.class);
-                assertThat(handler).isNotNull();
-
-                verify(reflectionService).invokeMethod(org.mockito.ArgumentMatchers.eq(handler),
-                        org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
-                        org.mockito.ArgumentMatchers.eq(event));
-            }
-        }
-
-        @Nested
-        class GivenAnEventHandlerAndAAfterGetResourceEvent {
-            @BeforeEach
-            void setUp() {
-                reflectionService = mock(ReflectionService.class);
-                invoker = new AnnotatedStoreEventInvoker(reflectionService);
-
-                EventSource source = new EventSource();
-                event = new AfterGetResourceEvent(source, store);
-
-                invoker.postProcessAfterInitialization(new CustomEventHandler(),
-                        "custom-bean");
-                invoker.onApplicationEvent(event);
-            }
-
-            @Test
-            void shouldCallThatCorrectHandlerMethod() {
-                Method handler = ReflectionUtils.findMethod(CustomEventHandler.class,
-                        "afterGetResource", Object.class);
-                assertThat(handler).isNotNull();
-
-                verify(reflectionService).invokeMethod(org.mockito.ArgumentMatchers.eq(handler),
-                        org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
-                        org.mockito.ArgumentMatchers.eq(event.getSource()));
-            }
-        }
-
-        @Nested
-        class GivenAnEventHandlerAcceptingTheEventAndAAfterGetResourceEvent {
-            @BeforeEach
-            void setUp() {
-                reflectionService = mock(ReflectionService.class);
-                invoker = new AnnotatedStoreEventInvoker(reflectionService);
-
-                EventSource source = new EventSource();
-                event = new AfterGetResourceEvent(source, store);
-
-                invoker.postProcessAfterInitialization(new CustomEventHandler(),
-                        "custom-bean");
-                invoker.onApplicationEvent(event);
-            }
-
-            @Test
-            void shouldCallThatCorrectHandlerMethod() {
-                Method handler = ReflectionUtils.findMethod(CustomEventHandler.class,
-                        "afterGetResource", AfterGetResourceEvent.class);
-                assertThat(handler).isNotNull();
-
-                verify(reflectionService).invokeMethod(org.mockito.ArgumentMatchers.eq(handler),
-                        org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
-                        org.mockito.ArgumentMatchers.eq(event));
-            }
-        }
-
-        @Nested
-        class GivenAnEventHandlerAndABeforeAssociateEvent {
-            @BeforeEach
-            void setUp() {
-                reflectionService = mock(ReflectionService.class);
-                invoker = new AnnotatedStoreEventInvoker(reflectionService);
-
-                EventSource source = new EventSource();
-                event = new BeforeAssociateEvent(source, store);
-
-                invoker.postProcessAfterInitialization(new CustomEventHandler(),
-                        "custom-bean");
-                invoker.onApplicationEvent(event);
-            }
-
-            @Test
-            void shouldCallThatCorrectHandlerMethod() {
-                Method handler = ReflectionUtils.findMethod(CustomEventHandler.class,
-                        "beforeAssociate", Object.class);
-                assertThat(handler).isNotNull();
-
-                verify(reflectionService).invokeMethod(org.mockito.ArgumentMatchers.eq(handler),
-                        org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
-                        org.mockito.ArgumentMatchers.eq(event.getSource()));
-            }
-        }
-
-        @Nested
-        class GivenAnEventHandlerAcceptingTheEventAndABeforeAssociateEvent {
-            @BeforeEach
-            void setUp() {
-                reflectionService = mock(ReflectionService.class);
-                invoker = new AnnotatedStoreEventInvoker(reflectionService);
-
-                EventSource source = new EventSource();
-                event = new BeforeAssociateEvent(source, store);
-
-                invoker.postProcessAfterInitialization(new CustomEventHandler(),
-                        "custom-bean");
-                invoker.onApplicationEvent(event);
-            }
-
-            @Test
-            void shouldCallThatCorrectHandlerMethod() {
-                Method handler = ReflectionUtils.findMethod(CustomEventHandler.class,
-                        "beforeAssociate", BeforeAssociateEvent.class);
-                assertThat(handler).isNotNull();
-
-                verify(reflectionService).invokeMethod(org.mockito.ArgumentMatchers.eq(handler),
-                        org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
-                        org.mockito.ArgumentMatchers.eq(event));
-            }
-        }
-
-        @Nested
-        class GivenAnEventHandlerAndAAfterAssociateEvent {
-            @BeforeEach
-            void setUp() {
-                reflectionService = mock(ReflectionService.class);
-                invoker = new AnnotatedStoreEventInvoker(reflectionService);
-
-                EventSource source = new EventSource();
-                event = new AfterAssociateEvent(source, store);
-
-                invoker.postProcessAfterInitialization(new CustomEventHandler(),
-                        "custom-bean");
-                invoker.onApplicationEvent(event);
-            }
-
-            @Test
-            void shouldCallThatCorrectHandlerMethod() {
-                Method handler = ReflectionUtils.findMethod(CustomEventHandler.class,
-                        "afterAssociate", Object.class);
-                assertThat(handler).isNotNull();
-
-                verify(reflectionService).invokeMethod(org.mockito.ArgumentMatchers.eq(handler),
-                        org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
-                        org.mockito.ArgumentMatchers.eq(event.getSource()));
-            }
-        }
-
-        @Nested
-        class GivenAnEventHandlerAcceptingTheEventAndAAfterAssociateEvent {
-            @BeforeEach
-            void setUp() {
-                reflectionService = mock(ReflectionService.class);
-                invoker = new AnnotatedStoreEventInvoker(reflectionService);
-
-                EventSource source = new EventSource();
-                event = new AfterAssociateEvent(source, store);
-
-                invoker.postProcessAfterInitialization(new CustomEventHandler(),
-                        "custom-bean");
-                invoker.onApplicationEvent(event);
-            }
-
-            @Test
-            void shouldCallThatCorrectHandlerMethod() {
-                Method handler = ReflectionUtils.findMethod(CustomEventHandler.class,
-                        "afterAssociate", AfterAssociateEvent.class);
-                assertThat(handler).isNotNull();
-
-                verify(reflectionService).invokeMethod(org.mockito.ArgumentMatchers.eq(handler),
-                        org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
-                        org.mockito.ArgumentMatchers.eq(event));
-            }
-        }
-
-        @Nested
-        class GivenAnEventHandlerAndABeforeUnassociateEvent {
-            @BeforeEach
-            void setUp() {
-                reflectionService = mock(ReflectionService.class);
-                invoker = new AnnotatedStoreEventInvoker(reflectionService);
-
-                EventSource source = new EventSource();
-                event = new BeforeUnassociateEvent(source, store);
-
-                invoker.postProcessAfterInitialization(new CustomEventHandler(),
-                        "custom-bean");
-                invoker.onApplicationEvent(event);
-            }
-
-            @Test
-            void shouldCallThatCorrectHandlerMethod() {
-                Method handler = ReflectionUtils.findMethod(CustomEventHandler.class,
-                        "beforeUnassociate", Object.class);
-                assertThat(handler).isNotNull();
-
-                verify(reflectionService).invokeMethod(org.mockito.ArgumentMatchers.eq(handler),
-                        org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
-                        org.mockito.ArgumentMatchers.eq(event.getSource()));
-            }
-        }
-
-        @Nested
-        class GivenAnEventHandlerAcceptingTheEventAndABeforeUnassociateEvent {
-            @BeforeEach
-            void setUp() {
-                reflectionService = mock(ReflectionService.class);
-                invoker = new AnnotatedStoreEventInvoker(reflectionService);
-
-                EventSource source = new EventSource();
-                event = new BeforeUnassociateEvent(source, store);
-
-                invoker.postProcessAfterInitialization(new CustomEventHandler(),
-                        "custom-bean");
-                invoker.onApplicationEvent(event);
-            }
-
-            @Test
-            void shouldCallThatCorrectHandlerMethod() {
-                Method handler = ReflectionUtils.findMethod(CustomEventHandler.class,
-                        "beforeUnassociate", BeforeUnassociateEvent.class);
-                assertThat(handler).isNotNull();
-
-                verify(reflectionService).invokeMethod(org.mockito.ArgumentMatchers.eq(handler),
-                        org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
-                        org.mockito.ArgumentMatchers.eq(event));
-            }
-        }
-
-        @Nested
-        class GivenAnEventHandlerAndAAfterUnassociateEvent {
-            @BeforeEach
-            void setUp() {
-                reflectionService = mock(ReflectionService.class);
-                invoker = new AnnotatedStoreEventInvoker(reflectionService);
-
-                EventSource source = new EventSource();
-                event = new AfterUnassociateEvent(source, store);
-
-                invoker.postProcessAfterInitialization(new CustomEventHandler(),
-                        "custom-bean");
-                invoker.onApplicationEvent(event);
-            }
-
-            @Test
-            void shouldCallThatCorrectHandlerMethod() {
-                Method handler = ReflectionUtils.findMethod(CustomEventHandler.class,
-                        "afterUnassociate", Object.class);
-                assertThat(handler).isNotNull();
-
-                verify(reflectionService).invokeMethod(org.mockito.ArgumentMatchers.eq(handler),
-                        org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
-                        org.mockito.ArgumentMatchers.eq(event.getSource()));
-            }
-        }
-
-        @Nested
-        class GivenAnEventHandlerAcceptingTheEventAndAAfterUnassociateEvent {
-            @BeforeEach
-            void setUp() {
-                reflectionService = mock(ReflectionService.class);
-                invoker = new AnnotatedStoreEventInvoker(reflectionService);
-
-                EventSource source = new EventSource();
-                event = new AfterUnassociateEvent(source, store);
-
-                invoker.postProcessAfterInitialization(new CustomEventHandler(),
-                        "custom-bean");
-                invoker.onApplicationEvent(event);
-            }
-
-            @Test
-            void shouldCallThatCorrectHandlerMethod() {
-                Method handler = ReflectionUtils.findMethod(CustomEventHandler.class,
-                        "afterUnassociate", AfterUnassociateEvent.class);
-                assertThat(handler).isNotNull();
-
-                verify(reflectionService).invokeMethod(org.mockito.ArgumentMatchers.eq(handler),
-                        org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
-                        org.mockito.ArgumentMatchers.eq(event));
-            }
-        }
-
-        @Nested
-        class GivenAnEventHandlerAndABeforeGetContentEvent {
-            @BeforeEach
-            void setUp() {
-                reflectionService = mock(ReflectionService.class);
-                invoker = new AnnotatedStoreEventInvoker(reflectionService);
-
-                EventSource source = new EventSource();
-                event = new BeforeGetContentEvent(source, store);
-
-                invoker.postProcessAfterInitialization(new CustomEventHandler(),
-                        "custom-bean");
-                invoker.onApplicationEvent(event);
-            }
-
-            @Test
-            void shouldCallThatCorrectHandlerMethod() {
-                Method handler = ReflectionUtils.findMethod(CustomEventHandler.class,
-                        "beforeGetContent", Object.class);
-                assertThat(handler).isNotNull();
-
-                verify(reflectionService).invokeMethod(org.mockito.ArgumentMatchers.eq(handler),
-                        org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
-                        org.mockito.ArgumentMatchers.eq(event.getSource()));
-            }
-        }
-
-        @Nested
-        class GivenAnEventHandlerAcceptingTheEventAndABeforeGetContentEvent {
-            @BeforeEach
-            void setUp() {
-                reflectionService = mock(ReflectionService.class);
-                invoker = new AnnotatedStoreEventInvoker(reflectionService);
-
-                EventSource source = new EventSource();
-                event = new BeforeGetContentEvent(source, store);
-
-                invoker.postProcessAfterInitialization(new CustomEventHandler(),
-                        "custom-bean");
-                invoker.onApplicationEvent(event);
-            }
-
-            @Test
-            void shouldCallThatCorrectHandlerMethod() {
-                Method handler = ReflectionUtils.findMethod(CustomEventHandler.class,
-                        "beforeGetContent", BeforeGetContentEvent.class);
-                assertThat(handler).isNotNull();
-
-                verify(reflectionService).invokeMethod(org.mockito.ArgumentMatchers.eq(handler),
-                        org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
-                        org.mockito.ArgumentMatchers.eq(event));
-            }
-        }
-
-        @Nested
-        class GivenAnEventHandlerAndAAfterGetContentEvent {
-            @BeforeEach
-            void setUp() {
-                reflectionService = mock(ReflectionService.class);
-                invoker = new AnnotatedStoreEventInvoker(reflectionService);
-
-                EventSource source = new EventSource();
-                event = new AfterGetContentEvent(source, store);
-
-                invoker.postProcessAfterInitialization(new CustomEventHandler(),
-                        "custom-bean");
-                invoker.onApplicationEvent(event);
-            }
-
-            @Test
-            void shouldCallThatCorrectHandlerMethod() {
-                Method handler = ReflectionUtils.findMethod(CustomEventHandler.class,
-                        "afterGetContent", Object.class);
-                assertThat(handler).isNotNull();
-
-                verify(reflectionService).invokeMethod(org.mockito.ArgumentMatchers.eq(handler),
-                        org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
-                        org.mockito.ArgumentMatchers.eq(event.getSource()));
-            }
-        }
-
-        @Nested
-        class GivenAnEventHandlerAcceptingTheEventAndAAfterGetContentEvent {
-            @BeforeEach
-            void setUp() {
-                reflectionService = mock(ReflectionService.class);
-                invoker = new AnnotatedStoreEventInvoker(reflectionService);
-
-                EventSource source = new EventSource();
-                event = new AfterGetContentEvent(source, store);
-
-                invoker.postProcessAfterInitialization(new CustomEventHandler(),
-                        "custom-bean");
-                invoker.onApplicationEvent(event);
-            }
-
-            @Test
-            void shouldCallThatCorrectHandlerMethod() {
-                Method handler = ReflectionUtils.findMethod(CustomEventHandler.class,
-                        "afterGetContent", AfterGetContentEvent.class);
-                assertThat(handler).isNotNull();
-
-                verify(reflectionService).invokeMethod(org.mockito.ArgumentMatchers.eq(handler),
-                        org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
-                        org.mockito.ArgumentMatchers.eq(event));
-            }
-        }
-
-        @Nested
-        class GivenAnEventHandlerAndABeforeSetContentEvent {
-            @BeforeEach
-            void setUp() {
-                reflectionService = mock(ReflectionService.class);
-                invoker = new AnnotatedStoreEventInvoker(reflectionService);
-
-                EventSource source = new EventSource();
-                event = new BeforeSetContentEvent(source, store, (InputStream) null);
-
-                invoker.postProcessAfterInitialization(new CustomEventHandler(),
-                        "custom-bean");
-                invoker.onApplicationEvent(event);
-            }
-
-            @Test
-            void shouldCallThatCorrectHandlerMethod() {
-                Method handler = ReflectionUtils.findMethod(CustomEventHandler.class,
-                        "beforeSetContent", Object.class);
-                assertThat(handler).isNotNull();
-
-                verify(reflectionService).invokeMethod(org.mockito.ArgumentMatchers.eq(handler),
-                        org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
-                        org.mockito.ArgumentMatchers.eq(event.getSource()));
-            }
-        }
-
-        @Nested
-        class GivenAnEventHandlerAcceptingTheEventAndABeforeSetContentEvent {
-            @BeforeEach
-            void setUp() {
-                reflectionService = mock(ReflectionService.class);
-                invoker = new AnnotatedStoreEventInvoker(reflectionService);
-
-                EventSource source = new EventSource();
-                event = new BeforeSetContentEvent(source, store, (InputStream) null);
-
-                invoker.postProcessAfterInitialization(new CustomEventHandler(),
-                        "custom-bean");
-                invoker.onApplicationEvent(event);
-            }
-
-            @Test
-            void shouldCallThatCorrectHandlerMethod() {
-                Method handler = ReflectionUtils.findMethod(CustomEventHandler.class,
-                        "beforeSetContent", BeforeSetContentEvent.class);
-                assertThat(handler).isNotNull();
-
-                verify(reflectionService).invokeMethod(org.mockito.ArgumentMatchers.eq(handler),
-                        org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
-                        org.mockito.ArgumentMatchers.eq(event));
-            }
-        }
-
-        @Nested
-        class GivenAnEventHandlerAndABeforeSetContentEvent2 {
-            @BeforeEach
-            void setUp() {
-                reflectionService = mock(ReflectionService.class);
-                invoker = new AnnotatedStoreEventInvoker(reflectionService);
-
-                EventSource source = new EventSource();
-                event = new AfterSetContentEvent(source, store);
-
-                invoker.postProcessAfterInitialization(new CustomEventHandler(),
-                        "custom-bean");
-                invoker.onApplicationEvent(event);
-            }
-
-            @Test
-            void shouldCallThatCorrectHandlerMethod() {
-                Method handler = ReflectionUtils.findMethod(CustomEventHandler.class,
-                        "afterSetContent", Object.class);
-                assertThat(handler).isNotNull();
-
-                verify(reflectionService).invokeMethod(org.mockito.ArgumentMatchers.eq(handler),
-                        org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
-                        org.mockito.ArgumentMatchers.eq(event.getSource()));
-            }
-        }
-
-        @Nested
-        class GivenAnEventHandlerAcceptingTheEventAndAAfterSetContentEvent {
-            @BeforeEach
-            void setUp() {
-                reflectionService = mock(ReflectionService.class);
-                invoker = new AnnotatedStoreEventInvoker(reflectionService);
-
-                EventSource source = new EventSource();
-                event = new AfterSetContentEvent(source, store);
-
-                invoker.postProcessAfterInitialization(new CustomEventHandler(),
-                        "custom-bean");
-                invoker.onApplicationEvent(event);
-            }
-
-            @Test
-            void shouldCallThatCorrectHandlerMethod() {
-                Method handler = ReflectionUtils.findMethod(CustomEventHandler.class,
-                        "afterSetContent", AfterSetContentEvent.class);
-                assertThat(handler).isNotNull();
-
-                verify(reflectionService).invokeMethod(org.mockito.ArgumentMatchers.eq(handler),
-                        org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
-                        org.mockito.ArgumentMatchers.eq(event));
-            }
-        }
-
-        @Nested
-        class GivenAnEventHandlerAndABeforeUnsetContentEvent {
-            @BeforeEach
-            void setUp() {
-                reflectionService = mock(ReflectionService.class);
-                invoker = new AnnotatedStoreEventInvoker(reflectionService);
-
-                EventSource source = new EventSource();
-                event = new BeforeUnsetContentEvent(source, store);
-
-                invoker.postProcessAfterInitialization(new CustomEventHandler(),
-                        "custom-bean");
-                invoker.onApplicationEvent(event);
-            }
-
-            @Test
-            void shouldCallThatCorrectHandlerMethod() {
-                Method handler = ReflectionUtils.findMethod(CustomEventHandler.class,
-                        "beforeUnsetContent", Object.class);
-                assertThat(handler).isNotNull();
-
-                verify(reflectionService).invokeMethod(org.mockito.ArgumentMatchers.eq(handler),
-                        org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
-                        org.mockito.ArgumentMatchers.eq(event.getSource()));
-            }
-        }
-
-        @Nested
-        class GivenAnEventHandlerAcceptingTheEventAndABeforeUnsetContentEvent {
-            @BeforeEach
-            void setUp() {
-                reflectionService = mock(ReflectionService.class);
-                invoker = new AnnotatedStoreEventInvoker(reflectionService);
-
-                EventSource source = new EventSource();
-                event = new BeforeUnsetContentEvent(source, store);
-
-                invoker.postProcessAfterInitialization(new CustomEventHandler(),
-                        "custom-bean");
-                invoker.onApplicationEvent(event);
-            }
-
-            @Test
-            void shouldCallThatCorrectHandlerMethod() {
-                Method handler = ReflectionUtils.findMethod(CustomEventHandler.class,
-                        "beforeUnsetContent", BeforeUnsetContentEvent.class);
-                assertThat(handler).isNotNull();
-
-                verify(reflectionService).invokeMethod(org.mockito.ArgumentMatchers.eq(handler),
-                        org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
-                        org.mockito.ArgumentMatchers.eq(event));
-            }
-        }
-
-        @Nested
-        class GivenAnEventHandlerAndAAfterUnsetContentEvent {
-            @BeforeEach
-            void setUp() {
-                reflectionService = mock(ReflectionService.class);
-                invoker = new AnnotatedStoreEventInvoker(reflectionService);
-
-                EventSource source = new EventSource();
-                event = new AfterUnsetContentEvent(source, store);
-
-                invoker.postProcessAfterInitialization(new CustomEventHandler(),
-                        "custom-bean");
-                invoker.onApplicationEvent(event);
-            }
-
-            @Test
-            void shouldCallThatCorrectHandlerMethod() {
-                Method handler = ReflectionUtils.findMethod(CustomEventHandler.class,
-                        "afterUnsetContent", Object.class);
-                assertThat(handler).isNotNull();
-
-                verify(reflectionService).invokeMethod(org.mockito.ArgumentMatchers.eq(handler),
-                        org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
-                        org.mockito.ArgumentMatchers.eq(event.getSource()));
-            }
-        }
-
-        @Nested
-        class GivenAnEventHandlerAcceptingTheEventAndAAfterUnsetContentEvent {
-            @BeforeEach
-            void setUp() {
-                reflectionService = mock(ReflectionService.class);
-                invoker = new AnnotatedStoreEventInvoker(reflectionService);
-
-                EventSource source = new EventSource();
-                event = new AfterUnsetContentEvent(source, store);
-
-                invoker.postProcessAfterInitialization(new CustomEventHandler(),
-                        "custom-bean");
-                invoker.onApplicationEvent(event);
-            }
-
-            @Test
-            void shouldCallThatCorrectHandlerMethod() {
-                Method handler = ReflectionUtils.findMethod(CustomEventHandler.class,
-                        "afterUnsetContent", AfterUnsetContentEvent.class);
-                assertThat(handler).isNotNull();
-
-                verify(reflectionService).invokeMethod(org.mockito.ArgumentMatchers.eq(handler),
-                        org.mockito.ArgumentMatchers.isA(CustomEventHandler.class),
-                        org.mockito.ArgumentMatchers.eq(event));
-            }
+        @ParameterizedTest
+        @MethodSource("internal.org.springframework.content.commons.repository.AnnotatedStoreEventInvokerTest#handlerInvocationCases")
+        void shouldCallMatchingHandlerMethod(HandlerInvocationCase handlerCase) {
+            reflectionService = mock(ReflectionService.class);
+            invoker = new AnnotatedStoreEventInvoker(reflectionService);
+
+            @SuppressWarnings("unchecked")
+            ContentStore<Object, Serializable> store = mock(ContentStore.class);
+            EventSource source = new EventSource();
+            StoreEvent event = handlerCase.eventFactory().apply(source, store);
+
+            invoker.postProcessAfterInitialization(new CustomEventHandler(), CUSTOM_HANDLER_BEAN);
+            invoker.onApplicationEvent(event);
+
+            Method handler = ReflectionUtils.findMethod(CustomEventHandler.class,
+                    handlerCase.handlerMethodName(), handlerCase.handlerParameterType());
+            assertThat(handler).isNotNull();
+
+            Object expectedArgument = handlerCase.expectedArgument().apply(event);
+            verify(reflectionService).invokeMethod(eq(handler), isA(CustomEventHandler.class), eq(expectedArgument));
         }
 
         @Nested
         class GivenAnEventHandlerAndAnUnknownEvent {
-            @BeforeEach
-            void setUp() {
+            @Test
+            void shouldNotCallAnEventHandler() {
                 reflectionService = mock(ReflectionService.class);
                 invoker = new AnnotatedStoreEventInvoker(reflectionService);
 
+                @SuppressWarnings("unchecked")
+                ContentStore<Object, Serializable> store = mock(ContentStore.class);
                 EventSource source = new EventSource();
-                event = new UnknownContentEvent(source, store);
+                StoreEvent event = new UnknownContentEvent(source, store);
 
-                invoker.postProcessAfterInitialization(new CustomEventHandler(),
-                        "custom-bean");
+                invoker.postProcessAfterInitialization(new CustomEventHandler(), CUSTOM_HANDLER_BEAN);
                 invoker.onApplicationEvent(event);
-            }
-
-            @Test
-            void shouldNotCallAnEventHandler() {
-                Method handler = ReflectionUtils.findMethod(CustomEventHandler.class,
-                        "afterUnsetContent", Object.class);
-                assertThat(handler).isNotNull();
 
                 verify(reflectionService, never()).invokeMethod(any(), any(), any());
             }
