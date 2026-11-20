@@ -14,6 +14,8 @@ import org.springframework.content.commons.io.DeletableResource;
 import org.springframework.content.commons.property.PropertyPath;
 import org.springframework.content.commons.store.*;
 import org.springframework.content.fs.config.EnableFileSystemStores;
+import org.springframework.content.test.support.TestSupportPackages;
+import org.springframework.content.test.support.jpa.*;
 import org.springframework.content.fs.io.FileSystemResourceLoader;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -40,14 +42,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class FileSystemStoreIT {
 
-    private FileSystemStoreIT.TEntity entity;
+    private DualContentJpaStringIdEntity entity;
     private Resource genericResource;
     private Exception e;
 
     private AnnotationConfigApplicationContext context;
 
-    private TestEntityRepository repo;
-    private TestEntityStore store;
+    private DualContentJpaStringIdRepository repo;
+    private DualContentJpaStringIdStore store;
 
     private EmbeddedRepository embeddedRepo;
     private EmbeddedStore embeddedStore;
@@ -60,8 +62,8 @@ public class FileSystemStoreIT {
         context.register(TestConfig.class);
         context.refresh();
 
-        repo = context.getBean(TestEntityRepository.class);
-        store = context.getBean(TestEntityStore.class);
+        repo = context.getBean(DualContentJpaStringIdRepository.class);
+        store = context.getBean(DualContentJpaStringIdStore.class);
         embeddedRepo = context.getBean(EmbeddedRepository.class);
         embeddedStore = context.getBean(EmbeddedStore.class);
         resourceLocation = new RandomString(5).nextString();
@@ -74,28 +76,6 @@ public class FileSystemStoreIT {
         }
     }
 
-    public interface ContentProperty {
-        String getContentId();
-
-        void setContentId(String contentId);
-
-        Long getContentLen();
-
-        void setContentLen(Long contentLen);
-    }
-
-    public interface TestEntityRepository extends JpaRepository<TEntity, String> {
-    }
-
-    public interface TestEntityStore extends ContentStore<TEntity, String> {
-    }
-
-    public interface SharedIdRepository extends JpaRepository<SharedIdContentIdEntity, String> {
-    }
-
-    public interface SharedIdStore extends ContentStore<SharedIdContentIdEntity, String> {
-    }
-
     public interface EmbeddedRepository extends JpaRepository<EntityWithEmbeddedContent, String> {
     }
 
@@ -103,8 +83,8 @@ public class FileSystemStoreIT {
     }
 
     @Configuration
-    @EnableJpaRepositories(considerNestedRepositories = true)
-    @EnableFileSystemStores
+    @EnableJpaRepositories(basePackages = {TestSupportPackages.JPA, "it.store"}, considerNestedRepositories = true)
+    @EnableFileSystemStores(basePackages = {TestSupportPackages.JPA, "it.store"})
     @Import(InfrastructureConfig.class)
     public static class TestConfig {
     }
@@ -141,7 +121,7 @@ public class FileSystemStoreIT {
 
             LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
             factory.setJpaVendorAdapter(vendorAdapter);
-            factory.setPackagesToScan("it.store");
+            factory.setPackagesToScan("it.store", TestSupportPackages.JPA);
             factory.setDataSource(dataSource());
 
             return factory;
@@ -153,97 +133,6 @@ public class FileSystemStoreIT {
             JpaTransactionManager txManager = new JpaTransactionManager();
             txManager.setEntityManagerFactory(entityManagerFactory().getObject());
             return txManager;
-        }
-    }
-
-    @Entity
-    @Table(name = "tEntity")
-    public static class TEntity implements ContentProperty {
-
-        @Id
-        private String id = UuidCreator.getTimeOrdered().toString();
-
-        @ContentId
-        private String contentId;
-
-        @ContentLength
-        private Long contentLen;
-
-        @ContentId
-        private String renditionId;
-
-        @ContentLength
-        private long renditionLen;
-
-        public TEntity() {
-        }
-
-        @Override
-        public String getContentId() {
-            return this.contentId;
-        }
-
-        @Override
-        public void setContentId(String contentId) {
-            this.contentId = contentId;
-        }
-
-        @Override
-        public Long getContentLen() {
-            return contentLen;
-        }
-
-        @Override
-        public void setContentLen(Long contentLen) {
-            this.contentLen = contentLen;
-        }
-
-        public String getRenditionId() {
-            return this.renditionId;
-        }
-
-        public void setRenditionId(String renditionId) {
-            this.renditionId = renditionId;
-        }
-
-        public long getRenditionLen() {
-            return renditionLen;
-        }
-
-        public void setRenditionLen(long renditionLen) {
-            this.renditionLen = renditionLen;
-        }
-    }
-
-    @Entity
-    @Table(name = "shared_id_entity")
-    public static class SharedIdContentIdEntity implements ContentProperty {
-
-        @Id
-        @ContentId
-        private String contentId = UuidCreator.getTimeOrdered().toString();
-
-        @ContentLength
-        private Long contentLen;
-
-        @Override
-        public String getContentId() {
-            return this.contentId;
-        }
-
-        @Override
-        public void setContentId(String contentId) {
-            this.contentId = contentId;
-        }
-
-        @Override
-        public Long getContentLen() {
-            return contentLen;
-        }
-
-        @Override
-        public void setContentLen(Long contentLen) {
-            this.contentLen = contentLen;
         }
     }
 
@@ -373,7 +262,7 @@ public class FileSystemStoreIT {
 
         @BeforeEach
         void setUp() {
-            entity = repo.save(new TEntity());
+            entity = repo.save(new DualContentJpaStringIdEntity());
         }
 
         @Test
@@ -456,7 +345,7 @@ public class FileSystemStoreIT {
 
         @BeforeEach
         void setUp() {
-            entity = repo.save(new TEntity());
+            entity = repo.save(new DualContentJpaStringIdEntity());
             store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
             store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
         }
@@ -568,7 +457,7 @@ public class FileSystemStoreIT {
             }
 
             assertThat(entity.getRenditionId()).isNull();
-            assertThat(entity.getRenditionLen()).isEqualTo(0L);
+            assertThat(entity.getRenditionLen()).isNull();
 
             FileSystemResourceLoader loader = context.getBean(FileSystemResourceLoader.class);
             assertThat(new File(loader.getRootResource().getPath(), resourceLocation).exists()).isFalse();
@@ -623,10 +512,10 @@ public class FileSystemStoreIT {
 
         @Test
         void shouldNotResetTheIdField() {
-            SharedIdRepository sharedIdRepository = context.getBean(SharedIdRepository.class);
-            SharedIdStore sharedIdStore = context.getBean(SharedIdStore.class);
+            SharedIdJakartaJpaRepository sharedIdRepository = context.getBean(SharedIdJakartaJpaRepository.class);
+            SharedIdJakartaJpaStore sharedIdStore = context.getBean(SharedIdJakartaJpaStore.class);
 
-            SharedIdContentIdEntity sharedIdContentIdEntity = sharedIdRepository.save(new SharedIdContentIdEntity());
+            SharedIdJakartaJpaEntity sharedIdContentIdEntity = sharedIdRepository.save(new SharedIdJakartaJpaEntity());
 
             sharedIdContentIdEntity = sharedIdStore.setContent(sharedIdContentIdEntity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
             sharedIdContentIdEntity = sharedIdRepository.save(sharedIdContentIdEntity);
