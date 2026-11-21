@@ -10,9 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.content.commons.property.PropertyPath;
-import org.springframework.content.test.support.TestSupportData;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.io.ByteArrayInputStream;
@@ -23,8 +21,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public abstract class AbstractRestIT {
 
-    @LocalServerPort
-    int port;
     @Autowired
     private AuditedNestedContentEntityRepository claimRepo;
     @Autowired
@@ -33,14 +29,6 @@ public abstract class AbstractRestIT {
     private WebApplicationContext webApplicationContext;
 
     private AuditedNestedContentEntity existingClaim;
-
-    public static String getContextName(Class<?> configClass) {
-        return configClass.getSimpleName().replaceAll("Config", "");
-    }
-
-    protected String getId() {
-        return "/store-tests/" + TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
-    }
 
     @Nested
     class JpaRest {
@@ -163,7 +151,7 @@ public abstract class AbstractRestIT {
                     }
 
                     @Test
-                    void shouldBeDELETEableWith204NoContent() {
+                    void shouldBeDeletableWith204NoContent() {
                         given()
                             .delete("/files/" + existingClaim.getId() + "/child")
                             .then()
