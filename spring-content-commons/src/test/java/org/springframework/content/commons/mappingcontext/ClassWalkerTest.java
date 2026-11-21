@@ -9,37 +9,16 @@ import org.springframework.content.commons.annotations.MimeType;
 import org.springframework.content.commons.annotations.OriginalFileName;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.data.mongodb.core.mapping.DBRef;
-import org.springframework.util.ReflectionUtils;
 
-import java.lang.reflect.Field;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ClassWalkerTest {
 
-    private static Field strField = ReflectionUtils.findField(TestClass.class, "str");
-    private static Field iField = ReflectionUtils.findField(TestClass.class, "i");
-    private static Field contentIdField = ReflectionUtils.findField(TestClass.class, "contentId");
-    private static Field contentLengthField = ReflectionUtils.findField(TestClass.class, "contentLength");
-    private static Field subContentIdField = ReflectionUtils.findField(TestSubClass.class, "contentId");
-    private static Field subContentLengthField = ReflectionUtils.findField(TestSubClass.class, "contentLength");
-    private static Field subSubContentIdField = ReflectionUtils.findField(TestSubSubClass.class, "contentId");
-    private static Field subSubContentLengthField = ReflectionUtils.findField(TestSubSubClass.class, "contentLength");
-
-    public static enum TestEnum {
-        A, B, C, D
-    }
-
     @SuppressWarnings("unused") // fixture shape for ClassWalker hierarchy tests
     public static class TestClass {
 
-        private TestEnum enums;
-
-        private TestClass circularRef;
-
-        private String str;
-        private int i;
         @ContentId
         private String contentId;
         @ContentLength
