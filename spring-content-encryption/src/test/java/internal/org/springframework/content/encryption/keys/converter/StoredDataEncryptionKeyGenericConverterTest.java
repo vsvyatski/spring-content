@@ -1,5 +1,6 @@
 package internal.org.springframework.content.encryption.keys.converter;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.content.encryption.keys.StoredDataEncryptionKey;
 import org.springframework.content.encryption.keys.StoredDataEncryptionKey.EncryptedSymmetricDataEncryptionKey;
@@ -25,7 +26,7 @@ public class StoredDataEncryptionKeyGenericConverterTest {
 
     @Test
     public void convertsBasedOnSourceType() {
-        var key = new UnencryptedSymmetricDataEncryptionKey("Test", new byte[0], new byte[0]);
+        var key = new UnencryptedSymmetricDataEncryptionKey("Test", ArrayUtils.EMPTY_BYTE_ARRAY, ArrayUtils.EMPTY_BYTE_ARRAY);
 
         var conversionResult = conversionService.convert(key, TypeDescriptor.valueOf(StoredDataEncryptionKey.class), TypeDescriptor.valueOf(byte[].class));
 
@@ -36,7 +37,7 @@ public class StoredDataEncryptionKeyGenericConverterTest {
 
     @Test
     public void convertsBasedOnTargetType_unencryptedKey() {
-        var key = new UnencryptedSymmetricDataEncryptionKey("Test", new byte[0], new byte[0]);
+        var key = new UnencryptedSymmetricDataEncryptionKey("Test", ArrayUtils.EMPTY_BYTE_ARRAY, ArrayUtils.EMPTY_BYTE_ARRAY);
         var encoded = UnencryptedSymmetricDataEncryptionKeyConverter.convert(key);
 
         var conversionResult = conversionService.convert(encoded, StoredDataEncryptionKey.class);
@@ -46,7 +47,7 @@ public class StoredDataEncryptionKeyGenericConverterTest {
 
     @Test
     public void convertsBasedOnTargetType_encryptedKey() {
-        var key = new EncryptedSymmetricDataEncryptionKey("test", "1", "1", "Test", new byte[0], new byte[0]);
+        var key = new EncryptedSymmetricDataEncryptionKey("test", "1", "1", "Test", ArrayUtils.EMPTY_BYTE_ARRAY, ArrayUtils.EMPTY_BYTE_ARRAY);
         var encoded = EncryptedSymmetricDataEncryptionKeyConverter.convert(key);
 
         var conversionResult = conversionService.convert(encoded, StoredDataEncryptionKey.class);

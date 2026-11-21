@@ -5,6 +5,7 @@ import internal.org.springframework.content.rest.boot.autoconfigure.ContentRestA
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import io.restassured.module.mockmvc.response.MockMvcResponse;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.http.HttpStatus;
 import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.BeforeEach;
@@ -128,7 +129,8 @@ public class EncryptionIT {
 
         @Override
         public EncryptedSymmetricDataEncryptionKey wrapEncryptionKey(EncryptionParameters dataEncryptionParameters) {
-            return new EncryptedSymmetricDataEncryptionKey("drop", "", "", dataEncryptionParameters.secretKey().getAlgorithm(), new byte[0], new byte[0]);
+            return new EncryptedSymmetricDataEncryptionKey("drop", "", "", dataEncryptionParameters.secretKey().getAlgorithm(),
+                ArrayUtils.EMPTY_BYTE_ARRAY, ArrayUtils.EMPTY_BYTE_ARRAY);
         }
 
         @Override
