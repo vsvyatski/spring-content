@@ -11,14 +11,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.content.azure.config.EnableAzureStorage;
-import org.springframework.content.test.support.TestSupportPackages;
-import org.springframework.content.test.support.jpa.*;
 import org.springframework.content.commons.io.DeletableResource;
 import org.springframework.content.commons.property.PropertyPath;
 import org.springframework.content.commons.store.GetResourceParams;
 import org.springframework.content.commons.store.SetContentParams;
 import org.springframework.content.commons.store.StoreAccessException;
 import org.springframework.content.commons.store.UnsetContentParams;
+import org.springframework.content.test.support.TestSupportPackages;
+import org.springframework.content.test.support.jpa.*;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -40,6 +40,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class AzureStorageIT {

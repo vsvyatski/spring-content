@@ -25,7 +25,6 @@ public class EnableAzureStorageTest {
 
     private static final BlobServiceClientBuilder builder = Azurite.getBlobServiceClientBuilder();
     private static final BlobContainerClient client = builder.buildClient().getBlobContainerClient("test");
-    private AzureStorageConfigurer configurer;
 
     static {
         if (!client.exists()) {
@@ -35,6 +34,7 @@ public class EnableAzureStorageTest {
         System.setProperty("spring.content.azure.bucket", "azure-test-bucket");
     }
 
+    private AzureStorageConfigurer configurer;
     private AnnotationConfigApplicationContext context;
 
     @Configuration
