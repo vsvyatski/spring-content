@@ -23,7 +23,6 @@ public class GenericBlobResourceTest {
 
     private GenericBlobResource resource;
 
-    private String id;
     private JdbcTemplate template;
     private PlatformTransactionManager txnMgr;
 
@@ -55,7 +54,7 @@ public class GenericBlobResourceTest {
                     when(statement.executeQuery(any())).thenReturn(rs);
 
                     when(rs.next()).thenThrow(new SQLException("badness"));
-                    resource = new GenericBlobResource(id, template, txnMgr);
+                    resource = new GenericBlobResource("some-id", template, txnMgr);
                     result = resource.exists();
                 }
 
@@ -85,7 +84,7 @@ public class GenericBlobResourceTest {
                     when(statement.executeQuery(any())).thenReturn(rs);
 
                     when(rs.next()).thenThrow(new SQLException("badness"));
-                    resource = new GenericBlobResource(id, template, txnMgr);
+                    resource = new GenericBlobResource("some-id", template, txnMgr);
                     result = resource.getInputStream();
                 }
 

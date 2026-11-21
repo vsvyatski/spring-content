@@ -29,9 +29,6 @@ public class DelegatingBlobResourceLoaderTest {
 
     private BlobResourceLoader customLoader;
 
-    private JdbcTemplate template;
-    private PlatformTransactionManager txnMgr;
-
     private Resource resource;
 
     @Nested
@@ -67,7 +64,7 @@ public class DelegatingBlobResourceLoaderTest {
             }
 
             @Nested
-            class GivenADatasourceThatDoesnTHaveAMatchingBlobResourceLoader {
+            class GivenADatasourceThatDoesntHaveAMatchingBlobResourceLoader {
                 @BeforeEach
                 void setUp() throws SQLException {
                     ds = mock(DataSource.class);

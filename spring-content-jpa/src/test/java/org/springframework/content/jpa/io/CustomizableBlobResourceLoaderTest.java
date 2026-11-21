@@ -22,15 +22,6 @@ public class CustomizableBlobResourceLoaderTest {
 
     private CustomizableBlobResourceLoader loader;
 
-    private JdbcTemplate template;
-    private PlatformTransactionManager txnMgr;
-
-    private DataSource ds;
-    private Connection conn;
-    private Statement stmt;
-
-    private Resource customDBResource;
-
     private Object result;
 
     @Nested
@@ -39,7 +30,7 @@ public class CustomizableBlobResourceLoaderTest {
         class GetDatabaseName {
             @BeforeEach
             void setUp() {
-                loader = new CustomizableBlobResourceLoader(template, txnMgr);
+                loader = new CustomizableBlobResourceLoader(mock(JdbcTemplate.class), mock(PlatformTransactionManager.class));
 
                 result = loader.getDatabaseName();
             }
@@ -54,13 +45,13 @@ public class CustomizableBlobResourceLoaderTest {
         class GetResource {
             @BeforeEach
             void setUp() throws SQLException {
-                ds = mock(DataSource.class);
-                template = new JdbcTemplate(ds);
-                txnMgr = new DataSourceTransactionManager(ds);
+                DataSource ds = mock(DataSource.class);
+                JdbcTemplate template = new JdbcTemplate(ds);
+                PlatformTransactionManager txnMgr = new DataSourceTransactionManager(ds);
 
-                conn = mock(Connection.class);
+                Connection conn = mock(Connection.class);
                 when(ds.getConnection()).thenReturn(conn);
-                stmt = mock(Statement.class);
+                Statement stmt = mock(Statement.class);
                 when(conn.createStatement()).thenReturn(stmt);
 
                 loader = new CustomizableBlobResourceLoader(template, txnMgr);
@@ -78,7 +69,7 @@ public class CustomizableBlobResourceLoaderTest {
         class GetClassLoader {
             @BeforeEach
             void setUp() {
-                loader = new CustomizableBlobResourceLoader(template, txnMgr);
+                loader = new CustomizableBlobResourceLoader(mock(JdbcTemplate.class), mock(PlatformTransactionManager.class));
 
                 result = loader.getClassLoader();
             }
@@ -93,26 +84,25 @@ public class CustomizableBlobResourceLoaderTest {
         class GivenAResourceProvider {
             @Nested
             class GetResource {
+                private Resource expectedResource;
+
                 @BeforeEach
                 void setUp() {
-                    customDBResource = mock(Resource.class);
+                    expectedResource = mock(Resource.class);
 
-                    ds = mock(DataSource.class);
-                    template = new JdbcTemplate(ds);
-                    txnMgr = new DataSourceTransactionManager(ds);
+                    DataSource ds = mock(DataSource.class);
+                    JdbcTemplate template = new JdbcTemplate(ds);
+                    PlatformTransactionManager txnMgr = new DataSourceTransactionManager(ds);
 
-                    loader = new CustomizableBlobResourceLoader(template, txnMgr);
-
-                    loader = new CustomizableBlobResourceLoader(template, txnMgr, "CUSTOM_DB", (l, t, txn) -> {
-                        return customDBResource;
-                    });
+                    loader = new CustomizableBlobResourceLoader(template, txnMgr, "CUSTOM_DB",
+                        (l, t, txn) -> expectedResource);
 
                     result = loader.getResource("some-id");
                 }
 
                 @Test
                 void shouldReturnTheResourceProvidersCustomResource() {
-                    assertThat(result).isEqualTo(customDBResource);
+                    assertThat(result).isSameAs(expectedResource);
                 }
             }
         }
