@@ -3,7 +3,6 @@ package internal.org.springframework.content.gcs.it;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.Storage;
-import com.google.cloud.storage.contrib.nio.testing.LocalStorageHelper;
 import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -96,7 +95,7 @@ public class GCPStorageWithEntityConverterIT {
 
         @Bean
         public static Storage storage() {
-            return LocalStorageHelper.getOptions().getService();
+            return GCSStorageContainer.getStorage();
         }
     }
 

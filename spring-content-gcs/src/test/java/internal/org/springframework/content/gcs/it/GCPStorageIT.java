@@ -4,7 +4,6 @@ import com.google.api.gax.paging.Page;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.Storage;
-import com.google.cloud.storage.contrib.nio.testing.LocalStorageHelper;
 import net.bytebuddy.utility.RandomString;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterEach;
@@ -13,7 +12,10 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.content.commons.io.DeletableResource;
 import org.springframework.content.commons.property.PropertyPath;
-import org.springframework.content.commons.store.*;
+import org.springframework.content.commons.store.GetResourceParams;
+import org.springframework.content.commons.store.SetContentParams;
+import org.springframework.content.commons.store.StoreAccessException;
+import org.springframework.content.commons.store.UnsetContentParams;
 import org.springframework.content.gcs.config.EnableGCPStorage;
 import org.springframework.content.test.support.TestSupportPackages;
 import org.springframework.content.test.support.jpa.*;
@@ -64,7 +66,7 @@ public class GCPStorageIT {
 
         @Bean
         public static Storage storage() {
-            return LocalStorageHelper.getOptions().getService();
+            return GCSStorageContainer.getStorage();
         }
     }
 

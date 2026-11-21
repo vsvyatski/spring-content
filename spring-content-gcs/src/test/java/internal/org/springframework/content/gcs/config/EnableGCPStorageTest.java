@@ -1,7 +1,7 @@
 package internal.org.springframework.content.gcs.config;
 
 import com.google.cloud.storage.Storage;
-import com.google.cloud.storage.contrib.nio.testing.LocalStorageHelper;
+import internal.org.springframework.content.gcs.it.GCSStorageContainer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -52,7 +52,7 @@ public class EnableGCPStorageTest {
 
         @Bean
         public static Storage storage() {
-            return LocalStorageHelper.getOptions().getService();
+            return GCSStorageContainer.getStorage();
         }
     }
 
