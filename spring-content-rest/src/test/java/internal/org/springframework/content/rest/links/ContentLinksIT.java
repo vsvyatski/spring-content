@@ -37,40 +37,40 @@ import static java.lang.String.format;
 public class ContentLinksIT {
 
     @Autowired
-    TestEntityRepository repository;
+    UuidSingleContentEntityRepository repository;
     @Autowired
-    TestEntityContentRepository contentRepository;
+    UuidSingleContentEntityStore contentRepository;
 
     @Autowired
-    TestEntity5Repository repository5;
+    DualContentRenditionEntityRepository repository5;
     @Autowired
-    TestEntity5Store store5;
+    DualContentRenditionEntityStore store5;
 
     @Autowired
-    TestEntity2Repository repository2;
+    AuditedNestedContentEntityRepository repository2;
     @Autowired
-    TestEntity2Store store2;
+    AuditedNestedContentEntityStore store2;
 
     @Autowired
-    TestEntity10Repository repository10;
+    EmbeddedDualContentEntityRepository repository10;
     @Autowired
-    TestEntity10Store store10;
+    EmbeddedDualContentEntityStore store10;
 
     @Autowired
-    TestEntity3Repository repository3;
+    JsonMappedContentEntityRepository repository3;
     @Autowired
-    TestEntity3ContentRepository contentRepository3;
+    JsonMappedContentEntityStore contentRepository3;
 
     @Autowired
     private WebApplicationContext context;
 
     private MockMvc mvc;
 
-    private TestEntity testEntity;
-    private TestEntity3 testEntity3;
-    private TestEntity5 testEntity5;
-    private TestEntity2 testEntity2;
-    private TestEntity10 testEntity10;
+    private UuidSingleContentEntity testEntity;
+    private JsonMappedContentEntity testEntity3;
+    private DualContentRenditionEntity testEntity5;
+    private AuditedNestedContentEntity testEntity2;
+    private EmbeddedDualContentEntity testEntity10;
 
     private ContentLinkTests contentLinkTests;
 
@@ -82,13 +82,13 @@ public class ContentLinksIT {
             @BeforeEach
             void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
-                testEntity3 = new TestEntity3();
+                testEntity3 = new JsonMappedContentEntity();
                 contentRepository3.setContent(testEntity3, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
                 testEntity3 = repository3.save(testEntity3);
                 this.setMvc(mvc);
                 this.setRepository(repository3);
                 this.setStore(contentRepository3);
-                this.setTestEntity(testEntity3);
+                this.setEntityUnderTest(testEntity3);
                 this.setUrl("/api/testEntity3s/" + testEntity3.getId());
                 this.setLinkRel("testEntity3");
                 this.setExpectedLinkRegex("http://localhost/api/testEntity3s/" + testEntity3.getId());
@@ -101,13 +101,13 @@ public class ContentLinksIT {
             @BeforeEach
             void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
-                testEntity5 = new TestEntity5();
+                testEntity5 = new DualContentRenditionEntity();
                 store5.setContent(testEntity5, PropertyPath.from("content"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
                 testEntity5 = repository5.save(testEntity5);
                 this.setMvc(mvc);
                 this.setRepository(repository5);
                 this.setStore(store5);
-                this.setTestEntity(testEntity5);
+                this.setEntityUnderTest(testEntity5);
                 this.setUrl("/api/testEntity5s/" + testEntity5.getId());
                 this.setLinkRel("content");
                 this.setExpectedLinkRegex(format("http://localhost/contentApi/testEntity5s/%s/content", testEntity5.getId()));
@@ -120,14 +120,14 @@ public class ContentLinksIT {
             @BeforeEach
             void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
-                testEntity2 = new TestEntity2();
+                testEntity2 = new AuditedNestedContentEntity();
                 testEntity2.getChild().setMimeType("text/plain");
                 store2.setContent(testEntity2, PropertyPath.from("child"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
                 testEntity2 = repository2.save(testEntity2);
                 this.setMvc(mvc);
                 this.setRepository(repository2);
                 this.setStore(store2);
-                this.setTestEntity(testEntity2);
+                this.setEntityUnderTest(testEntity2);
                 this.setUrl("/api/files/" + testEntity2.getId());
                 this.setLinkRel("child");
                 this.setExpectedLinkRegex(format("http://localhost/contentApi/files/%s/child", testEntity2.getId()));
@@ -140,7 +140,7 @@ public class ContentLinksIT {
             @BeforeEach
             void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
-                testEntity10 = new TestEntity10();
+                testEntity10 = new EmbeddedDualContentEntity();
                 store10.setContent(testEntity10, PropertyPath.from("child/content"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
                 testEntity10.getChild().setContentMimeType("text/plain");
                 testEntity10.getChild().setContentFileName("test");
@@ -150,7 +150,7 @@ public class ContentLinksIT {
                 this.setMvc(mvc);
                 this.setRepository(repository10);
                 this.setStore(store10);
-                this.setTestEntity(testEntity10);
+                this.setEntityUnderTest(testEntity10);
                 this.setUrl("/api/testEntity10s/" + testEntity10.getId());
                 this.setLinkRel("child/content");
                 this.setExpectedLinkRegex(format("http://localhost/contentApi/testEntity10s/%s/child/content", testEntity10.getId()));

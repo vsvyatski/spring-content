@@ -1,6 +1,6 @@
 package internal.org.springframework.content.rest.links;
 
-import internal.org.springframework.content.rest.support.TestEntityChild;
+import internal.org.springframework.content.rest.support.AuditedNestedContentChild;
 import jakarta.persistence.*;
 import jakarta.transaction.Transactional;
 import org.apache.commons.io.IOUtils;
@@ -348,7 +348,7 @@ public class ContentLinkRelIT {
         private @CreatedDate Date createdDate;
         private @LastModifiedDate Date modifiedDate;
 
-        private @Embedded TestEntityChild child = new TestEntityChild();
+        private @Embedded AuditedNestedContentChild child = new AuditedNestedContentChild();
 
         public Long getId() {
             return id;
@@ -382,11 +382,11 @@ public class ContentLinkRelIT {
             this.modifiedDate = modifiedDate;
         }
 
-        public TestEntityChild getChild() {
+        public AuditedNestedContentChild getChild() {
             return child;
         }
 
-        public void setChild(TestEntityChild child) {
+        public void setChild(AuditedNestedContentChild child) {
             this.child = child;
         }
     }
@@ -653,7 +653,7 @@ public class ContentLinkRelIT {
                     this.setMvc(mvc);
                     this.setRepository(repository);
                     this.setStore(contentRepository);
-                    this.setTestEntity(testEntity);
+                    this.setEntityUnderTest(testEntity);
                     this.setUrl("/api/testEntities/" + testEntity.getId());
                     this.setLinkRel("foo/content");
                     this.setExpectedLinkRegex(format("http://localhost/contentApi/testEntitiesContent/%s/content", testEntity.getId()));
@@ -672,7 +672,7 @@ public class ContentLinkRelIT {
                     this.setMvc(mvc);
                     this.setRepository(repository5);
                     this.setStore(store5);
-                    this.setTestEntity(testEntity5);
+                    this.setEntityUnderTest(testEntity5);
                     this.setUrl("/api/testEntity5s/" + testEntity5.getId());
                     this.setLinkRel("foo/contentProperty");
                     this.setExpectedLinkRegex(format("http://localhost/contentApi/testEntity5s/%s/contentProperty", testEntity5.getId()));
@@ -692,7 +692,7 @@ public class ContentLinkRelIT {
                     this.setMvc(mvc);
                     this.setRepository(repository2);
                     this.setStore(store2);
-                    this.setTestEntity(testEntity2);
+                    this.setEntityUnderTest(testEntity2);
                     this.setUrl("/api/files/" + testEntity2.getId());
                     this.setLinkRel("foo/child");
                     this.setExpectedLinkRegex(format("http://localhost/contentApi/files/%s/child", testEntity2.getId()));
@@ -715,7 +715,7 @@ public class ContentLinkRelIT {
                     this.setMvc(mvc);
                     this.setRepository(repository10);
                     this.setStore(store10);
-                    this.setTestEntity(testEntity10);
+                    this.setEntityUnderTest(testEntity10);
                     this.setUrl("/api/testEntity10s/" + testEntity10.getId());
                     this.setLinkRel("foo/child/content");
                     this.setExpectedLinkRegex(format("http://localhost/contentApi/testEntity10s/%s/child/content", testEntity10.getId()));

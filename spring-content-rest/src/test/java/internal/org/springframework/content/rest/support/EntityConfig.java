@@ -14,7 +14,7 @@ public class EntityConfig {
     public class EntityController {
 
         @Autowired
-        private TestEntity3Repository repo;
+        private JsonMappedContentEntityRepository repo;
 
         @RequestMapping(value = "/testEntity3s/{id}/softDelete", method = RequestMethod.DELETE)
         public void softDelete(@PathVariable("id") Long id) {

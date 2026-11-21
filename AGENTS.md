@@ -154,7 +154,10 @@ Change version for the whole reactor with:
 - Shared fixtures live in `spring-content-commons` test-jar (`org.springframework.content.test.support.**`).
   `@Enable*Stores` unit tests scan `TestSupportPackages` (`.jpa`, `.mongo`, `.fs`, `.s3`, `.gcs`, `.azure`) instead of
   inner `TestEntity` types. `EnableJpaStoresTest` asserts `DualContentJpaStringIdStore` (dual `@ContentId` entity in the
-  test-jar); other backends use single-content store marker interfaces.
+  test-jar); other backends use single-content store marker interfaces. REST module fixtures live under
+  `internal.org.springframework.content.rest.support` with purpose names (e.g. `JsonMappedContentEntity`);
+  `@RepositoryRestResource(path = …)` keeps legacy collection paths such as `testEntity3s` where tests depend on
+  them.
 
 When changing a store implementation, run that module’s `*Test` and, if behavior or IO/SQL is involved, the matching
 `*IT`.

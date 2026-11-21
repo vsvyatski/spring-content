@@ -69,9 +69,9 @@ public class ContentLinksResourceProcessorIT {
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
-                    PersistentEntity<?, ?> persistentEntity = repositories.getPersistentEntity(TestEntity4.class);
+                    PersistentEntity<?, ?> persistentEntity = repositories.getPersistentEntity(OneToOneLinkedContentEntity.class);
 
-                    TestEntity4 obj = new TestEntity4();
+                    OneToOneLinkedContentEntity obj = new OneToOneLinkedContentEntity();
                     obj.setId(999L);
                     obj.setContentId(UUID.randomUUID());
 
@@ -96,9 +96,9 @@ public class ContentLinksResourceProcessorIT {
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
-                    PersistentEntity<?, ?> persistentEntity = repositories.getPersistentEntity(TestEntity4.class);
+                    PersistentEntity<?, ?> persistentEntity = repositories.getPersistentEntity(OneToOneLinkedContentEntity.class);
 
-                    TestEntity4 obj = new TestEntity4();
+                    OneToOneLinkedContentEntity obj = new OneToOneLinkedContentEntity();
                     obj.setId(999L);
                     obj.setContentId(UUID.randomUUID());
 
@@ -132,9 +132,9 @@ public class ContentLinksResourceProcessorIT {
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
-                    PersistentEntity<?, ?> persistentEntity = repositories.getPersistentEntity(TestEntity4.class);
+                    PersistentEntity<?, ?> persistentEntity = repositories.getPersistentEntity(OneToOneLinkedContentEntity.class);
 
-                    TestEntity4 obj = new TestEntity4();
+                    OneToOneLinkedContentEntity obj = new OneToOneLinkedContentEntity();
                     obj.setId(999L);
                     obj.setContentId(UUID.randomUUID());
 
@@ -170,9 +170,9 @@ public class ContentLinksResourceProcessorIT {
             void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
-                PersistentEntity<?, ?> persistentEntity = repositories.getPersistentEntity(TestEntity5.class);
+                PersistentEntity<?, ?> persistentEntity = repositories.getPersistentEntity(DualContentRenditionEntity.class);
 
-                TestEntity5 obj = new TestEntity5();
+                DualContentRenditionEntity obj = new DualContentRenditionEntity();
                 obj.setId(999L);
                 UUID contentId = UUID.randomUUID();
                 obj.setContentId(contentId);
@@ -200,12 +200,12 @@ public class ContentLinksResourceProcessorIT {
             void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
-                PersistentEntity<?, ?> persistentEntity = repositories.getPersistentEntity(TestEntity2.class);
+                PersistentEntity<?, ?> persistentEntity = repositories.getPersistentEntity(AuditedNestedContentEntity.class);
 
-                TestEntity2 obj = new TestEntity2();
+                AuditedNestedContentEntity obj = new AuditedNestedContentEntity();
                 obj.setId(999L);
                 UUID contentId = UUID.randomUUID();
-                TestEntityChild child = new TestEntityChild();
+                AuditedNestedContentChild child = new AuditedNestedContentChild();
                 child.setContentId(contentId);
                 obj.setChild(child);
 
@@ -230,9 +230,9 @@ public class ContentLinksResourceProcessorIT {
             void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
-                PersistentEntity<?, ?> persistentEntity = persistentEntities.getRequiredPersistentEntity(TestEntity11.class);
+                PersistentEntity<?, ?> persistentEntity = persistentEntities.getRequiredPersistentEntity(RestResourcePackageEntity.class);
 
-                TestEntity11 testEntity11 = new TestEntity11();
+                RestResourcePackageEntity testEntity11 = new RestResourcePackageEntity();
                 testEntity11.setId(999L);
 
                 PersistentEntityResource.Builder build = PersistentEntityResource.build(testEntity11, persistentEntity);
@@ -257,10 +257,10 @@ public class ContentLinksResourceProcessorIT {
             void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
-                PersistentEntity<?, ?> persistentEntity = persistentEntities.getRequiredPersistentEntity(TestEntityChild.class);
+                PersistentEntity<?, ?> persistentEntity = persistentEntities.getRequiredPersistentEntity(AuditedNestedContentChild.class);
 
                 UUID contentId = UUID.randomUUID();
-                TestEntityChild child = new TestEntityChild();
+                AuditedNestedContentChild child = new AuditedNestedContentChild();
                 child.setContentId(contentId);
 
                 PersistentEntityResource.Builder build = PersistentEntityResource.build(child, persistentEntity);

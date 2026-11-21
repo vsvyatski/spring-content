@@ -34,21 +34,21 @@ import java.io.ByteArrayInputStream;
 public class EntityContentLinksIT {
 
     @Autowired
-    TestEntityRepository repository;
+    UuidSingleContentEntityRepository repository;
     @Autowired
-    TestEntityContentRepository contentRepository;
+    UuidSingleContentEntityStore contentRepository;
     @Autowired
-    TestEntity3Repository repository3;
+    JsonMappedContentEntityRepository repository3;
     @Autowired
-    TestEntity3ContentRepository contentRepository3;
+    JsonMappedContentEntityStore contentRepository3;
 
     @Autowired
     private WebApplicationContext context;
 
     private MockMvc mvc;
 
-    private TestEntity testEntity;
-    private TestEntity3 testEntity3;
+    private UuidSingleContentEntity testEntity;
+    private JsonMappedContentEntity testEntity3;
 
     private ContentLinkTests contentLinkTests;
 
@@ -60,13 +60,13 @@ public class EntityContentLinksIT {
             @BeforeEach
             void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
-                testEntity3 = new TestEntity3();
+                testEntity3 = new JsonMappedContentEntity();
                 contentRepository3.setContent(testEntity3, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
                 testEntity3 = repository3.save(testEntity3);
                 this.setMvc(mvc);
                 this.setRepository(repository3);
                 this.setStore(contentRepository3);
-                this.setTestEntity(testEntity3);
+                this.setEntityUnderTest(testEntity3);
                 this.setUrl("/testEntity3s/" + testEntity3.getId());
                 this.setLinkRel("content");
                 this.setExpectedLinkRegex(String.format("http://localhost/testEntity3s/%s/content", testEntity3.getId()));

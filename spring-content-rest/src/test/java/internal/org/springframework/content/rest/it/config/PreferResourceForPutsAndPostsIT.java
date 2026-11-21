@@ -1,8 +1,8 @@
 package internal.org.springframework.content.rest.it.config;
 
 import internal.org.springframework.content.rest.it.SecurityConfiguration;
-import internal.org.springframework.content.rest.support.TestEntity;
-import internal.org.springframework.content.rest.support.TestEntity2;
+import internal.org.springframework.content.rest.support.UuidSingleContentEntity;
+import internal.org.springframework.content.rest.support.AuditedNestedContentEntity;
 import internal.org.springframework.content.rest.support.mockstore.EnableMockStores;
 import internal.org.springframework.content.rest.support.mockstore.MockContentStore;
 import internal.org.springframework.content.rest.support.mockstore.MockStoreFactoryBean;
@@ -65,12 +65,12 @@ public class PreferResourceForPutsAndPostsIT {
     @Autowired
     private WebApplicationContext webApplicationContext;
 
-    private TestEntity2 existingClaim;
+    private AuditedNestedContentEntity existingClaim;
 
-    public interface PreferResourceForPutsAndPostsRepository extends CrudRepository<TestEntity, Long> {
+    public interface PreferResourceForPutsAndPostsRepository extends CrudRepository<UuidSingleContentEntity, Long> {
     }
 
-    private interface PreferResourceForPutsAndPostsStore extends MockContentStore<TestEntity, UUID> {
+    private interface PreferResourceForPutsAndPostsStore extends MockContentStore<UuidSingleContentEntity, UUID> {
     }
 
     @SpringBootApplication(exclude = {
@@ -143,7 +143,7 @@ public class PreferResourceForPutsAndPostsIT {
                 return new ContentRestConfigurer() {
                     @Override
                     public void configure(RestConfiguration config) {
-                        config.forDomainType(TestEntity.class).putAndPostPreferResource();
+                        config.forDomainType(UuidSingleContentEntity.class).putAndPostPreferResource();
                     }
                 };
             }
@@ -159,7 +159,7 @@ public class PreferResourceForPutsAndPostsIT {
 
         @Test
         void shouldUseTheSetContentSResourceMethod() {
-            TestEntity tentity = new TestEntity();
+            UuidSingleContentEntity tentity = new UuidSingleContentEntity();
             tentity = repo.save(tentity);
 
             given()
@@ -170,7 +170,7 @@ public class PreferResourceForPutsAndPostsIT {
 
             MockStoreFactoryBean storeFactory = context.getBean(MockStoreFactoryBean.class);
 
-            verify(storeFactory.getMock()).setContent(org.mockito.ArgumentMatchers.isA(TestEntity.class), org.mockito.ArgumentMatchers.isA(PropertyPath.class), (Resource) org.mockito.ArgumentMatchers.isA(Resource.class));
+            verify(storeFactory.getMock()).setContent(org.mockito.ArgumentMatchers.isA(UuidSingleContentEntity.class), org.mockito.ArgumentMatchers.isA(PropertyPath.class), (Resource) org.mockito.ArgumentMatchers.isA(Resource.class));
         }
     }
 }

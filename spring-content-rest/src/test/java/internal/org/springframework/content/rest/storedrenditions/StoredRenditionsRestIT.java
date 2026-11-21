@@ -1,9 +1,9 @@
 package internal.org.springframework.content.rest.storedrenditions;
 
 import internal.org.springframework.content.rest.support.StoreConfig;
-import internal.org.springframework.content.rest.support.TestEntity5;
-import internal.org.springframework.content.rest.support.TestEntity5Repository;
-import internal.org.springframework.content.rest.support.TestEntity5Store;
+import internal.org.springframework.content.rest.support.DualContentRenditionEntity;
+import internal.org.springframework.content.rest.support.DualContentRenditionEntityRepository;
+import internal.org.springframework.content.rest.support.DualContentRenditionEntityStore;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -56,11 +56,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class StoredRenditionsRestIT {
 
     @Autowired
-    private TestEntity5Repository repo;
+    private DualContentRenditionEntityRepository repo;
     @Autowired
-    private TestEntity5Store store;
+    private DualContentRenditionEntityStore store;
 
-    private TestEntity5 testEntity5;
+    private DualContentRenditionEntity testEntity5;
 
     @Autowired
     private WebApplicationContext context;
@@ -112,15 +112,15 @@ public class StoredRenditionsRestIT {
     public static class TestEventHandler {
 
         @Autowired
-        private TestEntity5Repository repo;
+        private DualContentRenditionEntityRepository repo;
 
         @Autowired
-        private TestEntity5Store store;
+        private DualContentRenditionEntityStore store;
 
         @HandleAfterSetContent
         public void onAfterSetContent(AfterSetContentEvent event) throws IOException {
 
-            TestEntity5 entity = (TestEntity5) event.getSource();
+            DualContentRenditionEntity entity = (DualContentRenditionEntity) event.getSource();
 
             long renderedLength = 0;
             try (InputStream inputStream = store.getContent(entity, PropertyPath.from("content"))) {
@@ -146,7 +146,7 @@ public class StoredRenditionsRestIT {
         @HandleBeforeUnsetContent
         public void onBeforeUnsetContent(BeforeUnsetContentEvent event) throws IOException {
 
-            TestEntity5 entity = (TestEntity5) event.getSource();
+            DualContentRenditionEntity entity = (DualContentRenditionEntity) event.getSource();
 
             ((DeletableResource) store.getResource(entity, PropertyPath.from("rendition"))).delete();
 
@@ -166,7 +166,7 @@ public class StoredRenditionsRestIT {
                 void setUp() throws Exception {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
-                    testEntity5 = repo.save(new TestEntity5());
+                    testEntity5 = repo.save(new DualContentRenditionEntity());
 
                     mvc.perform(put("/testEntity5s/" + testEntity5.getId() + "/content").content("foo").contentType("text/plain")).andExpect(status().is2xxSuccessful());
                 }
@@ -191,7 +191,7 @@ public class StoredRenditionsRestIT {
                     void setUp() throws Exception {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
-                        testEntity5 = repo.save(new TestEntity5());
+                        testEntity5 = repo.save(new DualContentRenditionEntity());
 
                         mvc.perform(put("/testEntity5s/" + testEntity5.getId() + "/content").content("foo").contentType("text/plain")).andExpect(status().is2xxSuccessful());
                     }
@@ -215,7 +215,7 @@ public class StoredRenditionsRestIT {
                     void setUp() throws Exception {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
-                        testEntity5 = repo.save(new TestEntity5());
+                        testEntity5 = repo.save(new DualContentRenditionEntity());
 
                         mvc.perform(put("/testEntity5s/" + testEntity5.getId() + "/content").content("foo").contentType("text/plain")).andExpect(status().is2xxSuccessful());
                     }
@@ -237,7 +237,7 @@ public class StoredRenditionsRestIT {
                     void setUp() throws Exception {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
-                        testEntity5 = repo.save(new TestEntity5());
+                        testEntity5 = repo.save(new DualContentRenditionEntity());
 
                         mvc.perform(put("/testEntity5s/" + testEntity5.getId() + "/content").content("foo").contentType("text/plain")).andExpect(status().is2xxSuccessful());
                     }
@@ -248,7 +248,7 @@ public class StoredRenditionsRestIT {
 
                         mvc.perform(delete("/testEntity5s/" + testEntity5.getId() + "/content")).andExpect(status().isNoContent());
 
-                        Optional<TestEntity5> fetched = repo.findById(id);
+                        Optional<DualContentRenditionEntity> fetched = repo.findById(id);
                         assertThat(fetched.isPresent()).isTrue();
                         assertThat(fetched.get().getContentId()).isNull();
                         assertThat(fetched.get().getContentLen()).isNull();

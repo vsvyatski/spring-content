@@ -42,7 +42,7 @@ public class ContentLinkTests {
         this.store = store;
     }
 
-    public void setTestEntity(Object testEntity) {
+    public void setEntityUnderTest(Object testEntity) {
         this.testEntity = testEntity;
     }
 

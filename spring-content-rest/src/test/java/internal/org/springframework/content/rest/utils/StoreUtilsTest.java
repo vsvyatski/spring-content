@@ -1,7 +1,7 @@
 package internal.org.springframework.content.rest.utils;
 
 import internal.org.springframework.content.commons.store.service.StoreInfoImpl;
-import internal.org.springframework.content.rest.support.TestEntity;
+import internal.org.springframework.content.rest.support.UuidSingleContentEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -32,15 +32,15 @@ public class StoreUtilsTest {
     public interface TestStoreWithPath extends Store<String> {
     }
 
-    public interface TestContentStore extends ContentStore<TestEntity, UUID> {
+    public interface TestContentStore extends ContentStore<UuidSingleContentEntity, UUID> {
     }
 
     @StoreRestResource
-    public interface ContentStoreWithAnnotation extends ContentStore<TestEntity, UUID> {
+    public interface ContentStoreWithAnnotation extends ContentStore<UuidSingleContentEntity, UUID> {
     }
 
     @StoreRestResource(path = "some-other-path")
-    public interface ContentStoreWithAnotherPath extends ContentStore<TestEntity, UUID> {
+    public interface ContentStoreWithAnotherPath extends ContentStore<UuidSingleContentEntity, UUID> {
     }
 
     @Nested
@@ -50,14 +50,14 @@ public class StoreUtilsTest {
             @BeforeEach
             void setUp() {
                 ContentStore storeImpl = mock(TestContentStore.class);
-                info = new StoreInfoImpl(TestContentStore.class, TestEntity.class, storeImpl);
+                info = new StoreInfoImpl(TestContentStore.class, UuidSingleContentEntity.class, storeImpl);
 
                 storePath = StoreUtils.storePath(info);
             }
 
             @Test
             void shouldReturnReturnTestEntities() {
-                assertThat(storePath).isEqualTo("testEntities");
+                assertThat(storePath).isEqualTo("uuidSingleContentEntities");
             }
         }
 
@@ -67,14 +67,14 @@ public class StoreUtilsTest {
             void setUp() {
                 ContentStore storeImpl = mock(ContentStoreWithAnnotation.class);
                 info = new StoreInfoImpl(ContentStoreWithAnnotation.class,
-                        TestEntity.class, storeImpl);
+                        UuidSingleContentEntity.class, storeImpl);
 
                 storePath = StoreUtils.storePath(info);
             }
 
             @Test
             void shouldReturnReturnTheSpecifiedPath() {
-                assertThat(storePath).isEqualTo("testEntities");
+                assertThat(storePath).isEqualTo("uuidSingleContentEntities");
             }
         }
 
@@ -83,7 +83,7 @@ public class StoreUtilsTest {
             @BeforeEach
             void setUp() {
                 ContentStore storeImpl = mock(ContentStoreWithAnotherPath.class);
-                info = new StoreInfoImpl(ContentStoreWithAnotherPath.class, TestEntity.class, storeImpl);
+                info = new StoreInfoImpl(ContentStoreWithAnotherPath.class, UuidSingleContentEntity.class, storeImpl);
 
                 storePath = StoreUtils.storePath(info);
             }

@@ -1,6 +1,6 @@
 package internal.org.springframework.content.rest.storeresolver;
 
-import internal.org.springframework.content.rest.support.TestEntity2;
+import internal.org.springframework.content.rest.support.AuditedNestedContentEntity;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpStatus;
@@ -40,7 +40,7 @@ public class StoreResolverRestConfigurationIT {
 
     private Application.TEntity tEntity;
 
-    private TestEntity2 existingClaim;
+    private AuditedNestedContentEntity existingClaim;
 
     @Nested
     class JpaRest {

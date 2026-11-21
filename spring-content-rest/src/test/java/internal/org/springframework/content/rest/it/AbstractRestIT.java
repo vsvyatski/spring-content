@@ -1,9 +1,9 @@
 package internal.org.springframework.content.rest.it;
 
-import internal.org.springframework.content.rest.support.TestEntity2;
-import internal.org.springframework.content.rest.support.TestEntity2JpaStore;
-import internal.org.springframework.content.rest.support.TestEntity2Repository;
-import internal.org.springframework.content.rest.support.TestEntityChild;
+import internal.org.springframework.content.rest.support.AuditedNestedContentEntity;
+import internal.org.springframework.content.rest.support.AuditedNestedContentEntityJpaStore;
+import internal.org.springframework.content.rest.support.AuditedNestedContentEntityRepository;
+import internal.org.springframework.content.rest.support.AuditedNestedContentChild;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import net.bytebuddy.utility.RandomString;
 import org.apache.http.HttpStatus;
@@ -26,13 +26,13 @@ public abstract class AbstractRestIT {
     @LocalServerPort
     int port;
     @Autowired
-    private TestEntity2Repository claimRepo;
+    private AuditedNestedContentEntityRepository claimRepo;
     @Autowired
-    private TestEntity2JpaStore claimFormStore;
+    private AuditedNestedContentEntityJpaStore claimFormStore;
     @Autowired
     private WebApplicationContext webApplicationContext;
 
-    private TestEntity2 existingClaim;
+    private AuditedNestedContentEntity existingClaim;
 
     public static String getContextName(Class<?> configClass) {
         return configClass.getSimpleName().replaceAll("Config", "");
@@ -54,19 +54,19 @@ public abstract class AbstractRestIT {
                     RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
 
                     // delete any existing claim forms
-                    Iterable<TestEntity2> existingClaims = claimRepo.findAll();
-                    for (TestEntity2 existingClaim : existingClaims) {
+                    Iterable<AuditedNestedContentEntity> existingClaims = claimRepo.findAll();
+                    for (AuditedNestedContentEntity existingClaim : existingClaims) {
                         if (existingClaim.getChild() != null) {
                             claimFormStore.unsetContent(existingClaim, PropertyPath.from("child"));
                         }
                     }
 
                     // and claims
-                    for (TestEntity2 existingClaim : existingClaims) {
+                    for (AuditedNestedContentEntity existingClaim : existingClaims) {
                         claimRepo.delete(existingClaim);
                     }
 
-                    existingClaim = new TestEntity2();
+                    existingClaim = new AuditedNestedContentEntity();
                     claimRepo.save(existingClaim);
                 }
 
@@ -108,22 +108,22 @@ public abstract class AbstractRestIT {
                         RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
 
                         // delete any existing claim forms
-                        Iterable<TestEntity2> existingClaims = claimRepo.findAll();
-                        for (TestEntity2 existingClaim : existingClaims) {
+                        Iterable<AuditedNestedContentEntity> existingClaims = claimRepo.findAll();
+                        for (AuditedNestedContentEntity existingClaim : existingClaims) {
                             if (existingClaim.getChild() != null) {
                                 claimFormStore.unsetContent(existingClaim, PropertyPath.from("child"));
                             }
                         }
 
                         // and claims
-                        for (TestEntity2 existingClaim : existingClaims) {
+                        for (AuditedNestedContentEntity existingClaim : existingClaims) {
                             claimRepo.delete(existingClaim);
                         }
 
-                        existingClaim = new TestEntity2();
+                        existingClaim = new AuditedNestedContentEntity();
                         claimRepo.save(existingClaim);
 
-                        existingClaim.setChild(new TestEntityChild());
+                        existingClaim.setChild(new AuditedNestedContentChild());
                         existingClaim.getChild().setMimeType("text/plain");
                         claimFormStore.setContent(existingClaim, PropertyPath.from("child"), new ByteArrayInputStream("This is plain text content!".getBytes()));
                         claimRepo.save(existingClaim);

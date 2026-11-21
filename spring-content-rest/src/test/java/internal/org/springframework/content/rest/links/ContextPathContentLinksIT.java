@@ -1,8 +1,8 @@
 package internal.org.springframework.content.rest.links;
 
-import internal.org.springframework.content.rest.support.TestEntity3;
-import internal.org.springframework.content.rest.support.TestEntity3ContentRepository;
-import internal.org.springframework.content.rest.support.TestEntity3Repository;
+import internal.org.springframework.content.rest.support.JsonMappedContentEntity;
+import internal.org.springframework.content.rest.support.JsonMappedContentEntityStore;
+import internal.org.springframework.content.rest.support.JsonMappedContentEntityRepository;
 import internal.org.springframework.content.rest.support.config.JpaInfrastructureConfig;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -50,9 +50,9 @@ import java.nio.charset.StandardCharsets;
 public class ContextPathContentLinksIT {
 
     @Autowired
-    TestEntity3Repository repository3;
+    JsonMappedContentEntityRepository repository3;
     @Autowired
-    TestEntity3ContentRepository contentRepository3;
+    JsonMappedContentEntityStore contentRepository3;
 
     @Autowired
     private WebApplicationContext context;
@@ -114,13 +114,13 @@ public class ContextPathContentLinksIT {
             @BeforeEach
             void setUp() {
                 MockMvc mvc = MockMvcBuilders.webAppContextSetup(context).build();
-                TestEntity3 testEntity3 = new TestEntity3();
+                JsonMappedContentEntity testEntity3 = new JsonMappedContentEntity();
                 contentRepository3.setContent(testEntity3, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
                 testEntity3 = repository3.save(testEntity3);
                 this.setMvc(mvc);
                 this.setRepository(repository3);
                 this.setStore(contentRepository3);
-                this.setTestEntity(testEntity3);
+                this.setEntityUnderTest(testEntity3);
                 this.setUrl("/contextPath/testEntity3s/" + testEntity3.getId());
                 this.setContextPath("/contextPath");
                 this.setLinkRel("testEntity3");

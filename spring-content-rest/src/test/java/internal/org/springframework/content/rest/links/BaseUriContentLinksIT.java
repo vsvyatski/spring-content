@@ -36,20 +36,20 @@ import static java.lang.String.format;
 public class BaseUriContentLinksIT {
 
     @Autowired
-    TestEntityRepository repository;
+    UuidSingleContentEntityRepository repository;
     @Autowired
-    TestEntityContentRepository contentRepository;
+    UuidSingleContentEntityStore contentRepository;
     @Autowired
-    TestEntity3Repository repository3;
+    JsonMappedContentEntityRepository repository3;
     @Autowired
-    TestEntity3ContentRepository contentRepository3;
+    JsonMappedContentEntityStore contentRepository3;
 
     @Autowired
     private WebApplicationContext context;
 
     private MockMvc mvc;
 
-    private TestEntity3 testEntity3;
+    private JsonMappedContentEntity testEntity3;
 
     private ContentLinkTests contentLinkTests;
 
@@ -61,13 +61,13 @@ public class BaseUriContentLinksIT {
             @BeforeEach
             void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
-                testEntity3 = new TestEntity3();
+                testEntity3 = new JsonMappedContentEntity();
                 contentRepository3.setContent(testEntity3, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
                 testEntity3 = repository3.save(testEntity3);
                 this.setMvc(mvc);
                 this.setRepository(repository3);
                 this.setStore(contentRepository3);
-                this.setTestEntity(testEntity3);
+                this.setEntityUnderTest(testEntity3);
                 this.setUrl("/api/testEntity3s/" + testEntity3.getId());
                 this.setLinkRel("content");
                 this.setExpectedLinkRegex(format("http://localhost/contentApi/testEntity3s/%s/content", testEntity3.getId()));

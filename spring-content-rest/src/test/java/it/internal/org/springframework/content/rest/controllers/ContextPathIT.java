@@ -1,8 +1,8 @@
 package it.internal.org.springframework.content.rest.controllers;
 
-import internal.org.springframework.content.rest.support.TestEntity3;
-import internal.org.springframework.content.rest.support.TestEntity3ContentRepository;
-import internal.org.springframework.content.rest.support.TestEntity3Repository;
+import internal.org.springframework.content.rest.support.JsonMappedContentEntity;
+import internal.org.springframework.content.rest.support.JsonMappedContentEntityStore;
+import internal.org.springframework.content.rest.support.JsonMappedContentEntityRepository;
 import internal.org.springframework.content.rest.support.config.JpaInfrastructureConfig;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,10 +48,10 @@ import java.nio.charset.StandardCharsets;
 public class ContextPathIT {
 
     @Autowired
-    private TestEntity3Repository repo3;
+    private JsonMappedContentEntityRepository repo3;
 
     @Autowired
-    private TestEntity3ContentRepository store3;
+    private JsonMappedContentEntityStore store3;
 
     @Autowired
     private WebApplicationContext context;
@@ -143,7 +143,7 @@ public class ContextPathIT {
                 @BeforeEach
                 void setUp() {
                     MockMvc mvc = MockMvcBuilders.webAppContextSetup(context).build();
-                    TestEntity3 testEntity3 = repo3.save(new TestEntity3());
+                    JsonMappedContentEntity testEntity3 = repo3.save(new JsonMappedContentEntity());
                     testEntity3.name = "tests";
                     testEntity3 = repo3.save(testEntity3);
                     this.setMvc(mvc);

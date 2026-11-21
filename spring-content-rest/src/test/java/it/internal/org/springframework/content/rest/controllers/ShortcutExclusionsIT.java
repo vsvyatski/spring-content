@@ -3,8 +3,8 @@ package it.internal.org.springframework.content.rest.controllers;
 import com.theoryinpractise.halbuilder.api.ReadableRepresentation;
 import com.theoryinpractise.halbuilder.api.RepresentationFactory;
 import com.theoryinpractise.halbuilder.standard.StandardRepresentationFactory;
-import internal.org.springframework.content.rest.support.TestEntity3;
-import internal.org.springframework.content.rest.support.TestEntity3Repository;
+import internal.org.springframework.content.rest.support.JsonMappedContentEntity;
+import internal.org.springframework.content.rest.support.JsonMappedContentEntityRepository;
 import internal.org.springframework.content.rest.support.config.JpaInfrastructureConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -49,14 +49,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class ShortcutExclusionsIT {
 
     @Autowired
-    private TestEntity3Repository repo;
+    private JsonMappedContentEntityRepository repo;
 
     @Autowired
     private WebApplicationContext context;
 
     private MockMvc mvc;
 
-    private TestEntity3 testEntity;
+    private JsonMappedContentEntity testEntity;
 
     @Configuration
     @EnableJpaRepositories(basePackages = "internal.org.springframework.content.rest.support")
@@ -98,7 +98,7 @@ public class ShortcutExclusionsIT {
             void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
-                testEntity = repo.save(new TestEntity3());
+                testEntity = repo.save(new JsonMappedContentEntity());
                 testEntity = repo.save(testEntity);
             }
 

@@ -36,7 +36,7 @@ public class StoreConfig extends JpaInfrastructureConfig {
                     .allowedMethods("GET", "PUT", "POST") //
                     .allowedOrigins("http://far.far.away");
 
-            config.withEntityLookup().forRepository(TestEntity7Repository.class, TestEntity7::getName, TestEntity7Repository::findByName);
+            config.withEntityLookup().forRepository(NaturalIdContentEntityRepository.class, NaturalIdContentEntity::getName, NaturalIdContentEntityRepository::findByName);
         });
     }
 

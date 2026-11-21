@@ -1,7 +1,7 @@
 package internal.org.springframework.content.rest.it.cachecontrol;
 
 import internal.org.springframework.content.rest.it.SecurityConfiguration;
-import internal.org.springframework.content.rest.support.TestEntity;
+import internal.org.springframework.content.rest.support.UuidSingleContentEntity;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -66,10 +66,10 @@ public class CacheControlIT {
     @Autowired
     private WebApplicationContext webApplicationContext;
 
-    public interface CacheControlRepository extends CrudRepository<TestEntity, Long> {
+    public interface CacheControlRepository extends CrudRepository<UuidSingleContentEntity, Long> {
     }
 
-    private interface CacheControlStore extends FileSystemContentStore<TestEntity, UUID> {
+    private interface CacheControlStore extends FileSystemContentStore<UuidSingleContentEntity, UUID> {
     }
 
     @SpringBootApplication(exclude = {
@@ -161,7 +161,7 @@ public class CacheControlIT {
 
         @Test
         void givenThePatternMatchesItShouldApplyTheConfiguredCacheSettings() {
-            TestEntity entity = new TestEntity();
+            UuidSingleContentEntity entity = new UuidSingleContentEntity();
             entity = repo.save(entity);
             entity = store.setContent(entity, new ByteArrayInputStream("some content".getBytes()));
             entity.setMimeType("text/plain");
@@ -178,7 +178,7 @@ public class CacheControlIT {
 
         @Test
         void givenThePatternDoesntMatchItShouldNotApplyTheConfiguredCacheSettings() {
-            TestEntity entity = new TestEntity();
+            UuidSingleContentEntity entity = new UuidSingleContentEntity();
             entity = repo.save(entity);
             entity = store.setContent(entity, new ByteArrayInputStream("some content".getBytes()));
             entity.setMimeType("text/plain");

@@ -38,21 +38,21 @@ public class BaseUriIT {
 
     // different exported URI
     @Autowired
-    private TestEntityRepository repository;
+    private UuidSingleContentEntityRepository repository;
     @Autowired
-    private TestEntityContentRepository contentRepository;
+    private UuidSingleContentEntityStore contentRepository;
 
     // same exported URI
     @Autowired
-    private TestEntity3Repository repo3;
+    private JsonMappedContentEntityRepository repo3;
     @Autowired
-    private TestEntity3ContentRepository store3;
+    private JsonMappedContentEntityStore store3;
 
     // same exported URI
     @Autowired
-    private TestEntity4Repository repo4;
+    private OneToOneLinkedContentEntityRepository repo4;
     @Autowired
-    private TestEntity4ContentRepository store4;
+    private OneToOneLinkedContentEntityStore store4;
 
     @Autowired
     private TestStore store;
@@ -62,9 +62,9 @@ public class BaseUriIT {
 
     private MockMvc mvc;
 
-    private TestEntity testEntity;
-    private TestEntity3 testEntity3;
-    private TestEntity4 testEntity4;
+    private UuidSingleContentEntity testEntity;
+    private JsonMappedContentEntity testEntity3;
+    private OneToOneLinkedContentEntity testEntity4;
 
     private Version version;
     private LastModifiedDate lastModifiedDate;
@@ -83,7 +83,7 @@ public class BaseUriIT {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
-                    testEntity3 = repo3.save(new TestEntity3());
+                    testEntity3 = repo3.save(new JsonMappedContentEntity());
                     testEntity3.name = "tests";
                     testEntity3 = repo3.save(testEntity3);
                     this.setMvc(mvc);
@@ -100,7 +100,7 @@ public class BaseUriIT {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
-                    testEntity3 = repo3.save(new TestEntity3());
+                    testEntity3 = repo3.save(new JsonMappedContentEntity());
                     testEntity3.name = "tests";
                     testEntity3 = repo3.save(testEntity3);
                     this.setMvc(mvc);
@@ -117,7 +117,7 @@ public class BaseUriIT {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
-                    testEntity = repository.save(new TestEntity());
+                    testEntity = repository.save(new UuidSingleContentEntity());
                     this.setMvc(mvc);
                     this.setUrl("/contentApi/testEntitiesContent/" + testEntity.getId());
                     this.setEntity(testEntity);
@@ -132,7 +132,7 @@ public class BaseUriIT {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
-                    testEntity = repository.save(new TestEntity());
+                    testEntity = repository.save(new UuidSingleContentEntity());
                     this.setMvc(mvc);
                     this.setUrl("/contentApi/testEntitiesContent/" + testEntity.getId());
                 }
@@ -144,7 +144,7 @@ public class BaseUriIT {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
-                    testEntity4 = new TestEntity4();
+                    testEntity4 = new OneToOneLinkedContentEntity();
                     testEntity4 = store4.setContent(testEntity4, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
                     testEntity4.mimeType = "text/plain";
                     testEntity4 = repo4.save(testEntity4);
@@ -167,7 +167,7 @@ public class BaseUriIT {
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
                     String content = "Hello Spring Content LastModifiedDate World!";
-                    testEntity4 = new TestEntity4();
+                    testEntity4 = new OneToOneLinkedContentEntity();
                     testEntity4 = store4.setContent(testEntity4, new ByteArrayInputStream(content.getBytes()));
                     testEntity4.mimeType = "text/plain";
                     testEntity4 = repo4.save(testEntity4);

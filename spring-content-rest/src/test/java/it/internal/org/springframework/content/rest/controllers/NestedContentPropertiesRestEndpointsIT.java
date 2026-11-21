@@ -1,9 +1,9 @@
 package it.internal.org.springframework.content.rest.controllers;
 
 import internal.org.springframework.content.rest.support.StoreConfig;
-import internal.org.springframework.content.rest.support.TestEntity10;
-import internal.org.springframework.content.rest.support.TestEntity10Repository;
-import internal.org.springframework.content.rest.support.TestEntity10Store;
+import internal.org.springframework.content.rest.support.EmbeddedDualContentEntity;
+import internal.org.springframework.content.rest.support.EmbeddedDualContentEntityRepository;
+import internal.org.springframework.content.rest.support.EmbeddedDualContentEntityStore;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -56,11 +56,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class NestedContentPropertiesRestEndpointsIT {
 
     @Autowired
-    private TestEntity10Repository repository;
+    private EmbeddedDualContentEntityRepository repository;
     @Autowired
-    private TestEntity10Store store;
+    private EmbeddedDualContentEntityStore store;
 
-    private TestEntity10 testEntity10;
+    private EmbeddedDualContentEntity testEntity10;
 
     @Autowired
     private WebApplicationContext context;
@@ -86,7 +86,7 @@ public class NestedContentPropertiesRestEndpointsIT {
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
-                    testEntity10 = repository.save(new TestEntity10());
+                    testEntity10 = repository.save(new EmbeddedDualContentEntity());
                 }
 
                 @Test
@@ -103,7 +103,7 @@ public class NestedContentPropertiesRestEndpointsIT {
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
-                    testEntity10 = repository.save(new TestEntity10());
+                    testEntity10 = repository.save(new EmbeddedDualContentEntity());
                 }
 
                 @Test
@@ -122,7 +122,7 @@ public class NestedContentPropertiesRestEndpointsIT {
                     void setUp() {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
-                        testEntity10 = repository.save(new TestEntity10());
+                        testEntity10 = repository.save(new EmbeddedDualContentEntity());
                     }
 
                     @Test
@@ -139,7 +139,7 @@ public class NestedContentPropertiesRestEndpointsIT {
                     void setUp() {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
-                        testEntity10 = repository.save(new TestEntity10());
+                        testEntity10 = repository.save(new EmbeddedDualContentEntity());
                     }
 
                     @Test
@@ -150,7 +150,7 @@ public class NestedContentPropertiesRestEndpointsIT {
                                                 .contentType("text/plain"))
                                 .andExpect(status().is2xxSuccessful());
 
-                        Optional<TestEntity10> fetched = repository.findById(testEntity10.getId());
+                        Optional<EmbeddedDualContentEntity> fetched = repository.findById(testEntity10.getId());
                         assertThat(fetched.isPresent()).isTrue();
                         assertThat(fetched.get().getChild().contentId).isNotNull();
                         assertThat(fetched.get().getChild().contentLen).isEqualTo(31L);
@@ -182,7 +182,7 @@ public class NestedContentPropertiesRestEndpointsIT {
                     void setUp() {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
-                        testEntity10 = repository.save(new TestEntity10());
+                        testEntity10 = repository.save(new EmbeddedDualContentEntity());
                     }
 
                     @Test
@@ -194,7 +194,7 @@ public class NestedContentPropertiesRestEndpointsIT {
                                                 .contentType("application/json"))
                                 .andExpect(status().isCreated());
 
-                        Optional<TestEntity10> fetched = repository.findById(testEntity10.getId());
+                        Optional<EmbeddedDualContentEntity> fetched = repository.findById(testEntity10.getId());
                         assertThat(fetched.isPresent()).isTrue();
                         assertThat(fetched.get().getChild().getContentId()).isNotNull();
                         assertThat(fetched.get().getChild().getContentLen()).isEqualTo(45L);
@@ -214,7 +214,7 @@ public class NestedContentPropertiesRestEndpointsIT {
                     void setUp() throws IOException {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
-                        testEntity10 = repository.save(new TestEntity10());
+                        testEntity10 = repository.save(new EmbeddedDualContentEntity());
 
                         String content = "Hello Spring Content World!";
                         testEntity10.getChild().contentMimeType = "text/plain";
@@ -261,7 +261,7 @@ public class NestedContentPropertiesRestEndpointsIT {
                     void setUp() throws IOException {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
-                        testEntity10 = repository.save(new TestEntity10());
+                        testEntity10 = repository.save(new EmbeddedDualContentEntity());
 
                         String content = "Hello Spring Content World!";
                         testEntity10.getChild().contentMimeType = "text/plain";
@@ -307,7 +307,7 @@ public class NestedContentPropertiesRestEndpointsIT {
                     void setUp() throws IOException {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
-                        testEntity10 = repository.save(new TestEntity10());
+                        testEntity10 = repository.save(new EmbeddedDualContentEntity());
 
                         String content = "Hello Spring Content World!";
                         testEntity10.getChild().contentMimeType = "text/plain";
@@ -354,7 +354,7 @@ public class NestedContentPropertiesRestEndpointsIT {
                     void setUp() throws IOException {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
-                        testEntity10 = repository.save(new TestEntity10());
+                        testEntity10 = repository.save(new EmbeddedDualContentEntity());
 
                         String content = "Hello Spring Content World!";
                         testEntity10.getChild().contentMimeType = "text/plain";
@@ -387,7 +387,7 @@ public class NestedContentPropertiesRestEndpointsIT {
                                                 .contentType("text/plain"))
                                 .andExpect(status().is2xxSuccessful());
 
-                        Optional<TestEntity10> fetched = repository
+                        Optional<EmbeddedDualContentEntity> fetched = repository
                                 .findById(testEntity10.getId());
                         assertThat(fetched.isPresent()).isTrue();
                         assertThat(fetched.get().getChild().contentId).isNotNull();
@@ -402,7 +402,7 @@ public class NestedContentPropertiesRestEndpointsIT {
                     void setUp() throws IOException {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
-                        testEntity10 = repository.save(new TestEntity10());
+                        testEntity10 = repository.save(new EmbeddedDualContentEntity());
 
                         String content = "Hello Spring Content World!";
                         testEntity10.getChild().contentMimeType = "text/plain";
@@ -433,7 +433,7 @@ public class NestedContentPropertiesRestEndpointsIT {
                                         "/testEntity10s/" + testEntity10.getId() + "/child/content"))
                                 .andExpect(status().isNoContent());
 
-                        Optional<TestEntity10> fetched = repository.findById(testEntity10.getId());
+                        Optional<EmbeddedDualContentEntity> fetched = repository.findById(testEntity10.getId());
                         assertThat(fetched.isPresent()).isTrue();
                         assertThat(fetched.get().getChild().contentId).isNull();
                         assertThat(fetched.get().getChild().contentLen).isNull();
@@ -470,7 +470,7 @@ public class NestedContentPropertiesRestEndpointsIT {
 
                 String location = response.getHeader("Location");
 
-                Optional<TestEntity10> fetchedEntity = repository.findById(Long.valueOf(StringUtils.substringAfterLast(location, "/")));
+                Optional<EmbeddedDualContentEntity> fetchedEntity = repository.findById(Long.valueOf(StringUtils.substringAfterLast(location, "/")));
                 assertThat(fetchedEntity.get().getHidden()).isNull();
 
                 // assert that it now exists

@@ -3,9 +3,9 @@ package it.internal.org.springframework.content.rest.controllers;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import internal.org.springframework.content.rest.support.StoreConfig;
-import internal.org.springframework.content.rest.support.TestEntity11;
-import internal.org.springframework.content.rest.support.TestEntity11Repository;
-import internal.org.springframework.content.rest.support.TestEntity11Store;
+import internal.org.springframework.content.rest.support.RestResourcePackageEntity;
+import internal.org.springframework.content.rest.support.RestResourcePackageEntityRepository;
+import internal.org.springframework.content.rest.support.RestResourcePackageEntityStore;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -57,11 +57,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class RestResourceMappedRestEndpointsIT {
 
     @Autowired
-    private TestEntity11Repository repo;
+    private RestResourcePackageEntityRepository repo;
     @Autowired
-    private TestEntity11Store store;
+    private RestResourcePackageEntityStore store;
 
-    private TestEntity11 testEntity11;
+    private RestResourcePackageEntity testEntity11;
 
     @Autowired
     private WebApplicationContext context;
@@ -89,7 +89,7 @@ public class RestResourceMappedRestEndpointsIT {
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
-                    testEntity11 = repo.save(new TestEntity11());
+                    testEntity11 = repo.save(new RestResourcePackageEntity());
                 }
 
                 @Test
@@ -106,7 +106,7 @@ public class RestResourceMappedRestEndpointsIT {
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
-                    testEntity11 = repo.save(new TestEntity11());
+                    testEntity11 = repo.save(new RestResourcePackageEntity());
                 }
 
                 @Test
@@ -125,7 +125,7 @@ public class RestResourceMappedRestEndpointsIT {
                     void setUp() {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
-                        testEntity11 = repo.save(new TestEntity11());
+                        testEntity11 = repo.save(new RestResourcePackageEntity());
                     }
 
                     @Test
@@ -142,7 +142,7 @@ public class RestResourceMappedRestEndpointsIT {
                     void setUp() {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
-                        testEntity11 = repo.save(new TestEntity11());
+                        testEntity11 = repo.save(new RestResourcePackageEntity());
                     }
 
                     @Test
@@ -153,7 +153,7 @@ public class RestResourceMappedRestEndpointsIT {
                                                 .contentType("text/plain"))
                                 .andExpect(status().is2xxSuccessful());
 
-                        Optional<TestEntity11> fetched = repo.findById(testEntity11.getId());
+                        Optional<RestResourcePackageEntity> fetched = repo.findById(testEntity11.getId());
                         assertThat(fetched.isPresent()).isTrue();
                         assertThat(fetched.get().get_package().contentId).isNotNull();
                         assertThat(fetched.get().get_package().contentLen).isEqualTo(31L);
@@ -170,7 +170,7 @@ public class RestResourceMappedRestEndpointsIT {
                     void setUp() {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
-                        testEntity11 = repo.save(new TestEntity11());
+                        testEntity11 = repo.save(new RestResourcePackageEntity());
                     }
 
                     @Test
@@ -182,7 +182,7 @@ public class RestResourceMappedRestEndpointsIT {
                                                 .contentType("application/json"))
                                 .andExpect(status().isCreated());
 
-                        Optional<TestEntity11> fetched = repo.findById(testEntity11.getId());
+                        Optional<RestResourcePackageEntity> fetched = repo.findById(testEntity11.getId());
                         assertThat(fetched.isPresent()).isTrue();
                         assertThat(fetched.get().get_package().getContentId()).isNotNull();
                         assertThat(fetched.get().get_package().getContentLen()).isEqualTo(45L);
@@ -202,7 +202,7 @@ public class RestResourceMappedRestEndpointsIT {
                     void setUp() throws IOException {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
-                        testEntity11 = repo.save(new TestEntity11());
+                        testEntity11 = repo.save(new RestResourcePackageEntity());
 
                         String content = "Hello Spring Content World!";
                         testEntity11.get_package().contentMimeType = "text/plain";
@@ -250,7 +250,7 @@ public class RestResourceMappedRestEndpointsIT {
                     void setUp() throws IOException {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
-                        testEntity11 = repo.save(new TestEntity11());
+                        testEntity11 = repo.save(new RestResourcePackageEntity());
 
                         String content = "Hello Spring Content World!";
                         testEntity11.get_package().contentMimeType = "text/plain";
@@ -297,7 +297,7 @@ public class RestResourceMappedRestEndpointsIT {
                     void setUp() throws IOException {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
-                        testEntity11 = repo.save(new TestEntity11());
+                        testEntity11 = repo.save(new RestResourcePackageEntity());
 
                         String content = "Hello Spring Content World!";
                         testEntity11.get_package().contentMimeType = "text/plain";
@@ -342,7 +342,7 @@ public class RestResourceMappedRestEndpointsIT {
                     void setUp() throws IOException {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
-                        testEntity11 = repo.save(new TestEntity11());
+                        testEntity11 = repo.save(new RestResourcePackageEntity());
 
                         String content = "Hello Spring Content World!";
                         testEntity11.get_package().contentMimeType = "text/plain";
@@ -387,7 +387,7 @@ public class RestResourceMappedRestEndpointsIT {
                     void setUp() throws IOException {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
-                        testEntity11 = repo.save(new TestEntity11());
+                        testEntity11 = repo.save(new RestResourcePackageEntity());
 
                         String content = "Hello Spring Content World!";
                         testEntity11.get_package().contentMimeType = "text/plain";
@@ -420,7 +420,7 @@ public class RestResourceMappedRestEndpointsIT {
                                                 .contentType("text/plain"))
                                 .andExpect(status().is2xxSuccessful());
 
-                        Optional<TestEntity11> fetched = repo.findById(testEntity11.getId());
+                        Optional<RestResourcePackageEntity> fetched = repo.findById(testEntity11.getId());
                         assertThat(fetched.isPresent()).isTrue();
                         assertThat(fetched.get().get_package().contentId).isNotNull();
                         assertThat(fetched.get().get_package().contentLen).isEqualTo(31L);
@@ -434,7 +434,7 @@ public class RestResourceMappedRestEndpointsIT {
                     void setUp() throws IOException {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
-                        testEntity11 = repo.save(new TestEntity11());
+                        testEntity11 = repo.save(new RestResourcePackageEntity());
 
                         String content = "Hello Spring Content World!";
                         testEntity11.get_package().contentMimeType = "text/plain";
@@ -465,7 +465,7 @@ public class RestResourceMappedRestEndpointsIT {
                                         "/testEntity11s/" + testEntity11.getId() + "/package/content"))
                                 .andExpect(status().isNoContent());
 
-                        Optional<TestEntity11> fetched = repo.findById(testEntity11.getId());
+                        Optional<RestResourcePackageEntity> fetched = repo.findById(testEntity11.getId());
                         assertThat(fetched.isPresent()).isTrue();
                         assertThat(fetched.get().get_package().contentId).isNull();
                         assertThat(fetched.get().get_package().contentLen).isNull();
