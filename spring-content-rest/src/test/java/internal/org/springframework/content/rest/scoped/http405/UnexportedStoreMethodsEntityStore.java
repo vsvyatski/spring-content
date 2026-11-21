@@ -27,15 +27,15 @@ public interface UnexportedStoreMethodsEntityStore extends FileSystemContentStor
     @RestResource(exported = false)
     @Override
     UnexportedStoreMethodsEntity setContent(UnexportedStoreMethodsEntity property, PropertyPath path, InputStream content,
-        SetContentParams params);
+                                            SetContentParams params);
 
     @RestResource(exported = false)
     @Override
     UnexportedStoreMethodsEntity setContent(UnexportedStoreMethodsEntity property, PropertyPath path,
-        Resource resourceContent);
+                                            Resource resourceContent);
 
     @RestResource(exported = false)
     @Override
     UnexportedStoreMethodsEntity unsetContent(UnexportedStoreMethodsEntity property, PropertyPath path,
-        UnsetContentParams params);
+                                              UnsetContentParams params);
 }

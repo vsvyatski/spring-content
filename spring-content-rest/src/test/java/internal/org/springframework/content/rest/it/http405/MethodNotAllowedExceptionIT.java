@@ -1,12 +1,7 @@
 package internal.org.springframework.content.rest.it.http405;
 
 import internal.org.springframework.content.rest.it.SecurityConfiguration;
-import internal.org.springframework.content.rest.scoped.http405.UnexportedContentPropertyEntity;
-import internal.org.springframework.content.rest.scoped.http405.UnexportedContentPropertyEntityRepository;
-import internal.org.springframework.content.rest.scoped.http405.UnexportedContentPropertyEntityStore;
-import internal.org.springframework.content.rest.scoped.http405.UnexportedStoreMethodsEntity;
-import internal.org.springframework.content.rest.scoped.http405.UnexportedStoreMethodsEntityRepository;
-import internal.org.springframework.content.rest.scoped.http405.UnexportedStoreMethodsEntityStore;
+import internal.org.springframework.content.rest.scoped.http405.*;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
