@@ -4,6 +4,7 @@ import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.content.commons.renditions.RenditionProvider;
 import org.springframework.content.jpa.config.EnableJpaStores;
+import org.springframework.content.test.support.TestSupportPackages;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.ConversionService;
@@ -26,8 +27,8 @@ import java.io.InputStream;
 
 @Configuration
 @EnableElasticsearchFulltextIndexing
-@EnableJpaRepositories(considerNestedRepositories = true)
-@EnableJpaStores
+@EnableJpaRepositories(basePackages = TestSupportPackages.FULLTEXT)
+@EnableJpaStores(basePackages = TestSupportPackages.FULLTEXT)
 public class ElasticsearchConfig {
 
     @Value("/org/springframework/content/jpa/schema-drop-hsqldb.sql")
@@ -80,7 +81,7 @@ public class ElasticsearchConfig {
 
         LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
         factory.setJpaVendorAdapter(vendorAdapter);
-        factory.setPackagesToScan("org.springframework.content.elasticsearch");
+        factory.setPackagesToScan(TestSupportPackages.FULLTEXT);
         factory.setDataSource(dataSource());
 
         return factory;

@@ -3,8 +3,9 @@ package org.springframework.content.elasticsearch;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.content.commons.renditions.RenditionProvider;
-import org.springframework.content.elasticsearch.ElasticsearchIT.Document;
 import org.springframework.content.jpa.config.EnableJpaStores;
+import org.springframework.content.test.support.TestSupportPackages;
+import org.springframework.content.test.support.fulltext.FulltextJpaUuidDocumentEntity;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.ConversionService;
@@ -30,8 +31,8 @@ import java.util.Map;
 
 @Configuration
 @EnableElasticsearchFulltextIndexing
-@EnableJpaRepositories(considerNestedRepositories = true)
-@EnableJpaStores
+@EnableJpaRepositories(basePackages = TestSupportPackages.FULLTEXT)
+@EnableJpaStores(basePackages = TestSupportPackages.FULLTEXT)
 public class CustomAttributesConfig {
 
     @Value("/org/springframework/content/jpa/schema-drop-hsqldb.sql")
@@ -50,7 +51,7 @@ public class CustomAttributesConfig {
     }
 
     @Bean
-    public AttributeProvider<Document> attributeProvider() {
+    public AttributeProvider<FulltextJpaUuidDocumentEntity> attributeProvider() {
         return entity -> {
 
             Map<String, String> attrs = new HashMap<>();
@@ -100,7 +101,7 @@ public class CustomAttributesConfig {
 
         LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
         factory.setJpaVendorAdapter(vendorAdapter);
-        factory.setPackagesToScan("org.springframework.content.elasticsearch");
+        factory.setPackagesToScan(TestSupportPackages.FULLTEXT);
         factory.setDataSource(dataSource());
 
         return factory;

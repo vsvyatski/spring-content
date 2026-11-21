@@ -21,6 +21,8 @@ public final class TestSupportPackages {
 
     public static final String AZURE = ROOT + ".azure";
 
+    public static final String FULLTEXT = ROOT + ".fulltext";
+
     private TestSupportPackages() {
     }
 }
