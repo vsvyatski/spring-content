@@ -1,4 +1,4 @@
-package internal.org.springframework.content.rest.it.http_405;
+package internal.org.springframework.content.rest.it.http405;
 
 import internal.org.springframework.content.rest.it.SecurityConfiguration;
 import internal.org.springframework.content.rest.scoped.http405.UnexportedContentPropertyEntity;
