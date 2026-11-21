@@ -1,41 +1,28 @@
-package internal.org.springframework.content.jpa.testsupport.models;
+package internal.org.springframework.content.jpa.support.models;
 
-import com.github.f4b6a3.uuid.UuidCreator;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.Embeddable;
+
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.annotations.MimeType;
 
-@Entity
-public class Document {
-
-    @Id
-    @org.springframework.data.annotation.Id
-    private String id = UuidCreator.getTimeOrdered().toString();
+@Embeddable
+public class ClaimForm {
 
     @ContentId
     private String contentId;
 
     @ContentLength
-    private Long contentLen;
+    private Long contentLength = 0L;
 
     @MimeType
-    private String contentMimeType;
+    private String contentMimeType = "text/plain";
 
     @ContentId
     private String renditionId;
 
     @ContentLength
     private long renditionLen;
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
 
     public String getContentId() {
         return contentId;
@@ -45,12 +32,12 @@ public class Document {
         this.contentId = contentId;
     }
 
-    public Long getContentLen() {
-        return contentLen;
+    public Long getContentLength() {
+        return contentLength;
     }
 
-    public void setContentLen(Long contentLen) {
-        this.contentLen = contentLen;
+    public void setContentLength(Long contentLength) {
+        this.contentLength = contentLength;
     }
 
     public String getContentMimeType() {
@@ -75,5 +62,11 @@ public class Document {
 
     public void setRenditionLen(long renditionLen) {
         this.renditionLen = renditionLen;
+    }
+
+    // Ensure we can handle entities with "computed" getters; i.e. getters that
+    // dont have an associated field
+    public boolean getIsActive() {
+        return true;
     }
 }

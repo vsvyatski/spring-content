@@ -1,6 +1,6 @@
-package internal.org.springframework.content.jpa.testsupport.stores;
+package internal.org.springframework.content.jpa.support.stores;
 
-import internal.org.springframework.content.jpa.testsupport.models.Document;
+import internal.org.springframework.content.jpa.support.models.Document;
 import org.springframework.content.commons.store.AssociativeStore;
 
 @SuppressWarnings("unused") // classpath / store component scan

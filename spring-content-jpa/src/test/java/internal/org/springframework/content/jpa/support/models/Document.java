@@ -1,28 +1,41 @@
-package internal.org.springframework.content.jpa.testsupport.models;
+package internal.org.springframework.content.jpa.support.models;
 
-import jakarta.persistence.Embeddable;
-
+import com.github.f4b6a3.uuid.UuidCreator;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.annotations.MimeType;
 
-@Embeddable
-public class ClaimForm {
+@Entity
+public class Document {
+
+    @Id
+    @org.springframework.data.annotation.Id
+    private String id = UuidCreator.getTimeOrdered().toString();
 
     @ContentId
     private String contentId;
 
     @ContentLength
-    private Long contentLength = 0L;
+    private Long contentLen;
 
     @MimeType
-    private String contentMimeType = "text/plain";
+    private String contentMimeType;
 
     @ContentId
     private String renditionId;
 
     @ContentLength
     private long renditionLen;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getContentId() {
         return contentId;
@@ -32,12 +45,12 @@ public class ClaimForm {
         this.contentId = contentId;
     }
 
-    public Long getContentLength() {
-        return contentLength;
+    public Long getContentLen() {
+        return contentLen;
     }
 
-    public void setContentLength(Long contentLength) {
-        this.contentLength = contentLength;
+    public void setContentLen(Long contentLen) {
+        this.contentLen = contentLen;
     }
 
     public String getContentMimeType() {
@@ -62,11 +75,5 @@ public class ClaimForm {
 
     public void setRenditionLen(long renditionLen) {
         this.renditionLen = renditionLen;
-    }
-
-    // Ensure we can handle entities with "computed" getters; i.e. getters that
-    // dont have an associated field
-    public boolean getIsActive() {
-        return true;
     }
 }

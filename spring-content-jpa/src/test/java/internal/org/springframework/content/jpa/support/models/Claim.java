@@ -1,4 +1,4 @@
-package internal.org.springframework.content.jpa.testsupport.models;
+package internal.org.springframework.content.jpa.support.models;
 
 import com.github.f4b6a3.uuid.UuidCreator;
 import jakarta.persistence.Embedded;

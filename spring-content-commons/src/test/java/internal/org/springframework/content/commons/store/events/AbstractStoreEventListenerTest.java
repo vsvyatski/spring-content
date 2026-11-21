@@ -8,7 +8,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.commons.store.events.*;
-import org.springframework.content.commons.store.events.testsupport.StoreEventSource;
+import org.springframework.content.test.support.events.StoreEventSource;
 import org.springframework.content.test.support.CommonsTestStores;
 
 import java.io.InputStream;

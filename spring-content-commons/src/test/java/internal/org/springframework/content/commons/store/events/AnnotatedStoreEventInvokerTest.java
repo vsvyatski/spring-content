@@ -8,7 +8,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.content.commons.annotations.*;
 import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.commons.store.events.*;
-import org.springframework.content.commons.store.events.testsupport.StoreEventSource;
+import org.springframework.content.test.support.events.StoreEventSource;
 import org.springframework.content.commons.utils.ReflectionService;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;

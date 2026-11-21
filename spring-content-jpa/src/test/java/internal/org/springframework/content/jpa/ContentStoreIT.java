@@ -2,10 +2,10 @@ package internal.org.springframework.content.jpa;
 
 import com.github.f4b6a3.uuid.UuidCreator;
 import internal.org.springframework.content.jpa.StoreIT.*;
-import internal.org.springframework.content.jpa.testsupport.models.Claim;
-import internal.org.springframework.content.jpa.testsupport.models.ClaimForm;
-import internal.org.springframework.content.jpa.testsupport.repositories.ClaimRepository;
-import internal.org.springframework.content.jpa.testsupport.stores.ClaimStore;
+import internal.org.springframework.content.jpa.support.models.Claim;
+import internal.org.springframework.content.jpa.support.models.ClaimForm;
+import internal.org.springframework.content.jpa.support.repositories.ClaimRepository;
+import internal.org.springframework.content.jpa.support.stores.ClaimStore;
 import jakarta.persistence.*;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Nested;

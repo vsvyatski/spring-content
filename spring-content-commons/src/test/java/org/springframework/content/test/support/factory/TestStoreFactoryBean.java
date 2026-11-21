@@ -1,4 +1,4 @@
-package org.springframework.content.commons.store.factory.testsupport;
+package org.springframework.content.test.support.factory;
 
 import org.springframework.content.commons.property.PropertyPath;
 import org.springframework.content.commons.store.*;

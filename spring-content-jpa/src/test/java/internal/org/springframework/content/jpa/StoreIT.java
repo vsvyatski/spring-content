@@ -1,6 +1,6 @@
 package internal.org.springframework.content.jpa;
 
-import internal.org.springframework.content.jpa.testsupport.stores.DocumentStore;
+import internal.org.springframework.content.jpa.support.stores.DocumentStore;
 import net.bytebuddy.utility.RandomString;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Nested;

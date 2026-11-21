@@ -1,6 +1,6 @@
-package internal.org.springframework.content.jpa.testsupport.repositories;
+package internal.org.springframework.content.jpa.support.repositories;
 
-import internal.org.springframework.content.jpa.testsupport.models.Document;
+import internal.org.springframework.content.jpa.support.models.Document;
 import org.springframework.data.repository.CrudRepository;
 
 @SuppressWarnings("unused") // classpath / store component scan

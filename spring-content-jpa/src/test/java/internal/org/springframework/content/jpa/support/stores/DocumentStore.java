@@ -1,4 +1,4 @@
-package internal.org.springframework.content.jpa.testsupport.stores;
+package internal.org.springframework.content.jpa.support.stores;
 
 import org.springframework.content.commons.store.Store;
 

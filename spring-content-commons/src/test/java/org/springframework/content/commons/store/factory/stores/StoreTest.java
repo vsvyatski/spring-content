@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.content.commons.store.AssociativeStore;
 import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.commons.store.Store;
-import org.springframework.content.commons.store.factory.testsupport.EnableTestStores;
+import org.springframework.content.test.support.factory.EnableTestStores;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
