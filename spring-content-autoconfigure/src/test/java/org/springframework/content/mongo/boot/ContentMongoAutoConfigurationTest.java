@@ -13,24 +13,22 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.mongo.store.MongoContentStore;
+import org.springframework.content.test.support.mongo.SingleContentMongoDocument;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.MongoDatabaseFactory;
 import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration;
 import org.springframework.data.mongodb.core.SimpleMongoClientDatabaseFactory;
 import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
-import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 
 public class ContentMongoAutoConfigurationTest {
 
     private ApplicationContextRunner contextRunner;
 
-    public interface TestEntityContentStore extends MongoContentStore<TestEntity, String> {
+    public interface TestEntityContentStore extends MongoContentStore<SingleContentMongoDocument, String> {
     }
 
     @Configuration
@@ -61,14 +59,6 @@ public class ContentMongoAutoConfigurationTest {
     @SpringBootApplication(exclude = {SolrAutoConfiguration.class, SolrExtensionAutoConfiguration.class, S3ContentAutoConfiguration.class})
     @Import(InfrastructureConfig.class)
     public static class TestConfig {
-    }
-
-    @Document
-    public static class TestEntity {
-        @Id
-        private String id;
-        @ContentId
-        private String contentId;
     }
 
     @Nested

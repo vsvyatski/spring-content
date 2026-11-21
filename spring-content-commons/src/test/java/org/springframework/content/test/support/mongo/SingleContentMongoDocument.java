@@ -1,20 +1,19 @@
 package org.springframework.content.test.support.mongo;
 
-import org.springframework.content.commons.annotations.ContentId;
+import org.springframework.content.test.support.SingleContentFields;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
  * Minimal Mongo document for Enable-store configuration tests.
  *
  * @author Vladimir Svyatski
  */
-public class SingleContentMongoDocument {
+@Document
+public class SingleContentMongoDocument extends SingleContentFields {
 
     @Id
     private String id;
-
-    @ContentId
-    private String contentId;
 
     public String getId() {
         return id;
@@ -22,13 +21,5 @@ public class SingleContentMongoDocument {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public String getContentId() {
-        return contentId;
-    }
-
-    public void setContentId(String contentId) {
-        this.contentId = contentId;
     }
 }
