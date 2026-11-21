@@ -13,12 +13,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class TextPlainToJpegRendererTest {
 
+    private final String toMimeType = "image/jpeg";
     private boolean wrapText = false;
     private RenditionProvider renderer;
-
     private InputStream input, result;
-    private final String toMimeType = "image/jpeg";
-
     private Exception e;
 
     @Nested
@@ -73,7 +71,7 @@ public class TextPlainToJpegRendererTest {
                     @Test
                     void shouldProduceTheCorrectImage() throws Exception {
                         try (InputStream expected = this.getClass().getResourceAsStream(
-                                "/textplaintorenderer/single-line.jpeg")) {
+                            "/textplaintorenderer/single-line.jpeg")) {
                             assertThat(expected).isNotNull();
                             assertThat(result).isNotNull();
                             assertThat(IOUtils.contentEquals(expected, result)).isTrue();

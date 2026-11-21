@@ -21,14 +21,12 @@ import static org.mockito.Mockito.*;
 
 public class WordToJpegRendererTest {
 
+    private final String toMimeType = "image/jpeg";
     POIXMLProperties props;
     private POIService poi;
     private XWPFDocument doc;
     private RenditionProvider renderer;
-
     private InputStream input;
-    private final String toMimeType = "image/jpeg";
-
     private Exception e;
 
     @Nested

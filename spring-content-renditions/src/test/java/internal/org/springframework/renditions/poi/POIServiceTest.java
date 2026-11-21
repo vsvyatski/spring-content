@@ -4,14 +4,13 @@ import org.apache.poi.openxml4j.exceptions.NotOfficeXmlFileException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.content.test.support.TestSupportData;
 import org.springframework.renditions.poi.POIService;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-
-import org.springframework.content.test.support.TestSupportData;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -62,7 +61,7 @@ public class POIServiceTest {
                     poi = new POIServiceImpl();
 
                     stream = new ByteArrayInputStream(
-                            TestSupportData.SAMPLE_INVALID_OFFICE_XML_PAYLOAD.getBytes(StandardCharsets.UTF_8));
+                        TestSupportData.SAMPLE_INVALID_OFFICE_XML_PAYLOAD.getBytes(StandardCharsets.UTF_8));
                 }
 
                 @Test

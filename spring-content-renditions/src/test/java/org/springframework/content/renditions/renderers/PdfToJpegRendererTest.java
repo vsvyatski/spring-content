@@ -21,15 +21,12 @@ import static org.mockito.Mockito.*;
 
 public class PdfToJpegRendererTest {
 
+    private final String toMimeType = "image/jpeg";
     private PDFService pdf;
     private PDDocument doc;
     private PDFRenderer pdfRenderer;
-
     private RenditionProvider renderer;
-
     private InputStream input;
-    private final String toMimeType = "image/jpeg";
-
     private Exception e;
 
     @Nested
