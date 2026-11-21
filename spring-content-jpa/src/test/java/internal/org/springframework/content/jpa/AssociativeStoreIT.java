@@ -5,9 +5,6 @@ import internal.org.springframework.content.jpa.StoreIT.H2Config;
 import internal.org.springframework.content.jpa.StoreIT.HSQLConfig;
 import internal.org.springframework.content.jpa.StoreIT.MySqlConfig;
 import internal.org.springframework.content.jpa.StoreIT.PostgresConfig;
-import org.springframework.content.test.support.jpa.DualContentMimeJpaAssociativeStore;
-import org.springframework.content.test.support.jpa.DualContentMimeJpaStringIdEntity;
-import org.springframework.content.test.support.jpa.DualContentMimeJpaStringIdRepository;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -15,6 +12,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.content.commons.property.PropertyPath;
 import org.springframework.content.commons.store.GetResourceParams;
 import org.springframework.content.commons.store.StoreAccessException;
+import org.springframework.content.test.support.jpa.DualContentMimeJpaAssociativeStore;
+import org.springframework.content.test.support.jpa.DualContentMimeJpaStringIdEntity;
+import org.springframework.content.test.support.jpa.DualContentMimeJpaStringIdRepository;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.WritableResource;
@@ -33,10 +33,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class AssociativeStoreIT {
 
     private static final Class<?>[] CONFIG_CLASSES = new Class[]{
-            H2Config.class,
-            HSQLConfig.class,
-            MySqlConfig.class,
-            PostgresConfig.class
+        H2Config.class,
+        HSQLConfig.class,
+        MySqlConfig.class,
+        PostgresConfig.class
     };
 
     private DualContentMimeJpaStringIdRepository repo;

@@ -25,6 +25,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class EnableJpaStoresTest {

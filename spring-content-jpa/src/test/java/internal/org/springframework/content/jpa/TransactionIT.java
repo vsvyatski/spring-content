@@ -27,10 +27,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class TransactionIT {
 
     private static final Class<?>[] CONFIG_CLASSES = new Class[]{
-            H2Config.class,
-            HSQLConfig.class,
-            MySqlConfig.class,
-            PostgresConfig.class
+        H2Config.class,
+        HSQLConfig.class,
+        MySqlConfig.class,
+        PostgresConfig.class
 //            SqlServerConfig.class,
 //            StoreIT.OracleConfig.class
     };
@@ -38,6 +38,10 @@ public class TransactionIT {
     private SingleContentJpaLongIdStore store;
 
     private SingleContentJpaLongIdEntity entity;
+
+    static Stream<Class<?>> databaseConfigs() {
+        return Stream.of(CONFIG_CLASSES);
+    }
 
     @Configuration
     public static class DbServiceConfig {
@@ -56,10 +60,6 @@ public class TransactionIT {
             store.setContent(entity, new ByteArrayInputStream("Spring Content World!".getBytes()));
             throw new RuntimeException("badness");
         }
-    }
-
-    static Stream<Class<?>> databaseConfigs() {
-        return Stream.of(CONFIG_CLASSES);
     }
 
     @Nested

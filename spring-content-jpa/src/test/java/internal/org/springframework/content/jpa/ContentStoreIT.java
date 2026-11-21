@@ -2,24 +2,18 @@ package internal.org.springframework.content.jpa;
 
 import internal.org.springframework.content.jpa.StoreIT.*;
 import org.apache.commons.io.IOUtils;
-import org.springframework.content.test.support.jpa.EmbeddedContentJpaStringIdEntity;
-import org.springframework.content.test.support.jpa.NestedDualContentJpaEmbeddable;
-import org.springframework.content.test.support.jpa.NestedDualContentJpaStringIdEntity;
-import org.springframework.content.test.support.jpa.NestedDualContentJpaStringIdRepository;
-import org.springframework.content.test.support.jpa.NestedDualContentJpaStringIdStore;
-import org.springframework.content.test.support.jpa.EmbeddedContentJpaStringIdRepository;
-import org.springframework.content.test.support.jpa.EmbeddedContentJpaStringIdStore;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.content.commons.property.PropertyPath;
 import org.springframework.content.commons.store.SetContentParams;
 import org.springframework.content.commons.store.UnsetContentParams;
+import org.springframework.content.test.support.jpa.*;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
-import org.jspecify.annotations.Nullable;
 import org.springframework.util.function.ThrowingSupplier;
 
 import java.io.ByteArrayInputStream;
@@ -33,10 +27,10 @@ import static org.mockito.Mockito.mock;
 public class ContentStoreIT {
 
     private static final Class<?>[] CONFIG_CLASSES = new Class[]{
-            H2Config.class,
-            HSQLConfig.class,
-            MySqlConfig.class,
-            PostgresConfig.class
+        H2Config.class,
+        HSQLConfig.class,
+        MySqlConfig.class,
+        PostgresConfig.class
     };
     protected NestedDualContentJpaStringIdRepository claimRepo;
     protected NestedDualContentJpaStringIdStore claimFormStore;
@@ -76,14 +70,15 @@ public class ContentStoreIT {
         }
     }
 
-    @FunctionalInterface
-    public interface ThrowingRunnable {
-        void run() throws Exception;
-    }
-
-    /** ContentStore#getContent may return null; call through here for null-marked assertions. */
+    /**
+     * ContentStore#getContent may return null; call through here for null-marked assertions.
+     */
     public static void assertNullInputStream(@Nullable InputStream content) {
         assertThat(content).isNull();
+    }
+
+    static Stream<Class<?>> databaseConfigs() {
+        return Stream.of(CONFIG_CLASSES);
     }
 
     protected boolean hasContent(NestedDualContentJpaStringIdEntity claim, PropertyPath path) {
@@ -121,9 +116,9 @@ public class ContentStoreIT {
 
                     // double-check the content got removed
                     InputStream content = doInTransaction(ptm,
-                            () -> claimFormStore.getContent(existingClaim, PropertyPath.from("claimForm/content")));
+                        () -> claimFormStore.getContent(existingClaim, PropertyPath.from("claimForm/content")));
                     InputStream renditionContent = doInTransaction(ptm,
-                            () -> claimFormStore.getContent(existingClaim, PropertyPath.from("claimForm/rendition")));
+                        () -> claimFormStore.getContent(existingClaim, PropertyPath.from("claimForm/rendition")));
                     try {
                         assertNullInputStream(content);
                         assertNullInputStream(renditionContent);
@@ -133,10 +128,6 @@ public class ContentStoreIT {
                 }
             }
         }
-    }
-
-    static Stream<Class<?>> databaseConfigs() {
-        return Stream.of(CONFIG_CLASSES);
     }
 
     private void boot(Class<?> configClass) {
@@ -163,6 +154,11 @@ public class ContentStoreIT {
     private void setInitialContent() {
         claimFormStore.setContent(claim, PropertyPath.from("claimForm/content"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
         claimFormStore.setContent(claim, PropertyPath.from("claimForm/rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
+    }
+
+    @FunctionalInterface
+    public interface ThrowingRunnable {
+        void run() throws Exception;
     }
 
     @Nested

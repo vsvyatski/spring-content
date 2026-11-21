@@ -44,19 +44,15 @@ import static org.mockito.Mockito.mock;
 
 public class StoreIT {
 
-    static Stream<Class<?>> databaseConfigs() {
-        return Stream.of(CONFIG_CLASSES);
-    }
-
     private static final Class<?>[] CONFIG_CLASSES = new Class[]{
-            H2Config.class,
-            HSQLConfig.class,
-            MySqlConfig.class,
-            PostgresConfig.class
+        H2Config.class,
+        HSQLConfig.class,
+        MySqlConfig.class,
+        PostgresConfig.class
 //			SqlServerConfig.class,
 //			OracleConfig.class
     };
-
+    private static final String IT_PACKAGE = "internal.org.springframework.content.jpa";
     // for postgres (large object api operations must be in a transaction)
     private PlatformTransactionManager ptm;
 
@@ -66,12 +62,28 @@ public class StoreIT {
 
     private TransactionStatus status;
 
+    static Stream<Class<?>> databaseConfigs() {
+        return Stream.of(CONFIG_CLASSES);
+    }
+
     protected String getId() {
         RandomString random = new RandomString(5);
         return "/store-tests/" + random.nextString();
     }
 
-    private static final String IT_PACKAGE = "internal.org.springframework.content.jpa";
+    private void bootStoreContext(Class<?> configClass) {
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+        context.register(TestConfig.class);
+        context.register(configClass);
+        context.refresh();
+
+        ptm = context.getBean(PlatformTransactionManager.class);
+        store = context.getBean(DocumentStore.class);
+
+        if (ptm == null) {
+            ptm = mock(PlatformTransactionManager.class);
+        }
+    }
 
     @Configuration
     @EnableJpaRepositories(basePackages = {IT_PACKAGE, TestSupportPackages.JPA}, considerNestedRepositories = true)
@@ -239,7 +251,7 @@ public class StoreIT {
 
         @Bean
         public PlatformTransactionManager transactionManager(
-                LocalContainerEntityManagerFactoryBean entityManagerFactory) {
+            LocalContainerEntityManagerFactoryBean entityManagerFactory) {
 
             JpaTransactionManager txManager = new JpaTransactionManager();
             txManager.setEntityManagerFactory(entityManagerFactory.getObject());
@@ -412,25 +424,11 @@ public class StoreIT {
 
         @Bean
         public PlatformTransactionManager transactionManager(
-                LocalContainerEntityManagerFactoryBean entityManagerFactory) {
+            LocalContainerEntityManagerFactoryBean entityManagerFactory) {
 
             JpaTransactionManager txManager = new JpaTransactionManager();
             txManager.setEntityManagerFactory(entityManagerFactory.getObject());
             return txManager;
-        }
-    }
-
-    private void bootStoreContext(Class<?> configClass) {
-        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-        context.register(TestConfig.class);
-        context.register(configClass);
-        context.refresh();
-
-        ptm = context.getBean(PlatformTransactionManager.class);
-        store = context.getBean(DocumentStore.class);
-
-        if (ptm == null) {
-            ptm = mock(PlatformTransactionManager.class);
         }
     }
 
