@@ -20,6 +20,7 @@ import org.springframework.content.test.support.TestSupportPackages;
 import org.springframework.content.test.support.jpa.DualContentJpaLongIdMimeEntity;
 import org.springframework.content.test.support.jpa.DualContentJpaLongIdMimeRepository;
 import org.springframework.content.test.support.jpa.DualContentJpaLongIdMimeStore;
+import org.springframework.content.test.support.TestSupportData;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -109,7 +110,7 @@ public class S3StoreWithEntityConverterIT {
         entity.setContentType("text/plain");
         entity = repo.save(entity);
 
-        store.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+        store.setContent(entity, PropertyPath.from("content"), TestSupportData.sampleTextStream());
     }
 
     private record TestData(String name, Class<?>[] config, String bucket) {

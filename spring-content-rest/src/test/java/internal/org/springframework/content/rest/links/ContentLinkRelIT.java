@@ -1,5 +1,6 @@
 package internal.org.springframework.content.rest.links;
 
+import org.springframework.content.test.support.TestSupportData;
 import internal.org.springframework.content.rest.links.linkrel.*;
 import internal.org.springframework.content.rest.support.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,7 +39,7 @@ public class ContentLinkRelIT {
                     UuidSingleContentEntityRepository repository = context.getBean(UuidSingleContentEntityRepository.class);
                     LinkRelUuidSingleContentEntityStore contentStore = context.getBean(LinkRelUuidSingleContentEntityStore.class);
                     UuidSingleContentEntity entity = new UuidSingleContentEntity();
-                    contentStore.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                    contentStore.setContent(entity, TestSupportData.sampleTextStream());
                     entity = repository.save(entity);
                     this.setMvc(mvc);
                     this.setUrl("/api/testEntities/" + entity.getId());
@@ -66,7 +67,7 @@ public class ContentLinkRelIT {
                     LinkRelDualContentRenditionEntityStore store5 = context.getBean(LinkRelDualContentRenditionEntityStore.class);
                     DualContentRenditionEntity entity = new DualContentRenditionEntity();
                     store5.setContent(entity, PropertyPath.from("content"),
-                            new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                            TestSupportData.sampleTextStream());
                     entity = repository5.save(entity);
                     this.setMvc(mvc);
                     this.setUrl("/api/testEntity5s/" + entity.getId());
@@ -95,7 +96,7 @@ public class ContentLinkRelIT {
                     AuditedNestedContentEntity entity = new AuditedNestedContentEntity();
                     entity.getChild().setMimeType("text/plain");
                     store2.setContent(entity, PropertyPath.from("child"),
-                            new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                            TestSupportData.sampleTextStream());
                     entity = repository2.save(entity);
                     this.setMvc(mvc);
                     this.setUrl("/api/files/" + entity.getId());
@@ -124,10 +125,10 @@ public class ContentLinkRelIT {
                     entity.getChild().setContentMimeType("text/plain");
                     entity.getChild().setContentFileName("test");
                     store10.setContent(entity, PropertyPath.from("child/content"),
-                            new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                            TestSupportData.sampleTextStream());
                     entity.getChild().setPreviewMimeType("text/plain");
                     store10.setContent(entity, PropertyPath.from("child/preview"),
-                            new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                            TestSupportData.sampleTextStream());
                     entity = repository10.save(entity);
                     this.setMvc(mvc);
                     this.setUrl("/api/testEntity10s/" + entity.getId());

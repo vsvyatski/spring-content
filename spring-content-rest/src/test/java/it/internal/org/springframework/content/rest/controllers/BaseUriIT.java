@@ -1,5 +1,6 @@
 package it.internal.org.springframework.content.rest.controllers;
 
+import org.springframework.content.test.support.TestSupportData;
 import internal.org.springframework.content.rest.support.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -145,7 +146,7 @@ public class BaseUriIT {
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
                     testEntity4 = new OneToOneLinkedContentEntity();
-                    testEntity4 = store4.setContent(testEntity4, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                    testEntity4 = store4.setContent(testEntity4, TestSupportData.sampleTextStream());
                     testEntity4.mimeType = "text/plain";
                     testEntity4 = repo4.save(testEntity4);
                     String url = "/contentApi/testEntity4s/" + testEntity4.getId();

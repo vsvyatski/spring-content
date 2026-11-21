@@ -1,6 +1,5 @@
 package it.store;
 
-import net.bytebuddy.utility.RandomString;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,6 +15,7 @@ import org.springframework.content.fs.config.EnableFileSystemStores;
 import org.springframework.content.fs.io.FileSystemResourceLoader;
 import org.springframework.content.test.support.TestSupportPackages;
 import org.springframework.content.test.support.jpa.*;
+import org.springframework.content.test.support.TestSupportData;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -64,7 +64,7 @@ public class FileSystemStoreIT {
         store = context.getBean(DualContentJpaStringIdStore.class);
         embeddedRepo = context.getBean(EmbeddedContentJpaStringIdRepository.class);
         embeddedStore = context.getBean(EmbeddedContentJpaStringIdStore.class);
-        resourceLocation = new RandomString(5).nextString();
+        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
     }
 
     @AfterEach
@@ -155,10 +155,10 @@ public class FileSystemStoreIT {
 
         @Test
         void shouldStoreThatContent() throws IOException {
-            write(genericResource, "Hello Spring Content World!");
+            write(genericResource, TestSupportData.SAMPLE_TEXT_PAYLOAD);
 
             assertThat(genericResource.exists()).isTrue();
-            try (InputStream expected = new ByteArrayInputStream("Hello Spring Content World!".getBytes())) {
+            try (InputStream expected = TestSupportData.sampleTextStream()) {
                 try (InputStream actual = genericResource.getInputStream()) {
                     assertThat(IOUtils.contentEquals(expected, actual)).isTrue();
                 }
@@ -167,11 +167,11 @@ public class FileSystemStoreIT {
 
         @Test
         void shouldStoreThatUpdatedContent() throws IOException {
-            write(genericResource, "Hello Spring Content World!");
-            write(genericResource, "Hello Updated Spring Content World!");
+            write(genericResource, TestSupportData.SAMPLE_TEXT_PAYLOAD);
+            write(genericResource, TestSupportData.SAMPLE_UPDATED_TEXT_PAYLOAD);
 
             assertThat(genericResource.exists()).isTrue();
-            try (InputStream expected = new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes())) {
+            try (InputStream expected = TestSupportData.sampleUpdatedTextStream()) {
                 try (InputStream actual = genericResource.getInputStream()) {
                     assertThat(IOUtils.contentEquals(expected, actual)).isTrue();
                 }
@@ -181,7 +181,7 @@ public class FileSystemStoreIT {
         @Test
         void shouldNotExistOnceDeleted() {
             try {
-                write(genericResource, "Hello Spring Content World!");
+                write(genericResource, TestSupportData.SAMPLE_TEXT_PAYLOAD);
                 ((DeletableResource) genericResource).delete();
             } catch (Exception ex) {
                 e = ex;
@@ -287,19 +287,19 @@ public class FileSystemStoreIT {
         @BeforeEach
         void setUp() {
             entity = repo.save(new DualContentJpaStringIdEntity());
-            store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-            store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
+            store.setContent(entity, TestSupportData.sampleTextStream());
+            store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleHtmlRenditionStream());
         }
 
         @Test
         void shouldBeAbleToStoreNewContent() {
             try (InputStream content = store.getContent(entity)) {
-                assertThat(IOUtils.contentEquals(new ByteArrayInputStream("Hello Spring Content World!".getBytes()), content)).isTrue();
+                assertThat(IOUtils.contentEquals(TestSupportData.sampleTextStream(), content)).isTrue();
             } catch (IOException ignored) {
             }
 
             try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
-                assertThat(IOUtils.contentEquals(new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()), content)).isTrue();
+                assertThat(IOUtils.contentEquals(TestSupportData.sampleHtmlRenditionStream(), content)).isTrue();
             } catch (IOException ignored) {
             }
         }
@@ -323,17 +323,17 @@ public class FileSystemStoreIT {
             String renditionId = entity.getRenditionId();
             assertThat(new File(loader.getRootResource().getPath(), renditionId).exists()).isTrue();
             entity = store.setContent(entity,
-                new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()));
+                TestSupportData.sampleUpdatedTextStream());
             entity = store.setContent(entity, PropertyPath.from("rendition"),
-                new ByteArrayInputStream("<html>Hello Updated Spring Content World!</html>".getBytes()));
+                TestSupportData.sampleUpdatedHtmlRenditionStream());
 
             try (InputStream content = store.getContent(entity)) {
-                boolean matches = IOUtils.contentEquals(new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), content);
+                boolean matches = IOUtils.contentEquals(TestSupportData.sampleUpdatedTextStream(), content);
                 assertThat(matches).isTrue();
             }
 
             try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
-                boolean matches = IOUtils.contentEquals(new ByteArrayInputStream("<html>Hello Updated Spring Content World!</html>".getBytes()), content);
+                boolean matches = IOUtils.contentEquals(TestSupportData.sampleUpdatedHtmlRenditionStream(), content);
                 assertThat(matches).isTrue();
             }
 
@@ -347,17 +347,17 @@ public class FileSystemStoreIT {
         @Test
         void shouldStoreOnlyTheNewContent() throws IOException {
             entity = store.setContent(entity,
-                new ByteArrayInputStream("Hello Spring World!".getBytes()));
+                TestSupportData.samplePartialUpdateStream());
             entity = store.setContent(entity, PropertyPath.from("rendition"),
-                new ByteArrayInputStream("<html>Hello Spring World!</html>".getBytes()));
+                TestSupportData.samplePartialUpdateHtmlRenditionStream());
 
             try (InputStream content = store.getContent(entity)) {
-                boolean matches = IOUtils.contentEquals(new ByteArrayInputStream("Hello Spring World!".getBytes()), content);
+                boolean matches = IOUtils.contentEquals(TestSupportData.samplePartialUpdateStream(), content);
                 assertThat(matches).isTrue();
             }
 
             try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
-                boolean matches = IOUtils.contentEquals(new ByteArrayInputStream("<html>Hello Spring World!</html>".getBytes()), content);
+                boolean matches = IOUtils.contentEquals(TestSupportData.samplePartialUpdateHtmlRenditionStream(), content);
                 assertThat(matches).isTrue();
             }
         }
@@ -369,11 +369,11 @@ public class FileSystemStoreIT {
             assertThat(new File(loader.getRootResource().getPath(), contentId).exists()).isTrue();
 
             entity = store.setContent(entity, PropertyPath.from("content"),
-                new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()),
+                TestSupportData.sampleUpdatedTextStream(),
                 new SetContentParams(-1, true, SetContentParams.ContentDisposition.CreateNew));
 
             try (InputStream content = store.getContent(entity)) {
-                boolean matches = IOUtils.contentEquals(new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), content);
+                boolean matches = IOUtils.contentEquals(TestSupportData.sampleUpdatedTextStream(), content);
                 assertThat(matches).isTrue();
             }
 
@@ -461,7 +461,7 @@ public class FileSystemStoreIT {
 
             SharedIdJakartaJpaEntity sharedIdContentIdEntity = sharedIdRepository.save(new SharedIdJakartaJpaEntity());
 
-            sharedIdContentIdEntity = sharedIdStore.setContent(sharedIdContentIdEntity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+            sharedIdContentIdEntity = sharedIdStore.setContent(sharedIdContentIdEntity, TestSupportData.sampleTextStream());
             sharedIdContentIdEntity = sharedIdRepository.save(sharedIdContentIdEntity);
             String id = sharedIdContentIdEntity.getContentId();
             sharedIdContentIdEntity = sharedIdStore.unsetContent(sharedIdContentIdEntity);
@@ -478,9 +478,9 @@ public class FileSystemStoreIT {
         @Test
         void shouldBeSuccessfulWhenContentIsSet() throws IOException {
             EmbeddedContentJpaStringIdEntity embedded = embeddedRepo.save(new EmbeddedContentJpaStringIdEntity());
-            embeddedStore.setContent(embedded, PropertyPath.from("content"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+            embeddedStore.setContent(embedded, PropertyPath.from("content"), TestSupportData.sampleTextStream());
             try (InputStream is = embeddedStore.getContent(embedded, PropertyPath.from("content"))) {
-                assertThat(IOUtils.contentEquals(is, new ByteArrayInputStream("Hello Spring Content World!".getBytes()))).isTrue();
+                assertThat(IOUtils.contentEquals(is, TestSupportData.sampleTextStream())).isTrue();
             }
         }
 

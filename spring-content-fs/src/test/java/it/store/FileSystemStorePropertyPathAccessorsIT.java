@@ -1,6 +1,5 @@
 package it.store;
 
-import net.bytebuddy.utility.RandomString;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,6 +14,7 @@ import org.springframework.content.test.support.TestSupportPackages;
 import org.springframework.content.test.support.jpa.PropertyPathJpaUuidEntity;
 import org.springframework.content.test.support.jpa.PropertyPathJpaUuidRepository;
 import org.springframework.content.test.support.jpa.PropertyPathJpaUuidStore;
+import org.springframework.content.test.support.TestSupportData;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -119,8 +119,7 @@ public class FileSystemStorePropertyPathAccessorsIT {
                     repo = context.getBean(PropertyPathJpaUuidRepository.class);
                     store = context.getBean(PropertyPathJpaUuidStore.class);
 
-                    RandomString random = new RandomString(5);
-                    resourceLocation = random.nextString();
+                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     genericResource = store.getResource(resourceLocation);
                 }
@@ -152,12 +151,11 @@ public class FileSystemStorePropertyPathAccessorsIT {
                         repo = context.getBean(PropertyPathJpaUuidRepository.class);
                         store = context.getBean(PropertyPathJpaUuidStore.class);
 
-                        RandomString random = new RandomString(5);
-                        resourceLocation = random.nextString();
+                                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                         genericResource = store.getResource(resourceLocation);
 
-                        try (InputStream is = new ByteArrayInputStream("Hello Spring Content World!".getBytes())) {
+                        try (InputStream is = TestSupportData.sampleTextStream()) {
                             try (OutputStream os = ((WritableResource) genericResource).getOutputStream()) {
                                 IOUtils.copy(is, os);
                             }
@@ -174,7 +172,7 @@ public class FileSystemStorePropertyPathAccessorsIT {
                     void shouldStoreThatContent() throws IOException {
                         assertThat(genericResource.exists()).isTrue();
 
-                        try (InputStream expected = new ByteArrayInputStream("Hello Spring Content World!".getBytes())) {
+                        try (InputStream expected = TestSupportData.sampleTextStream()) {
                             try (InputStream actual = genericResource.getInputStream()) {
                                 boolean matches = IOUtils.contentEquals(expected, actual);
                                 assertThat(matches).isTrue();
@@ -193,18 +191,17 @@ public class FileSystemStorePropertyPathAccessorsIT {
                             repo = context.getBean(PropertyPathJpaUuidRepository.class);
                             store = context.getBean(PropertyPathJpaUuidStore.class);
 
-                            RandomString random = new RandomString(5);
-                            resourceLocation = random.nextString();
+                                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                             genericResource = store.getResource(resourceLocation);
 
-                            try (InputStream is = new ByteArrayInputStream("Hello Spring Content World!".getBytes())) {
+                            try (InputStream is = TestSupportData.sampleTextStream()) {
                                 try (OutputStream os = ((WritableResource) genericResource).getOutputStream()) {
                                     IOUtils.copy(is, os);
                                 }
                             }
 
-                            try (InputStream is = new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes())) {
+                            try (InputStream is = TestSupportData.sampleUpdatedTextStream()) {
                                 try (OutputStream os = ((WritableResource) genericResource).getOutputStream()) {
                                     IOUtils.copy(is, os);
                                 }
@@ -221,7 +218,7 @@ public class FileSystemStorePropertyPathAccessorsIT {
                         void shouldStoreThatUpdatedContent() throws IOException {
                             assertThat(genericResource.exists()).isTrue();
 
-                            try (InputStream expected = new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes())) {
+                            try (InputStream expected = TestSupportData.sampleUpdatedTextStream()) {
                                 try (InputStream actual = genericResource.getInputStream()) {
                                     assertThat(IOUtils.contentEquals(expected, actual)).isTrue();
                                 }
@@ -240,12 +237,11 @@ public class FileSystemStorePropertyPathAccessorsIT {
                             repo = context.getBean(PropertyPathJpaUuidRepository.class);
                             store = context.getBean(PropertyPathJpaUuidStore.class);
 
-                            RandomString random = new RandomString(5);
-                            resourceLocation = random.nextString();
+                                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                             genericResource = store.getResource(resourceLocation);
 
-                            try (InputStream is = new ByteArrayInputStream("Hello Spring Content World!".getBytes())) {
+                            try (InputStream is = TestSupportData.sampleTextStream()) {
                                 try (OutputStream os = ((WritableResource) genericResource).getOutputStream()) {
                                     IOUtils.copy(is, os);
                                 }
@@ -286,8 +282,7 @@ public class FileSystemStorePropertyPathAccessorsIT {
                     repo = context.getBean(PropertyPathJpaUuidRepository.class);
                     store = context.getBean(PropertyPathJpaUuidStore.class);
 
-                    RandomString random = new RandomString(5);
-                    resourceLocation = random.nextString();
+                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new PropertyPathJpaUuidEntity();
                     entity = repo.save(entity);
@@ -317,8 +312,7 @@ public class FileSystemStorePropertyPathAccessorsIT {
                             repo = context.getBean(PropertyPathJpaUuidRepository.class);
                             store = context.getBean(PropertyPathJpaUuidStore.class);
 
-                            RandomString random = new RandomString(5);
-                            resourceLocation = random.nextString();
+                                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                             entity = new PropertyPathJpaUuidEntity();
                             entity = repo.save(entity);
@@ -349,8 +343,7 @@ public class FileSystemStorePropertyPathAccessorsIT {
                                 repo = context.getBean(PropertyPathJpaUuidRepository.class);
                                 store = context.getBean(PropertyPathJpaUuidStore.class);
 
-                                RandomString random = new RandomString(5);
-                                resourceLocation = random.nextString();
+                                                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                                 entity = new PropertyPathJpaUuidEntity();
                                 entity = repo.save(entity);
@@ -384,8 +377,7 @@ public class FileSystemStorePropertyPathAccessorsIT {
                                 repo = context.getBean(PropertyPathJpaUuidRepository.class);
                                 store = context.getBean(PropertyPathJpaUuidStore.class);
 
-                                RandomString random = new RandomString(5);
-                                resourceLocation = random.nextString();
+                                                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                                 entity = new PropertyPathJpaUuidEntity();
                                 entity = repo.save(entity);
@@ -422,8 +414,7 @@ public class FileSystemStorePropertyPathAccessorsIT {
                                 repo = context.getBean(PropertyPathJpaUuidRepository.class);
                                 store = context.getBean(PropertyPathJpaUuidStore.class);
 
-                                RandomString random = new RandomString(5);
-                                resourceLocation = random.nextString();
+                                                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                                 entity = new PropertyPathJpaUuidEntity();
                                 entity = repo.save(entity);
@@ -460,8 +451,7 @@ public class FileSystemStorePropertyPathAccessorsIT {
                                 repo = context.getBean(PropertyPathJpaUuidRepository.class);
                                 store = context.getBean(PropertyPathJpaUuidStore.class);
 
-                                RandomString random = new RandomString(5);
-                                resourceLocation = random.nextString();
+                                                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                                 entity = new PropertyPathJpaUuidEntity();
                                 entity = repo.save(entity);
@@ -502,13 +492,12 @@ public class FileSystemStorePropertyPathAccessorsIT {
                 repo = context.getBean(PropertyPathJpaUuidRepository.class);
                 store = context.getBean(PropertyPathJpaUuidStore.class);
 
-                RandomString random = new RandomString(5);
-                resourceLocation = random.nextString();
+                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                 entity = new PropertyPathJpaUuidEntity();
                 entity = repo.save(entity);
 
-                store.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                store.setContent(entity, PropertyPath.from("content"), TestSupportData.sampleTextStream());
             }
 
             @AfterEach
@@ -520,7 +509,7 @@ public class FileSystemStorePropertyPathAccessorsIT {
             void shouldBeAbleToStoreNewContent() {
                 // content
                 try (InputStream content = store.getContent(entity, PropertyPath.from("content"))) {
-                    assertThat(IOUtils.contentEquals(new ByteArrayInputStream("Hello Spring Content World!".getBytes()), content)).isTrue();
+                    assertThat(IOUtils.contentEquals(TestSupportData.sampleTextStream(), content)).isTrue();
                 } catch (IOException ignored) {
                 }
             }
@@ -544,17 +533,16 @@ public class FileSystemStorePropertyPathAccessorsIT {
                     repo = context.getBean(PropertyPathJpaUuidRepository.class);
                     store = context.getBean(PropertyPathJpaUuidStore.class);
 
-                    RandomString random = new RandomString(5);
-                    resourceLocation = random.nextString();
+                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new PropertyPathJpaUuidEntity();
                     entity = repo.save(entity);
 
                     store.setContent(entity, PropertyPath.from("content"),
-                        new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                        TestSupportData.sampleTextStream());
 
                     entity = store.setContent(entity, PropertyPath.from("content"),
-                        new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()));
+                        TestSupportData.sampleUpdatedTextStream());
                 }
 
                 @AfterEach
@@ -566,7 +554,7 @@ public class FileSystemStorePropertyPathAccessorsIT {
                 void shouldHaveTheUpdatedContent() throws IOException {
                     //content
                     try (InputStream content = store.getContent(entity, PropertyPath.from("content"))) {
-                        boolean matches = IOUtils.contentEquals(new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), content);
+                        boolean matches = IOUtils.contentEquals(TestSupportData.sampleUpdatedTextStream(), content);
                         assertThat(matches).isTrue();
                     }
                 }
@@ -583,17 +571,16 @@ public class FileSystemStorePropertyPathAccessorsIT {
                     repo = context.getBean(PropertyPathJpaUuidRepository.class);
                     store = context.getBean(PropertyPathJpaUuidStore.class);
 
-                    RandomString random = new RandomString(5);
-                    resourceLocation = random.nextString();
+                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new PropertyPathJpaUuidEntity();
                     entity = repo.save(entity);
 
                     store.setContent(entity, PropertyPath.from("content"),
-                        new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                        TestSupportData.sampleTextStream());
 
                     entity = store.setContent(entity, PropertyPath.from("content"),
-                        new ByteArrayInputStream("Hello Spring World!".getBytes()));
+                        TestSupportData.samplePartialUpdateStream());
                 }
 
                 @AfterEach
@@ -605,7 +592,7 @@ public class FileSystemStorePropertyPathAccessorsIT {
                 void shouldStoreOnlyTheNewContent() throws IOException {
                     //content
                     try (InputStream content = store.getContent(entity, PropertyPath.from("content"))) {
-                        boolean matches = IOUtils.contentEquals(new ByteArrayInputStream("Hello Spring World!".getBytes()), content);
+                        boolean matches = IOUtils.contentEquals(TestSupportData.samplePartialUpdateStream(), content);
                         assertThat(matches).isTrue();
                     }
                 }
@@ -622,13 +609,12 @@ public class FileSystemStorePropertyPathAccessorsIT {
                     repo = context.getBean(PropertyPathJpaUuidRepository.class);
                     store = context.getBean(PropertyPathJpaUuidStore.class);
 
-                    RandomString random = new RandomString(5);
-                    resourceLocation = random.nextString();
+                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new PropertyPathJpaUuidEntity();
                     entity = repo.save(entity);
 
-                    store.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                    store.setContent(entity, PropertyPath.from("content"), TestSupportData.sampleTextStream());
 
                     resourceLocation = entity.getContent().getContentId();
                     entity = store.unsetContent(entity, PropertyPath.from("content"));
@@ -663,13 +649,12 @@ public class FileSystemStorePropertyPathAccessorsIT {
                     repo = context.getBean(PropertyPathJpaUuidRepository.class);
                     store = context.getBean(PropertyPathJpaUuidStore.class);
 
-                    RandomString random = new RandomString(5);
-                    resourceLocation = random.nextString();
+                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new PropertyPathJpaUuidEntity();
                     entity = repo.save(entity);
 
-                    store.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                    store.setContent(entity, PropertyPath.from("content"), TestSupportData.sampleTextStream());
                 }
 
                 @AfterEach
@@ -699,13 +684,12 @@ public class FileSystemStorePropertyPathAccessorsIT {
                     repo = context.getBean(PropertyPathJpaUuidRepository.class);
                     store = context.getBean(PropertyPathJpaUuidStore.class);
 
-                    RandomString random = new RandomString(5);
-                    resourceLocation = random.nextString();
+                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new PropertyPathJpaUuidEntity();
                     entity = repo.save(entity);
 
-                    store.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                    store.setContent(entity, PropertyPath.from("content"), TestSupportData.sampleTextStream());
                 }
 
                 @AfterEach
@@ -735,13 +719,12 @@ public class FileSystemStorePropertyPathAccessorsIT {
                     repo = context.getBean(PropertyPathJpaUuidRepository.class);
                     store = context.getBean(PropertyPathJpaUuidStore.class);
 
-                    RandomString random = new RandomString(5);
-                    resourceLocation = random.nextString();
+                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new PropertyPathJpaUuidEntity();
                     entity = repo.save(entity);
 
-                    store.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                    store.setContent(entity, PropertyPath.from("content"), TestSupportData.sampleTextStream());
                 }
 
                 @AfterEach

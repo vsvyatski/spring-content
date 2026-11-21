@@ -1,5 +1,6 @@
 package internal.org.springframework.content.rest.links;
 
+import org.springframework.content.test.support.TestSupportData;
 import internal.org.springframework.content.rest.support.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -35,7 +36,7 @@ public class ContentLinksIT {
                 JsonMappedContentEntityRepository repository3 = context.getBean(JsonMappedContentEntityRepository.class);
                 JsonMappedContentEntityStore store3 = context.getBean(JsonMappedContentEntityStore.class);
                 JsonMappedContentEntity testEntity3 = new JsonMappedContentEntity();
-                store3.setContent(testEntity3, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                store3.setContent(testEntity3, TestSupportData.sampleTextStream());
                 testEntity3 = repository3.save(testEntity3);
                 this.setMvc(mvc);
                 this.setUrl("/api/testEntity3s/" + testEntity3.getId());
@@ -62,7 +63,7 @@ public class ContentLinksIT {
                 DualContentRenditionEntityRepository repository5 = context.getBean(DualContentRenditionEntityRepository.class);
                 DualContentRenditionEntityStore store5 = context.getBean(DualContentRenditionEntityStore.class);
                 DualContentRenditionEntity testEntity5 = new DualContentRenditionEntity();
-                store5.setContent(testEntity5, PropertyPath.from("content"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                store5.setContent(testEntity5, PropertyPath.from("content"), TestSupportData.sampleTextStream());
                 testEntity5 = repository5.save(testEntity5);
                 this.setMvc(mvc);
                 this.setUrl("/api/testEntity5s/" + testEntity5.getId());
@@ -90,7 +91,7 @@ public class ContentLinksIT {
                 AuditedNestedContentEntityStore store2 = context.getBean(AuditedNestedContentEntityStore.class);
                 AuditedNestedContentEntity testEntity2 = new AuditedNestedContentEntity();
                 testEntity2.getChild().setMimeType("text/plain");
-                store2.setContent(testEntity2, PropertyPath.from("child"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                store2.setContent(testEntity2, PropertyPath.from("child"), TestSupportData.sampleTextStream());
                 testEntity2 = repository2.save(testEntity2);
                 this.setMvc(mvc);
                 this.setUrl("/api/files/" + testEntity2.getId());
@@ -117,10 +118,10 @@ public class ContentLinksIT {
                 EmbeddedDualContentEntityRepository repository10 = context.getBean(EmbeddedDualContentEntityRepository.class);
                 EmbeddedDualContentEntityStore store10 = context.getBean(EmbeddedDualContentEntityStore.class);
                 EmbeddedDualContentEntity testEntity10 = new EmbeddedDualContentEntity();
-                store10.setContent(testEntity10, PropertyPath.from("child/content"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                store10.setContent(testEntity10, PropertyPath.from("child/content"), TestSupportData.sampleTextStream());
                 testEntity10.getChild().setContentMimeType("text/plain");
                 testEntity10.getChild().setContentFileName("test");
-                store10.setContent(testEntity10, PropertyPath.from("child/preview"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                store10.setContent(testEntity10, PropertyPath.from("child/preview"), TestSupportData.sampleTextStream());
                 testEntity10.getChild().setPreviewMimeType("text/plain");
                 testEntity10 = repository10.save(testEntity10);
                 this.setMvc(mvc);

@@ -1,5 +1,6 @@
 package internal.org.springframework.content.jpa.io;
 
+import org.springframework.content.test.support.TestSupportData;
 import com.github.f4b6a3.uuid.UuidCreator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -126,7 +127,7 @@ public class PostgresBlobResourceIT {
                     TransactionStatus status = txn.getTransaction(new DefaultTransactionDefinition());
 
                     try (OutputStream os = r.getOutputStream()) {
-                        os.write("Hello Spring Content World!".getBytes());
+                        os.write(TestSupportData.sampleTextBytes());
                     }
 
                     txn.commit(status);

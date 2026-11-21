@@ -5,8 +5,8 @@ import internal.org.springframework.content.rest.support.AuditedNestedContentEnt
 import internal.org.springframework.content.rest.support.AuditedNestedContentEntityRepository;
 import internal.org.springframework.content.rest.support.AuditedNestedContentChild;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
-import net.bytebuddy.utility.RandomString;
 import org.apache.http.HttpStatus;
+import org.springframework.content.test.support.TestSupportData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -39,8 +39,7 @@ public abstract class AbstractRestIT {
     }
 
     protected String getId() {
-        RandomString random = new RandomString(5);
-        return "/store-tests/" + random.nextString();
+        return "/store-tests/" + TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
     }
 
     @Nested

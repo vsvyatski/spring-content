@@ -1,5 +1,6 @@
 package internal.org.springframework.content.rest.links;
 
+import org.springframework.content.test.support.TestSupportData;
 import com.theoryinpractise.halbuilder.api.ReadableRepresentation;
 import com.theoryinpractise.halbuilder.api.RepresentationFactory;
 import com.theoryinpractise.halbuilder.standard.StandardRepresentationFactory;
@@ -218,7 +219,7 @@ public class ContentLinksWithProjectionsIT {
 
                     testEntity = new TEntity();
                     testEntity.setName("foo");
-                    testEntity = store.setContent(testEntity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                    testEntity = store.setContent(testEntity, TestSupportData.sampleTextStream());
                     testEntity = repository.save(testEntity);
                 }
 

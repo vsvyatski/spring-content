@@ -1,5 +1,6 @@
 package it.internal.org.springframework.content.rest.controllers;
 
+import org.springframework.content.test.support.TestSupportData;
 import internal.org.springframework.content.rest.support.StoreConfig;
 import internal.org.springframework.content.rest.support.EmbeddedChildContentEntity;
 import internal.org.springframework.content.rest.support.EmbeddedChildContentEntityRepository;
@@ -239,7 +240,7 @@ public class NestedContentPropertyRestEndpointsIT {
 
                         testEntity8 = repository2.save(new EmbeddedChildContentEntity());
 
-                        String content = "Hello Spring Content World!";
+                        String content = TestSupportData.SAMPLE_TEXT_PAYLOAD;
                         testEntity8.getChild().contentMimeType = "text/plain";
                         UUID contentId = UUID.randomUUID();
                         store.associate(testEntity8, PropertyPath.from("child"), contentId);
@@ -274,7 +275,7 @@ public class NestedContentPropertyRestEndpointsIT {
                                 .andReturn().getResponse();
 
                         assertThat(response).isNotNull();
-                        assertThat(response.getContentAsString()).isEqualTo("Hello Spring Content World!");
+                        assertThat(response.getContentAsString()).isEqualTo(TestSupportData.SAMPLE_TEXT_PAYLOAD);
                     }
                 }
 
@@ -286,7 +287,7 @@ public class NestedContentPropertyRestEndpointsIT {
 
                         testEntity8 = repository2.save(new EmbeddedChildContentEntity());
 
-                        String content = "Hello Spring Content World!";
+                        String content = TestSupportData.SAMPLE_TEXT_PAYLOAD;
                         testEntity8.getChild().contentMimeType = "text/plain";
                         UUID contentId = UUID.randomUUID();
                         store.associate(testEntity8, PropertyPath.from("child"), contentId);
@@ -332,7 +333,7 @@ public class NestedContentPropertyRestEndpointsIT {
 
                         testEntity8 = repository2.save(new EmbeddedChildContentEntity());
 
-                        String content = "Hello Spring Content World!";
+                        String content = TestSupportData.SAMPLE_TEXT_PAYLOAD;
                         testEntity8.getChild().contentMimeType = "text/plain";
                         UUID contentId = UUID.randomUUID();
                         store.associate(testEntity8, PropertyPath.from("child"), contentId);
@@ -367,7 +368,7 @@ public class NestedContentPropertyRestEndpointsIT {
                                 .getResponse();
 
                         assertThat(response).isNotNull();
-                        assertThat(response.getContentAsString()).isEqualTo("Hello Spring Content World!");
+                        assertThat(response.getContentAsString()).isEqualTo(TestSupportData.SAMPLE_TEXT_PAYLOAD);
                     }
                 }
 
@@ -379,7 +380,7 @@ public class NestedContentPropertyRestEndpointsIT {
 
                         testEntity8 = repository2.save(new EmbeddedChildContentEntity());
 
-                        String content = "Hello Spring Content World!";
+                        String content = TestSupportData.SAMPLE_TEXT_PAYLOAD;
                         testEntity8.getChild().contentMimeType = "text/plain";
                         UUID contentId = UUID.randomUUID();
                         store.associate(testEntity8, PropertyPath.from("child"), contentId);
@@ -427,7 +428,7 @@ public class NestedContentPropertyRestEndpointsIT {
 
                         testEntity8 = repository2.save(new EmbeddedChildContentEntity());
 
-                        String content = "Hello Spring Content World!";
+                        String content = TestSupportData.SAMPLE_TEXT_PAYLOAD;
                         testEntity8.getChild().contentMimeType = "text/plain";
                         UUID contentId = UUID.randomUUID();
                         store.associate(testEntity8, PropertyPath.from("child"), contentId);

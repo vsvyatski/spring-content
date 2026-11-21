@@ -1,5 +1,6 @@
 package it.rest.revisions;
 
+import org.springframework.content.test.support.TestSupportData;
 import internal.org.springframework.content.rest.support.config.JpaInfrastructureConfig;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -156,7 +157,7 @@ public class RevisionPropertyRestEndpointsIT {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                     testEntity = repository.save(new TEntity());
-                    testEntity = store.setContent(testEntity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                    testEntity = store.setContent(testEntity, TestSupportData.sampleTextStream());
                     testEntity.setMimeType("text/plain");
                     testEntity = repository.save(testEntity);
 
@@ -179,7 +180,7 @@ public class RevisionPropertyRestEndpointsIT {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                     testEntity = repository.save(new TEntity());
-                    testEntity = store.setContent(testEntity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                    testEntity = store.setContent(testEntity, TestSupportData.sampleTextStream());
                     testEntity.setMimeType("text/plain");
                     testEntity = repository.save(testEntity);
 
@@ -199,7 +200,7 @@ public class RevisionPropertyRestEndpointsIT {
                                     andReturn().getResponse();
 
                     assertThat(response).isNotNull();
-                    assertThat(response.getContentAsString()).isEqualTo("Hello Spring Content World!");
+                    assertThat(response.getContentAsString()).isEqualTo(TestSupportData.SAMPLE_TEXT_PAYLOAD);
                 }
             }
         }

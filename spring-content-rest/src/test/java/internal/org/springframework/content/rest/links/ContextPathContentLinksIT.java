@@ -1,5 +1,6 @@
 package internal.org.springframework.content.rest.links;
 
+import org.springframework.content.test.support.TestSupportData;
 import internal.org.springframework.content.rest.support.JsonMappedContentEntity;
 import internal.org.springframework.content.rest.support.JsonMappedContentEntityStore;
 import internal.org.springframework.content.rest.support.JsonMappedContentEntityRepository;
@@ -121,7 +122,7 @@ public class ContextPathContentLinksIT {
             void setUp() {
                 MockMvc mvc = MockMvcBuilders.webAppContextSetup(context).build();
                 JsonMappedContentEntity testEntity3 = new JsonMappedContentEntity();
-                store3.setContent(testEntity3, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                store3.setContent(testEntity3, TestSupportData.sampleTextStream());
                 testEntity3 = repository3.save(testEntity3);
                 this.setMvc(mvc);
                 this.setUrl("/contextPath/testEntity3s/" + testEntity3.getId());

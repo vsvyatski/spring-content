@@ -4,7 +4,6 @@ import com.google.api.gax.paging.Page;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.Storage;
-import net.bytebuddy.utility.RandomString;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,6 +18,7 @@ import org.springframework.content.commons.store.UnsetContentParams;
 import org.springframework.content.gcs.config.EnableGCPStorage;
 import org.springframework.content.test.support.TestSupportPackages;
 import org.springframework.content.test.support.jpa.*;
+import org.springframework.content.test.support.TestSupportData;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -122,8 +122,7 @@ public class GCPStorageIT {
                         storage = context.getBean(Storage.class);
 
 
-                        RandomString random = new RandomString(5);
-                        resourceLocation = random.nextString();
+                                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                         genericResource = store.getResource(resourceLocation);
                     }
@@ -168,12 +167,11 @@ public class GCPStorageIT {
                             storage = context.getBean(Storage.class);
 
 
-                            RandomString random = new RandomString(5);
-                            resourceLocation = random.nextString();
+                                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                             genericResource = store.getResource(resourceLocation);
 
-                            try (InputStream is = new ByteArrayInputStream("Hello Spring Content World!".getBytes())) {
+                            try (InputStream is = TestSupportData.sampleTextStream()) {
                                 try (OutputStream os = ((WritableResource) genericResource).getOutputStream()) {
                                     IOUtils.copy(is, os);
                                 }
@@ -198,7 +196,7 @@ public class GCPStorageIT {
                         void shouldStoreThatContent() throws IOException {
                             assertThat(genericResource.exists()).isTrue();
 
-                            try (InputStream expected = new ByteArrayInputStream("Hello Spring Content World!".getBytes())) {
+                            try (InputStream expected = TestSupportData.sampleTextStream()) {
                                 try (InputStream actual = genericResource.getInputStream()) {
                                     boolean matches = IOUtils.contentEquals(expected, actual);
                                     assertThat(matches).isTrue();
@@ -220,18 +218,17 @@ public class GCPStorageIT {
                             storage = context.getBean(Storage.class);
 
 
-                            RandomString random = new RandomString(5);
-                            resourceLocation = random.nextString();
+                                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                             genericResource = store.getResource(resourceLocation);
 
-                            try (InputStream is = new ByteArrayInputStream("Hello Spring Content World!".getBytes())) {
+                            try (InputStream is = TestSupportData.sampleTextStream()) {
                                 try (OutputStream os = ((WritableResource) genericResource).getOutputStream()) {
                                     IOUtils.copy(is, os);
                                 }
                             }
 
-                            try (InputStream is = new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes())) {
+                            try (InputStream is = TestSupportData.sampleUpdatedTextStream()) {
                                 try (OutputStream os = ((WritableResource) genericResource).getOutputStream()) {
                                     IOUtils.copy(is, os);
                                 }
@@ -256,7 +253,7 @@ public class GCPStorageIT {
                         void shouldStoreThatUpdatedContent() throws IOException {
                             assertThat(genericResource.exists()).isTrue();
 
-                            try (InputStream expected = new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes())) {
+                            try (InputStream expected = TestSupportData.sampleUpdatedTextStream()) {
                                 try (InputStream actual = genericResource.getInputStream()) {
                                     assertThat(IOUtils.contentEquals(expected, actual)).isTrue();
                                 }
@@ -277,12 +274,11 @@ public class GCPStorageIT {
                             storage = context.getBean(Storage.class);
 
 
-                            RandomString random = new RandomString(5);
-                            resourceLocation = random.nextString();
+                                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                             genericResource = store.getResource(resourceLocation);
 
-                            try (InputStream is = new ByteArrayInputStream("Hello Spring Content World!".getBytes())) {
+                            try (InputStream is = TestSupportData.sampleTextStream()) {
                                 try (OutputStream os = ((WritableResource) genericResource).getOutputStream()) {
                                     IOUtils.copy(is, os);
                                 }
@@ -335,8 +331,7 @@ public class GCPStorageIT {
                         storage = context.getBean(Storage.class);
 
 
-                        RandomString random = new RandomString(5);
-                        resourceLocation = random.nextString();
+                                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                         entity = new DualContentJpaLongIdEntity();
                         entity = repo.save(entity);
@@ -371,8 +366,7 @@ public class GCPStorageIT {
                                 storage = context.getBean(Storage.class);
 
 
-                                RandomString random = new RandomString(5);
-                                resourceLocation = random.nextString();
+                                                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                                 entity = new DualContentJpaLongIdEntity();
                                 entity = repo.save(entity);
@@ -408,8 +402,7 @@ public class GCPStorageIT {
                                 storage = context.getBean(Storage.class);
 
 
-                                RandomString random = new RandomString(5);
-                                resourceLocation = random.nextString();
+                                                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                                 entity = new DualContentJpaLongIdEntity();
                                 entity = repo.save(entity);
@@ -452,8 +445,7 @@ public class GCPStorageIT {
                                 storage = context.getBean(Storage.class);
 
 
-                                RandomString random = new RandomString(5);
-                                resourceLocation = random.nextString();
+                                                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                                 entity = new DualContentJpaLongIdEntity();
                                 entity = repo.save(entity);
@@ -492,8 +484,7 @@ public class GCPStorageIT {
                                 storage = context.getBean(Storage.class);
 
 
-                                RandomString random = new RandomString(5);
-                                resourceLocation = random.nextString();
+                                                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                                 entity = new DualContentJpaLongIdEntity();
                                 entity = repo.save(entity);
@@ -533,8 +524,7 @@ public class GCPStorageIT {
                                 storage = context.getBean(Storage.class);
 
 
-                                RandomString random = new RandomString(5);
-                                resourceLocation = random.nextString();
+                                                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                                 entity = new DualContentJpaLongIdEntity();
                                 entity = repo.save(entity);
@@ -574,8 +564,7 @@ public class GCPStorageIT {
                                 storage = context.getBean(Storage.class);
 
 
-                                RandomString random = new RandomString(5);
-                                resourceLocation = random.nextString();
+                                                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                                 entity = new DualContentJpaLongIdEntity();
                                 entity = repo.save(entity);
@@ -621,14 +610,13 @@ public class GCPStorageIT {
                     storage = context.getBean(Storage.class);
 
 
-                    RandomString random = new RandomString(5);
-                    resourceLocation = random.nextString();
+                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new DualContentJpaLongIdEntity();
                     entity = repo.save(entity);
 
-                    store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-                    store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
+                    store.setContent(entity, TestSupportData.sampleTextStream());
+                    store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleHtmlRenditionStream());
                     entity = repo.save(entity);
                 }
 
@@ -641,13 +629,13 @@ public class GCPStorageIT {
                 void shouldBeAbleToStoreNewContent() {
                     // content
                     try (InputStream content = store.getContent(entity)) {
-                        assertThat(IOUtils.contentEquals(new ByteArrayInputStream("Hello Spring Content World!".getBytes()), content)).isTrue();
+                        assertThat(IOUtils.contentEquals(TestSupportData.sampleTextStream(), content)).isTrue();
                     } catch (IOException ignored) {
                     }
 
                     //rendition
                     try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
-                        assertThat(IOUtils.contentEquals(new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()), content)).isTrue();
+                        assertThat(IOUtils.contentEquals(TestSupportData.sampleHtmlRenditionStream(), content)).isTrue();
                     } catch (IOException ignored) {
                     }
                 }
@@ -679,18 +667,17 @@ public class GCPStorageIT {
                     storage = context.getBean(Storage.class);
 
 
-                    RandomString random = new RandomString(5);
-                    resourceLocation = random.nextString();
+                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new DualContentJpaLongIdEntity();
                     entity = repo.save(entity);
 
-                    store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-                    store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
+                    store.setContent(entity, TestSupportData.sampleTextStream());
+                    store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleHtmlRenditionStream());
                     entity = repo.save(entity);
 
-                    store.setContent(entity, new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()));
-                    store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Updated Spring Content World!</html>".getBytes()));
+                    store.setContent(entity, TestSupportData.sampleUpdatedTextStream());
+                    store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleUpdatedHtmlRenditionStream());
                     entity = repo.save(entity);
                 }
 
@@ -703,13 +690,13 @@ public class GCPStorageIT {
                 void shouldHaveTheUpdatedContent() throws IOException {
                     //content
                     try (InputStream content = store.getContent(entity)) {
-                        boolean matches = IOUtils.contentEquals(new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), content);
+                        boolean matches = IOUtils.contentEquals(TestSupportData.sampleUpdatedTextStream(), content);
                         assertThat(matches).isTrue();
                     }
 
                     //rendition
                     try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
-                        boolean matches = IOUtils.contentEquals(new ByteArrayInputStream("<html>Hello Updated Spring Content World!</html>".getBytes()), content);
+                        boolean matches = IOUtils.contentEquals(TestSupportData.sampleUpdatedHtmlRenditionStream(), content);
                         assertThat(matches).isTrue();
                     }
                 }
@@ -728,18 +715,17 @@ public class GCPStorageIT {
                     storage = context.getBean(Storage.class);
 
 
-                    RandomString random = new RandomString(5);
-                    resourceLocation = random.nextString();
+                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new DualContentJpaLongIdEntity();
                     entity = repo.save(entity);
 
-                    store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-                    store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
+                    store.setContent(entity, TestSupportData.sampleTextStream());
+                    store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleHtmlRenditionStream());
                     entity = repo.save(entity);
 
-                    store.setContent(entity, new ByteArrayInputStream("Hello Spring World!".getBytes()));
-                    store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring World!</html>".getBytes()));
+                    store.setContent(entity, TestSupportData.samplePartialUpdateStream());
+                    store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.samplePartialUpdateHtmlRenditionStream());
                     entity = repo.save(entity);
                 }
 
@@ -752,13 +738,13 @@ public class GCPStorageIT {
                 void shouldStoreOnlyTheNewContent() throws IOException {
                     //content
                     try (InputStream content = store.getContent(entity)) {
-                        boolean matches = IOUtils.contentEquals(new ByteArrayInputStream("Hello Spring World!".getBytes()), content);
+                        boolean matches = IOUtils.contentEquals(TestSupportData.samplePartialUpdateStream(), content);
                         assertThat(matches).isTrue();
                     }
 
                     //rendition
                     try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
-                        boolean matches = IOUtils.contentEquals(new ByteArrayInputStream("<html>Hello Spring World!</html>".getBytes()), content);
+                        boolean matches = IOUtils.contentEquals(TestSupportData.samplePartialUpdateHtmlRenditionStream(), content);
                         assertThat(matches).isTrue();
                     }
                 }
@@ -777,14 +763,13 @@ public class GCPStorageIT {
                     storage = context.getBean(Storage.class);
 
 
-                    RandomString random = new RandomString(5);
-                    resourceLocation = random.nextString();
+                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new DualContentJpaLongIdEntity();
                     entity = repo.save(entity);
 
-                    store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-                    store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
+                    store.setContent(entity, TestSupportData.sampleTextStream());
+                    store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleHtmlRenditionStream());
                     entity = repo.save(entity);
                 }
 
@@ -799,11 +784,11 @@ public class GCPStorageIT {
                     assertThat(contentId).isNotNull();
                     assertThat(storage.get(BlobId.of("test-bucket", contentId)).exists()).isTrue();
 
-                    store.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), new SetContentParams(-1, true, SetContentParams.ContentDisposition.CreateNew));
+                    store.setContent(entity, PropertyPath.from("content"), TestSupportData.sampleUpdatedTextStream(), new SetContentParams(-1, true, SetContentParams.ContentDisposition.CreateNew));
                     entity = repo.save(entity);
 
                     try (InputStream content = store.getContent(entity)) {
-                        boolean matches = IOUtils.contentEquals(new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), content);
+                        boolean matches = IOUtils.contentEquals(TestSupportData.sampleUpdatedTextStream(), content);
                         assertThat(matches).isTrue();
                     }
 
@@ -826,14 +811,13 @@ public class GCPStorageIT {
                     storage = context.getBean(Storage.class);
 
 
-                    RandomString random = new RandomString(5);
-                    resourceLocation = random.nextString();
+                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new DualContentJpaLongIdEntity();
                     entity = repo.save(entity);
 
-                    store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-                    store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
+                    store.setContent(entity, TestSupportData.sampleTextStream());
+                    store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleHtmlRenditionStream());
                     entity = repo.save(entity);
 
                     resourceLocation = entity.getContentId();
@@ -881,14 +865,13 @@ public class GCPStorageIT {
                     storage = context.getBean(Storage.class);
 
 
-                    RandomString random = new RandomString(5);
-                    resourceLocation = random.nextString();
+                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new DualContentJpaLongIdEntity();
                     entity = repo.save(entity);
 
-                    store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-                    store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
+                    store.setContent(entity, TestSupportData.sampleTextStream());
+                    store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleHtmlRenditionStream());
                     entity = repo.save(entity);
 
                     resourceLocation = entity.getContentId();
@@ -927,14 +910,13 @@ public class GCPStorageIT {
                     storage = context.getBean(Storage.class);
 
 
-                    RandomString random = new RandomString(5);
-                    resourceLocation = random.nextString();
+                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new DualContentJpaLongIdEntity();
                     entity = repo.save(entity);
 
-                    store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-                    store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
+                    store.setContent(entity, TestSupportData.sampleTextStream());
+                    store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleHtmlRenditionStream());
                     entity = repo.save(entity);
                 }
 
@@ -967,14 +949,13 @@ public class GCPStorageIT {
                     storage = context.getBean(Storage.class);
 
 
-                    RandomString random = new RandomString(5);
-                    resourceLocation = random.nextString();
+                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new DualContentJpaLongIdEntity();
                     entity = repo.save(entity);
 
-                    store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-                    store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
+                    store.setContent(entity, TestSupportData.sampleTextStream());
+                    store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleHtmlRenditionStream());
                     entity = repo.save(entity);
                 }
 
@@ -1007,14 +988,13 @@ public class GCPStorageIT {
                     storage = context.getBean(Storage.class);
 
 
-                    RandomString random = new RandomString(5);
-                    resourceLocation = random.nextString();
+                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new DualContentJpaLongIdEntity();
                     entity = repo.save(entity);
 
-                    store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-                    store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
+                    store.setContent(entity, TestSupportData.sampleTextStream());
+                    store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleHtmlRenditionStream());
                     entity = repo.save(entity);
                 }
 
@@ -1047,14 +1027,13 @@ public class GCPStorageIT {
                     storage = context.getBean(Storage.class);
 
 
-                    RandomString random = new RandomString(5);
-                    resourceLocation = random.nextString();
+                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new DualContentJpaLongIdEntity();
                     entity = repo.save(entity);
 
-                    store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-                    store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
+                    store.setContent(entity, TestSupportData.sampleTextStream());
+                    store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleHtmlRenditionStream());
                     entity = repo.save(entity);
                 }
 
@@ -1070,7 +1049,7 @@ public class GCPStorageIT {
 
                     SharedIdJakartaJpaEntity sharedIdContentIdEntity = sharedIdRepository.save(new SharedIdJakartaJpaEntity());
 
-                    sharedIdContentIdEntity = sharedIdStore.setContent(sharedIdContentIdEntity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                    sharedIdContentIdEntity = sharedIdStore.setContent(sharedIdContentIdEntity, TestSupportData.sampleTextStream());
                     sharedIdContentIdEntity = sharedIdRepository.save(sharedIdContentIdEntity);
                     String id = sharedIdContentIdEntity.getContentId();
                     sharedIdContentIdEntity = sharedIdStore.unsetContent(sharedIdContentIdEntity);
@@ -1108,9 +1087,9 @@ public class GCPStorageIT {
                         EmbeddedContentJpaStringIdRepository embeddedRepo = context.getBean(EmbeddedContentJpaStringIdRepository.class);
                         EmbeddedContentJpaStringIdStore embeddedStore = context.getBean(EmbeddedContentJpaStringIdStore.class);
                         EmbeddedContentJpaStringIdEntity embedded = embeddedRepo.save(new EmbeddedContentJpaStringIdEntity());
-                        embeddedStore.setContent(embedded, PropertyPath.from("content"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                        embeddedStore.setContent(embedded, PropertyPath.from("content"), TestSupportData.sampleTextStream());
                         try (InputStream is = embeddedStore.getContent(embedded, PropertyPath.from("content"))) {
-                            assertThat(IOUtils.contentEquals(is, new ByteArrayInputStream("Hello Spring Content World!".getBytes()))).isTrue();
+                            assertThat(IOUtils.contentEquals(is, TestSupportData.sampleTextStream())).isTrue();
                         }
                     }
 

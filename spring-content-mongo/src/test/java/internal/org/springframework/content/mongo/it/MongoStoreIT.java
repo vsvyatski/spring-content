@@ -1,7 +1,6 @@
 package internal.org.springframework.content.mongo.it;
 
 import com.mongodb.client.MongoClient;
-import net.bytebuddy.utility.RandomString;
 import org.apache.commons.io.IOUtils;
 import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.AfterEach;
@@ -18,6 +17,7 @@ import org.springframework.content.mongo.config.EnableMongoStores;
 import org.springframework.content.test.support.NullableAssertions;
 import org.springframework.content.test.support.TestSupportPackages;
 import org.springframework.content.test.support.mongo.*;
+import org.springframework.content.test.support.TestSupportData;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -104,8 +104,7 @@ public class MongoStoreIT {
                         repo = context.getBean(DualContentMongoRepository.class);
                         store = context.getBean(DualContentMongoStore.class);
 
-                        RandomString random = new RandomString(5);
-                        resourceLocation = random.nextString();
+                                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                         genericResource = store.getResource(resourceLocation);
                     }
@@ -143,12 +142,11 @@ public class MongoStoreIT {
                             repo = context.getBean(DualContentMongoRepository.class);
                             store = context.getBean(DualContentMongoStore.class);
 
-                            RandomString random = new RandomString(5);
-                            resourceLocation = random.nextString();
+                                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                             genericResource = store.getResource(resourceLocation);
 
-                            try (InputStream is = new ByteArrayInputStream("Hello Spring Content World!".getBytes())) {
+                            try (InputStream is = TestSupportData.sampleTextStream()) {
                                 try (OutputStream os = ((WritableResource) genericResource).getOutputStream()) {
                                     IOUtils.copy(is, os);
                                 }
@@ -166,7 +164,7 @@ public class MongoStoreIT {
                         void shouldStoreThatContent() throws IOException {
                             assertThat(genericResource.exists()).isTrue();
 
-                            try (InputStream expected = new ByteArrayInputStream("Hello Spring Content World!".getBytes())) {
+                            try (InputStream expected = TestSupportData.sampleTextStream()) {
                                 try (InputStream actual = genericResource.getInputStream()) {
                                     boolean matches = IOUtils.contentEquals(expected, actual);
                                     assertThat(matches).isTrue();
@@ -188,18 +186,17 @@ public class MongoStoreIT {
                             repo = context.getBean(DualContentMongoRepository.class);
                             store = context.getBean(DualContentMongoStore.class);
 
-                            RandomString random = new RandomString(5);
-                            resourceLocation = random.nextString();
+                                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                             genericResource = store.getResource(resourceLocation);
 
-                            try (InputStream is = new ByteArrayInputStream("Hello Spring Content World!".getBytes())) {
+                            try (InputStream is = TestSupportData.sampleTextStream()) {
                                 try (OutputStream os = ((WritableResource) genericResource).getOutputStream()) {
                                     IOUtils.copy(is, os);
                                 }
                             }
 
-                            try (InputStream is = new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes())) {
+                            try (InputStream is = TestSupportData.sampleUpdatedTextStream()) {
                                 try (OutputStream os = ((WritableResource) genericResource).getOutputStream()) {
                                     IOUtils.copy(is, os);
                                 }
@@ -217,7 +214,7 @@ public class MongoStoreIT {
                         void shouldStoreThatUpdatedContent() throws IOException {
                             assertThat(genericResource.exists()).isTrue();
 
-                            try (InputStream expected = new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes())) {
+                            try (InputStream expected = TestSupportData.sampleUpdatedTextStream()) {
                                 try (InputStream actual = genericResource.getInputStream()) {
                                     assertThat(IOUtils.contentEquals(expected, actual)).isTrue();
                                 }
@@ -238,12 +235,11 @@ public class MongoStoreIT {
                             repo = context.getBean(DualContentMongoRepository.class);
                             store = context.getBean(DualContentMongoStore.class);
 
-                            RandomString random = new RandomString(5);
-                            resourceLocation = random.nextString();
+                                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                             genericResource = store.getResource(resourceLocation);
 
-                            try (InputStream is = new ByteArrayInputStream("Hello Spring Content World!".getBytes())) {
+                            try (InputStream is = TestSupportData.sampleTextStream()) {
                                 try (OutputStream os = ((WritableResource) genericResource).getOutputStream()) {
                                     IOUtils.copy(is, os);
                                 }
@@ -289,8 +285,7 @@ public class MongoStoreIT {
                         repo = context.getBean(DualContentMongoRepository.class);
                         store = context.getBean(DualContentMongoStore.class);
 
-                        RandomString random = new RandomString(5);
-                        resourceLocation = random.nextString();
+                                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                         entity = new DualContentMongoDocument();
                         entity = repo.save(entity);
@@ -325,8 +320,7 @@ public class MongoStoreIT {
                                 repo = context.getBean(DualContentMongoRepository.class);
                                 store = context.getBean(DualContentMongoStore.class);
 
-                                RandomString random = new RandomString(5);
-                                resourceLocation = random.nextString();
+                                                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                                 entity = new DualContentMongoDocument();
                                 entity = repo.save(entity);
@@ -362,8 +356,7 @@ public class MongoStoreIT {
                                 repo = context.getBean(DualContentMongoRepository.class);
                                 store = context.getBean(DualContentMongoStore.class);
 
-                                RandomString random = new RandomString(5);
-                                resourceLocation = random.nextString();
+                                                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                                 entity = new DualContentMongoDocument();
                                 entity = repo.save(entity);
@@ -406,8 +399,7 @@ public class MongoStoreIT {
                                 repo = context.getBean(DualContentMongoRepository.class);
                                 store = context.getBean(DualContentMongoStore.class);
 
-                                RandomString random = new RandomString(5);
-                                resourceLocation = random.nextString();
+                                                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                                 entity = new DualContentMongoDocument();
                                 entity = repo.save(entity);
@@ -446,8 +438,7 @@ public class MongoStoreIT {
                                 repo = context.getBean(DualContentMongoRepository.class);
                                 store = context.getBean(DualContentMongoStore.class);
 
-                                RandomString random = new RandomString(5);
-                                resourceLocation = random.nextString();
+                                                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                                 entity = new DualContentMongoDocument();
                                 entity = repo.save(entity);
@@ -487,8 +478,7 @@ public class MongoStoreIT {
                                 repo = context.getBean(DualContentMongoRepository.class);
                                 store = context.getBean(DualContentMongoStore.class);
 
-                                RandomString random = new RandomString(5);
-                                resourceLocation = random.nextString();
+                                                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                                 entity = new DualContentMongoDocument();
                                 entity = repo.save(entity);
@@ -528,8 +518,7 @@ public class MongoStoreIT {
                                 repo = context.getBean(DualContentMongoRepository.class);
                                 store = context.getBean(DualContentMongoStore.class);
 
-                                RandomString random = new RandomString(5);
-                                resourceLocation = random.nextString();
+                                                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                                 entity = new DualContentMongoDocument();
                                 entity = repo.save(entity);
@@ -575,14 +564,13 @@ public class MongoStoreIT {
                     repo = context.getBean(DualContentMongoRepository.class);
                     store = context.getBean(DualContentMongoStore.class);
 
-                    RandomString random = new RandomString(5);
-                    resourceLocation = random.nextString();
+                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new DualContentMongoDocument();
                     entity = repo.save(entity);
 
-                    store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-                    store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                    store.setContent(entity, TestSupportData.sampleTextStream());
+                    store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleTextStream());
                 }
 
                 @AfterEach
@@ -594,13 +582,13 @@ public class MongoStoreIT {
                 void shouldBeAbleToStoreNewContent() {
                     // content
                     try (InputStream content = store.getContent(entity)) {
-                        assertThat(IOUtils.contentEquals(new ByteArrayInputStream("Hello Spring Content World!".getBytes()), content)).isTrue();
+                        assertThat(IOUtils.contentEquals(TestSupportData.sampleTextStream(), content)).isTrue();
                     } catch (IOException ignored) {
                     }
 
                     //rendition
                     try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
-                        assertThat(IOUtils.contentEquals(new ByteArrayInputStream("Hello Spring Content World!".getBytes()), content)).isTrue();
+                        assertThat(IOUtils.contentEquals(TestSupportData.sampleTextStream(), content)).isTrue();
                     } catch (IOException ignored) {
                     }
                 }
@@ -634,17 +622,16 @@ public class MongoStoreIT {
                     repo = context.getBean(DualContentMongoRepository.class);
                     store = context.getBean(DualContentMongoStore.class);
 
-                    RandomString random = new RandomString(5);
-                    resourceLocation = random.nextString();
+                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new DualContentMongoDocument();
                     entity = repo.save(entity);
 
-                    store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-                    store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                    store.setContent(entity, TestSupportData.sampleTextStream());
+                    store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleTextStream());
 
-                    store.setContent(entity, new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()));
-                    store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()));
+                    store.setContent(entity, TestSupportData.sampleUpdatedTextStream());
+                    store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleUpdatedTextStream());
                     entity = repo.save(entity);
                 }
 
@@ -657,13 +644,13 @@ public class MongoStoreIT {
                 void shouldHaveTheUpdatedContent() throws IOException {
                     //content
                     try (InputStream content = store.getContent(entity)) {
-                        boolean matches = IOUtils.contentEquals(new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), content);
+                        boolean matches = IOUtils.contentEquals(TestSupportData.sampleUpdatedTextStream(), content);
                         assertThat(matches).isTrue();
                     }
 
                     //rendition
                     try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
-                        boolean matches = IOUtils.contentEquals(new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), content);
+                        boolean matches = IOUtils.contentEquals(TestSupportData.sampleUpdatedTextStream(), content);
                         assertThat(matches).isTrue();
                     }
                 }
@@ -682,17 +669,16 @@ public class MongoStoreIT {
                     repo = context.getBean(DualContentMongoRepository.class);
                     store = context.getBean(DualContentMongoStore.class);
 
-                    RandomString random = new RandomString(5);
-                    resourceLocation = random.nextString();
+                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new DualContentMongoDocument();
                     entity = repo.save(entity);
 
-                    store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-                    store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                    store.setContent(entity, TestSupportData.sampleTextStream());
+                    store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleTextStream());
 
-                    store.setContent(entity, new ByteArrayInputStream("Hello Spring World!".getBytes()));
-                    store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("Hello Spring World!".getBytes()));
+                    store.setContent(entity, TestSupportData.samplePartialUpdateStream());
+                    store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.samplePartialUpdateStream());
                     entity = repo.save(entity);
                 }
 
@@ -705,13 +691,13 @@ public class MongoStoreIT {
                 void shouldStoreOnlyTheNewContent() throws IOException {
                     //content
                     try (InputStream content = store.getContent(entity)) {
-                        boolean matches = IOUtils.contentEquals(new ByteArrayInputStream("Hello Spring World!".getBytes()), content);
+                        boolean matches = IOUtils.contentEquals(TestSupportData.samplePartialUpdateStream(), content);
                         assertThat(matches).isTrue();
                     }
 
                     //rendition
                     try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
-                        boolean matches = IOUtils.contentEquals(new ByteArrayInputStream("Hello Spring World!".getBytes()), content);
+                        boolean matches = IOUtils.contentEquals(TestSupportData.samplePartialUpdateStream(), content);
                         assertThat(matches).isTrue();
                     }
                 }
@@ -730,14 +716,13 @@ public class MongoStoreIT {
                     repo = context.getBean(DualContentMongoRepository.class);
                     store = context.getBean(DualContentMongoStore.class);
 
-                    RandomString random = new RandomString(5);
-                    resourceLocation = random.nextString();
+                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new DualContentMongoDocument();
                     entity = repo.save(entity);
 
-                    store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-                    store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                    store.setContent(entity, TestSupportData.sampleTextStream());
+                    store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleTextStream());
                 }
 
                 @AfterEach
@@ -751,11 +736,11 @@ public class MongoStoreIT {
                     assertThat(contentId).isNotNull();
                     assertThat(gridFsTemplate.getResource(contentId).exists()).isTrue();
 
-                    store.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), new SetContentParams(-1, true, SetContentParams.ContentDisposition.CreateNew));
+                    store.setContent(entity, PropertyPath.from("content"), TestSupportData.sampleUpdatedTextStream(), new SetContentParams(-1, true, SetContentParams.ContentDisposition.CreateNew));
                     entity = repo.save(entity);
 
                     try (InputStream content = store.getContent(entity)) {
-                        boolean matches = IOUtils.contentEquals(new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), content);
+                        boolean matches = IOUtils.contentEquals(TestSupportData.sampleUpdatedTextStream(), content);
                         assertThat(matches).isTrue();
                     }
 
@@ -782,14 +767,13 @@ public class MongoStoreIT {
                     repo = context.getBean(DualContentMongoRepository.class);
                     store = context.getBean(DualContentMongoStore.class);
 
-                    RandomString random = new RandomString(5);
-                    resourceLocation = random.nextString();
+                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new DualContentMongoDocument();
                     entity = repo.save(entity);
 
-                    store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-                    store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                    store.setContent(entity, TestSupportData.sampleTextStream());
+                    store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleTextStream());
 
                     String storedContentId = entity.getContentId();
                     assertThat(storedContentId).isNotNull();
@@ -839,14 +823,13 @@ public class MongoStoreIT {
                     repo = context.getBean(DualContentMongoRepository.class);
                     store = context.getBean(DualContentMongoStore.class);
 
-                    RandomString random = new RandomString(5);
-                    resourceLocation = random.nextString();
+                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new DualContentMongoDocument();
                     entity = repo.save(entity);
 
-                    store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-                    store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                    store.setContent(entity, TestSupportData.sampleTextStream());
+                    store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleTextStream());
 
                     String storedContentId = entity.getContentId();
                     assertThat(storedContentId).isNotNull();
@@ -887,14 +870,13 @@ public class MongoStoreIT {
                     repo = context.getBean(DualContentMongoRepository.class);
                     store = context.getBean(DualContentMongoStore.class);
 
-                    RandomString random = new RandomString(5);
-                    resourceLocation = random.nextString();
+                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new DualContentMongoDocument();
                     entity = repo.save(entity);
 
-                    store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-                    store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                    store.setContent(entity, TestSupportData.sampleTextStream());
+                    store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleTextStream());
                 }
 
                 @AfterEach
@@ -926,14 +908,13 @@ public class MongoStoreIT {
                     repo = context.getBean(DualContentMongoRepository.class);
                     store = context.getBean(DualContentMongoStore.class);
 
-                    RandomString random = new RandomString(5);
-                    resourceLocation = random.nextString();
+                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new DualContentMongoDocument();
                     entity = repo.save(entity);
 
-                    store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-                    store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                    store.setContent(entity, TestSupportData.sampleTextStream());
+                    store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleTextStream());
                 }
 
                 @AfterEach
@@ -965,14 +946,13 @@ public class MongoStoreIT {
                     repo = context.getBean(DualContentMongoRepository.class);
                     store = context.getBean(DualContentMongoStore.class);
 
-                    RandomString random = new RandomString(5);
-                    resourceLocation = random.nextString();
+                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new DualContentMongoDocument();
                     entity = repo.save(entity);
 
-                    store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-                    store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                    store.setContent(entity, TestSupportData.sampleTextStream());
+                    store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleTextStream());
                 }
 
                 @AfterEach
@@ -1004,14 +984,13 @@ public class MongoStoreIT {
                     repo = context.getBean(DualContentMongoRepository.class);
                     store = context.getBean(DualContentMongoStore.class);
 
-                    RandomString random = new RandomString(5);
-                    resourceLocation = random.nextString();
+                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new DualContentMongoDocument();
                     entity = repo.save(entity);
 
-                    store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-                    store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                    store.setContent(entity, TestSupportData.sampleTextStream());
+                    store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleTextStream());
                 }
 
                 @AfterEach
@@ -1026,7 +1005,7 @@ public class MongoStoreIT {
 
                     SharedIdJakartaMongoDocument sharedIdContentIdEntity = sharedIdRepository.save(new SharedIdJakartaMongoDocument());
 
-                    sharedIdContentIdEntity = sharedIdStore.setContent(sharedIdContentIdEntity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                    sharedIdContentIdEntity = sharedIdStore.setContent(sharedIdContentIdEntity, TestSupportData.sampleTextStream());
                     sharedIdContentIdEntity = sharedIdRepository.save(sharedIdContentIdEntity);
                     String id = sharedIdContentIdEntity.getContentId();
                     assertThat(id).isNotNull();
@@ -1049,14 +1028,13 @@ public class MongoStoreIT {
                     repo = context.getBean(DualContentMongoRepository.class);
                     store = context.getBean(DualContentMongoStore.class);
 
-                    RandomString random = new RandomString(5);
-                    resourceLocation = random.nextString();
+                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new DualContentMongoDocument();
                     entity = repo.save(entity);
 
-                    store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-                    store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                    store.setContent(entity, TestSupportData.sampleTextStream());
+                    store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleTextStream());
                 }
 
                 @AfterEach
@@ -1071,7 +1049,7 @@ public class MongoStoreIT {
 
                     SharedIdSpringMongoDocument SharedIdSpringMongoDocument = SharedIdSpringMongoRepository.save(new SharedIdSpringMongoDocument());
 
-                    SharedIdSpringMongoDocument = SharedIdSpringMongoStore.setContent(SharedIdSpringMongoDocument, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                    SharedIdSpringMongoDocument = SharedIdSpringMongoStore.setContent(SharedIdSpringMongoDocument, TestSupportData.sampleTextStream());
                     SharedIdSpringMongoDocument = SharedIdSpringMongoRepository.save(SharedIdSpringMongoDocument);
                     String id = SharedIdSpringMongoDocument.getContentId();
                     assertThat(id).isNotNull();

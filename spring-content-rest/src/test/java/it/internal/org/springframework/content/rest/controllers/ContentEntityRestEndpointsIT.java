@@ -1,5 +1,6 @@
 package it.internal.org.springframework.content.rest.controllers;
 
+import org.springframework.content.test.support.TestSupportData;
 import internal.org.springframework.content.rest.support.*;
 import internal.org.springframework.content.rest.support.EventListenerConfig.TestEventListener;
 import jakarta.servlet.ServletException;
@@ -184,7 +185,7 @@ public class ContentEntityRestEndpointsIT {
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
                     testEntity4 = new OneToOneLinkedContentEntity();
-                    testEntity4 = store4.setContent(testEntity4, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                    testEntity4 = store4.setContent(testEntity4, TestSupportData.sampleTextStream());
                     testEntity4.mimeType = "text/plain";
                     testEntity4 = repo4.save(testEntity4);
                     String url = "/testEntity4s/" + testEntity4.getId();
@@ -376,7 +377,7 @@ public class ContentEntityRestEndpointsIT {
 
             @Test
             void shouldSupportContentOperations() throws Exception {
-                String content = "Hello Spring Content World!";
+                String content = TestSupportData.SAMPLE_TEXT_PAYLOAD;
                 mvc.perform(
                                 put("/testEntity9s/" + testEntity9.id)
                                         .contextPath("")
@@ -398,7 +399,7 @@ public class ContentEntityRestEndpointsIT {
                         .andExpect(status().isOk()).andReturn().getResponse();
 
                 assertThat(response).isNotNull();
-                assertThat(response.getContentAsString()).isEqualTo("Hello Spring Content World!");
+                assertThat(response.getContentAsString()).isEqualTo(TestSupportData.SAMPLE_TEXT_PAYLOAD);
             }
         }
 

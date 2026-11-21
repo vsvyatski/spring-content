@@ -1,5 +1,6 @@
 package internal.org.springframework.content.rest.links;
 
+import org.springframework.content.test.support.TestSupportData;
 import internal.org.springframework.content.rest.support.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -58,7 +59,7 @@ public class EntityContentLinksIT {
             void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
                 testEntity3 = new JsonMappedContentEntity();
-                store3.setContent(testEntity3, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                store3.setContent(testEntity3, TestSupportData.sampleTextStream());
                 testEntity3 = repository3.save(testEntity3);
                 this.setMvc(mvc);
                 this.setUrl("/testEntity3s/" + testEntity3.getId());

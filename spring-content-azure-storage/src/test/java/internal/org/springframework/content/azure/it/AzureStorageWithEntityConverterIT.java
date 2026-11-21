@@ -22,6 +22,7 @@ import org.springframework.content.test.support.TestSupportPackages;
 import org.springframework.content.test.support.jpa.DualContentJpaLongIdMimeEntity;
 import org.springframework.content.test.support.jpa.DualContentJpaLongIdMimeRepository;
 import org.springframework.content.test.support.jpa.DualContentJpaLongIdMimeStore;
+import org.springframework.content.test.support.TestSupportData;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -176,7 +177,7 @@ public class AzureStorageWithEntityConverterIT {
                 entity.setContentType("text/plain");
                 entity = repo.save(entity);
 
-                store.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                store.setContent(entity, PropertyPath.from("content"), TestSupportData.sampleTextStream());
                 BlobClient blobClient = builder.buildClient().getBlobContainerClient(data.bucket()).getBlobClient(entity.getContentId());
                 assertThat(blobClient.exists()).isTrue();
             } finally {
@@ -194,7 +195,7 @@ public class AzureStorageWithEntityConverterIT {
                 entity.setContentType("text/plain");
                 entity = repo.save(entity);
 
-                store.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                store.setContent(entity, PropertyPath.from("content"), TestSupportData.sampleTextStream());
                 // content
                 assertThat(entity.getContentId()).isNotNull();
                 assertThat(entity.getContentId().trim().length()).isGreaterThan(0);
@@ -216,7 +217,7 @@ public class AzureStorageWithEntityConverterIT {
                     entity.setContentType("text/plain");
                     entity = repo.save(entity);
 
-                    store.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                    store.setContent(entity, PropertyPath.from("content"), TestSupportData.sampleTextStream());
 
                     String resourceLocation = entity.getContentId();
                     entity = store.unsetContent(entity, PropertyPath.from("content"));

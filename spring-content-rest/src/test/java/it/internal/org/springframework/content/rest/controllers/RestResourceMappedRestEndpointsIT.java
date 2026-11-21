@@ -1,5 +1,6 @@
 package it.internal.org.springframework.content.rest.controllers;
 
+import org.springframework.content.test.support.TestSupportData;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import internal.org.springframework.content.rest.support.StoreConfig;
@@ -204,7 +205,7 @@ public class RestResourceMappedRestEndpointsIT {
 
                         testEntity11 = repo.save(new RestResourcePackageEntity());
 
-                        String content = "Hello Spring Content World!";
+                        String content = TestSupportData.SAMPLE_TEXT_PAYLOAD;
                         testEntity11.get_package().contentMimeType = "text/plain";
                         UUID contentId = UUID.randomUUID();
                         store.associate(testEntity11, PropertyPath.from("_package/content"), contentId);
@@ -252,7 +253,7 @@ public class RestResourceMappedRestEndpointsIT {
 
                         testEntity11 = repo.save(new RestResourcePackageEntity());
 
-                        String content = "Hello Spring Content World!";
+                        String content = TestSupportData.SAMPLE_TEXT_PAYLOAD;
                         testEntity11.get_package().contentMimeType = "text/plain";
                         UUID contentId = UUID.randomUUID();
                         store.associate(testEntity11, PropertyPath.from("_package/content"), contentId);
@@ -287,7 +288,7 @@ public class RestResourceMappedRestEndpointsIT {
                                 .andReturn().getResponse();
 
                         assertThat(response).isNotNull();
-                        assertThat(response.getContentAsString()).isEqualTo("Hello Spring Content World!");
+                        assertThat(response.getContentAsString()).isEqualTo(TestSupportData.SAMPLE_TEXT_PAYLOAD);
                     }
                 }
 
@@ -299,7 +300,7 @@ public class RestResourceMappedRestEndpointsIT {
 
                         testEntity11 = repo.save(new RestResourcePackageEntity());
 
-                        String content = "Hello Spring Content World!";
+                        String content = TestSupportData.SAMPLE_TEXT_PAYLOAD;
                         testEntity11.get_package().contentMimeType = "text/plain";
                         UUID contentId = UUID.randomUUID();
                         store.associate(testEntity11, PropertyPath.from("_package/content"), contentId);
@@ -344,7 +345,7 @@ public class RestResourceMappedRestEndpointsIT {
 
                         testEntity11 = repo.save(new RestResourcePackageEntity());
 
-                        String content = "Hello Spring Content World!";
+                        String content = TestSupportData.SAMPLE_TEXT_PAYLOAD;
                         testEntity11.get_package().contentMimeType = "text/plain";
                         UUID contentId = UUID.randomUUID();
                         store.associate(testEntity11, PropertyPath.from("_package/content"), contentId);
@@ -377,7 +378,7 @@ public class RestResourceMappedRestEndpointsIT {
                                 .getResponse();
 
                         assertThat(response).isNotNull();
-                        assertThat(response.getContentAsString()).isEqualTo("Hello Spring Content World!");
+                        assertThat(response.getContentAsString()).isEqualTo(TestSupportData.SAMPLE_TEXT_PAYLOAD);
                     }
                 }
 
@@ -389,7 +390,7 @@ public class RestResourceMappedRestEndpointsIT {
 
                         testEntity11 = repo.save(new RestResourcePackageEntity());
 
-                        String content = "Hello Spring Content World!";
+                        String content = TestSupportData.SAMPLE_TEXT_PAYLOAD;
                         testEntity11.get_package().contentMimeType = "text/plain";
                         UUID contentId = UUID.randomUUID();
                         store.associate(testEntity11, PropertyPath.from("_package/content"), contentId);
@@ -436,7 +437,7 @@ public class RestResourceMappedRestEndpointsIT {
 
                         testEntity11 = repo.save(new RestResourcePackageEntity());
 
-                        String content = "Hello Spring Content World!";
+                        String content = TestSupportData.SAMPLE_TEXT_PAYLOAD;
                         testEntity11.get_package().contentMimeType = "text/plain";
                         UUID contentId = UUID.randomUUID();
                         store.associate(testEntity11, PropertyPath.from("_package/content"), contentId);

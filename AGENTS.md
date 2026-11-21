@@ -154,7 +154,8 @@ Change version for the whole reactor with:
 - `ContentStore` marker interfaces use a `*Store` suffix (e.g. `TestEntityContentStore`), not `*ContentRepository`.
   Reserve `*Repository` for Spring Data `CrudRepository` / `JpaRepository` types only.
 - Shared fixtures live in `spring-content-commons` test-jar (`org.springframework.content.test.support.**`).
-  Reuse `TestSupportData` for synthetic content ids instead of letter-salad literals; use real phrases for payload bytes.
+  Reuse `TestSupportData` for synthetic content ids, default UTF-8 payloads (`sampleTextStream()`, etc.), and
+  `UNASSOCIATED_RESOURCE_LOCATION` instead of `RandomString` or letter-salad literals.
   `@Enable*Stores` unit tests scan `TestSupportPackages` (`.jpa`, `.mongo`, `.fs`, `.s3`, `.gcs`, `.azure`) instead of
   inner `TestEntity` types. `EnableJpaStoresTest` asserts `DualContentJpaStringIdStore` (dual `@ContentId` entity in the
   test-jar); other backends use single-content store marker interfaces. REST module fixtures live under

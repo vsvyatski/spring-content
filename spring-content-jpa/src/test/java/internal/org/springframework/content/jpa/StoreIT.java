@@ -1,7 +1,6 @@
 package internal.org.springframework.content.jpa;
 
 import internal.org.springframework.content.jpa.support.stores.DocumentStore;
-import net.bytebuddy.utility.RandomString;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -10,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.content.commons.io.DeletableResource;
 import org.springframework.content.jpa.config.EnableJpaStores;
 import org.springframework.content.test.support.TestSupportPackages;
+import org.springframework.content.test.support.TestSupportData;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,7 +31,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import javax.sql.DataSource;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -68,8 +67,7 @@ public class StoreIT {
     }
 
     protected String getId() {
-        RandomString random = new RandomString(5);
-        return "/store-tests/" + random.nextString();
+        return "/store-tests/" + TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
     }
 
     private void bootStoreContext(Class<?> configClass) {
@@ -467,7 +465,7 @@ public class StoreIT {
                 }
 
                 boolean matches = false;
-                InputStream expected = new ByteArrayInputStream("Hello Spring Content World!".getBytes());
+                InputStream expected = TestSupportData.sampleTextStream();
                 InputStream actual = null;
                 try {
                     actual = r.getInputStream();
@@ -492,7 +490,7 @@ public class StoreIT {
             status = ptm.getTransaction(new DefaultTransactionDefinition());
 
             r = store.getResource(getId());
-            InputStream is = new ByteArrayInputStream("Hello Spring Content World!".getBytes());
+            InputStream is = TestSupportData.sampleTextStream();
             try (OutputStream os = ((WritableResource) r).getOutputStream()) {
                 IOUtils.copy(is, os);
             }
@@ -501,7 +499,7 @@ public class StoreIT {
                 assertThat(r.exists()).isTrue();
 
                 boolean matches = false;
-                InputStream expected = new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes());
+                InputStream expected = TestSupportData.sampleUpdatedTextStream();
                 InputStream actual = null;
                 try {
                     actual = r.getInputStream();
@@ -531,7 +529,7 @@ public class StoreIT {
             status = ptm.getTransaction(new DefaultTransactionDefinition());
 
             r = store.getResource(getId());
-            InputStream is = new ByteArrayInputStream("Hello Spring Content World!".getBytes());
+            InputStream is = TestSupportData.sampleTextStream();
             try (OutputStream os = ((WritableResource) r).getOutputStream()) {
                 IOUtils.copy(is, os);
             }

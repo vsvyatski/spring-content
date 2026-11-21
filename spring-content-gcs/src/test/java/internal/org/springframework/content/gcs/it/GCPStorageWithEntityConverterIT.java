@@ -13,6 +13,7 @@ import org.springframework.content.gcs.config.EnableGCPStorage;
 import org.springframework.content.gcs.config.GCPStorageConfigurer;
 import org.springframework.content.test.support.FakeEntity;
 import org.springframework.content.test.support.TestSupportPackages;
+import org.springframework.content.test.support.TestSupportData;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -76,7 +77,7 @@ public class GCPStorageWithEntityConverterIT {
         entity.setContentType("text/plain");
         entity = repo.save(entity);
 
-        store.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+        store.setContent(entity, PropertyPath.from("content"), TestSupportData.sampleTextStream());
     }
 
     private record TestData(String name, Class<?>[] config, String bucket) {

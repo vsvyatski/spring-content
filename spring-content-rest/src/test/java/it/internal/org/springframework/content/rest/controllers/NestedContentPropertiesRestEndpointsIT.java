@@ -1,5 +1,6 @@
 package it.internal.org.springframework.content.rest.controllers;
 
+import org.springframework.content.test.support.TestSupportData;
 import internal.org.springframework.content.rest.support.StoreConfig;
 import internal.org.springframework.content.rest.support.EmbeddedDualContentEntity;
 import internal.org.springframework.content.rest.support.EmbeddedDualContentEntityRepository;
@@ -216,7 +217,7 @@ public class NestedContentPropertiesRestEndpointsIT {
 
                         testEntity10 = repository.save(new EmbeddedDualContentEntity());
 
-                        String content = "Hello Spring Content World!";
+                        String content = TestSupportData.SAMPLE_TEXT_PAYLOAD;
                         testEntity10.getChild().contentMimeType = "text/plain";
                         UUID contentId = UUID.randomUUID();
                         store.associate(testEntity10, PropertyPath.from("child/content"), contentId);
@@ -251,7 +252,7 @@ public class NestedContentPropertiesRestEndpointsIT {
                                 .andReturn().getResponse();
 
                         assertThat(response).isNotNull();
-                        assertThat(response.getContentAsString()).isEqualTo("Hello Spring Content World!");
+                        assertThat(response.getContentAsString()).isEqualTo(TestSupportData.SAMPLE_TEXT_PAYLOAD);
                     }
                 }
 
@@ -263,7 +264,7 @@ public class NestedContentPropertiesRestEndpointsIT {
 
                         testEntity10 = repository.save(new EmbeddedDualContentEntity());
 
-                        String content = "Hello Spring Content World!";
+                        String content = TestSupportData.SAMPLE_TEXT_PAYLOAD;
                         testEntity10.getChild().contentMimeType = "text/plain";
                         UUID contentId = UUID.randomUUID();
                         store.associate(testEntity10, PropertyPath.from("child/content"), contentId);
@@ -309,7 +310,7 @@ public class NestedContentPropertiesRestEndpointsIT {
 
                         testEntity10 = repository.save(new EmbeddedDualContentEntity());
 
-                        String content = "Hello Spring Content World!";
+                        String content = TestSupportData.SAMPLE_TEXT_PAYLOAD;
                         testEntity10.getChild().contentMimeType = "text/plain";
                         UUID contentId = UUID.randomUUID();
                         store.associate(testEntity10, PropertyPath.from("child/content"), contentId);
@@ -344,7 +345,7 @@ public class NestedContentPropertiesRestEndpointsIT {
                                 .getResponse();
 
                         assertThat(response).isNotNull();
-                        assertThat(response.getContentAsString()).isEqualTo("Hello Spring Content World!");
+                        assertThat(response.getContentAsString()).isEqualTo(TestSupportData.SAMPLE_TEXT_PAYLOAD);
                     }
                 }
 
@@ -356,7 +357,7 @@ public class NestedContentPropertiesRestEndpointsIT {
 
                         testEntity10 = repository.save(new EmbeddedDualContentEntity());
 
-                        String content = "Hello Spring Content World!";
+                        String content = TestSupportData.SAMPLE_TEXT_PAYLOAD;
                         testEntity10.getChild().contentMimeType = "text/plain";
                         UUID contentId = UUID.randomUUID();
                         store.associate(testEntity10, PropertyPath.from("child/content"), contentId);
@@ -404,7 +405,7 @@ public class NestedContentPropertiesRestEndpointsIT {
 
                         testEntity10 = repository.save(new EmbeddedDualContentEntity());
 
-                        String content = "Hello Spring Content World!";
+                        String content = TestSupportData.SAMPLE_TEXT_PAYLOAD;
                         testEntity10.getChild().contentMimeType = "text/plain";
                         UUID contentId = UUID.randomUUID();
                         store.associate(testEntity10, PropertyPath.from("child/content"), contentId);
