@@ -1,6 +1,9 @@
 package internal.org.springframework.content.rest.storeresolver;
 
-import internal.org.springframework.content.rest.support.AuditedNestedContentEntity;
+import internal.org.springframework.content.rest.scoped.storeresolver.StoreResolverEntityFsStore;
+import internal.org.springframework.content.rest.scoped.storeresolver.StoreResolverEntityJpaStore;
+import internal.org.springframework.content.rest.scoped.storeresolver.StoreResolverEntityRepository;
+import org.springframework.content.test.support.jpa.fixture.SingleContentJpaLongIdMimeEntity;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpStatus;
@@ -30,17 +33,15 @@ public class StoreResolverRestConfigurationIT {
     @LocalServerPort
     int port;
     @Autowired
-    private Application.TEntityRepository repo;
+    private StoreResolverEntityRepository repo;
     @Autowired
-    private Application.TEntityJpaStore jpaStore;
+    private StoreResolverEntityJpaStore jpaStore;
     @Autowired
-    private Application.TEntityFsStore fsStore;
+    private StoreResolverEntityFsStore fsStore;
     @Autowired
     private WebApplicationContext webApplicationContext;
 
-    private Application.TEntity tEntity;
-
-    private AuditedNestedContentEntity existingClaim;
+    private SingleContentJpaLongIdMimeEntity tEntity;
 
     @Nested
     class JpaRest {
@@ -50,7 +51,7 @@ public class StoreResolverRestConfigurationIT {
             void setUp() {
                 RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
 
-                tEntity = new Application.TEntity();
+                tEntity = new SingleContentJpaLongIdMimeEntity();
                 tEntity = repo.save(tEntity);
             }
 

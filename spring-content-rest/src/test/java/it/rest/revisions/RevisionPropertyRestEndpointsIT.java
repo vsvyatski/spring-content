@@ -1,31 +1,23 @@
 package it.rest.revisions;
 
 import internal.org.springframework.content.rest.support.config.JpaInfrastructureConfig;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import org.hibernate.envers.Audited;
+import internal.org.springframework.content.rest.scoped.revision.RevisionPropertyEntityRepository;
+import internal.org.springframework.content.rest.scoped.revision.RevisionPropertyEntityStore;
+import internal.org.springframework.content.rest.scoped.revision.RevisionPropertyEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.content.commons.annotations.ContentId;
-import org.springframework.content.commons.annotations.ContentLength;
-import org.springframework.content.commons.annotations.MimeType;
 import org.springframework.content.fs.config.EnableFileSystemStores;
 import org.springframework.content.fs.io.FileSystemResourceLoader;
-import org.springframework.content.fs.store.FileSystemContentStore;
 import org.springframework.content.rest.config.RestConfiguration;
 import org.springframework.content.test.support.TestSupportData;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.envers.repository.support.EnversRevisionRepositoryFactoryBean;
 import org.springframework.data.history.Revisions;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.data.repository.history.RevisionRepository;
 import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguration;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
@@ -48,32 +40,29 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class RevisionPropertyRestEndpointsIT {
 
     @Autowired
-    private RevisionPropertyRestEndpointsIT.TEntityRepository repository;
+    private RevisionPropertyEntityRepository repository;
 
     @Autowired
-    private RevisionPropertyRestEndpointsIT.TEntityContentStore store;
+    private RevisionPropertyEntityStore store;
 
     @Autowired
     private WebApplicationContext context;
 
     private MockMvc mvc;
 
-    private TEntity testEntity;
-
-    public interface TEntityRepository extends JpaRepository<TEntity, Long>, RevisionRepository<TEntity, Long, Integer> {
-    }
-
-    public interface TEntityContentStore extends FileSystemContentStore<TEntity, String> {
-    }
+    private RevisionPropertyEntity testEntity;
 
     @Configuration
-    @EnableJpaRepositories(basePackages = "it.rest.revisions", considerNestedRepositories = true, repositoryFactoryBeanClass = EnversRevisionRepositoryFactoryBean.class)
-    @EnableFileSystemStores(basePackages = "it.rest.revisions")
+    @EnableJpaRepositories(
+        basePackages = "internal.org.springframework.content.rest.scoped.revision",
+        considerNestedRepositories = true,
+        repositoryFactoryBeanClass = EnversRevisionRepositoryFactoryBean.class)
+    @EnableFileSystemStores(basePackages = "internal.org.springframework.content.rest.scoped.revision")
     public static class TestConfig extends JpaInfrastructureConfig {
 
         @Override
         protected String[] packagesToScan() {
-            return new String[]{"it.rest.revisions"};
+            return new String[]{"internal.org.springframework.content.rest.scoped.revision"};
         }
 
         @Bean
@@ -92,59 +81,6 @@ public class RevisionPropertyRestEndpointsIT {
         }
     }
 
-    @Entity
-    @Audited
-    public static class TEntity {
-
-        @Id
-        @GeneratedValue(strategy = GenerationType.AUTO)
-        private Long id;
-
-        @ContentId
-        private String contentId;
-
-        @ContentLength
-        private Long contentLen;
-
-        @MimeType
-        private String mimeType;
-
-        public TEntity() {
-        }
-
-        public Long getId() {
-            return id;
-        }
-
-        public void setId(Long id) {
-            this.id = id;
-        }
-
-        public String getContentId() {
-            return contentId;
-        }
-
-        public void setContentId(String contentId) {
-            this.contentId = contentId;
-        }
-
-        public Long getContentLen() {
-            return contentLen;
-        }
-
-        public void setContentLen(Long contentLen) {
-            this.contentLen = contentLen;
-        }
-
-        public String getMimeType() {
-            return mimeType;
-        }
-
-        public void setMimeType(String mimeType) {
-            this.mimeType = mimeType;
-        }
-    }
-
     @Nested
     class RevisionPropertyRESTEndpoints {
         @Nested
@@ -155,7 +91,7 @@ public class RevisionPropertyRestEndpointsIT {
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
-                    testEntity = repository.save(new TEntity());
+                    testEntity = repository.save(new RevisionPropertyEntity());
                     testEntity = store.setContent(testEntity, TestSupportData.sampleTextStream());
                     testEntity.setMimeType("text/plain");
                     testEntity = repository.save(testEntity);
@@ -178,7 +114,7 @@ public class RevisionPropertyRestEndpointsIT {
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
-                    testEntity = repository.save(new TEntity());
+                    testEntity = repository.save(new RevisionPropertyEntity());
                     testEntity = store.setContent(testEntity, TestSupportData.sampleTextStream());
                     testEntity.setMimeType("text/plain");
                     testEntity = repository.save(testEntity);
@@ -188,7 +124,7 @@ public class RevisionPropertyRestEndpointsIT {
 
                 @Test
                 void shouldReturnTheContent() throws Exception {
-                    Revisions<Integer, TEntity> revisions = repository.findRevisions(testEntity.getId());
+                    Revisions<Integer, RevisionPropertyEntity> revisions = repository.findRevisions(testEntity.getId());
                     Integer revisionId = revisions.getLatestRevision().getRequiredRevisionNumber();
 
                     MockHttpServletResponse response =

@@ -92,6 +92,12 @@
       <artifactId>jackson-annotations</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.hibernate.orm</groupId>
+      <artifactId>hibernate-envers</artifactId>
+      <version>${hibernate-orm.version}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>

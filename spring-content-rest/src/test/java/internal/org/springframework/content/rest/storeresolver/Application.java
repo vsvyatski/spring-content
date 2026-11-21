@@ -1,31 +1,23 @@
 package internal.org.springframework.content.rest.storeresolver;
 
 import internal.org.springframework.content.rest.it.SecurityConfiguration;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.data.mongodb.autoconfigure.DataMongoAutoConfiguration;
 import org.springframework.boot.data.mongodb.autoconfigure.DataMongoRepositoriesAutoConfiguration;
 import org.springframework.boot.mongodb.autoconfigure.MongoAutoConfiguration;
-import org.springframework.content.commons.annotations.ContentId;
-import org.springframework.content.commons.annotations.ContentLength;
-import org.springframework.content.commons.annotations.MimeType;
 import org.springframework.content.commons.storeservice.StoreInfo;
 import org.springframework.content.fs.config.EnableFileSystemStores;
 import org.springframework.content.fs.io.FileSystemResourceLoader;
 import org.springframework.content.fs.store.FileSystemContentStore;
 import org.springframework.content.jpa.config.EnableJpaStores;
-import org.springframework.content.jpa.store.JpaContentStore;
 import org.springframework.content.rest.config.ContentRestConfigurer;
 import org.springframework.content.rest.config.RestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
@@ -53,24 +45,17 @@ public class Application {
         SpringApplication.run(Application.class, args);
     }
 
-    @SuppressWarnings("unused") // classpath / store component scan
-    public interface TEntityRepository extends JpaRepository<TEntity, Long> {
-    }
-
-    @SuppressWarnings("unused") // classpath / store component scan
-    public interface TEntityFsStore extends FileSystemContentStore<TEntity, String> {
-    }
-
-    @SuppressWarnings("unused") // classpath / store component scan
-    public interface TEntityJpaStore extends JpaContentStore<TEntity, String> {
-    }
-
     @Configuration
     @Import({RestConfiguration.class, SecurityConfiguration.class})
-    @EnableJpaRepositories(basePackages = "internal.org.springframework.content.rest.storeresolver", considerNestedRepositories = true)
+    @EnableJpaRepositories(
+        basePackages = {
+            "internal.org.springframework.content.rest.storeresolver",
+            "internal.org.springframework.content.rest.scoped.storeresolver"
+        },
+        considerNestedRepositories = true)
     @EnableTransactionManagement
-    @EnableJpaStores(basePackages = "internal.org.springframework.content.rest.storeresolver")
-    @EnableFileSystemStores(basePackages = "internal.org.springframework.content.rest.storeresolver")
+    @EnableJpaStores(basePackages = "internal.org.springframework.content.rest.scoped.storeresolver")
+    @EnableFileSystemStores(basePackages = "internal.org.springframework.content.rest.scoped.storeresolver")
     public static class AppConfig {
 
         @Value("/org/springframework/content/jpa/schema-drop-h2.sql")
@@ -108,7 +93,7 @@ public class Application {
 
             LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
             factory.setJpaVendorAdapter(vendorAdapter);
-            factory.setPackagesToScan("internal.org.springframework.content.rest.storeresolver");
+            factory.setPackagesToScan("org.springframework.content.test.support.jpa.fixture");
             factory.setDataSource(dataSource());
 
             return factory;
@@ -136,55 +121,6 @@ public class Application {
                 }
                 return null;
             });
-        }
-    }
-
-    @Entity
-    public static class TEntity {
-
-        @Id
-        @GeneratedValue
-        private Long id;
-
-        @ContentId
-        private String contentId;
-
-        @ContentLength
-        private Long contentLength;
-
-        @MimeType
-        private String mimeType;
-
-        public Long getId() {
-            return id;
-        }
-
-        public void setId(Long id) {
-            this.id = id;
-        }
-
-        public String getContentId() {
-            return contentId;
-        }
-
-        public void setContentId(String contentId) {
-            this.contentId = contentId;
-        }
-
-        public Long getContentLength() {
-            return contentLength;
-        }
-
-        public void setContentLength(Long contentLength) {
-            this.contentLength = contentLength;
-        }
-
-        public String getMimeType() {
-            return mimeType;
-        }
-
-        public void setMimeType(String mimeType) {
-            this.mimeType = mimeType;
         }
     }
 }
