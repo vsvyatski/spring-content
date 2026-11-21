@@ -40,7 +40,7 @@ public class BaseUriIT {
     @Autowired
     private UuidSingleContentEntityRepository repository;
     @Autowired
-    private UuidSingleContentEntityStore contentRepository;
+    private UuidSingleContentEntityStore contentStore;
 
     // same exported URI
     @Autowired
@@ -122,7 +122,7 @@ public class BaseUriIT {
                     this.setUrl("/contentApi/testEntitiesContent/" + testEntity.getId());
                     this.setEntity(testEntity);
                     this.setRepository(repository);
-                    this.setStore(contentRepository);
+                    this.setStore(contentStore);
                 }
             }
 

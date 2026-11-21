@@ -56,7 +56,7 @@ public class ContentEntityRestEndpointsIT {
     @Autowired
     UuidSingleContentEntityRepository repository;
     @Autowired
-    UuidSingleContentEntityStore contentRepository;
+    UuidSingleContentEntityStore contentStore;
 
     // same exported URI
     @Autowired
@@ -161,7 +161,7 @@ public class ContentEntityRestEndpointsIT {
                         contentTests.setUrl("/testEntitiesContent/" + testEntity.getId());
                         contentTests.setEntity(testEntity);
                         contentTests.setRepository(repository);
-                        contentTests.setStore(contentRepository);
+                        contentTests.setStore(contentStore);
                         corsTests.setMvc(mvc);
                         corsTests.setUrl("/testEntitiesContent/" + testEntity.getId());
                     }

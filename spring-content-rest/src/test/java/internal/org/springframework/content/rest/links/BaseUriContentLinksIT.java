@@ -40,7 +40,7 @@ public class BaseUriContentLinksIT {
     @Autowired
     JsonMappedContentEntityRepository repository3;
     @Autowired
-    JsonMappedContentEntityStore contentRepository3;
+    JsonMappedContentEntityStore store3;
 
     @Autowired
     private WebApplicationContext context;
@@ -60,7 +60,7 @@ public class BaseUriContentLinksIT {
             void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
                 testEntity3 = new JsonMappedContentEntity();
-                contentRepository3.setContent(testEntity3, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                store3.setContent(testEntity3, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
                 testEntity3 = repository3.save(testEntity3);
                 this.setMvc(mvc);
                 this.setUrl("/api/testEntity3s/" + testEntity3.getId());

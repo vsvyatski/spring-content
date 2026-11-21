@@ -33,9 +33,9 @@ public class ContentLinksIT {
             void setUp() {
                 MockMvc mvc = MockMvcBuilders.webAppContextSetup(context).build();
                 JsonMappedContentEntityRepository repository3 = context.getBean(JsonMappedContentEntityRepository.class);
-                JsonMappedContentEntityStore contentRepository3 = context.getBean(JsonMappedContentEntityStore.class);
+                JsonMappedContentEntityStore store3 = context.getBean(JsonMappedContentEntityStore.class);
                 JsonMappedContentEntity testEntity3 = new JsonMappedContentEntity();
-                contentRepository3.setContent(testEntity3, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                store3.setContent(testEntity3, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
                 testEntity3 = repository3.save(testEntity3);
                 this.setMvc(mvc);
                 this.setUrl("/api/testEntity3s/" + testEntity3.getId());

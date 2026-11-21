@@ -21,7 +21,7 @@ import static org.mockito.Mockito.when;
 
 public class StoresImplTest {
 
-    private StoresImpl contentRepoService;
+    private StoresImpl storesImpl;
 
     private ApplicationContext context;
     private StoreFactory mockFactory;
@@ -64,13 +64,13 @@ public class StoresImplTest {
 
                 when(context.getBeanNamesForType(StoreFactory.class)).thenReturn(new String[]{});
 
-                contentRepoService = new StoresImpl(context);
-                contentRepoService.afterPropertiesSet();
+                storesImpl = new StoresImpl(context);
+                storesImpl.afterPropertiesSet();
             }
 
             @Test
             void shouldAlwaysReturnEmpty() {
-                assertThat(contentRepoService.getStores(Store.class)).isEqualTo(new StoreInfo[]{});
+                assertThat(storesImpl.getStores(Store.class)).isEqualTo(new StoreInfo[]{});
             }
         }
 
@@ -95,26 +95,26 @@ public class StoresImplTest {
                 when(context.getBean("&testStoreFactory", StoreFactory.class)).thenReturn(mockFactory);
                 when(context.getBean("testStoreFactory", Store.class)).thenReturn(store);
 
-                contentRepoService = new StoresImpl(context);
-                contentRepoService.afterPropertiesSet();
+                storesImpl = new StoresImpl(context);
+                storesImpl.afterPropertiesSet();
             }
 
             @Test
             void shouldReturnNoStoreInfo() {
-                StoreInfo[] infos = contentRepoService.getStores(Store.class);
+                StoreInfo[] infos = storesImpl.getStores(Store.class);
                 assertThat(infos.length).isEqualTo(1);
             }
 
             @Test
             void shouldReturnNoAssociativestoreInfo() {
-                StoreInfo[] infos = contentRepoService
+                StoreInfo[] infos = storesImpl
                     .getStores(AssociativeStore.class);
                 assertThat(infos.length).isEqualTo(1);
             }
 
             @Test
             void shouldReturnContentStoreInfo() {
-                StoreInfo[] infos = contentRepoService.getStores(ContentStore.class);
+                StoreInfo[] infos = storesImpl.getStores(ContentStore.class);
                 assertThat(infos.length).isEqualTo(1);
             }
         }
@@ -141,26 +141,26 @@ public class StoresImplTest {
                 when(context.getBean("&testStoreFactory", StoreFactory.class)).thenReturn(mockFactory);
                 when(context.getBean("testStoreFactory", Store.class)).thenReturn(store);
 
-                contentRepoService = new StoresImpl(context);
-                contentRepoService.afterPropertiesSet();
+                storesImpl = new StoresImpl(context);
+                storesImpl.afterPropertiesSet();
             }
 
             @Test
             void shouldReturnStoreInfo() {
-                StoreInfo[] infos = contentRepoService.getStores(Store.class);
+                StoreInfo[] infos = storesImpl.getStores(Store.class);
                 assertThat(infos.length).isEqualTo(1);
             }
 
             @Test
             void shouldReturnAssociativestoreInfo() {
-                StoreInfo[] infos = contentRepoService
+                StoreInfo[] infos = storesImpl
                     .getStores(AssociativeStore.class);
                 assertThat(infos.length).isEqualTo(0);
             }
 
             @Test
             void shouldReturnNoContentStoreInfo() {
-                StoreInfo[] infos = contentRepoService.getStores(ContentStore.class);
+                StoreInfo[] infos = storesImpl.getStores(ContentStore.class);
                 assertThat(infos.length).isEqualTo(0);
             }
         }
@@ -187,25 +187,25 @@ public class StoresImplTest {
                 when(context.getBean("&testStoreFactory", StoreFactory.class)).thenReturn(mockFactory);
                 when(context.getBean("testStoreFactory", Store.class)).thenReturn(store);
 
-                contentRepoService = new StoresImpl(context);
-                contentRepoService.afterPropertiesSet();
+                storesImpl = new StoresImpl(context);
+                storesImpl.afterPropertiesSet();
             }
 
             @Test
             void shouldReturnNoContentStoreInfo() {
-                StoreInfo[] infos = contentRepoService.getStores(ContentStore.class);
+                StoreInfo[] infos = storesImpl.getStores(ContentStore.class);
                 assertThat(infos.length).isEqualTo(0);
             }
 
             @Test
             void shouldReturnStoreInfo() {
-                StoreInfo[] infos = contentRepoService.getStores(Store.class);
+                StoreInfo[] infos = storesImpl.getStores(Store.class);
                 assertThat(infos.length).isEqualTo(1);
             }
 
             @Test
             void shouldReturnAssociativestoreInfo() {
-                StoreInfo[] infos = contentRepoService
+                StoreInfo[] infos = storesImpl
                     .getStores(AssociativeStore.class);
                 assertThat(infos.length).isEqualTo(1);
             }
@@ -246,20 +246,20 @@ public class StoresImplTest {
                 when(context.getBean("testStoreFactory1", Store.class)).thenReturn(store);
                 when(context.getBean("testStoreFactory2", Store.class)).thenReturn(store2);
 
-                contentRepoService = new StoresImpl(context);
-                contentRepoService.afterPropertiesSet();
+                storesImpl = new StoresImpl(context);
+                storesImpl.afterPropertiesSet();
             }
 
             @Test
             void shouldReturnStoresThatMatchTheFilter() {
-                StoreInfo[] infos = contentRepoService.getStores(
+                StoreInfo[] infos = storesImpl.getStores(
                     AssociativeStore.class, Stores.MATCH_ALL);
                 assertThat(infos.length).isEqualTo(2);
             }
 
             @Test
             void shouldNotReturnStoresThatDontMatchTheFilter() {
-                StoreInfo[] infos = contentRepoService
+                StoreInfo[] infos = storesImpl
                     .getStores(AssociativeStore.class, new StoreFilter() {
                         @Override
                         public String name() {
@@ -310,13 +310,13 @@ public class StoresImplTest {
                 when(context.getBean("testStoreFactory1", Store.class)).thenReturn(store);
                 when(context.getBean("testStoreFactory2", Store.class)).thenReturn(store2);
 
-                contentRepoService = new StoresImpl(context);
-                contentRepoService.afterPropertiesSet();
+                storesImpl = new StoresImpl(context);
+                storesImpl.afterPropertiesSet();
             }
 
             @Test
             void shouldReturnStoresThatMatchTheFilter() {
-                StoreInfo[] infos = contentRepoService.getStores(ContentStore.class, Stores.MATCH_ALL);
+                StoreInfo[] infos = storesImpl.getStores(ContentStore.class, Stores.MATCH_ALL);
                 assertThat(infos.length).isEqualTo(2);
             }
         }

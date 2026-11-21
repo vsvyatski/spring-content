@@ -36,9 +36,9 @@ public class ContentLinkRelIT {
                 void setUp() {
                     MockMvc mvc = MockMvcBuilders.webAppContextSetup(context).build();
                     UuidSingleContentEntityRepository repository = context.getBean(UuidSingleContentEntityRepository.class);
-                    LinkRelUuidSingleContentEntityStore contentRepository = context.getBean(LinkRelUuidSingleContentEntityStore.class);
+                    LinkRelUuidSingleContentEntityStore contentStore = context.getBean(LinkRelUuidSingleContentEntityStore.class);
                     UuidSingleContentEntity entity = new UuidSingleContentEntity();
-                    contentRepository.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                    contentStore.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
                     entity = repository.save(entity);
                     this.setMvc(mvc);
                     this.setUrl("/api/testEntities/" + entity.getId());

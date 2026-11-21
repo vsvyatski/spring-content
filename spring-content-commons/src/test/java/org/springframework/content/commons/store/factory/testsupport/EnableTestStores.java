@@ -42,10 +42,10 @@ public @interface EnableTestStores {
     Class<?>[] basePackageClasses() default {};
 
     /**
-     * Returns the {@link FactoryBean} class to be used for each repository instance.
+     * Returns the {@link FactoryBean} class to be used for each store instance.
      * Defaults to {@link TestContentStoreFactory}.
      *
-     * @return content repository factory bean class
+     * @return content store factory bean class
      */
     Class<?> storeFactoryBeanClass() default TestContentStoreFactory.class;
 
