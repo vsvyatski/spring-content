@@ -3,15 +3,12 @@ package org.springframework.content.rest.config;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.fs.config.EnableFileSystemStores;
 import org.springframework.content.fs.io.FileSystemResourceLoader;
 import org.springframework.content.fs.store.FileSystemContentStore;
+import org.springframework.content.test.support.mongo.SingleContentMongoDocument;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguration;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
@@ -27,11 +24,8 @@ public class HypermediaConfigurationTest {
     private AnnotationConfigWebApplicationContext context;
 
     @SuppressWarnings("unused") // classpath / store component scan
-    public interface TestEntityRepository extends MongoRepository<TestEntity, String> {
-    }
-
-    @SuppressWarnings("unused") // classpath / store component scan
-    public interface TestEntityContentStore extends FileSystemContentStore<TestEntity, String> {
+    public interface SingleContentMongoDocumentFsStore
+        extends FileSystemContentStore<SingleContentMongoDocument, String> {
     }
 
     @Configuration
@@ -42,14 +36,6 @@ public class HypermediaConfigurationTest {
         public FileSystemResourceLoader filesystemRoot() throws IOException {
             return new FileSystemResourceLoader(Files.createTempDirectory("").toFile().getAbsolutePath());
         }
-    }
-
-    @Document
-    public static class TestEntity {
-        @Id
-        private String id;
-        @ContentId
-        private String contentId;
     }
 
     @Nested
