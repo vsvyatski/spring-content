@@ -1,4 +1,4 @@
-package internal.org.springframework.content.commons.repository.events;
+package internal.org.springframework.content.commons.store.events;
 
 import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.BeforeEach;
@@ -356,7 +356,7 @@ public class AbstractStoreEventListenerTest {
         }
 
         @ParameterizedTest
-        @MethodSource("internal.org.springframework.content.commons.repository.events.AbstractStoreEventListenerTest#storeListenerCases")
+        @MethodSource("internal.org.springframework.content.commons.store.events.AbstractStoreEventListenerTest#storeListenerCases")
         void shouldCallTheEventConsumer(StoreListenerCase listenerCase) {
             StoreEventSource source = new StoreEventSource();
             event = listenerCase.eventFactory().apply(source, store);
@@ -365,7 +365,7 @@ public class AbstractStoreEventListenerTest {
         }
 
         @ParameterizedTest
-        @MethodSource("internal.org.springframework.content.commons.repository.events.AbstractStoreEventListenerTest#storeListenerCases")
+        @MethodSource("internal.org.springframework.content.commons.store.events.AbstractStoreEventListenerTest#storeListenerCases")
         void shouldCallTheEventSourceConsumer(StoreListenerCase listenerCase) {
             StoreEventSource source = new StoreEventSource();
             event = listenerCase.eventFactory().apply(source, store);
