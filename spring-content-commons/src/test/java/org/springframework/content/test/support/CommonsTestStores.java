@@ -18,17 +18,17 @@ public final class CommonsTestStores {
     private CommonsTestStores() {
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public static ContentStore<Object, Serializable> mockContentStore() {
         return mock(ContentStore.class);
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public static <S, SID extends Serializable> AssociativeStore<S, SID> mockAssociativeStore() {
         return mock(AssociativeStore.class);
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public static <SID extends Serializable> Store<SID> mockStore() {
         return mock(Store.class);
     }

@@ -19,7 +19,7 @@ public class TestStoreFactoryBean extends AbstractStoreFactoryBean {
         return new TestConfigStoreImpl();
     }
 
-    public static class TestConfigStoreImpl implements ContentStore {
+    public static class TestConfigStoreImpl implements ContentStore<Object, Serializable> {
         @Override
         public Object setContent(Object property, InputStream content) {
             throw new UnsupportedOperationException();
