@@ -20,7 +20,7 @@ public class EmbeddedContentJpaStringIdEntity {
     private String id = UUID.randomUUID().toString();
 
     @Embedded
-    private EmbeddedJpaContent content;
+    private EmbeddedJpaContent content = new EmbeddedJpaContent();
 
     public String getId() {
         return id;
