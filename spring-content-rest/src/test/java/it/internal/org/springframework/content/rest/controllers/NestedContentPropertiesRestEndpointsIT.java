@@ -298,7 +298,7 @@ public class NestedContentPropertiesRestEndpointsIT {
                                 .getResponse();
 
                         assertThat(response).isNotNull();
-                        assertThat(response.getContentAsString()).isEqualTo("<html><body>Hello Spring Content World!</body></html>");
+                        assertThat(response.getContentAsString()).isEqualTo(TestSupportData.SAMPLE_REST_HTML_RENDITION_BODY);
                     }
                 }
 

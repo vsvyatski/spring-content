@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.content.commons.store.ContentStore;
+import org.springframework.content.test.support.TestSupportData;
 import org.springframework.content.commons.store.Store;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.http.HttpMethod;
@@ -232,7 +233,7 @@ public class Content {
                         .getResponse();
 
                 assertThat(response).isNotNull();
-                assertThat(response.getContentAsString()).isEqualTo("<html><body>Hello Spring Content World!</body></html>");
+                assertThat(response.getContentAsString()).isEqualTo(TestSupportData.SAMPLE_REST_HTML_RENDITION_BODY);
                 assertThat(response.getContentType()).isEqualTo("text/html");
             }
         }
@@ -312,7 +313,7 @@ public class Content {
                         .getResponse();
 
                 assertThat(response).isNotNull();
-                assertThat(response.getContentAsString()).isEqualTo("<html><body>Hello Spring Content World!</body></html>");
+                assertThat(response.getContentAsString()).isEqualTo(TestSupportData.SAMPLE_REST_HTML_RENDITION_BODY);
                 assertThat(response.getContentType()).isEqualTo("text/html");
             }
         }
@@ -362,7 +363,7 @@ public class Content {
                         .getResponse();
 
                 assertThat(response).isNotNull();
-                assertThat(response.getContentAsString()).isEqualTo("<html><body>Hello Spring Content World!</body></html>");
+                assertThat(response.getContentAsString()).isEqualTo(TestSupportData.SAMPLE_REST_HTML_RENDITION_BODY);
                 assertThat(response.getContentType()).isEqualTo("text/html;charset=ISO-8859-1");
             }
         }

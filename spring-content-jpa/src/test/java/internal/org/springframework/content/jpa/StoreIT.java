@@ -450,19 +450,18 @@ public class StoreIT {
 
         @ParameterizedTest(name = "{0}")
         @MethodSource("internal.org.springframework.content.jpa.StoreIT#databaseConfigs")
-        void shouldStoreThatContent(Class<?> configClass) {
+        void shouldStoreThatContent(Class<?> configClass) throws IOException {
             bootStoreContext(configClass);
 
             status = ptm.getTransaction(new DefaultTransactionDefinition());
 
             r = store.getResource(getId());
+            try (InputStream is = TestSupportData.sampleTextStream();
+                    OutputStream os = ((WritableResource) r).getOutputStream()) {
+                IOUtils.copy(is, os);
+            }
             try {
-                try {
-                    assertThat(r.exists()).isTrue();
-                } catch (Throwable t) {
-                    t.printStackTrace(System.err);
-                    throw t;
-                }
+                assertThat(r.exists()).isTrue();
 
                 boolean matches = false;
                 InputStream expected = TestSupportData.sampleTextStream();
@@ -490,8 +489,12 @@ public class StoreIT {
             status = ptm.getTransaction(new DefaultTransactionDefinition());
 
             r = store.getResource(getId());
-            InputStream is = TestSupportData.sampleTextStream();
-            try (OutputStream os = ((WritableResource) r).getOutputStream()) {
+            try (InputStream is = TestSupportData.sampleTextStream();
+                    OutputStream os = ((WritableResource) r).getOutputStream()) {
+                IOUtils.copy(is, os);
+            }
+            try (InputStream is = TestSupportData.sampleUpdatedTextStream();
+                    OutputStream os = ((WritableResource) r).getOutputStream()) {
                 IOUtils.copy(is, os);
             }
 

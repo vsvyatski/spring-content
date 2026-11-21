@@ -40,6 +40,13 @@ public final class TestSupportData {
     public static final String SAMPLE_PARTIAL_UPDATE_HTML_RENDITION =
             "<html>" + SAMPLE_PARTIAL_UPDATE_PAYLOAD + "</html>";
 
+    /** Rendition body returned by Spring Data REST content endpoints in ITs. */
+    public static final String SAMPLE_REST_HTML_RENDITION_BODY =
+            "<html><body>" + SAMPLE_TEXT_PAYLOAD + "</body></html>";
+
+    /** Payload for {@code @LastModifiedDate} REST controller ITs. */
+    public static final String SAMPLE_LAST_MODIFIED_DATE_PAYLOAD = "Hello Spring Content LastModifiedDate World!";
+
     private TestSupportData() {
     }
 

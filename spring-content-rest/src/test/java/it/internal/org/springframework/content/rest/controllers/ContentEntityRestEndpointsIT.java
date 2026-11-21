@@ -206,7 +206,7 @@ public class ContentEntityRestEndpointsIT {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
-                    String content = "Hello Spring Content LastModifiedDate World!";
+                    String content = TestSupportData.SAMPLE_LAST_MODIFIED_DATE_PAYLOAD;
                     testEntity4 = new OneToOneLinkedContentEntity();
                     testEntity4 = store4.setContent(testEntity4, new ByteArrayInputStream(content.getBytes()));
                     testEntity4.mimeType = "text/plain";
