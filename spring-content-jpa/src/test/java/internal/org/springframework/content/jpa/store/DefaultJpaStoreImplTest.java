@@ -82,10 +82,6 @@ public class DefaultJpaStoreImplTest {
             this.contentId = null;
         }
 
-        public JakartaTestEntity(String contentId) {
-            this.contentId = contentId;
-        }
-
         public String getContentId() {
             return this.contentId;
         }

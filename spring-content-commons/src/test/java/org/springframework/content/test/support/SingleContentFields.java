@@ -9,8 +9,4 @@ public class SingleContentFields extends ContentFields<String> implements Conten
 
     public SingleContentFields() {
     }
-
-    public SingleContentFields(String contentId) {
-        super(contentId);
-    }
 }

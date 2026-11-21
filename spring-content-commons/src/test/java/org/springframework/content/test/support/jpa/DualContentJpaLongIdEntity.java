@@ -21,10 +21,6 @@ public class DualContentJpaLongIdEntity extends DualContentFields {
     public DualContentJpaLongIdEntity() {
     }
 
-    public DualContentJpaLongIdEntity(String contentId) {
-        super(contentId);
-    }
-
     public Long getId() {
         return id;
     }

@@ -19,10 +19,6 @@ public class DualContentJpaLongIdMimeEntity extends DualContentJpaLongIdEntity {
     public DualContentJpaLongIdMimeEntity() {
     }
 
-    public DualContentJpaLongIdMimeEntity(String contentId) {
-        super(contentId);
-    }
-
     public String getContentType() {
         return contentType;
     }

@@ -22,10 +22,6 @@ public class ContentFields<ID extends Serializable> {
     public ContentFields() {
     }
 
-    public ContentFields(ID contentId) {
-        this.contentId = contentId;
-    }
-
     public ID getContentId() {
         return contentId;
     }

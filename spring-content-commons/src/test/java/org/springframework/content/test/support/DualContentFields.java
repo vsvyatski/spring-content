@@ -20,10 +20,6 @@ public class DualContentFields extends SingleContentFields implements DualConten
     public DualContentFields() {
     }
 
-    public DualContentFields(String contentId) {
-        super(contentId);
-    }
-
     @Override
     public String getRenditionId() {
         return renditionId;

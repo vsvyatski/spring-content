@@ -32,10 +32,6 @@ public class TestEntity7 implements ContentEntity {
     public TestEntity7() {
     }
 
-    public TestEntity7(String name) {
-        this.name = name;
-    }
-
     public Long getId() {
         return id;
     }

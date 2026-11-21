@@ -149,6 +149,8 @@ Change version for the whole reactor with:
 - Naming: `*Test.java` = unit (always); `*IT.java` = integration (`-P tests` only)
 - Follow existing IT style: inner entity/store/repo types, `@Enable*Stores` + `@EnableJpaRepositories` test configs,
   assert streams with Commons IO + AssertJ
+- Test entities: provide a public no-arg constructor; add parameterized constructors only when a test calls
+  `new Entity(...)` with arguments (JPA and Spring Data materialize entities via the no-arg constructor)
 
 When changing a store implementation, run that module’s `*Test` and, if behavior or IO/SQL is involved, the matching
 `*IT`.
