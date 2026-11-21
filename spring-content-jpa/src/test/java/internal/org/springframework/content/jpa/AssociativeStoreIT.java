@@ -1,10 +1,6 @@
 package internal.org.springframework.content.jpa;
 
 import com.github.f4b6a3.uuid.UuidCreator;
-import internal.org.springframework.content.jpa.StoreIT.H2Config;
-import internal.org.springframework.content.jpa.StoreIT.HSQLConfig;
-import internal.org.springframework.content.jpa.StoreIT.MySqlConfig;
-import internal.org.springframework.content.jpa.StoreIT.PostgresConfig;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -26,18 +22,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class AssociativeStoreIT {
-
-    private static final Class<?>[] CONFIG_CLASSES = new Class[]{
-        H2Config.class,
-        HSQLConfig.class,
-        MySqlConfig.class,
-        PostgresConfig.class
-    };
 
     private DualContentMimeJpaStringIdRepository repo;
     private DualContentMimeJpaAssociativeStore store;
@@ -49,10 +37,6 @@ public class AssociativeStoreIT {
     private String resourceId;
 
     private Exception e;
-
-    static Stream<Class<?>> databaseConfigs() {
-        return Stream.of(CONFIG_CLASSES);
-    }
 
     private void boot(Class<?> configClass) {
         AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
@@ -82,7 +66,7 @@ public class AssociativeStoreIT {
     @Nested
     class GivenANewEntity {
         @ParameterizedTest(name = "{0}")
-        @MethodSource("internal.org.springframework.content.jpa.AssociativeStoreIT#databaseConfigs")
+        @MethodSource("internal.org.springframework.content.jpa.StoreIT#databaseConfigs")
         void shouldNotHaveAnAssociatedResource(Class<?> configClass) {
             boot(configClass);
             saveNewDocument();
@@ -95,7 +79,7 @@ public class AssociativeStoreIT {
             @Nested
             class WhenTheResourceIsAssociated {
                 @ParameterizedTest(name = "{0}")
-                @MethodSource("internal.org.springframework.content.jpa.AssociativeStoreIT#databaseConfigs")
+                @MethodSource("internal.org.springframework.content.jpa.StoreIT#databaseConfigs")
                 void shouldBeRecordedAsSuchOnEntityContentId(Class<?> configClass) {
                     boot(configClass);
                     saveNewDocument();
@@ -109,7 +93,7 @@ public class AssociativeStoreIT {
                 @Nested
                 class WhenTheResourceHasContent {
                     @ParameterizedTest(name = "{0}")
-                    @MethodSource("internal.org.springframework.content.jpa.AssociativeStoreIT#databaseConfigs")
+                    @MethodSource("internal.org.springframework.content.jpa.StoreIT#databaseConfigs")
                     void shouldNotHonorByteRanges(Class<?> configClass) throws IOException {
                         boot(configClass);
                         saveNewDocument();
@@ -134,7 +118,7 @@ public class AssociativeStoreIT {
                 @Nested
                 class WhenTheResourceIsUnassociated {
                     @ParameterizedTest(name = "{0}")
-                    @MethodSource("internal.org.springframework.content.jpa.AssociativeStoreIT#databaseConfigs")
+                    @MethodSource("internal.org.springframework.content.jpa.StoreIT#databaseConfigs")
                     void shouldResetEntityContentId(Class<?> configClass) {
                         boot(configClass);
                         saveNewDocument();
@@ -152,7 +136,7 @@ public class AssociativeStoreIT {
             @Nested
             class WhenAnInvalidPropertyPathIsUsedToAssociateAResource {
                 @ParameterizedTest(name = "{0}")
-                @MethodSource("internal.org.springframework.content.jpa.AssociativeStoreIT#databaseConfigs")
+                @MethodSource("internal.org.springframework.content.jpa.StoreIT#databaseConfigs")
                 void shouldThrowAnError(Class<?> configClass) {
                     boot(configClass);
                     saveNewDocument();
@@ -169,7 +153,7 @@ public class AssociativeStoreIT {
             @Nested
             class WhenAnInvalidPropertyPathIsUsedToLoadAResource {
                 @ParameterizedTest(name = "{0}")
-                @MethodSource("internal.org.springframework.content.jpa.AssociativeStoreIT#databaseConfigs")
+                @MethodSource("internal.org.springframework.content.jpa.StoreIT#databaseConfigs")
                 void shouldThrowAnError(Class<?> configClass) {
                     boot(configClass);
                     saveNewDocument();
@@ -186,7 +170,7 @@ public class AssociativeStoreIT {
             @Nested
             class WhenAnInvalidPropertyPathIsUsedToUnassociateAResource {
                 @ParameterizedTest(name = "{0}")
-                @MethodSource("internal.org.springframework.content.jpa.AssociativeStoreIT#databaseConfigs")
+                @MethodSource("internal.org.springframework.content.jpa.StoreIT#databaseConfigs")
                 void shouldThrowAnError(Class<?> configClass) {
                     boot(configClass);
                     saveNewDocument();

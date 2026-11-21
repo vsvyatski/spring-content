@@ -44,11 +44,12 @@ import static org.mockito.Mockito.mock;
 
 public class StoreIT {
 
-    private static final Class<?>[] CONFIG_CLASSES = new Class[]{
-        H2Config.class,
-        HSQLConfig.class,
-        MySqlConfig.class,
-        PostgresConfig.class
+    /** Shared by JPA storage ITs; SqlServer/Oracle need Docker and stay commented until re-enabled (#2227). */
+    public static final Class<?>[] DATABASE_CONFIG_CLASSES = {
+            H2Config.class,
+            HSQLConfig.class,
+            MySqlConfig.class,
+            PostgresConfig.class,
 //			SqlServerConfig.class,
 //			OracleConfig.class
     };
@@ -62,8 +63,8 @@ public class StoreIT {
 
     private TransactionStatus status;
 
-    static Stream<Class<?>> databaseConfigs() {
-        return Stream.of(CONFIG_CLASSES);
+    public static Stream<Class<?>> databaseConfigs() {
+        return Stream.of(DATABASE_CONFIG_CLASSES);
     }
 
     protected String getId() {

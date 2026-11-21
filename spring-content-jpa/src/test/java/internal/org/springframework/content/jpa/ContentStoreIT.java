@@ -1,6 +1,5 @@
 package internal.org.springframework.content.jpa;
 
-import internal.org.springframework.content.jpa.StoreIT.*;
 import org.apache.commons.io.IOUtils;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Nested;
@@ -19,19 +18,12 @@ import org.springframework.util.function.ThrowingSupplier;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 public class ContentStoreIT {
 
-    private static final Class<?>[] CONFIG_CLASSES = new Class[]{
-        H2Config.class,
-        HSQLConfig.class,
-        MySqlConfig.class,
-        PostgresConfig.class
-    };
     protected NestedDualContentJpaStringIdRepository claimRepo;
     protected NestedDualContentJpaStringIdStore claimFormStore;
     protected NestedDualContentJpaStringIdEntity claim;
@@ -75,10 +67,6 @@ public class ContentStoreIT {
      */
     public static void assertNullInputStream(@Nullable InputStream content) {
         assertThat(content).isNull();
-    }
-
-    static Stream<Class<?>> databaseConfigs() {
-        return Stream.of(CONFIG_CLASSES);
     }
 
     protected boolean hasContent(NestedDualContentJpaStringIdEntity claim, PropertyPath path) {
@@ -132,7 +120,7 @@ public class ContentStoreIT {
 
     private void boot(Class<?> configClass) {
         context = new AnnotationConfigApplicationContext();
-        context.register(TestConfig.class);
+        context.register(StoreIT.TestConfig.class);
         context.register(configClass);
         context.refresh();
 
@@ -164,7 +152,7 @@ public class ContentStoreIT {
     @Nested
     class GivenAnEntityWithContent {
         @ParameterizedTest(name = "{0}")
-        @MethodSource("internal.org.springframework.content.jpa.ContentStoreIT#databaseConfigs")
+        @MethodSource("internal.org.springframework.content.jpa.StoreIT#databaseConfigs")
         void shouldBeAbleToStoreNewContent(Class<?> configClass) {
             try {
                 boot(configClass);
@@ -191,7 +179,7 @@ public class ContentStoreIT {
         }
 
         @ParameterizedTest(name = "{0}")
-        @MethodSource("internal.org.springframework.content.jpa.ContentStoreIT#databaseConfigs")
+        @MethodSource("internal.org.springframework.content.jpa.StoreIT#databaseConfigs")
         void shouldHaveContentMetadata(Class<?> configClass) {
             try {
                 boot(configClass);
@@ -214,7 +202,7 @@ public class ContentStoreIT {
         @Nested
         class WhenContentIsUpdated {
             @ParameterizedTest(name = "{0}")
-            @MethodSource("internal.org.springframework.content.jpa.ContentStoreIT#databaseConfigs")
+            @MethodSource("internal.org.springframework.content.jpa.StoreIT#databaseConfigs")
             void shouldHaveTheUpdatedContent(Class<?> configClass) {
                 try {
                     boot(configClass);
@@ -250,7 +238,7 @@ public class ContentStoreIT {
         @Nested
         class WhenContentIsUpdatedWithShorterContent {
             @ParameterizedTest(name = "{0}")
-            @MethodSource("internal.org.springframework.content.jpa.ContentStoreIT#databaseConfigs")
+            @MethodSource("internal.org.springframework.content.jpa.StoreIT#databaseConfigs")
             void shouldStoreOnlyTheNewContent(Class<?> configClass) {
                 try {
                     boot(configClass);
@@ -286,7 +274,7 @@ public class ContentStoreIT {
         @Nested
         class WhenContentIsUpdatedAndNotOverwritten {
             @ParameterizedTest(name = "{0}")
-            @MethodSource("internal.org.springframework.content.jpa.ContentStoreIT#databaseConfigs")
+            @MethodSource("internal.org.springframework.content.jpa.StoreIT#databaseConfigs")
             void shouldHaveTheUpdatedContent(Class<?> configClass) throws IOException {
                 try {
                     boot(configClass);
@@ -312,7 +300,7 @@ public class ContentStoreIT {
         @Nested
         class WhenContentIsDeleted {
             @ParameterizedTest(name = "{0}")
-            @MethodSource("internal.org.springframework.content.jpa.ContentStoreIT#databaseConfigs")
+            @MethodSource("internal.org.springframework.content.jpa.StoreIT#databaseConfigs")
             void shouldHaveNoContent(Class<?> configClass) {
                 try {
                     boot(configClass);
@@ -358,7 +346,7 @@ public class ContentStoreIT {
         @Nested
         class WhenContentIsDeletedWithKeepDisposition {
             @ParameterizedTest(name = "{0}")
-            @MethodSource("internal.org.springframework.content.jpa.ContentStoreIT#databaseConfigs")
+            @MethodSource("internal.org.springframework.content.jpa.StoreIT#databaseConfigs")
             void shouldHaveNoContent(Class<?> configClass) {
                 try {
                     boot(configClass);
@@ -394,7 +382,7 @@ public class ContentStoreIT {
             @Nested
             class GivenAnEntityWithANullEmbeddedContentObject {
                 @ParameterizedTest(name = "{0}")
-                @MethodSource("internal.org.springframework.content.jpa.ContentStoreIT#databaseConfigs")
+                @MethodSource("internal.org.springframework.content.jpa.StoreIT#databaseConfigs")
                 void shouldReturnNullWhenContentIsFetched(Class<?> configClass) throws IOException {
                     try {
                         boot(configClass);
@@ -410,7 +398,7 @@ public class ContentStoreIT {
                 }
 
                 @ParameterizedTest(name = "{0}")
-                @MethodSource("internal.org.springframework.content.jpa.ContentStoreIT#databaseConfigs")
+                @MethodSource("internal.org.springframework.content.jpa.StoreIT#databaseConfigs")
                 void shouldBeSuccessfulWhenContentIsSet(Class<?> configClass) throws IOException {
                     try {
                         boot(configClass);
@@ -429,7 +417,7 @@ public class ContentStoreIT {
                 }
 
                 @ParameterizedTest(name = "{0}")
-                @MethodSource("internal.org.springframework.content.jpa.ContentStoreIT#databaseConfigs")
+                @MethodSource("internal.org.springframework.content.jpa.StoreIT#databaseConfigs")
                 void shouldReturnNullWhenContentIsUnset(Class<?> configClass) {
                     try {
                         boot(configClass);

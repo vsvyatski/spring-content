@@ -1,9 +1,5 @@
 package internal.org.springframework.content.jpa;
 
-import internal.org.springframework.content.jpa.StoreIT.H2Config;
-import internal.org.springframework.content.jpa.StoreIT.HSQLConfig;
-import internal.org.springframework.content.jpa.StoreIT.MySqlConfig;
-import internal.org.springframework.content.jpa.StoreIT.PostgresConfig;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -20,28 +16,14 @@ import org.springframework.transaction.PlatformTransactionManager;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class TransactionIT {
 
-    private static final Class<?>[] CONFIG_CLASSES = new Class[]{
-        H2Config.class,
-        HSQLConfig.class,
-        MySqlConfig.class,
-        PostgresConfig.class
-//            SqlServerConfig.class,
-//            StoreIT.OracleConfig.class
-    };
-
     private SingleContentJpaLongIdStore store;
 
     private SingleContentJpaLongIdEntity entity;
-
-    static Stream<Class<?>> databaseConfigs() {
-        return Stream.of(CONFIG_CLASSES);
-    }
 
     @Configuration
     public static class DbServiceConfig {
@@ -65,7 +47,7 @@ public class TransactionIT {
     @Nested
     class TransactionTest {
         @ParameterizedTest(name = "{0}")
-        @MethodSource("internal.org.springframework.content.jpa.TransactionIT#databaseConfigs")
+        @MethodSource("internal.org.springframework.content.jpa.StoreIT#databaseConfigs")
         void shouldNotCommitChangesToContent(Class<?> configClass) {
             AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
             context.register(StoreIT.TestConfig.class);
