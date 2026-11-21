@@ -11,7 +11,7 @@ import java.io.Serializable;
  *
  * @author Vladimir Svyatski
  */
-public class ContentFields<ID extends Serializable> {
+public class ContentFields<ID extends Serializable> implements ContentAccessor<ID> {
 
     @ContentId
     private ID contentId;
@@ -22,18 +22,22 @@ public class ContentFields<ID extends Serializable> {
     public ContentFields() {
     }
 
+    @Override
     public ID getContentId() {
         return contentId;
     }
 
+    @Override
     public void setContentId(ID contentId) {
         this.contentId = contentId;
     }
 
+    @Override
     public Long getContentLen() {
         return contentLen;
     }
 
+    @Override
     public void setContentLen(Long contentLen) {
         this.contentLen = contentLen;
     }
