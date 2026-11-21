@@ -900,8 +900,8 @@ public class S3StoreIT {
                     resourceLocation = random.nextString();
 
                     entity = new DualContentJpaLongIdMimeEntity();
-                    //                    entity.setContentType("text/plain");
-                    //                    entity.setContentType("text/html");
+                    entity.setContentType("text/plain");
+                    entity.setRenditionType("text/html");
                     entity = repo.save(entity);
 
                     store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
@@ -934,6 +934,17 @@ public class S3StoreIT {
                     assertThat(entity.getRenditionId()).isNotNull();
                     assertThat(entity.getRenditionId().trim().length()).isGreaterThan(0);
                     assertThat(entity.getRenditionLen()).isEqualTo(40L);
+
+                    assertThat(entity.getContentType()).isEqualTo("text/plain");
+                    assertThat(entity.getRenditionType()).isEqualTo("text/html");
+
+                    HeadObjectResponse contentHead = client.headObject(
+                            HeadObjectRequest.builder().bucket(BUCKET).key(entity.getContentId()).build());
+                    assertThat(contentHead.contentType()).isEqualTo("text/plain");
+
+                    HeadObjectResponse renditionHead = client.headObject(
+                            HeadObjectRequest.builder().bucket(BUCKET).key(entity.getRenditionId()).build());
+                    assertThat(renditionHead.contentType()).isEqualTo("text/html");
                 }
             }
 
@@ -977,8 +988,8 @@ public class S3StoreIT {
                     resourceLocation = random.nextString();
 
                     entity = new DualContentJpaLongIdMimeEntity();
-                    //                    entity.setContentType("text/plain");
-                    //                    entity.setContentType("text/html");
+                    entity.setContentType("text/plain");
+                    entity.setRenditionType("text/html");
                     entity = repo.save(entity);
 
                     store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
@@ -1047,8 +1058,8 @@ public class S3StoreIT {
                     resourceLocation = random.nextString();
 
                     entity = new DualContentJpaLongIdMimeEntity();
-                    //                    entity.setContentType("text/plain");
-                    //                    entity.setContentType("text/html");
+                    entity.setContentType("text/plain");
+                    entity.setRenditionType("text/html");
                     entity = repo.save(entity);
 
                     store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
@@ -1117,8 +1128,8 @@ public class S3StoreIT {
                     resourceLocation = random.nextString();
 
                     entity = new DualContentJpaLongIdMimeEntity();
-                    //                    entity.setContentType("text/plain");
-                    //                    entity.setContentType("text/html");
+                    entity.setContentType("text/plain");
+                    entity.setRenditionType("text/html");
                     entity = repo.save(entity);
 
                     store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
@@ -1184,8 +1195,8 @@ public class S3StoreIT {
                     resourceLocation = random.nextString();
 
                     entity = new DualContentJpaLongIdMimeEntity();
-                    //                    entity.setContentType("text/plain");
-                    //                    entity.setContentType("text/html");
+                    entity.setContentType("text/plain");
+                    entity.setRenditionType("text/html");
                     entity = repo.save(entity);
 
                     store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
@@ -1261,8 +1272,8 @@ public class S3StoreIT {
                     resourceLocation = random.nextString();
 
                     entity = new DualContentJpaLongIdMimeEntity();
-                    //                    entity.setContentType("text/plain");
-                    //                    entity.setContentType("text/html");
+                    entity.setContentType("text/plain");
+                    entity.setRenditionType("text/html");
                     entity = repo.save(entity);
 
                     store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
@@ -1327,8 +1338,8 @@ public class S3StoreIT {
                     resourceLocation = random.nextString();
 
                     entity = new DualContentJpaLongIdMimeEntity();
-                    //                    entity.setContentType("text/plain");
-                    //                    entity.setContentType("text/html");
+                    entity.setContentType("text/plain");
+                    entity.setRenditionType("text/html");
                     entity = repo.save(entity);
 
                     store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
@@ -1386,8 +1397,8 @@ public class S3StoreIT {
                     resourceLocation = random.nextString();
 
                     entity = new DualContentJpaLongIdMimeEntity();
-                    //                    entity.setContentType("text/plain");
-                    //                    entity.setContentType("text/html");
+                    entity.setContentType("text/plain");
+                    entity.setRenditionType("text/html");
                     entity = repo.save(entity);
 
                     store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
@@ -1445,8 +1456,8 @@ public class S3StoreIT {
                     resourceLocation = random.nextString();
 
                     entity = new DualContentJpaLongIdMimeEntity();
-                    //                    entity.setContentType("text/plain");
-                    //                    entity.setContentType("text/html");
+                    entity.setContentType("text/plain");
+                    entity.setRenditionType("text/html");
                     entity = repo.save(entity);
 
                     store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
@@ -1504,8 +1515,8 @@ public class S3StoreIT {
                     resourceLocation = random.nextString();
 
                     entity = new DualContentJpaLongIdMimeEntity();
-                    //                    entity.setContentType("text/plain");
-                    //                    entity.setContentType("text/html");
+                    entity.setContentType("text/plain");
+                    entity.setRenditionType("text/html");
                     entity = repo.save(entity);
 
                     store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
@@ -1567,8 +1578,8 @@ public class S3StoreIT {
                         resourceLocation = random.nextString();
 
                         entity = new DualContentJpaLongIdMimeEntity();
-                        //                    entity.setContentType("text/plain");
-                        //                    entity.setContentType("text/html");
+                        entity.setContentType("text/plain");
+                        entity.setRenditionType("text/html");
                         entity = repo.save(entity);
 
                         store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
