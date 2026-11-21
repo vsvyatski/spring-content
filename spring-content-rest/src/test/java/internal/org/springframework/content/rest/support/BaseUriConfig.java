@@ -10,7 +10,6 @@ import org.springframework.content.rest.config.ContentRestConfigurer;
 import org.springframework.content.rest.config.RestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurer;
@@ -28,7 +27,6 @@ import java.nio.charset.StandardCharsets;
 @EnableJpaRepositories(basePackages = "internal.org.springframework.content.rest.support")
 @EnableTransactionManagement
 @EnableFileSystemStores(basePackages = "internal.org.springframework.content.rest.support")
-@Profile("store")
 public class BaseUriConfig extends JpaInfrastructureConfig {
 
     @Bean

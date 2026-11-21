@@ -122,7 +122,7 @@ public class ContentLinksResourceProcessorIT {
                 @Test
                 void shouldAddOriginalAndShortcutLinks() {
                     assertThat(resource.getLinks("testEntity4s")).extracting("href").contains("http://localhost/contentApi/testEntity4s/999");
-                    assertThat(resource.getLinks("testEntity4")).extracting("href").contains("http://localhost/contentApi/testEntity4s/999");
+                    assertThat(resource.getLinks("oneToOneLinkedContentEntity")).extracting("href").contains("http://localhost/contentApi/testEntity4s/999");
                 }
             }
 
@@ -159,7 +159,7 @@ public class ContentLinksResourceProcessorIT {
                 @Test
                 void shouldAddOriginalAndShortcutLinks() {
                     assertThat(resource.getLinks("testEntity4s")).extracting("href").doesNotContain("http://localhost/contentApi/testEntity4s/999");
-                    assertThat(resource.getLinks("testEntity4")).extracting("href").doesNotContain("http://localhost/contentApi/testEntity4s/999");
+                    assertThat(resource.getLinks("oneToOneLinkedContentEntity")).extracting("href").doesNotContain("http://localhost/contentApi/testEntity4s/999");
                 }
             }
         }

@@ -6,6 +6,6 @@ import org.springframework.content.rest.StoreRestResource;
 
 import java.util.UUID;
 
-@StoreRestResource(/*linkRel = "foo"*/)
+@StoreRestResource(path = "testEntity11s")
 public interface RestResourcePackageEntityStore extends FileSystemContentStore<RestResourcePackageEntity, UUID>, Renderable<RestResourcePackageEntity> {
 }

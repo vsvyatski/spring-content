@@ -8,6 +8,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.content.commons.renditions.RenditionProvider;
@@ -22,6 +23,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.NestedTestConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -107,8 +109,10 @@ public class ContextPathContentLinksIT {
     }
 
     @Nested
+    @NestedTestConfiguration(NestedTestConfiguration.EnclosingConfiguration.INHERIT)
     class GivenTheSpringContentBaseUriPropertyIsSetToContentApi {
         @Nested
+        @NestedTestConfiguration(NestedTestConfiguration.EnclosingConfiguration.INHERIT)
         @DisplayName("given an Entity and a Store with a default store path")
         class GivenAnEntityAndAStoreWithADefaultStorePathContentLinkTests extends ContentLinkTests {
             @BeforeEach
@@ -118,13 +122,15 @@ public class ContextPathContentLinksIT {
                 contentRepository3.setContent(testEntity3, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
                 testEntity3 = repository3.save(testEntity3);
                 this.setMvc(mvc);
-                this.setRepository(repository3);
-                this.setStore(contentRepository3);
-                this.setEntityUnderTest(testEntity3);
                 this.setUrl("/contextPath/testEntity3s/" + testEntity3.getId());
                 this.setContextPath("/contextPath");
-                this.setLinkRel("testEntity3");
+                this.setLinkRel("jsonMappedContentEntity");
                 this.setExpectedLinkRegex("http://localhost/contextPath/testEntity3s/" + testEntity3.getId());
+            }
+
+            @Test
+            void shouldProvideAResponseWithAContentLink() throws Exception {
+                assertContentLinkInHalResponse();
             }
         }
     }

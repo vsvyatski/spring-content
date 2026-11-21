@@ -4,6 +4,7 @@ import internal.org.springframework.content.rest.support.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.content.rest.config.HypermediaConfiguration;
@@ -11,6 +12,7 @@ import org.springframework.content.rest.config.RestConfiguration;
 import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.NestedTestConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -34,10 +36,6 @@ import java.io.ByteArrayInputStream;
 public class EntityContentLinksIT {
 
     @Autowired
-    UuidSingleContentEntityRepository repository;
-    @Autowired
-    UuidSingleContentEntityStore contentRepository;
-    @Autowired
     JsonMappedContentEntityRepository repository3;
     @Autowired
     JsonMappedContentEntityStore contentRepository3;
@@ -47,14 +45,13 @@ public class EntityContentLinksIT {
 
     private MockMvc mvc;
 
-    private UuidSingleContentEntity testEntity;
     private JsonMappedContentEntity testEntity3;
 
-    private ContentLinkTests contentLinkTests;
-
     @Nested
+    @NestedTestConfiguration(NestedTestConfiguration.EnclosingConfiguration.INHERIT)
     class EntityLinks {
         @Nested
+        @NestedTestConfiguration(NestedTestConfiguration.EnclosingConfiguration.INHERIT)
         @DisplayName("when entity links are enabled")
         class WhenEntityLinksAreEnabledContentLinkTests extends ContentLinkTests {
             @BeforeEach
@@ -64,12 +61,14 @@ public class EntityContentLinksIT {
                 contentRepository3.setContent(testEntity3, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
                 testEntity3 = repository3.save(testEntity3);
                 this.setMvc(mvc);
-                this.setRepository(repository3);
-                this.setStore(contentRepository3);
-                this.setEntityUnderTest(testEntity3);
                 this.setUrl("/testEntity3s/" + testEntity3.getId());
                 this.setLinkRel("content");
                 this.setExpectedLinkRegex(String.format("http://localhost/testEntity3s/%s/content", testEntity3.getId()));
+            }
+
+            @Test
+            void shouldProvideAResponseWithAContentLink() throws Exception {
+                assertContentLinkInHalResponse();
             }
         }
     }
