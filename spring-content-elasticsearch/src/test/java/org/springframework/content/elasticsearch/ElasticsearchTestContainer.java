@@ -19,12 +19,6 @@ public class ElasticsearchTestContainer extends ElasticsearchContainer {
         super(IMAGE_NAME);
         start();
 
-//        try {
-//            ExecResult r = execInContainer("sh", "-c", "bin/elasticsearch-plugin install --batch ingest-attachment");
-//            int i=0;
-//        } catch (IOException | InterruptedException e) {
-//            throw new RuntimeException("Failed to setup solr container", e);
-//        }
     }
 
     public static ElasticsearchClient client() {

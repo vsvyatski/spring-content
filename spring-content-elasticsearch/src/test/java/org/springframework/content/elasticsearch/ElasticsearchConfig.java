@@ -97,7 +97,7 @@ public class ElasticsearchConfig {
     @Bean
     DataSourceInitializer datasourceInitializer(DataSource dataSource) {
         ResourceDatabasePopulator databasePopulator =
-                new ResourceDatabasePopulator();
+            new ResourceDatabasePopulator();
 
         databasePopulator.addScript(dropRepositoryTables);
         databasePopulator.addScript(dataRepositorySchema);

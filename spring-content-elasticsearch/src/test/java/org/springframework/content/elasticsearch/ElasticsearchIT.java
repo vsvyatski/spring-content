@@ -8,11 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.content.commons.search.IndexService;
-import org.springframework.content.test.support.fulltext.FulltextJpaUuidDocumentEntity;
-import org.springframework.content.test.support.fulltext.FulltextJpaUuidDocumentRepository;
-import org.springframework.content.test.support.fulltext.FulltextJpaUuidDocumentSearchableStore;
-import org.springframework.content.test.support.fulltext.FulltextJpaUuidDocumentStore;
-import org.springframework.content.test.support.fulltext.FulltextSearchResult;
+import org.springframework.content.test.support.fulltext.*;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.data.domain.PageRequest;
 
@@ -349,8 +345,8 @@ public class ElasticsearchIT {
             @Test
             void shouldReturnTheSpecifiedAttributes() {
                 org.awaitility.Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> assertThat(store.search("one", PageRequest.of(0, 10)))
-                        .contains(doc1.getContentId())
-                        .doesNotContain(doc2.getContentId()));
+                    .contains(doc1.getContentId())
+                    .doesNotContain(doc2.getContentId()));
             }
         }
     }
