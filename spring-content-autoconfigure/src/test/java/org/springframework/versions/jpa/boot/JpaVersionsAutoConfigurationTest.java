@@ -1,10 +1,15 @@
 package org.springframework.versions.jpa.boot;
 
+import internal.org.springframework.content.jpa.boot.autoconfigure.JpaContentAutoConfiguration;
 import internal.org.springframework.content.s3.boot.autoconfigure.S3ContentAutoConfiguration;
 import internal.org.springframework.content.solr.boot.autoconfigure.SolrAutoConfiguration;
 import internal.org.springframework.content.solr.boot.autoconfigure.SolrExtensionAutoConfiguration;
 import internal.org.springframework.versions.jpa.boot.autoconfigure.JpaVersionsAutoConfiguration;
 import internal.org.springframework.versions.jpa.boot.autoconfigure.JpaVersionsDatabaseInitializer;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -24,13 +29,65 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.Database;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.versions.AncestorId;
+import org.springframework.versions.AncestorRootId;
 import org.springframework.versions.LockingAndVersioningRepository;
+import org.springframework.versions.SuccessorId;
 
 import javax.sql.DataSource;
 
 public class JpaVersionsAutoConfigurationTest {
 
     private ApplicationContextRunner contextRunner;
+
+    @Entity
+    public static class TestEntityVersioned {
+
+        @Id
+        @GeneratedValue(strategy = GenerationType.AUTO)
+        private Long id;
+
+        @AncestorRootId
+        private String ancestralRootId;
+
+        @AncestorId
+        private String ancestorId;
+
+        @SuccessorId
+        private String successorId;
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+
+        public String getAncestralRootId() {
+            return ancestralRootId;
+        }
+
+        public void setAncestralRootId(String ancestralRootId) {
+            this.ancestralRootId = ancestralRootId;
+        }
+
+        public String getAncestorId() {
+            return ancestorId;
+        }
+
+        public void setAncestorId(String ancestorId) {
+            this.ancestorId = ancestorId;
+        }
+
+        public String getSuccessorId() {
+            return successorId;
+        }
+
+        public void setSuccessorId(String successorId) {
+            this.successorId = successorId;
+        }
+    }
 
     public interface NestedTestEntityRepository extends CrudRepository<TestEntityVersioned, Long>, LockingAndVersioningRepository<TestEntityVersioned> {
     }
@@ -65,15 +122,39 @@ public class JpaVersionsAutoConfigurationTest {
         }
     }
 
-    @SpringBootApplication(exclude = {SolrAutoConfiguration.class, SolrExtensionAutoConfiguration.class, S3ContentAutoConfiguration.class})
+    @SpringBootApplication(exclude = {
+        JpaContentAutoConfiguration.class,
+        SolrAutoConfiguration.class,
+        SolrExtensionAutoConfiguration.class,
+        S3ContentAutoConfiguration.class
+    })
     @Import(JpaTestConfig.class)
     public static class StarterConfig /*extends BaseConfig*/ {
     }
 
-    @SpringBootApplication(exclude = {SolrAutoConfiguration.class, SolrExtensionAutoConfiguration.class, S3ContentAutoConfiguration.class})
+    @SpringBootApplication(exclude = {
+        JpaContentAutoConfiguration.class,
+        SolrAutoConfiguration.class,
+        SolrExtensionAutoConfiguration.class,
+        S3ContentAutoConfiguration.class
+    })
     @EnableJpaRepositories(basePackages = "org.springframework.versions", considerNestedRepositories = true)
     @Import(JpaTestConfig.class)
     public static class StarterWithAnnotationConfig /*extends BaseConfig*/ {
+    }
+
+    @Test
+    void versionedEntityExposesVersioningPropertyAccessors() {
+        TestEntityVersioned entity = new TestEntityVersioned();
+        entity.setId(1L);
+        entity.setAncestralRootId("root-1");
+        entity.setAncestorId("ancestor-1");
+        entity.setSuccessorId("successor-1");
+
+        Assertions.assertThat(entity.getId()).isEqualTo(1L);
+        Assertions.assertThat(entity.getAncestralRootId()).isEqualTo("root-1");
+        Assertions.assertThat(entity.getAncestorId()).isEqualTo("ancestor-1");
+        Assertions.assertThat(entity.getSuccessorId()).isEqualTo("successor-1");
     }
 
     @Nested
@@ -83,7 +164,7 @@ public class JpaVersionsAutoConfigurationTest {
             @BeforeEach
             void setUp() {
                 contextRunner = new ApplicationContextRunner()
-                        .withConfiguration(AutoConfigurations.of(JpaVersionsAutoConfiguration.class));
+                    .withConfiguration(AutoConfigurations.of(JpaVersionsAutoConfiguration.class));
             }
 
             @Test
@@ -97,14 +178,14 @@ public class JpaVersionsAutoConfigurationTest {
             @BeforeEach
             void setUp() {
                 contextRunner = new ApplicationContextRunner()
-                        .withConfiguration(AutoConfigurations.of(JpaVersionsAutoConfiguration.class));
+                    .withConfiguration(AutoConfigurations.of(JpaVersionsAutoConfiguration.class));
             }
 
             @Test
             void shouldIncludeTheRepositoryBean() {
                 contextRunner.withUserConfiguration(StarterWithAnnotationConfig.class).run(
-                        (context) ->
-                                Assertions.assertThat(context).hasSingleBean(NestedTestEntityRepository.class)
+                    (context) ->
+                        Assertions.assertThat(context).hasSingleBean(NestedTestEntityRepository.class)
                 );
             }
         }
