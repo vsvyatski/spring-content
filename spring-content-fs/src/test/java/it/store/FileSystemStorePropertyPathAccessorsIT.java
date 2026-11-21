@@ -10,11 +10,11 @@ import org.springframework.content.commons.io.DeletableResource;
 import org.springframework.content.commons.property.PropertyPath;
 import org.springframework.content.commons.store.StoreAccessException;
 import org.springframework.content.fs.config.EnableFileSystemStores;
+import org.springframework.content.fs.io.FileSystemResourceLoader;
 import org.springframework.content.test.support.TestSupportPackages;
 import org.springframework.content.test.support.jpa.PropertyPathJpaUuidEntity;
 import org.springframework.content.test.support.jpa.PropertyPathJpaUuidRepository;
 import org.springframework.content.test.support.jpa.PropertyPathJpaUuidStore;
-import org.springframework.content.fs.io.FileSystemResourceLoader;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,11 +31,7 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
-import java.io.File;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.nio.file.Files;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -555,10 +551,10 @@ public class FileSystemStorePropertyPathAccessorsIT {
                     entity = repo.save(entity);
 
                     store.setContent(entity, PropertyPath.from("content"),
-                            new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                        new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
 
                     entity = store.setContent(entity, PropertyPath.from("content"),
-                            new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()));
+                        new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()));
                 }
 
                 @AfterEach
@@ -594,10 +590,10 @@ public class FileSystemStorePropertyPathAccessorsIT {
                     entity = repo.save(entity);
 
                     store.setContent(entity, PropertyPath.from("content"),
-                            new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                        new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
 
                     entity = store.setContent(entity, PropertyPath.from("content"),
-                            new ByteArrayInputStream("Hello Spring World!".getBytes()));
+                        new ByteArrayInputStream("Hello Spring World!".getBytes()));
                 }
 
                 @AfterEach

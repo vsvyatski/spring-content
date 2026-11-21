@@ -8,11 +8,14 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.content.commons.io.DeletableResource;
 import org.springframework.content.commons.property.PropertyPath;
-import org.springframework.content.commons.store.*;
+import org.springframework.content.commons.store.GetResourceParams;
+import org.springframework.content.commons.store.SetContentParams;
+import org.springframework.content.commons.store.StoreAccessException;
+import org.springframework.content.commons.store.UnsetContentParams;
 import org.springframework.content.fs.config.EnableFileSystemStores;
+import org.springframework.content.fs.io.FileSystemResourceLoader;
 import org.springframework.content.test.support.TestSupportPackages;
 import org.springframework.content.test.support.jpa.*;
-import org.springframework.content.fs.io.FileSystemResourceLoader;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -320,9 +323,9 @@ public class FileSystemStoreIT {
             String renditionId = entity.getRenditionId();
             assertThat(new File(loader.getRootResource().getPath(), renditionId).exists()).isTrue();
             entity = store.setContent(entity,
-                    new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()));
+                new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()));
             entity = store.setContent(entity, PropertyPath.from("rendition"),
-                    new ByteArrayInputStream("<html>Hello Updated Spring Content World!</html>".getBytes()));
+                new ByteArrayInputStream("<html>Hello Updated Spring Content World!</html>".getBytes()));
 
             try (InputStream content = store.getContent(entity)) {
                 boolean matches = IOUtils.contentEquals(new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), content);
@@ -344,9 +347,9 @@ public class FileSystemStoreIT {
         @Test
         void shouldStoreOnlyTheNewContent() throws IOException {
             entity = store.setContent(entity,
-                    new ByteArrayInputStream("Hello Spring World!".getBytes()));
+                new ByteArrayInputStream("Hello Spring World!".getBytes()));
             entity = store.setContent(entity, PropertyPath.from("rendition"),
-                    new ByteArrayInputStream("<html>Hello Spring World!</html>".getBytes()));
+                new ByteArrayInputStream("<html>Hello Spring World!</html>".getBytes()));
 
             try (InputStream content = store.getContent(entity)) {
                 boolean matches = IOUtils.contentEquals(new ByteArrayInputStream("Hello Spring World!".getBytes()), content);
@@ -366,8 +369,8 @@ public class FileSystemStoreIT {
             assertThat(new File(loader.getRootResource().getPath(), contentId).exists()).isTrue();
 
             entity = store.setContent(entity, PropertyPath.from("content"),
-                    new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()),
-                    new SetContentParams(-1, true, SetContentParams.ContentDisposition.CreateNew));
+                new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()),
+                new SetContentParams(-1, true, SetContentParams.ContentDisposition.CreateNew));
 
             try (InputStream content = store.getContent(entity)) {
                 boolean matches = IOUtils.contentEquals(new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), content);

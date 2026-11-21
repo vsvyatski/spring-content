@@ -25,8 +25,6 @@ public final class TestSupportPackages {
 
     public static final String ENCRYPTION = ROOT + ".encryption";
 
-    public static final String IDTYPE = ROOT + ".idtype";
-
     private TestSupportPackages() {
     }
 }
