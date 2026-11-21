@@ -24,6 +24,14 @@
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>
+            <groupId>io.github.vsvyatski</groupId>
+            <artifactId>spring-content-commons</artifactId>
+            <version>${project.parent.version}</version>
+            <type>test-jar</type>
+            <classifier>tests</classifier>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.vault</groupId>
             <artifactId>spring-vault-core</artifactId>
             <version>4.1.1</version>
