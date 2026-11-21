@@ -47,6 +47,6 @@ public @interface EnableTestStores {
      *
      * @return content store factory bean class
      */
+    @SuppressWarnings("unused")
     Class<?> storeFactoryBeanClass() default TestContentStoreFactory.class;
-
 }

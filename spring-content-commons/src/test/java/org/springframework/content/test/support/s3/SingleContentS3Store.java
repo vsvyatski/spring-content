@@ -4,7 +4,7 @@ import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.test.support.SingleContentFields;
 
 /**
- * {@link ContentStore} marker for {@link org.springframework.content.s3.config.EnableS3Stores} configuration tests.
+ * {@link ContentStore} marker for S3 enable-store configuration tests.
  *
  * @author Vladimir Svyatski
  */
