@@ -151,6 +151,8 @@ Change version for the whole reactor with:
   assert streams with Commons IO + AssertJ
 - Test entities: provide a public no-arg constructor; add parameterized constructors only when a test calls
   `new Entity(...)` with arguments (JPA and Spring Data materialize entities via the no-arg constructor)
+- `ContentStore` marker interfaces use a `*Store` suffix (e.g. `TestEntityContentStore`), not `*ContentRepository`.
+  Reserve `*Repository` for Spring Data `CrudRepository` / `JpaRepository` types only.
 - Shared fixtures live in `spring-content-commons` test-jar (`org.springframework.content.test.support.**`).
   `@Enable*Stores` unit tests scan `TestSupportPackages` (`.jpa`, `.mongo`, `.fs`, `.s3`, `.gcs`, `.azure`) instead of
   inner `TestEntity` types. `EnableJpaStoresTest` asserts `DualContentJpaStringIdStore` (dual `@ContentId` entity in the

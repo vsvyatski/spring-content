@@ -32,7 +32,7 @@ public class StoresImplTest {
     public interface AssociativeStoreInterface extends AssociativeStore<Object, String> {
     }
 
-    public interface ContentRepositoryInterface extends ContentStore<Object, String> {
+    public interface ContentStoreInterface extends ContentStore<Object, String> {
     }
 
     public interface EntityStoreInterface extends AssociativeStore<Entity, String> {
@@ -87,7 +87,7 @@ public class StoresImplTest {
                     .thenAnswer(new Answer<Object>() {
                         @Override
                         public Object answer(InvocationOnMock invocation) {
-                            return ContentRepositoryInterface.class;
+                            return ContentStoreInterface.class;
                         }
                     });
 

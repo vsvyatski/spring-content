@@ -84,7 +84,7 @@ public abstract class AbstractStoreFactoryBean implements BeanFactoryAware, Init
                     types = pt.getActualTypeArguments();
                     if (types.length != 2) {
                         throw new IllegalStateException(String.format(
-                                "ContentRepository class %s must have domain and contentId types",
+                                "ContentStore class %s must have domain and contentId types",
                                 repositoryClass.getCanonicalName()));
                     }
                     if (types[index] instanceof Class) {

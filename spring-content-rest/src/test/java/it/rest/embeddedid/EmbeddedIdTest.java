@@ -59,7 +59,7 @@ public class EmbeddedIdTest {
     private TestEntityRepository repo;
 
     @Autowired
-    private TestEntityContentRepository store;
+    private TestEntityContentStore store;
 
     @Autowired
     private WebApplicationContext context;
@@ -69,7 +69,7 @@ public class EmbeddedIdTest {
     public interface TestEntityRepository extends JpaRepository<TestEntity, TestEntityId> {
     }
 
-    public interface TestEntityContentRepository extends FileSystemContentStore<TestEntity, TestEntityId> {
+    public interface TestEntityContentStore extends FileSystemContentStore<TestEntity, TestEntityId> {
     }
 
     @SpringBootApplication

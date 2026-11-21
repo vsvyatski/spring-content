@@ -75,7 +75,7 @@ public class EnableFileSystemStoresTest {
     @Nested
     class EnableFileSystemStoresCases {
         @Nested
-        class GivenAContextAndAConfigurationWithAFilesystemContentRepositoryBean {
+        class GivenAContextAndAConfigurationWithAFilesystemContentStoreBean {
             @BeforeEach
             void setUp() {
                 context = new AnnotationConfigApplicationContext();
@@ -89,7 +89,7 @@ public class EnableFileSystemStoresTest {
             }
 
             @Test
-            void shouldHaveAContentRepositoryBean() {
+            void shouldHaveAContentStoreBean() {
                 assertThat(context.getBean(SingleContentFsStore.class)).isNotNull();
             }
 

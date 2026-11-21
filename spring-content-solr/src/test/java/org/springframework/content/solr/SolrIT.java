@@ -43,7 +43,7 @@ public class SolrIT {
     @Autowired
     private DocumentRepository docRepo;
     @Autowired
-    private DocumentContentRepository docContentRepo;
+    private DocumentContentStore docContentStore;
     @Autowired
     private DocumentStoreSearchable store;
     @Autowired
@@ -56,7 +56,7 @@ public class SolrIT {
     public interface DocumentRepository extends CrudRepository<Document, Long> {
     }
 
-    public interface DocumentContentRepository extends ContentStore<Document, UUID>, Searchable<UUID> {
+    public interface DocumentContentStore extends ContentStore<Document, UUID>, Searchable<UUID> {
     }
 
     public interface DocumentStoreSearchable extends ContentStore<Document, UUID>, Searchable<FulltextInfo> {
@@ -169,14 +169,14 @@ public class SolrIT {
             doc.setTitle("title of document 1");
             doc.setEmail("author@email.com");
             doc = docRepo.save(doc);
-            doc = docContentRepo.setContent(doc, this.getClass().getResourceAsStream("/one.docx"));
+            doc = docContentStore.setContent(doc, this.getClass().getResourceAsStream("/one.docx"));
             doc = docRepo.save(doc);
         }
 
         @AfterEach
         void tearDown() throws IOException, SolrServerException {
-            if (docContentRepo != null) {
-                docContentRepo.unsetContent(doc);
+            if (docContentStore != null) {
+                docContentStore.unsetContent(doc);
             }
             if (docRepo != null) {
                 docRepo.delete(doc);
@@ -215,14 +215,14 @@ public class SolrIT {
                 doc.setTitle("title of document 1");
                 doc.setEmail("author@email.com");
                 doc = docRepo.save(doc);
-                doc = docContentRepo.setContent(doc, this.getClass().getResourceAsStream("/one.docx"));
+                doc = docContentStore.setContent(doc, this.getClass().getResourceAsStream("/one.docx"));
                 doc = docRepo.save(doc);
             }
 
             @AfterEach
             void tearDown() throws IOException, SolrServerException {
-                if (docContentRepo != null) {
-                    docContentRepo.unsetContent(doc);
+                if (docContentStore != null) {
+                    docContentStore.unsetContent(doc);
                 }
                 if (docRepo != null) {
                     docRepo.delete(doc);
@@ -238,7 +238,7 @@ public class SolrIT {
 
             @Test
             void shouldReturnTheSearchedContent() {
-                Iterable<UUID> content = docContentRepo.search("one");
+                Iterable<UUID> content = docContentStore.search("one");
                 assertThat(content).contains(doc.getContentId());
             }
         }
@@ -254,17 +254,17 @@ public class SolrIT {
                 doc.setTitle("title of document 1");
                 doc.setEmail("author@email.com");
                 doc = docRepo.save(doc);
-                doc = docContentRepo.setContent(doc, this.getClass().getResourceAsStream("/one.docx"));
+                doc = docContentStore.setContent(doc, this.getClass().getResourceAsStream("/one.docx"));
                 doc = docRepo.save(doc);
 
-                docContentRepo.setContent(doc, this.getClass().getResourceAsStream("/two.rtf"));
+                docContentStore.setContent(doc, this.getClass().getResourceAsStream("/two.rtf"));
                 docRepo.save(doc);
             }
 
             @AfterEach
             void tearDown() throws IOException, SolrServerException {
-                if (docContentRepo != null) {
-                    docContentRepo.unsetContent(doc);
+                if (docContentStore != null) {
+                    docContentStore.unsetContent(doc);
                 }
                 if (docRepo != null) {
                     docRepo.delete(doc);
@@ -304,18 +304,18 @@ public class SolrIT {
                 doc.setTitle("title of document 1");
                 doc.setEmail("author@email.com");
                 doc = docRepo.save(doc);
-                doc = docContentRepo.setContent(doc, this.getClass().getResourceAsStream("/one.docx"));
+                doc = docContentStore.setContent(doc, this.getClass().getResourceAsStream("/one.docx"));
                 doc = docRepo.save(doc);
 
                 id = doc.getContentId();
-                docContentRepo.unsetContent(doc);
+                docContentStore.unsetContent(doc);
                 docRepo.delete(doc);
             }
 
             @AfterEach
             void tearDown() throws IOException, SolrServerException {
-                if (docContentRepo != null) {
-                    docContentRepo.unsetContent(doc);
+                if (docContentStore != null) {
+                    docContentStore.unsetContent(doc);
                 }
                 if (docRepo != null) {
                     docRepo.delete(doc);
@@ -360,16 +360,16 @@ public class SolrIT {
                     Document doc = new Document();
                     doc.setTitle(format("doc %s", i));
                     doc.setEmail("author@email.com");
-                    doc = docContentRepo.setContent(doc, this.getClass().getResourceAsStream("/one.docx"));
+                    doc = docContentStore.setContent(doc, this.getClass().getResourceAsStream("/one.docx"));
                     docRepo.save(doc);
                 }
             }
 
             @AfterEach
             void tearDown() throws IOException, SolrServerException {
-                if (docRepo != null && docContentRepo != null) {
+                if (docRepo != null && docContentStore != null) {
                     for (Document doc : docRepo.findAll()) {
-                        doc = docContentRepo.unsetContent(doc);
+                        doc = docContentStore.unsetContent(doc);
                     }
                     for (Document doc : docRepo.findAll()) {
                         docRepo.deleteById(doc.getId());
@@ -387,25 +387,25 @@ public class SolrIT {
             @Test
             void shouldReturnResultsInPages() {
                 org.awaitility.Awaitility.await().untilAsserted(() -> {
-                    var page = (docContentRepo.search("foo", PageRequest.of(0, 3)));
+                    var page = (docContentStore.search("foo", PageRequest.of(0, 3)));
                     assertThat(page.getNumberOfElements()).isEqualTo(3);
 
                 });
 
                 org.awaitility.Awaitility.await().untilAsserted(() -> {
-                    var page = (docContentRepo.search("foo", PageRequest.of(1, 3)));
+                    var page = (docContentStore.search("foo", PageRequest.of(1, 3)));
                     assertThat(page.getNumberOfElements()).isEqualTo(3);
 
                 });
 
                 org.awaitility.Awaitility.await().untilAsserted(() -> {
-                    var page = (docContentRepo.search("foo", PageRequest.of(2, 3)));
+                    var page = (docContentStore.search("foo", PageRequest.of(2, 3)));
                     assertThat(page.getNumberOfElements()).isEqualTo(3);
 
                 });
 
                 org.awaitility.Awaitility.await().untilAsserted(() -> {
-                    var page = (docContentRepo.search("foo", PageRequest.of(3, 3)));
+                    var page = (docContentStore.search("foo", PageRequest.of(3, 3)));
                     assertThat(page.getNumberOfElements()).isEqualTo(1);
 
                 });
@@ -414,7 +414,7 @@ public class SolrIT {
             @Test
             void shouldReturnSpecificResultPage() {
                 org.awaitility.Awaitility.await().untilAsserted(() -> {
-                    var page = (docContentRepo.search("foo", PageRequest.of(3, 3)));
+                    var page = (docContentStore.search("foo", PageRequest.of(3, 3)));
                     assertThat(page.getNumberOfElements()).isEqualTo(1);
 
                 });
@@ -444,8 +444,8 @@ public class SolrIT {
 
         @AfterEach
         void tearDown() throws IOException, SolrServerException {
-            if (docContentRepo != null) {
-                docContentRepo.unsetContent(doc);
+            if (docContentStore != null) {
+                docContentStore.unsetContent(doc);
             }
             if (docRepo != null) {
                 docRepo.delete(doc);
@@ -461,7 +461,7 @@ public class SolrIT {
 
         @Test
         void shouldApplyTheProvidedAttributesAndFilterQuery() {
-            Iterable<UUID> tmp = docContentRepo.search("one");
+            Iterable<UUID> tmp = docContentStore.search("one");
             assertThat(tmp).isNotNull();
 
             List<UUID> results = new ArrayList<UUID>();
@@ -488,8 +488,8 @@ public class SolrIT {
 
         @AfterEach
         void tearDown() throws IOException, SolrServerException {
-            if (docContentRepo != null) {
-                docContentRepo.unsetContent(doc);
+            if (docContentStore != null) {
+                docContentStore.unsetContent(doc);
             }
             if (docRepo != null) {
                 docRepo.delete(doc);

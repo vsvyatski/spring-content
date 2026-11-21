@@ -44,7 +44,7 @@ public class TransactionIT {
     private PlatformTransactionManager ptm;
 
     private TestEntityRepository repo;
-    private TestEntityContentRepository store;
+    private TestEntityContentStore store;
     private DbService dbService;
 
     private TestEntity te;
@@ -56,7 +56,7 @@ public class TransactionIT {
     public interface TestEntityRepository extends JpaRepository<TestEntity, String> {
     }
 
-    public interface TestEntityContentRepository extends ContentStore<TestEntity, String> {
+    public interface TestEntityContentStore extends ContentStore<TestEntity, String> {
     }
 
     @Configuration
@@ -74,7 +74,7 @@ public class TransactionIT {
     public static class DbService {
 
         @Transactional
-        public TestEntity doSomeDbStuff(TestEntityContentRepository store, TestEntity te) {
+        public TestEntity doSomeDbStuff(TestEntityContentStore store, TestEntity te) {
             te = store.setContent(te, new ByteArrayInputStream("Spring Content World!".getBytes()));
             throw new RuntimeException("badness");
         }
@@ -95,7 +95,7 @@ public class TransactionIT {
             context.refresh();
 
             repo = context.getBean(TestEntityRepository.class);
-            store = context.getBean(TestEntityContentRepository.class);
+            store = context.getBean(TestEntityContentStore.class);
             dbService = context.getBean(DbService.class);
             ptm = context.getBean(PlatformTransactionManager.class);
 

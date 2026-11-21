@@ -96,7 +96,7 @@ public class EnableS3StoresTest {
     @Nested
     class EnableS3StoresCases {
         @Nested
-        class GivenAContextAndAConfigurationWithAnS3ContentRepositoryBean {
+        class GivenAContextAndAConfigurationWithAnS3ContentStoreBean {
             @BeforeEach
             void setUp() {
                 context = new AnnotationConfigApplicationContext();
@@ -110,7 +110,7 @@ public class EnableS3StoresTest {
             }
 
             @Test
-            void shouldHaveAContentRepositoryBean() {
+            void shouldHaveAContentStoreBean() {
                 assertThat(context.getBean(SingleContentS3Store.class)).isNotNull();
             }
 

@@ -25,7 +25,7 @@ public class ContentFileSystemAutoConfigurationTest {
 
     private ApplicationContextRunner contextRunner;
 
-    public interface TestEntityContentRepository extends FileSystemContentStore<TestEntity, String> {
+    public interface TestEntityContentStore extends FileSystemContentStore<TestEntity, String> {
     }
 
     @SpringBootApplication(exclude = {SolrAutoConfiguration.class, SolrExtensionAutoConfiguration.class, S3ContentAutoConfiguration.class})
@@ -58,7 +58,7 @@ public class ContentFileSystemAutoConfigurationTest {
 
             @Test
             void shouldLoadTheContext() {
-                contextRunner.withUserConfiguration(TestConfig.class).run((context) -> Assertions.assertThat(context).hasSingleBean(TestEntityContentRepository.class));
+                contextRunner.withUserConfiguration(TestConfig.class).run((context) -> Assertions.assertThat(context).hasSingleBean(TestEntityContentStore.class));
             }
         }
 
@@ -123,7 +123,7 @@ public class ContentFileSystemAutoConfigurationTest {
             @Test
             void shouldLoadTheContext() {
                 contextRunner.withUserConfiguration(ConfigWithExplicitEnableFileSystemStores.class).run((context) -> {
-                    Assertions.assertThat(context).hasSingleBean(TestEntityContentRepository.class);
+                    Assertions.assertThat(context).hasSingleBean(TestEntityContentStore.class);
                     Assertions.assertThat(context).hasSingleBean(FileSystemResourceLoader.class);
                 });
             }

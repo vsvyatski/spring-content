@@ -84,7 +84,7 @@ public class EnableMongoStoresTest {
     @Nested
     class EnableMongoStoresCases {
         @Nested
-        class GivenAnEnabledConfigurationWithAMongoContentRepositoryBean {
+        class GivenAnEnabledConfigurationWithAMongoContentStoreBean {
             @BeforeEach
             void setUp() {
                 context = new AnnotationConfigApplicationContext();
@@ -98,7 +98,7 @@ public class EnableMongoStoresTest {
             }
 
             @Test
-            void shouldHaveAMongoContentRepositoryBean() {
+            void shouldHaveAMongoContentStoreBean() {
                 assertThat(context.getBean(SingleContentMongoStore.class)).isNotNull();
             }
 
@@ -134,7 +134,7 @@ public class EnableMongoStoresTest {
         }
 
         @Nested
-        class GivenAnEnabledConfigurationWithNoMongoContentRepositoryBeans {
+        class GivenAnEnabledConfigurationWithNoMongoContentStoreBeans {
             @BeforeEach
             void setUp() {
                 context = new AnnotationConfigApplicationContext();

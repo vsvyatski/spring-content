@@ -54,7 +54,7 @@ public class DefaultFileSystemStoresImplTest {
     private Exception e;
 
     @Nested
-    class DefaultFileSystemContentRepositoryImpl {
+    class DefaultFileSystemStoresImplBehaviour {
         @Nested
         class Store {
             @Nested

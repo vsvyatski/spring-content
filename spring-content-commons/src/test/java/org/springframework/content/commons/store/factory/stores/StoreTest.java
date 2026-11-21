@@ -26,7 +26,7 @@ public class StoreTest {
     @Autowired
     private ApplicationContext context;
 
-    public interface TestContentRepository extends ContentStore<Object, Serializable> {
+    public interface TestContentStore extends ContentStore<Object, Serializable> {
     }
 
     public interface TestStore extends Store<URI> {
@@ -49,7 +49,7 @@ public class StoreTest {
         class GivenTheApplicationContext {
             @Test
             void shouldHaveAStoreBean() {
-                assertThat(context.getBean(TestContentRepository.class)).isNotNull();
+                assertThat(context.getBean(TestContentStore.class)).isNotNull();
             }
 
             @Test

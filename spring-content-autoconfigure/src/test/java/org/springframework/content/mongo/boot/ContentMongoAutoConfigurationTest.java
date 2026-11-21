@@ -30,7 +30,7 @@ public class ContentMongoAutoConfigurationTest {
 
     private ApplicationContextRunner contextRunner;
 
-    public interface TestEntityContentRepository extends MongoContentStore<TestEntity, String> {
+    public interface TestEntityContentStore extends MongoContentStore<TestEntity, String> {
     }
 
     @Configuration
@@ -83,7 +83,7 @@ public class ContentMongoAutoConfigurationTest {
         void shouldLoadTheContext() {
             contextRunner.withUserConfiguration(TestConfig.class)
                     .run((context) ->
-                            Assertions.assertThat(context).hasSingleBean(TestEntityContentRepository.class));
+                            Assertions.assertThat(context).hasSingleBean(TestEntityContentStore.class));
         }
     }
 }

@@ -35,7 +35,7 @@ public class RestConfigurationTest {
     }
 
     @SuppressWarnings("unused") // classpath / store component scan
-    public interface TestEntityContentRepository extends FileSystemContentStore<TestEntity, String> {
+    public interface TestEntityContentStore extends FileSystemContentStore<TestEntity, String> {
     }
 
     @Configuration

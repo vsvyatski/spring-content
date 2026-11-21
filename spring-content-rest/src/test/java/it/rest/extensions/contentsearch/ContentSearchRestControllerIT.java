@@ -101,7 +101,7 @@ public class ContentSearchRestControllerIT {
     private List<InternalResult> internalResults;
 
     @SuppressWarnings("unused") // classpath / store component scan
-    public interface TestEntityNoContentRepository extends CrudRepository<TestEntityNoContent, String> {
+    public interface TestEntityNoContentCrudRepository extends CrudRepository<TestEntityNoContent, String> {
     }
 
     @SuppressWarnings("unused") // classpath / store component scan

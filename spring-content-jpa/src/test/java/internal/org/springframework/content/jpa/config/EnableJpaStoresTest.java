@@ -77,7 +77,7 @@ public class EnableJpaStoresTest {
     @Nested
     class EnableJpaStoresCases {
         @Nested
-        class GivenAContextAndAConfigurationWithAJpaContentRepositoryBean {
+        class GivenAContextAndAConfigurationWithAJpaContentStoreBean {
             @BeforeEach
             void setUp() {
                 context = new AnnotationConfigApplicationContext();
@@ -91,7 +91,7 @@ public class EnableJpaStoresTest {
             }
 
             @Test
-            void shouldHaveAContentRepositoryBean() {
+            void shouldHaveAContentStoreBean() {
                 // Dual-content JPA fixture (not SingleContent*): exercises two @ContentId properties in test-jar.
                 assertThat(context.getBean(DualContentJpaStringIdStore.class)).isNotNull();
             }
