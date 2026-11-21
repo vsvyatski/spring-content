@@ -48,10 +48,7 @@ public class PostgresBlobResourceIT {
 
     private JdbcTemplate template;
 
-    private String entityId = null;
     private long lobId;
-
-    private PostgresBlobResource r = null;
 
     @Configuration
     @EnableTransactionManagement
@@ -117,10 +114,10 @@ public class PostgresBlobResourceIT {
             class WhenTheContentIsDeleted {
                 @BeforeEach
                 void setUp() throws IOException, SQLException {
-                    entityId = UuidCreator.getTimeOrdered().toString();
+                    String entityId = UuidCreator.getTimeOrdered().toString();
                     template = new JdbcTemplate(ds);
 
-                    r = new PostgresBlobResource(entityId, template, txn);
+                    PostgresBlobResource r = new PostgresBlobResource(entityId, template, txn);
 
                     DataSource ds = PostgresBlobResourceIT.this.template.getDataSource();
                     assert ds != null;
