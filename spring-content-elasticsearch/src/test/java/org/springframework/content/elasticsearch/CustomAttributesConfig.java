@@ -35,9 +35,9 @@ import java.util.Map;
 public class CustomAttributesConfig {
 
     @Value("/org/springframework/content/jpa/schema-drop-hsqldb.sql")
-    private Resource dropReopsitoryTables;
+    private Resource dropRepositoryTables;
     @Value("/org/springframework/content/jpa/schema-hsqldb.sql")
-    private Resource dataReopsitorySchema;
+    private Resource dataRepositorySchema;
 
     @Bean
     public ConversionService conversionService() {
@@ -51,28 +51,18 @@ public class CustomAttributesConfig {
 
     @Bean
     public AttributeProvider<Document> attributeProvider() {
-        return new AttributeProvider<Document>() {
+        return entity -> {
 
-            @Override
-            public Map<String, String> synchronize(Document entity) {
-
-                Map<String, String> attrs = new HashMap<>();
-                attrs.put("title", entity.getTitle());
-                attrs.put("author", entity.getAuthor());
-                return attrs;
-            }
+            Map<String, String> attrs = new HashMap<>();
+            attrs.put("title", entity.getTitle());
+            attrs.put("author", entity.getAuthor());
+            return attrs;
         };
     }
 
     @Bean
     public FilterQueryProvider filterQueryProvider() {
-        return new FilterQueryProvider() {
-
-            @Override
-            public Map<String, Object> filterQueries(Class<?> entity) {
-                return Collections.singletonMap("author", "Buck Rogers");
-            }
-        };
+        return entity -> Collections.singletonMap("author", "Buck Rogers");
     }
 
     @Bean
@@ -128,8 +118,8 @@ public class CustomAttributesConfig {
         ResourceDatabasePopulator databasePopulator =
                 new ResourceDatabasePopulator();
 
-        databasePopulator.addScript(dropReopsitoryTables);
-        databasePopulator.addScript(dataReopsitorySchema);
+        databasePopulator.addScript(dropRepositoryTables);
+        databasePopulator.addScript(dataRepositorySchema);
         databasePopulator.setIgnoreFailedDrops(true);
 
         DataSourceInitializer initializer = new DataSourceInitializer();

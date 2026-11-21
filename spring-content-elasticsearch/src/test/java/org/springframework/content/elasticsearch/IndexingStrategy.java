@@ -5,5 +5,4 @@ public interface IndexingStrategy {
     void setup() throws Exception;
 
     String indexName();
-
 }

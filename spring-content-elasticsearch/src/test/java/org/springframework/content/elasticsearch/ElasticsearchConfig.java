@@ -31,9 +31,9 @@ import java.io.InputStream;
 public class ElasticsearchConfig {
 
     @Value("/org/springframework/content/jpa/schema-drop-hsqldb.sql")
-    private Resource dropReopsitoryTables;
+    private Resource dropRepositoryTables;
     @Value("/org/springframework/content/jpa/schema-hsqldb.sql")
-    private Resource dataReopsitorySchema;
+    private Resource dataRepositorySchema;
 
     @Bean
     public ConversionService conversionService() {
@@ -98,8 +98,8 @@ public class ElasticsearchConfig {
         ResourceDatabasePopulator databasePopulator =
                 new ResourceDatabasePopulator();
 
-        databasePopulator.addScript(dropReopsitoryTables);
-        databasePopulator.addScript(dataReopsitorySchema);
+        databasePopulator.addScript(dropRepositoryTables);
+        databasePopulator.addScript(dataRepositorySchema);
         databasePopulator.setIgnoreFailedDrops(true);
 
         DataSourceInitializer initializer = new DataSourceInitializer();
