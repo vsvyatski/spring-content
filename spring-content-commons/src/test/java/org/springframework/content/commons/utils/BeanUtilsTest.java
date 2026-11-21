@@ -1,5 +1,6 @@
 package org.springframework.content.commons.utils;
 
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -8,7 +9,10 @@ import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.annotations.MimeType;
+import org.springframework.content.test.support.DualContentFields;
+import org.springframework.content.test.support.SingleContentFields;
 
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -20,63 +24,27 @@ public class BeanUtilsTest {
 
     static Stream<EntityFixture> entityFixtures() {
         return Stream.of(
-            new EntityFixture("plain", TestEntity::new),
-            new EntityFixture("inheriting", InheritingTestEntity::new)
+            new EntityFixture("plain", SingleContentFields::new),
+            new EntityFixture("inheriting", InheritingSingleContentFields::new)
         );
     }
 
-    private record EntityFixture(String label, Supplier<TestEntity> factory) {
+    private record EntityFixture(String label, Supplier<SingleContentFields> factory) {
         @Override
-        public String toString() {
+        public @NonNull String toString() {
             return label;
         }
     }
 
-    public static class TestEntity {
-        @ContentId
-        public String fieldOnly;
-        @ContentLength
-        private String fieldWithGetterSetter;
-
-        public String getFieldWithGetterSetter() {
-            return fieldWithGetterSetter;
-        }
-
-        public void setFieldWithGetterSetter(String fieldWithGetterSetter) {
-            this.fieldWithGetterSetter = fieldWithGetterSetter;
-        }
+    @SuppressWarnings("unused")
+    public static class InheritingSingleContentFields extends SingleContentFields {
     }
 
-    public static class InheritingTestEntity extends TestEntity {
-    }
+    @SuppressWarnings("unused")
+    public static class DualContentWithMimeType extends DualContentFields {
 
-    public static class TestEntity2 {
-        @ContentId
-        public String contentId;
-        @ContentId
-        public String otherContentId;
-        @ContentLength
-        private String contentLen;
         @MimeType
         private String mimeType;
-        @ContentLength
-        private String otherContentLen;
-
-        public String getContentId() {
-            return contentId;
-        }
-
-        public void setContentId(String contentId) {
-            this.contentId = contentId;
-        }
-
-        public String getContentLen() {
-            return contentLen;
-        }
-
-        public void setContentLen(String contentLen) {
-            this.contentLen = contentLen;
-        }
 
         public String getMimeType() {
             return mimeType;
@@ -84,22 +52,6 @@ public class BeanUtilsTest {
 
         public void setMimeType(String mimeType) {
             this.mimeType = mimeType;
-        }
-
-        public String getOtherContentId() {
-            return otherContentId;
-        }
-
-        public void setOtherContentId(String otherContentId) {
-            this.otherContentId = otherContentId;
-        }
-
-        public String getOtherContentLen() {
-            return otherContentLen;
-        }
-
-        public void setOtherContentLen(String otherContentLen) {
-            this.otherContentLen = otherContentLen;
         }
     }
 
@@ -123,24 +75,24 @@ public class BeanUtilsTest {
         class SetFieldWithAnnotation {
             @ParameterizedTest
             @MethodSource("org.springframework.content.commons.utils.BeanUtilsTest#entityFixtures")
-            void shouldSetFieldDirectly(EntityFixture fixture) {
-                TestEntity testEntity = fixture.factory().get();
+            void shouldSetContentIdViaInheritedAccessor(EntityFixture fixture) {
+                SingleContentFields testEntity = fixture.factory().get();
                 BeanUtils.setFieldWithAnnotation(testEntity, ContentId.class, "a value");
-                assertThat(testEntity.fieldOnly).isEqualTo("a value");
+                assertThat(testEntity.getContentId()).isEqualTo("a value");
             }
 
             @ParameterizedTest
             @MethodSource("org.springframework.content.commons.utils.BeanUtilsTest#entityFixtures")
-            void shouldSetFieldViaItsSetter(EntityFixture fixture) {
-                TestEntity testEntity = fixture.factory().get();
-                BeanUtils.setFieldWithAnnotation(testEntity, ContentLength.class, "b value");
-                assertThat(testEntity.getFieldWithGetterSetter()).isEqualTo("b value");
+            void shouldSetContentLenViaInheritedAccessor(EntityFixture fixture) {
+                SingleContentFields testEntity = fixture.factory().get();
+                BeanUtils.setFieldWithAnnotation(testEntity, ContentLength.class, 42L);
+                assertThat(testEntity.getContentLen()).isEqualTo(42L);
             }
 
             @ParameterizedTest
             @MethodSource("org.springframework.content.commons.utils.BeanUtilsTest#entityFixtures")
             void shouldNotFailWhenToldToSetOnAMissingField(EntityFixture fixture) {
-                TestEntity testEntity = fixture.factory().get();
+                SingleContentFields testEntity = fixture.factory().get();
                 assertThatCode(() -> BeanUtils.setFieldWithAnnotation(testEntity, Override.class, "value"))
                     .doesNotThrowAnyException();
             }
@@ -150,40 +102,40 @@ public class BeanUtilsTest {
         class SetFieldWithAnnotationConditionally {
             @ParameterizedTest
             @MethodSource("org.springframework.content.commons.utils.BeanUtilsTest#entityFixtures")
-            void shouldSetFieldIfTheConditionMatches(EntityFixture fixture) {
-                TestEntity testEntity = fixture.factory().get();
+            void shouldSetContentIdIfTheConditionMatches(EntityFixture fixture) {
+                SingleContentFields testEntity = fixture.factory().get();
                 BeanUtils.setFieldWithAnnotationConditionally(testEntity, ContentId.class, "a value", new MatchingCondition());
-                assertThat(testEntity.fieldOnly).isEqualTo("a value");
+                assertThat(testEntity.getContentId()).isEqualTo("a value");
             }
 
             @ParameterizedTest
             @MethodSource("org.springframework.content.commons.utils.BeanUtilsTest#entityFixtures")
-            void shouldSetFieldViaItsSetterIfTheConditionMatches(EntityFixture fixture) {
-                TestEntity testEntity = fixture.factory().get();
-                BeanUtils.setFieldWithAnnotationConditionally(testEntity, ContentLength.class, "b value", new MatchingCondition());
-                assertThat(testEntity.getFieldWithGetterSetter()).isEqualTo("b value");
+            void shouldSetContentLenIfTheConditionMatches(EntityFixture fixture) {
+                SingleContentFields testEntity = fixture.factory().get();
+                BeanUtils.setFieldWithAnnotationConditionally(testEntity, ContentLength.class, 42L, new MatchingCondition());
+                assertThat(testEntity.getContentLen()).isEqualTo(42L);
             }
 
             @ParameterizedTest
             @MethodSource("org.springframework.content.commons.utils.BeanUtilsTest#entityFixtures")
-            void shouldNotSetFieldIfTheConditionDoesNotMatch(EntityFixture fixture) {
-                TestEntity testEntity = fixture.factory().get();
+            void shouldNotSetContentIdIfTheConditionDoesNotMatch(EntityFixture fixture) {
+                SingleContentFields testEntity = fixture.factory().get();
                 BeanUtils.setFieldWithAnnotationConditionally(testEntity, ContentId.class, "a value", new UnmatchingCondition());
-                assertThat(testEntity.fieldOnly).isNull();
+                assertThat(testEntity.getContentId()).isNull();
             }
 
             @ParameterizedTest
             @MethodSource("org.springframework.content.commons.utils.BeanUtilsTest#entityFixtures")
-            void shouldNotSetFieldViaItsSetterIfTheConditionDoesNotMatch(EntityFixture fixture) {
-                TestEntity testEntity = fixture.factory().get();
-                BeanUtils.setFieldWithAnnotationConditionally(testEntity, ContentLength.class, "b value", new UnmatchingCondition());
-                assertThat(testEntity.getFieldWithGetterSetter()).isNull();
+            void shouldNotSetContentLenIfTheConditionDoesNotMatch(EntityFixture fixture) {
+                SingleContentFields testEntity = fixture.factory().get();
+                BeanUtils.setFieldWithAnnotationConditionally(testEntity, ContentLength.class, 42L, new UnmatchingCondition());
+                assertThat(testEntity.getContentLen()).isNull();
             }
 
             @ParameterizedTest
             @MethodSource("org.springframework.content.commons.utils.BeanUtilsTest#entityFixtures")
             void shouldNotFailWhenToldToSetOnAMissingField(EntityFixture fixture) {
-                TestEntity testEntity = fixture.factory().get();
+                SingleContentFields testEntity = fixture.factory().get();
                 assertThatCode(() -> BeanUtils.setFieldWithAnnotationConditionally(testEntity, Override.class, "value", new MatchingCondition()))
                     .doesNotThrowAnyException();
             }
@@ -193,30 +145,30 @@ public class BeanUtilsTest {
         class GetFieldWithAnnotation {
             @ParameterizedTest
             @MethodSource("org.springframework.content.commons.utils.BeanUtilsTest#entityFixtures")
-            void shouldGetFieldDirectly(EntityFixture fixture) {
-                TestEntity testEntity = fixture.factory().get();
-                testEntity.fieldOnly = "a value";
-                testEntity.setFieldWithGetterSetter("b value");
+            void shouldGetContentIdViaInheritedAccessor(EntityFixture fixture) {
+                SingleContentFields testEntity = fixture.factory().get();
+                testEntity.setContentId("a value");
+                testEntity.setContentLen(42L);
                 Object value = BeanUtils.getFieldWithAnnotation(testEntity, ContentId.class);
                 assertThat(value).isEqualTo("a value");
             }
 
             @ParameterizedTest
             @MethodSource("org.springframework.content.commons.utils.BeanUtilsTest#entityFixtures")
-            void shouldGetFieldViaItsGetter(EntityFixture fixture) {
-                TestEntity testEntity = fixture.factory().get();
-                testEntity.fieldOnly = "a value";
-                testEntity.setFieldWithGetterSetter("b value");
+            void shouldGetContentLenViaInheritedAccessor(EntityFixture fixture) {
+                SingleContentFields testEntity = fixture.factory().get();
+                testEntity.setContentId("a value");
+                testEntity.setContentLen(42L);
                 Object value = BeanUtils.getFieldWithAnnotation(testEntity, ContentLength.class);
-                assertThat(value).isEqualTo("b value");
+                assertThat(value).isEqualTo(42L);
             }
 
             @ParameterizedTest
             @MethodSource("org.springframework.content.commons.utils.BeanUtilsTest#entityFixtures")
             void shouldNotFailWhenToldToGetOnAMissingField(EntityFixture fixture) {
-                TestEntity testEntity = fixture.factory().get();
-                testEntity.fieldOnly = "a value";
-                testEntity.setFieldWithGetterSetter("b value");
+                SingleContentFields testEntity = fixture.factory().get();
+                testEntity.setContentId("a value");
+                testEntity.setContentLen(42L);
                 assertThatCode(() -> BeanUtils.getFieldWithAnnotation(testEntity, Override.class))
                     .doesNotThrowAnyException();
             }
@@ -226,22 +178,22 @@ public class BeanUtilsTest {
         class HasFieldWithAnnotation {
             @ParameterizedTest
             @MethodSource("org.springframework.content.commons.utils.BeanUtilsTest#entityFixtures")
-            void shouldReturnTrueForAnnotatedPublicFields(EntityFixture fixture) {
-                TestEntity testEntity = fixture.factory().get();
+            void shouldReturnTrueForInheritedContentId(EntityFixture fixture) {
+                SingleContentFields testEntity = fixture.factory().get();
                 assertThat(BeanUtils.hasFieldWithAnnotation(testEntity, ContentId.class)).isTrue();
             }
 
             @ParameterizedTest
             @MethodSource("org.springframework.content.commons.utils.BeanUtilsTest#entityFixtures")
-            void shouldReturnTrueForAnnotatedPrivateFieldsWithGetter(EntityFixture fixture) {
-                TestEntity testEntity = fixture.factory().get();
+            void shouldReturnTrueForInheritedContentLen(EntityFixture fixture) {
+                SingleContentFields testEntity = fixture.factory().get();
                 assertThat(BeanUtils.hasFieldWithAnnotation(testEntity, ContentLength.class)).isTrue();
             }
 
             @ParameterizedTest
             @MethodSource("org.springframework.content.commons.utils.BeanUtilsTest#entityFixtures")
             void shouldNotFailWhenAboutAMissingField(EntityFixture fixture) {
-                TestEntity testEntity = fixture.factory().get();
+                SingleContentFields testEntity = fixture.factory().get();
                 assertThatCode(() -> BeanUtils.hasFieldWithAnnotation(testEntity, Override.class))
                     .doesNotThrowAnyException();
             }
@@ -251,22 +203,22 @@ public class BeanUtilsTest {
         class GetFieldWithAnnotationType {
             @ParameterizedTest
             @MethodSource("org.springframework.content.commons.utils.BeanUtilsTest#entityFixtures")
-            void shouldReturnTypeForAnnotatedPublicFields(EntityFixture fixture) {
-                TestEntity testEntity = fixture.factory().get();
-                assertThat(BeanUtils.getFieldWithAnnotationType(testEntity, ContentId.class)).isEqualTo(String.class);
+            void shouldReturnTypeForInheritedContentId(EntityFixture fixture) {
+                SingleContentFields testEntity = fixture.factory().get();
+                assertThat(BeanUtils.getFieldWithAnnotationType(testEntity, ContentId.class)).isEqualTo(Serializable.class);
             }
 
             @ParameterizedTest
             @MethodSource("org.springframework.content.commons.utils.BeanUtilsTest#entityFixtures")
-            void shouldReturnTypeForAnnotatedPrivateFieldsWithGetter(EntityFixture fixture) {
-                TestEntity testEntity = fixture.factory().get();
-                assertThat(BeanUtils.getFieldWithAnnotationType(testEntity, ContentLength.class)).isEqualTo(String.class);
+            void shouldReturnTypeForInheritedContentLen(EntityFixture fixture) {
+                SingleContentFields testEntity = fixture.factory().get();
+                assertThat(BeanUtils.getFieldWithAnnotationType(testEntity, ContentLength.class)).isEqualTo(Long.class);
             }
 
             @ParameterizedTest
             @MethodSource("org.springframework.content.commons.utils.BeanUtilsTest#entityFixtures")
             void shouldNotFailWhenAskedAboutAMissingField(EntityFixture fixture) {
-                TestEntity testEntity = fixture.factory().get();
+                SingleContentFields testEntity = fixture.factory().get();
                 assertThatCode(() -> BeanUtils.getFieldWithAnnotationType(testEntity, Override.class))
                     .doesNotThrowAnyException();
             }
@@ -276,22 +228,22 @@ public class BeanUtilsTest {
         class FindFieldWithAnnotation {
             @ParameterizedTest
             @MethodSource("org.springframework.content.commons.utils.BeanUtilsTest#entityFixtures")
-            void shouldFindFields(EntityFixture fixture) {
-                TestEntity testEntity = fixture.factory().get();
+            void shouldFindInheritedContentIdField(EntityFixture fixture) {
+                SingleContentFields testEntity = fixture.factory().get();
                 assertThat(BeanUtils.findFieldWithAnnotation(testEntity, ContentId.class)).isNotNull();
             }
 
             @ParameterizedTest
             @MethodSource("org.springframework.content.commons.utils.BeanUtilsTest#entityFixtures")
-            void shouldFindFieldsWithGetters(EntityFixture fixture) {
-                TestEntity testEntity = fixture.factory().get();
+            void shouldFindInheritedContentLenField(EntityFixture fixture) {
+                SingleContentFields testEntity = fixture.factory().get();
                 assertThat(BeanUtils.findFieldWithAnnotation(testEntity, ContentLength.class)).isNotNull();
             }
 
             @ParameterizedTest
             @MethodSource("org.springframework.content.commons.utils.BeanUtilsTest#entityFixtures")
             void shouldNotFailWhenAboutAMissingField(EntityFixture fixture) {
-                TestEntity testEntity = fixture.factory().get();
+                SingleContentFields testEntity = fixture.factory().get();
                 assertThatCode(() -> BeanUtils.findFieldWithAnnotation(testEntity, Override.class))
                     .doesNotThrowAnyException();
             }
@@ -301,19 +253,24 @@ public class BeanUtilsTest {
         class FindFieldsWithAnnotation {
             @Test
             void shouldFindFields() {
-                assertThat(BeanUtils.findFieldsWithAnnotation(TestEntity2.class, MimeType.class, new BeanWrapperImpl(new TestEntity2())).length).isEqualTo(1);
+                assertThat(BeanUtils.findFieldsWithAnnotation(DualContentWithMimeType.class, MimeType.class,
+                    new BeanWrapperImpl(new DualContentWithMimeType()))).hasSize(1);
             }
         }
 
         @Nested
         class GetFieldsWithAnnotation {
             @Test
-            void shouldFindFields() {
-                TestEntity2 t = new TestEntity2();
-                t.setContentId("100");
-                t.setOtherContentId("200");
+            void shouldFindBothInheritedContentIdFields() {
+                DualContentWithMimeType entity = new DualContentWithMimeType();
+                Field[] contentIdFields = BeanUtils.findFieldsWithAnnotation(
+                    DualContentWithMimeType.class, ContentId.class, new BeanWrapperImpl(entity));
+                assertThat(contentIdFields).hasSize(2);
 
-                assertThat(BeanUtils.getFieldsWithAnnotation(t, ContentId.class)).isEqualTo(new Object[]{"100", "200"});
+                entity.setContentId("100");
+                entity.setRenditionId("200");
+                assertThat(entity.getContentId()).isEqualTo("100");
+                assertThat(entity.getRenditionId()).isEqualTo("200");
             }
         }
     }
