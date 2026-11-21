@@ -40,17 +40,17 @@ public final class StoreUtils {
     public static String storePath(StoreInfo info) {
         Class<?> clazz = info.getInterface();
         StoreRestResource annotation = AnnotationUtils.findAnnotation(clazz,
-                StoreRestResource.class);
+            StoreRestResource.class);
         String path = annotation == null ? null : annotation.path().trim();
         path = StringUtils.hasText(path) ? path
-                : English.plural(StringUtils.uncapitalize(getSimpleName(info)));
+            : English.plural(StringUtils.uncapitalize(getSimpleName(info)));
         return path;
     }
 
     public static String getSimpleName(StoreInfo info) {
         Class<?> clazz = info.getDomainObjectClass();
         return clazz != null ? clazz.getSimpleName()
-                : stripStoreName(info.getInterface());
+            : stripStoreName(info.getInterface());
     }
 
     public static String stripStoreName(Class<?> iface) {

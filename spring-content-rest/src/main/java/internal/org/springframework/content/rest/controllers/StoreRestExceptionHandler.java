@@ -51,10 +51,10 @@ public class StoreRestExceptionHandler {
      * @return
      */
     @ExceptionHandler({LockOwnerException.class,
-            OptimisticLockException.class,
-            OptimisticLockingFailureException.class,
-            PessimisticLockException.class,
-            PessimisticLockingFailureException.class})
+        OptimisticLockException.class,
+        OptimisticLockingFailureException.class,
+        PessimisticLockException.class,
+        PessimisticLockingFailureException.class})
     ResponseEntity<ExceptionMessage> handleConflict(Exception e) {
         return errorResponse(HttpStatus.CONFLICT, new HttpHeaders(), e);
     }

@@ -25,7 +25,7 @@ import java.nio.file.Files;
 @AutoConfigureAfter({JpaVersionsAutoConfiguration.class})
 @ConditionalOnClass(FileSystemStoreRegistrar.class)
 @ConditionalOnProperty(prefix = "spring.content.storage.type", name = "default",
-        havingValue = "fs", matchIfMissing = true)
+    havingValue = "fs", matchIfMissing = true)
 public class FileSystemContentAutoConfiguration {
 
     @Bean

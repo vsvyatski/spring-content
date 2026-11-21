@@ -65,7 +65,7 @@ public class SolrITConfig {
 
     @Bean
     public SolrClient solrClient(
-            SolrProperties props) {
+        SolrProperties props) {
 
         return SolrTestContainer.getSolrClient();
     }

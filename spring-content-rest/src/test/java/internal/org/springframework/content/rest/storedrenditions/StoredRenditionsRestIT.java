@@ -1,9 +1,9 @@
 package internal.org.springframework.content.rest.storedrenditions;
 
-import internal.org.springframework.content.rest.support.StoreConfig;
 import internal.org.springframework.content.rest.support.DualContentRenditionEntity;
 import internal.org.springframework.content.rest.support.DualContentRenditionEntityRepository;
 import internal.org.springframework.content.rest.support.DualContentRenditionEntityStore;
+import internal.org.springframework.content.rest.support.StoreConfig;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -102,7 +102,7 @@ public class StoredRenditionsRestIT {
                         input = "";
                     }
                     return new ByteArrayInputStream(
-                            String.format("\"<html><head><title>Dynamic Rendition</title></head><body>%s</body></html>\"", input).getBytes());
+                        String.format("\"<html><head><title>Dynamic Rendition</title></head><body>%s</body></html>\"", input).getBytes());
                 }
             };
         }
@@ -134,8 +134,8 @@ public class StoredRenditionsRestIT {
 
                 try (OutputStream stream = ((WritableResource) store.getResource(entity, PropertyPath.from("rendition"))).getOutputStream()) {
                     renderedLength = IOUtils.copyLarge(
-                            new ByteArrayInputStream(String.format("<html><head><title>Stored Rendition</title></head><body>%s</body></html>", renderedContent).getBytes()),
-                            stream);
+                        new ByteArrayInputStream(String.format("<html><head><title>Stored Rendition</title></head><body>%s</body></html>", renderedContent).getBytes()),
+                        stream);
                 }
             }
 
@@ -201,11 +201,11 @@ public class StoredRenditionsRestIT {
                         Long id = testEntity5.getId();
 
                         mvc.perform(
-                                        get("/testEntity5s/" + testEntity5.getId() + "/content")
-                                                .accept("text/html"))
-                                .andExpect(status().isOk())
-                                .andExpect(content().string(not("<html><head><title>Dynamic Rendition</title></head><body>foo</body></html>")))
-                                .andExpect(content().string("<html><head><title>Stored Rendition</title></head><body>foo</body></html>"));
+                                get("/testEntity5s/" + testEntity5.getId() + "/content")
+                                    .accept("text/html"))
+                            .andExpect(status().isOk())
+                            .andExpect(content().string(not("<html><head><title>Dynamic Rendition</title></head><body>foo</body></html>")))
+                            .andExpect(content().string("<html><head><title>Stored Rendition</title></head><body>foo</body></html>"));
                     }
                 }
 
@@ -225,9 +225,9 @@ public class StoredRenditionsRestIT {
                         Long id = testEntity5.getId();
 
                         mvc.perform(
-                                        get("/testEntity5s/" + testEntity5.getId() + "/rendition")
-                                                .accept("text/html"))
-                                .andExpect(status().isMethodNotAllowed());
+                                get("/testEntity5s/" + testEntity5.getId() + "/rendition")
+                                    .accept("text/html"))
+                            .andExpect(status().isMethodNotAllowed());
                     }
                 }
 

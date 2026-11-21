@@ -24,8 +24,8 @@ import java.nio.file.Paths;
 import java.util.Collections;
 
 public abstract class AbstractStoreFactoryBean implements BeanFactoryAware, InitializingBean, BeanClassLoaderAware,
-        FactoryBean<Store<? extends Serializable>>,
-        ApplicationEventPublisherAware, StoreFactory {
+    FactoryBean<Store<? extends Serializable>>,
+    ApplicationEventPublisherAware, StoreFactory {
 
     protected static boolean REACTIVE_STORAGE = false;
 
@@ -67,25 +67,25 @@ public abstract class AbstractStoreFactoryBean implements BeanFactoryAware, Init
         for (Type t : types) {
             if (t instanceof ParameterizedType pt) {
                 if (pt.getRawType().getTypeName()
-                        .equals(Store.class.getCanonicalName())) {
+                    .equals(Store.class.getCanonicalName())) {
                     types = pt.getActualTypeArguments();
                     if (types.length != 1) {
                         throw new IllegalStateException(
-                                String.format("Store class %s must have a contentId type",
-                                        repositoryClass.getCanonicalName()));
+                            String.format("Store class %s must have a contentId type",
+                                repositoryClass.getCanonicalName()));
                     }
                     if (types[0] instanceof Class) {
                         clazz = (Class<?>) types[0];
                     }
                 } else if (pt.getRawType().getTypeName()
-                        .equals(AssociativeStore.class.getCanonicalName())
-                        || pt.getRawType().getTypeName()
-                        .equals(ContentStore.class.getCanonicalName())) {
+                    .equals(AssociativeStore.class.getCanonicalName())
+                    || pt.getRawType().getTypeName()
+                    .equals(ContentStore.class.getCanonicalName())) {
                     types = pt.getActualTypeArguments();
                     if (types.length != 2) {
                         throw new IllegalStateException(String.format(
-                                "ContentStore class %s must have domain and contentId types",
-                                repositoryClass.getCanonicalName()));
+                            "ContentStore class %s must have domain and contentId types",
+                            repositoryClass.getCanonicalName()));
                     }
                     if (types[index] instanceof Class) {
                         clazz = (Class<?>) types[index];
@@ -158,18 +158,18 @@ public abstract class AbstractStoreFactoryBean implements BeanFactoryAware, Init
         result.setTarget(target);
         if (!ClassUtils.getAllInterfaces(storeInterface).contains(ReactiveContentStore.class)) {
             result.setInterfaces(new Class[]{
-                    storeInterface,
-                    Store.class,
-                    AssociativeStore.class,
-                    ContentStore.class,
-                    ParameterTypeAware.class
+                storeInterface,
+                Store.class,
+                AssociativeStore.class,
+                ContentStore.class,
+                ParameterTypeAware.class
             });
         } else {
             result.setInterfaces(new Class[]{
-                    storeInterface,
-                    Store.class,
-                    ReactiveContentStore.class,
-                    ParameterTypeAware.class
+                storeInterface,
+                Store.class,
+                ReactiveContentStore.class,
+                ParameterTypeAware.class
             });
         }
 

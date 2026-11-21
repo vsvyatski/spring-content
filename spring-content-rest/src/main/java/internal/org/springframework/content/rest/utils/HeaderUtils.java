@@ -1,11 +1,11 @@
 package internal.org.springframework.content.rest.utils;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.core.convert.support.ConfigurableConversionService;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.data.convert.Jsr310Converters;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.jspecify.annotations.Nullable;
 import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -37,9 +37,9 @@ public class HeaderUtils {
      * @see <a href="https://tools.ietf.org/html/rfc7231#section-7.1.1.1">Section 7.1.1.1 of RFC 7231</a>
      */
     private static final String[] DATE_FORMATS = new String[]{
-            "EEE, dd MMM yyyy HH:mm:ss zzz",
-            "EEE, dd-MMM-yy HH:mm:ss zzz",
-            "EEE MMM dd HH:mm:ss yyyy"
+        "EEE, dd MMM yyyy HH:mm:ss zzz",
+        "EEE, dd-MMM-yy HH:mm:ss zzz",
+        "EEE MMM dd HH:mm:ss yyyy"
     };
 
     private static final ConfigurableConversionService conversionService = new DefaultConversionService();
@@ -58,11 +58,11 @@ public class HeaderUtils {
             if (isIfUnmodifiedSincePresent(headers)) {
                 if (resourceLastModified != null) {
                     Long lastModified = Stream.of(resourceLastModified)
-                            .filter(it -> it != null)
-                            .map(it -> conversionService.convert(it, Date.class))//
-                            .map(it -> conversionService.convert(it, Instant.class))//
-                            .map(it -> it.toEpochMilli())
-                            .findFirst().orElse(-1L);
+                        .filter(it -> it != null)
+                        .map(it -> conversionService.convert(it, Date.class))//
+                        .map(it -> conversionService.convert(it, Instant.class))//
+                        .map(it -> it.toEpochMilli())
+                        .findFirst().orElse(-1L);
                     boolean unmodified = checkIfUnmodifiedSinceCondition(headers, lastModified);
                     if (!unmodified) {
                         throw new ResponseStatusException(HttpStatus.PRECONDITION_FAILED, format("Entity modified since %s", headers.get("If-Unmodified-Since").get(0)));
@@ -97,7 +97,7 @@ public class HeaderUtils {
                 // Compare weak/strong ETags as per https://tools.ietf.org/html/rfc7232#section-2.3
                 while (etagMatcher.find()) {
                     if (StringUtils.hasLength(etagMatcher.group()) &&
-                            resourceETag.replaceFirst("^W/", "").equals(etagMatcher.group(3))) {
+                        resourceETag.replaceFirst("^W/", "").equals(etagMatcher.group(3))) {
                         matches = true;
                     }
                 }
@@ -118,7 +118,7 @@ public class HeaderUtils {
                 // Compare weak/strong ETags as per https://tools.ietf.org/html/rfc7232#section-2.3
                 while (etagMatcher.find()) {
                     if (StringUtils.hasLength(etagMatcher.group()) &&
-                            resourceETag.replaceFirst("^W/", "").equals(etagMatcher.group(3))) {
+                        resourceETag.replaceFirst("^W/", "").equals(etagMatcher.group(3))) {
                         matches = true;
                     }
                 }

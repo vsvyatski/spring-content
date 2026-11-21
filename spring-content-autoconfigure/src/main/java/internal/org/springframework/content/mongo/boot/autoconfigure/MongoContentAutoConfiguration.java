@@ -16,7 +16,7 @@ import org.springframework.context.annotation.Import;
 @AutoConfigureAfter({JpaVersionsAutoConfiguration.class})
 @ConditionalOnClass({MongoClient.class, MongoContentStoresRegistrar.class})
 @ConditionalOnProperty(prefix = "spring.content.storage.type", name = "default",
-        havingValue = "gridfs", matchIfMissing = true)
+    havingValue = "gridfs", matchIfMissing = true)
 @ConditionalOnMissingBean(MongoStoreFactoryBean.class)
 @Import({MongoContentAutoConfigureRegistrar.class, MongoStoreConfiguration.class})
 public class MongoContentAutoConfiguration {

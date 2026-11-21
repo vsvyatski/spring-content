@@ -1,6 +1,5 @@
 package internal.org.springframework.content.rest.links;
 
-import org.springframework.content.test.support.TestSupportData;
 import internal.org.springframework.content.rest.support.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -8,12 +7,11 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.content.commons.property.PropertyPath;
+import org.springframework.content.test.support.TestSupportData;
 import org.springframework.test.context.NestedTestConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-
-import java.io.ByteArrayInputStream;
 
 import static java.lang.String.format;
 
@@ -44,11 +42,11 @@ public class ContentLinksIT {
                 this.setExpectedLinkRegex("http://localhost/api/testEntity3s/" + testEntity3.getId());
             }
 
-                @Test
-                void shouldProvideAResponseWithAContentLink() throws Exception {
-                    assertContentLinkInHalResponse();
-                }
+            @Test
+            void shouldProvideAResponseWithAContentLink() throws Exception {
+                assertContentLinkInHalResponse();
             }
+        }
 
         @Nested
         @NestedTestConfiguration(NestedTestConfiguration.EnclosingConfiguration.INHERIT)
@@ -71,11 +69,11 @@ public class ContentLinksIT {
                 this.setExpectedLinkRegex(format("http://localhost/contentApi/testEntity5s/%s/content", testEntity5.getId()));
             }
 
-                @Test
-                void shouldProvideAResponseWithAContentLink() throws Exception {
-                    assertContentLinkInHalResponse();
-                }
+            @Test
+            void shouldProvideAResponseWithAContentLink() throws Exception {
+                assertContentLinkInHalResponse();
             }
+        }
 
         @Nested
         @NestedTestConfiguration(NestedTestConfiguration.EnclosingConfiguration.INHERIT)
@@ -99,11 +97,11 @@ public class ContentLinksIT {
                 this.setExpectedLinkRegex(format("http://localhost/contentApi/files/%s/child", testEntity2.getId()));
             }
 
-                @Test
-                void shouldProvideAResponseWithAContentLink() throws Exception {
-                    assertContentLinkInHalResponse();
-                }
+            @Test
+            void shouldProvideAResponseWithAContentLink() throws Exception {
+                assertContentLinkInHalResponse();
             }
+        }
 
         @Nested
         @NestedTestConfiguration(NestedTestConfiguration.EnclosingConfiguration.INHERIT)

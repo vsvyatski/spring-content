@@ -13,11 +13,12 @@ import java.util.Collection;
 public class ContentPropertyDataEncryptionKeyAccessor<S, T extends StoredDataEncryptionKey> implements DataEncryptionKeyAccessor<S, T> {
 
     private static final TypeDescriptor ENCRYPTED_DEK = new TypeDescriptor(
-            ResolvableType.forClass(StoredDataEncryptionKey.class), null, null);
+        ResolvableType.forClass(StoredDataEncryptionKey.class), null, null);
     private static final TypeDescriptor ENCRYPTED_DEK_COLLECTION = TypeDescriptor.collection(Collection.class,
-            ENCRYPTED_DEK);
+        ENCRYPTED_DEK);
     private final String customPropertyName;
     private final ConversionService conversionService;
+
     public ContentPropertyDataEncryptionKeyAccessor(String customPropertyName, ConversionService conversionService) {
         this.customPropertyName = customPropertyName;
         this.conversionService = conversionService;
@@ -43,10 +44,10 @@ public class ContentPropertyDataEncryptionKeyAccessor<S, T extends StoredDataEnc
         var typeDescriptor = new TypeDescriptor(ResolvableType.forMethodParameter(descriptor.getWriteMethod(), 0), null, descriptor.getWriteMethod().getAnnotations());
 
         var keyType = newKeys.stream().findFirst().map(TypeDescriptor::forObject)
-                .orElse(ENCRYPTED_DEK);
+            .orElse(ENCRYPTED_DEK);
 
         var newValue = conversionService.convert(newKeys, TypeDescriptor.collection(newKeys.getClass(), keyType),
-                typeDescriptor);
+            typeDescriptor);
         contentProperty.setCustomProperty(entity, customPropertyName, newValue);
         return entity;
     }

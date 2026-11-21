@@ -48,7 +48,7 @@ public class POIServiceTest {
                 @Test
                 void shouldThrowAnException() {
                     assertThatThrownBy(() -> poi.xwpfDocument(stream))
-                            .isInstanceOf(IllegalArgumentException.class);
+                        .isInstanceOf(IllegalArgumentException.class);
                 }
             }
 
@@ -64,7 +64,7 @@ public class POIServiceTest {
                 @Test
                 void shouldThrowAnException() {
                     assertThatThrownBy(() -> poi.xwpfDocument(stream))
-                            .isInstanceOf(NotOfficeXmlFileException.class);
+                        .isInstanceOf(NotOfficeXmlFileException.class);
                 }
             }
         }

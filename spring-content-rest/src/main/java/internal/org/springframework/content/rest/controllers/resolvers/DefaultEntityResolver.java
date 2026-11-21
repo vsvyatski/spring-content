@@ -140,7 +140,7 @@ public class DefaultEntityResolver implements EntityResolver {
     }
 
     public Object findOne(Repositories repositories, StoreInfo info, String repository, String id)
-            throws HttpRequestMethodNotSupportedException {
+        throws HttpRequestMethodNotSupportedException {
 
         RepositoryInformation ri = RepositoryUtils.findRepositoryInformation(repositories, repository);
 
@@ -154,7 +154,7 @@ public class DefaultEntityResolver implements EntityResolver {
     }
 
     public Object findOne(Repositories repositories, StoreInfo info, Class<?> domainObjClass, String repository, Serializable id)
-            throws HttpRequestMethodNotSupportedException {
+        throws HttpRequestMethodNotSupportedException {
 
         Optional<Object> domainObj = Optional.empty();
 
@@ -186,7 +186,7 @@ public class DefaultEntityResolver implements EntityResolver {
 
     @SuppressWarnings("unchecked")
     public Optional<Object> findOneByReflection(Repositories repositories, Class<?> domainObjClass, Serializable id)
-            throws HttpRequestMethodNotSupportedException {
+        throws HttpRequestMethodNotSupportedException {
 
         RepositoryInformation ri = RepositoryUtils.findRepositoryInformation(repositories, domainObjClass);
 
@@ -208,12 +208,12 @@ public class DefaultEntityResolver implements EntityResolver {
         }
 
         return (Optional<Object>) ReflectionUtils.invokeMethod(findOneMethod.get(),
-                repositories.getRepositoryFor(domainObjClazz).get(),
-                oid);
+            repositories.getRepositoryFor(domainObjClazz).get(),
+            oid);
     }
 
     private RepositoryInvoker resolveRootResourceInformation(StoreInfo info, String repository, Serializable id, ModelAndViewContainer mavContainer, WebDataBinderFactory binderFactory)
-            throws Exception {
+        throws Exception {
 
         Method m = ReflectionUtils.findMethod(RepositoryEntityControllerFacade.class, "getItemResource", org.springframework.data.rest.webmvc.RootResourceInformation.class);
         MethodParameter repoRequestMethodParameter = new MethodParameter(m, 0);
@@ -259,7 +259,7 @@ public class DefaultEntityResolver implements EntityResolver {
 
         @Override
         public WebDataBinder createBinder(NativeWebRequest webRequest, Object target, String objectName)
-                throws Exception {
+            throws Exception {
             return null;
         }
     }
@@ -443,7 +443,7 @@ public class DefaultEntityResolver implements EntityResolver {
 
         @Override
         public void setCharacterEncoding(String env)
-                throws UnsupportedEncodingException {
+            throws UnsupportedEncodingException {
         }
 
         @Override
@@ -466,7 +466,7 @@ public class DefaultEntityResolver implements EntityResolver {
 
         @Override
         public ServletInputStream getInputStream()
-                throws IOException {
+            throws IOException {
 
             return null;
         }
@@ -521,7 +521,7 @@ public class DefaultEntityResolver implements EntityResolver {
 
         @Override
         public BufferedReader getReader()
-                throws IOException {
+            throws IOException {
 
             return null;
         }
@@ -602,14 +602,14 @@ public class DefaultEntityResolver implements EntityResolver {
 
         @Override
         public AsyncContext startAsync()
-                throws IllegalStateException {
+            throws IllegalStateException {
 
             return null;
         }
 
         @Override
         public AsyncContext startAsync(ServletRequest servletRequest, ServletResponse servletResponse)
-                throws IllegalStateException {
+            throws IllegalStateException {
 
             return null;
         }
@@ -802,42 +802,42 @@ public class DefaultEntityResolver implements EntityResolver {
 
         @Override
         public boolean authenticate(HttpServletResponse response)
-                throws IOException,
-                ServletException {
+            throws IOException,
+            ServletException {
 
             return false;
         }
 
         @Override
         public void login(String username, String password)
-                throws ServletException {
+            throws ServletException {
         }
 
         @Override
         public void logout()
-                throws ServletException {
+            throws ServletException {
         }
 
         @Override
         public Collection<Part> getParts()
-                throws IOException,
-                ServletException {
+            throws IOException,
+            ServletException {
 
             return null;
         }
 
         @Override
         public Part getPart(String name)
-                throws IOException,
-                ServletException {
+            throws IOException,
+            ServletException {
 
             return null;
         }
 
         @Override
         public <T extends HttpUpgradeHandler> T upgrade(Class<T> handlerClass)
-                throws IOException,
-                ServletException {
+            throws IOException,
+            ServletException {
 
             return null;
         }

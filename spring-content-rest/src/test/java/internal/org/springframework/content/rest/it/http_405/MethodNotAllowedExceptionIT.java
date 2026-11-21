@@ -197,9 +197,9 @@ public class MethodNotAllowedExceptionIT {
     }
 
     @SpringBootApplication(exclude = {
-            MongoAutoConfiguration.class,
-            DataMongoAutoConfiguration.class,
-            DataMongoRepositoriesAutoConfiguration.class
+        MongoAutoConfiguration.class,
+        DataMongoAutoConfiguration.class,
+        DataMongoRepositoriesAutoConfiguration.class
     })
     public static class Application {
 
@@ -281,11 +281,11 @@ public class MethodNotAllowedExceptionIT {
             tentity = repo.save(tentity);
 
             given()
-                    .accept("text/plain")
-                    .when()
-                    .get("/tEntities/" + tentity.getId())
-                    .then()
-                    .statusCode(405);
+                .accept("text/plain")
+                .when()
+                .get("/tEntities/" + tentity.getId())
+                .then()
+                .statusCode(405);
         }
     }
 
@@ -302,12 +302,12 @@ public class MethodNotAllowedExceptionIT {
             tentity = repo.save(tentity);
 
             given()
-                    .contentType("text/plain")
-                    .body("some content".getBytes())
-                    .when()
-                    .post("/tEntities/" + tentity.getId())
-                    .then()
-                    .statusCode(405);
+                .contentType("text/plain")
+                .body("some content".getBytes())
+                .when()
+                .post("/tEntities/" + tentity.getId())
+                .then()
+                .statusCode(405);
         }
     }
 
@@ -325,11 +325,11 @@ public class MethodNotAllowedExceptionIT {
             tentity = repo.save(tentity);
 
             given()
-                    .accept("text/plain")
-                    .when()
-                    .delete("/tEntities/" + tentity.getId())
-                    .then()
-                    .statusCode(405);
+                .accept("text/plain")
+                .when()
+                .delete("/tEntities/" + tentity.getId())
+                .then()
+                .statusCode(405);
         }
     }
 
@@ -347,26 +347,26 @@ public class MethodNotAllowedExceptionIT {
             entity = repo2.save(entity);
 
             given()
-                    .accept("text/plain")
-                    .when()
-                    .get("/tEntity2s/" + entity.getId() + "/content")
-                    .then()
-                    .statusCode(405);
+                .accept("text/plain")
+                .when()
+                .get("/tEntity2s/" + entity.getId() + "/content")
+                .then()
+                .statusCode(405);
 
             given()
-                    .contentType("text/plain")
-                    .body("some content".getBytes())
-                    .when()
-                    .post("/tEntity2s/" + entity.getId() + "/content")
-                    .then()
-                    .statusCode(405);
+                .contentType("text/plain")
+                .body("some content".getBytes())
+                .when()
+                .post("/tEntity2s/" + entity.getId() + "/content")
+                .then()
+                .statusCode(405);
 
             given()
-                    .accept("text/plain")
-                    .when()
-                    .delete("/tEntity2s/" + entity.getId() + "/content")
-                    .then()
-                    .statusCode(405);
+                .accept("text/plain")
+                .when()
+                .delete("/tEntity2s/" + entity.getId() + "/content")
+                .then()
+                .statusCode(405);
         }
     }
 }

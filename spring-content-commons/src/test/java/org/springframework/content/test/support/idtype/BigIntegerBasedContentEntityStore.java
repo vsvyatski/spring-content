@@ -6,5 +6,5 @@ import java.math.BigInteger;
  * @author Vladimir Svyatski
  */
 public class BigIntegerBasedContentEntityStore
-        extends InMemoryTypeSupportContentStore<BigIntegerBasedContentEntity, BigInteger> {
+    extends InMemoryTypeSupportContentStore<BigIntegerBasedContentEntity, BigInteger> {
 }

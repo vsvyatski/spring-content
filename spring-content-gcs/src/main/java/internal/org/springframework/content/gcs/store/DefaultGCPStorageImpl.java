@@ -40,7 +40,7 @@ import static java.lang.String.format;
 
 @Transactional
 public class DefaultGCPStorageImpl<S, SID extends Serializable>
-        implements ContentStore<S, SID> {
+    implements ContentStore<S, SID> {
 
     private static final Log logger = LogFactory.getLog(DefaultGCPStorageImpl.class);
 
@@ -117,7 +117,7 @@ public class DefaultGCPStorageImpl<S, SID extends Serializable>
         TypeDescriptor contentPropertyInfoType = ContentPropertyInfoTypeDescriptor.withGenerics(entity, property);
         if (placementService.canConvert(contentPropertyInfoType, TypeDescriptor.valueOf(BlobId.class))) {
             ContentPropertyInfo<S, SID> contentPropertyInfo = new ContentPropertyInfo<>(entity,
-                    (SID) property.getContentId(entity), propertyPath, property);
+                (SID) property.getContentId(entity), propertyPath, property);
             BlobId blobId = (BlobId) placementService.convert(contentPropertyInfo, contentPropertyInfoType, TypeDescriptor.valueOf(BlobId.class));
 
             if (blobId != null) {
@@ -175,7 +175,7 @@ public class DefaultGCPStorageImpl<S, SID extends Serializable>
             public boolean matches(TypeDescriptor descriptor) {
                 for (Annotation annotation : descriptor.getAnnotations()) {
                     if ("jakarta.persistence.Id".equals(annotation.annotationType().getCanonicalName())
-                            || "org.springframework.data.annotation.Id".equals(annotation.annotationType().getCanonicalName())) {
+                        || "org.springframework.data.annotation.Id".equals(annotation.annotationType().getCanonicalName())) {
                         return false;
                     }
                 }
@@ -187,15 +187,15 @@ public class DefaultGCPStorageImpl<S, SID extends Serializable>
     @Override
     public void unassociate(Object entity) {
         BeanUtils.setFieldWithAnnotationConditionally(entity, ContentId.class, null,
-                field -> {
-                    for (Annotation annotation : field.getAnnotations()) {
-                        if ("jakarta.persistence.Id".equals(annotation.annotationType().getCanonicalName())
-                                || "org.springframework.data.annotation.Id".equals(annotation.annotationType().getCanonicalName())) {
-                            return false;
-                        }
+            field -> {
+                for (Annotation annotation : field.getAnnotations()) {
+                    if ("jakarta.persistence.Id".equals(annotation.annotationType().getCanonicalName())
+                        || "org.springframework.data.annotation.Id".equals(annotation.annotationType().getCanonicalName())) {
+                        return false;
                     }
-                    return true;
-                });
+                }
+                return true;
+            });
     }
 
     @Transactional
@@ -208,9 +208,9 @@ public class DefaultGCPStorageImpl<S, SID extends Serializable>
             Serializable newId = UuidCreator.getTimeOrdered().toString();
 
             Object convertedId = placementService.convert(
-                    newId,
-                    TypeDescriptor.forObject(newId),
-                    TypeDescriptor.valueOf(BeanUtils.getFieldWithAnnotationType(entity, ContentId.class)));
+                newId,
+                TypeDescriptor.forObject(newId),
+                TypeDescriptor.valueOf(BeanUtils.getFieldWithAnnotationType(entity, ContentId.class)));
 
             BeanUtils.setFieldWithAnnotation(entity, ContentId.class, convertedId);
         }
@@ -247,7 +247,7 @@ public class DefaultGCPStorageImpl<S, SID extends Serializable>
     @Override
     public S setContent(S entity, PropertyPath propertyPath, InputStream content, long contentLen) {
         return this.setContent(entity, propertyPath, content,
-                new org.springframework.content.commons.store.SetContentParams(contentLen, true, org.springframework.content.commons.store.SetContentParams.ContentDisposition.Overwrite));
+            new org.springframework.content.commons.store.SetContentParams(contentLen, true, org.springframework.content.commons.store.SetContentParams.ContentDisposition.Overwrite));
     }
 
     @Override
@@ -263,9 +263,9 @@ public class DefaultGCPStorageImpl<S, SID extends Serializable>
             Serializable newId = UuidCreator.getTimeOrdered().toString();
 
             Object convertedId = placementService.convert(
-                    newId,
-                    TypeDescriptor.forObject(newId),
-                    property.getContentIdType(entity));
+                newId,
+                TypeDescriptor.forObject(newId),
+                property.getContentIdType(entity));
 
             property.setContentId(entity, convertedId, null);
         }
@@ -372,21 +372,21 @@ public class DefaultGCPStorageImpl<S, SID extends Serializable>
 
         // reset content fields
         BeanUtils.setFieldWithAnnotationConditionally(entity, ContentId.class, null,
-                new Condition() {
-                    @Override
-                    public boolean matches(Field field) {
-                        for (Annotation annotation : field.getAnnotations()) {
-                            if ("jakarta.persistence.Id".equals(
-                                    annotation.annotationType().getCanonicalName())
-                                    || "org.springframework.data.annotation.Id"
-                                    .equals(annotation.annotationType()
-                                            .getCanonicalName())) {
-                                return false;
-                            }
+            new Condition() {
+                @Override
+                public boolean matches(Field field) {
+                    for (Annotation annotation : field.getAnnotations()) {
+                        if ("jakarta.persistence.Id".equals(
+                            annotation.annotationType().getCanonicalName())
+                            || "org.springframework.data.annotation.Id"
+                            .equals(annotation.annotationType()
+                                .getCanonicalName())) {
+                            return false;
                         }
-                        return true;
                     }
-                });
+                    return true;
+                }
+            });
 
         Class<?> contentLenType = BeanUtils.getFieldWithAnnotationType(entity, ContentLength.class);
         if (contentLenType != null) {
@@ -430,10 +430,10 @@ public class DefaultGCPStorageImpl<S, SID extends Serializable>
                 public boolean matches(TypeDescriptor descriptor) {
                     for (Annotation annotation : descriptor.getAnnotations()) {
                         if ("jakarta.persistence.Id".equals(
-                                annotation.annotationType().getCanonicalName())
-                                || "org.springframework.data.annotation.Id"
-                                .equals(annotation.annotationType()
-                                        .getCanonicalName())) {
+                            annotation.annotationType().getCanonicalName())
+                            || "org.springframework.data.annotation.Id"
+                            .equals(annotation.annotationType()
+                                .getCanonicalName())) {
                             return false;
                         }
                     }

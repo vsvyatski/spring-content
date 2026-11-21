@@ -61,9 +61,9 @@ public class HypermediaConfigurationTest {
                 context = new AnnotationConfigWebApplicationContext();
                 context.setServletContext(new MockServletContext());
                 context.register(TestConfig.class,
-                        DelegatingWebMvcConfiguration.class,
-                        RepositoryRestMvcConfiguration.class,
-                        HypermediaConfiguration.class);
+                    DelegatingWebMvcConfiguration.class,
+                    RepositoryRestMvcConfiguration.class,
+                    HypermediaConfiguration.class);
                 context.refresh();
             }
 

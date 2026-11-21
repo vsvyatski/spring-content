@@ -17,7 +17,7 @@ public class FileSystemContentAutoConfigureRegistrar extends FileSystemStoreRegi
 
     @Override
     protected void registerContentStoreBeanDefinitions(
-            AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
+        AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
 
         AnnotationMetadata metadata = AnnotationMetadata.introspect(EnableFileSystemContentAutoConfiguration.class);
         AnnotationAttributes attributes = new AnnotationAttributes(Objects.requireNonNull(metadata.getAnnotationAttributes(this.getAnnotation().getName())));
@@ -28,13 +28,13 @@ public class FileSystemContentAutoConfigureRegistrar extends FileSystemStoreRegi
         scanner.setResourceLoader(this.getResourceLoader());
 
         Set<GenericBeanDefinition> definitions = StoreUtils.getStoreCandidates(
-                scanner,
-                this.getEnvironment(),
-                this.getResourceLoader(),
-                basePackages,
-                multipleStoreImplementationsDetected(),
-                this.getSignatureTypes(),
-                this.getOverridePropertyValue()
+            scanner,
+            this.getEnvironment(),
+            this.getResourceLoader(),
+            basePackages,
+            multipleStoreImplementationsDetected(),
+            this.getSignatureTypes(),
+            this.getOverridePropertyValue()
         );
 
         this.buildAndRegisterDefinitions(importingClassMetadata, registry, attributes, basePackages, definitions);

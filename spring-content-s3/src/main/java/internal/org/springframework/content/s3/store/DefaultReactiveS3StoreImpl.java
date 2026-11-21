@@ -35,7 +35,7 @@ import java.util.concurrent.CompletableFuture;
 
 @Transactional
 public class DefaultReactiveS3StoreImpl<S, SID extends Serializable>
-        implements ReactiveContentStore<S> {
+    implements ReactiveContentStore<S> {
 
     private static Log logger = LogFactory.getLog(DefaultReactiveS3StoreImpl.class);
 
@@ -88,9 +88,9 @@ public class DefaultReactiveS3StoreImpl<S, SID extends Serializable>
             Serializable newId = UUID.randomUUID().toString();
 
             Object convertedId = placementService.convert(
-                    newId,
-                    TypeDescriptor.forObject(newId),
-                    property.getContentIdType(entity));
+                newId,
+                TypeDescriptor.forObject(newId),
+                property.getContentIdType(entity));
 
             property.setContentId(entity, convertedId, null);
             contentId = convertedId;
@@ -99,9 +99,9 @@ public class DefaultReactiveS3StoreImpl<S, SID extends Serializable>
         final S3ObjectId s3ObjectId = getS3ObjectId(entity, path, property);
 
         PutObjectRequest.Builder requestBuilder = PutObjectRequest.builder()
-                .bucket(s3ObjectId.getBucket())
-                .contentLength(contentLen)
-                .key(s3ObjectId.getKey());
+            .bucket(s3ObjectId.getBucket())
+            .contentLength(contentLen)
+            .key(s3ObjectId.getKey());
 
         Object mimeType = property.getMimeType(entity);
         if (mimeType != null) {
@@ -110,27 +110,27 @@ public class DefaultReactiveS3StoreImpl<S, SID extends Serializable>
         }
 
         CompletableFuture<PutObjectResponse> future = asyncClient.putObject(
-                requestBuilder.build(),
-                AsyncRequestBody.fromPublisher(buffer)
+            requestBuilder.build(),
+            AsyncRequestBody.fromPublisher(buffer)
         );
 
         return Mono.fromFuture(future)
-                .map((response) -> {
-                            try {
-                                property.setContentId(entity, s3ObjectId.getKey(), null);
-                            } catch (Exception e) {
-                                logger.error("Error setting content id " + s3ObjectId.getKey(), e);
-                                throw e;
-                            }
-                            try {
-                                property.setContentLength(entity, contentLen);
-                            } catch (Exception e) {
-                                logger.error("Error setting content length " + contentLen, e);
-                                throw e;
-                            }
-                            return entity;
-                        }
-                );
+            .map((response) -> {
+                    try {
+                        property.setContentId(entity, s3ObjectId.getKey(), null);
+                    } catch (Exception e) {
+                        logger.error("Error setting content id " + s3ObjectId.getKey(), e);
+                        throw e;
+                    }
+                    try {
+                        property.setContentLength(entity, contentLen);
+                    } catch (Exception e) {
+                        logger.error("Error setting content length " + contentLen, e);
+                        throw e;
+                    }
+                    return entity;
+                }
+            );
     }
 
     @Override
@@ -152,13 +152,13 @@ public class DefaultReactiveS3StoreImpl<S, SID extends Serializable>
         final S3ObjectId s3ObjectId = getS3ObjectId(entity, path, property);
 
         GetObjectRequest request = GetObjectRequest.builder()
-                .bucket(s3ObjectId.getBucket())
-                .key(s3ObjectId.getKey())
-                .build();
+            .bucket(s3ObjectId.getBucket())
+            .key(s3ObjectId.getKey())
+            .build();
 
         AsyncResponseTransformer.toFile(new File("/tmp/foo"));
         CompletableFuture<ResponsePublisher<GetObjectResponse>> responseFuture =
-                asyncClient.getObject(request, AsyncResponseTransformer.toPublisher());
+            asyncClient.getObject(request, AsyncResponseTransformer.toPublisher());
 
         ResponsePublisher<GetObjectResponse> responsePublisher = responseFuture.join();
         return Flux.from(responsePublisher);
@@ -184,32 +184,32 @@ public class DefaultReactiveS3StoreImpl<S, SID extends Serializable>
         final S3ObjectId s3ObjectId = getS3ObjectId(entity, propertyPath, property);
 
         DeleteObjectRequest deleteRequest = DeleteObjectRequest.builder()
-                .bucket(s3ObjectId.getBucket())
-                .key(s3ObjectId.getKey())
-                .build();
+            .bucket(s3ObjectId.getBucket())
+            .key(s3ObjectId.getKey())
+            .build();
 
         CompletableFuture<DeleteObjectResponse> future = asyncClient.deleteObject(deleteRequest);
 
         return Mono.fromFuture(future)
-                .map((response) -> {
-                            property.setContentId(entity, null, new org.springframework.content.commons.mappingcontext.Condition() {
-                                @Override
-                                public boolean matches(TypeDescriptor descriptor) {
-                                    for (Annotation annotation : descriptor.getAnnotations()) {
-                                        if ("jakarta.persistence.Id".equals(
-                                                annotation.annotationType().getCanonicalName())
-                                                || "org.springframework.data.annotation.Id"
-                                                .equals(annotation.annotationType()
-                                                        .getCanonicalName())) {
-                                            return false;
-                                        }
-                                    }
-                                    return true;
+            .map((response) -> {
+                    property.setContentId(entity, null, new org.springframework.content.commons.mappingcontext.Condition() {
+                        @Override
+                        public boolean matches(TypeDescriptor descriptor) {
+                            for (Annotation annotation : descriptor.getAnnotations()) {
+                                if ("jakarta.persistence.Id".equals(
+                                    annotation.annotationType().getCanonicalName())
+                                    || "org.springframework.data.annotation.Id"
+                                    .equals(annotation.annotationType()
+                                        .getCanonicalName())) {
+                                    return false;
                                 }
-                            });
-                            property.setContentLength(entity, BeanUtils.getDefaultValueForType(property.getContentLengthType().getType()));
-                            return entity;
+                            }
+                            return true;
                         }
-                );
+                    });
+                    property.setContentLength(entity, BeanUtils.getDefaultValueForType(property.getContentLengthType().getType()));
+                    return entity;
+                }
+            );
     }
 }

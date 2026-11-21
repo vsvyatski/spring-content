@@ -90,7 +90,7 @@ public class AssociativeStoreContentService implements ContentService {
 
     @Override
     public void getContent(HttpServletRequest request, HttpServletResponse response, HttpHeaders headers, Resource resource, MediaType resourceType)
-            throws ResponseStatusException, MethodNotAllowedException {
+        throws ResponseStatusException, MethodNotAllowedException {
 
         Method[] methodsToUse = getExportedMethodsFor(((StoreResource) resource).getStoreInfo().getInterface()).getResourceMethods();
 
@@ -250,20 +250,20 @@ public class AssociativeStoreContentService implements ContentService {
 
         static {
             GETRESOURCE_METHODS = new Method[]{
-                    ReflectionUtils.findMethod(AssociativeStore.class, "getResource", Object.class, PropertyPath.class),
+                ReflectionUtils.findMethod(AssociativeStore.class, "getResource", Object.class, PropertyPath.class),
             };
 
             SETCONTENT_METHODS = new Method[]{
-                    ReflectionUtils.findMethod(ContentStore.class, "setContent", Object.class, InputStream.class),
-                    ReflectionUtils.findMethod(ContentStore.class, "setContent", Object.class, Resource.class),
+                ReflectionUtils.findMethod(ContentStore.class, "setContent", Object.class, InputStream.class),
+                ReflectionUtils.findMethod(ContentStore.class, "setContent", Object.class, Resource.class),
             };
 
             UNSETCONTENT_METHODS = new Method[]{
-                    ReflectionUtils.findMethod(ContentStore.class, "unsetContent", Object.class),
+                ReflectionUtils.findMethod(ContentStore.class, "unsetContent", Object.class),
             };
 
             GETCONTENT_METHODS = new Method[]{
-                    ReflectionUtils.findMethod(ContentStore.class, "getContent", Object.class),
+                ReflectionUtils.findMethod(ContentStore.class, "getContent", Object.class),
             };
         }
 

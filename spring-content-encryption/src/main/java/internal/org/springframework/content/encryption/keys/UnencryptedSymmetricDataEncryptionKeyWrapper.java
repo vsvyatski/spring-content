@@ -8,7 +8,7 @@ import org.springframework.content.encryption.keys.StoredDataEncryptionKey.Unenc
 import javax.crypto.spec.SecretKeySpec;
 
 public class UnencryptedSymmetricDataEncryptionKeyWrapper implements
-        DataEncryptionKeyWrapper<UnencryptedSymmetricDataEncryptionKey> {
+    DataEncryptionKeyWrapper<UnencryptedSymmetricDataEncryptionKey> {
     @Override
     public boolean supports(StoredDataEncryptionKey storedDataEncryptionKey) {
         return storedDataEncryptionKey instanceof UnencryptedSymmetricDataEncryptionKey;
@@ -17,15 +17,15 @@ public class UnencryptedSymmetricDataEncryptionKeyWrapper implements
     @Override
     public EncryptionParameters unwrapEncryptionKey(UnencryptedSymmetricDataEncryptionKey encryptedDataEncryptionKey) {
         return new EncryptionParameters(
-                new SecretKeySpec(encryptedDataEncryptionKey.keyData(), encryptedDataEncryptionKey.algorithm()),
-                encryptedDataEncryptionKey.initializationVector()
+            new SecretKeySpec(encryptedDataEncryptionKey.keyData(), encryptedDataEncryptionKey.algorithm()),
+            encryptedDataEncryptionKey.initializationVector()
         );
     }
 
     @Override
     public UnencryptedSymmetricDataEncryptionKey wrapEncryptionKey(EncryptionParameters dataEncryptionParameters) {
         return new UnencryptedSymmetricDataEncryptionKey(dataEncryptionParameters.secretKey().getAlgorithm(),
-                dataEncryptionParameters.secretKey().getEncoded(),
-                dataEncryptionParameters.initializationVector());
+            dataEncryptionParameters.secretKey().getEncoded(),
+            dataEncryptionParameters.initializationVector());
     }
 }

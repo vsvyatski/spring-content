@@ -27,6 +27,6 @@ public class AssociativeStoreResourceResolver implements ResourceResolver {
         GetResourceParams params = new GetResourceParams(nativeWebRequest.getHeader("Range"));
         Resource r = info.getImplementation(AssociativeStore.class).getResource(domainObj, propertyPath, params);
         return new AssociatedStoreResourceImpl<>(info, domainObj, propertyPath,
-                mappingContext.getContentProperty(domainObj.getClass(), propertyPath.name()), r);
+            mappingContext.getContentProperty(domainObj.getClass(), propertyPath.name()), r);
     }
 }

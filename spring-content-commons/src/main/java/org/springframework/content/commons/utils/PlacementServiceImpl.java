@@ -16,8 +16,8 @@ import java.util.Set;
 public class PlacementServiceImpl extends DefaultConversionService implements PlacementService {
 
     public static final String CONTENT_PROPERTY_INFO_GENERIC_PARAMETERS_MISSING_MESSAGE =
-            "Unable to determine entity type <S> and content id type <SID> for " +
-                    ContentPropertyInfo.class.getName() + "; does the class parameterize those types?";
+        "Unable to determine entity type <S> and content id type <SID> for " +
+            ContentPropertyInfo.class.getName() + "; does the class parameterize those types?";
 
     public PlacementServiceImpl() {
         // Issue #57
@@ -50,7 +50,7 @@ public class PlacementServiceImpl extends DefaultConversionService implements Pl
         ResolvableType[] generics = getRequiredGenericParameters(converter.getClass());
         if (generics == null) {
             throw new IllegalArgumentException("Unable to determine source type <S> and target type <T> for your " +
-                    "Converter [" + converter.getClass().getName() + "]; does the class parameterize those types?");
+                "Converter [" + converter.getClass().getName() + "]; does the class parameterize those types?");
         }
         ResolvableType sourceType = generics[0];
         if (sourceType.resolve() == ContentPropertyInfo.class) {
@@ -78,7 +78,7 @@ public class PlacementServiceImpl extends DefaultConversionService implements Pl
                                     @NonNull Converter<? super S, ? extends T> converter) {
         if (sourceType == ContentPropertyInfo.class) {
             throw new IllegalArgumentException("Adding of" + ContentPropertyInfo.class.getName() +
-                    " converter is not supported by this method; use addConverter(Converter<?, ?> converter) instead");
+                " converter is not supported by this method; use addConverter(Converter<?, ?> converter) instead");
 
             // add similar checks as for addConverter(Converter<?, ?> converter) if we decide to add support
 //            ResolvableType sourceResolvableType = ResolvableType.forClass(sourceType).as(ContentPropertyInfo.class);
@@ -134,7 +134,7 @@ public class PlacementServiceImpl extends DefaultConversionService implements Pl
             // Full check for complex generic type match required?
             ResolvableType rt = targetType.getResolvableType();
             if (!(rt.getType() instanceof Class) && !rt.isAssignableFrom(this.targetType) &&
-                    !this.targetType.hasUnresolvableGenerics()) {
+                !this.targetType.hasUnresolvableGenerics()) {
                 return false;
             }
 
@@ -151,7 +151,7 @@ public class PlacementServiceImpl extends DefaultConversionService implements Pl
             // return true;
 
             return !(this.converter instanceof ConditionalConverter) ||
-                    ((ConditionalConverter) this.converter).matches(sourceType, targetType);
+                ((ConditionalConverter) this.converter).matches(sourceType, targetType);
         }
 
         @Override

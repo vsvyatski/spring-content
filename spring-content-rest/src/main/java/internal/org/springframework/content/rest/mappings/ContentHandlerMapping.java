@@ -50,16 +50,16 @@ public class ContentHandlerMapping extends StoreAwareHandlerMapping {
         this.exclusions = config.shortcutExclusions();
         if (this.exclusions.size() == 0) {
             this.exclusions
-                    .exclude("GET", MediaType.parseMediaType("application/json"))
-                    .exclude("GET", MediaType.parseMediaType("application/hal+json"))
-                    .exclude("DELETE", MediaType.parseMediaType("application/json"))
-                    .exclude("DELETE", MediaType.parseMediaType("application/hal+json"))
-                    .exclude("PUT", MediaType.parseMediaType("application/json"))
-                    .exclude("PUT", MediaType.parseMediaType("application/hal+json"))
-                    .exclude("POST", MediaType.parseMediaType("application/json"))
-                    .exclude("POST", MediaType.parseMediaType("application/hal+json"))
-                    .exclude("PATCH", MediaType.parseMediaType("*/*"))
-                    .exclude("HEAD", MediaType.parseMediaType("*/*"));
+                .exclude("GET", MediaType.parseMediaType("application/json"))
+                .exclude("GET", MediaType.parseMediaType("application/hal+json"))
+                .exclude("DELETE", MediaType.parseMediaType("application/json"))
+                .exclude("DELETE", MediaType.parseMediaType("application/hal+json"))
+                .exclude("PUT", MediaType.parseMediaType("application/json"))
+                .exclude("PUT", MediaType.parseMediaType("application/hal+json"))
+                .exclude("POST", MediaType.parseMediaType("application/json"))
+                .exclude("POST", MediaType.parseMediaType("application/hal+json"))
+                .exclude("PATCH", MediaType.parseMediaType("*/*"))
+                .exclude("HEAD", MediaType.parseMediaType("*/*"));
         }
     }
 
@@ -83,7 +83,7 @@ public class ContentHandlerMapping extends StoreAwareHandlerMapping {
      */
     @Override
     protected HandlerMethod lookupHandlerMethod(String lookupPath, HttpServletRequest request)
-            throws Exception {
+        throws Exception {
 
         String storeLookupPath = StoreUtils.storeLookupPath(lookupPath, this.getConfiguration().getBaseUri());
 
@@ -175,7 +175,7 @@ public class ContentHandlerMapping extends StoreAwareHandlerMapping {
 
     private boolean isFullyQualifiedContentPropertyRequest(String[] path, StoreInfo info2) {
         return (AssociativeStore.class.isAssignableFrom(info2.getInterface()) ||
-                org.springframework.content.commons.store.AssociativeStore.class.isAssignableFrom(info2.getInterface())) && path.length >= 4;
+            org.springframework.content.commons.store.AssociativeStore.class.isAssignableFrom(info2.getInterface())) && path.length >= 4;
     }
 
     @Override
@@ -190,7 +190,7 @@ public class ContentHandlerMapping extends StoreAwareHandlerMapping {
     @Override
     protected RequestCondition<?> getCustomMethodCondition(Method method) {
         StoreType typeAnnotation = AnnotationUtils.findAnnotation(method,
-                StoreType.class);
+            StoreType.class);
         if (typeAnnotation != null) {
             return new StoreCondition(typeAnnotation, this.contentStores, method, this.getConfiguration().getBaseUri());
         }
@@ -235,12 +235,12 @@ public class ContentHandlerMapping extends StoreAwareHandlerMapping {
             }
             StoreInfo info = stores.getStore(Store.class, StoreUtils.withStorePath(segments[1]));
             if (info != null
-                    && ((Store.class.isAssignableFrom(info.getInterface())
-                    || org.springframework.content.commons.store.Store.class.isAssignableFrom(info.getInterface()))
-                    && "store".equals(storeType))
-                    || ((ContentStore.class.isAssignableFrom(info.getInterface())
-                    || org.springframework.content.commons.store.ContentStore.class.isAssignableFrom(info.getInterface()))
-                    && "contentstore".equals(storeType))
+                && ((Store.class.isAssignableFrom(info.getInterface())
+                || org.springframework.content.commons.store.Store.class.isAssignableFrom(info.getInterface()))
+                && "store".equals(storeType))
+                || ((ContentStore.class.isAssignableFrom(info.getInterface())
+                || org.springframework.content.commons.store.ContentStore.class.isAssignableFrom(info.getInterface()))
+                && "contentstore".equals(storeType))
             ) {
                 return this;
             }
@@ -251,10 +251,10 @@ public class ContentHandlerMapping extends StoreAwareHandlerMapping {
         @Override
         public int compareTo(StoreCondition other, HttpServletRequest request) {
             if (this.isMappingForRequest(request)
-                    && other.isMappingForRequest(request) == false)
+                && other.isMappingForRequest(request) == false)
                 return 1;
             else if (this.isMappingForRequest(request) == false
-                    && other.isMappingForRequest(request))
+                && other.isMappingForRequest(request))
                 return -1;
             else {
                 String path = new UrlPathHelper().getPathWithinApplication(request);
@@ -281,12 +281,12 @@ public class ContentHandlerMapping extends StoreAwareHandlerMapping {
             }
             StoreInfo info = stores.getStore(Store.class, StoreUtils.withStorePath(segments[1]));
             if (info != null
-                    && ((Store.class.isAssignableFrom(info.getInterface())
-                    || org.springframework.content.commons.store.Store.class.isAssignableFrom(info.getInterface()))
-                    && "store".equals(storeType))
-                    || ((ContentStore.class.isAssignableFrom(info.getInterface())
-                    || org.springframework.content.commons.store.ContentStore.class.isAssignableFrom(info.getInterface()))
-                    && "contentstore".equals(storeType))) {
+                && ((Store.class.isAssignableFrom(info.getInterface())
+                || org.springframework.content.commons.store.Store.class.isAssignableFrom(info.getInterface()))
+                && "store".equals(storeType))
+                || ((ContentStore.class.isAssignableFrom(info.getInterface())
+                || org.springframework.content.commons.store.ContentStore.class.isAssignableFrom(info.getInterface()))
+                && "contentstore".equals(storeType))) {
                 return true;
             }
             return false;

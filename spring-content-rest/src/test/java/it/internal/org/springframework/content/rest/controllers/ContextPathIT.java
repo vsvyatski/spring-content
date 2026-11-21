@@ -1,8 +1,8 @@
 package it.internal.org.springframework.content.rest.controllers;
 
 import internal.org.springframework.content.rest.support.JsonMappedContentEntity;
-import internal.org.springframework.content.rest.support.JsonMappedContentEntityStore;
 import internal.org.springframework.content.rest.support.JsonMappedContentEntityRepository;
+import internal.org.springframework.content.rest.support.JsonMappedContentEntityStore;
 import internal.org.springframework.content.rest.support.config.JpaInfrastructureConfig;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,10 +38,10 @@ import java.nio.charset.StandardCharsets;
 
 @WebAppConfiguration
 @ContextConfiguration(classes = {
-        ContextPathIT.ContextPathConfig.class,
-        DelegatingWebMvcConfiguration.class,
-        RepositoryRestMvcConfiguration.class,
-        RestConfiguration.class})
+    ContextPathIT.ContextPathConfig.class,
+    DelegatingWebMvcConfiguration.class,
+    RepositoryRestMvcConfiguration.class,
+    RestConfiguration.class})
 @Transactional
 @ActiveProfiles("store")
 @ExtendWith(SpringExtension.class)
@@ -101,7 +101,7 @@ public class ContextPathIT {
                         input = "";
                     }
                     return new ByteArrayInputStream(
-                            String.format("<html><body>%s</body></html>", input).getBytes());
+                        String.format("<html><body>%s</body></html>", input).getBytes());
                 }
             };
         }
@@ -129,7 +129,7 @@ public class ContextPathIT {
                         input = "";
                     }
                     return new ByteArrayInputStream(
-                            String.format("<html><body>%s</body></html>", input).getBytes());
+                        String.format("<html><body>%s</body></html>", input).getBytes());
                 }
             };
         }

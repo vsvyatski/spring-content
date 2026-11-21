@@ -1506,7 +1506,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     @Test
                     void shouldThrowASecurityException() {
                         assertThatThrownBy(() -> repo.deleteAllVersions(e1v11))
-                                .isInstanceOf(SecurityException.class);
+                            .isInstanceOf(SecurityException.class);
                     }
                 }
 
@@ -1535,7 +1535,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     @Test
                     void shouldThrowASecurityException() {
                         assertThatThrownBy(() -> repo.deleteAllVersions(e1v11))
-                                .isInstanceOf(SecurityException.class);
+                            .isInstanceOf(SecurityException.class);
                     }
                 }
 
@@ -1606,8 +1606,8 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                             @Test
                             void shouldFailToDeleteTheEntity() {
                                 assertThatThrownBy(() -> repo.deleteAllVersions(e1v11))
-                                        .isInstanceOf(LockOwnerException.class)
-                                        .hasMessageContaining("not lock owner");
+                                    .isInstanceOf(LockOwnerException.class)
+                                    .hasMessageContaining("not lock owner");
                             }
                         }
 
@@ -1670,8 +1670,8 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         @Test
                         void shouldFail() {
                             assertThatThrownBy(() -> repo.deleteAllVersions(e1))
-                                    .isInstanceOf(LockingAndVersioningException.class)
-                                    .hasMessageContaining("not head");
+                                .isInstanceOf(LockingAndVersioningException.class)
+                                .hasMessageContaining("not head");
                         }
                     }
                 }

@@ -33,7 +33,7 @@ public class StoreFragmentDefinition {
 
     public String getImplementationBeanName() {
         return this.storeInterfaceName + "#" +
-                StringUtils.uncapitalize(ClassUtils.getShortName(implementationClassName));
+            StringUtils.uncapitalize(ClassUtils.getShortName(implementationClassName));
     }
 
     public BeanDefinition getBeanDefinition() {

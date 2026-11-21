@@ -44,14 +44,14 @@ public class JpaInfrastructureConfig {
 
     protected String[] packagesToScan() {
         return new String[]{
-                "internal.org.springframework.content.rest.support"
+            "internal.org.springframework.content.rest.support"
         };
     }
 
     @Bean
     @DependsOn("entityManagerFactory")
     public PlatformTransactionManager transactionManager(
-            @Autowired LocalContainerEntityManagerFactoryBean entityManagerFactory) {
+        @Autowired LocalContainerEntityManagerFactoryBean entityManagerFactory) {
         return new JpaTransactionManager(entityManagerFactory.getObject());
     }
 }

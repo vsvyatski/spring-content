@@ -222,17 +222,17 @@ public class ContentProperty {
         }
         ContentProperty that = (ContentProperty) o;
         return Objects.equals(contentPropertyPath, that.contentPropertyPath)
-                && Objects.equals(contentIdPropertyPath, that.contentIdPropertyPath)
-                && Objects.equals(contentIdType, that.contentIdType)
-                && Objects.equals(contentLengthPropertyPath, that.contentLengthPropertyPath)
-                && Objects.equals(contentLengthType, that.contentLengthType)
-                && Objects.equals(mimeTypePropertyPath, that.mimeTypePropertyPath)
-                && Objects.equals(originalFileNamePropertyPath, that.originalFileNamePropertyPath);
+            && Objects.equals(contentIdPropertyPath, that.contentIdPropertyPath)
+            && Objects.equals(contentIdType, that.contentIdType)
+            && Objects.equals(contentLengthPropertyPath, that.contentLengthPropertyPath)
+            && Objects.equals(contentLengthType, that.contentLengthType)
+            && Objects.equals(mimeTypePropertyPath, that.mimeTypePropertyPath)
+            && Objects.equals(originalFileNamePropertyPath, that.originalFileNamePropertyPath);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(contentPropertyPath, contentIdPropertyPath, contentIdType, contentLengthPropertyPath,
-                contentLengthType, mimeTypePropertyPath, originalFileNamePropertyPath);
+            contentLengthType, mimeTypePropertyPath, originalFileNamePropertyPath);
     }
 }

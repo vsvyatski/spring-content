@@ -10,10 +10,14 @@ import java.nio.charset.StandardCharsets;
  */
 public final class TestSupportData {
 
-    /** Synthetic {@code @ContentId} value for mocked store tests. */
+    /**
+     * Synthetic {@code @ContentId} value for mocked store tests.
+     */
     public static final String SAMPLE_CONTENT_ID = "12345-67890";
 
-    /** Minimal content id when tests only need a short opaque key. */
+    /**
+     * Minimal content id when tests only need a short opaque key.
+     */
     public static final String SAMPLE_SHORT_CONTENT_ID = "12345";
 
     /**
@@ -21,30 +25,40 @@ public final class TestSupportData {
      */
     public static final String SAMPLE_FS_RESOURCE_PATH = "/12345/67890";
 
-    /** Fixed resource key for associate / missing-resource store IT setup. */
+    /**
+     * Fixed resource key for associate / missing-resource store IT setup.
+     */
     public static final String UNASSOCIATED_RESOURCE_LOCATION = "unassociated-resource";
 
-    /** Default UTF-8 payload for round-trip content assertions. */
+    /**
+     * Default UTF-8 payload for round-trip content assertions.
+     */
     public static final String SAMPLE_TEXT_PAYLOAD = "Hello Spring Content World!";
 
     public static final String SAMPLE_UPDATED_TEXT_PAYLOAD = "Hello Updated Spring Content World!";
 
-    /** Shorter payload used when ITs overwrite only part of dual content. */
+    /**
+     * Shorter payload used when ITs overwrite only part of dual content.
+     */
     public static final String SAMPLE_PARTIAL_UPDATE_PAYLOAD = "Hello Spring World!";
 
     public static final String SAMPLE_HTML_RENDITION_PAYLOAD = "<html>" + SAMPLE_TEXT_PAYLOAD + "</html>";
 
     public static final String SAMPLE_UPDATED_HTML_RENDITION_PAYLOAD =
-            "<html>" + SAMPLE_UPDATED_TEXT_PAYLOAD + "</html>";
+        "<html>" + SAMPLE_UPDATED_TEXT_PAYLOAD + "</html>";
 
     public static final String SAMPLE_PARTIAL_UPDATE_HTML_RENDITION =
-            "<html>" + SAMPLE_PARTIAL_UPDATE_PAYLOAD + "</html>";
+        "<html>" + SAMPLE_PARTIAL_UPDATE_PAYLOAD + "</html>";
 
-    /** Rendition body returned by Spring Data REST content endpoints in ITs. */
+    /**
+     * Rendition body returned by Spring Data REST content endpoints in ITs.
+     */
     public static final String SAMPLE_REST_HTML_RENDITION_BODY =
-            "<html><body>" + SAMPLE_TEXT_PAYLOAD + "</body></html>";
+        "<html><body>" + SAMPLE_TEXT_PAYLOAD + "</body></html>";
 
-    /** Payload for {@code @LastModifiedDate} REST controller ITs. */
+    /**
+     * Payload for {@code @LastModifiedDate} REST controller ITs.
+     */
     public static final String SAMPLE_LAST_MODIFIED_DATE_PAYLOAD = "Hello Spring Content LastModifiedDate World!";
 
     private TestSupportData() {

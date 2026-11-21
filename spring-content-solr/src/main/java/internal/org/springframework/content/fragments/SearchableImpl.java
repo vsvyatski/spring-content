@@ -79,7 +79,7 @@ public class SearchableImpl implements Searchable<Object>, ContentStoreAware {
 
     /* package */ QueryRequest solrAuthenticate(QueryRequest request) {
         request.setBasicAuthCredentials(solrProperties.getUser(),
-                solrProperties.getPassword());
+            solrProperties.getPassword());
         return request;
     }
 
@@ -152,7 +152,7 @@ public class SearchableImpl implements Searchable<Object>, ContentStoreAware {
                 try {
                     result = searchType.getDeclaredConstructor().newInstance();
                 } catch (InstantiationException | IllegalAccessException | NoSuchMethodException
-                        | java.lang.reflect.InvocationTargetException e) {
+                         | java.lang.reflect.InvocationTargetException e) {
                     e.printStackTrace(System.err);
                     continue;
                 }

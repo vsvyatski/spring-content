@@ -1,6 +1,5 @@
 package it.internal.org.springframework.content.rest.controllers;
 
-import org.springframework.content.test.support.TestSupportData;
 import internal.org.springframework.content.rest.support.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -9,6 +8,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.content.rest.config.HypermediaConfiguration;
 import org.springframework.content.rest.config.RestConfiguration;
+import org.springframework.content.test.support.TestSupportData;
 import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -26,12 +26,12 @@ import static java.lang.String.format;
 
 @WebAppConfiguration
 @ContextConfiguration(classes = {
-        BaseUriConfig.class,
-        EntityConfig.class,
-        DelegatingWebMvcConfiguration.class,
-        RepositoryRestMvcConfiguration.class,
-        RestConfiguration.class,
-        HypermediaConfiguration.class})
+    BaseUriConfig.class,
+    EntityConfig.class,
+    DelegatingWebMvcConfiguration.class,
+    RepositoryRestMvcConfiguration.class,
+    RestConfiguration.class,
+    HypermediaConfiguration.class})
 @Transactional
 @ActiveProfiles("store")
 @ExtendWith(SpringExtension.class)

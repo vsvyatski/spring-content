@@ -24,7 +24,9 @@ public class DualContentMimeFields extends DualContentFields {
         this.contentMimeType = contentMimeType;
     }
 
-    /** Alias matching legacy JPA embeddable bean names in content store ITs. */
+    /**
+     * Alias matching legacy JPA embeddable bean names in content store ITs.
+     */
     public @Nullable Long getContentLength() {
         return getContentLen();
     }

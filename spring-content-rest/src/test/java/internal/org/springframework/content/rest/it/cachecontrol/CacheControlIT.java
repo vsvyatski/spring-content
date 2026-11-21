@@ -73,9 +73,9 @@ public class CacheControlIT {
     }
 
     @SpringBootApplication(exclude = {
-            MongoAutoConfiguration.class,
-            DataMongoAutoConfiguration.class,
-            DataMongoRepositoriesAutoConfiguration.class
+        MongoAutoConfiguration.class,
+        DataMongoAutoConfiguration.class,
+        DataMongoRepositoriesAutoConfiguration.class
     })
     public static class Application {
 
@@ -146,8 +146,8 @@ public class CacheControlIT {
             public ContentRestConfigurer configurer() {
 
                 return config -> config
-                        .cacheControl()
-                        .antMatcher("/testEntities/*", CacheControl.maxAge(Duration.ofSeconds(60)));
+                    .cacheControl()
+                    .antMatcher("/testEntities/*", CacheControl.maxAge(Duration.ofSeconds(60)));
             }
         }
     }
@@ -168,12 +168,12 @@ public class CacheControlIT {
             entity = repo.save(entity);
 
             given()
-                    .accept("text/plain")
-                    .when()
-                    .get("/testEntities/" + entity.getId())
-                    .then()
-                    .statusCode(200)
-                    .header("Cache-Control", "max-age=60");
+                .accept("text/plain")
+                .when()
+                .get("/testEntities/" + entity.getId())
+                .then()
+                .statusCode(200)
+                .header("Cache-Control", "max-age=60");
         }
 
         @Test
@@ -185,12 +185,12 @@ public class CacheControlIT {
             entity = repo.save(entity);
 
             given()
-                    .accept("text/plain")
-                    .when()
-                    .get("/testEntities/" + entity.getId() + "/content")
-                    .then()
-                    .statusCode(200)
-                    .header("Cache-Control", "no-cache, no-store, max-age=0, must-revalidate");
+                .accept("text/plain")
+                .when()
+                .get("/testEntities/" + entity.getId() + "/content")
+                .then()
+                .statusCode(200)
+                .header("Cache-Control", "no-cache, no-store, max-age=0, must-revalidate");
         }
     }
 }

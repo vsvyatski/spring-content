@@ -32,8 +32,8 @@ public class StoreFragmentsFactoryBean implements FactoryBean<StoreFragments>, B
     public void afterPropertiesSet() {
 
         var fragments = fragmentBeanNames.stream()
-                .map(it -> beanFactory.getBean(it, StoreFragment.class))
-                .collect(Collectors.toList());
+            .map(it -> beanFactory.getBean(it, StoreFragment.class))
+            .collect(Collectors.toList());
 
         storeFragments = new StoreFragments(fragments);
     }

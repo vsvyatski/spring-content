@@ -99,7 +99,7 @@ public class SearchableImpl implements Searchable<Object> {
             }
         }
         boolean highlight = !ContentPropertyUtils.isPrimitiveContentPropertyClass(searchType)
-                && BeanUtils.findFieldWithAnnotation(searchType, Highlight.class) != null;
+            && BeanUtils.findFieldWithAnnotation(searchType, Highlight.class) != null;
 
         try {
             var res = client.search(s -> {
@@ -171,7 +171,7 @@ public class SearchableImpl implements Searchable<Object> {
                     contents.add(row);
                 }
             } catch (InstantiationException | IllegalAccessException | NoSuchMethodException
-                    | java.lang.reflect.InvocationTargetException e) {
+                     | java.lang.reflect.InvocationTargetException e) {
                 e.printStackTrace();
             }
         }

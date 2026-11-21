@@ -1,18 +1,18 @@
 package internal.org.springframework.content.rest.it;
 
+import internal.org.springframework.content.rest.support.AuditedNestedContentChild;
 import internal.org.springframework.content.rest.support.AuditedNestedContentEntity;
 import internal.org.springframework.content.rest.support.AuditedNestedContentEntityJpaStore;
 import internal.org.springframework.content.rest.support.AuditedNestedContentEntityRepository;
-import internal.org.springframework.content.rest.support.AuditedNestedContentChild;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import org.apache.http.HttpStatus;
-import org.springframework.content.test.support.TestSupportData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.content.commons.property.PropertyPath;
+import org.springframework.content.test.support.TestSupportData;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.io.ByteArrayInputStream;
@@ -73,29 +73,29 @@ public abstract class AbstractRestIT {
                 void shouldBePOSTableWithNewContentWith201Created() {
                     // assert content does not exist
                     when()
-                            .get("/files/" + existingClaim.getId() + "/child")
-                            .then()
-                            .assertThat()
-                            .statusCode(HttpStatus.SC_NOT_FOUND);
+                        .get("/files/" + existingClaim.getId() + "/child")
+                        .then()
+                        .assertThat()
+                        .statusCode(HttpStatus.SC_NOT_FOUND);
 
                     String newContent = "This is some new content";
 
                     // POST the new content
                     given()
-                            .contentType("text/plain")
-                            .body(newContent.getBytes())
-                            .when()
-                            .post("/files/" + existingClaim.getId() + "/child")
-                            .then()
-                            .statusCode(HttpStatus.SC_CREATED);
+                        .contentType("text/plain")
+                        .body(newContent.getBytes())
+                        .when()
+                        .post("/files/" + existingClaim.getId() + "/child")
+                        .then()
+                        .statusCode(HttpStatus.SC_CREATED);
 
                     // assert that it now exists
                     var response1 = given()
-                            .header("accept", "text/plain")
-                            .get("/files/" + existingClaim.getId() + "/child")
-                            .then()
-                            .statusCode(HttpStatus.SC_OK)
-                            .extract().response();
+                        .header("accept", "text/plain")
+                        .get("/files/" + existingClaim.getId() + "/child")
+                        .then()
+                        .statusCode(HttpStatus.SC_OK)
+                        .extract().response();
                     assertThat(response1.getContentType()).startsWith("text/plain");
                     assertThat(response1.asString()).isEqualTo(newContent);
                 }
@@ -131,11 +131,11 @@ public abstract class AbstractRestIT {
                     @Test
                     void shouldReturnTheContentWith200OK() {
                         var response2 = given()
-                                .header("accept", "text/plain")
-                                .get("/files/" + existingClaim.getId() + "/child")
-                                .then()
-                                .statusCode(HttpStatus.SC_OK)
-                                .extract().response();
+                            .header("accept", "text/plain")
+                            .get("/files/" + existingClaim.getId() + "/child")
+                            .then()
+                            .statusCode(HttpStatus.SC_OK)
+                            .extract().response();
                         assertThat(response2.getContentType()).startsWith("text/plain");
                         assertThat(response2.asString()).isEqualTo("This is plain text content!");
                     }
@@ -145,19 +145,19 @@ public abstract class AbstractRestIT {
                         String newContent = "This is new content";
 
                         given()
-                                .contentType("text/plain")
-                                .body(newContent.getBytes())
-                                .when()
-                                .post("/files/" + existingClaim.getId() + "/child")
-                                .then()
-                                .statusCode(HttpStatus.SC_OK);
+                            .contentType("text/plain")
+                            .body(newContent.getBytes())
+                            .when()
+                            .post("/files/" + existingClaim.getId() + "/child")
+                            .then()
+                            .statusCode(HttpStatus.SC_OK);
 
                         var response3 = given()
-                                .header("accept", "text/plain")
-                                .get("/files/" + existingClaim.getId() + "/child")
-                                .then()
-                                .statusCode(HttpStatus.SC_OK)
-                                .extract().response();
+                            .header("accept", "text/plain")
+                            .get("/files/" + existingClaim.getId() + "/child")
+                            .then()
+                            .statusCode(HttpStatus.SC_OK)
+                            .extract().response();
                         assertThat(response3.getContentType()).startsWith("text/plain");
                         assertThat(response3.asString()).isEqualTo(newContent);
                     }
@@ -165,17 +165,17 @@ public abstract class AbstractRestIT {
                     @Test
                     void shouldBeDELETEableWith204NoContent() {
                         given()
-                                .delete("/files/" + existingClaim.getId() + "/child")
-                                .then()
-                                .assertThat()
-                                .statusCode(HttpStatus.SC_NO_CONTENT);
+                            .delete("/files/" + existingClaim.getId() + "/child")
+                            .then()
+                            .assertThat()
+                            .statusCode(HttpStatus.SC_NO_CONTENT);
 
                         // and make sure that it is really gone
                         when()
-                                .get("/files/" + existingClaim.getId() + "/child")
-                                .then()
-                                .assertThat()
-                                .statusCode(HttpStatus.SC_NOT_FOUND);
+                            .get("/files/" + existingClaim.getId() + "/child")
+                            .then()
+                            .assertThat()
+                            .statusCode(HttpStatus.SC_NOT_FOUND);
                     }
                 }
             }

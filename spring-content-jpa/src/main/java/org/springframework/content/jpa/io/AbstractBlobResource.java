@@ -232,7 +232,7 @@ public abstract class AbstractBlobResource implements BlobResource {
                                         actual.close();
                                     } catch (IOException e) {
                                         logger.debug(format("closing stream for blob resource %s", id),
-                                                e);
+                                            e);
                                     }
                                 }
                             } finally {
@@ -240,7 +240,7 @@ public abstract class AbstractBlobResource implements BlobResource {
                                     rs.close();
                                 } catch (SQLException e) {
                                     logger.debug(format("closing resultset for blob resource %s", id),
-                                            e);
+                                        e);
                                 }
                             }
                         } finally {

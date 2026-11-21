@@ -81,7 +81,7 @@ public class PostgresBlobResource extends AbstractBlobResource {
 
     @Override
     public void delete()
-            throws IOException {
+        throws IOException {
 
         final Object id = this.getId();
         String sql = getSelectBlobSQL(id);

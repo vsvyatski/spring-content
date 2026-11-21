@@ -40,10 +40,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebAppConfiguration
 @ContextConfiguration(classes = {
-        ShortcutExclusionsIT.Config.class,
-        DelegatingWebMvcConfiguration.class,
-        RepositoryRestMvcConfiguration.class,
-        RestConfiguration.class})
+    ShortcutExclusionsIT.Config.class,
+    DelegatingWebMvcConfiguration.class,
+    RepositoryRestMvcConfiguration.class,
+    RestConfiguration.class})
 @Transactional
 @ExtendWith(SpringExtension.class)
 public class ShortcutExclusionsIT {
@@ -107,15 +107,15 @@ public class ShortcutExclusionsIT {
             @Test
             void shouldReturnTheEntity() throws Exception {
                 MockHttpServletResponse response = mvc
-                        .perform(get("/testEntity3s/" + testEntity.getId())
-                                .accept("*/*"))
-                        .andExpect(status().isOk())
-                        .andReturn().getResponse();
+                    .perform(get("/testEntity3s/" + testEntity.getId())
+                        .accept("*/*"))
+                    .andExpect(status().isOk())
+                    .andReturn().getResponse();
 
                 RepresentationFactory representationFactory = new StandardRepresentationFactory();
                 ReadableRepresentation halResponse = representationFactory
-                        .readRepresentation("application/hal+json",
-                                new StringReader(response.getContentAsString()));
+                    .readRepresentation("application/hal+json",
+                        new StringReader(response.getContentAsString()));
                 assertThat(halResponse.getLinks().size()).isGreaterThan(2);
                 assertThat(halResponse.getLinksByRel("testEntity3")).isNotNull();
             }

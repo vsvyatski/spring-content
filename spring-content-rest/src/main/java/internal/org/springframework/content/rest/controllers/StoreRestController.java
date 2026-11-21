@@ -85,7 +85,7 @@ public class StoreRestController implements InitializingBean {
                            HttpServletResponse response,
                            @RequestHeader HttpHeaders headers,
                            StoreResource storeResource)
-            throws MethodNotAllowedException {
+        throws MethodNotAllowedException {
 
         if (storeResource == null || storeResource.exists() == false) {
             throw new ResourceNotFoundException();
@@ -101,76 +101,76 @@ public class StoreRestController implements InitializingBean {
     }
 
     @RequestMapping(value = STORE_REQUEST_MAPPING, method = RequestMethod.PUT, headers = {
-            "content-type!=multipart/form-data", "accept!=application/hal+json"})
+        "content-type!=multipart/form-data", "accept!=application/hal+json"})
     @ResponseBody
     public void putContent(HttpServletRequest request, HttpServletResponse response, @RequestHeader HttpHeaders headers, StoreResource storeResource)
-            throws IOException, MethodNotAllowedException {
+        throws IOException, MethodNotAllowedException {
 
         ContentService contentService = contentServiceFactory.getContentService(storeResource);
 
         handleMultipart(request, response, headers,
-                contentService,
-                new InputStreamResource(request.getInputStream(), null),
-                headers.getContentType(),
-                storeResource,
-                storeResource.getETag());
+            contentService,
+            new InputStreamResource(request.getInputStream(), null),
+            headers.getContentType(),
+            storeResource,
+            storeResource.getETag());
     }
 
     @RequestMapping(value = STORE_REQUEST_MAPPING, method = RequestMethod.PUT, headers = "content-type=multipart/form-data")
     @ResponseBody
     public void putMultipartContent(HttpServletRequest request, HttpServletResponse response, @RequestHeader HttpHeaders headers,
                                     @RequestParam("file") MultipartFile multiPart, StoreResource storeResource)
-            throws IOException, MethodNotAllowedException {
+        throws IOException, MethodNotAllowedException {
 
         ContentService contentService = contentServiceFactory.getContentService(storeResource);
 
         headers.setContentLength(multiPart.getSize());
 
         handleMultipart(request, response, headers,
-                contentService,
-                multiPart.getResource(),
-                MediaType.parseMediaType(multiPart.getContentType()),
-                storeResource,
-                storeResource.getETag());
+            contentService,
+            multiPart.getResource(),
+            MediaType.parseMediaType(multiPart.getContentType()),
+            storeResource,
+            storeResource.getETag());
     }
 
     @RequestMapping(value = STORE_REQUEST_MAPPING, method = RequestMethod.POST, headers = "content-type=multipart/form-data")
     @ResponseBody
     public void postMultipartContent(HttpServletRequest request, HttpServletResponse response, @RequestHeader HttpHeaders headers,
                                      @RequestParam("file") MultipartFile multiPart, StoreResource storeResource)
-            throws IOException, MethodNotAllowedException {
+        throws IOException, MethodNotAllowedException {
 
         ContentService contentService = contentServiceFactory.getContentService(storeResource);
 
         headers.setContentLength(multiPart.getSize());
 
         handleMultipart(request, response, headers,
-                contentService,
-                new InputStreamResource(multiPart.getInputStream(), multiPart.getOriginalFilename()),
-                MediaType.parseMediaType(multiPart.getContentType()),
-                storeResource,
-                storeResource.getETag());
+            contentService,
+            new InputStreamResource(multiPart.getInputStream(), multiPart.getOriginalFilename()),
+            MediaType.parseMediaType(multiPart.getContentType()),
+            storeResource,
+            storeResource.getETag());
 
     }
 
     @RequestMapping(value = STORE_REQUEST_MAPPING, method = RequestMethod.POST, headers = {"content-type!=multipart/form-data"})
     @ResponseBody
     public void postContent(HttpServletRequest request, HttpServletResponse response, @RequestHeader HttpHeaders headers, StoreResource storeResource)
-            throws IOException, MethodNotAllowedException {
+        throws IOException, MethodNotAllowedException {
 
         ContentService contentService = contentServiceFactory.getContentService(storeResource);
 
         handleMultipart(request, response, headers,
-                contentService,
-                new InputStreamResource(request.getInputStream(), null),
-                headers.getContentType(),
-                storeResource,
-                storeResource.getETag());
+            contentService,
+            new InputStreamResource(request.getInputStream(), null),
+            headers.getContentType(),
+            storeResource,
+            storeResource.getETag());
     }
 
     @RequestMapping(value = STORE_REQUEST_MAPPING, method = RequestMethod.DELETE, headers = "accept!=application/hal+json")
     public void deleteContent(@RequestHeader HttpHeaders headers, HttpServletResponse response, StoreResource storeResource)
-            throws IOException, MethodNotAllowedException {
+        throws IOException, MethodNotAllowedException {
 
         if (!storeResource.exists()) {
             throw new ResourceNotFoundException();
@@ -191,7 +191,7 @@ public class StoreRestController implements InitializingBean {
                                    MediaType sourceMimeType,
                                    StoreResource target,
                                    Object targetETag)
-            throws IOException, MethodNotAllowedException {
+        throws IOException, MethodNotAllowedException {
 
         boolean isNew = false;
 

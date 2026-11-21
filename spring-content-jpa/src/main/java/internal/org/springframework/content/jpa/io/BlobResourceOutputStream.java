@@ -114,7 +114,7 @@ public class BlobResourceOutputStream extends OutputStream {
         return this.template.query(sql, new ResultSetExtractor<Blob>() {
             @Override
             public Blob extractData(ResultSet rs)
-                    throws SQLException, DataAccessException {
+                throws SQLException, DataAccessException {
                 if (rs.next()) {
                     return rs.getBlob(1);
                 } else {

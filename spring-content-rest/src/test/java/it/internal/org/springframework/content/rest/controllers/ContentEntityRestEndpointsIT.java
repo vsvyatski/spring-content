@@ -1,6 +1,5 @@
 package it.internal.org.springframework.content.rest.controllers;
 
-import org.springframework.content.test.support.TestSupportData;
 import internal.org.springframework.content.rest.support.*;
 import internal.org.springframework.content.rest.support.EventListenerConfig.TestEventListener;
 import jakarta.servlet.ServletException;
@@ -14,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.content.rest.config.HypermediaConfiguration;
 import org.springframework.content.rest.config.RestConfiguration;
+import org.springframework.content.test.support.TestSupportData;
 import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguration;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockMultipartFile;
@@ -40,13 +40,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebAppConfiguration
 @ContextConfiguration(classes = {
-        StoreConfig.class,
-        EntityConfig.class,
-        DelegatingWebMvcConfiguration.class,
-        RepositoryRestMvcConfiguration.class,
-        RestConfiguration.class,
-        HypermediaConfiguration.class,
-        EventListenerConfig.class
+    StoreConfig.class,
+    EntityConfig.class,
+    DelegatingWebMvcConfiguration.class,
+    RepositoryRestMvcConfiguration.class,
+    RestConfiguration.class,
+    HypermediaConfiguration.class,
+    EventListenerConfig.class
 })
 @Transactional
 @ActiveProfiles("store")
@@ -144,7 +144,7 @@ public class ContentEntityRestEndpointsIT {
                     @Test
                     void shouldReturn200() throws Exception {
                         mvc.perform(delete("/testEntity3s/" + testEntity3.id + "/softDelete"))
-                                .andExpect(status().is2xxSuccessful());
+                            .andExpect(status().is2xxSuccessful());
                     }
                 }
             }
@@ -170,10 +170,10 @@ public class ContentEntityRestEndpointsIT {
                     @Test
                     void shouldReturnTheRelevantCORSHeadersAndOK() throws Exception {
                         mvc.perform(options("/testEntities/" + testEntity.getId())
-                                        .header("Access-Control-Request-Method", "PUT")
-                                        .header("Origin", "http://www.someurl.com"))
-                                .andExpect(status().isOk())
-                                .andExpect(header().string("Access-Control-Allow-Origin", "http://www.someurl.com"));
+                                .header("Access-Control-Request-Method", "PUT")
+                                .header("Origin", "http://www.someurl.com"))
+                            .andExpect(status().isOk())
+                            .andExpect(header().string("Access-Control-Allow-Origin", "http://www.someurl.com"));
                     }
                 }
             }
@@ -233,8 +233,8 @@ public class ContentEntityRestEndpointsIT {
                 @Test
                 void shouldReturn404WhenNoContentIsSet() throws Exception {
                     mvc.perform(get("/testEntity6s/" + testEntity6.getId())
-                                    .accept("text/plain"))
-                            .andExpect(status().isNotFound());
+                            .accept("text/plain"))
+                        .andExpect(status().isNotFound());
                 }
             }
         }
@@ -257,16 +257,16 @@ public class ContentEntityRestEndpointsIT {
 
                 // POST the new content
                 MockHttpServletResponse response = mvc.perform(multipart("/testEntity3s")
-                                .file(file)
-                                .contentType("multipart/form-data; boundary=c0de8278")
-                                .param("name", "foo")
-                                .param("hidden", "bar")
-                                .param("ying", "yang")
-                                .param("things", "one", "two")
-                                .param("testEntity4", "/testEntity4s/" + testEntity4Id))
+                        .file(file)
+                        .contentType("multipart/form-data; boundary=c0de8278")
+                        .param("name", "foo")
+                        .param("hidden", "bar")
+                        .param("ying", "yang")
+                        .param("things", "one", "two")
+                        .param("testEntity4", "/testEntity4s/" + testEntity4Id))
 
-                        .andExpect(status().isCreated())
-                        .andReturn().getResponse();
+                    .andExpect(status().isCreated())
+                    .andReturn().getResponse();
 
                 String location = response.getHeader("Location");
 
@@ -281,9 +281,9 @@ public class ContentEntityRestEndpointsIT {
 
                 // assert that it now exists
                 response = mvc.perform(get(location)
-                                .accept("text/plain"))
-                        .andExpect(status().isOk())
-                        .andReturn().getResponse();
+                        .accept("text/plain"))
+                    .andExpect(status().isOk())
+                    .andReturn().getResponse();
 
                 assertThat(response.getContentAsString()).isEqualTo(newContent);
             }
@@ -303,22 +303,22 @@ public class ContentEntityRestEndpointsIT {
                     String newContent = "This is some new content";
 
                     MockMultipartFile file = new MockMultipartFile("content", "filename.txt", "text/plain",
-                            newContent.getBytes());
+                        newContent.getBytes());
 
                     // POST the entity
                     MockHttpServletResponse response = mvc.perform(multipart("/testEntity4s")
-                                    .file(file)
-                                    .param("name", "foo")
-                                    .param("title", "bar"))
+                            .file(file)
+                            .param("name", "foo")
+                            .param("title", "bar"))
 
-                            .andExpect(status().isCreated())
-                            .andReturn().getResponse();
+                        .andExpect(status().isCreated())
+                        .andReturn().getResponse();
 
                     String location = response.getHeader("Location");
 
                     // assert that the entity exists
                     Optional<OneToOneLinkedContentEntity> fetchedEntity = repo4.findById(
-                            Long.valueOf(StringUtils.substringAfterLast(location, "/")));
+                        Long.valueOf(StringUtils.substringAfterLast(location, "/")));
                     assertThat(fetchedEntity.get().getName()).isEqualTo("foo");
                     assertThat(fetchedEntity.get().getTitle()).isEqualTo("bar");
                     assertThat(fetchedEntity.get().getContentId()).isNotNull();
@@ -327,9 +327,9 @@ public class ContentEntityRestEndpointsIT {
 
                     // assert that the content now exists
                     response = mvc.perform(get(location)
-                                    .accept("text/plain"))
-                            .andExpect(status().isOk())
-                            .andReturn().getResponse();
+                            .accept("text/plain"))
+                        .andExpect(status().isOk())
+                        .andReturn().getResponse();
 
                     assertThat(response.getContentAsString()).isEqualTo(newContent);
                 }
@@ -346,17 +346,17 @@ public class ContentEntityRestEndpointsIT {
                 void shouldCreateANewEntityAndRespondWithA201Created() throws Exception {
                     // POST the entity
                     MockHttpServletResponse response = mvc.perform(multipart("/testEntity4s")
-                                    .param("name", "foo")
-                                    .param("title", "bar"))
+                            .param("name", "foo")
+                            .param("title", "bar"))
 
-                            .andExpect(status().isCreated())
-                            .andReturn().getResponse();
+                        .andExpect(status().isCreated())
+                        .andReturn().getResponse();
 
                     String location = response.getHeader("Location");
 
                     // assert that the entity exists
                     Optional<OneToOneLinkedContentEntity> fetchedEntity = repo4.findById(
-                            Long.valueOf(StringUtils.substringAfterLast(location, "/")));
+                        Long.valueOf(StringUtils.substringAfterLast(location, "/")));
                     assertThat(fetchedEntity.get().getName()).isEqualTo("foo");
                     assertThat(fetchedEntity.get().getTitle()).isEqualTo("bar");
                     assertThat(fetchedEntity.get().getContentId()).isNull();
@@ -379,11 +379,11 @@ public class ContentEntityRestEndpointsIT {
             void shouldSupportContentOperations() throws Exception {
                 String content = TestSupportData.SAMPLE_TEXT_PAYLOAD;
                 mvc.perform(
-                                put("/testEntity9s/" + testEntity9.id)
-                                        .contextPath("")
-                                        .content(content)
-                                        .contentType("text/plain"))
-                        .andExpect(status().isCreated());
+                        put("/testEntity9s/" + testEntity9.id)
+                            .contextPath("")
+                            .content(content)
+                            .contentType("text/plain"))
+                    .andExpect(status().isCreated());
 
                 Optional<JsonIgnoredContentEntity> fetched = repo9.findById(testEntity9.getId());
                 assertThat(fetched.isPresent()).isTrue();
@@ -393,10 +393,10 @@ public class ContentEntityRestEndpointsIT {
                 assertThat(IOUtils.toString(store9.getContent(fetched.get()), Charset.defaultCharset())).isEqualTo(content);
 
                 MockHttpServletResponse response = mvc
-                        .perform(get("/testEntity9s/" + testEntity9.id)
-                                .contextPath("")
-                                .accept("text/plain"))
-                        .andExpect(status().isOk()).andReturn().getResponse();
+                    .perform(get("/testEntity9s/" + testEntity9.id)
+                        .contextPath("")
+                        .accept("text/plain"))
+                    .andExpect(status().isOk()).andReturn().getResponse();
 
                 assertThat(response).isNotNull();
                 assertThat(response.getContentAsString()).isEqualTo(TestSupportData.SAMPLE_TEXT_PAYLOAD);
@@ -419,11 +419,11 @@ public class ContentEntityRestEndpointsIT {
 
                 // POST the new content
                 MockHttpServletResponse response = mvc.perform(multipart("/testEntity9s")
-                                .file(file)
-                                .param("name", "foo")
-                                .param("hidden", "bar"))
-                        .andExpect(status().isCreated())
-                        .andReturn().getResponse();
+                        .file(file)
+                        .param("name", "foo")
+                        .param("hidden", "bar"))
+                    .andExpect(status().isCreated())
+                    .andReturn().getResponse();
 
                 String location = response.getHeader("Location");
 
@@ -432,13 +432,13 @@ public class ContentEntityRestEndpointsIT {
 
                 // assert entity now exists
                 mvc.perform(head(location))
-                        .andExpect(status().is2xxSuccessful());
+                    .andExpect(status().is2xxSuccessful());
 
                 // assert content now exists
                 response = mvc.perform(get(location + "/content")
-                                .accept("text/plain"))
-                        .andExpect(status().isOk())
-                        .andReturn().getResponse();
+                        .accept("text/plain"))
+                    .andExpect(status().isOk())
+                    .andReturn().getResponse();
                 assertThat(response.getContentAsString()).isEqualTo(newContent);
             }
         }
@@ -456,14 +456,14 @@ public class ContentEntityRestEndpointsIT {
 
                 // POST the entity
                 MockHttpServletResponse response = mvc.perform(multipart("/testEntity3s")
-                                .param("name", "foo")
-                                .param("hidden", "bar")
-                                .param("ying", "yang")
-                                .param("things", "one", "two")
-                                .param("testEntity4", "/testEntity4s/" + testEntity4Id))
+                        .param("name", "foo")
+                        .param("hidden", "bar")
+                        .param("ying", "yang")
+                        .param("things", "one", "two")
+                        .param("testEntity4", "/testEntity4s/" + testEntity4Id))
 
-                        .andExpect(status().isCreated())
-                        .andReturn().getResponse();
+                    .andExpect(status().isCreated())
+                    .andReturn().getResponse();
 
                 String location = response.getHeader("Location");
 
@@ -492,13 +492,13 @@ public class ContentEntityRestEndpointsIT {
             void shouldCreateANewEntityAndFireTheOnBeforeCreateOnAfterCreateEvents() throws Exception {
                 // POST the entity
                 MockHttpServletResponse response = mvc.perform(multipart("/testEntity3s")
-                                .param("name", "foo foo")
-                                .param("hidden", "bar bar")
-                                .param("ying", "yang")
-                                .param("things", "one", "two"))
+                        .param("name", "foo foo")
+                        .param("hidden", "bar bar")
+                        .param("ying", "yang")
+                        .param("things", "one", "two"))
 
-                        .andExpect(status().isCreated())
-                        .andReturn().getResponse();
+                    .andExpect(status().isCreated())
+                    .andReturn().getResponse();
 
                 assertThat(eventListener.getBeforeCreate().size()).isEqualTo(1);
                 assertThat(eventListener.getAfterCreate().size()).isEqualTo(1);
@@ -517,21 +517,21 @@ public class ContentEntityRestEndpointsIT {
             @Test
             void shouldReturnAnErrorAndNotMakeTheEntity() {
                 MockMultipartFile file = new MockMultipartFile("oopsDoesntExist", "filename.txt", "text/plain",
-                        "foo".getBytes());
+                    "foo".getBytes());
 
                 var before = repo3.count();
 
                 // POST the entity
                 assertThrows(ServletException.class, () ->
-                        mvc.perform(multipart("/testEntity3s")
-                                        .file(file)
-                                        .param("name", "foo foo")
-                                        .param("hidden", "bar bar")
-                                        .param("ying", "yang")
-                                        .param("things", "one", "two"))
+                    mvc.perform(multipart("/testEntity3s")
+                            .file(file)
+                            .param("name", "foo foo")
+                            .param("hidden", "bar bar")
+                            .param("ying", "yang")
+                            .param("things", "one", "two"))
 
-                                .andExpect(status().isCreated())
-                                .andReturn().getResponse()
+                        .andExpect(status().isCreated())
+                        .andReturn().getResponse()
                 );
 
                 assertThat(repo3.count()).isEqualTo(before);
@@ -554,9 +554,9 @@ public class ContentEntityRestEndpointsIT {
 
                 // POST the new content
                 MockHttpServletResponse response = mvc.perform(multipart("/testEntity11s")
-                                .file(file))
-                        .andExpect(status().isCreated())
-                        .andReturn().getResponse();
+                        .file(file))
+                    .andExpect(status().isCreated())
+                    .andReturn().getResponse();
 
                 String location = response.getHeader("Location");
 
@@ -565,13 +565,13 @@ public class ContentEntityRestEndpointsIT {
 
                 // assert entity now exists
                 mvc.perform(head(location))
-                        .andExpect(status().is2xxSuccessful());
+                    .andExpect(status().is2xxSuccessful());
 
                 // assert content now exists
                 response = mvc.perform(get(location + "/package/content")
-                                .accept("text/plain"))
-                        .andExpect(status().isOk())
-                        .andReturn().getResponse();
+                        .accept("text/plain"))
+                    .andExpect(status().isOk())
+                    .andReturn().getResponse();
                 assertThat(response.getContentAsString()).isEqualTo(newContent);
             }
         }

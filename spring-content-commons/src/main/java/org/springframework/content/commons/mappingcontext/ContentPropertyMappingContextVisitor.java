@@ -36,6 +36,11 @@ public class ContentPropertyMappingContextVisitor implements ClassVisitor {
         this.contentPropertySeparator = contentPropertySeparator;
     }
 
+    private static TypeDescriptor typeDescriptorForField(Field field, Class<?> klazz) {
+        Class<?> resolved = ResolvableType.forField(field, klazz).resolve();
+        return TypeDescriptor.valueOf(resolved != null ? resolved : field.getType());
+    }
+
     public Map<String, ContentProperty> getProperties() {
         Map<String, ContentProperty> props = new HashMap<>();
         for (Map<String, ContentProperty> property : properties.values()) {
@@ -65,11 +70,6 @@ public class ContentPropertyMappingContextVisitor implements ClassVisitor {
 
     private String key(String path, Class<?> klazz) {
         return klazz.getCanonicalName() + "." + path;
-    }
-
-    private static TypeDescriptor typeDescriptorForField(Field field, Class<?> klazz) {
-        Class<?> resolved = ResolvableType.forField(field, klazz).resolve();
-        return TypeDescriptor.valueOf(resolved != null ? resolved : field.getType());
     }
 
     @Override

@@ -33,7 +33,7 @@ import static org.springframework.data.mongodb.core.query.Query.query;
 import static org.springframework.data.mongodb.gridfs.GridFsCriteria.whereFilename;
 
 public class DefaultMongoStoreImpl<S, SID extends Serializable>
-        implements ContentStore<S, SID> {
+    implements ContentStore<S, SID> {
 
     private static Log logger = LogFactory.getLog(DefaultMongoStoreImpl.class);
 
@@ -125,7 +125,7 @@ public class DefaultMongoStoreImpl<S, SID extends Serializable>
         Resource resource = this.getResource(id);
         Object convertedId = convertToExternalContentIdType(entity, id);
         BeanUtils.setFieldWithAnnotation(entity, ContentId.class,
-                convertedId.toString());
+            convertedId.toString());
     }
 
     @Override
@@ -145,21 +145,21 @@ public class DefaultMongoStoreImpl<S, SID extends Serializable>
     @Override
     public void unassociate(S entity) {
         BeanUtils.setFieldWithAnnotationConditionally(entity, ContentId.class, null,
-                new Condition() {
-                    @Override
-                    public boolean matches(Field field) {
-                        for (Annotation annotation : field.getAnnotations()) {
-                            if ("jakarta.persistence.Id".equals(
-                                    annotation.annotationType().getCanonicalName())
-                                    || "org.springframework.data.annotation.Id"
-                                    .equals(annotation.annotationType()
-                                            .getCanonicalName())) {
-                                return false;
-                            }
+            new Condition() {
+                @Override
+                public boolean matches(Field field) {
+                    for (Annotation annotation : field.getAnnotations()) {
+                        if ("jakarta.persistence.Id".equals(
+                            annotation.annotationType().getCanonicalName())
+                            || "org.springframework.data.annotation.Id"
+                            .equals(annotation.annotationType()
+                                .getCanonicalName())) {
+                            return false;
                         }
-                        return true;
                     }
-                });
+                    return true;
+                }
+            });
     }
 
     @Override
@@ -175,10 +175,10 @@ public class DefaultMongoStoreImpl<S, SID extends Serializable>
             public boolean matches(TypeDescriptor descriptor) {
                 for (Annotation annotation : descriptor.getAnnotations()) {
                     if ("jakarta.persistence.Id".equals(
-                            annotation.annotationType().getCanonicalName())
-                            || "org.springframework.data.annotation.Id"
-                            .equals(annotation.annotationType()
-                                    .getCanonicalName())) {
+                        annotation.annotationType().getCanonicalName())
+                        || "org.springframework.data.annotation.Id"
+                        .equals(annotation.annotationType()
+                            .getCanonicalName())) {
                         return false;
                     }
                 }
@@ -378,22 +378,22 @@ public class DefaultMongoStoreImpl<S, SID extends Serializable>
 
                 // reset content fields
                 BeanUtils.setFieldWithAnnotationConditionally(property, ContentId.class,
-                        null, new Condition() {
-                            @Override
-                            public boolean matches(Field field) {
-                                for (Annotation annotation : field.getAnnotations()) {
-                                    if ("jakarta.persistence.Id"
-                                            .equals(annotation.annotationType()
-                                                    .getCanonicalName())
-                                            || "org.springframework.data.annotation.Id"
-                                            .equals(annotation.annotationType()
-                                                    .getCanonicalName())) {
-                                        return false;
-                                    }
+                    null, new Condition() {
+                        @Override
+                        public boolean matches(Field field) {
+                            for (Annotation annotation : field.getAnnotations()) {
+                                if ("jakarta.persistence.Id"
+                                    .equals(annotation.annotationType()
+                                        .getCanonicalName())
+                                    || "org.springframework.data.annotation.Id"
+                                    .equals(annotation.annotationType()
+                                        .getCanonicalName())) {
+                                    return false;
                                 }
-                                return true;
                             }
-                        });
+                            return true;
+                        }
+                    });
                 Class<?> contentLenType = BeanUtils.getFieldWithAnnotationType(property, ContentLength.class);
                 if (contentLenType != null) {
                     BeanUtils.setFieldWithAnnotation(property, ContentLength.class, BeanUtils.getDefaultValueForType(contentLenType));
@@ -439,10 +439,10 @@ public class DefaultMongoStoreImpl<S, SID extends Serializable>
                 public boolean matches(TypeDescriptor descriptor) {
                     for (Annotation annotation : descriptor.getAnnotations()) {
                         if ("jakarta.persistence.Id".equals(
-                                annotation.annotationType().getCanonicalName())
-                                || "org.springframework.data.annotation.Id"
-                                .equals(annotation.annotationType()
-                                        .getCanonicalName())) {
+                            annotation.annotationType().getCanonicalName())
+                            || "org.springframework.data.annotation.Id"
+                            .equals(annotation.annotationType()
+                                .getCanonicalName())) {
                             return false;
                         }
                     }
@@ -460,11 +460,11 @@ public class DefaultMongoStoreImpl<S, SID extends Serializable>
 
     protected Object convertToExternalContentIdType(S property, Object contentId) {
         if (placer.canConvert(TypeDescriptor.forObject(contentId),
-                TypeDescriptor.valueOf(BeanUtils.getFieldWithAnnotationType(property,
-                        ContentId.class)))) {
+            TypeDescriptor.valueOf(BeanUtils.getFieldWithAnnotationType(property,
+                ContentId.class)))) {
             contentId = placer.convert(contentId, TypeDescriptor.forObject(contentId),
-                    TypeDescriptor.valueOf(BeanUtils.getFieldWithAnnotationType(property,
-                            ContentId.class)));
+                TypeDescriptor.valueOf(BeanUtils.getFieldWithAnnotationType(property,
+                    ContentId.class)));
             return contentId;
         }
         return contentId.toString();
@@ -472,9 +472,9 @@ public class DefaultMongoStoreImpl<S, SID extends Serializable>
 
     private Object convertToExternalContentIdType(Object contentId, TypeDescriptor contentIdType) {
         if (placer.canConvert(TypeDescriptor.forObject(contentId),
-                contentIdType)) {
+            contentIdType)) {
             contentId = placer.convert(contentId, TypeDescriptor.forObject(contentId),
-                    contentIdType);
+                contentIdType);
             return contentId;
         }
         return contentId.toString();

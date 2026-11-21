@@ -1,9 +1,8 @@
 package internal.org.springframework.content.rest.links;
 
-import org.springframework.content.test.support.TestSupportData;
 import internal.org.springframework.content.rest.support.JsonMappedContentEntity;
-import internal.org.springframework.content.rest.support.JsonMappedContentEntityStore;
 import internal.org.springframework.content.rest.support.JsonMappedContentEntityRepository;
+import internal.org.springframework.content.rest.support.JsonMappedContentEntityStore;
 import internal.org.springframework.content.rest.support.config.JpaInfrastructureConfig;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,6 +16,7 @@ import org.springframework.content.fs.config.EnableFileSystemStores;
 import org.springframework.content.fs.io.FileSystemResourceLoader;
 import org.springframework.content.rest.config.HypermediaConfiguration;
 import org.springframework.content.rest.config.RestConfiguration;
+import org.springframework.content.test.support.TestSupportData;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -42,11 +42,11 @@ import java.nio.charset.StandardCharsets;
 
 @WebAppConfiguration
 @ContextConfiguration(classes = {
-        ContextPathContentLinksIT.ContextPathConfig.class,
-        DelegatingWebMvcConfiguration.class,
-        RepositoryRestMvcConfiguration.class,
-        RestConfiguration.class,
-        HypermediaConfiguration.class})
+    ContextPathContentLinksIT.ContextPathConfig.class,
+    DelegatingWebMvcConfiguration.class,
+    RepositoryRestMvcConfiguration.class,
+    RestConfiguration.class,
+    HypermediaConfiguration.class})
 @Transactional
 @ActiveProfiles("store")
 @ExtendWith(SpringExtension.class)
@@ -105,7 +105,7 @@ public class ContextPathContentLinksIT {
                         input = "";
                     }
                     return new ByteArrayInputStream(
-                            String.format("<html><body>%s</body></html>", input).getBytes());
+                        String.format("<html><body>%s</body></html>", input).getBytes());
                 }
             };
         }

@@ -67,7 +67,7 @@ public class StoreUtilsTest {
             void setUp() {
                 ContentStore storeImpl = mock(ContentStoreWithAnnotation.class);
                 info = new StoreInfoImpl(ContentStoreWithAnnotation.class,
-                        UuidSingleContentEntity.class, storeImpl);
+                    UuidSingleContentEntity.class, storeImpl);
 
                 storePath = StoreUtils.storePath(info);
             }

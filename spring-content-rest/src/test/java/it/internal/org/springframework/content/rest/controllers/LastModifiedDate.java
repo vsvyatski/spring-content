@@ -97,10 +97,10 @@ public abstract class LastModifiedDate {
         @Test
         void shouldReturnTheContentWithTheLastModifiedHeader() throws Exception {
             MockHttpServletResponse response = mvc
-                    .perform(get(url)
-                            .accept("text/plain"))
-                    .andExpect(status().isOk())
-                    .andReturn().getResponse();
+                .perform(get(url)
+                    .accept("text/plain"))
+                .andExpect(status().isOk())
+                .andReturn().getResponse();
 
             assertThat(response).isNotNull();
             assertThat(response.getContentAsString()).isEqualTo(content);
@@ -120,11 +120,11 @@ public abstract class LastModifiedDate {
             String ifModifiedSince = format.format(cal.getTime());
 
             MockHttpServletResponse response = mvc
-                    .perform(get(url)
-                            .accept("text/plain")
-                            .header("if-modified-since", ifModifiedSince))
-                    .andExpect(status().isOk())
-                    .andReturn().getResponse();
+                .perform(get(url)
+                    .accept("text/plain")
+                    .header("if-modified-since", ifModifiedSince))
+                .andExpect(status().isOk())
+                .andReturn().getResponse();
 
             assertThat(response).isNotNull();
             assertThat(response.getContentAsString()).isEqualTo(content);
@@ -137,10 +137,10 @@ public abstract class LastModifiedDate {
         @Test
         void shouldRespondWith304NotModified() throws Exception {
             mvc.perform(get(url)
-                            .accept("text/plain")
-                            .header("if-modified-since", toHeaderDateFormat(lastModifiedDate)))
-                    .andExpect(status().isNotModified())
-                    .andExpect(content().string(""));
+                    .accept("text/plain")
+                    .header("if-modified-since", toHeaderDateFormat(lastModifiedDate)))
+                .andExpect(status().isNotModified())
+                .andExpect(content().string(""));
         }
     }
 
@@ -149,10 +149,10 @@ public abstract class LastModifiedDate {
         @Test
         void shouldRespondWith412PreconditionFailed() throws Exception {
             mvc.perform(get(url)
-                            .accept("text/plain")
-                            .header("if-unmodified-since", toHeaderDateFormat(addDays(lastModifiedDate, -1))))
-                    .andExpect(status().isPreconditionFailed())
-                    .andReturn();
+                    .accept("text/plain")
+                    .header("if-unmodified-since", toHeaderDateFormat(addDays(lastModifiedDate, -1))))
+                .andExpect(status().isPreconditionFailed())
+                .andReturn();
         }
     }
 
@@ -161,10 +161,10 @@ public abstract class LastModifiedDate {
         @Test
         void shouldRespondWith200AndTheContent() throws Exception {
             mvc.perform(get(url)
-                            .accept("text/plain")
-                            .header("if-unmodified-since", isWithinASecond(lastModifiedDate)))
-                    .andExpect(status().isOk())
-                    .andExpect(content().string(content));
+                    .accept("text/plain")
+                    .header("if-unmodified-since", isWithinASecond(lastModifiedDate)))
+                .andExpect(status().isOk())
+                .andExpect(content().string(content));
         }
     }
 
@@ -173,10 +173,10 @@ public abstract class LastModifiedDate {
         @Test
         void shouldRespondWith412PreconditionFailed() throws Exception {
             mvc.perform(put(url)
-                            .content("Hello Modified Spring Content World!")
-                            .contentType("text/plain")
-                            .header("if-unmodified-since", toHeaderDateFormat(addDays(lastModifiedDate, -1))))
-                    .andExpect(status().isPreconditionFailed());
+                    .content("Hello Modified Spring Content World!")
+                    .contentType("text/plain")
+                    .header("if-unmodified-since", toHeaderDateFormat(addDays(lastModifiedDate, -1))))
+                .andExpect(status().isPreconditionFailed());
         }
     }
 
@@ -185,10 +185,10 @@ public abstract class LastModifiedDate {
         @Test
         void shouldUpdateTheContent() throws Exception {
             mvc.perform(put(url)
-                            .content("Hello Modified Spring Content World!")
-                            .contentType("text/plain")
-                            .header("if-unmodified-since", toHeaderDateFormat(lastModifiedDate)))
-                    .andExpect(status().isOk());
+                    .content("Hello Modified Spring Content World!")
+                    .contentType("text/plain")
+                    .header("if-unmodified-since", toHeaderDateFormat(lastModifiedDate)))
+                .andExpect(status().isOk());
         }
     }
 
@@ -198,11 +198,11 @@ public abstract class LastModifiedDate {
         void shouldRespondWithA412PreconditionFailed() throws Exception {
             if (etag != null) {
                 mvc.perform(put(url)
-                                .content("Hello Modified Spring Content World!")
-                                .contentType("text/plain")
-                                .header("if-unmodified-since", toHeaderDateFormat(lastModifiedDate))
-                                .header("if-none-match", etag))
-                        .andExpect(status().isPreconditionFailed());
+                        .content("Hello Modified Spring Content World!")
+                        .contentType("text/plain")
+                        .header("if-unmodified-since", toHeaderDateFormat(lastModifiedDate))
+                        .header("if-none-match", etag))
+                    .andExpect(status().isPreconditionFailed());
             }
         }
     }
@@ -212,8 +212,8 @@ public abstract class LastModifiedDate {
         @Test
         void shouldRespondWith412PreconditionFailed() throws Exception {
             mvc.perform(delete(url)
-                            .header("if-unmodified-since", toHeaderDateFormat(addDays(lastModifiedDate, -1))))
-                    .andExpect(status().isPreconditionFailed());
+                    .header("if-unmodified-since", toHeaderDateFormat(addDays(lastModifiedDate, -1))))
+                .andExpect(status().isPreconditionFailed());
         }
     }
 
@@ -222,8 +222,8 @@ public abstract class LastModifiedDate {
         @Test
         void shouldUpdateTheContent() throws Exception {
             mvc.perform(delete(url)
-                            .header("if-unmodified-since", toHeaderDateFormat(lastModifiedDate)))
-                    .andExpect(status().isNoContent());
+                    .header("if-unmodified-since", toHeaderDateFormat(lastModifiedDate)))
+                .andExpect(status().isNoContent());
         }
     }
 }

@@ -106,7 +106,7 @@ public class ContentLinksResourceProcessor implements RepresentationModelProcess
             originalLink(config.getBaseUri(), store, entityId).ifPresent((l) -> addLink(resource, l));
 
             addLink(resource, shortcutLink(config.getBaseUri(), store, entityId, StringUtils
-                    .uncapitalize(StoreUtils.getSimpleName(store))));
+                .uncapitalize(StoreUtils.getSimpleName(store))));
         } else {
             for (Map.Entry<String, ContentProperty> contentProperty : contentProperties.entrySet()) {
                 resource.add(fullyQualifiedLink(config.getBaseUri(), store, entityId, contentProperty));

@@ -64,9 +64,9 @@ public class RestConfigurationTest {
                 context = new AnnotationConfigWebApplicationContext();
                 context.setServletContext(new MockServletContext());
                 context.register(TestConfig.class,
-                        DelegatingWebMvcConfiguration.class,
-                        RepositoryRestMvcConfiguration.class,
-                        RestConfiguration.class);
+                    DelegatingWebMvcConfiguration.class,
+                    RepositoryRestMvcConfiguration.class,
+                    RestConfiguration.class);
                 context.refresh();
             }
 

@@ -1,8 +1,8 @@
 package internal.org.springframework.content.rest.io;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
-import org.jspecify.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;

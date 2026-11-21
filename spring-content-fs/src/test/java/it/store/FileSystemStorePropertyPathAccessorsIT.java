@@ -10,11 +10,11 @@ import org.springframework.content.commons.property.PropertyPath;
 import org.springframework.content.commons.store.StoreAccessException;
 import org.springframework.content.fs.config.EnableFileSystemStores;
 import org.springframework.content.fs.io.FileSystemResourceLoader;
+import org.springframework.content.test.support.TestSupportData;
 import org.springframework.content.test.support.TestSupportPackages;
 import org.springframework.content.test.support.jpa.PropertyPathJpaUuidEntity;
 import org.springframework.content.test.support.jpa.PropertyPathJpaUuidRepository;
 import org.springframework.content.test.support.jpa.PropertyPathJpaUuidStore;
-import org.springframework.content.test.support.TestSupportData;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -119,7 +119,7 @@ public class FileSystemStorePropertyPathAccessorsIT {
                     repo = context.getBean(PropertyPathJpaUuidRepository.class);
                     store = context.getBean(PropertyPathJpaUuidStore.class);
 
-                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     genericResource = store.getResource(resourceLocation);
                 }
@@ -151,7 +151,7 @@ public class FileSystemStorePropertyPathAccessorsIT {
                         repo = context.getBean(PropertyPathJpaUuidRepository.class);
                         store = context.getBean(PropertyPathJpaUuidStore.class);
 
-                                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                         genericResource = store.getResource(resourceLocation);
 
@@ -191,7 +191,7 @@ public class FileSystemStorePropertyPathAccessorsIT {
                             repo = context.getBean(PropertyPathJpaUuidRepository.class);
                             store = context.getBean(PropertyPathJpaUuidStore.class);
 
-                                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                            resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                             genericResource = store.getResource(resourceLocation);
 
@@ -237,7 +237,7 @@ public class FileSystemStorePropertyPathAccessorsIT {
                             repo = context.getBean(PropertyPathJpaUuidRepository.class);
                             store = context.getBean(PropertyPathJpaUuidStore.class);
 
-                                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                            resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                             genericResource = store.getResource(resourceLocation);
 
@@ -282,7 +282,7 @@ public class FileSystemStorePropertyPathAccessorsIT {
                     repo = context.getBean(PropertyPathJpaUuidRepository.class);
                     store = context.getBean(PropertyPathJpaUuidStore.class);
 
-                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new PropertyPathJpaUuidEntity();
                     entity = repo.save(entity);
@@ -312,7 +312,7 @@ public class FileSystemStorePropertyPathAccessorsIT {
                             repo = context.getBean(PropertyPathJpaUuidRepository.class);
                             store = context.getBean(PropertyPathJpaUuidStore.class);
 
-                                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                            resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                             entity = new PropertyPathJpaUuidEntity();
                             entity = repo.save(entity);
@@ -343,7 +343,7 @@ public class FileSystemStorePropertyPathAccessorsIT {
                                 repo = context.getBean(PropertyPathJpaUuidRepository.class);
                                 store = context.getBean(PropertyPathJpaUuidStore.class);
 
-                                                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                                 entity = new PropertyPathJpaUuidEntity();
                                 entity = repo.save(entity);
@@ -377,7 +377,7 @@ public class FileSystemStorePropertyPathAccessorsIT {
                                 repo = context.getBean(PropertyPathJpaUuidRepository.class);
                                 store = context.getBean(PropertyPathJpaUuidStore.class);
 
-                                                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                                 entity = new PropertyPathJpaUuidEntity();
                                 entity = repo.save(entity);
@@ -414,7 +414,7 @@ public class FileSystemStorePropertyPathAccessorsIT {
                                 repo = context.getBean(PropertyPathJpaUuidRepository.class);
                                 store = context.getBean(PropertyPathJpaUuidStore.class);
 
-                                                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                                 entity = new PropertyPathJpaUuidEntity();
                                 entity = repo.save(entity);
@@ -451,7 +451,7 @@ public class FileSystemStorePropertyPathAccessorsIT {
                                 repo = context.getBean(PropertyPathJpaUuidRepository.class);
                                 store = context.getBean(PropertyPathJpaUuidStore.class);
 
-                                                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                                 entity = new PropertyPathJpaUuidEntity();
                                 entity = repo.save(entity);
@@ -492,7 +492,7 @@ public class FileSystemStorePropertyPathAccessorsIT {
                 repo = context.getBean(PropertyPathJpaUuidRepository.class);
                 store = context.getBean(PropertyPathJpaUuidStore.class);
 
-                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                 entity = new PropertyPathJpaUuidEntity();
                 entity = repo.save(entity);
@@ -533,7 +533,7 @@ public class FileSystemStorePropertyPathAccessorsIT {
                     repo = context.getBean(PropertyPathJpaUuidRepository.class);
                     store = context.getBean(PropertyPathJpaUuidStore.class);
 
-                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new PropertyPathJpaUuidEntity();
                     entity = repo.save(entity);
@@ -571,7 +571,7 @@ public class FileSystemStorePropertyPathAccessorsIT {
                     repo = context.getBean(PropertyPathJpaUuidRepository.class);
                     store = context.getBean(PropertyPathJpaUuidStore.class);
 
-                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new PropertyPathJpaUuidEntity();
                     entity = repo.save(entity);
@@ -609,7 +609,7 @@ public class FileSystemStorePropertyPathAccessorsIT {
                     repo = context.getBean(PropertyPathJpaUuidRepository.class);
                     store = context.getBean(PropertyPathJpaUuidStore.class);
 
-                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new PropertyPathJpaUuidEntity();
                     entity = repo.save(entity);
@@ -649,7 +649,7 @@ public class FileSystemStorePropertyPathAccessorsIT {
                     repo = context.getBean(PropertyPathJpaUuidRepository.class);
                     store = context.getBean(PropertyPathJpaUuidStore.class);
 
-                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new PropertyPathJpaUuidEntity();
                     entity = repo.save(entity);
@@ -684,7 +684,7 @@ public class FileSystemStorePropertyPathAccessorsIT {
                     repo = context.getBean(PropertyPathJpaUuidRepository.class);
                     store = context.getBean(PropertyPathJpaUuidStore.class);
 
-                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new PropertyPathJpaUuidEntity();
                     entity = repo.save(entity);
@@ -719,7 +719,7 @@ public class FileSystemStorePropertyPathAccessorsIT {
                     repo = context.getBean(PropertyPathJpaUuidRepository.class);
                     store = context.getBean(PropertyPathJpaUuidStore.class);
 
-                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new PropertyPathJpaUuidEntity();
                     entity = repo.save(entity);

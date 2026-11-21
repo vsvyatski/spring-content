@@ -9,7 +9,7 @@ import java.util.Random;
  * @author Vladimir Svyatski
  */
 public class BigIntegerBasedContentEntity extends ContentFields<BigInteger>
-        implements TypeSupportIdGenerator<BigInteger> {
+    implements TypeSupportIdGenerator<BigInteger> {
 
     @Override
     public BigInteger generateId() {

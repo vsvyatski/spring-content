@@ -63,12 +63,12 @@ public class StoreResolverRestConfigurationIT {
                 String newContent = "This is some new content";
 
                 given()
-                        .contentType("text/plain")
-                        .body(newContent.getBytes())
-                        .when()
-                        .post("/tEntities/" + tEntity.getId())
-                        .then()
-                        .statusCode(HttpStatus.SC_CREATED);
+                    .contentType("text/plain")
+                    .body(newContent.getBytes())
+                    .when()
+                    .post("/tEntities/" + tEntity.getId())
+                    .then()
+                    .statusCode(HttpStatus.SC_CREATED);
 
                 // refetch
                 tEntity = repo.findById(tEntity.getId()).orElse(null);

@@ -43,15 +43,15 @@ public class ContentLinkTests {
 
     protected void assertContentLinkInHalResponse() throws Exception {
         MockHttpServletResponse response = mvc.perform(get(url)
-                        .accept("application/hal+json")
-                        .contextPath(contextPath))
-                .andExpect(status().isOk()).andReturn().getResponse();
+                .accept("application/hal+json")
+                .contextPath(contextPath))
+            .andExpect(status().isOk()).andReturn().getResponse();
         assertThat(response).isNotNull();
 
         RepresentationFactory representationFactory = new StandardRepresentationFactory();
         ReadableRepresentation halResponse = representationFactory
-                .readRepresentation("application/hal+json",
-                        new StringReader(response.getContentAsString()));
+            .readRepresentation("application/hal+json",
+                new StringReader(response.getContentAsString()));
 
         assertThat(halResponse).isNotNull();
         assertThat(halResponse.getLinksByRel(linkRel)).isNotNull();

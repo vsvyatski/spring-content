@@ -26,10 +26,10 @@ class PartialContentInputStream extends InputStream {
     private long currentPosition = 0;
 
     public PartialContentInputStream(
-            InputStream delegate,
-            long totalLength,
-            long rangeStart,
-            long rangeEndExclusive
+        InputStream delegate,
+        long totalLength,
+        long rangeStart,
+        long rangeEndExclusive
     ) {
         this.delegate = delegate;
         if (totalLength < rangeEndExclusive) {
@@ -68,23 +68,23 @@ class PartialContentInputStream extends InputStream {
             // Or our start position is after the end of the range that we're holding
             // All positions between are outside the range
             return new BlockState(
-                    false,
-                    startPosition,
-                    endPosition
+                false,
+                startPosition,
+                endPosition
             );
         } else if (startPosition < rangeStart /* implicit by condition above: && endPosition >= rangeStart */) {
             // We are starting outside the range. Go right up until the start of the range only
             return new BlockState(
-                    false,
-                    startPosition,
-                    rangeStart
+                false,
+                startPosition,
+                rangeStart
             );
         } else {
             // We are currently inside the range. Go right up until the end of the range at most
             return new BlockState(
-                    true,
-                    startPosition,
-                    Math.min(endPosition, rangeEnd)
+                true,
+                startPosition,
+                Math.min(endPosition, rangeEnd)
             );
         }
     }
@@ -112,7 +112,7 @@ class PartialContentInputStream extends InputStream {
 
     @Override
     public int read()
-            throws IOException {
+        throws IOException {
         if (currentPosition >= totalLength) {
             return -1;
         }
@@ -165,14 +165,14 @@ class PartialContentInputStream extends InputStream {
 
     @Override
     public void close()
-            throws IOException {
+        throws IOException {
         delegate.close();
     }
 
     private record BlockState(
-            boolean insideRange,
-            long startPosition,
-            long endPosition
+        boolean insideRange,
+        long startPosition,
+        long endPosition
     ) {
 
         public long length() {

@@ -47,7 +47,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(classes = {EmbeddedIdTest.Application.class},
-        webEnvironment = WebEnvironment.RANDOM_PORT)
+    webEnvironment = WebEnvironment.RANDOM_PORT)
 @EnableAutoConfiguration(exclude = {HypermediaAutoConfiguration.class, SecurityAutoConfiguration.class})
 @ExtendWith(SpringExtension.class)
 public class EmbeddedIdTest {
@@ -193,11 +193,11 @@ public class EmbeddedIdTest {
             entity = repo.save(entity);
 
             MockHttpServletResponse response =
-                    mvc.perform(
-                                    get("/testEntities/" + entity.getId()).
-                                            accept("text/plain")).
-                            andExpect(status().isOk()).
-                            andReturn().getResponse();
+                mvc.perform(
+                        get("/testEntities/" + entity.getId()).
+                            accept("text/plain")).
+                    andExpect(status().isOk()).
+                    andReturn().getResponse();
 
             assertThat(response).isNotNull();
             assertThat(response.getContentAsString()).isEqualTo(content);

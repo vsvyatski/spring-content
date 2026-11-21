@@ -1,6 +1,7 @@
 package internal.org.springframework.content.rest.io;
 
 import jakarta.persistence.Version;
+import org.jspecify.annotations.Nullable;
 import org.springframework.content.commons.io.DeletableResource;
 import org.springframework.content.commons.io.RangeableResource;
 import org.springframework.content.commons.mappingcontext.ContentProperty;
@@ -18,7 +19,6 @@ import org.springframework.data.convert.Jsr310Converters;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.jspecify.annotations.Nullable;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.resource.HttpResource;
 
@@ -165,10 +165,10 @@ public class AssociatedStoreResourceImpl<S> implements HttpResource, AssociatedS
 
         if (lastModified != null) {
             return Stream.of(lastModified)
-                    .map(it -> getConversionService().convert(it, Date.class))//
-                    .map(it -> getConversionService().convert(it, Instant.class))//
-                    .map(it -> it.toEpochMilli())
-                    .findFirst().orElseThrow(() -> new IllegalArgumentException(format("Invalid data type for @LastModifiedDate on Entity %s", this.getAssociation())));
+                .map(it -> getConversionService().convert(it, Date.class))//
+                .map(it -> getConversionService().convert(it, Instant.class))//
+                .map(it -> it.toEpochMilli())
+                .findFirst().orElseThrow(() -> new IllegalArgumentException(format("Invalid data type for @LastModifiedDate on Entity %s", this.getAssociation())));
         }
 
         return -1L;
@@ -257,20 +257,20 @@ public class AssociatedStoreResourceImpl<S> implements HttpResource, AssociatedS
 
     @Override
     public OutputStream getOutputStream()
-            throws IOException {
+        throws IOException {
         return ((WritableResource) original).getOutputStream();
     }
 
     @Override
     public WritableByteChannel writableChannel()
-            throws IOException {
+        throws IOException {
         return ((WritableResource) original).writableChannel();
     }
 
 
     @Override
     public void delete()
-            throws IOException {
+        throws IOException {
         ((DeletableResource) original).delete();
     }
 

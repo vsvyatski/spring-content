@@ -45,7 +45,7 @@ import static java.lang.String.format;
 
 @Transactional
 public class DefaultS3StoreImpl<S, SID extends Serializable>
-        implements ContentStore<S, SID> {
+    implements ContentStore<S, SID> {
 
     private static Log logger = LogFactory.getLog(DefaultS3StoreImpl.class);
 
@@ -134,7 +134,7 @@ public class DefaultS3StoreImpl<S, SID extends Serializable>
         TypeDescriptor contentPropertyInfoType = ContentPropertyInfoTypeDescriptor.withGenerics(entity, property);
         if (placementService.canConvert(contentPropertyInfoType, TypeDescriptor.valueOf(S3ObjectId.class))) {
             ContentPropertyInfo<S, SID> contentPropertyInfo = new ContentPropertyInfo<>(entity,
-                    (SID) property.getContentId(entity), propertyPath, property);
+                (SID) property.getContentId(entity), propertyPath, property);
             s3ObjectId = (S3ObjectId) placementService.convert(contentPropertyInfo, contentPropertyInfoType, TypeDescriptor.valueOf(S3ObjectId.class));
             Resource r = this.getResourceInternal(s3ObjectId, params);
             return r;
@@ -198,21 +198,21 @@ public class DefaultS3StoreImpl<S, SID extends Serializable>
     @Override
     public void unassociate(Object entity) {
         BeanUtils.setFieldWithAnnotationConditionally(entity, ContentId.class, null,
-                new Condition() {
-                    @Override
-                    public boolean matches(Field field) {
-                        for (Annotation annotation : field.getAnnotations()) {
-                            if ("jakarta.persistence.Id".equals(
-                                    annotation.annotationType().getCanonicalName())
-                                    || "org.springframework.data.annotation.Id"
-                                    .equals(annotation.annotationType()
-                                            .getCanonicalName())) {
-                                return false;
-                            }
+            new Condition() {
+                @Override
+                public boolean matches(Field field) {
+                    for (Annotation annotation : field.getAnnotations()) {
+                        if ("jakarta.persistence.Id".equals(
+                            annotation.annotationType().getCanonicalName())
+                            || "org.springframework.data.annotation.Id"
+                            .equals(annotation.annotationType()
+                                .getCanonicalName())) {
+                            return false;
                         }
-                        return true;
                     }
-                });
+                    return true;
+                }
+            });
     }
 
     @Override
@@ -228,10 +228,10 @@ public class DefaultS3StoreImpl<S, SID extends Serializable>
             public boolean matches(TypeDescriptor descriptor) {
                 for (Annotation annotation : descriptor.getAnnotations()) {
                     if ("jakarta.persistence.Id".equals(
-                            annotation.annotationType().getCanonicalName())
-                            || "org.springframework.data.annotation.Id"
-                            .equals(annotation.annotationType()
-                                    .getCanonicalName())) {
+                        annotation.annotationType().getCanonicalName())
+                        || "org.springframework.data.annotation.Id"
+                        .equals(annotation.annotationType()
+                            .getCanonicalName())) {
                         return false;
                     }
                 }
@@ -267,9 +267,9 @@ public class DefaultS3StoreImpl<S, SID extends Serializable>
             Serializable newId = UUID.randomUUID().toString();
 
             Object convertedId = placementService.convert(
-                    newId,
-                    TypeDescriptor.forObject(newId),
-                    TypeDescriptor.valueOf(BeanUtils.getFieldWithAnnotationType(entity, ContentId.class)));
+                newId,
+                TypeDescriptor.forObject(newId),
+                TypeDescriptor.valueOf(BeanUtils.getFieldWithAnnotationType(entity, ContentId.class)));
 
             BeanUtils.setFieldWithAnnotation(entity, ContentId.class, convertedId);
         }
@@ -308,7 +308,7 @@ public class DefaultS3StoreImpl<S, SID extends Serializable>
     @Override
     public S setContent(S entity, PropertyPath propertyPath, InputStream content, long contentLen) {
         return this.setContent(entity, propertyPath, content,
-                new org.springframework.content.commons.store.SetContentParams(contentLen, true, org.springframework.content.commons.store.SetContentParams.ContentDisposition.Overwrite));
+            new org.springframework.content.commons.store.SetContentParams(contentLen, true, org.springframework.content.commons.store.SetContentParams.ContentDisposition.Overwrite));
     }
 
     @Override
@@ -324,9 +324,9 @@ public class DefaultS3StoreImpl<S, SID extends Serializable>
             Serializable newId = UUID.randomUUID().toString();
 
             Object convertedId = placementService.convert(
-                    newId,
-                    TypeDescriptor.forObject(newId),
-                    property.getContentIdType(entity));
+                newId,
+                TypeDescriptor.forObject(newId),
+                property.getContentIdType(entity));
 
             property.setContentId(entity, convertedId, null);
         }
@@ -430,21 +430,21 @@ public class DefaultS3StoreImpl<S, SID extends Serializable>
 
         // reset content fields
         BeanUtils.setFieldWithAnnotationConditionally(entity, ContentId.class, null,
-                new Condition() {
-                    @Override
-                    public boolean matches(Field field) {
-                        for (Annotation annotation : field.getAnnotations()) {
-                            if ("jakarta.persistence.Id".equals(
-                                    annotation.annotationType().getCanonicalName())
-                                    || "org.springframework.data.annotation.Id"
-                                    .equals(annotation.annotationType()
-                                            .getCanonicalName())) {
-                                return false;
-                            }
+            new Condition() {
+                @Override
+                public boolean matches(Field field) {
+                    for (Annotation annotation : field.getAnnotations()) {
+                        if ("jakarta.persistence.Id".equals(
+                            annotation.annotationType().getCanonicalName())
+                            || "org.springframework.data.annotation.Id"
+                            .equals(annotation.annotationType()
+                                .getCanonicalName())) {
+                            return false;
                         }
-                        return true;
                     }
-                });
+                    return true;
+                }
+            });
         Class<?> contentLenType = BeanUtils.getFieldWithAnnotationType(entity, ContentLength.class);
         if (contentLenType != null) {
             BeanUtils.setFieldWithAnnotation(entity, ContentLength.class, BeanUtils.getDefaultValueForType(contentLenType));
@@ -484,10 +484,10 @@ public class DefaultS3StoreImpl<S, SID extends Serializable>
                 public boolean matches(TypeDescriptor descriptor) {
                     for (Annotation annotation : descriptor.getAnnotations()) {
                         if ("jakarta.persistence.Id".equals(
-                                annotation.annotationType().getCanonicalName())
-                                || "org.springframework.data.annotation.Id"
-                                .equals(annotation.annotationType()
-                                        .getCanonicalName())) {
+                            annotation.annotationType().getCanonicalName())
+                            || "org.springframework.data.annotation.Id"
+                            .equals(annotation.annotationType()
+                                .getCanonicalName())) {
                             return false;
                         }
                     }

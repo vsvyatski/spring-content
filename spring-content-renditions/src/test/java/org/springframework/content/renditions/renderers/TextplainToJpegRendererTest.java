@@ -58,7 +58,7 @@ public class TextplainToJpegRendererTest {
                     @BeforeEach
                     void setUp() {
                         input = new ByteArrayInputStream(
-                                "Hello Spring Content World!".getBytes());
+                            "Hello Spring Content World!".getBytes());
 
                         renderer = new TextplainToJpegRenderer(wrapText);
 
@@ -72,7 +72,7 @@ public class TextplainToJpegRendererTest {
                     @Test
                     void shouldProduceTheCorrectImage() {
                         InputStream expected = this.getClass().getResourceAsStream(
-                                "/textplaintorenderer/single-line.jpeg");
+                            "/textplaintorenderer/single-line.jpeg");
                         assertThat(expected).isNotNull();
                         assertThat(result).isNotNull();
                         // InputStream expected =
@@ -88,7 +88,7 @@ public class TextplainToJpegRendererTest {
                     @BeforeEach
                     void setUp() {
                         input = new ByteArrayInputStream(
-                                "Hello\nSpring\n\nContent\n\n\nWorld!".getBytes());
+                            "Hello\nSpring\n\nContent\n\n\nWorld!".getBytes());
 
                         renderer = new TextplainToJpegRenderer(wrapText);
 
@@ -113,8 +113,8 @@ public class TextplainToJpegRendererTest {
                     void setUp() {
                         wrapText = true;
                         input = new ByteArrayInputStream(
-                                "Hello Spring Content World!  This is a really long line that we expect to wrap"
-                                        .getBytes());
+                            "Hello Spring Content World!  This is a really long line that we expect to wrap"
+                                .getBytes());
 
                         renderer = new TextplainToJpegRenderer(wrapText);
 
@@ -138,8 +138,8 @@ public class TextplainToJpegRendererTest {
                     @BeforeEach
                     void setUp() {
                         input = new ByteArrayInputStream(
-                                "Hello Spring Content World!  This is a really long line that we expect to wrap"
-                                        .getBytes());
+                            "Hello Spring Content World!  This is a really long line that we expect to wrap"
+                                .getBytes());
 
                         renderer = new TextplainToJpegRenderer(wrapText);
 
@@ -163,8 +163,8 @@ public class TextplainToJpegRendererTest {
                     @BeforeEach
                     void setUp() {
                         input = new ByteArrayInputStream(
-                                "Hello\n\nSpring\n\nContent\n\nWorld!\n\n\nThis\n\nis\n\na\n\nreally\n\nreally\n\nreally\n\nreally\n\nreally\n\nlong\n\nfile\n\nthat\n\nwill\n\noverflow\n\nthe\n\nimage"
-                                        .getBytes());
+                            "Hello\n\nSpring\n\nContent\n\nWorld!\n\n\nThis\n\nis\n\na\n\nreally\n\nreally\n\nreally\n\nreally\n\nreally\n\nlong\n\nfile\n\nthat\n\nwill\n\noverflow\n\nthe\n\nimage"
+                                .getBytes());
 
                         renderer = new TextplainToJpegRenderer(wrapText);
 

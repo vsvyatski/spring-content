@@ -33,11 +33,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @WebAppConfiguration
 @ContextConfiguration(classes = {
-        BaseUriConfig.class,
-        DelegatingWebMvcConfiguration.class,
-        RepositoryRestMvcConfiguration.class,
-        RestConfiguration.class,
-        HypermediaConfiguration.class})
+    BaseUriConfig.class,
+    DelegatingWebMvcConfiguration.class,
+    RepositoryRestMvcConfiguration.class,
+    RestConfiguration.class,
+    HypermediaConfiguration.class})
 @Transactional
 @ActiveProfiles("store")
 @ExtendWith(SpringExtension.class)

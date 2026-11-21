@@ -1,7 +1,9 @@
 package internal.org.springframework.content.rest.links;
 
-import org.springframework.content.test.support.TestSupportData;
-import internal.org.springframework.content.rest.links.linkrel.*;
+import internal.org.springframework.content.rest.links.linkrel.LinkRelAuditedNestedContentEntityStore;
+import internal.org.springframework.content.rest.links.linkrel.LinkRelDualContentRenditionEntityStore;
+import internal.org.springframework.content.rest.links.linkrel.LinkRelEmbeddedDualContentEntityStore;
+import internal.org.springframework.content.rest.links.linkrel.LinkRelUuidSingleContentEntityStore;
 import internal.org.springframework.content.rest.support.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -9,12 +11,11 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.content.commons.property.PropertyPath;
+import org.springframework.content.test.support.TestSupportData;
 import org.springframework.test.context.NestedTestConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-
-import java.io.ByteArrayInputStream;
 
 import static java.lang.String.format;
 
@@ -45,7 +46,7 @@ public class ContentLinkRelIT {
                     this.setUrl("/api/testEntities/" + entity.getId());
                     this.setLinkRel("foo/content");
                     this.setExpectedLinkRegex(
-                            format("http://localhost/contentApi/testEntitiesContent/%s/content", entity.getId()));
+                        format("http://localhost/contentApi/testEntitiesContent/%s/content", entity.getId()));
                 }
 
                 @Test
@@ -67,13 +68,13 @@ public class ContentLinkRelIT {
                     LinkRelDualContentRenditionEntityStore store5 = context.getBean(LinkRelDualContentRenditionEntityStore.class);
                     DualContentRenditionEntity entity = new DualContentRenditionEntity();
                     store5.setContent(entity, PropertyPath.from("content"),
-                            TestSupportData.sampleTextStream());
+                        TestSupportData.sampleTextStream());
                     entity = repository5.save(entity);
                     this.setMvc(mvc);
                     this.setUrl("/api/testEntity5s/" + entity.getId());
                     this.setLinkRel("foo/content");
                     this.setExpectedLinkRegex(
-                            format("http://localhost/contentApi/testEntity5s/%s/content", entity.getId()));
+                        format("http://localhost/contentApi/testEntity5s/%s/content", entity.getId()));
                 }
 
                 @Test
@@ -96,7 +97,7 @@ public class ContentLinkRelIT {
                     AuditedNestedContentEntity entity = new AuditedNestedContentEntity();
                     entity.getChild().setMimeType("text/plain");
                     store2.setContent(entity, PropertyPath.from("child"),
-                            TestSupportData.sampleTextStream());
+                        TestSupportData.sampleTextStream());
                     entity = repository2.save(entity);
                     this.setMvc(mvc);
                     this.setUrl("/api/files/" + entity.getId());
@@ -125,16 +126,16 @@ public class ContentLinkRelIT {
                     entity.getChild().setContentMimeType("text/plain");
                     entity.getChild().setContentFileName("test");
                     store10.setContent(entity, PropertyPath.from("child/content"),
-                            TestSupportData.sampleTextStream());
+                        TestSupportData.sampleTextStream());
                     entity.getChild().setPreviewMimeType("text/plain");
                     store10.setContent(entity, PropertyPath.from("child/preview"),
-                            TestSupportData.sampleTextStream());
+                        TestSupportData.sampleTextStream());
                     entity = repository10.save(entity);
                     this.setMvc(mvc);
                     this.setUrl("/api/testEntity10s/" + entity.getId());
                     this.setLinkRel("foo/child/content");
                     this.setExpectedLinkRegex(
-                            format("http://localhost/contentApi/testEntity10s/%s/child/content", entity.getId()));
+                        format("http://localhost/contentApi/testEntity10s/%s/child/content", entity.getId()));
                 }
 
                 @Test

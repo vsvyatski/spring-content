@@ -15,9 +15,9 @@ import org.springframework.content.commons.store.StoreAccessException;
 import org.springframework.content.commons.store.UnsetContentParams;
 import org.springframework.content.mongo.config.EnableMongoStores;
 import org.springframework.content.test.support.NullableAssertions;
+import org.springframework.content.test.support.TestSupportData;
 import org.springframework.content.test.support.TestSupportPackages;
 import org.springframework.content.test.support.mongo.*;
-import org.springframework.content.test.support.TestSupportData;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -104,7 +104,7 @@ public class MongoStoreIT {
                         repo = context.getBean(DualContentMongoRepository.class);
                         store = context.getBean(DualContentMongoStore.class);
 
-                                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                         genericResource = store.getResource(resourceLocation);
                     }
@@ -142,7 +142,7 @@ public class MongoStoreIT {
                             repo = context.getBean(DualContentMongoRepository.class);
                             store = context.getBean(DualContentMongoStore.class);
 
-                                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                            resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                             genericResource = store.getResource(resourceLocation);
 
@@ -186,7 +186,7 @@ public class MongoStoreIT {
                             repo = context.getBean(DualContentMongoRepository.class);
                             store = context.getBean(DualContentMongoStore.class);
 
-                                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                            resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                             genericResource = store.getResource(resourceLocation);
 
@@ -235,7 +235,7 @@ public class MongoStoreIT {
                             repo = context.getBean(DualContentMongoRepository.class);
                             store = context.getBean(DualContentMongoStore.class);
 
-                                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                            resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                             genericResource = store.getResource(resourceLocation);
 
@@ -285,7 +285,7 @@ public class MongoStoreIT {
                         repo = context.getBean(DualContentMongoRepository.class);
                         store = context.getBean(DualContentMongoStore.class);
 
-                                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                         entity = new DualContentMongoDocument();
                         entity = repo.save(entity);
@@ -320,7 +320,7 @@ public class MongoStoreIT {
                                 repo = context.getBean(DualContentMongoRepository.class);
                                 store = context.getBean(DualContentMongoStore.class);
 
-                                                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                                 entity = new DualContentMongoDocument();
                                 entity = repo.save(entity);
@@ -356,7 +356,7 @@ public class MongoStoreIT {
                                 repo = context.getBean(DualContentMongoRepository.class);
                                 store = context.getBean(DualContentMongoStore.class);
 
-                                                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                                 entity = new DualContentMongoDocument();
                                 entity = repo.save(entity);
@@ -399,7 +399,7 @@ public class MongoStoreIT {
                                 repo = context.getBean(DualContentMongoRepository.class);
                                 store = context.getBean(DualContentMongoStore.class);
 
-                                                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                                 entity = new DualContentMongoDocument();
                                 entity = repo.save(entity);
@@ -438,7 +438,7 @@ public class MongoStoreIT {
                                 repo = context.getBean(DualContentMongoRepository.class);
                                 store = context.getBean(DualContentMongoStore.class);
 
-                                                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                                 entity = new DualContentMongoDocument();
                                 entity = repo.save(entity);
@@ -478,7 +478,7 @@ public class MongoStoreIT {
                                 repo = context.getBean(DualContentMongoRepository.class);
                                 store = context.getBean(DualContentMongoStore.class);
 
-                                                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                                 entity = new DualContentMongoDocument();
                                 entity = repo.save(entity);
@@ -518,7 +518,7 @@ public class MongoStoreIT {
                                 repo = context.getBean(DualContentMongoRepository.class);
                                 store = context.getBean(DualContentMongoStore.class);
 
-                                                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                                 entity = new DualContentMongoDocument();
                                 entity = repo.save(entity);
@@ -564,7 +564,7 @@ public class MongoStoreIT {
                     repo = context.getBean(DualContentMongoRepository.class);
                     store = context.getBean(DualContentMongoStore.class);
 
-                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new DualContentMongoDocument();
                     entity = repo.save(entity);
@@ -622,7 +622,7 @@ public class MongoStoreIT {
                     repo = context.getBean(DualContentMongoRepository.class);
                     store = context.getBean(DualContentMongoStore.class);
 
-                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new DualContentMongoDocument();
                     entity = repo.save(entity);
@@ -669,7 +669,7 @@ public class MongoStoreIT {
                     repo = context.getBean(DualContentMongoRepository.class);
                     store = context.getBean(DualContentMongoStore.class);
 
-                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new DualContentMongoDocument();
                     entity = repo.save(entity);
@@ -716,7 +716,7 @@ public class MongoStoreIT {
                     repo = context.getBean(DualContentMongoRepository.class);
                     store = context.getBean(DualContentMongoStore.class);
 
-                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new DualContentMongoDocument();
                     entity = repo.save(entity);
@@ -767,7 +767,7 @@ public class MongoStoreIT {
                     repo = context.getBean(DualContentMongoRepository.class);
                     store = context.getBean(DualContentMongoStore.class);
 
-                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new DualContentMongoDocument();
                     entity = repo.save(entity);
@@ -823,7 +823,7 @@ public class MongoStoreIT {
                     repo = context.getBean(DualContentMongoRepository.class);
                     store = context.getBean(DualContentMongoStore.class);
 
-                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new DualContentMongoDocument();
                     entity = repo.save(entity);
@@ -870,7 +870,7 @@ public class MongoStoreIT {
                     repo = context.getBean(DualContentMongoRepository.class);
                     store = context.getBean(DualContentMongoStore.class);
 
-                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new DualContentMongoDocument();
                     entity = repo.save(entity);
@@ -908,7 +908,7 @@ public class MongoStoreIT {
                     repo = context.getBean(DualContentMongoRepository.class);
                     store = context.getBean(DualContentMongoStore.class);
 
-                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new DualContentMongoDocument();
                     entity = repo.save(entity);
@@ -946,7 +946,7 @@ public class MongoStoreIT {
                     repo = context.getBean(DualContentMongoRepository.class);
                     store = context.getBean(DualContentMongoStore.class);
 
-                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new DualContentMongoDocument();
                     entity = repo.save(entity);
@@ -984,7 +984,7 @@ public class MongoStoreIT {
                     repo = context.getBean(DualContentMongoRepository.class);
                     store = context.getBean(DualContentMongoStore.class);
 
-                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new DualContentMongoDocument();
                     entity = repo.save(entity);
@@ -1028,7 +1028,7 @@ public class MongoStoreIT {
                     repo = context.getBean(DualContentMongoRepository.class);
                     store = context.getBean(DualContentMongoStore.class);
 
-                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new DualContentMongoDocument();
                     entity = repo.save(entity);

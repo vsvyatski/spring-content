@@ -99,10 +99,10 @@ public class ElasticsearchIndexServiceImpl<T> implements IndexService<T> {
 
         try {
             var res = client.index(i -> i
-                    .index(manager.indexName(entity.getClass()))
-                    .id(id)
-                    .pipeline(SPRING_CONTENT_ATTACHMENT)
-                    .document(attributesToSync));
+                .index(manager.indexName(entity.getClass()))
+                .id(id)
+                .pipeline(SPRING_CONTENT_ATTACHMENT)
+                .document(attributesToSync));
             LOGGER.info(format("Content '%s' indexed with result %s", id, res.result()));
         } catch (IOException e) {
             throw new StoreAccessException(format("Error indexing content %s", id), e);
@@ -149,9 +149,9 @@ public class ElasticsearchIndexServiceImpl<T> implements IndexService<T> {
         }
         if (!found) {
             var wpr = client.ingest().putPipeline(p -> p
-                    .id(SPRING_CONTENT_ATTACHMENT)
-                    .description("Extract attachment information encoded in Base64 with UTF-8 charset")
-                    .processors(proc -> proc.attachment(a -> a.field("data"))));
+                .id(SPRING_CONTENT_ATTACHMENT)
+                .description("Extract attachment information encoded in Base64 with UTF-8 charset")
+                .processors(proc -> proc.attachment(a -> a.field("data"))));
             Assert.isTrue(wpr.acknowledged(), "Attachment pipeline not acknowledged by server");
         }
         pipelinedInitialized = true;

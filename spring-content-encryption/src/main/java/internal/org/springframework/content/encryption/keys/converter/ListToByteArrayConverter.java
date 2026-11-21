@@ -36,8 +36,8 @@ public class ListToByteArrayConverter implements ConditionalGenericConverter {
     @Override
     public Object convert(Object source, @NonNull TypeDescriptor sourceType, @NonNull TypeDescriptor targetType) {
         List<byte[]> converted = ((List) source).stream()
-                .map(item -> conversionService.convert(item, sourceType.getElementTypeDescriptor(), targetType))
-                .toList();
+            .map(item -> conversionService.convert(item, sourceType.getElementTypeDescriptor(), targetType))
+            .toList();
         var convertedTotalSize = converted.stream().mapToInt(b -> b.length).sum();
 
         var bb = ByteBuffer.allocate(Character.BYTES + Integer.BYTES + converted.size() * Integer.BYTES + convertedTotalSize);

@@ -9,5 +9,5 @@ import java.util.UUID;
 
 @StoreRestResource(path = "testEntity10s", linkRel = "foo")
 public interface LinkRelEmbeddedDualContentEntityStore extends FileSystemContentStore<EmbeddedDualContentEntity, UUID>,
-        Renderable<EmbeddedDualContentEntity> {
+    Renderable<EmbeddedDualContentEntity> {
 }

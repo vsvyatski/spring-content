@@ -236,7 +236,7 @@ public class LockingAndVersioningRepositoryImpl<T, ID extends Serializable> impl
             this.unlock(currentVersion);
 
             newVersion = (S) versioner
-                    .establishSuccessor(newVersion, info.getNumber(), info.getLabel(), ancestorRoot, currentVersion);
+                .establishSuccessor(newVersion, info.getNumber(), info.getLabel(), ancestorRoot, currentVersion);
             em.persist(newVersion);
             Object newId = getId(newVersion);
 

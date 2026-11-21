@@ -11,26 +11,26 @@ import java.util.function.Supplier;
 
 class ByteBufferCodec<D, B> {
     private static final Map<Class<?>, BytesConverter<?>> CONVERTERS = Map.of(
-            byte[].class, new BytesConverter<>(
-                    b -> b.length,
-                    ByteBuffer::put,
-                    (bb, len) -> {
-                        byte[] data = new byte[len];
-                        bb.get(data);
-                        return data;
-                    }
-            ),
-            String.class, new BytesConverter<>(
-                    String::length,
-                    (bb, s) -> {
-                        bb.put(s.getBytes(StandardCharsets.UTF_8));
-                    },
-                    (bb, len) -> {
-                        byte[] data = new byte[len];
-                        bb.get(data);
-                        return new String(data, StandardCharsets.UTF_8);
-                    }
-            )
+        byte[].class, new BytesConverter<>(
+            b -> b.length,
+            ByteBuffer::put,
+            (bb, len) -> {
+                byte[] data = new byte[len];
+                bb.get(data);
+                return data;
+            }
+        ),
+        String.class, new BytesConverter<>(
+            String::length,
+            (bb, s) -> {
+                bb.put(s.getBytes(StandardCharsets.UTF_8));
+            },
+            (bb, len) -> {
+                byte[] data = new byte[len];
+                bb.get(data);
+                return new String(data, StandardCharsets.UTF_8);
+            }
+        )
     );
     private final char marker;
     private final List<Field<D, B, ?>> fields;
@@ -54,8 +54,8 @@ class ByteBufferCodec<D, B> {
 
     public byte[] encode(D object) {
         var fieldLength = fields.stream()
-                .mapToInt(field -> getConverter(field).length(field.get(object)) + Integer.BYTES)
-                .sum();
+            .mapToInt(field -> getConverter(field).length(field.get(object)) + Integer.BYTES)
+            .sum();
 
         var bb = ByteBuffer.allocate(Character.BYTES + Integer.BYTES + fieldLength);
         bb.putChar(marker);
@@ -116,17 +116,17 @@ class ByteBufferCodec<D, B> {
 
             if (writtenBytes != len) {
                 throw new IllegalStateException(
-                        "Write function did not write requested number of bytes (requested %d; written %d)"
-                                .formatted(len, writtenBytes)
+                    "Write function did not write requested number of bytes (requested %d; written %d)"
+                        .formatted(len, writtenBytes)
                 );
             }
         }
     }
 
     public record Field<D, B, T>(
-            Class<T> type,
-            Function<D, T> getter,
-            BiFunction<B, T, B> builderSetter
+        Class<T> type,
+        Function<D, T> getter,
+        BiFunction<B, T, B> builderSetter
     ) {
         T get(D data) {
             return getter.apply(data);

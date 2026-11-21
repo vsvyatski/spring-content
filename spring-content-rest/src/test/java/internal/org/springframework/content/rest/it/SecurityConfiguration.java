@@ -12,7 +12,7 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) {
         http.csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(c -> c.requestMatchers("/**").permitAll());
+            .authorizeHttpRequests(c -> c.requestMatchers("/**").permitAll());
 
         return http.build();
     }

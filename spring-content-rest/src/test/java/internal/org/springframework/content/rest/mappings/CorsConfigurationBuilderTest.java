@@ -49,7 +49,7 @@ public class CorsConfigurationBuilderTest {
     }
 
     @CrossOrigin(methods = {RequestMethod.GET, RequestMethod.PUT, RequestMethod.POST,
-            RequestMethod.DELETE})
+        RequestMethod.DELETE})
     public interface StoreWithAllowedMethods extends Store<UUID> {
     }
 

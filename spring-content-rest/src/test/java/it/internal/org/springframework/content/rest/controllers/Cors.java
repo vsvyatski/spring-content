@@ -38,10 +38,10 @@ public class Cors {
         @Test
         void shouldReturnTheRelevantCORSHeadersAndOK() throws Exception {
             mvc.perform(options(url)
-                            .header("Access-Control-Request-Method", "DELETE")
-                            .header("Origin", "http://www.someurl.com"))
-                    .andExpect(status().isOk())
-                    .andExpect(header().string("Access-Control-Allow-Origin", "http://www.someurl.com"));
+                    .header("Access-Control-Request-Method", "DELETE")
+                    .header("Origin", "http://www.someurl.com"))
+                .andExpect(status().isOk())
+                .andExpect(header().string("Access-Control-Allow-Origin", "http://www.someurl.com"));
         }
     }
 
@@ -50,9 +50,9 @@ public class Cors {
         @Test
         void shouldBeForbidden() throws Exception {
             mvc.perform(options(url)
-                            .header("Access-Control-Request-Method", "DELETE")
-                            .header("Origin", "http://www.someotherurl.com"))
-                    .andExpect(status().isForbidden());
+                    .header("Access-Control-Request-Method", "DELETE")
+                    .header("Origin", "http://www.someotherurl.com"))
+                .andExpect(status().isForbidden());
         }
     }
 }

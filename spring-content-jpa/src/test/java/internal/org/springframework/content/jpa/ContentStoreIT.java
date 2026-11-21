@@ -9,8 +9,8 @@ import org.springframework.content.commons.property.PropertyPath;
 import org.springframework.content.commons.store.SetContentParams;
 import org.springframework.content.commons.store.UnsetContentParams;
 import org.springframework.content.test.support.NullableAssertions;
-import org.springframework.content.test.support.jpa.*;
 import org.springframework.content.test.support.TestSupportData;
+import org.springframework.content.test.support.jpa.*;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -18,7 +18,6 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.util.function.ThrowingSupplier;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -72,7 +71,9 @@ public class ContentStoreIT {
         NullableAssertions.assertNull(content);
     }
 
-    /** AssociativeStore#getResource may return null; call through here for null-marked assertions. */
+    /**
+     * AssociativeStore#getResource may return null; call through here for null-marked assertions.
+     */
     public static void assertNullResource(@Nullable Resource resource) {
         NullableAssertions.assertNull(resource);
     }

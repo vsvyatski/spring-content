@@ -54,13 +54,13 @@ public final class ContentPropertyUtils {
     public static boolean isWrapperType(Class<?> type) {
 
         return Boolean.class.equals(type) ||
-                Byte.class.equals(type) ||
-                Character.class.equals(type) ||
-                Double.class.equals(type) ||
-                Float.class.equals(type) ||
-                Integer.class.equals(type) ||
-                Long.class.equals(type) ||
-                Short.class.equals(type);
+            Byte.class.equals(type) ||
+            Character.class.equals(type) ||
+            Double.class.equals(type) ||
+            Float.class.equals(type) ||
+            Integer.class.equals(type) ||
+            Long.class.equals(type) ||
+            Short.class.equals(type);
     }
 
 
@@ -68,9 +68,9 @@ public final class ContentPropertyUtils {
 
         if (IS_JPA_PRESENT) {
             if (f.getAnnotation(OneToOne.class) != null ||
-                    f.getAnnotation(OneToMany.class) != null ||
-                    f.getAnnotation(ManyToOne.class) != null ||
-                    f.getAnnotation(ManyToMany.class) != null) {
+                f.getAnnotation(OneToMany.class) != null ||
+                f.getAnnotation(ManyToOne.class) != null ||
+                f.getAnnotation(ManyToMany.class) != null) {
                 return true;
             }
         }

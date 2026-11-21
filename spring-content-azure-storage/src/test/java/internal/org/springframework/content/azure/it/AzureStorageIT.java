@@ -16,9 +16,9 @@ import org.springframework.content.commons.store.GetResourceParams;
 import org.springframework.content.commons.store.SetContentParams;
 import org.springframework.content.commons.store.StoreAccessException;
 import org.springframework.content.commons.store.UnsetContentParams;
+import org.springframework.content.test.support.TestSupportData;
 import org.springframework.content.test.support.TestSupportPackages;
 import org.springframework.content.test.support.jpa.*;
-import org.springframework.content.test.support.TestSupportData;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -130,7 +130,7 @@ public class AzureStorageIT {
                         store = context.getBean(DualContentJpaLongIdStore.class);
 
 
-                                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                         genericResource = store.getResource(resourceLocation);
                     }
@@ -174,7 +174,7 @@ public class AzureStorageIT {
                             store = context.getBean(DualContentJpaLongIdStore.class);
 
 
-                                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                            resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                             genericResource = store.getResource(resourceLocation);
 
@@ -224,7 +224,7 @@ public class AzureStorageIT {
                             store = context.getBean(DualContentJpaLongIdStore.class);
 
 
-                                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                            resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                             genericResource = store.getResource(resourceLocation);
 
@@ -279,7 +279,7 @@ public class AzureStorageIT {
                             store = context.getBean(DualContentJpaLongIdStore.class);
 
 
-                                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                            resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                             genericResource = store.getResource(resourceLocation);
 
@@ -336,7 +336,7 @@ public class AzureStorageIT {
                         store = context.getBean(DualContentJpaLongIdStore.class);
 
 
-                                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                         entity = new DualContentJpaLongIdEntity();
                         entity = repo.save(entity);
@@ -370,7 +370,7 @@ public class AzureStorageIT {
                                 store = context.getBean(DualContentJpaLongIdStore.class);
 
 
-                                                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                                 entity = new DualContentJpaLongIdEntity();
                                 entity = repo.save(entity);
@@ -405,7 +405,7 @@ public class AzureStorageIT {
                                 store = context.getBean(DualContentJpaLongIdStore.class);
 
 
-                                                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                                 entity = new DualContentJpaLongIdEntity();
                                 entity = repo.save(entity);
@@ -447,7 +447,7 @@ public class AzureStorageIT {
                                 store = context.getBean(DualContentJpaLongIdStore.class);
 
 
-                                                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                                 entity = new DualContentJpaLongIdEntity();
                                 entity = repo.save(entity);
@@ -485,7 +485,7 @@ public class AzureStorageIT {
                                 store = context.getBean(DualContentJpaLongIdStore.class);
 
 
-                                                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                                 entity = new DualContentJpaLongIdEntity();
                                 entity = repo.save(entity);
@@ -524,7 +524,7 @@ public class AzureStorageIT {
                                 store = context.getBean(DualContentJpaLongIdStore.class);
 
 
-                                                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                                 entity = new DualContentJpaLongIdEntity();
                                 entity = repo.save(entity);
@@ -563,7 +563,7 @@ public class AzureStorageIT {
                                 store = context.getBean(DualContentJpaLongIdStore.class);
 
 
-                                                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                                 entity = new DualContentJpaLongIdEntity();
                                 entity = repo.save(entity);
@@ -608,7 +608,7 @@ public class AzureStorageIT {
                     store = context.getBean(DualContentJpaLongIdStore.class);
 
 
-                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new DualContentJpaLongIdEntity();
                     entity = repo.save(entity);
@@ -663,7 +663,7 @@ public class AzureStorageIT {
                     store = context.getBean(DualContentJpaLongIdStore.class);
 
 
-                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new DualContentJpaLongIdEntity();
                     entity = repo.save(entity);
@@ -709,7 +709,7 @@ public class AzureStorageIT {
                     store = context.getBean(DualContentJpaLongIdStore.class);
 
 
-                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new DualContentJpaLongIdEntity();
                     entity = repo.save(entity);
@@ -755,7 +755,7 @@ public class AzureStorageIT {
                     store = context.getBean(DualContentJpaLongIdStore.class);
 
 
-                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new DualContentJpaLongIdEntity();
                     entity = repo.save(entity);
@@ -804,7 +804,7 @@ public class AzureStorageIT {
                     store = context.getBean(DualContentJpaLongIdStore.class);
 
 
-                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new DualContentJpaLongIdEntity();
                     entity = repo.save(entity);
@@ -858,7 +858,7 @@ public class AzureStorageIT {
                     store = context.getBean(DualContentJpaLongIdStore.class);
 
 
-                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new DualContentJpaLongIdEntity();
                     entity = repo.save(entity);
@@ -903,7 +903,7 @@ public class AzureStorageIT {
                     store = context.getBean(DualContentJpaLongIdStore.class);
 
 
-                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new DualContentJpaLongIdEntity();
                     entity = repo.save(entity);
@@ -940,7 +940,7 @@ public class AzureStorageIT {
                     store = context.getBean(DualContentJpaLongIdStore.class);
 
 
-                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new DualContentJpaLongIdEntity();
                     entity = repo.save(entity);
@@ -977,7 +977,7 @@ public class AzureStorageIT {
                     store = context.getBean(DualContentJpaLongIdStore.class);
 
 
-                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new DualContentJpaLongIdEntity();
                     entity = repo.save(entity);
@@ -1014,7 +1014,7 @@ public class AzureStorageIT {
                     store = context.getBean(DualContentJpaLongIdStore.class);
 
 
-                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new DualContentJpaLongIdEntity();
                     entity = repo.save(entity);

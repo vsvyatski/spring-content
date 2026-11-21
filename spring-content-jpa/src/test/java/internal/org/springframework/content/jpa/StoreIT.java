@@ -8,8 +8,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.content.commons.io.DeletableResource;
 import org.springframework.content.jpa.config.EnableJpaStores;
-import org.springframework.content.test.support.TestSupportPackages;
 import org.springframework.content.test.support.TestSupportData;
+import org.springframework.content.test.support.TestSupportPackages;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -43,12 +43,14 @@ import static org.mockito.Mockito.mock;
 
 public class StoreIT {
 
-    /** Shared by JPA storage ITs; SqlServer/Oracle need Docker and stay commented until re-enabled (#2227). */
+    /**
+     * Shared by JPA storage ITs; SqlServer/Oracle need Docker and stay commented until re-enabled (#2227).
+     */
     public static final Class<?>[] DATABASE_CONFIG_CLASSES = {
-            H2Config.class,
-            HSQLConfig.class,
-            MySqlConfig.class,
-            PostgresConfig.class,
+        H2Config.class,
+        HSQLConfig.class,
+        MySqlConfig.class,
+        PostgresConfig.class,
 //			SqlServerConfig.class,
 //			OracleConfig.class
     };
@@ -457,7 +459,7 @@ public class StoreIT {
 
             r = store.getResource(getId());
             try (InputStream is = TestSupportData.sampleTextStream();
-                    OutputStream os = ((WritableResource) r).getOutputStream()) {
+                 OutputStream os = ((WritableResource) r).getOutputStream()) {
                 IOUtils.copy(is, os);
             }
             try {
@@ -490,11 +492,11 @@ public class StoreIT {
 
             r = store.getResource(getId());
             try (InputStream is = TestSupportData.sampleTextStream();
-                    OutputStream os = ((WritableResource) r).getOutputStream()) {
+                 OutputStream os = ((WritableResource) r).getOutputStream()) {
                 IOUtils.copy(is, os);
             }
             try (InputStream is = TestSupportData.sampleUpdatedTextStream();
-                    OutputStream os = ((WritableResource) r).getOutputStream()) {
+                 OutputStream os = ((WritableResource) r).getOutputStream()) {
                 IOUtils.copy(is, os);
             }
 

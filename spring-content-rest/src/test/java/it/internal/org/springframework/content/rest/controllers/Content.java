@@ -6,8 +6,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.content.commons.store.ContentStore;
-import org.springframework.content.test.support.TestSupportData;
 import org.springframework.content.commons.store.Store;
+import org.springframework.content.test.support.TestSupportData;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.http.HttpMethod;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -90,8 +90,8 @@ public class Content {
         @Test
         void shouldReturn404() throws Exception {
             mvc.perform(get(url)
-                            .accept("*/*"))
-                    .andExpect(status().isNotFound());
+                    .accept("*/*"))
+                .andExpect(status().isNotFound());
         }
     }
 
@@ -100,8 +100,8 @@ public class Content {
         @Test
         void shouldReturn404() throws Exception {
             mvc.perform(get(url)
-                            .accept("text/plain"))
-                    .andExpect(status().isNotFound());
+                    .accept("text/plain"))
+                .andExpect(status().isNotFound());
         }
     }
 
@@ -111,11 +111,11 @@ public class Content {
         void shouldSetTheContentAndReturn201() throws Exception {
             String content = "Hello New Spring Content World!";
             mvc.perform(
-                            put(url)
-                                    .contextPath(contextPath)
-                                    .content(content)
-                                    .contentType("text/plain"))
-                    .andExpect(status().isCreated());
+                    put(url)
+                        .contextPath(contextPath)
+                        .content(content)
+                        .contentType("text/plain"))
+                .andExpect(status().isCreated());
 
             Optional<ContentEntity> fetched = repository.findById(entity.getId());
             assertThat(fetched.isPresent()).isTrue();
@@ -131,8 +131,8 @@ public class Content {
         @Test
         void shouldReturn404() throws Exception {
             mvc.perform(delete(url)
-                    .contextPath(contextPath)
-                    .accept("text/plain")).andExpect(status().isNotFound());
+                .contextPath(contextPath)
+                .accept("text/plain")).andExpect(status().isNotFound());
         }
     }
 
@@ -143,10 +143,10 @@ public class Content {
             String content = "This is Spring Content!";
 
             mvc.perform(multipart(url)
-                            .file(new MockMultipartFile("file", "表单ID及字段.txt", "text/plain", content.getBytes()))
-                            .contextPath(contextPath)
-                    )
-                    .andExpect(status().isCreated());
+                    .file(new MockMultipartFile("file", "表单ID及字段.txt", "text/plain", content.getBytes()))
+                    .contextPath(contextPath)
+                )
+                .andExpect(status().isCreated());
 
             Optional<ContentEntity> fetched = repository.findById(entity.getId());
             assertThat(fetched.isPresent()).isTrue();
@@ -175,14 +175,14 @@ public class Content {
                 assertThat(Charset.defaultCharset()).isEqualTo(Charset.forName("UTF-8"));
 
                 MockHttpServletResponse response = mvc
-                        .perform(get(url)
-                                .contextPath(contextPath)
-                                .accept("text/plain"))
-                        .andExpect(status().isOk()).andReturn().getResponse();
+                    .perform(get(url)
+                        .contextPath(contextPath)
+                        .accept("text/plain"))
+                    .andExpect(status().isOk()).andReturn().getResponse();
 
                 assertThat(response).isNotNull();
                 assertThat(response.getHeader("Content-Disposition")).contains(
-                        "filename*=UTF-8''" + URLEncoder.encode("表单ID及字段.txt", StandardCharsets.UTF_8));
+                    "filename*=UTF-8''" + URLEncoder.encode("表单ID及字段.txt", StandardCharsets.UTF_8));
                 assertThat(response.getContentAsString()).isEqualTo("Hello Spring Content World!");
             }
         }
@@ -201,11 +201,11 @@ public class Content {
             @Test
             void shouldReturnTheOriginalContent() throws Exception {
                 MockHttpServletResponse response = mvc.perform(
-                                get(url)
-                                        .contextPath(contextPath)
-                        )
-                        .andExpect(status().isOk())
-                        .andReturn().getResponse();
+                        get(url)
+                            .contextPath(contextPath)
+                    )
+                    .andExpect(status().isOk())
+                    .andReturn().getResponse();
 
                 assertThat(response).isNotNull();
                 assertThat(response.getContentAsString()).isEqualTo("Hello Spring Content World!");
@@ -226,11 +226,11 @@ public class Content {
             @Test
             void shouldReturnTheRenditionAnd200() throws Exception {
                 MockHttpServletResponse response = mvc
-                        .perform(get(url)
-                                .contextPath(contextPath)
-                                .accept("text/html"))
-                        .andExpect(status().isOk()).andReturn()
-                        .getResponse();
+                    .perform(get(url)
+                        .contextPath(contextPath)
+                        .accept("text/html"))
+                    .andExpect(status().isOk()).andReturn()
+                    .getResponse();
 
                 assertThat(response).isNotNull();
                 assertThat(response.getContentAsString()).isEqualTo(TestSupportData.SAMPLE_REST_HTML_RENDITION_BODY);
@@ -256,11 +256,11 @@ public class Content {
             @Test
             void shouldReturnTheRenditionAnd200() throws Exception {
                 MockHttpServletResponse response = mvc
-                        .perform(get(url)
-                                .contextPath(contextPath)
-                                .accept("text/html"))
-                        .andExpect(status().isOk()).andReturn()
-                        .getResponse();
+                    .perform(get(url)
+                        .contextPath(contextPath)
+                        .accept("text/html"))
+                    .andExpect(status().isOk()).andReturn()
+                    .getResponse();
 
                 assertThat(response).isNotNull();
                 assertThat(response.getContentAsString()).isEqualTo("<html><body>original content</body></html>");
@@ -282,10 +282,10 @@ public class Content {
             @Test
             void shouldReturnTheOriginalContentAnd200() throws Exception {
                 MockHttpServletResponse response = mvc.perform(get(url)
-                                .contextPath(contextPath)
-                                .accept(new String[]{"text/xml", "text/plain"}))
-                        .andExpect(status().isOk()).andReturn()
-                        .getResponse();
+                        .contextPath(contextPath)
+                        .accept(new String[]{"text/xml", "text/plain"}))
+                    .andExpect(status().isOk()).andReturn()
+                    .getResponse();
 
                 assertThat(response).isNotNull();
                 assertThat(response.getContentAsString()).isEqualTo("Hello Spring Content World!");
@@ -307,10 +307,10 @@ public class Content {
             @Test
             void shouldReturnTheOriginalContentAnd200() throws Exception {
                 MockHttpServletResponse response = mvc.perform(get(url)
-                                .contextPath(contextPath)
-                                .accept(new String[]{"text/xml", "text/html", "*/*"}))
-                        .andExpect(status().isOk()).andReturn()
-                        .getResponse();
+                        .contextPath(contextPath)
+                        .accept(new String[]{"text/xml", "text/html", "*/*"}))
+                    .andExpect(status().isOk()).andReturn()
+                    .getResponse();
 
                 assertThat(response).isNotNull();
                 assertThat(response.getContentAsString()).isEqualTo(TestSupportData.SAMPLE_REST_HTML_RENDITION_BODY);
@@ -332,10 +332,10 @@ public class Content {
             @Test
             void shouldReturnTheOriginalContentAnd200() throws Exception {
                 MockHttpServletResponse response = mvc.perform(get(url)
-                                .contextPath(contextPath)
-                                .accept(new String[]{"*/*"}))
-                        .andExpect(status().isOk()).andReturn()
-                        .getResponse();
+                        .contextPath(contextPath)
+                        .accept(new String[]{"*/*"}))
+                    .andExpect(status().isOk()).andReturn()
+                    .getResponse();
 
                 assertThat(response).isNotNull();
                 assertThat(response.getContentAsString()).isEqualTo("Hello Spring Content World!");
@@ -357,10 +357,10 @@ public class Content {
             @Test
             void shouldReturnTheOriginalContentAnd200() throws Exception {
                 MockHttpServletResponse response = mvc.perform(get(url)
-                                .contextPath(contextPath)
-                                .accept("text/html;charset=ISO-8859-1"))
-                        .andExpect(status().isOk()).andReturn()
-                        .getResponse();
+                        .contextPath(contextPath)
+                        .accept("text/html;charset=ISO-8859-1"))
+                    .andExpect(status().isOk()).andReturn()
+                    .getResponse();
 
                 assertThat(response).isNotNull();
                 assertThat(response.getContentAsString()).isEqualTo(TestSupportData.SAMPLE_REST_HTML_RENDITION_BODY);
@@ -385,10 +385,10 @@ public class Content {
             @Test
             void shouldReturnTheOriginalContentAnd200() throws Exception {
                 MockHttpServletResponse response = mvc.perform(get(url)
-                                .contextPath(contextPath)
-                                .accept(new String[]{"text/plain"}))
-                        .andExpect(status().isOk()).andReturn()
-                        .getResponse();
+                        .contextPath(contextPath)
+                        .accept(new String[]{"text/plain"}))
+                    .andExpect(status().isOk()).andReturn()
+                    .getResponse();
 
                 assertThat(response).isNotNull();
                 assertThat(response.getContentAsString()).isEqualTo("Hello Spring Content World!");
@@ -410,9 +410,9 @@ public class Content {
             @Test
             void shouldReturnTheOriginalContentAnd200() throws Exception {
                 mvc.perform(get(url)
-                                .contextPath(contextPath)
-                                .accept("text/css"))
-                        .andExpect(status().isNotFound());
+                        .contextPath(contextPath)
+                        .accept("text/css"))
+                    .andExpect(status().isNotFound());
             }
         }
 
@@ -430,12 +430,12 @@ public class Content {
             @Test
             void shouldReturnTheContentRangeAnd206() throws Exception {
                 MockHttpServletResponse response = mvc
-                        .perform(get(url)
-                                .contextPath(contextPath)
-                                .accept("text/plain")
-                                .header("range", "bytes=6-19"))
-                        .andExpect(status().isPartialContent()).andReturn()
-                        .getResponse();
+                    .perform(get(url)
+                        .contextPath(contextPath)
+                        .accept("text/plain")
+                        .header("range", "bytes=6-19"))
+                    .andExpect(status().isPartialContent()).andReturn()
+                    .getResponse();
 
                 assertThat(response).isNotNull();
                 assertThat(response.getContentAsString()).isEqualTo("Spring Content");
@@ -456,10 +456,10 @@ public class Content {
             @Test
             void shouldOverwriteTheContentAndReturn200() throws Exception {
                 mvc.perform(put(url)
-                                .contextPath(contextPath)
-                                .content("Hello Modified Spring Content World!")
-                                .contentType("text/plain"))
-                        .andExpect(status().isOk());
+                        .contextPath(contextPath)
+                        .content("Hello Modified Spring Content World!")
+                        .contentType("text/plain"))
+                    .andExpect(status().isOk());
 
                 assertThat(IOUtils.toString(((ContentStore) store).getContent(entity), Charset.defaultCharset())).isEqualTo("Hello Modified Spring Content World!");
             }
@@ -481,12 +481,12 @@ public class Content {
                 String content = "This is Modified Spring Content!";
 
                 mvc.perform(multipart(url)
-                                .file(new MockMultipartFile("file",
-                                        "tests-file-modified.txt",
-                                        "text/plain", content.getBytes()))
-                                .contextPath(contextPath)
-                        )
-                        .andExpect(status().isOk());
+                        .file(new MockMultipartFile("file",
+                            "tests-file-modified.txt",
+                            "text/plain", content.getBytes()))
+                        .contextPath(contextPath)
+                    )
+                    .andExpect(status().isOk());
 
                 Optional<ContentEntity> fetched = repository.findById(entity.getId());
                 assertThat(fetched.isPresent()).isTrue();
@@ -511,10 +511,10 @@ public class Content {
             @Test
             void shouldReturn400BadRequest() throws Exception {
                 mvc.perform(post(url)
-                                .content("some content")
-                                .contextPath(contextPath)
-                        )
-                        .andExpect(status().isBadRequest());
+                        .content("some content")
+                        .contextPath(contextPath)
+                    )
+                    .andExpect(status().isBadRequest());
             }
         }
 
@@ -534,12 +534,12 @@ public class Content {
                 String content = "This is Modified Spring Content!";
 
                 mvc.perform(multipart(HttpMethod.PUT, url)
-                                .file(new MockMultipartFile("file",
-                                        "tests-file-modified.txt",
-                                        "text/plain", content.getBytes()))
-                                .contextPath(contextPath)
-                        )
-                        .andExpect(status().isOk());
+                        .file(new MockMultipartFile("file",
+                            "tests-file-modified.txt",
+                            "text/plain", content.getBytes()))
+                        .contextPath(contextPath)
+                    )
+                    .andExpect(status().isOk());
 
                 Optional<ContentEntity> fetched = repository.findById(entity.getId());
                 assertThat(fetched.isPresent()).isTrue();
@@ -564,10 +564,10 @@ public class Content {
             @Test
             void shouldDeleteTheContentAttributesAndReturnA200Response() throws Exception {
                 mvc.perform(delete(url)
-                                .contentType("text/plain")
-                                .contextPath(contextPath)
-                        )
-                        .andExpect(status().isNoContent());
+                        .contentType("text/plain")
+                        .contextPath(contextPath)
+                    )
+                    .andExpect(status().isNoContent());
 
                 Optional<ContentEntity> fetched = repository.findById(entity.getId());
                 assertThat(fetched.isPresent()).isTrue();

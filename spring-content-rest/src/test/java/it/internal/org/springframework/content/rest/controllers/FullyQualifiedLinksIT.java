@@ -2,8 +2,8 @@ package it.internal.org.springframework.content.rest.controllers;
 
 import internal.org.springframework.content.rest.support.FullyQualifiedLinksConfig;
 import internal.org.springframework.content.rest.support.UuidSingleContentEntity;
-import internal.org.springframework.content.rest.support.UuidSingleContentEntityStore;
 import internal.org.springframework.content.rest.support.UuidSingleContentEntityRepository;
+import internal.org.springframework.content.rest.support.UuidSingleContentEntityStore;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -22,10 +22,10 @@ import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfigu
 
 @WebAppConfiguration
 @ContextConfiguration(classes = {
-        FullyQualifiedLinksConfig.class,
-        DelegatingWebMvcConfiguration.class,
-        RepositoryRestMvcConfiguration.class,
-        RestConfiguration.class})
+    FullyQualifiedLinksConfig.class,
+    DelegatingWebMvcConfiguration.class,
+    RepositoryRestMvcConfiguration.class,
+    RestConfiguration.class})
 @Transactional
 @ExtendWith(SpringExtension.class)
 public class FullyQualifiedLinksIT {

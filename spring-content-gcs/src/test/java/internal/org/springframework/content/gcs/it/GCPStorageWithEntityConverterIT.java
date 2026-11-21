@@ -12,8 +12,8 @@ import org.springframework.content.commons.property.PropertyPath;
 import org.springframework.content.gcs.config.EnableGCPStorage;
 import org.springframework.content.gcs.config.GCPStorageConfigurer;
 import org.springframework.content.test.support.FakeEntity;
-import org.springframework.content.test.support.TestSupportPackages;
 import org.springframework.content.test.support.TestSupportData;
+import org.springframework.content.test.support.TestSupportPackages;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,7 +29,6 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
-import java.io.ByteArrayInputStream;
 import java.io.Serializable;
 import java.util.stream.Stream;
 

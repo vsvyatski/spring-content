@@ -18,9 +18,9 @@ import org.springframework.content.commons.store.SetContentParams;
 import org.springframework.content.commons.store.StoreAccessException;
 import org.springframework.content.commons.store.UnsetContentParams;
 import org.springframework.content.s3.config.EnableS3Stores;
+import org.springframework.content.test.support.TestSupportData;
 import org.springframework.content.test.support.TestSupportPackages;
 import org.springframework.content.test.support.jpa.*;
-import org.springframework.content.test.support.TestSupportData;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
@@ -36,6 +36,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.util.Arrays;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -136,7 +137,7 @@ public class S3StoreIT {
                             }
                         }
 
-                                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                         genericResource = store.getResource(resourceLocation);
                     }
@@ -200,7 +201,7 @@ public class S3StoreIT {
                                 }
                             }
 
-                                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                            resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                             genericResource = store.getResource(resourceLocation);
 
@@ -266,7 +267,7 @@ public class S3StoreIT {
                                 }
                             }
 
-                                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                            resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                             genericResource = store.getResource(resourceLocation);
 
@@ -336,7 +337,7 @@ public class S3StoreIT {
                                 }
                             }
 
-                                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                            resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                             genericResource = store.getResource(resourceLocation);
 
@@ -403,7 +404,7 @@ public class S3StoreIT {
                                 }
                             }
 
-                                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                            resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                             genericResource = store.getResource(resourceLocation);
 
@@ -474,7 +475,7 @@ public class S3StoreIT {
                             }
                         }
 
-                                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                         entity = new DualContentJpaLongIdMimeEntity();
                         entity = repo.save(entity);
@@ -527,7 +528,7 @@ public class S3StoreIT {
                                     }
                                 }
 
-                                                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                                 entity = new DualContentJpaLongIdMimeEntity();
                                 entity = repo.save(entity);
@@ -581,7 +582,7 @@ public class S3StoreIT {
                                     }
                                 }
 
-                                                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                                 entity = new DualContentJpaLongIdMimeEntity();
                                 entity = repo.save(entity);
@@ -638,7 +639,7 @@ public class S3StoreIT {
                                     }
                                 }
 
-                                                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                                 entity = new DualContentJpaLongIdMimeEntity();
                                 entity = repo.save(entity);
@@ -696,7 +697,7 @@ public class S3StoreIT {
                                     }
                                 }
 
-                                                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                                 entity = new DualContentJpaLongIdMimeEntity();
                                 entity = repo.save(entity);
@@ -754,7 +755,7 @@ public class S3StoreIT {
                                     }
                                 }
 
-                                                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                                 entity = new DualContentJpaLongIdMimeEntity();
                                 entity = repo.save(entity);
@@ -818,7 +819,7 @@ public class S3StoreIT {
                         }
                     }
 
-                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new DualContentJpaLongIdMimeEntity();
                     entity.setContentType("text/plain");
@@ -905,7 +906,7 @@ public class S3StoreIT {
                         }
                     }
 
-                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new DualContentJpaLongIdMimeEntity();
                     entity.setContentType("text/plain");
@@ -974,7 +975,7 @@ public class S3StoreIT {
                         }
                     }
 
-                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new DualContentJpaLongIdMimeEntity();
                     entity.setContentType("text/plain");
@@ -1043,7 +1044,7 @@ public class S3StoreIT {
                         }
                     }
 
-                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new DualContentJpaLongIdMimeEntity();
                     entity.setContentType("text/plain");
@@ -1109,7 +1110,7 @@ public class S3StoreIT {
                         }
                     }
 
-                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new DualContentJpaLongIdMimeEntity();
                     entity.setContentType("text/plain");
@@ -1185,7 +1186,7 @@ public class S3StoreIT {
                         }
                     }
 
-                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new DualContentJpaLongIdMimeEntity();
                     entity.setContentType("text/plain");
@@ -1250,7 +1251,7 @@ public class S3StoreIT {
                         }
                     }
 
-                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new DualContentJpaLongIdMimeEntity();
                     entity.setContentType("text/plain");
@@ -1308,7 +1309,7 @@ public class S3StoreIT {
                         }
                     }
 
-                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new DualContentJpaLongIdMimeEntity();
                     entity.setContentType("text/plain");
@@ -1366,7 +1367,7 @@ public class S3StoreIT {
                         }
                     }
 
-                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new DualContentJpaLongIdMimeEntity();
                     entity.setContentType("text/plain");
@@ -1424,7 +1425,7 @@ public class S3StoreIT {
                         }
                     }
 
-                                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new DualContentJpaLongIdMimeEntity();
                     entity.setContentType("text/plain");
@@ -1486,7 +1487,7 @@ public class S3StoreIT {
                             }
                         }
 
-                                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                         entity = new DualContentJpaLongIdMimeEntity();
                         entity.setContentType("text/plain");

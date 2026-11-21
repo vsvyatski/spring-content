@@ -19,7 +19,7 @@ public class ContentJpaDatabaseInitializer extends DataSourceScriptDatabaseIniti
     private static DatabaseInitializationSettings getSettings(ContentJpaProperties properties, DataSource dataSource) {
         DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
         settings.setSchemaLocations(Collections.singletonList(properties.getSchema()
-                .replace("@@platform@@", getDatabaseName(dataSource))));
+            .replace("@@platform@@", getDatabaseName(dataSource))));
 //        settings.setDataLocations(scriptLocations(this.properties.getDataLocations(), "data", this.properties.getPlatform()));
         settings.setContinueOnError(false);
         settings.setMode(properties.getInitializer().getInitializeSchema());
@@ -29,7 +29,7 @@ public class ContentJpaDatabaseInitializer extends DataSourceScriptDatabaseIniti
     private static String getDatabaseName(DataSource dataSource) {
         try {
             String productName = JdbcUtils.commonDatabaseName(JdbcUtils
-                    .extractDatabaseMetaData(dataSource, DatabaseMetaData::getDatabaseProductName));
+                .extractDatabaseMetaData(dataSource, DatabaseMetaData::getDatabaseProductName));
             DatabaseDriver databaseDriver = DatabaseDriver.fromProductName(productName);
             if (databaseDriver == DatabaseDriver.UNKNOWN) {
                 throw new IllegalStateException("Unable to detect database type");

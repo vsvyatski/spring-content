@@ -42,18 +42,18 @@ public class AesCtrEncryptionEngine implements ContentEncryptionEngine {
         byte[] iv = new byte[IV_SIZE_BYTES];
         secureRandom.nextBytes(iv);
         return new EncryptionParameters(
-                secretKey,
-                iv
+            secretKey,
+            iv
         );
     }
 
     private Cipher initializeCipher(EncryptionParameters parameters, boolean forEncryption)
-            throws GeneralSecurityException {
+        throws GeneralSecurityException {
         Cipher cipher = Cipher.getInstance("AES/CTR/NoPadding");
         cipher.init(
-                forEncryption ? Cipher.ENCRYPT_MODE : Cipher.DECRYPT_MODE,
-                parameters.secretKey(),
-                new IvParameterSpec(parameters.initializationVector())
+            forEncryption ? Cipher.ENCRYPT_MODE : Cipher.DECRYPT_MODE,
+            parameters.secretKey(),
+            new IvParameterSpec(parameters.initializationVector())
         );
 
         return cipher;
@@ -70,17 +70,17 @@ public class AesCtrEncryptionEngine implements ContentEncryptionEngine {
 
     @Override
     public InputStream decrypt(
-            Function<InputStreamRequestParameters, InputStream> cipherTextStreamRequest,
-            EncryptionParameters encryptionParameters,
-            InputStreamRequestParameters requestParameters
+        Function<InputStreamRequestParameters, InputStream> cipherTextStreamRequest,
+        EncryptionParameters encryptionParameters,
+        InputStreamRequestParameters requestParameters
     ) {
         var blockStartOffset = calculateBlockOffset(requestParameters.startByteOffset());
 
         var adjustedIv = adjustIvForOffset(encryptionParameters.initializationVector(), blockStartOffset);
 
         var adjustedParameters = new EncryptionParameters(
-                encryptionParameters.secretKey(),
-                adjustedIv
+            encryptionParameters.secretKey(),
+            adjustedIv
         );
 
         var byteStartOffset = blockStartOffset * AES_BLOCK_SIZE_BYTES;
@@ -95,16 +95,16 @@ public class AesCtrEncryptionEngine implements ContentEncryptionEngine {
         }
 
         return new ZeroPrefixedInputStream(
-                new EnsureSingleSkipInputStream(
-                        new CipherInputStream(
-                                new SkippingInputStream(
-                                        cipherTextStream,
-                                        byteStartOffset
-                                ),
-                                cipher
-                        )
-                ),
-                byteStartOffset
+            new EnsureSingleSkipInputStream(
+                new CipherInputStream(
+                    new SkippingInputStream(
+                        cipherTextStream,
+                        byteStartOffset
+                    ),
+                    cipher
+                )
+            ),
+            byteStartOffset
         );
     }
 
@@ -118,7 +118,7 @@ public class AesCtrEncryptionEngine implements ContentEncryptionEngine {
         // This block IV is built from the initial IV and the block counter.
         var initialIv = new BigInteger(1, iv);
         byte[] bigintBytes = initialIv.add(BigInteger.valueOf(offsetBlocks))
-                .toByteArray();
+            .toByteArray();
 
         // Because we're using BigInteger for math here,
         // the resulting byte array may be longer (when overflowing the IV size, we should wrap around)

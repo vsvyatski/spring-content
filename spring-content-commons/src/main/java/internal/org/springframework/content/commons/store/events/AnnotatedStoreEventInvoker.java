@@ -5,32 +5,8 @@ import org.apache.commons.logging.LogFactory;
 import org.jspecify.annotations.NonNull;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.content.commons.annotations.HandleAfterAssociate;
-import org.springframework.content.commons.annotations.HandleAfterGetContent;
-import org.springframework.content.commons.annotations.HandleAfterGetResource;
-import org.springframework.content.commons.annotations.HandleAfterSetContent;
-import org.springframework.content.commons.annotations.HandleAfterUnassociate;
-import org.springframework.content.commons.annotations.HandleAfterUnsetContent;
-import org.springframework.content.commons.annotations.HandleBeforeAssociate;
-import org.springframework.content.commons.annotations.HandleBeforeGetContent;
-import org.springframework.content.commons.annotations.HandleBeforeGetResource;
-import org.springframework.content.commons.annotations.HandleBeforeSetContent;
-import org.springframework.content.commons.annotations.HandleBeforeUnassociate;
-import org.springframework.content.commons.annotations.HandleBeforeUnsetContent;
-import org.springframework.content.commons.annotations.StoreEventHandler;
-import org.springframework.content.commons.store.events.AfterAssociateEvent;
-import org.springframework.content.commons.store.events.AfterGetContentEvent;
-import org.springframework.content.commons.store.events.AfterGetResourceEvent;
-import org.springframework.content.commons.store.events.AfterSetContentEvent;
-import org.springframework.content.commons.store.events.AfterUnassociateEvent;
-import org.springframework.content.commons.store.events.AfterUnsetContentEvent;
-import org.springframework.content.commons.store.events.BeforeAssociateEvent;
-import org.springframework.content.commons.store.events.BeforeGetContentEvent;
-import org.springframework.content.commons.store.events.BeforeGetResourceEvent;
-import org.springframework.content.commons.store.events.BeforeSetContentEvent;
-import org.springframework.content.commons.store.events.BeforeUnassociateEvent;
-import org.springframework.content.commons.store.events.BeforeUnsetContentEvent;
-import org.springframework.content.commons.store.events.StoreEvent;
+import org.springframework.content.commons.annotations.*;
+import org.springframework.content.commons.store.events.*;
 import org.springframework.content.commons.utils.ReflectionService;
 import org.springframework.content.commons.utils.ReflectionServiceImpl;
 import org.springframework.context.ApplicationEvent;
@@ -49,7 +25,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class AnnotatedStoreEventInvoker
-        implements ApplicationListener<ApplicationEvent>, BeanPostProcessor {
+    implements ApplicationListener<ApplicationEvent>, BeanPostProcessor {
 
     private static final Log logger = LogFactory.getLog(AnnotatedStoreEventInvoker.class);
 
@@ -75,13 +51,13 @@ public class AnnotatedStoreEventInvoker
 
     @Override
     public Object postProcessBeforeInitialization(@NonNull Object bean, @NonNull String beanName)
-            throws BeansException {
+        throws BeansException {
         return bean;
     }
 
     @Override
     public Object postProcessAfterInitialization(@NonNull Object bean, @NonNull String beanName)
-            throws BeansException {
+        throws BeansException {
 
         Class<?> beanType = ClassUtils.getUserClass(bean);
         StoreEventHandler typeAnno = AnnotationUtils.findAnnotation(beanType, StoreEventHandler.class);
@@ -94,7 +70,7 @@ public class AnnotatedStoreEventInvoker
 
             @Override
             public void doWith(@NonNull Method method)
-                    throws IllegalArgumentException {
+                throws IllegalArgumentException {
                 findHandler(bean, method, HandleBeforeGetResource.class, BeforeGetResourceEvent.class);
                 findHandler(bean, method, HandleAfterGetResource.class, AfterGetResourceEvent.class);
                 findHandler(bean, method, HandleBeforeAssociate.class, BeforeAssociateEvent.class);
@@ -129,9 +105,9 @@ public class AnnotatedStoreEventInvoker
             Object src = event.getSource();
 
             if ((isStoreEventType(handlerMethod.targetType) &&
-                    !ClassUtils.isAssignable(handlerMethod.targetType, event.getClass())) ||
-                    (!isStoreEventType(handlerMethod.targetType) &&
-                            !ClassUtils.isAssignable(handlerMethod.targetType, src.getClass()))) {
+                !ClassUtils.isAssignable(handlerMethod.targetType, event.getClass())) ||
+                (!isStoreEventType(handlerMethod.targetType) &&
+                    !ClassUtils.isAssignable(handlerMethod.targetType, src.getClass()))) {
                 continue;
             }
 
@@ -144,11 +120,11 @@ public class AnnotatedStoreEventInvoker
 
             if (logger.isDebugEnabled()) {
                 logger.debug(String.format("Invoking %s handler for %s.",
-                        event.getClass().getSimpleName(), event.getSource()));
+                    event.getClass().getSimpleName(), event.getSource()));
             }
 
             reflectionService.invokeMethod(handlerMethod.method, handlerMethod.handler,
-                    parameters.toArray());
+                parameters.toArray());
         }
     }
 
@@ -164,14 +140,14 @@ public class AnnotatedStoreEventInvoker
 
         if (parameterTypes.length == 0) {
             throw new IllegalStateException(String.format(
-                    "Event handler method %s must have a content object argument",
-                    method.getName()));
+                "Event handler method %s must have a content object argument",
+                method.getName()));
         }
 
         EventHandlerMethod handlerMethod = new EventHandlerMethod(parameterTypes[0], bean, method);
 
         logger.debug(
-                String.format("Annotated handler method found: {%s}", handlerMethod));
+            String.format("Annotated handler method found: {%s}", handlerMethod));
 
         List<EventHandlerMethod> events = handlerMethods.get(eventType);
 
@@ -216,8 +192,8 @@ public class AnnotatedStoreEventInvoker
         @Override
         public String toString() {
             return String.format(
-                    "EventHandlerMethod{ targetType=%s, method=%s, handler=%s }",
-                    targetType, method, handler);
+                "EventHandlerMethod{ targetType=%s, method=%s, handler=%s }",
+                targetType, method, handler);
         }
     }
 }

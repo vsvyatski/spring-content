@@ -18,11 +18,11 @@ import org.springframework.content.azure.config.EnableAzureStorage;
 import org.springframework.content.commons.config.ContentPropertyInfo;
 import org.springframework.content.commons.property.PropertyPath;
 import org.springframework.content.test.support.FakeEntity;
+import org.springframework.content.test.support.TestSupportData;
 import org.springframework.content.test.support.TestSupportPackages;
 import org.springframework.content.test.support.jpa.DualContentJpaLongIdMimeEntity;
 import org.springframework.content.test.support.jpa.DualContentJpaLongIdMimeRepository;
 import org.springframework.content.test.support.jpa.DualContentJpaLongIdMimeStore;
-import org.springframework.content.test.support.TestSupportData;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -38,7 +38,6 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
-import java.io.ByteArrayInputStream;
 import java.io.Serializable;
 import java.util.stream.Stream;
 

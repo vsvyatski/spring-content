@@ -1,8 +1,8 @@
 package internal.org.springframework.content.rest.it.config;
 
 import internal.org.springframework.content.rest.it.SecurityConfiguration;
-import internal.org.springframework.content.rest.support.UuidSingleContentEntity;
 import internal.org.springframework.content.rest.support.AuditedNestedContentEntity;
+import internal.org.springframework.content.rest.support.UuidSingleContentEntity;
 import internal.org.springframework.content.rest.support.mockstore.EnableMockStores;
 import internal.org.springframework.content.rest.support.mockstore.MockContentStore;
 import internal.org.springframework.content.rest.support.mockstore.MockStoreFactoryBean;
@@ -74,9 +74,9 @@ public class PreferResourceForPutsAndPostsIT {
     }
 
     @SpringBootApplication(exclude = {
-            MongoAutoConfiguration.class,
-            DataMongoAutoConfiguration.class,
-            DataMongoRepositoriesAutoConfiguration.class
+        MongoAutoConfiguration.class,
+        DataMongoAutoConfiguration.class,
+        DataMongoRepositoriesAutoConfiguration.class
     })
     public static class Application {
 
@@ -163,10 +163,10 @@ public class PreferResourceForPutsAndPostsIT {
             tentity = repo.save(tentity);
 
             given()
-                    .contentType("text/plain")
-                    .body("some content".getBytes())
-                    .when()
-                    .post("/testEntities/" + tentity.getId());
+                .contentType("text/plain")
+                .body("some content".getBytes())
+                .when()
+                .post("/testEntities/" + tentity.getId());
 
             MockStoreFactoryBean storeFactory = context.getBean(MockStoreFactoryBean.class);
 

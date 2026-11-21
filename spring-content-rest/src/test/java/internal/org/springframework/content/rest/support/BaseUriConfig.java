@@ -89,7 +89,7 @@ public class BaseUriConfig extends JpaInfrastructureConfig {
                     input = "";
                 }
                 return new ByteArrayInputStream(
-                        String.format("<html><body>%s</body></html>", input).getBytes());
+                    String.format("<html><body>%s</body></html>", input).getBytes());
             }
         };
     }

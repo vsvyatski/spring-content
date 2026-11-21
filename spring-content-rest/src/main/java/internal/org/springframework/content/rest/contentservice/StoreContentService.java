@@ -39,7 +39,7 @@ public class StoreContentService implements ContentService {
 
     @Override
     public void getContent(HttpServletRequest request, HttpServletResponse response, HttpHeaders headers, Resource resource, MediaType resourceType)
-            throws ResponseStatusException {
+        throws ResponseStatusException {
         try {
             MediaType producedResourceType = null;
             List<MediaType> acceptedMimeTypes = headers.getAccept();
@@ -48,9 +48,9 @@ public class StoreContentService implements ContentService {
                 MimeTypeUtils.sortBySpecificity(acceptedMimeTypes);
                 for (MediaType acceptedMimeType : acceptedMimeTypes) {
                     if (resource instanceof RenderableResource && ((RenderableResource) resource)
-                            .isRenderableAs(acceptedMimeType)) {
+                        .isRenderableAs(acceptedMimeType)) {
                         resource = new RenderedResource(((RenderableResource) resource)
-                                .renderAs(acceptedMimeType), resource);
+                            .renderAs(acceptedMimeType), resource);
                         producedResourceType = acceptedMimeType;
                         break;
                     } else if (acceptedMimeType.includes(resourceType)) {
@@ -94,7 +94,7 @@ public class StoreContentService implements ContentService {
 
     @Override
     public void setContent(HttpServletRequest request, HttpServletResponse response, HttpHeaders headers, Resource source, MediaType sourceMimeType, Resource target)
-            throws IOException, MethodNotAllowedException {
+        throws IOException, MethodNotAllowedException {
 
         InputStream in = source.getInputStream();
         OutputStream out = ((WritableResource) target).getOutputStream();

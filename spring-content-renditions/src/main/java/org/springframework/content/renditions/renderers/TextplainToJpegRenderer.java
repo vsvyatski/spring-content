@@ -63,7 +63,7 @@ public class TextplainToJpegRenderer implements RenditionProvider {
         BufferedImage tempBuffer = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
         Graphics2D g = tempBuffer.createGraphics();
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                RenderingHints.VALUE_ANTIALIAS_ON);
+            RenderingHints.VALUE_ANTIALIAS_ON);
         g.setFont(font);
 
         FontRenderContext fc = g.getFontRenderContext();
@@ -101,9 +101,9 @@ public class TextplainToJpegRenderer implements RenditionProvider {
 
             AttributedString attribString = new AttributedString(line);
             attribString.addAttribute(TextAttribute.BACKGROUND, Color.WHITE, 0,
-                    line.length());
+                line.length());
             attribString.addAttribute(TextAttribute.FOREGROUND, Color.BLACK, 0,
-                    line.length());
+                line.length());
             attribString.addAttribute(TextAttribute.FONT, font, 0, line.length());
 
             AttributedCharacterIterator aci = attribString.getIterator();
@@ -111,11 +111,11 @@ public class TextplainToJpegRenderer implements RenditionProvider {
 
             while (lbm.getPosition() < line.length()) {
                 BufferedImage lineBuffer = new BufferedImage(width, lineHeight,
-                        BufferedImage.TYPE_INT_ARGB);
+                    BufferedImage.TYPE_INT_ARGB);
 
                 Graphics2D g1 = lineBuffer.createGraphics();
                 g1.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                        RenderingHints.VALUE_ANTIALIAS_ON);
+                    RenderingHints.VALUE_ANTIALIAS_ON);
 
                 TextLayout layout = lbm.nextLayout(width - margin);
 
@@ -154,7 +154,7 @@ public class TextplainToJpegRenderer implements RenditionProvider {
 
         for (int i = 0; i < images.size(); i++) {
             g.drawImage(images.get(i), 0, margin + (i * lineHeight),
-                    null);
+                null);
         }
 
         OutputStream out = new FileOutputStream(fileName);

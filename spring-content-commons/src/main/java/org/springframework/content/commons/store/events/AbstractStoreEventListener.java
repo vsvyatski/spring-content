@@ -5,10 +5,10 @@ import org.springframework.context.ApplicationListener;
 import static org.springframework.core.GenericTypeResolver.resolveTypeArgument;
 
 public abstract class AbstractStoreEventListener<T>
-        implements ApplicationListener<StoreEvent> {
+    implements ApplicationListener<StoreEvent> {
 
     private final Class<?> INTERESTED_TYPE = resolveTypeArgument(getClass(),
-            AbstractStoreEventListener.class);
+        AbstractStoreEventListener.class);
 
     /*
      * (non-Javadoc)

@@ -17,8 +17,8 @@ public class RepositoryEntityMultipartConfiguration {
         return new RepositoryRestConfigurer() {
             public void configureHttpMessageConverters(List<HttpMessageConverter<?>> messageConverters) {
                 var multipartConverters = messageConverters.stream()
-                        .map(RepositoryEntityMultipartHttpMessageConverter::new)
-                        .toList();
+                    .map(RepositoryEntityMultipartHttpMessageConverter::new)
+                    .toList();
 
                 messageConverters.addAll(multipartConverters);
             }

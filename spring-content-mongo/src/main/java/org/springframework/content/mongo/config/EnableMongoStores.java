@@ -5,6 +5,7 @@ import internal.org.springframework.content.mongo.config.MongoStoreConfiguration
 import internal.org.springframework.content.mongo.config.MongoStoreFactoryBean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.context.annotation.Import;
+
 import java.lang.annotation.*;
 
 @Target(ElementType.TYPE)

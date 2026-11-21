@@ -1,27 +1,27 @@
 <settings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/SETTINGS/1.0.0"
           xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
-    <!-- This file can be used as an example for the one you have in your ~/.m2/settings.xml -->
-    <servers>
-        <server>
-            <!-- User token for Central Portal -->
-            <id>central</id>
-            <username>${env.CENTRAL_USERNAME}</username>
-            <password>${env.CENTRAL_PASSWORD}</password>
-        </server>
-    </servers>
-    <profiles>
-        <profile>
-            <!-- Used for signing -->
-            <id>central</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <properties>
-                <gpg.executable>gpg</gpg.executable>
-                <gpg.keyname>${env.GPG_KEY_NAME}</gpg.keyname>
-                <!-- The standard environment variable MAVEN_GPG_PASSPHRASE can be utilized instead. -->
-                <gpg.passphrase>${env.GPG_PASSPHRASE}</gpg.passphrase>
-            </properties>
-        </profile>
-    </profiles>
+  <!-- This file can be used as an example for the one you have in your ~/.m2/settings.xml -->
+  <servers>
+    <server>
+      <!-- User token for Central Portal -->
+      <id>central</id>
+      <username>${env.CENTRAL_USERNAME}</username>
+      <password>${env.CENTRAL_PASSWORD}</password>
+    </server>
+  </servers>
+  <profiles>
+    <profile>
+      <!-- Used for signing -->
+      <id>central</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <properties>
+        <gpg.executable>gpg</gpg.executable>
+        <gpg.keyname>${env.GPG_KEY_NAME}</gpg.keyname>
+        <!-- The standard environment variable MAVEN_GPG_PASSPHRASE can be utilized instead. -->
+        <gpg.passphrase>${env.GPG_PASSPHRASE}</gpg.passphrase>
+      </properties>
+    </profile>
+  </profiles>
 </settings>

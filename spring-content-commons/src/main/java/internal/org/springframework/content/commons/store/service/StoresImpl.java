@@ -44,15 +44,15 @@ public class StoresImpl implements Stores, InitializingBean {
 
             if (ContentStore.class.isAssignableFrom(factory.getStoreInterface())) {
                 StoreInfo info = new StoreInfoImpl(
-                        factory.getStoreInterface(),
-                        TypeInformation.of(factory.getStoreInterface()).getRequiredSuperTypeInformation(ContentStore.class).getTypeArguments().get(0).getType(),
-                        new StoreSupplier(this.factory, beanNameFromFactoryBeanName(name)));
+                    factory.getStoreInterface(),
+                    TypeInformation.of(factory.getStoreInterface()).getRequiredSuperTypeInformation(ContentStore.class).getTypeArguments().get(0).getType(),
+                    new StoreSupplier(this.factory, beanNameFromFactoryBeanName(name)));
                 storeInfos.add(info);
             } else {
                 StoreInfo info = new StoreInfoImpl(
-                        factory.getStoreInterface(),
-                        getDomainObjectClass(factory.getStoreInterface()),
-                        new StoreSupplier(this.factory, beanNameFromFactoryBeanName(name)));
+                    factory.getStoreInterface(),
+                    getDomainObjectClass(factory.getStoreInterface()),
+                    new StoreSupplier(this.factory, beanNameFromFactoryBeanName(name)));
                 storeInfos.add(info);
             }
         }
@@ -67,9 +67,9 @@ public class StoresImpl implements Stores, InitializingBean {
         for (Type genericInterface : genericInterfaces) {
             if (genericInterface instanceof ParameterizedType) {
                 if (((ParameterizedType) genericInterface).getRawType()
-                        .equals(ContentStore.class)) {
+                    .equals(ContentStore.class)) {
                     Type t = ((ParameterizedType) genericInterface)
-                            .getActualTypeArguments()[0];
+                        .getActualTypeArguments()[0];
                     return (Class<?>) t;
                 }
             }

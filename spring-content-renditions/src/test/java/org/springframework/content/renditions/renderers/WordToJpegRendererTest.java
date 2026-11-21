@@ -105,7 +105,7 @@ public class WordToJpegRendererTest {
 
                         doc = mock(XWPFDocument.class);
                         doThrow(NotOfficeXmlFileException.class).when(poi)
-                                .xwpfDocument(any());
+                            .xwpfDocument(any());
 
                         try {
                             renderer.convert(input, mimeType);

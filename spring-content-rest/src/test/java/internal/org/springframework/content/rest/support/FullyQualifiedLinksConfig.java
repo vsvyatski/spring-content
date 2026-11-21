@@ -74,7 +74,7 @@ public class FullyQualifiedLinksConfig extends JpaInfrastructureConfig {
                     input = "";
                 }
                 return new ByteArrayInputStream(
-                        String.format("<html><body>%s</body></html>", input).getBytes());
+                    String.format("<html><body>%s</body></html>", input).getBytes());
             }
         };
     }
@@ -102,7 +102,7 @@ public class FullyQualifiedLinksConfig extends JpaInfrastructureConfig {
                     input = "";
                 }
                 return new ByteArrayInputStream(
-                        String.format("<html><body>%s</body></html>", input).getBytes(StandardCharsets.UTF_8));
+                    String.format("<html><body>%s</body></html>", input).getBytes(StandardCharsets.UTF_8));
             }
         };
     }

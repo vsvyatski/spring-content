@@ -43,8 +43,8 @@ public class StoreAwareHandlerMapping extends RequestMappingHandlerMapping {
         }
 
         String[] augmentedPatterns = pathPatterns.getPatternValues().stream()
-                .map(pattern -> prefix.concat(pattern))
-                .toArray(String[]::new);
+            .map(pattern -> prefix.concat(pattern))
+            .toArray(String[]::new);
 
         return info.mutate().paths(augmentedPatterns).build();
     }

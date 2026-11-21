@@ -23,7 +23,7 @@ import java.util.Map;
  * @author Vladimir Svyatski
  */
 public class InMemoryTypeSupportContentStore<S extends TypeSupportIdGenerator<SID>, SID extends Serializable>
-        implements ContentStore<S, SID> {
+    implements ContentStore<S, SID> {
 
     private static final String NOT_SUPPORTED = "The method is not supported in the test class.";
 

@@ -1,6 +1,5 @@
 package it.rest.revisions;
 
-import org.springframework.content.test.support.TestSupportData;
 import internal.org.springframework.content.rest.support.config.JpaInfrastructureConfig;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -19,6 +18,7 @@ import org.springframework.content.fs.config.EnableFileSystemStores;
 import org.springframework.content.fs.io.FileSystemResourceLoader;
 import org.springframework.content.fs.store.FileSystemContentStore;
 import org.springframework.content.rest.config.RestConfiguration;
+import org.springframework.content.test.support.TestSupportData;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.envers.repository.support.EnversRevisionRepositoryFactoryBean;
@@ -36,7 +36,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfiguration;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -167,9 +166,9 @@ public class RevisionPropertyRestEndpointsIT {
                 @Test
                 void shouldReturnA404() throws Exception {
                     mvc.perform(
-                                    get("/tEntities/" + testEntity.getId() + "/revisions/1/content").
-                                            accept("text/plain")).
-                            andExpect(status().isNotFound());
+                            get("/tEntities/" + testEntity.getId() + "/revisions/1/content").
+                                accept("text/plain")).
+                        andExpect(status().isNotFound());
                 }
             }
 
@@ -193,11 +192,11 @@ public class RevisionPropertyRestEndpointsIT {
                     Integer revisionId = revisions.getLatestRevision().getRequiredRevisionNumber();
 
                     MockHttpServletResponse response =
-                            mvc.perform(
-                                            get("/tEntities/" + testEntity.getId() + "/revisions/" + revisionId + "/content").
-                                                    accept("text/plain")).
-                                    andExpect(status().isOk()).
-                                    andReturn().getResponse();
+                        mvc.perform(
+                                get("/tEntities/" + testEntity.getId() + "/revisions/" + revisionId + "/content").
+                                    accept("text/plain")).
+                            andExpect(status().isOk()).
+                            andReturn().getResponse();
 
                     assertThat(response).isNotNull();
                     assertThat(response.getContentAsString()).isEqualTo(TestSupportData.SAMPLE_TEXT_PAYLOAD);

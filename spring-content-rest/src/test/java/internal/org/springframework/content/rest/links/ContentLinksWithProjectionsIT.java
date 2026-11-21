@@ -1,6 +1,5 @@
 package internal.org.springframework.content.rest.links;
 
-import org.springframework.content.test.support.TestSupportData;
 import com.theoryinpractise.halbuilder.api.ReadableRepresentation;
 import com.theoryinpractise.halbuilder.api.RepresentationFactory;
 import com.theoryinpractise.halbuilder.standard.StandardRepresentationFactory;
@@ -20,6 +19,7 @@ import org.springframework.content.fs.io.FileSystemResourceLoader;
 import org.springframework.content.fs.store.FileSystemContentStore;
 import org.springframework.content.rest.config.HypermediaConfiguration;
 import org.springframework.content.rest.config.RestConfiguration;
+import org.springframework.content.test.support.TestSupportData;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -46,7 +46,6 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfiguration;
 
 import javax.sql.DataSource;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.StringReader;
 import java.util.UUID;
@@ -57,11 +56,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebAppConfiguration
 @ContextConfiguration(classes = {
-        ContentLinksWithProjectionsIT.StoreConfig.class,
-        DelegatingWebMvcConfiguration.class,
-        RepositoryRestMvcConfiguration.class,
-        RestConfiguration.class,
-        HypermediaConfiguration.class})
+    ContentLinksWithProjectionsIT.StoreConfig.class,
+    DelegatingWebMvcConfiguration.class,
+    RepositoryRestMvcConfiguration.class,
+    RestConfiguration.class,
+    HypermediaConfiguration.class})
 @Transactional
 @ActiveProfiles("store")
 @ExtendWith(SpringExtension.class)
@@ -81,8 +80,8 @@ public class ContentLinksWithProjectionsIT {
     private TEntity testEntity;
 
     @Projection(
-            name = "customTEntity",
-            types = {TEntity.class})
+        name = "customTEntity",
+        types = {TEntity.class})
     @SuppressWarnings("unused") // Spring Data REST projection
     public interface CustomTEntity {
 
@@ -182,7 +181,7 @@ public class ContentLinksWithProjectionsIT {
 
         protected String[] packagesToScan() {
             return new String[]{
-                    "internal.org.springframework.content.rest.links"
+                "internal.org.springframework.content.rest.links"
             };
         }
 
@@ -226,14 +225,14 @@ public class ContentLinksWithProjectionsIT {
                 @Test
                 void shouldProvideAResponseWithAContentLink() throws Exception {
                     MockHttpServletResponse response = mvc.perform(get("/tEntities/" + testEntity.getId() + "?projection=customTEntity")
-                                    .accept("application/hal+json"))
-                            .andExpect(status().isOk()).andReturn().getResponse();
+                            .accept("application/hal+json"))
+                        .andExpect(status().isOk()).andReturn().getResponse();
                     assertThat(response).isNotNull();
 
                     RepresentationFactory representationFactory = new StandardRepresentationFactory();
                     ReadableRepresentation halResponse = representationFactory
-                            .readRepresentation("application/hal+json",
-                                    new StringReader(response.getContentAsString()));
+                        .readRepresentation("application/hal+json",
+                            new StringReader(response.getContentAsString()));
 
                     assertThat(halResponse).isNotNull();
                     assertThat(halResponse.getLinksByRel("content")).isNotNull();

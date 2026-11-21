@@ -3,12 +3,11 @@ package org.springframework.content.test.support.jpa;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-
-import java.util.UUID;
-
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.test.support.ContentAccessor;
+
+import java.util.UUID;
 
 /**
  * JPA entity whose Jakarta {@code @Id} is also the {@code @ContentId}.

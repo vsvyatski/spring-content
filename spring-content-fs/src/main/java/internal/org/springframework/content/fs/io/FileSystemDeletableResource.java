@@ -145,7 +145,7 @@ public class FileSystemDeletableResource implements WritableResource, DeletableR
     @Override
     public boolean equals(Object obj) {
         return this == obj ||
-                (obj instanceof FileSystemDeletableResource other && resource.equals(other.resource));
+            (obj instanceof FileSystemDeletableResource other && resource.equals(other.resource));
     }
 
     @Override

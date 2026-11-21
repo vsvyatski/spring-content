@@ -6,5 +6,5 @@ IF NOT EXISTS(
     SELECT 'foo' FROM sys.indexes
     WHERE object_id =OBJECT_ID('locks')
 AND name = 'locks_pk')
-CREATEUNIQUE INDEX locks_pk ON locks(entity_id, lock_owner);
+CREATEUNIQUEINDEX locks_pk ON locks(entity_id, lock_owner);
 

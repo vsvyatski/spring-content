@@ -126,7 +126,7 @@ public class RenderableImpl implements Renderable<Object>, ContentStoreAware {
     public boolean hasRendition(Object entity, String mimeType) {
 
         String fromMimeType = (String) BeanUtils
-                .getFieldWithAnnotation(entity, org.springframework.content.commons.annotations.MimeType.class);
+            .getFieldWithAnnotation(entity, org.springframework.content.commons.annotations.MimeType.class);
         if (fromMimeType == null) {
             return false;
         }

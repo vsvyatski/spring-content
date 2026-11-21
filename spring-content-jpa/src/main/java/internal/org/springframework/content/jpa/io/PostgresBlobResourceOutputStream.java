@@ -122,7 +122,7 @@ public class PostgresBlobResourceOutputStream extends BlobResourceOutputStream {
         return this.getTemplate().query(sql, new ResultSetExtractor<Blob>() {
             @Override
             public Blob extractData(ResultSet rs)
-                    throws SQLException, DataAccessException {
+                throws SQLException, DataAccessException {
                 if (rs.next()) {
                     return rs.getBlob(1);
                 } else {

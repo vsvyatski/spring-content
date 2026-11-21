@@ -13,9 +13,10 @@ public class StoredDataEncryptionKeyGenericConverter implements ConditionalGener
 
     private static final TypeDescriptor ENCRYPTED_DEK = TypeDescriptor.valueOf(StoredDataEncryptionKey.class);
     private static final Collection<TypeDescriptor> SUB_TYPES = permittedSubClasses(StoredDataEncryptionKey.class).stream()
-            .map(TypeDescriptor::valueOf)
-            .toList();
+        .map(TypeDescriptor::valueOf)
+        .toList();
     private final ConversionService conversionService;
+
     public StoredDataEncryptionKeyGenericConverter(ConversionService conversionService) {
         this.conversionService = conversionService;
     }
@@ -34,17 +35,17 @@ public class StoredDataEncryptionKeyGenericConverter implements ConditionalGener
 
     private static Stream<TypeDescriptor> typesAssignableTo(TypeDescriptor typeDescriptor) {
         return SUB_TYPES.stream()
-                .filter(type -> type.isAssignableTo(typeDescriptor));
+            .filter(type -> type.isAssignableTo(typeDescriptor));
     }
 
     @Override
     public boolean matches(@NonNull TypeDescriptor sourceType, TypeDescriptor targetType) {
         if (targetType.isAssignableTo(ENCRYPTED_DEK)) {
             return typesAssignableTo(targetType)
-                    .anyMatch(type -> conversionService.canConvert(sourceType, type));
+                .anyMatch(type -> conversionService.canConvert(sourceType, type));
         } else if (sourceType.isAssignableTo(ENCRYPTED_DEK)) {
             return typesAssignableTo(sourceType)
-                    .anyMatch(type -> conversionService.canConvert(type, targetType));
+                .anyMatch(type -> conversionService.canConvert(type, targetType));
         }
         return false;
     }
@@ -58,16 +59,16 @@ public class StoredDataEncryptionKeyGenericConverter implements ConditionalGener
     public Object convert(Object source, @NonNull TypeDescriptor sourceType, TypeDescriptor targetType) {
         if (targetType.isAssignableTo(ENCRYPTED_DEK)) {
             return typesAssignableTo(targetType)
-                    .map(type -> conversionService.convert(source, sourceType, type))
-                    .filter(Objects::nonNull)
-                    .findFirst()
-                    .orElse(null);
+                .map(type -> conversionService.convert(source, sourceType, type))
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElse(null);
         } else if (sourceType.isAssignableTo(ENCRYPTED_DEK)) {
             return typesAssignableTo(sourceType)
-                    .map(type -> conversionService.convert(source, type, targetType))
-                    .filter(Objects::nonNull)
-                    .findFirst()
-                    .orElse(null);
+                .map(type -> conversionService.convert(source, type, targetType))
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElse(null);
         }
         return null;
     }
