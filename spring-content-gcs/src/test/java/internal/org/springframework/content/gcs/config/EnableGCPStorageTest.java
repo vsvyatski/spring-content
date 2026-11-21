@@ -22,12 +22,11 @@ import static org.mockito.Mockito.verify;
 
 public class EnableGCPStorageTest {
 
-    // mocks
-    static GCPStorageConfigurer configurer;
+    private GCPStorageConfigurer configurer;
     private AnnotationConfigApplicationContext context;
 
     @Configuration
-    @EnableGCPStorage(basePackages = "contains.no.fs.repositores")
+    @EnableGCPStorage(basePackages = "contains.no.gcs.repositories")
     @Import(InfrastructureConfig.class)
     public static class EmptyConfig {
     }
@@ -44,7 +43,7 @@ public class EnableGCPStorageTest {
     public static class ConverterConfig {
         @Bean
         public GCPStorageConfigurer configurer() {
-            return configurer;
+            return mock(GCPStorageConfigurer.class);
         }
     }
 
@@ -88,11 +87,10 @@ public class EnableGCPStorageTest {
         class GivenAContextWithAConfigurer {
             @BeforeEach
             void setUp() {
-                configurer = mock(GCPStorageConfigurer.class);
-
                 context = new AnnotationConfigApplicationContext();
                 context.register(ConverterConfig.class);
                 context.refresh();
+                configurer = context.getBean(GCPStorageConfigurer.class);
             }
 
             @AfterEach

@@ -25,8 +25,7 @@ public class EnableAzureStorageTest {
 
     private static final BlobServiceClientBuilder builder = Azurite.getBlobServiceClientBuilder();
     private static final BlobContainerClient client = builder.buildClient().getBlobContainerClient("test");
-    // mocks
-    static AzureStorageConfigurer configurer;
+    private AzureStorageConfigurer configurer;
 
     static {
         if (!client.exists()) {
@@ -39,7 +38,7 @@ public class EnableAzureStorageTest {
     private AnnotationConfigApplicationContext context;
 
     @Configuration
-    @EnableAzureStorage(basePackages = "contains.no.fs.repositores")
+    @EnableAzureStorage(basePackages = "contains.no.azure.repositories")
     @Import(InfrastructureConfig.class)
     public static class EmptyConfig {
     }
@@ -56,7 +55,7 @@ public class EnableAzureStorageTest {
     public static class ConverterConfig {
         @Bean
         public AzureStorageConfigurer configurer() {
-            return configurer;
+            return mock(AzureStorageConfigurer.class);
         }
     }
 
@@ -99,11 +98,10 @@ public class EnableAzureStorageTest {
         class GivenAContextWithAConfigurer {
             @BeforeEach
             void setUp() {
-                configurer = mock(AzureStorageConfigurer.class);
-
                 context = new AnnotationConfigApplicationContext();
                 context.register(ConverterConfig.class);
                 context.refresh();
+                configurer = context.getBean(AzureStorageConfigurer.class);
             }
 
             @AfterEach

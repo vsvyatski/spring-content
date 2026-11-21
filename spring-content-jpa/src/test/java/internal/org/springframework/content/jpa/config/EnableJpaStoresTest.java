@@ -92,6 +92,7 @@ public class EnableJpaStoresTest {
 
             @Test
             void shouldHaveAContentRepositoryBean() {
+                // Dual-content JPA fixture (not SingleContent*): exercises two @ContentId properties in test-jar.
                 assertThat(context.getBean(DualContentJpaStringIdStore.class)).isNotNull();
             }
 

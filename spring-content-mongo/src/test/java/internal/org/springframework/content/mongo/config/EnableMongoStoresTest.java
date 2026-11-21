@@ -30,7 +30,7 @@ public class EnableMongoStoresTest {
     private AnnotationConfigApplicationContext context;
 
     @Configuration
-    @EnableMongoStores(basePackages = "contains.no.mongo.repositores")
+    @EnableMongoStores(basePackages = "contains.no.mongo.repositories")
     @Import(InfrastructureConfig.class)
     public static class EmptyConfig {
     }

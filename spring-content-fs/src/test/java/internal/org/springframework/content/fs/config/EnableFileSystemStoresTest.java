@@ -25,8 +25,7 @@ import static org.mockito.Mockito.verify;
 
 public class EnableFileSystemStoresTest {
 
-    // mocks
-    static FileSystemStoreConfigurer configurer;
+    private FileSystemStoreConfigurer configurer;
     private AnnotationConfigApplicationContext context;
 
     @Configuration
@@ -64,7 +63,7 @@ public class EnableFileSystemStoresTest {
 
         @Bean
         public FileSystemStoreConfigurer configurer() {
-            return configurer;
+            return mock(FileSystemStoreConfigurer.class);
         }
 
         @Bean
@@ -109,11 +108,10 @@ public class EnableFileSystemStoresTest {
         class GivenAContextWithAConfigurer {
             @BeforeEach
             void setUp() {
-                configurer = mock(FileSystemStoreConfigurer.class);
-
                 context = new AnnotationConfigApplicationContext();
                 context.register(ConverterConfig.class);
                 context.refresh();
+                configurer = context.getBean(FileSystemStoreConfigurer.class);
             }
 
             @AfterEach

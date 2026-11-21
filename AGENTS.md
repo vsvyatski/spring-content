@@ -153,7 +153,8 @@ Change version for the whole reactor with:
   `new Entity(...)` with arguments (JPA and Spring Data materialize entities via the no-arg constructor)
 - Shared fixtures live in `spring-content-commons` test-jar (`org.springframework.content.test.support.**`).
   `@Enable*Stores` unit tests scan `TestSupportPackages` (`.jpa`, `.mongo`, `.fs`, `.s3`, `.gcs`, `.azure`) instead of
-  inner `TestEntity` types
+  inner `TestEntity` types. `EnableJpaStoresTest` asserts `DualContentJpaStringIdStore` (dual `@ContentId` entity in the
+  test-jar); other backends use single-content store marker interfaces.
 
 When changing a store implementation, run that module’s `*Test` and, if behavior or IO/SQL is involved, the matching
 `*IT`.

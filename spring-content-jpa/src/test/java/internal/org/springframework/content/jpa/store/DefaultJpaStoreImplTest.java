@@ -8,6 +8,7 @@ import org.springframework.content.commons.store.StoreAccessException;
 import org.springframework.content.test.support.ContentAccessor;
 import org.springframework.content.test.support.SingleContentFields;
 import org.springframework.content.test.support.jpa.SharedIdJakartaJpaEntity;
+import org.springframework.content.test.support.jpa.SharedIdSpringJpaEntity;
 import org.springframework.content.jpa.io.BlobResource;
 import org.springframework.content.jpa.io.BlobResourceLoader;
 import org.springframework.core.io.InputStreamResource;
@@ -31,6 +32,7 @@ public class DefaultJpaStoreImplTest {
 
     private ContentAccessor entity;
     private SharedIdJakartaJpaEntity jakartaAnnotatedEntity;
+    private SharedIdSpringJpaEntity springAnnotatedEntity;
     private InputStream stream;
     private InputStream inputStream;
     private Resource inputResource;
@@ -469,6 +471,34 @@ public class DefaultJpaStoreImplTest {
                 @Test
                 void shouldNOTResetTheContentId() {
                     assertThat(jakartaAnnotatedEntity.getContentId()).isEqualTo(id);
+                }
+            }
+        }
+    }
+
+    @Nested
+    class DefaultJpaStoreImplSpringDataAnnotatedEntity {
+        @Nested
+        class AssociativeStore {
+            @Nested
+            class UnassociateSpringAnnotatedEntity {
+                @BeforeEach
+                void setUp() {
+                    blobResourceLoader = mock(BlobResourceLoader.class);
+                    id = "12345";
+
+                    springAnnotatedEntity = new SharedIdSpringJpaEntity();
+                    springAnnotatedEntity.setContentId(id);
+                    springAnnotatedEntity.setContentLen(20L);
+
+                    store =
+                            spy(new DefaultJpaStoreImpl<Object, String>(blobResourceLoader, null, 8096));
+                    store.unassociate(springAnnotatedEntity);
+                }
+
+                @Test
+                void shouldNOTResetTheContentId() {
+                    assertThat(springAnnotatedEntity.getContentId()).isEqualTo(id);
                 }
             }
         }

@@ -17,6 +17,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.convert.converter.ConverterRegistry;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
@@ -32,9 +33,9 @@ import static org.mockito.Mockito.verify;
 public class EnableS3StoresTest {
 
     private static final String BUCKET = "aws-test-bucket";
-    // mocks
-    static S3StoreConfigurer configurer;
-    static S3Client client;
+
+    private S3StoreConfigurer configurer;
+    private S3Client client;
 
     static {
         System.setProperty("spring.content.s3.bucket", BUCKET);
@@ -43,7 +44,7 @@ public class EnableS3StoresTest {
     private AnnotationConfigApplicationContext context;
 
     @Configuration
-    @EnableS3Stores(basePackages = "contains.no.fs.repositores")
+    @EnableS3Stores(basePackages = "contains.no.s3.repositories")
     @Import(InfrastructureConfig.class)
     public static class EmptyConfig {
     }
@@ -60,7 +61,7 @@ public class EnableS3StoresTest {
     public static class ConverterConfig {
         @Bean
         public S3StoreConfigurer configurer() {
-            return configurer;
+            return mock(S3StoreConfigurer.class);
         }
     }
 
@@ -68,9 +69,15 @@ public class EnableS3StoresTest {
     @EnableS3Stores(basePackages = TestSupportPackages.S3)
     @Import(InfrastructureConfig.class)
     public static class MultiTenantConfig {
+        @Bean("multiTenantClient")
+        public S3Client multiTenantClient() {
+            return mock(S3Client.class);
+        }
+
         @Bean
-        public MultiTenantS3ClientProvider s3Provider() {
-            return () -> client;
+        public MultiTenantS3ClientProvider s3Provider(
+                @Qualifier("multiTenantClient") S3Client multiTenantClient) {
+            return () -> multiTenantClient;
         }
     }
 
@@ -117,11 +124,10 @@ public class EnableS3StoresTest {
         class GivenAContextWithAConfigurer {
             @BeforeEach
             void setUp() {
-                configurer = mock(S3StoreConfigurer.class);
-
                 context = new AnnotationConfigApplicationContext();
                 context.register(ConverterConfig.class);
                 context.refresh();
+                configurer = context.getBean(S3StoreConfigurer.class);
             }
 
             @AfterEach
@@ -159,11 +165,10 @@ public class EnableS3StoresTest {
         class GivenAContextWithAMultiTenantConfiguration {
             @BeforeEach
             void setUp() {
-                client = mock(S3Client.class);
-
                 context = new AnnotationConfigApplicationContext();
                 context.register(MultiTenantConfig.class);
                 context.refresh();
+                client = context.getBean("multiTenantClient", S3Client.class);
             }
 
             @AfterEach
