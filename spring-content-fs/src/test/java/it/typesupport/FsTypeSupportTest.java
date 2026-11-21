@@ -1,7 +1,6 @@
 package it.typesupport;
 
-import com.github.f4b6a3.uuid.UuidCreator;
-import it.typesupport.model.*;
+import org.springframework.content.test.support.idtype.*;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,7 +46,7 @@ public class FsTypeSupportTest {
                 @BeforeEach
                 void setUp() {
                     entity = new UUIDBasedContentEntity();
-                    id = UuidCreator.getTimeOrdered();
+                    id = UUID.randomUUID();
                     ((UUIDBasedContentEntity) entity).setContentId((UUID) id);
 
                     uuidStore.setContent((UUIDBasedContentEntity) entity, new ByteArrayInputStream("uuid".getBytes()));

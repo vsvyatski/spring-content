@@ -1,4 +1,4 @@
-package it.typesupport.model;
+package org.springframework.content.test.support.idtype;
 
 import org.apache.commons.io.IOUtils;
 import org.springframework.content.commons.annotations.ContentId;
@@ -17,14 +17,23 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ContentEntityStore<S extends IdGenerator<?>, SID extends Serializable> implements ContentStore<S, SID> {
-    private final String NOT_SUPPORTED_OPERATION = "The method is not supported in the test class.";
+/**
+ * In-memory {@link ContentStore} for content-id type ITs (no storage backend).
+ *
+ * @author Vladimir Svyatski
+ */
+public class InMemoryTypeSupportContentStore<S extends TypeSupportIdGenerator<SID>, SID extends Serializable>
+        implements ContentStore<S, SID> {
+
+    private static final String NOT_SUPPORTED = "The method is not supported in the test class.";
 
     private final Map<Object, byte[]> storage = new HashMap<>();
 
     @Override
     public S setContent(S entity, InputStream content) {
-        if (entity == null) return null;
+        if (entity == null) {
+            return null;
+        }
 
         Object contentId = BeanUtils.getFieldWithAnnotation(entity, ContentId.class);
         if (contentId == null) {
@@ -44,7 +53,9 @@ public class ContentEntityStore<S extends IdGenerator<?>, SID extends Serializab
 
     @Override
     public S unsetContent(S entity) {
-        if (entity == null) return null;
+        if (entity == null) {
+            return null;
+        }
 
         Object contentId = BeanUtils.getFieldWithAnnotation(entity, ContentId.class);
         if (contentId != null) {
@@ -56,7 +67,9 @@ public class ContentEntityStore<S extends IdGenerator<?>, SID extends Serializab
 
     @Override
     public InputStream getContent(S entity) {
-        if (entity == null) return null;
+        if (entity == null) {
+            return null;
+        }
 
         Object contentId = BeanUtils.getFieldWithAnnotation(entity, ContentId.class);
         if (contentId != null) {
@@ -67,81 +80,81 @@ public class ContentEntityStore<S extends IdGenerator<?>, SID extends Serializab
 
     @Override
     public S setContent(S entity, PropertyPath propertyPath, InputStream content) {
-        throw new UnsupportedOperationException(NOT_SUPPORTED_OPERATION);
+        throw new UnsupportedOperationException(NOT_SUPPORTED);
     }
 
     @Override
     public S setContent(S entity, PropertyPath propertyPath, InputStream content, long contentLen) {
-        throw new UnsupportedOperationException(NOT_SUPPORTED_OPERATION);
+        throw new UnsupportedOperationException(NOT_SUPPORTED);
     }
 
     @Override
     public S setContent(S entity, PropertyPath propertyPath, InputStream content, SetContentParams params) {
-        throw new UnsupportedOperationException(NOT_SUPPORTED_OPERATION);
+        throw new UnsupportedOperationException(NOT_SUPPORTED);
     }
 
     @Override
     public S setContent(S entity, Resource resourceContent) {
-        throw new UnsupportedOperationException(NOT_SUPPORTED_OPERATION);
+        throw new UnsupportedOperationException(NOT_SUPPORTED);
     }
 
     @Override
     public S setContent(S entity, PropertyPath propertyPath, Resource resourceContent) {
-        throw new UnsupportedOperationException(NOT_SUPPORTED_OPERATION);
+        throw new UnsupportedOperationException(NOT_SUPPORTED);
     }
 
     @Override
     public S unsetContent(S entity, PropertyPath propertyPath) {
-        throw new UnsupportedOperationException(NOT_SUPPORTED_OPERATION);
+        throw new UnsupportedOperationException(NOT_SUPPORTED);
     }
 
     @Override
     public S unsetContent(S entity, PropertyPath propertyPath, UnsetContentParams params) {
-        throw new UnsupportedOperationException(NOT_SUPPORTED_OPERATION);
+        throw new UnsupportedOperationException(NOT_SUPPORTED);
     }
 
     @Override
     public InputStream getContent(S entity, PropertyPath propertyPath) {
-        throw new UnsupportedOperationException(NOT_SUPPORTED_OPERATION);
+        throw new UnsupportedOperationException(NOT_SUPPORTED);
     }
 
     @Override
     public Resource getResource(S entity) {
-        throw new UnsupportedOperationException(NOT_SUPPORTED_OPERATION);
+        throw new UnsupportedOperationException(NOT_SUPPORTED);
     }
 
     @Override
     public Resource getResource(S entity, PropertyPath propertyPath) {
-        throw new UnsupportedOperationException(NOT_SUPPORTED_OPERATION);
+        throw new UnsupportedOperationException(NOT_SUPPORTED);
     }
 
     @Override
     public Resource getResource(S entity, PropertyPath propertyPath, GetResourceParams params) {
-        throw new UnsupportedOperationException(NOT_SUPPORTED_OPERATION);
+        throw new UnsupportedOperationException(NOT_SUPPORTED);
     }
 
     @Override
     public void associate(S entity, SID id) {
-        throw new UnsupportedOperationException(NOT_SUPPORTED_OPERATION);
+        throw new UnsupportedOperationException(NOT_SUPPORTED);
     }
 
     @Override
     public void associate(S entity, PropertyPath propertyPath, SID id) {
-        throw new UnsupportedOperationException(NOT_SUPPORTED_OPERATION);
+        throw new UnsupportedOperationException(NOT_SUPPORTED);
     }
 
     @Override
     public void unassociate(S entity) {
-        throw new UnsupportedOperationException(NOT_SUPPORTED_OPERATION);
+        throw new UnsupportedOperationException(NOT_SUPPORTED);
     }
 
     @Override
     public void unassociate(S entity, PropertyPath propertyPath) {
-        throw new UnsupportedOperationException(NOT_SUPPORTED_OPERATION);
+        throw new UnsupportedOperationException(NOT_SUPPORTED);
     }
 
     @Override
     public Resource getResource(SID id) {
-        throw new UnsupportedOperationException(NOT_SUPPORTED_OPERATION);
+        throw new UnsupportedOperationException(NOT_SUPPORTED);
     }
 }
