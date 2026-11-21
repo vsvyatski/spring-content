@@ -4,6 +4,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
 import org.springframework.content.test.support.DualContentFields;
 
 /**
@@ -12,6 +14,7 @@ import org.springframework.content.test.support.DualContentFields;
  * @author Vladimir Svyatski
  */
 @Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 public class DualContentJpaLongIdEntity extends DualContentFields {
 
     @Id

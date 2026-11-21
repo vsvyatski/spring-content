@@ -4,24 +4,16 @@ import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.contrib.nio.testing.LocalStorageHelper;
-import jakarta.persistence.Access;
-import jakarta.persistence.AccessType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
 import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.content.commons.config.ContentPropertyInfo;
 import org.springframework.content.commons.property.PropertyPath;
-import org.springframework.content.gcs.Bucket;
 import org.springframework.content.gcs.config.EnableGCPStorage;
 import org.springframework.content.gcs.config.GCPStorageConfigurer;
 import org.springframework.content.test.support.FakeEntity;
 import org.springframework.content.test.support.TestSupportPackages;
-import org.springframework.content.test.support.jpa.DualContentJpaLongIdMimeEntity;
-import org.springframework.content.test.support.jpa.DualContentJpaLongIdMimeRepository;
-import org.springframework.content.test.support.jpa.DualContentJpaLongIdMimeStore;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -60,10 +52,10 @@ public class GCPStorageWithEntityConverterIT {
         };
     }
 
-    private DualContentJpaLongIdMimeEntity entity;
+    private GcsBucketMimeEntity entity;
     private AnnotationConfigApplicationContext context;
-    private DualContentJpaLongIdMimeRepository repo;
-    private DualContentJpaLongIdMimeStore store;
+    private GcsBucketMimeRepository repo;
+    private GcsBucketMimeStore store;
     private Storage storage;
 
     static Stream<TestData> converterConfigs() {
@@ -75,13 +67,13 @@ public class GCPStorageWithEntityConverterIT {
         context.register(testDataSet.config());
         context.refresh();
 
-        repo = context.getBean(DualContentJpaLongIdMimeRepository.class);
-        store = context.getBean(DualContentJpaLongIdMimeStore.class);
+        repo = context.getBean(GcsBucketMimeRepository.class);
+        store = context.getBean(GcsBucketMimeStore.class);
         storage = context.getBean(Storage.class);
     }
 
     private void saveEntityWithContent() {
-        entity = new TestEntity();
+        entity = new GcsBucketMimeEntity();
         entity.setContentType("text/plain");
         entity = repo.save(entity);
 
@@ -114,11 +106,17 @@ public class GCPStorageWithEntityConverterIT {
         @Bean
         public GCPStorageConfigurer configurer() {
             return registry -> {
-
-                registry.addConverter((Converter<ContentPropertyInfo<TestEntity, Serializable>, BlobId>) info -> BlobId.of(OTHER_OTHER_BUCKET, info.contentId().toString()));
-
-                registry.addConverter((Converter<ContentPropertyInfo<FakeEntity, Serializable>, BlobId>) info -> {
-                    throw new IllegalStateException("wrong converter called");
+                registry.addConverter(new Converter<ContentPropertyInfo<GcsBucketMimeEntity, Serializable>, BlobId>() {
+                    @Override
+                    public BlobId convert(ContentPropertyInfo<GcsBucketMimeEntity, Serializable> info) {
+                        return BlobId.of(OTHER_OTHER_BUCKET, info.contentId().toString());
+                    }
+                });
+                registry.addConverter(new Converter<ContentPropertyInfo<FakeEntity, Serializable>, BlobId>() {
+                    @Override
+                    public BlobId convert(ContentPropertyInfo<FakeEntity, Serializable> info) {
+                        throw new IllegalStateException("wrong converter called");
+                    }
                 });
             };
         }
@@ -155,19 +153,6 @@ public class GCPStorageWithEntityConverterIT {
             txManager.setEntityManagerFactory(entityManagerFactory().getObject());
             return txManager;
         }
-    }
-
-    /**
-     * GCS {@link Bucket} lives on a subtype; commons test-jar cannot depend on this module.
-     */
-    @Entity
-    @Table(name = "test_entity")
-    @Access(AccessType.FIELD)
-    public static class TestEntity extends DualContentJpaLongIdMimeEntity {
-
-        @Bucket
-        @SuppressWarnings("unused") // read by GCS entity-level @Bucket mapping
-        private final String bucket = "other-bucket";
     }
 
     @Nested
