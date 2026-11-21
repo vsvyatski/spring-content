@@ -13,8 +13,6 @@ public class FileRemoverTest {
 
     private File file;
 
-    private FileRemover observer;
-
     @Nested
     class FileRemoverCases {
         @Nested
@@ -22,7 +20,7 @@ public class FileRemoverTest {
             @BeforeEach
             void setUp() {
                 file = mock(File.class);
-                observer = new FileRemover(file);
+                FileRemover observer = new FileRemover(file);
 
                 observer.closed();
             }

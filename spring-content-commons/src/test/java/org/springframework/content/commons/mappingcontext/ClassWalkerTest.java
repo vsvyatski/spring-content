@@ -36,7 +36,7 @@ public class ClassWalkerTest {
 
         private TestEnum enums;
 
-        private TestClass circlularRef;
+        private TestClass circularRef;
 
         private String str;
         private int i;

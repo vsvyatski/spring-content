@@ -83,8 +83,8 @@ public class ObservableOutputStreamTest {
             @Test
             void shouldCallListenersOnClosedEventHandlerInOrder() {
                 InOrder inOrder = inOrder(observer1, observer2);
-                verify(observer1).closed();
-                verify(observer2).closed();
+                inOrder.verify(observer1).closed();
+                inOrder.verify(observer2).closed();
                 verifyNoMoreInteractions(observer1, observer2);
             }
         }
