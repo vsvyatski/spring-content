@@ -8,10 +8,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.content.commons.store.Store;
 import org.springframework.content.commons.store.StoreAccessException;
 import org.springframework.content.commons.store.StoreExceptionTranslator;
-import org.springframework.content.test.support.factory.TestContentStore;
-import org.springframework.content.test.support.factory.TestStoreFactoryBean;
 import org.springframework.content.commons.storeservice.StoreFilter;
 import org.springframework.content.commons.storeservice.StoreInfo;
+import org.springframework.content.test.support.factory.TestContentStore;
+import org.springframework.content.test.support.factory.TestStoreFactoryBean;
 import org.springframework.context.support.GenericApplicationContext;
 
 import java.io.ByteArrayInputStream;

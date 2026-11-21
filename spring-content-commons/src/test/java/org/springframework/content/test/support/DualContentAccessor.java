@@ -9,11 +9,13 @@ public interface DualContentAccessor extends ContentAccessor<String> {
 
     String getRenditionId();
 
-    @SuppressWarnings("unused") // set via BeanUtils / store metadata, not direct calls
+    // set via BeanUtils / store metadata, not direct calls
+    @SuppressWarnings("unused")
     void setRenditionId(String renditionId);
 
     Long getRenditionLen();
 
-    @SuppressWarnings("unused") // set via BeanUtils / store metadata, not direct calls
+    // set via BeanUtils / store metadata, not direct calls
+    @SuppressWarnings("unused")
     void setRenditionLen(Long renditionLen);
 }

@@ -66,22 +66,27 @@ public class StoreMethodInterceptorTest {
         toStringMethod = requireMethod(Object.class, "toString");
     }
 
+    private StoreMethodInterceptor interceptor;
+    private ContentStore<Object, Serializable> store;
+    private MethodInvocation invocation;
+    private ApplicationEventPublisher publisher;
+    private Object result;
+    private Throwable e;
+    private ByteArrayInputStream modifiedStream;
+
     private static Method requireMethod(Class<?> type, String name, Class<?>... parameterTypes) {
         Method method = ReflectionUtils.findMethod(type, name, parameterTypes);
         Assert.notNull(method, () -> "Method not found: " + type.getName() + "#" + name);
         return method;
     }
 
-    private StoreMethodInterceptor interceptor;
-
-    private ContentStore<Object, Serializable> store;
-    private MethodInvocation invocation;
-    private ApplicationEventPublisher publisher;
-
-    private Object result;
-    private Throwable e;
-
-    private ByteArrayInputStream modifiedStream;
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private static StoreFragment<?> contentStoreFragment(
+        ContentStore<Object, Serializable> contentStore,
+        ApplicationEventPublisher eventPublisher) {
+        return new StoreFragment(
+            UuidSingleContentStore.class, new StoreImpl(contentStore, eventPublisher, CONTENT_COPY_ROOT));
+    }
 
     @SuppressWarnings("OverlyBroadCatchBlock")
     private void invokeInterceptor() {
@@ -91,14 +96,6 @@ public class StoreMethodInterceptorTest {
         } catch (Throwable invokeException) {
             e = invokeException;
         }
-    }
-
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    private static StoreFragment<?> contentStoreFragment(
-        ContentStore<Object, Serializable> contentStore,
-        ApplicationEventPublisher eventPublisher) {
-        return new StoreFragment(
-            UuidSingleContentStore.class, new StoreImpl(contentStore, eventPublisher, CONTENT_COPY_ROOT));
     }
 
     private void attachInterceptor(ContentStore<Object, Serializable> contentStore, ApplicationEventPublisher eventPublisher) {

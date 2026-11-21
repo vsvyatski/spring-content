@@ -7,9 +7,9 @@ import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.annotations.MimeType;
 import org.springframework.content.commons.annotations.OriginalFileName;
-import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.content.test.support.SingleContentFields;
 import org.springframework.content.test.support.UuidSingleContentFields;
+import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 
 import java.util.UUID;
