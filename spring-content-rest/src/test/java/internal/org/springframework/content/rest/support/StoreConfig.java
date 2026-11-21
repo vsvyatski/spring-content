@@ -6,7 +6,6 @@ import org.springframework.content.commons.renditions.RenditionProvider;
 import org.springframework.content.fs.config.EnableFileSystemStores;
 import org.springframework.content.fs.io.FileSystemResourceLoader;
 import org.springframework.content.rest.config.ContentRestConfigurer;
-import org.springframework.content.rest.config.RestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -42,15 +41,9 @@ public class StoreConfig extends JpaInfrastructureConfig {
 
     @Bean
     ContentRestConfigurer contentRestConfigurer() {
-
-        return new ContentRestConfigurer() {
-            @Override
-            public void configure(RestConfiguration config) {
-                config.getCorsRegistry().addMapping("/**") //
-                    .allowedMethods("GET", "PUT", "POST") //
-                    .allowedOrigins("http://far.far.away");
-            }
-        };
+        return config -> config.getCorsRegistry().addMapping("/**") //
+            .allowedMethods("GET", "PUT", "POST") //
+            .allowedOrigins("http://far.far.away");
     }
 
     @Bean
@@ -62,7 +55,9 @@ public class StoreConfig extends JpaInfrastructureConfig {
     public File filesystemRoot() {
         File baseDir = new File(System.getProperty("java.io.tmpdir"));
         File filesystemRoot = new File(baseDir, "spring-content-controller-tests");
-        filesystemRoot.mkdirs();
+        if (!filesystemRoot.mkdirs() && !filesystemRoot.isDirectory()) {
+            throw new IllegalStateException("Failed to create " + filesystemRoot);
+        }
         return filesystemRoot;
     }
 
