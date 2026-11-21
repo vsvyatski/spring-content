@@ -27,9 +27,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.AdditionalMatchers.not;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
+import static org.springframework.content.test.support.TestSupportData.SAMPLE_CONTENT_ID;
+import static org.springframework.content.test.support.TestSupportData.SAMPLE_FS_RESOURCE_PATH;
 
 public class DefaultFileSystemStoresImplTest {
-    private static final String CONTENT_ID = "abcd-efgh";
 
     private DefaultFileSystemStoreImpl<ContentAccessor<String>, String> filesystemStoreImpl;
     private FileSystemResourceLoader loader;
@@ -68,18 +69,18 @@ public class DefaultFileSystemStoresImplTest {
                     filesystemStoreImpl = spy(new DefaultFileSystemStoreImpl<>(
                         loader, null, placer, fileService));
 
-                    id = "12345-67890";
+                    id = SAMPLE_CONTENT_ID;
 
-                    when(placer.convert(eq("12345-67890"), eq(String.class)))
-                        .thenReturn("12345-67890");
+                    when(placer.convert(eq(SAMPLE_CONTENT_ID), eq(String.class)))
+                        .thenReturn(SAMPLE_CONTENT_ID);
 
                     resource = filesystemStoreImpl.getResource(id);
                 }
 
                 @Test
                 void shouldUseThePlacerServiceToGetAResourcePath() {
-                    verify(placer).convert(eq("12345-67890"), eq(String.class));
-                    verify(loader).getResource(eq("12345-67890"));
+                    verify(placer).convert(eq(SAMPLE_CONTENT_ID), eq(String.class));
+                    verify(loader).getResource(eq(SAMPLE_CONTENT_ID));
                 }
             }
         }
@@ -121,18 +122,18 @@ public class DefaultFileSystemStoresImplTest {
                             loader, null, placer, fileService));
 
                         entity = new SingleContentFields();
-                        entity.setContentId("12345-67890");
+                        entity.setContentId(SAMPLE_CONTENT_ID);
 
-                        when(placer.convert(eq("12345-67890"),
-                            eq(String.class))).thenReturn("/12345/67890");
+                        when(placer.convert(eq(SAMPLE_CONTENT_ID),
+                            eq(String.class))).thenReturn(SAMPLE_FS_RESOURCE_PATH);
 
                         resource = filesystemStoreImpl.getResource(entity);
                     }
 
                     @Test
                     void shouldUseThePlacerServiceToGetAResourcePath() {
-                        verify(placer).convert(eq("12345-67890"), eq(String.class));
-                        verify(loader).getResource(eq("/12345/67890"));
+                        verify(placer).convert(eq(SAMPLE_CONTENT_ID), eq(String.class));
+                        verify(loader).getResource(eq(SAMPLE_FS_RESOURCE_PATH));
                     }
                 }
 
@@ -152,8 +153,8 @@ public class DefaultFileSystemStoresImplTest {
                         deletableResource = mock(DeletableResource.class);
 
                         when(placer.canConvert(eq(entity.getClass()), eq(String.class))).thenReturn(true);
-                        when(placer.convert(eq(entity), eq(String.class))).thenReturn("/abcd/efgh");
-                        when(loader.getResource("/abcd/efgh")).thenReturn(deletableResource);
+                        when(placer.convert(eq(entity), eq(String.class))).thenReturn(SAMPLE_FS_RESOURCE_PATH);
+                        when(loader.getResource(SAMPLE_FS_RESOURCE_PATH)).thenReturn(deletableResource);
 
                         resource = filesystemStoreImpl.getResource(entity);
                     }
@@ -206,14 +207,14 @@ public class DefaultFileSystemStoresImplTest {
                     filesystemStoreImpl = spy(new DefaultFileSystemStoreImpl<>(
                         loader, null, placer, fileService));
 
-                    id = "12345-67890";
+                    id = SAMPLE_CONTENT_ID;
 
                     entity = new SingleContentFields();
 
-                    when(placer.convert(eq("12345-67890"), eq(String.class))).thenReturn("/12345/67890");
+                    when(placer.convert(eq(SAMPLE_CONTENT_ID), eq(String.class))).thenReturn(SAMPLE_FS_RESOURCE_PATH);
 
                     deletableResource = mock(DeletableResource.class);
-                    when(loader.getResource(eq("/12345/67890")))
+                    when(loader.getResource(eq(SAMPLE_FS_RESOURCE_PATH)))
                         .thenReturn(deletableResource);
 
                     when(deletableResource.contentLength()).thenReturn(20L);
@@ -223,7 +224,7 @@ public class DefaultFileSystemStoresImplTest {
 
                 @Test
                 void shouldSetTheEntitySContentIDAttribute() {
-                    assertThat(entity.getContentId()).isEqualTo("12345-67890");
+                    assertThat(entity.getContentId()).isEqualTo(SAMPLE_CONTENT_ID);
                 }
             }
 
@@ -239,7 +240,7 @@ public class DefaultFileSystemStoresImplTest {
                         loader, null, placer, fileService));
 
                     entity = new SingleContentFields();
-                    entity.setContentId("12345-67890");
+                    entity.setContentId(SAMPLE_CONTENT_ID);
 
                     filesystemStoreImpl.unassociate(entity);
                 }
@@ -276,9 +277,9 @@ public class DefaultFileSystemStoresImplTest {
                             when(placer.convert(matches(
                                     "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"),
                                 eq(String.class)))
-                                .thenReturn("12345-67890");
+                                .thenReturn(SAMPLE_CONTENT_ID);
 
-                            when(loader.getResource(eq("12345-67890")))
+                            when(loader.getResource(eq(SAMPLE_CONTENT_ID)))
                                 .thenReturn(writeableResource);
                             output = mock(OutputStream.class);
                             when(writeableResource.getOutputStream()).thenReturn(output);
@@ -307,7 +308,7 @@ public class DefaultFileSystemStoresImplTest {
 
                         @Test
                         void shouldCreateANewResource() {
-                            verify(loader).getResource(eq("12345-67890"));
+                            verify(loader).getResource(eq(SAMPLE_CONTENT_ID));
                         }
 
                         @Test
@@ -335,8 +336,8 @@ public class DefaultFileSystemStoresImplTest {
                                 "Hello content world!".getBytes());
 
                             when(placer.canConvert(eq(entity.getClass()), eq(String.class))).thenReturn(true);
-                            when(placer.convert(eq(entity), eq(String.class))).thenReturn("/abcd/efgh");
-                            when(loader.getResource(eq("/abcd/efgh"))).thenReturn(writeableResource);
+                            when(placer.convert(eq(entity), eq(String.class))).thenReturn(SAMPLE_FS_RESOURCE_PATH);
+                            when(loader.getResource(eq(SAMPLE_FS_RESOURCE_PATH))).thenReturn(writeableResource);
 
                             when(writeableResource.exists()).thenReturn(true);
 
@@ -386,23 +387,23 @@ public class DefaultFileSystemStoresImplTest {
 
                             when(placer.convert(eq(entity), eq(String.class))).thenReturn(null);
 
-                            when(placer.convert(eq("12345-67890"),
+                            when(placer.convert(eq(SAMPLE_CONTENT_ID),
                                 eq(String.class)))
-                                .thenReturn("12345-67890");
+                                .thenReturn(SAMPLE_CONTENT_ID);
 
                             when(placer.convert(matches(
                                     "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"),
                                 eq(String.class)))
-                                .thenReturn("12345-67890");
+                                .thenReturn(SAMPLE_CONTENT_ID);
 
-                            when(loader.getResource(eq("12345-67890")))
+                            when(loader.getResource(eq(SAMPLE_CONTENT_ID)))
                                 .thenReturn(writeableResource);
                             output = mock(OutputStream.class);
                             when(writeableResource.getOutputStream()).thenReturn(output);
 
                             when(writeableResource.contentLength()).thenReturn(20L);
 
-                            entity.setContentId("12345-67890");
+                            entity.setContentId(SAMPLE_CONTENT_ID);
                             when(writeableResource.exists()).thenReturn(true);
 
                             try {
@@ -415,7 +416,7 @@ public class DefaultFileSystemStoresImplTest {
                         @Test
                         void shouldUseThePlacerServiceToGetAResourcePath() {
                             verify(placer, atLeastOnce()).convert(any(), eq(String.class));
-                            verify(loader).getResource(eq("12345-67890"));
+                            verify(loader).getResource(eq(SAMPLE_CONTENT_ID));
                         }
 
                         @Test
@@ -449,16 +450,16 @@ public class DefaultFileSystemStoresImplTest {
 
                             when(placer.convert(eq(entity), eq(String.class))).thenReturn(null);
 
-                            when(placer.convert(eq("12345-67890"),
+                            when(placer.convert(eq(SAMPLE_CONTENT_ID),
                                 eq(String.class)))
-                                .thenReturn("12345-67890");
+                                .thenReturn(SAMPLE_CONTENT_ID);
 
                             when(placer.convert(matches(
                                     "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"),
                                 eq(String.class)))
-                                .thenReturn("12345-67890");
+                                .thenReturn(SAMPLE_CONTENT_ID);
 
-                            when(loader.getResource(eq("12345-67890")))
+                            when(loader.getResource(eq(SAMPLE_CONTENT_ID)))
                                 .thenReturn(writeableResource);
                             output = mock(OutputStream.class);
                             when(writeableResource.getOutputStream()).thenReturn(output);
@@ -492,7 +493,7 @@ public class DefaultFileSystemStoresImplTest {
 
                         @Test
                         void shouldCreateANewResource() {
-                            verify(loader).getResource(eq("12345-67890"));
+                            verify(loader).getResource(eq(SAMPLE_CONTENT_ID));
                         }
 
                         @Test
@@ -521,16 +522,16 @@ public class DefaultFileSystemStoresImplTest {
 
                             when(placer.convert(eq(entity), eq(String.class))).thenReturn(null);
 
-                            when(placer.convert(eq("12345-67890"),
+                            when(placer.convert(eq(SAMPLE_CONTENT_ID),
                                 eq(String.class)))
-                                .thenReturn("12345-67890");
+                                .thenReturn(SAMPLE_CONTENT_ID);
 
                             when(placer.convert(matches(
                                     "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"),
                                 eq(String.class)))
-                                .thenReturn("12345-67890");
+                                .thenReturn(SAMPLE_CONTENT_ID);
 
-                            when(loader.getResource(eq("12345-67890")))
+                            when(loader.getResource(eq(SAMPLE_CONTENT_ID)))
                                 .thenReturn(writeableResource);
                             output = mock(OutputStream.class);
                             when(writeableResource.getOutputStream()).thenReturn(output);
@@ -639,25 +640,25 @@ public class DefaultFileSystemStoresImplTest {
                             writeableResource = mock(WritableResource.class);
                             entity = new SingleContentFields();
                             content = mock(InputStream.class);
-                            entity.setContentId(CONTENT_ID);
+                            entity.setContentId(SAMPLE_CONTENT_ID);
 
                             when(placer.convert(eq(entity), eq(String.class)))
                                 .thenReturn(null);
 
-                            when(placer.convert(eq(CONTENT_ID), eq(String.class)))
-                                .thenReturn(CONTENT_ID);
+                            when(placer.convert(eq(SAMPLE_CONTENT_ID), eq(String.class)))
+                                .thenReturn(SAMPLE_CONTENT_ID);
 
-                            when(loader.getResource(eq(CONTENT_ID)))
+                            when(loader.getResource(eq(SAMPLE_CONTENT_ID)))
                                 .thenReturn(writeableResource);
                             when(writeableResource.getInputStream()).thenReturn(content);
 
                             when(placer.canConvert(eq(entity.getClass()), eq(String.class))).thenReturn(true);
                             when(placer.convert(eq(entity), eq(String.class)))
-                                .thenReturn("/abcd/efgh");
+                                .thenReturn(SAMPLE_FS_RESOURCE_PATH);
 
                             nonExistentResource = mock(DeletableResource.class);
 
-                            when(loader.getResource(eq("/abcd/efgh")))
+                            when(loader.getResource(eq(SAMPLE_FS_RESOURCE_PATH)))
                                 .thenReturn(nonExistentResource);
 
                             when(writeableResource.exists()).thenReturn(false);
@@ -689,23 +690,23 @@ public class DefaultFileSystemStoresImplTest {
                             writeableResource = mock(WritableResource.class);
                             entity = new SingleContentFields();
                             content = mock(InputStream.class);
-                            entity.setContentId(CONTENT_ID);
+                            entity.setContentId(SAMPLE_CONTENT_ID);
 
                             when(placer.convert(eq(entity), eq(String.class)))
                                 .thenReturn(null);
 
-                            when(placer.convert(eq(CONTENT_ID), eq(String.class)))
-                                .thenReturn(CONTENT_ID);
+                            when(placer.convert(eq(SAMPLE_CONTENT_ID), eq(String.class)))
+                                .thenReturn(SAMPLE_CONTENT_ID);
 
-                            when(loader.getResource(eq(CONTENT_ID)))
+                            when(loader.getResource(eq(SAMPLE_CONTENT_ID)))
                                 .thenReturn(writeableResource);
                             when(writeableResource.getInputStream()).thenReturn(content);
 
                             when(placer.canConvert(eq(entity.getClass()), eq(String.class))).thenReturn(true);
                             when(placer.convert(eq(entity), eq(String.class)))
-                                .thenReturn("/abcd/efgh");
+                                .thenReturn(SAMPLE_FS_RESOURCE_PATH);
 
-                            when(loader.getResource(eq("/abcd/efgh")))
+                            when(loader.getResource(eq(SAMPLE_FS_RESOURCE_PATH)))
                                 .thenReturn(writeableResource);
 
                             when(writeableResource.exists()).thenReturn(true);
@@ -742,22 +743,22 @@ public class DefaultFileSystemStoresImplTest {
                             writeableResource = mock(WritableResource.class);
                             entity = new SingleContentFields();
                             content = mock(InputStream.class);
-                            entity.setContentId(CONTENT_ID);
+                            entity.setContentId(SAMPLE_CONTENT_ID);
 
                             when(placer.convert(eq(entity), eq(String.class))).thenReturn(null);
 
-                            when(placer.convert(eq(CONTENT_ID), eq(String.class)))
-                                .thenReturn(CONTENT_ID);
+                            when(placer.convert(eq(SAMPLE_CONTENT_ID), eq(String.class)))
+                                .thenReturn(SAMPLE_CONTENT_ID);
 
-                            when(loader.getResource(eq(CONTENT_ID))).thenReturn(writeableResource);
+                            when(loader.getResource(eq(SAMPLE_CONTENT_ID))).thenReturn(writeableResource);
                             when(writeableResource.getInputStream()).thenReturn(content);
 
                             when(placer.convert(eq(entity), eq(String.class))).thenReturn(null);
                             nonExistentResource = mock(DeletableResource.class);
                             when(writeableResource.exists()).thenReturn(true);
 
-                            when(loader.getResource(eq("/abcd/efgh"))).thenReturn(nonExistentResource);
-                            when(loader.getResource(eq(CONTENT_ID))).thenReturn(nonExistentResource);
+                            when(loader.getResource(eq(SAMPLE_FS_RESOURCE_PATH))).thenReturn(nonExistentResource);
+                            when(loader.getResource(eq(SAMPLE_CONTENT_ID))).thenReturn(nonExistentResource);
 
                             try {
                                 result = filesystemStoreImpl.getContent(entity);
@@ -786,15 +787,15 @@ public class DefaultFileSystemStoresImplTest {
                             writeableResource = mock(WritableResource.class);
                             entity = new SingleContentFields();
                             content = mock(InputStream.class);
-                            entity.setContentId(CONTENT_ID);
+                            entity.setContentId(SAMPLE_CONTENT_ID);
 
                             when(placer.convert(eq(entity), eq(String.class)))
                                 .thenReturn(null);
 
-                            when(placer.convert(eq(CONTENT_ID), eq(String.class)))
-                                .thenReturn(CONTENT_ID);
+                            when(placer.convert(eq(SAMPLE_CONTENT_ID), eq(String.class)))
+                                .thenReturn(SAMPLE_CONTENT_ID);
 
-                            when(loader.getResource(eq(CONTENT_ID)))
+                            when(loader.getResource(eq(SAMPLE_CONTENT_ID)))
                                 .thenReturn(writeableResource);
                             when(writeableResource.getInputStream()).thenReturn(content);
 
@@ -826,15 +827,15 @@ public class DefaultFileSystemStoresImplTest {
                                 writeableResource = mock(WritableResource.class);
                                 entity = new SingleContentFields();
                                 content = mock(InputStream.class);
-                                entity.setContentId(CONTENT_ID);
+                                entity.setContentId(SAMPLE_CONTENT_ID);
 
                                 when(placer.convert(eq(entity), eq(String.class)))
                                     .thenReturn(null);
 
-                                when(placer.convert(eq(CONTENT_ID), eq(String.class)))
-                                    .thenReturn(CONTENT_ID);
+                                when(placer.convert(eq(SAMPLE_CONTENT_ID), eq(String.class)))
+                                    .thenReturn(SAMPLE_CONTENT_ID);
 
-                                when(loader.getResource(eq(CONTENT_ID)))
+                                when(loader.getResource(eq(SAMPLE_CONTENT_ID)))
                                     .thenReturn(writeableResource);
                                 when(writeableResource.getInputStream()).thenReturn(content);
 
@@ -870,25 +871,25 @@ public class DefaultFileSystemStoresImplTest {
                             writeableResource = mock(WritableResource.class);
                             entity = new SingleContentFields();
                             content = mock(InputStream.class);
-                            entity.setContentId(CONTENT_ID);
+                            entity.setContentId(SAMPLE_CONTENT_ID);
 
                             when(placer.convert(eq(entity), eq(String.class)))
                                 .thenReturn(null);
 
-                            when(placer.convert(eq(CONTENT_ID), eq(String.class)))
-                                .thenReturn(CONTENT_ID);
+                            when(placer.convert(eq(SAMPLE_CONTENT_ID), eq(String.class)))
+                                .thenReturn(SAMPLE_CONTENT_ID);
 
-                            when(loader.getResource(eq(CONTENT_ID)))
+                            when(loader.getResource(eq(SAMPLE_CONTENT_ID)))
                                 .thenReturn(writeableResource);
                             when(writeableResource.getInputStream()).thenReturn(content);
 
                             when(placer.convert(eq(entity), eq(String.class))).thenReturn(null);
                             nonExistentResource = mock(DeletableResource.class);
-                            when(loader.getResource(eq("/abcd/efgh")))
+                            when(loader.getResource(eq(SAMPLE_FS_RESOURCE_PATH)))
                                 .thenReturn(nonExistentResource);
                             when(nonExistentResource.exists()).thenReturn(false);
 
-                            when(loader.getResource(eq(CONTENT_ID)))
+                            when(loader.getResource(eq(SAMPLE_CONTENT_ID)))
                                 .thenReturn(writeableResource);
                             when(writeableResource.exists()).thenReturn(true);
 
@@ -903,7 +904,7 @@ public class DefaultFileSystemStoresImplTest {
                         void shouldCheckTheNewLocationAndThenTheOld() {
                             InOrder inOrder = Mockito.inOrder(loader);
 
-                            inOrder.verify(loader).getResource(eq(CONTENT_ID));
+                            inOrder.verify(loader).getResource(eq(SAMPLE_CONTENT_ID));
                             inOrder.verifyNoMoreInteractions();
                         }
 
@@ -932,17 +933,17 @@ public class DefaultFileSystemStoresImplTest {
 
                             writeableResource = mock(WritableResource.class);
                             entity = new SingleContentFields();
-                            entity.setContentId(CONTENT_ID);
+                            entity.setContentId(SAMPLE_CONTENT_ID);
                             entity.setContentLen(100L);
                             deletableResource = mock(DeletableResource.class);
 
                             when(placer.canConvert(eq(entity.getClass()), eq(String.class))).thenReturn(true);
                             when(placer.convert(eq(entity), eq(String.class)))
-                                .thenReturn("/abcd/efgh");
+                                .thenReturn(SAMPLE_FS_RESOURCE_PATH);
 
                             nonExistentResource = mock(DeletableResource.class);
 
-                            when(loader.getResource(eq("/abcd/efgh")))
+                            when(loader.getResource(eq(SAMPLE_FS_RESOURCE_PATH)))
                                 .thenReturn(nonExistentResource);
 
                             when(nonExistentResource.exists()).thenReturn(false);
@@ -969,17 +970,17 @@ public class DefaultFileSystemStoresImplTest {
 
                             writeableResource = mock(WritableResource.class);
                             entity = new SingleContentFields();
-                            entity.setContentId(CONTENT_ID);
+                            entity.setContentId(SAMPLE_CONTENT_ID);
                             entity.setContentLen(100L);
                             deletableResource = mock(DeletableResource.class);
 
                             when(placer.canConvert(eq(entity.getClass()), eq(String.class))).thenReturn(true);
                             when(placer.convert(eq(entity), eq(String.class)))
-                                .thenReturn("/abcd/efgh");
+                                .thenReturn(SAMPLE_FS_RESOURCE_PATH);
 
                             deletableResource = mock(DeletableResource.class);
 
-                            when(loader.getResource(eq("/abcd/efgh")))
+                            when(loader.getResource(eq(SAMPLE_FS_RESOURCE_PATH)))
                                 .thenReturn(deletableResource);
 
                             File resourceFile = mock(File.class);
@@ -1018,15 +1019,15 @@ public class DefaultFileSystemStoresImplTest {
 
                             writeableResource = mock(WritableResource.class);
                             entity = new SingleContentFields();
-                            entity.setContentId(CONTENT_ID);
+                            entity.setContentId(SAMPLE_CONTENT_ID);
                             entity.setContentLen(100L);
                             deletableResource = mock(DeletableResource.class);
 
                             when(placer.convert(eq(entity), eq(String.class))).thenReturn(null);
-                            when(placer.convert(eq(CONTENT_ID), eq(String.class)))
-                                .thenReturn(CONTENT_ID);
+                            when(placer.convert(eq(SAMPLE_CONTENT_ID), eq(String.class)))
+                                .thenReturn(SAMPLE_CONTENT_ID);
 
-                            when(loader.getResource(eq(CONTENT_ID)))
+                            when(loader.getResource(eq(SAMPLE_CONTENT_ID)))
                                 .thenReturn(deletableResource);
 
                             File resourceFile = mock(File.class);
@@ -1061,15 +1062,15 @@ public class DefaultFileSystemStoresImplTest {
 
                                 writeableResource = mock(WritableResource.class);
                                 entity = new SingleContentFields();
-                                entity.setContentId(CONTENT_ID);
+                                entity.setContentId(SAMPLE_CONTENT_ID);
                                 entity.setContentLen(100L);
                                 deletableResource = mock(DeletableResource.class);
 
                                 when(placer.convert(eq(entity), eq(String.class))).thenReturn(null);
-                                when(placer.convert(eq(CONTENT_ID), eq(String.class)))
-                                    .thenReturn(CONTENT_ID);
+                                when(placer.convert(eq(SAMPLE_CONTENT_ID), eq(String.class)))
+                                    .thenReturn(SAMPLE_CONTENT_ID);
 
-                                when(loader.getResource(eq(CONTENT_ID)))
+                                when(loader.getResource(eq(SAMPLE_CONTENT_ID)))
                                     .thenReturn(deletableResource);
 
                                 File resourceFile = mock(File.class);
@@ -1106,15 +1107,15 @@ public class DefaultFileSystemStoresImplTest {
 
                                 writeableResource = mock(WritableResource.class);
                                 entity = new SingleContentFields();
-                                entity.setContentId(CONTENT_ID);
+                                entity.setContentId(SAMPLE_CONTENT_ID);
                                 entity.setContentLen(100L);
                                 deletableResource = mock(DeletableResource.class);
 
                                 when(placer.convert(eq(entity), eq(String.class))).thenReturn(null);
-                                when(placer.convert(eq(CONTENT_ID), eq(String.class)))
-                                    .thenReturn(CONTENT_ID);
+                                when(placer.convert(eq(SAMPLE_CONTENT_ID), eq(String.class)))
+                                    .thenReturn(SAMPLE_CONTENT_ID);
 
-                                when(loader.getResource(eq(CONTENT_ID)))
+                                when(loader.getResource(eq(SAMPLE_CONTENT_ID)))
                                     .thenReturn(deletableResource);
 
                                 File resourceFile = mock(File.class);
@@ -1129,14 +1130,14 @@ public class DefaultFileSystemStoresImplTest {
                                 when(rootResource.getFile()).thenReturn(root);
 
                                 entity = new SharedIdJakartaJpaEntity();
-                                entity.setContentId(CONTENT_ID);
+                                entity.setContentId(SAMPLE_CONTENT_ID);
 
                                 filesystemStoreImpl.unsetContent(entity);
                             }
 
                             @Test
                             void shouldNotResetTheContentIdMetadata() {
-                                assertThat(entity.getContentId()).isEqualTo(CONTENT_ID);
+                                assertThat(entity.getContentId()).isEqualTo(SAMPLE_CONTENT_ID);
                                 assertThat(entity.getContentLen()).isNull();
                             }
                         }
@@ -1154,15 +1155,15 @@ public class DefaultFileSystemStoresImplTest {
 
                                 writeableResource = mock(WritableResource.class);
                                 entity = new SingleContentFields();
-                                entity.setContentId(CONTENT_ID);
+                                entity.setContentId(SAMPLE_CONTENT_ID);
                                 entity.setContentLen(100L);
                                 deletableResource = mock(DeletableResource.class);
 
                                 when(placer.convert(eq(entity), eq(String.class))).thenReturn(null);
-                                when(placer.convert(eq(CONTENT_ID), eq(String.class)))
-                                    .thenReturn(CONTENT_ID);
+                                when(placer.convert(eq(SAMPLE_CONTENT_ID), eq(String.class)))
+                                    .thenReturn(SAMPLE_CONTENT_ID);
 
-                                when(loader.getResource(eq(CONTENT_ID)))
+                                when(loader.getResource(eq(SAMPLE_CONTENT_ID)))
                                     .thenReturn(deletableResource);
 
                                 File resourceFile = mock(File.class);
@@ -1177,14 +1178,14 @@ public class DefaultFileSystemStoresImplTest {
                                 when(rootResource.getFile()).thenReturn(root);
 
                                 entity = new SharedIdSpringJpaEntity();
-                                entity.setContentId(CONTENT_ID);
+                                entity.setContentId(SAMPLE_CONTENT_ID);
 
                                 filesystemStoreImpl.unsetContent(entity);
                             }
 
                             @Test
                             void shouldNotResetTheContentIdMetadata() {
-                                assertThat(entity.getContentId()).isEqualTo(CONTENT_ID);
+                                assertThat(entity.getContentId()).isEqualTo(SAMPLE_CONTENT_ID);
                                 assertThat(entity.getContentLen()).isNull();
                             }
                         }
@@ -1203,16 +1204,16 @@ public class DefaultFileSystemStoresImplTest {
 
                             writeableResource = mock(WritableResource.class);
                             entity = new SingleContentFields();
-                            entity.setContentId(CONTENT_ID);
+                            entity.setContentId(SAMPLE_CONTENT_ID);
                             entity.setContentLen(100L);
                             deletableResource = mock(DeletableResource.class);
 
                             when(placer.convert(eq(entity), eq(String.class))).thenReturn(null);
-                            when(placer.convert(eq(CONTENT_ID), eq(String.class)))
-                                .thenReturn(CONTENT_ID);
+                            when(placer.convert(eq(SAMPLE_CONTENT_ID), eq(String.class)))
+                                .thenReturn(SAMPLE_CONTENT_ID);
 
                             nonExistentResource = mock(DeletableResource.class);
-                            when(loader.getResource(eq(CONTENT_ID)))
+                            when(loader.getResource(eq(SAMPLE_CONTENT_ID)))
                                 .thenReturn(nonExistentResource);
                             when(nonExistentResource.exists()).thenReturn(false);
 

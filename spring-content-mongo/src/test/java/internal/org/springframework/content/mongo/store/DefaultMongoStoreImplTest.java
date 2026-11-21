@@ -20,6 +20,8 @@ import java.io.InputStream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
+import static org.springframework.content.test.support.TestSupportData.SAMPLE_CONTENT_ID;
+import static org.springframework.content.test.support.TestSupportData.SAMPLE_SHORT_CONTENT_ID;
 
 public class DefaultMongoStoreImplTest {
 
@@ -62,7 +64,7 @@ public class DefaultMongoStoreImplTest {
             @BeforeEach
             void entity() {
                 property = new SingleContentFields();
-                property.setContentId("12345");
+                property.setContentId(SAMPLE_SHORT_CONTENT_ID);
             }
 
             @Nested
@@ -70,13 +72,13 @@ public class DefaultMongoStoreImplTest {
                 @BeforeEach
                 void sharedId() {
                     property = new SharedIdJakartaMongoDocument();
-                    property.setContentId("12345");
+                    property.setContentId(SAMPLE_SHORT_CONTENT_ID);
                     mongoContentRepoImpl.unassociate(property);
                 }
 
                 @Test
                 void shouldNotResetTheContentIdBecauseItIsAlsoTheId() {
-                    assertThat(property.getContentId()).isEqualTo("12345");
+                    assertThat(property.getContentId()).isEqualTo(SAMPLE_SHORT_CONTENT_ID);
                 }
             }
         }
@@ -104,9 +106,9 @@ public class DefaultMongoStoreImplTest {
             class WhenTheContentAlreadyExists {
                 @BeforeEach
                 void existing() throws Exception {
-                    property.setContentId("abcd-efghi");
-                    when(placer.convert(eq("abcd-efghi"), eq(String.class))).thenReturn("abcd-efghi");
-                    when(gridFsTemplate.getResource("abcd-efghi")).thenReturn(resource);
+                    property.setContentId(SAMPLE_CONTENT_ID);
+                    when(placer.convert(eq(SAMPLE_CONTENT_ID), eq(String.class))).thenReturn(SAMPLE_CONTENT_ID);
+                    when(gridFsTemplate.getResource(SAMPLE_CONTENT_ID)).thenReturn(resource);
                     when(resource.exists()).thenReturn(true);
                     when(resource.contentLength()).thenReturn(1L);
                 }
@@ -177,10 +179,10 @@ public class DefaultMongoStoreImplTest {
             @BeforeEach
             void entity() throws IOException {
                 property = new SingleContentFields();
-                property.setContentId("abcd");
+                property.setContentId(SAMPLE_SHORT_CONTENT_ID);
                 content = mock(InputStream.class);
-                when(placer.convert(eq("abcd"), eq(String.class))).thenReturn("abcd");
-                when(gridFsTemplate.getResource("abcd")).thenReturn(resource);
+                when(placer.convert(eq(SAMPLE_SHORT_CONTENT_ID), eq(String.class))).thenReturn(SAMPLE_SHORT_CONTENT_ID);
+                when(gridFsTemplate.getResource(SAMPLE_SHORT_CONTENT_ID)).thenReturn(resource);
                 when(resource.getInputStream()).thenReturn(content);
             }
 
@@ -217,9 +219,9 @@ public class DefaultMongoStoreImplTest {
             @BeforeEach
             void entity() {
                 property = new SingleContentFields();
-                property.setContentId("abcd");
-                when(placer.convert(eq("abcd"), eq(String.class))).thenReturn("abcd");
-                when(gridFsTemplate.getResource("abcd")).thenReturn(resource);
+                property.setContentId(SAMPLE_SHORT_CONTENT_ID);
+                when(placer.convert(eq(SAMPLE_SHORT_CONTENT_ID), eq(String.class))).thenReturn(SAMPLE_SHORT_CONTENT_ID);
+                when(gridFsTemplate.getResource(SAMPLE_SHORT_CONTENT_ID)).thenReturn(resource);
                 when(resource.exists()).thenReturn(true);
             }
 
