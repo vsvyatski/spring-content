@@ -40,6 +40,23 @@ public class JpaVersionsAutoConfigurationTest {
 
     private ApplicationContextRunner contextRunner;
 
+    @Test
+    void versionedEntityExposesVersioningPropertyAccessors() {
+        TestEntityVersioned entity = new TestEntityVersioned();
+        entity.setId(1L);
+        entity.setAncestralRootId("root-1");
+        entity.setAncestorId("ancestor-1");
+        entity.setSuccessorId("successor-1");
+
+        Assertions.assertThat(entity.getId()).isEqualTo(1L);
+        Assertions.assertThat(entity.getAncestralRootId()).isEqualTo("root-1");
+        Assertions.assertThat(entity.getAncestorId()).isEqualTo("ancestor-1");
+        Assertions.assertThat(entity.getSuccessorId()).isEqualTo("successor-1");
+    }
+
+    public interface NestedTestEntityRepository extends CrudRepository<TestEntityVersioned, Long>, LockingAndVersioningRepository<TestEntityVersioned> {
+    }
+
     @Entity
     public static class TestEntityVersioned {
 
@@ -87,9 +104,6 @@ public class JpaVersionsAutoConfigurationTest {
         public void setSuccessorId(String successorId) {
             this.successorId = successorId;
         }
-    }
-
-    public interface NestedTestEntityRepository extends CrudRepository<TestEntityVersioned, Long>, LockingAndVersioningRepository<TestEntityVersioned> {
     }
 
     @Configuration
@@ -141,20 +155,6 @@ public class JpaVersionsAutoConfigurationTest {
     @EnableJpaRepositories(basePackages = "org.springframework.versions", considerNestedRepositories = true)
     @Import(JpaTestConfig.class)
     public static class StarterWithAnnotationConfig /*extends BaseConfig*/ {
-    }
-
-    @Test
-    void versionedEntityExposesVersioningPropertyAccessors() {
-        TestEntityVersioned entity = new TestEntityVersioned();
-        entity.setId(1L);
-        entity.setAncestralRootId("root-1");
-        entity.setAncestorId("ancestor-1");
-        entity.setSuccessorId("successor-1");
-
-        Assertions.assertThat(entity.getId()).isEqualTo(1L);
-        Assertions.assertThat(entity.getAncestralRootId()).isEqualTo("root-1");
-        Assertions.assertThat(entity.getAncestorId()).isEqualTo("ancestor-1");
-        Assertions.assertThat(entity.getSuccessorId()).isEqualTo("successor-1");
     }
 
     @Nested

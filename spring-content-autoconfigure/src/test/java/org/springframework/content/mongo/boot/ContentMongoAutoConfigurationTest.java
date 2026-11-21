@@ -66,14 +66,14 @@ public class ContentMongoAutoConfigurationTest {
         @BeforeEach
         void setUp() {
             contextRunner = new ApplicationContextRunner()
-                    .withConfiguration(AutoConfigurations.of(MongoContentAutoConfiguration.class));
+                .withConfiguration(AutoConfigurations.of(MongoContentAutoConfiguration.class));
         }
 
         @Test
         void shouldLoadTheContext() {
             contextRunner.withUserConfiguration(TestConfig.class)
-                    .run((context) ->
-                            Assertions.assertThat(context).hasSingleBean(TestEntityContentStore.class));
+                .run((context) ->
+                    Assertions.assertThat(context).hasSingleBean(TestEntityContentStore.class));
         }
     }
 }

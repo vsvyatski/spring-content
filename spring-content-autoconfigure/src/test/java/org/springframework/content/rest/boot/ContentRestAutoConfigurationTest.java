@@ -30,8 +30,8 @@ public class ContentRestAutoConfigurationTest {
 
     @SpringBootApplication(exclude = {SolrAutoConfiguration.class, SolrExtensionAutoConfiguration.class, S3ContentAutoConfiguration.class})
     @ImportAutoConfiguration({HibernateJpaAutoConfiguration.class, DataJpaRepositoriesAutoConfiguration.class,
-            PropertyPlaceholderAutoConfiguration.class, DataRestAutoConfiguration.class,
-            JacksonAutoConfiguration.class, ContentRestAutoConfiguration.class})
+        PropertyPlaceholderAutoConfiguration.class, DataRestAutoConfiguration.class,
+        JacksonAutoConfiguration.class, ContentRestAutoConfiguration.class})
     public static class TestConfig {
     }
 

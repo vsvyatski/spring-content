@@ -18,8 +18,8 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.content.fs.config.EnableFileSystemStores;
 import org.springframework.content.fs.io.FileSystemResourceLoader;
 import org.springframework.content.fs.store.FileSystemContentStore;
-import org.springframework.context.annotation.Bean;
 import org.springframework.content.test.support.jpa.SingleContentJpaLongIdEntity;
+import org.springframework.context.annotation.Bean;
 
 public class ContentFileSystemAutoConfigurationTest {
 
@@ -53,7 +53,7 @@ public class ContentFileSystemAutoConfigurationTest {
             @BeforeEach
             void setUp() {
                 contextRunner = new ApplicationContextRunner()
-                        .withConfiguration(AutoConfigurations.of(FileSystemContentAutoConfiguration.class));
+                    .withConfiguration(AutoConfigurations.of(FileSystemContentAutoConfiguration.class));
             }
 
             @Test
@@ -67,7 +67,7 @@ public class ContentFileSystemAutoConfigurationTest {
             @BeforeEach
             void setUp() {
                 contextRunner = new ApplicationContextRunner()
-                        .withConfiguration(AutoConfigurations.of(FileSystemContentAutoConfiguration.class));
+                    .withConfiguration(AutoConfigurations.of(FileSystemContentAutoConfiguration.class));
                 System.setProperty("spring.content.fs.filesystem-root", "${java.io.tmpdir}/UPPERCASE/NOTATION/");
             }
 
@@ -90,7 +90,7 @@ public class ContentFileSystemAutoConfigurationTest {
             @BeforeEach
             void setUp() {
                 contextRunner = new ApplicationContextRunner()
-                        .withConfiguration(AutoConfigurations.of(FileSystemContentAutoConfiguration.class));
+                    .withConfiguration(AutoConfigurations.of(FileSystemContentAutoConfiguration.class));
             }
 
             @Test
@@ -117,7 +117,7 @@ public class ContentFileSystemAutoConfigurationTest {
             @BeforeEach
             void setUp() {
                 contextRunner = new ApplicationContextRunner()
-                        .withConfiguration(AutoConfigurations.of(FileSystemContentAutoConfiguration.class));
+                    .withConfiguration(AutoConfigurations.of(FileSystemContentAutoConfiguration.class));
             }
 
             @Test

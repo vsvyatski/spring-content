@@ -28,15 +28,15 @@ public class SolrAutoConfigurationTest {
             @BeforeEach
             void setUp() {
                 contextRunner = new ApplicationContextRunner()
-                        .withConfiguration(AutoConfigurations.of(SolrAutoConfiguration.class));
+                    .withConfiguration(AutoConfigurations.of(SolrAutoConfiguration.class));
             }
 
             @Test
             void shouldIncludeTheAutoconfiguredAnnotatedEventHandlerBean() {
                 contextRunner.withUserConfiguration(TestConfig.class)
-                        .run((context) ->
-                                Assertions.assertThat(context).getBean("solrFulltextEventListener")
-                                        .isNotNull());
+                    .run((context) ->
+                        Assertions.assertThat(context).getBean("solrFulltextEventListener")
+                            .isNotNull());
             }
         }
     }

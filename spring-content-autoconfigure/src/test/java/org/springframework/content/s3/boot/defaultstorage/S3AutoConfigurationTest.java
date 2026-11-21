@@ -30,7 +30,7 @@ public class S3AutoConfigurationTest {
             @BeforeEach
             void setUp() {
                 contextRunner = new ApplicationContextRunner()
-                        .withConfiguration(AutoConfigurations.of(S3ContentAutoConfiguration.class));
+                    .withConfiguration(AutoConfigurations.of(S3ContentAutoConfiguration.class));
 
                 System.setProperty("spring.content.storage.type.default", "s3");
             }
@@ -43,7 +43,7 @@ public class S3AutoConfigurationTest {
             @Test
             void shouldCreateAnS3ClientBean() {
                 contextRunner.withUserConfiguration(TestConfigWithoutBeans.class)
-                        .run((context) -> Assertions.assertThat(context).hasSingleBean(S3Client.class));
+                    .run((context) -> Assertions.assertThat(context).hasSingleBean(S3Client.class));
             }
         }
 
@@ -52,7 +52,7 @@ public class S3AutoConfigurationTest {
             @BeforeEach
             void setUp() {
                 contextRunner = new ApplicationContextRunner()
-                        .withConfiguration(AutoConfigurations.of(S3ContentAutoConfiguration.class));
+                    .withConfiguration(AutoConfigurations.of(S3ContentAutoConfiguration.class));
 
                 System.setProperty("spring.content.storage.type.default", "fs");
             }
@@ -73,13 +73,13 @@ public class S3AutoConfigurationTest {
             @BeforeEach
             void setUp() {
                 contextRunner = new ApplicationContextRunner()
-                        .withConfiguration(AutoConfigurations.of(S3ContentAutoConfiguration.class));
+                    .withConfiguration(AutoConfigurations.of(S3ContentAutoConfiguration.class));
             }
 
             @Test
             void shouldCreateAnS3ClientBean() {
                 contextRunner.withUserConfiguration(TestConfigWithoutBeans.class)
-                        .run((context) -> Assertions.assertThat(context).hasSingleBean(S3Client.class));
+                    .run((context) -> Assertions.assertThat(context).hasSingleBean(S3Client.class));
             }
         }
     }

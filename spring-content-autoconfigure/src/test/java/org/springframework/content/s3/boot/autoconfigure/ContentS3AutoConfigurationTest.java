@@ -15,8 +15,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.content.s3.config.EnableS3Stores;
 import org.springframework.content.s3.store.S3ContentStore;
-import org.springframework.context.annotation.Bean;
 import org.springframework.content.test.support.jpa.SingleContentJpaLongIdEntity;
+import org.springframework.context.annotation.Bean;
 import software.amazon.awssdk.services.s3.S3Client;
 
 import static org.mockito.Mockito.mock;
@@ -66,7 +66,7 @@ public class ContentS3AutoConfigurationTest {
             @BeforeEach
             void setUp() {
                 contextRunner = new ApplicationContextRunner()
-                        .withConfiguration(AutoConfigurations.of(S3ContentAutoConfiguration.class));
+                    .withConfiguration(AutoConfigurations.of(S3ContentAutoConfiguration.class));
             }
 
             @Test
@@ -83,7 +83,7 @@ public class ContentS3AutoConfigurationTest {
             @BeforeEach
             void setUp() {
                 contextRunner = new ApplicationContextRunner()
-                        .withConfiguration(AutoConfigurations.of(S3ContentAutoConfiguration.class));
+                    .withConfiguration(AutoConfigurations.of(S3ContentAutoConfiguration.class));
             }
 
             @Test
@@ -100,7 +100,7 @@ public class ContentS3AutoConfigurationTest {
             @BeforeEach
             void setUp() {
                 contextRunner = new ApplicationContextRunner()
-                        .withConfiguration(AutoConfigurations.of(S3ContentAutoConfiguration.class));
+                    .withConfiguration(AutoConfigurations.of(S3ContentAutoConfiguration.class));
             }
 
             @Test
@@ -117,7 +117,7 @@ public class ContentS3AutoConfigurationTest {
             @BeforeEach
             void setUp() {
                 contextRunner = new ApplicationContextRunner()
-                        .withConfiguration(AutoConfigurations.of(S3ContentAutoConfiguration.class));
+                    .withConfiguration(AutoConfigurations.of(S3ContentAutoConfiguration.class));
 
                 System.setProperty("spring.content.s3.endpoint", "http://some-endpoint");
                 System.setProperty("spring.content.s3.accessKey", "foo");

@@ -23,6 +23,18 @@ public class JpaVersionsDatabaseInitializerTest {
     private DataSource ds;
     private JpaVersionsProperties props;
 
+    private boolean locksTableExists() throws SQLException {
+        try (Connection conn = ds.getConnection();
+             ResultSet tables = conn.getMetaData().getTables(null, null, null, new String[]{"TABLE"})) {
+            while (tables.next()) {
+                if ("locks".equalsIgnoreCase(tables.getString("TABLE_NAME"))) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
     @Nested
     class JpaVersionsDatabaseInitializerCases {
         @Nested
@@ -56,18 +68,6 @@ public class JpaVersionsDatabaseInitializerTest {
             void shouldNotExecuteCreateTableStatementsOnTheDatabase() throws SQLException {
                 assertThat(locksTableExists()).isFalse();
             }
-        }
-    }
-
-    private boolean locksTableExists() throws SQLException {
-        try (Connection conn = ds.getConnection();
-             ResultSet tables = conn.getMetaData().getTables(null, null, null, new String[]{"TABLE"})) {
-            while (tables.next()) {
-                if ("locks".equalsIgnoreCase(tables.getString("TABLE_NAME"))) {
-                    return true;
-                }
-            }
-            return false;
         }
     }
 }
