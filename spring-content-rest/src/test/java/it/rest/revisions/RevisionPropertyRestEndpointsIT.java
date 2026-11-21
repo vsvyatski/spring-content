@@ -85,7 +85,9 @@ public class RevisionPropertyRestEndpointsIT {
         public File filesystemRoot() {
             File baseDir = new File(System.getProperty("java.io.tmpdir"));
             File filesystemRoot = new File(baseDir, "spring-content-controller-revisions-tests");
-            filesystemRoot.mkdirs();
+            if (!filesystemRoot.mkdirs() && !filesystemRoot.isDirectory()) {
+                throw new IllegalStateException("Failed to create " + filesystemRoot);
+            }
             return filesystemRoot;
         }
     }

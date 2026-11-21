@@ -85,7 +85,9 @@ public class ShortcutExclusionsIT {
         public File filesystemRoot() {
             File baseDir = new File(System.getProperty("java.io.tmpdir"));
             File filesystemRoot = new File(baseDir, "spring-content-excluded-shortcut-links");
-            filesystemRoot.mkdirs();
+            if (!filesystemRoot.mkdirs() && !filesystemRoot.isDirectory()) {
+                throw new IllegalStateException("Failed to create " + filesystemRoot);
+            }
             return filesystemRoot;
         }
     }

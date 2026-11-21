@@ -99,7 +99,9 @@ public class FileServiceTest {
             void setUp() throws IOException {
                 parent = Files.createTempDirectory("commons-").toFile();
                 file = new File(parent, "something");
-                file.mkdirs();
+                if (!file.mkdirs() && !file.isDirectory()) {
+                    throw new IllegalStateException("Failed to create " + file);
+                }
                 assertThat(file.exists()).isTrue();
 
                 fileService = new FileServiceImpl();

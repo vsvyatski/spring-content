@@ -199,7 +199,9 @@ public class ContentLinksWithProjectionsIT {
         public File filesystemRoot() {
             File baseDir = new File(System.getProperty("java.io.tmpdir"));
             File filesystemRoot = new File(baseDir, "spring-content-controller-tests");
-            filesystemRoot.mkdirs();
+            if (!filesystemRoot.mkdirs() && !filesystemRoot.isDirectory()) {
+                throw new IllegalStateException("Failed to create " + filesystemRoot);
+            }
             return filesystemRoot;
         }
     }
