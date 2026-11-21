@@ -1,10 +1,13 @@
 package internal.org.springframework.content.rest.it.http_405;
 
 import internal.org.springframework.content.rest.it.SecurityConfiguration;
+import internal.org.springframework.content.rest.scoped.http405.UnexportedContentPropertyEntity;
+import internal.org.springframework.content.rest.scoped.http405.UnexportedContentPropertyEntityRepository;
+import internal.org.springframework.content.rest.scoped.http405.UnexportedContentPropertyEntityStore;
+import internal.org.springframework.content.rest.scoped.http405.UnexportedStoreMethodsEntity;
+import internal.org.springframework.content.rest.scoped.http405.UnexportedStoreMethodsEntityRepository;
+import internal.org.springframework.content.rest.scoped.http405.UnexportedStoreMethodsEntityStore;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -18,23 +21,14 @@ import org.springframework.boot.data.mongodb.autoconfigure.DataMongoRepositories
 import org.springframework.boot.mongodb.autoconfigure.MongoAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.content.commons.annotations.ContentId;
-import org.springframework.content.commons.annotations.ContentLength;
-import org.springframework.content.commons.annotations.MimeType;
-import org.springframework.content.commons.property.PropertyPath;
-import org.springframework.content.commons.store.SetContentParams;
-import org.springframework.content.commons.store.UnsetContentParams;
 import org.springframework.content.fs.config.EnableFileSystemStores;
 import org.springframework.content.fs.io.FileSystemResourceLoader;
-import org.springframework.content.fs.store.FileSystemContentStore;
-import org.springframework.content.rest.RestResource;
 import org.springframework.content.rest.config.RestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.jdbc.datasource.init.DataSourceInitializer;
@@ -50,9 +44,7 @@ import org.springframework.web.context.WebApplicationContext;
 import javax.sql.DataSource;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
-import java.util.UUID;
 
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 
@@ -61,140 +53,19 @@ import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 public class MethodNotAllowedExceptionIT {
 
     @Autowired
-    private PreferResourceForPutsAndPostsRepository repo;
+    private UnexportedStoreMethodsEntityRepository repo;
 
     @Autowired
-    private UnexportedContentStore store;
+    private UnexportedStoreMethodsEntityStore store;
 
     @Autowired
-    private TestEntity2Repo repo2;
+    private UnexportedContentPropertyEntityRepository repo2;
 
     @Autowired
-    private TestEntity2Store store2;
+    private UnexportedContentPropertyEntityStore store2;
 
     @Autowired
     private WebApplicationContext webApplicationContext;
-
-    public interface PreferResourceForPutsAndPostsRepository extends CrudRepository<TEntity, Long> {
-    }
-
-    public interface UnexportedContentStore extends FileSystemContentStore<TEntity, UUID> {
-
-        @RestResource(exported = false)
-        @Override
-        InputStream getContent(TEntity property, PropertyPath path);
-
-        @RestResource(exported = false)
-        @Override
-        TEntity setContent(TEntity property, PropertyPath path, InputStream content);
-
-        @RestResource(exported = false)
-        @Override
-        TEntity setContent(TEntity property, PropertyPath path, InputStream content, SetContentParams params);
-
-        @RestResource(exported = false)
-        @Override
-        TEntity setContent(TEntity property, PropertyPath path, Resource resourceContent);
-
-        @RestResource(exported = false)
-        @Override
-        TEntity unsetContent(TEntity property, PropertyPath path, UnsetContentParams params);
-    }
-
-    public interface TestEntity2Repo extends CrudRepository<TEntity2, Long> {
-    }
-
-    public interface TestEntity2Store extends FileSystemContentStore<TEntity2, UUID> {
-    }
-
-    @Entity
-    public static class TEntity {
-        private @Id
-        @GeneratedValue Long id;
-        private @ContentId UUID contentId;
-        private @ContentLength Long len;
-        private @MimeType String mimeType;
-
-        public TEntity() {
-        }
-
-        public Long getId() {
-            return id;
-        }
-
-        public void setId(Long id) {
-            this.id = id;
-        }
-
-        public UUID getContentId() {
-            return contentId;
-        }
-
-        public void setContentId(UUID contentId) {
-            this.contentId = contentId;
-        }
-
-        public Long getLen() {
-            return len;
-        }
-
-        public void setLen(Long len) {
-            this.len = len;
-        }
-
-        public String getMimeType() {
-            return mimeType;
-        }
-
-        public void setMimeType(String mimeType) {
-            this.mimeType = mimeType;
-        }
-    }
-
-    @Entity
-    public static class TEntity2 {
-        private @Id
-        @GeneratedValue Long id;
-        private @ContentId
-        @RestResource(exported = false) UUID contentId;
-        private @ContentLength Long len;
-        private @MimeType String mimeType;
-
-        public TEntity2() {
-        }
-
-        public Long getId() {
-            return id;
-        }
-
-        public void setId(Long id) {
-            this.id = id;
-        }
-
-        public UUID getContentId() {
-            return contentId;
-        }
-
-        public void setContentId(UUID contentId) {
-            this.contentId = contentId;
-        }
-
-        public Long getLen() {
-            return len;
-        }
-
-        public void setLen(Long len) {
-            this.len = len;
-        }
-
-        public String getMimeType() {
-            return mimeType;
-        }
-
-        public void setMimeType(String mimeType) {
-            this.mimeType = mimeType;
-        }
-    }
 
     @SpringBootApplication(exclude = {
         MongoAutoConfiguration.class,
@@ -207,9 +78,12 @@ public class MethodNotAllowedExceptionIT {
             SpringApplication.run(Application.class, args);
         }
 
+        @Configuration
         @Import({RestConfiguration.class, SecurityConfiguration.class})
-        @EnableJpaRepositories(basePackages = "internal.org.springframework.content.rest.it.http_405", considerNestedRepositories = true)
-        @EnableFileSystemStores(basePackages = "internal.org.springframework.content.rest.it.http_405")
+        @EnableJpaRepositories(
+            basePackages = "internal.org.springframework.content.rest.scoped.http405",
+            considerNestedRepositories = true)
+        @EnableFileSystemStores(basePackages = "internal.org.springframework.content.rest.scoped.http405")
         public static class TestConfig {
 
             @Value("/org/springframework/content/jpa/schema-drop-h2.sql")
@@ -247,7 +121,9 @@ public class MethodNotAllowedExceptionIT {
 
                 LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
                 factory.setJpaVendorAdapter(vendorAdapter);
-                factory.setPackagesToScan("internal.org.springframework.content.rest.it.http_405");
+                factory.setPackagesToScan(
+                    "internal.org.springframework.content.rest.scoped.http405",
+                    "org.springframework.content.test.support.jpa.fixture");
                 factory.setDataSource(dataSource());
 
                 return factory;
@@ -276,14 +152,14 @@ public class MethodNotAllowedExceptionIT {
 
         @Test
         void shouldThrowA405NotAllowed() {
-            TEntity tentity = new TEntity();
-            tentity = store.setContent(tentity, new ByteArrayInputStream("some content".getBytes()));
-            tentity = repo.save(tentity);
+            UnexportedStoreMethodsEntity entity = new UnexportedStoreMethodsEntity();
+            entity = store.setContent(entity, new ByteArrayInputStream("some content".getBytes()));
+            entity = repo.save(entity);
 
             given()
                 .accept("text/plain")
                 .when()
-                .get("/tEntities/" + tentity.getId())
+                .get("/tEntities/" + entity.getId())
                 .then()
                 .statusCode(405);
         }
@@ -298,14 +174,14 @@ public class MethodNotAllowedExceptionIT {
 
         @Test
         void shouldThrowA405NotAllowed() {
-            TEntity tentity = new TEntity();
-            tentity = repo.save(tentity);
+            UnexportedStoreMethodsEntity entity = new UnexportedStoreMethodsEntity();
+            entity = repo.save(entity);
 
             given()
                 .contentType("text/plain")
                 .body("some content".getBytes())
                 .when()
-                .post("/tEntities/" + tentity.getId())
+                .post("/tEntities/" + entity.getId())
                 .then()
                 .statusCode(405);
         }
@@ -320,14 +196,14 @@ public class MethodNotAllowedExceptionIT {
 
         @Test
         void shouldThrowA405NotAllowed() {
-            TEntity tentity = new TEntity();
-            tentity = store.setContent(tentity, new ByteArrayInputStream("some content".getBytes()));
-            tentity = repo.save(tentity);
+            UnexportedStoreMethodsEntity entity = new UnexportedStoreMethodsEntity();
+            entity = store.setContent(entity, new ByteArrayInputStream("some content".getBytes()));
+            entity = repo.save(entity);
 
             given()
                 .accept("text/plain")
                 .when()
-                .delete("/tEntities/" + tentity.getId())
+                .delete("/tEntities/" + entity.getId())
                 .then()
                 .statusCode(405);
         }
@@ -342,7 +218,7 @@ public class MethodNotAllowedExceptionIT {
 
         @Test
         void shouldThrowA405NotAllowedForAllRequests() {
-            TEntity2 entity = new TEntity2();
+            UnexportedContentPropertyEntity entity = new UnexportedContentPropertyEntity();
             entity = store2.setContent(entity, new ByteArrayInputStream("some content".getBytes()));
             entity = repo2.save(entity);
 
