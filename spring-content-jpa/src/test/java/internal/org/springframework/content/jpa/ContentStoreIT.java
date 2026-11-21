@@ -1,24 +1,21 @@
 package internal.org.springframework.content.jpa;
 
-import com.github.f4b6a3.uuid.UuidCreator;
 import internal.org.springframework.content.jpa.StoreIT.*;
 import internal.org.springframework.content.jpa.support.models.Claim;
 import internal.org.springframework.content.jpa.support.models.ClaimForm;
 import internal.org.springframework.content.jpa.support.repositories.ClaimRepository;
 import internal.org.springframework.content.jpa.support.stores.ClaimStore;
-import jakarta.persistence.*;
 import org.apache.commons.io.IOUtils;
+import org.springframework.content.test.support.jpa.EmbeddedContentJpaStringIdEntity;
+import org.springframework.content.test.support.jpa.EmbeddedContentJpaStringIdRepository;
+import org.springframework.content.test.support.jpa.EmbeddedContentJpaStringIdStore;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.springframework.content.commons.annotations.ContentId;
-import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.property.PropertyPath;
-import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.commons.store.SetContentParams;
 import org.springframework.content.commons.store.UnsetContentParams;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
@@ -46,8 +43,7 @@ public class ContentStoreIT {
     protected Object id;
     // for Postgres (large object api operations must be in a transaction)
     private PlatformTransactionManager ptm;
-    private EmbeddedRepository embeddedRepo;
-    private EmbeddedStore embeddedStore;
+    private AnnotationConfigApplicationContext context;
 
     public static <T> T doInTransaction(PlatformTransactionManager ptm, ThrowingSupplier<T> block) {
         TransactionStatus status = ptm.getTransaction(new DefaultTransactionDefinition());
@@ -110,71 +106,12 @@ public class ContentStoreIT {
         }
     }
 
-    public interface EmbeddedRepository extends JpaRepository<EntityWithEmbeddedContent, String> {
-    }
-
-    public interface EmbeddedStore extends ContentStore<EntityWithEmbeddedContent, String> {
-    }
-
-    @Entity
-    @Table(name = "entity_with_embedded")
-    public static class EntityWithEmbeddedContent {
-
-        @Id
-        private String id = UuidCreator.getTimeOrdered().toString();
-
-        @Embedded
-        private EmbeddedContent content;
-
-        public String getId() {
-            return id;
-        }
-
-        public void setId(String id) {
-            this.id = id;
-        }
-
-        public EmbeddedContent getContent() {
-            return content;
-        }
-
-        public void setContent(EmbeddedContent content) {
-            this.content = content;
-        }
-    }
-
-    @Embeddable
-    public static class EmbeddedContent {
-
-        @ContentId
-        private String contentId;
-
-        @ContentLength
-        private Long contentLen;
-
-        public String getContentId() {
-            return contentId;
-        }
-
-        public void setContentId(String contentId) {
-            this.contentId = contentId;
-        }
-
-        public Long getContentLen() {
-            return contentLen;
-        }
-
-        public void setContentLen(Long contentLen) {
-            this.contentLen = contentLen;
-        }
-    }
-
     static Stream<Class<?>> databaseConfigs() {
         return Stream.of(CONFIG_CLASSES);
     }
 
     private void boot(Class<?> configClass) {
-        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+        context = new AnnotationConfigApplicationContext();
         context.register(TestConfig.class);
         context.register(configClass);
         context.refresh();
@@ -182,9 +119,6 @@ public class ContentStoreIT {
         ptm = context.getBean(PlatformTransactionManager.class);
         claimRepo = context.getBean(ClaimRepository.class);
         claimFormStore = context.getBean(ClaimStore.class);
-
-        embeddedRepo = context.getBean(EmbeddedRepository.class);
-        embeddedStore = context.getBean(EmbeddedStore.class);
 
         if (ptm == null) {
             ptm = mock(PlatformTransactionManager.class);
@@ -449,8 +383,10 @@ public class ContentStoreIT {
                     try {
                         boot(configClass);
                         setInitialContent();
-                        EntityWithEmbeddedContent entity = embeddedRepo.save(new EntityWithEmbeddedContent());
-                        assertThat(embeddedStore.getContent(entity, PropertyPath.from("content"))).isNull();
+                        EmbeddedContentJpaStringIdRepository embeddedRepo = context.getBean(EmbeddedContentJpaStringIdRepository.class);
+                        EmbeddedContentJpaStringIdStore embeddedStore = context.getBean(EmbeddedContentJpaStringIdStore.class);
+                        EmbeddedContentJpaStringIdEntity embedded = embeddedRepo.save(new EmbeddedContentJpaStringIdEntity());
+                        assertThat(embeddedStore.getContent(embedded, PropertyPath.from("content"))).isNull();
                     } finally {
                         deleteAllClaimFormsContent();
                         deleteAllClaims();
@@ -463,9 +399,11 @@ public class ContentStoreIT {
                     try {
                         boot(configClass);
                         setInitialContent();
-                        EntityWithEmbeddedContent entity = embeddedRepo.save(new EntityWithEmbeddedContent());
-                        embeddedStore.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-                        try (InputStream is = embeddedStore.getContent(entity, PropertyPath.from("content"))) {
+                        EmbeddedContentJpaStringIdRepository embeddedRepo = context.getBean(EmbeddedContentJpaStringIdRepository.class);
+                        EmbeddedContentJpaStringIdStore embeddedStore = context.getBean(EmbeddedContentJpaStringIdStore.class);
+                        EmbeddedContentJpaStringIdEntity embedded = embeddedRepo.save(new EmbeddedContentJpaStringIdEntity());
+                        embeddedStore.setContent(embedded, PropertyPath.from("content"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                        try (InputStream is = embeddedStore.getContent(embedded, PropertyPath.from("content"))) {
                             assertThat(IOUtils.contentEquals(is, new ByteArrayInputStream("Hello Spring Content World!".getBytes()))).isTrue();
                         }
                     } finally {
@@ -480,8 +418,10 @@ public class ContentStoreIT {
                     try {
                         boot(configClass);
                         setInitialContent();
-                        EntityWithEmbeddedContent entity = embeddedRepo.save(new EntityWithEmbeddedContent());
-                        assertThat(embeddedStore.unsetContent(entity, PropertyPath.from("content"))).isSameAs(entity);
+                        EmbeddedContentJpaStringIdRepository embeddedRepo = context.getBean(EmbeddedContentJpaStringIdRepository.class);
+                        EmbeddedContentJpaStringIdStore embeddedStore = context.getBean(EmbeddedContentJpaStringIdStore.class);
+                        EmbeddedContentJpaStringIdEntity embedded = embeddedRepo.save(new EmbeddedContentJpaStringIdEntity());
+                        assertThat(embeddedStore.unsetContent(embedded, PropertyPath.from("content"))).isSameAs(embedded);
                     } finally {
                         deleteAllClaimFormsContent();
                         deleteAllClaims();

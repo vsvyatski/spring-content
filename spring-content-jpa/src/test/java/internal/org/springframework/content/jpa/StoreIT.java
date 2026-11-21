@@ -9,6 +9,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.content.commons.io.DeletableResource;
 import org.springframework.content.jpa.config.EnableJpaStores;
+import org.springframework.content.test.support.TestSupportPackages;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -77,9 +78,11 @@ public class StoreIT {
         return "/store-tests/" + random.nextString();
     }
 
+    private static final String IT_PACKAGE = "internal.org.springframework.content.jpa";
+
     @Configuration
-    @EnableJpaRepositories(considerNestedRepositories = true)
-    @EnableJpaStores
+    @EnableJpaRepositories(basePackages = {IT_PACKAGE, TestSupportPackages.JPA}, considerNestedRepositories = true)
+    @EnableJpaStores(basePackages = {IT_PACKAGE, TestSupportPackages.JPA})
     public static class TestConfig {
     }
 
@@ -122,7 +125,7 @@ public class StoreIT {
 
             LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
             factory.setJpaVendorAdapter(vendorAdapter);
-            factory.setPackagesToScan(getClass().getPackage().getName());
+            factory.setPackagesToScan(IT_PACKAGE, TestSupportPackages.JPA);
             factory.setDataSource(dataSource());
 
             return factory;
@@ -175,7 +178,7 @@ public class StoreIT {
 
             LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
             factory.setJpaVendorAdapter(vendorAdapter);
-            factory.setPackagesToScan(getClass().getPackage().getName());
+            factory.setPackagesToScan(IT_PACKAGE, TestSupportPackages.JPA);
             factory.setDataSource(dataSource());
 
             return factory;
@@ -231,7 +234,7 @@ public class StoreIT {
 
             LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
             factory.setJpaVendorAdapter(vendorAdapter);
-            factory.setPackagesToScan(getClass().getPackage().getName());
+            factory.setPackagesToScan(IT_PACKAGE, TestSupportPackages.JPA);
             factory.setDataSource(dataSource);
 
             factory.setJpaVendorAdapter(vendorAdapter);
@@ -293,7 +296,7 @@ public class StoreIT {
 
             LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
             factory.setJpaVendorAdapter(vendorAdapter);
-            factory.setPackagesToScan(getClass().getPackage().getName());
+            factory.setPackagesToScan(IT_PACKAGE, TestSupportPackages.JPA);
             factory.setDataSource(dataSource());
 
             return factory;
@@ -349,7 +352,7 @@ public class StoreIT {
 
             LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
             factory.setJpaVendorAdapter(vendorAdapter);
-            factory.setPackagesToScan(getClass().getPackage().getName());
+            factory.setPackagesToScan(IT_PACKAGE, TestSupportPackages.JPA);
             factory.setDataSource(dataSource());
 
             return factory;
@@ -408,7 +411,7 @@ public class StoreIT {
 
             LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
             factory.setJpaVendorAdapter(vendorAdapter);
-            factory.setPackagesToScan(getClass().getPackage().getName());
+            factory.setPackagesToScan(IT_PACKAGE, TestSupportPackages.JPA);
             factory.setDataSource(dataSource);
 
             return factory;
