@@ -26,7 +26,7 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.Database;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
-import org.springframework.support.TestEntity;
+import org.springframework.content.test.support.jpa.SingleContentJpaLongIdEntity;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
@@ -40,7 +40,7 @@ public class ContentJpaAutoConfigurationTest {
 
     private ApplicationContextRunner contextRunner;
 
-    public interface TestEntityContentStore extends JpaContentStore<TestEntity, String> {
+    public interface TestEntityContentStore extends JpaContentStore<SingleContentJpaLongIdEntity, String> {
     }
 
     @Configuration

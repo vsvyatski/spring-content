@@ -19,13 +19,13 @@ import org.springframework.content.fs.config.EnableFileSystemStores;
 import org.springframework.content.fs.io.FileSystemResourceLoader;
 import org.springframework.content.fs.store.FileSystemContentStore;
 import org.springframework.context.annotation.Bean;
-import org.springframework.support.TestEntity;
+import org.springframework.content.test.support.jpa.SingleContentJpaLongIdEntity;
 
 public class ContentFileSystemAutoConfigurationTest {
 
     private ApplicationContextRunner contextRunner;
 
-    public interface TestEntityContentStore extends FileSystemContentStore<TestEntity, String> {
+    public interface TestEntityContentStore extends FileSystemContentStore<SingleContentJpaLongIdEntity, String> {
     }
 
     @SpringBootApplication(exclude = {SolrAutoConfiguration.class, SolrExtensionAutoConfiguration.class, S3ContentAutoConfiguration.class})

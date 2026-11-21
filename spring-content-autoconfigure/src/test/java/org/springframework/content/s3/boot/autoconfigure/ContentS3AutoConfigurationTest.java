@@ -16,7 +16,7 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.content.s3.config.EnableS3Stores;
 import org.springframework.content.s3.store.S3ContentStore;
 import org.springframework.context.annotation.Bean;
-import org.springframework.support.TestEntity;
+import org.springframework.content.test.support.jpa.SingleContentJpaLongIdEntity;
 import software.amazon.awssdk.services.s3.S3Client;
 
 import static org.mockito.Mockito.mock;
@@ -31,7 +31,7 @@ public class ContentS3AutoConfigurationTest {
 
     private ApplicationContextRunner contextRunner;
 
-    public interface TestEntityContentStore extends S3ContentStore<TestEntity, String> {
+    public interface TestEntityContentStore extends S3ContentStore<SingleContentJpaLongIdEntity, String> {
     }
 
     @SpringBootApplication(exclude = {FileSystemContentAutoConfiguration.class, MongoContentAutoConfiguration.class, SolrAutoConfiguration.class, SolrExtensionAutoConfiguration.class})
