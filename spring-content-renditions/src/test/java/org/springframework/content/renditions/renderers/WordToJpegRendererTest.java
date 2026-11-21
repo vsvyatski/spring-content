@@ -27,7 +27,7 @@ public class WordToJpegRendererTest {
     private RenditionProvider renderer;
 
     private InputStream input;
-    private String mimeType;
+    private final String toMimeType = "image/jpeg";
 
     private Exception e;
 
@@ -78,7 +78,7 @@ public class WordToJpegRendererTest {
                     input = new ByteArrayInputStream("".getBytes());
 
                     try {
-                        renderer.convert(input, mimeType);
+                        renderer.convert(input, toMimeType);
                     } catch (Exception e) {
                         WordToJpegRendererTest.this.e = e;
                     }
@@ -108,7 +108,7 @@ public class WordToJpegRendererTest {
                             .xwpfDocument(any());
 
                         try {
-                            renderer.convert(input, mimeType);
+                            renderer.convert(input, toMimeType);
                         } catch (Exception e) {
                             WordToJpegRendererTest.this.e = e;
                         }
@@ -141,7 +141,7 @@ public class WordToJpegRendererTest {
                         doThrow(POIXMLException.class).when(doc).getProperties();
 
                         try {
-                            renderer.convert(input, mimeType);
+                            renderer.convert(input, toMimeType);
                         } catch (Exception e) {
                             WordToJpegRendererTest.this.e = e;
                         }
@@ -175,7 +175,7 @@ public class WordToJpegRendererTest {
                         doThrow(IOException.class).when(props).getThumbnailImage();
 
                         try {
-                            renderer.convert(input, mimeType);
+                            renderer.convert(input, toMimeType);
                         } catch (Exception e) {
                             WordToJpegRendererTest.this.e = e;
                         }
@@ -197,7 +197,7 @@ public class WordToJpegRendererTest {
                     renderer = new WordToJpegRenderer(poi);
 
                     try {
-                        renderer.convert(input, mimeType);
+                        renderer.convert(input, toMimeType);
                     } catch (Exception e) {
                         WordToJpegRendererTest.this.e = e;
                     }

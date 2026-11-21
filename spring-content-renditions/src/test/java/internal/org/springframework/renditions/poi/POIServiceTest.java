@@ -9,6 +9,9 @@ import org.springframework.renditions.poi.POIService;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+
+import org.springframework.content.test.support.TestSupportData;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -39,7 +42,7 @@ public class POIServiceTest {
             }
 
             @Nested
-            class GivenANullInputstream {
+            class GivenNullInputStream {
                 @BeforeEach
                 void setUp() {
                     poi = new POIServiceImpl();
@@ -53,12 +56,13 @@ public class POIServiceTest {
             }
 
             @Nested
-            class GivenAnInvalidInputstream {
+            class GivenInvalidInputStream {
                 @BeforeEach
                 void setUp() {
                     poi = new POIServiceImpl();
 
-                    stream = new ByteArrayInputStream("asdhg".getBytes());
+                    stream = new ByteArrayInputStream(
+                            TestSupportData.SAMPLE_INVALID_OFFICE_XML_PAYLOAD.getBytes(StandardCharsets.UTF_8));
                 }
 
                 @Test

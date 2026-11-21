@@ -28,7 +28,7 @@ public class PdfToJpegRendererTest {
     private RenditionProvider renderer;
 
     private InputStream input;
-    private String mimeType;
+    private final String toMimeType = "image/jpeg";
 
     private Exception e;
 
@@ -82,7 +82,7 @@ public class PdfToJpegRendererTest {
 
                         when(doc.getNumberOfPages()).thenReturn(1);
                         try {
-                            renderer.convert(input, mimeType);
+                            renderer.convert(input, toMimeType);
                         } catch (Exception e) {
                             PdfToJpegRendererTest.this.e = e;
                         }
@@ -116,7 +116,7 @@ public class PdfToJpegRendererTest {
                             doThrow(IOException.class).when(pdfRenderer)
                                 .renderImageWithDPI(0, 300, ImageType.RGB);
                             try {
-                                renderer.convert(input, mimeType);
+                                renderer.convert(input, toMimeType);
                             } catch (Exception e) {
                                 PdfToJpegRendererTest.this.e = e;
                             }
@@ -151,7 +151,7 @@ public class PdfToJpegRendererTest {
 
                         doThrow(IOException.class).when(pdf).load(any());
                         try {
-                            renderer.convert(input, mimeType);
+                            renderer.convert(input, toMimeType);
                         } catch (Exception e) {
                             PdfToJpegRendererTest.this.e = e;
                         }
@@ -173,7 +173,7 @@ public class PdfToJpegRendererTest {
                     renderer = new PdfToJpegRenderer(pdf);
 
                     try {
-                        renderer.convert(input, mimeType);
+                        renderer.convert(input, toMimeType);
                     } catch (Exception e) {
                         PdfToJpegRendererTest.this.e = e;
                     }

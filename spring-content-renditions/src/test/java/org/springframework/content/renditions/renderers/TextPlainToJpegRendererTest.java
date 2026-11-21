@@ -1,5 +1,6 @@
 package org.springframework.content.renditions.renderers;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -10,18 +11,18 @@ import java.io.InputStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class TextplainToJpegRendererTest {
+public class TextPlainToJpegRendererTest {
 
     private boolean wrapText = false;
     private RenditionProvider renderer;
 
     private InputStream input, result;
-    private String mimeType;
+    private final String toMimeType = "image/jpeg";
 
     private Exception e;
 
     @Nested
-    class TextplainToJpegRendererCases {
+    class TextPlainToJpegRendererCases {
         @Nested
         class Consumes {
             @BeforeEach
@@ -63,23 +64,20 @@ public class TextplainToJpegRendererTest {
                         renderer = new TextplainToJpegRenderer(wrapText);
 
                         try {
-                            result = renderer.convert(input, mimeType);
+                            result = renderer.convert(input, toMimeType);
                         } catch (Exception e) {
-                            TextplainToJpegRendererTest.this.e = e;
+                            TextPlainToJpegRendererTest.this.e = e;
                         }
                     }
 
                     @Test
-                    void shouldProduceTheCorrectImage() {
-                        InputStream expected = this.getClass().getResourceAsStream(
-                            "/textplaintorenderer/single-line.jpeg");
-                        assertThat(expected).isNotNull();
-                        assertThat(result).isNotNull();
-                        // InputStream expected =
-                        // this.getClass().getResourceAsStream("/textplaintorenderer/single-line.jpeg");
-                        // assertThat(expected).isNotNull();
-                        // assertThat(IOUtils.contentEquals(expected, result),
-                        // is(true));
+                    void shouldProduceTheCorrectImage() throws Exception {
+                        try (InputStream expected = this.getClass().getResourceAsStream(
+                                "/textplaintorenderer/single-line.jpeg")) {
+                            assertThat(expected).isNotNull();
+                            assertThat(result).isNotNull();
+                            assertThat(IOUtils.contentEquals(expected, result)).isTrue();
+                        }
                     }
                 }
 
@@ -93,17 +91,20 @@ public class TextplainToJpegRendererTest {
                         renderer = new TextplainToJpegRenderer(wrapText);
 
                         try {
-                            result = renderer.convert(input, mimeType);
+                            result = renderer.convert(input, toMimeType);
                         } catch (Exception e) {
-                            TextplainToJpegRendererTest.this.e = e;
+                            TextPlainToJpegRendererTest.this.e = e;
                         }
                     }
 
                     @Test
-                    void shouldProduceTheCorrectImage() {
-                        assertThat(result).isNotNull();
-                        // assertThat(IOUtils.contentEquals(this.getClass().getResourceAsStream("/textplaintorenderer/multi-line.jpeg"),
-                        // result)).isTrue();
+                    void shouldProduceTheCorrectImage() throws Exception {
+                        try (InputStream expected = this.getClass().getResourceAsStream(
+                            "/textplaintorenderer/multi-line.jpeg")) {
+                            assertThat(expected).isNotNull();
+                            assertThat(result).isNotNull();
+                            assertThat(IOUtils.contentEquals(expected, result)).isTrue();
+                        }
                     }
                 }
 
@@ -116,20 +117,23 @@ public class TextplainToJpegRendererTest {
                             "Hello Spring Content World!  This is a really long line that we expect to wrap"
                                 .getBytes());
 
-                        renderer = new TextplainToJpegRenderer(wrapText);
+                        renderer = new TextplainToJpegRenderer(true);
 
                         try {
-                            result = renderer.convert(input, mimeType);
+                            result = renderer.convert(input, toMimeType);
                         } catch (Exception e) {
-                            TextplainToJpegRendererTest.this.e = e;
+                            TextPlainToJpegRendererTest.this.e = e;
                         }
                     }
 
                     @Test
-                    void shouldProduceTheCorrectImage() {
-                        assertThat(result).isNotNull();
-                        // assertThat(IOUtils.contentEquals(this.getClass().getResourceAsStream("/textplaintorenderer/wrapped-line.jpeg"),
-                        // result)).isTrue();
+                    void shouldProduceTheCorrectImage() throws Exception {
+                        try (InputStream expected = this.getClass().getResourceAsStream(
+                            "/textplaintorenderer/wrapped-line.jpeg")) {
+                            assertThat(expected).isNotNull();
+                            assertThat(result).isNotNull();
+                            assertThat(IOUtils.contentEquals(expected, result)).isTrue();
+                        }
                     }
                 }
 
@@ -144,17 +148,20 @@ public class TextplainToJpegRendererTest {
                         renderer = new TextplainToJpegRenderer(wrapText);
 
                         try {
-                            result = renderer.convert(input, mimeType);
+                            result = renderer.convert(input, toMimeType);
                         } catch (Exception e) {
-                            TextplainToJpegRendererTest.this.e = e;
+                            TextPlainToJpegRendererTest.this.e = e;
                         }
                     }
 
                     @Test
-                    void shouldProduceTheCorrectImage() {
-                        assertThat(result).isNotNull();
-                        // assertThat(IOUtils.contentEquals(this.getClass().getResourceAsStream("/textplaintorenderer/overflowed-line.jpeg"),
-                        // result)).isTrue();
+                    void shouldProduceTheCorrectImage() throws Exception {
+                        try (InputStream expected = this.getClass().getResourceAsStream(
+                            "/textplaintorenderer/overflowed-line.jpeg")) {
+                            assertThat(expected).isNotNull();
+                            assertThat(result).isNotNull();
+                            assertThat(IOUtils.contentEquals(expected, result)).isTrue();
+                        }
                     }
                 }
 
@@ -169,17 +176,20 @@ public class TextplainToJpegRendererTest {
                         renderer = new TextplainToJpegRenderer(wrapText);
 
                         try {
-                            result = renderer.convert(input, mimeType);
+                            result = renderer.convert(input, toMimeType);
                         } catch (Exception e) {
-                            TextplainToJpegRendererTest.this.e = e;
+                            TextPlainToJpegRendererTest.this.e = e;
                         }
                     }
 
                     @Test
-                    void shouldProduceTheCorrectImage() {
-                        assertThat(result).isNotNull();
-                        // assertThat(IOUtils.contentEquals(this.getClass().getResourceAsStream("/textplaintorenderer/overflowed-image.jpeg"),
-                        // result)).isTrue();
+                    void shouldProduceTheCorrectImage() throws Exception {
+                        try (InputStream expected = this.getClass().getResourceAsStream(
+                            "/textplaintorenderer/overflowed-image.jpeg")) {
+                            assertThat(expected).isNotNull();
+                            assertThat(result).isNotNull();
+                            assertThat(IOUtils.contentEquals(expected, result)).isTrue();
+                        }
                     }
                 }
             }
@@ -193,9 +203,9 @@ public class TextplainToJpegRendererTest {
                     renderer = new TextplainToJpegRenderer(wrapText);
 
                     try {
-                        result = renderer.convert(input, mimeType);
+                        result = renderer.convert(input, toMimeType);
                     } catch (Exception e) {
-                        TextplainToJpegRendererTest.this.e = e;
+                        TextPlainToJpegRendererTest.this.e = e;
                     }
                 }
 
@@ -212,9 +222,9 @@ public class TextplainToJpegRendererTest {
                     renderer = new TextplainToJpegRenderer(wrapText);
 
                     try {
-                        result = renderer.convert(input, mimeType);
+                        result = renderer.convert(input, toMimeType);
                     } catch (Exception e) {
-                        TextplainToJpegRendererTest.this.e = e;
+                        TextPlainToJpegRendererTest.this.e = e;
                     }
                 }
 
