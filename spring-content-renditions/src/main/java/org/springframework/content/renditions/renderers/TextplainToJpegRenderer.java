@@ -7,14 +7,25 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontFormatException;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.font.FontRenderContext;
 import java.awt.font.LineBreakMeasurer;
 import java.awt.font.TextAttribute;
 import java.awt.font.TextLayout;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.text.AttributedCharacterIterator;
 import java.text.AttributedString;
 import java.util.ArrayList;
@@ -22,12 +33,14 @@ import java.util.ArrayList;
 @Service
 public class TextplainToJpegRenderer implements RenditionProvider {
 
-    //private static Log logger = LogFactory.getLog(WordToJpegRenderer.class);
-
     private static final int width = 272;
     private static final int margin = 5;
-    private static final String fontName = "Courier New";
     private static final int fontSize = 12;
+
+    private static final String FONT_RESOURCE =
+        "/org/springframework/content/renditions/fonts/JetBrainsMono-Regular.ttf";
+
+    private static final Font renderingFont = loadRenderingFont();
 
     private boolean wrapText = false;
 
@@ -36,6 +49,17 @@ public class TextplainToJpegRenderer implements RenditionProvider {
 
     public TextplainToJpegRenderer(boolean wrapText) {
         this.wrapText = wrapText;
+    }
+
+    private static Font loadRenderingFont() {
+        try (InputStream in = TextplainToJpegRenderer.class.getResourceAsStream(FONT_RESOURCE)) {
+            Assert.notNull(in, () -> "Bundled font not found on classpath: " + FONT_RESOURCE);
+            Font base = Font.createFont(Font.TRUETYPE_FONT, in);
+            return base.deriveFont(Font.PLAIN, (float) fontSize);
+        }
+        catch (IOException | FontFormatException e) {
+            throw new RenditionException("Error loading bundled font", e);
+        }
     }
 
     @Override
@@ -53,12 +77,7 @@ public class TextplainToJpegRenderer implements RenditionProvider {
 
         Assert.notNull(fromInputSource, "input source must not be null");
 
-        Font font;
-        try {
-            font = new Font(fontName, Font.PLAIN, fontSize);
-        } catch (Exception e) {
-            throw new RenditionException("Error creating font", e);
-        }
+        Font font = renderingFont;
 
         BufferedImage tempBuffer = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
         Graphics2D g = tempBuffer.createGraphics();

@@ -1,13 +1,17 @@
 package org.springframework.content.renditions.renderers;
 
-import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.content.commons.renditions.RenditionProvider;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -18,6 +22,36 @@ public class TextPlainToJpegRendererTest {
     private RenditionProvider renderer;
     private InputStream input, result;
     private Exception e;
+
+    static void assertJpegMatchesGoldenPng(InputStream jpeg, String goldenPngClasspath) throws IOException {
+        assertThat(jpeg).isNotNull();
+        BufferedImage expected = ImageIO.read(
+            Objects.requireNonNull(TextPlainToJpegRendererTest.class.getResourceAsStream(goldenPngClasspath)));
+        BufferedImage actual = ImageIO.read(jpeg);
+        assertThat(actual).isNotNull();
+        assertThat(expected).isNotNull();
+
+        int width = expected.getWidth();
+        int height = expected.getHeight();
+        assertThat(actual.getWidth()).isEqualTo(width);
+        assertThat(actual.getHeight()).isEqualTo(height);
+
+        int[] expectedArgb = toIntRgb(expected).getRGB(0, 0, width, height, null, 0, width);
+        int[] actualArgb = toIntRgb(actual).getRGB(0, 0, width, height, null, 0, width);
+        assertThat(actualArgb).isEqualTo(expectedArgb);
+    }
+
+    private static BufferedImage toIntRgb(BufferedImage image) {
+        if (image.getType() == BufferedImage.TYPE_INT_RGB) {
+            return image;
+        }
+        BufferedImage rgb = new BufferedImage(image.getWidth(), image.getHeight(),
+            BufferedImage.TYPE_INT_RGB);
+        Graphics2D graphics = rgb.createGraphics();
+        graphics.drawImage(image, 0, 0, null);
+        graphics.dispose();
+        return rgb;
+    }
 
     @Nested
     class TextPlainToJpegRendererCases {
@@ -70,12 +104,7 @@ public class TextPlainToJpegRendererTest {
 
                     @Test
                     void shouldProduceTheCorrectImage() throws Exception {
-                        try (InputStream expected = this.getClass().getResourceAsStream(
-                            "/textplaintorenderer/single-line.jpeg")) {
-                            assertThat(expected).isNotNull();
-                            assertThat(result).isNotNull();
-                            assertThat(IOUtils.contentEquals(expected, result)).isTrue();
-                        }
+                        assertJpegMatchesGoldenPng(result, "/textplaintorenderer/single-line.png");
                     }
                 }
 
@@ -97,12 +126,7 @@ public class TextPlainToJpegRendererTest {
 
                     @Test
                     void shouldProduceTheCorrectImage() throws Exception {
-                        try (InputStream expected = this.getClass().getResourceAsStream(
-                            "/textplaintorenderer/multi-line.jpeg")) {
-                            assertThat(expected).isNotNull();
-                            assertThat(result).isNotNull();
-                            assertThat(IOUtils.contentEquals(expected, result)).isTrue();
-                        }
+                        assertJpegMatchesGoldenPng(result, "/textplaintorenderer/multi-line.png");
                     }
                 }
 
@@ -126,12 +150,7 @@ public class TextPlainToJpegRendererTest {
 
                     @Test
                     void shouldProduceTheCorrectImage() throws Exception {
-                        try (InputStream expected = this.getClass().getResourceAsStream(
-                            "/textplaintorenderer/wrapped-line.jpeg")) {
-                            assertThat(expected).isNotNull();
-                            assertThat(result).isNotNull();
-                            assertThat(IOUtils.contentEquals(expected, result)).isTrue();
-                        }
+                        assertJpegMatchesGoldenPng(result, "/textplaintorenderer/wrapped-line.png");
                     }
                 }
 
@@ -143,7 +162,7 @@ public class TextPlainToJpegRendererTest {
                             "Hello Spring Content World!  This is a really long line that we expect to wrap"
                                 .getBytes());
 
-                        renderer = new TextplainToJpegRenderer(wrapText);
+                        renderer = new TextplainToJpegRenderer(false);
 
                         try {
                             result = renderer.convert(input, toMimeType);
@@ -154,12 +173,7 @@ public class TextPlainToJpegRendererTest {
 
                     @Test
                     void shouldProduceTheCorrectImage() throws Exception {
-                        try (InputStream expected = this.getClass().getResourceAsStream(
-                            "/textplaintorenderer/overflowed-line.jpeg")) {
-                            assertThat(expected).isNotNull();
-                            assertThat(result).isNotNull();
-                            assertThat(IOUtils.contentEquals(expected, result)).isTrue();
-                        }
+                        assertJpegMatchesGoldenPng(result, "/textplaintorenderer/overflowed-line.png");
                     }
                 }
 
@@ -182,12 +196,7 @@ public class TextPlainToJpegRendererTest {
 
                     @Test
                     void shouldProduceTheCorrectImage() throws Exception {
-                        try (InputStream expected = this.getClass().getResourceAsStream(
-                            "/textplaintorenderer/overflowed-image.jpeg")) {
-                            assertThat(expected).isNotNull();
-                            assertThat(result).isNotNull();
-                            assertThat(IOUtils.contentEquals(expected, result)).isTrue();
-                        }
+                        assertJpegMatchesGoldenPng(result, "/textplaintorenderer/overflowed-image.png");
                     }
                 }
             }
