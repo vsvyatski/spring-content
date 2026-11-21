@@ -1,4 +1,4 @@
-package internal.org.springframework.content.commons.repository;
+package internal.org.springframework.content.commons.store.events;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -255,7 +255,7 @@ public class AnnotatedStoreEventInvokerTest {
     class OnApplicationEvent {
 
         @ParameterizedTest
-        @MethodSource("internal.org.springframework.content.commons.repository.AnnotatedStoreEventInvokerTest#handlerInvocationCases")
+        @MethodSource("internal.org.springframework.content.commons.store.events.AnnotatedStoreEventInvokerTest#handlerInvocationCases")
         void shouldCallMatchingHandlerMethod(HandlerInvocationCase handlerCase) {
             reflectionService = mock(ReflectionService.class);
             invoker = new AnnotatedStoreEventInvoker(reflectionService);

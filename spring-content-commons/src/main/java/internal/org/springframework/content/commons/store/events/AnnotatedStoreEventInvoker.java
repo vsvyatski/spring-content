@@ -1,4 +1,4 @@
-package internal.org.springframework.content.commons.repository;
+package internal.org.springframework.content.commons.store.events;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

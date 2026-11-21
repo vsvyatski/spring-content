@@ -1,6 +1,6 @@
 package org.springframework.content.commons.store.factory.stores;
 
-import internal.org.springframework.content.commons.repository.AnnotatedStoreEventInvoker;
+import internal.org.springframework.content.commons.store.events.AnnotatedStoreEventInvoker;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

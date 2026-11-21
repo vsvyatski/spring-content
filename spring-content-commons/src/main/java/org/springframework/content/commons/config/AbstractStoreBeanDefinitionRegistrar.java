@@ -4,7 +4,7 @@ import internal.org.springframework.content.commons.config.StoreFragment;
 import internal.org.springframework.content.commons.config.StoreFragmentDefinition;
 import internal.org.springframework.content.commons.config.StoreFragmentDetector;
 import internal.org.springframework.content.commons.config.StoreFragmentsFactoryBean;
-import internal.org.springframework.content.commons.repository.AnnotatedStoreEventInvoker;
+import internal.org.springframework.content.commons.store.events.AnnotatedStoreEventInvoker;
 import internal.org.springframework.content.commons.utils.StoreCandidateComponentProvider;
 import internal.org.springframework.content.commons.utils.StoreUtils;
 import org.apache.commons.logging.Log;
