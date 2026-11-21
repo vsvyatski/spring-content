@@ -17,6 +17,7 @@ import org.springframework.content.azure.config.BlobId;
 import org.springframework.content.azure.config.EnableAzureStorage;
 import org.springframework.content.commons.config.ContentPropertyInfo;
 import org.springframework.content.commons.property.PropertyPath;
+import org.springframework.content.test.support.FakeEntity;
 import org.springframework.content.test.support.TestSupportPackages;
 import org.springframework.content.test.support.jpa.DualContentJpaLongIdMimeEntity;
 import org.springframework.content.test.support.jpa.DualContentJpaLongIdMimeRepository;
@@ -148,10 +149,6 @@ public class AzureStorageWithEntityConverterIT {
             txManager.setEntityManagerFactory(entityManagerFactory().getObject());
             return txManager;
         }
-    }
-
-    @SuppressWarnings("unused") // negative converter type check only
-    public static class FakeEntity {
     }
 
     /**

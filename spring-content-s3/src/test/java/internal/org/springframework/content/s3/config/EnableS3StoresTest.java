@@ -7,17 +7,17 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.content.s3.config.EnableS3Stores;
+import org.springframework.content.s3.config.MultiTenantS3ClientProvider;
+import org.springframework.content.s3.config.S3StoreConfigurer;
 import org.springframework.content.test.support.SingleContentFields;
 import org.springframework.content.test.support.TestSupportPackages;
 import org.springframework.content.test.support.s3.SingleContentS3Store;
-import org.springframework.content.s3.config.MultiTenantS3ClientProvider;
-import org.springframework.content.s3.config.S3StoreConfigurer;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.convert.converter.ConverterRegistry;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
@@ -34,13 +34,12 @@ public class EnableS3StoresTest {
 
     private static final String BUCKET = "aws-test-bucket";
 
-    private S3StoreConfigurer configurer;
-    private S3Client client;
-
     static {
         System.setProperty("spring.content.s3.bucket", BUCKET);
     }
 
+    private S3StoreConfigurer configurer;
+    private S3Client client;
     private AnnotationConfigApplicationContext context;
 
     @Configuration
@@ -76,7 +75,7 @@ public class EnableS3StoresTest {
 
         @Bean
         public MultiTenantS3ClientProvider s3Provider(
-                @Qualifier("multiTenantClient") S3Client multiTenantClient) {
+            @Qualifier("multiTenantClient") S3Client multiTenantClient) {
             return () -> multiTenantClient;
         }
     }

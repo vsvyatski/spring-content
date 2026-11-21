@@ -31,11 +31,11 @@ public class LocalStack extends LocalStackContainer implements Serializable {
 
     public static S3Client getAmazonS3Client() throws URISyntaxException {
         return S3Client.builder()
-                .endpointOverride(new URI(INSTANCE.getEndpointConfiguration().getServiceEndpoint()))
-                .region(Region.US_EAST_1) // Set a region, so it does not need to be configured externally
-                .credentialsProvider(new CrossAwsCredentialsProvider(INSTANCE.getDefaultCredentialsProvider()))
-                .serviceConfiguration((builder) -> builder.pathStyleAccessEnabled(true).build())
-                .build();
+            .endpointOverride(new URI(INSTANCE.getEndpointConfiguration().getServiceEndpoint()))
+            .region(Region.US_EAST_1) // Set a region, so it does not need to be configured externally
+            .credentialsProvider(new CrossAwsCredentialsProvider(INSTANCE.getDefaultCredentialsProvider()))
+            .serviceConfiguration((builder) -> builder.pathStyleAccessEnabled(true).build())
+            .build();
     }
 
     /**

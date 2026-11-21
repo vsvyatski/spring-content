@@ -11,10 +11,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.persistence.autoconfigure.EntityScan;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.annotations.ContentLength;
-import org.springframework.content.commons.annotations.MimeType;
 import org.springframework.content.commons.io.DeletableResource;
 import org.springframework.content.commons.io.RangeableResource;
 import org.springframework.content.commons.property.PropertyPath;
@@ -25,7 +25,6 @@ import org.springframework.content.commons.store.UnsetContentParams;
 import org.springframework.content.s3.config.EnableS3Stores;
 import org.springframework.content.test.support.TestSupportPackages;
 import org.springframework.content.test.support.jpa.*;
-import org.springframework.boot.persistence.autoconfigure.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
@@ -173,24 +172,24 @@ public class S3StoreIT {
                     void setUp() throws InterruptedException {
                         synchronized (mutex) {
                             HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                                    .bucket("test-bucket")
-                                    .build();
+                                .bucket("test-bucket")
+                                .build();
 
                             try {
                                 client.headBucket(headBucketRequest);
                             } catch (NoSuchBucketException e) {
 
                                 CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                        .bucket("test-bucket")
-                                        .build();
+                                    .bucket("test-bucket")
+                                    .build();
                                 client.createBucket(bucketRequest);
 
                                 // wait for bucket to be created before continuing
                                 boolean found = false;
                                 while (!found) {
                                     headBucketRequest = HeadBucketRequest.builder()
-                                            .bucket(BUCKET)
-                                            .build();
+                                        .bucket(BUCKET)
+                                        .build();
                                     try {
                                         client.headBucket(headBucketRequest);
                                         found = true;
@@ -238,24 +237,24 @@ public class S3StoreIT {
                         void setUp() throws IOException, InterruptedException {
                             synchronized (mutex) {
                                 HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                                        .bucket("test-bucket")
-                                        .build();
+                                    .bucket("test-bucket")
+                                    .build();
 
                                 try {
                                     client.headBucket(headBucketRequest);
                                 } catch (NoSuchBucketException e) {
 
                                     CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                            .bucket("test-bucket")
-                                            .build();
+                                        .bucket("test-bucket")
+                                        .build();
                                     client.createBucket(bucketRequest);
 
                                     // wait for bucket to be created before continuing
                                     boolean found = false;
                                     while (!found) {
                                         headBucketRequest = HeadBucketRequest.builder()
-                                                .bucket(BUCKET)
-                                                .build();
+                                            .bucket(BUCKET)
+                                            .build();
                                         try {
                                             client.headBucket(headBucketRequest);
                                             found = true;
@@ -305,24 +304,24 @@ public class S3StoreIT {
                         void setUp() throws IOException, InterruptedException {
                             synchronized (mutex) {
                                 HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                                        .bucket("test-bucket")
-                                        .build();
+                                    .bucket("test-bucket")
+                                    .build();
 
                                 try {
                                     client.headBucket(headBucketRequest);
                                 } catch (NoSuchBucketException e) {
 
                                     CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                            .bucket("test-bucket")
-                                            .build();
+                                        .bucket("test-bucket")
+                                        .build();
                                     client.createBucket(bucketRequest);
 
                                     // wait for bucket to be created before continuing
                                     boolean found = false;
                                     while (!found) {
                                         headBucketRequest = HeadBucketRequest.builder()
-                                                .bucket(BUCKET)
-                                                .build();
+                                            .bucket(BUCKET)
+                                            .build();
                                         try {
                                             client.headBucket(headBucketRequest);
                                             found = true;
@@ -376,24 +375,24 @@ public class S3StoreIT {
                         void setUp() throws IOException, InterruptedException {
                             synchronized (mutex) {
                                 HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                                        .bucket("test-bucket")
-                                        .build();
+                                    .bucket("test-bucket")
+                                    .build();
 
                                 try {
                                     client.headBucket(headBucketRequest);
                                 } catch (NoSuchBucketException e) {
 
                                     CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                            .bucket("test-bucket")
-                                            .build();
+                                        .bucket("test-bucket")
+                                        .build();
                                     client.createBucket(bucketRequest);
 
                                     // wait for bucket to be created before continuing
                                     boolean found = false;
                                     while (!found) {
                                         headBucketRequest = HeadBucketRequest.builder()
-                                                .bucket(BUCKET)
-                                                .build();
+                                            .bucket(BUCKET)
+                                            .build();
                                         try {
                                             client.headBucket(headBucketRequest);
                                             found = true;
@@ -444,24 +443,24 @@ public class S3StoreIT {
                         void setUp() throws IOException, InterruptedException {
                             synchronized (mutex) {
                                 HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                                        .bucket("test-bucket")
-                                        .build();
+                                    .bucket("test-bucket")
+                                    .build();
 
                                 try {
                                     client.headBucket(headBucketRequest);
                                 } catch (NoSuchBucketException e) {
 
                                     CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                            .bucket("test-bucket")
-                                            .build();
+                                        .bucket("test-bucket")
+                                        .build();
                                     client.createBucket(bucketRequest);
 
                                     // wait for bucket to be created before continuing
                                     boolean found = false;
                                     while (!found) {
                                         headBucketRequest = HeadBucketRequest.builder()
-                                                .bucket(BUCKET)
-                                                .build();
+                                            .bucket(BUCKET)
+                                            .build();
                                         try {
                                             client.headBucket(headBucketRequest);
                                             found = true;
@@ -516,24 +515,24 @@ public class S3StoreIT {
                     void setUp() throws InterruptedException {
                         synchronized (mutex) {
                             HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                                    .bucket("test-bucket")
-                                    .build();
+                                .bucket("test-bucket")
+                                .build();
 
                             try {
                                 client.headBucket(headBucketRequest);
                             } catch (NoSuchBucketException e) {
 
                                 CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                        .bucket("test-bucket")
-                                        .build();
+                                    .bucket("test-bucket")
+                                    .build();
                                 client.createBucket(bucketRequest);
 
                                 // wait for bucket to be created before continuing
                                 boolean found = false;
                                 while (!found) {
                                     headBucketRequest = HeadBucketRequest.builder()
-                                            .bucket(BUCKET)
-                                            .build();
+                                        .bucket(BUCKET)
+                                        .build();
                                     try {
                                         client.headBucket(headBucketRequest);
                                         found = true;
@@ -570,24 +569,24 @@ public class S3StoreIT {
                             void setUp() throws InterruptedException {
                                 synchronized (mutex) {
                                     HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                                            .bucket("test-bucket")
-                                            .build();
+                                        .bucket("test-bucket")
+                                        .build();
 
                                     try {
                                         client.headBucket(headBucketRequest);
                                     } catch (NoSuchBucketException e) {
 
                                         CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                                .bucket("test-bucket")
-                                                .build();
+                                            .bucket("test-bucket")
+                                            .build();
                                         client.createBucket(bucketRequest);
 
                                         // wait for bucket to be created before continuing
                                         boolean found = false;
                                         while (!found) {
                                             headBucketRequest = HeadBucketRequest.builder()
-                                                    .bucket(BUCKET)
-                                                    .build();
+                                                .bucket(BUCKET)
+                                                .build();
                                             try {
                                                 client.headBucket(headBucketRequest);
                                                 found = true;
@@ -625,24 +624,24 @@ public class S3StoreIT {
                             void setUp() throws InterruptedException {
                                 synchronized (mutex) {
                                     HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                                            .bucket("test-bucket")
-                                            .build();
+                                        .bucket("test-bucket")
+                                        .build();
 
                                     try {
                                         client.headBucket(headBucketRequest);
                                     } catch (NoSuchBucketException e) {
 
                                         CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                                .bucket("test-bucket")
-                                                .build();
+                                            .bucket("test-bucket")
+                                            .build();
                                         client.createBucket(bucketRequest);
 
                                         // wait for bucket to be created before continuing
                                         boolean found = false;
                                         while (!found) {
                                             headBucketRequest = HeadBucketRequest.builder()
-                                                    .bucket(BUCKET)
-                                                    .build();
+                                                .bucket(BUCKET)
+                                                .build();
                                             try {
                                                 client.headBucket(headBucketRequest);
                                                 found = true;
@@ -683,24 +682,24 @@ public class S3StoreIT {
                             void setUp() throws InterruptedException {
                                 synchronized (mutex) {
                                     HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                                            .bucket("test-bucket")
-                                            .build();
+                                        .bucket("test-bucket")
+                                        .build();
 
                                     try {
                                         client.headBucket(headBucketRequest);
                                     } catch (NoSuchBucketException e) {
 
                                         CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                                .bucket("test-bucket")
-                                                .build();
+                                            .bucket("test-bucket")
+                                            .build();
                                         client.createBucket(bucketRequest);
 
                                         // wait for bucket to be created before continuing
                                         boolean found = false;
                                         while (!found) {
                                             headBucketRequest = HeadBucketRequest.builder()
-                                                    .bucket(BUCKET)
-                                                    .build();
+                                                .bucket(BUCKET)
+                                                .build();
                                             try {
                                                 client.headBucket(headBucketRequest);
                                                 found = true;
@@ -742,24 +741,24 @@ public class S3StoreIT {
                             void setUp() throws InterruptedException {
                                 synchronized (mutex) {
                                     HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                                            .bucket("test-bucket")
-                                            .build();
+                                        .bucket("test-bucket")
+                                        .build();
 
                                     try {
                                         client.headBucket(headBucketRequest);
                                     } catch (NoSuchBucketException e) {
 
                                         CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                                .bucket("test-bucket")
-                                                .build();
+                                            .bucket("test-bucket")
+                                            .build();
                                         client.createBucket(bucketRequest);
 
                                         // wait for bucket to be created before continuing
                                         boolean found = false;
                                         while (!found) {
                                             headBucketRequest = HeadBucketRequest.builder()
-                                                    .bucket(BUCKET)
-                                                    .build();
+                                                .bucket(BUCKET)
+                                                .build();
                                             try {
                                                 client.headBucket(headBucketRequest);
                                                 found = true;
@@ -801,24 +800,24 @@ public class S3StoreIT {
                             void setUp() throws InterruptedException {
                                 synchronized (mutex) {
                                     HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                                            .bucket("test-bucket")
-                                            .build();
+                                        .bucket("test-bucket")
+                                        .build();
 
                                     try {
                                         client.headBucket(headBucketRequest);
                                     } catch (NoSuchBucketException e) {
 
                                         CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                                .bucket("test-bucket")
-                                                .build();
+                                            .bucket("test-bucket")
+                                            .build();
                                         client.createBucket(bucketRequest);
 
                                         // wait for bucket to be created before continuing
                                         boolean found = false;
                                         while (!found) {
                                             headBucketRequest = HeadBucketRequest.builder()
-                                                    .bucket(BUCKET)
-                                                    .build();
+                                                .bucket(BUCKET)
+                                                .build();
                                             try {
                                                 client.headBucket(headBucketRequest);
                                                 found = true;
@@ -866,24 +865,24 @@ public class S3StoreIT {
                 void setUp() throws InterruptedException {
                     synchronized (mutex) {
                         HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                                .bucket("test-bucket")
-                                .build();
+                            .bucket("test-bucket")
+                            .build();
 
                         try {
                             client.headBucket(headBucketRequest);
                         } catch (NoSuchBucketException e) {
 
                             CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                    .bucket("test-bucket")
-                                    .build();
+                                .bucket("test-bucket")
+                                .build();
                             client.createBucket(bucketRequest);
 
                             // wait for bucket to be created before continuing
                             boolean found = false;
                             while (!found) {
                                 headBucketRequest = HeadBucketRequest.builder()
-                                        .bucket(BUCKET)
-                                        .build();
+                                    .bucket(BUCKET)
+                                    .build();
                                 try {
                                     client.headBucket(headBucketRequest);
                                     found = true;
@@ -939,11 +938,11 @@ public class S3StoreIT {
                     assertThat(entity.getRenditionType()).isEqualTo("text/html");
 
                     HeadObjectResponse contentHead = client.headObject(
-                            HeadObjectRequest.builder().bucket(BUCKET).key(entity.getContentId()).build());
+                        HeadObjectRequest.builder().bucket(BUCKET).key(entity.getContentId()).build());
                     assertThat(contentHead.contentType()).isEqualTo("text/plain");
 
                     HeadObjectResponse renditionHead = client.headObject(
-                            HeadObjectRequest.builder().bucket(BUCKET).key(entity.getRenditionId()).build());
+                        HeadObjectRequest.builder().bucket(BUCKET).key(entity.getRenditionId()).build());
                     assertThat(renditionHead.contentType()).isEqualTo("text/html");
                 }
             }
@@ -954,24 +953,24 @@ public class S3StoreIT {
                 void setUp() throws InterruptedException {
                     synchronized (mutex) {
                         HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                                .bucket("test-bucket")
-                                .build();
+                            .bucket("test-bucket")
+                            .build();
 
                         try {
                             client.headBucket(headBucketRequest);
                         } catch (NoSuchBucketException e) {
 
                             CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                    .bucket("test-bucket")
-                                    .build();
+                                .bucket("test-bucket")
+                                .build();
                             client.createBucket(bucketRequest);
 
                             // wait for bucket to be created before continuing
                             boolean found = false;
                             while (!found) {
                                 headBucketRequest = HeadBucketRequest.builder()
-                                        .bucket(BUCKET)
-                                        .build();
+                                    .bucket(BUCKET)
+                                    .build();
                                 try {
                                     client.headBucket(headBucketRequest);
                                     found = true;
@@ -1024,24 +1023,24 @@ public class S3StoreIT {
                 void setUp() throws InterruptedException {
                     synchronized (mutex) {
                         HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                                .bucket("test-bucket")
-                                .build();
+                            .bucket("test-bucket")
+                            .build();
 
                         try {
                             client.headBucket(headBucketRequest);
                         } catch (NoSuchBucketException e) {
 
                             CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                    .bucket("test-bucket")
-                                    .build();
+                                .bucket("test-bucket")
+                                .build();
                             client.createBucket(bucketRequest);
 
                             // wait for bucket to be created before continuing
                             boolean found = false;
                             while (!found) {
                                 headBucketRequest = HeadBucketRequest.builder()
-                                        .bucket(BUCKET)
-                                        .build();
+                                    .bucket(BUCKET)
+                                    .build();
                                 try {
                                     client.headBucket(headBucketRequest);
                                     found = true;
@@ -1094,24 +1093,24 @@ public class S3StoreIT {
                 void setUp() throws InterruptedException {
                     synchronized (mutex) {
                         HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                                .bucket("test-bucket")
-                                .build();
+                            .bucket("test-bucket")
+                            .build();
 
                         try {
                             client.headBucket(headBucketRequest);
                         } catch (NoSuchBucketException e) {
 
                             CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                    .bucket("test-bucket")
-                                    .build();
+                                .bucket("test-bucket")
+                                .build();
                             client.createBucket(bucketRequest);
 
                             // wait for bucket to be created before continuing
                             boolean found = false;
                             while (!found) {
                                 headBucketRequest = HeadBucketRequest.builder()
-                                        .bucket(BUCKET)
-                                        .build();
+                                    .bucket(BUCKET)
+                                    .build();
                                 try {
                                     client.headBucket(headBucketRequest);
                                     found = true;
@@ -1161,24 +1160,24 @@ public class S3StoreIT {
                 void setUp() throws InterruptedException {
                     synchronized (mutex) {
                         HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                                .bucket("test-bucket")
-                                .build();
+                            .bucket("test-bucket")
+                            .build();
 
                         try {
                             client.headBucket(headBucketRequest);
                         } catch (NoSuchBucketException e) {
 
                             CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                    .bucket("test-bucket")
-                                    .build();
+                                .bucket("test-bucket")
+                                .build();
                             client.createBucket(bucketRequest);
 
                             // wait for bucket to be created before continuing
                             boolean found = false;
                             while (!found) {
                                 headBucketRequest = HeadBucketRequest.builder()
-                                        .bucket(BUCKET)
-                                        .build();
+                                    .bucket(BUCKET)
+                                    .build();
                                 try {
                                     client.headBucket(headBucketRequest);
                                     found = true;
@@ -1219,8 +1218,8 @@ public class S3StoreIT {
                     assertThat(entity.getContentLen()).isNull();
 
                     assertThatThrownBy(() -> client.headObject(
-                            HeadObjectRequest.builder().bucket(BUCKET).key(resourceLocation).build()))
-                            .isInstanceOf(NoSuchKeyException.class);
+                        HeadObjectRequest.builder().bucket(BUCKET).key(resourceLocation).build()))
+                        .isInstanceOf(NoSuchKeyException.class);
 
                     //rendition
                     try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
@@ -1238,24 +1237,24 @@ public class S3StoreIT {
                 void setUp() throws InterruptedException {
                     synchronized (mutex) {
                         HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                                .bucket("test-bucket")
-                                .build();
+                            .bucket("test-bucket")
+                            .build();
 
                         try {
                             client.headBucket(headBucketRequest);
                         } catch (NoSuchBucketException e) {
 
                             CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                    .bucket("test-bucket")
-                                    .build();
+                                .bucket("test-bucket")
+                                .build();
                             client.createBucket(bucketRequest);
 
                             // wait for bucket to be created before continuing
                             boolean found = false;
                             while (!found) {
                                 headBucketRequest = HeadBucketRequest.builder()
-                                        .bucket(BUCKET)
-                                        .build();
+                                    .bucket(BUCKET)
+                                    .build();
                                 try {
                                     client.headBucket(headBucketRequest);
                                     found = true;
@@ -1304,24 +1303,24 @@ public class S3StoreIT {
                 void setUp() throws InterruptedException {
                     synchronized (mutex) {
                         HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                                .bucket("test-bucket")
-                                .build();
+                            .bucket("test-bucket")
+                            .build();
 
                         try {
                             client.headBucket(headBucketRequest);
                         } catch (NoSuchBucketException e) {
 
                             CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                    .bucket("test-bucket")
-                                    .build();
+                                .bucket("test-bucket")
+                                .build();
                             client.createBucket(bucketRequest);
 
                             // wait for bucket to be created before continuing
                             boolean found = false;
                             while (!found) {
                                 headBucketRequest = HeadBucketRequest.builder()
-                                        .bucket(BUCKET)
-                                        .build();
+                                    .bucket(BUCKET)
+                                    .build();
                                 try {
                                     client.headBucket(headBucketRequest);
                                     found = true;
@@ -1363,24 +1362,24 @@ public class S3StoreIT {
                 void setUp() throws InterruptedException {
                     synchronized (mutex) {
                         HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                                .bucket("test-bucket")
-                                .build();
+                            .bucket("test-bucket")
+                            .build();
 
                         try {
                             client.headBucket(headBucketRequest);
                         } catch (NoSuchBucketException e) {
 
                             CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                    .bucket("test-bucket")
-                                    .build();
+                                .bucket("test-bucket")
+                                .build();
                             client.createBucket(bucketRequest);
 
                             // wait for bucket to be created before continuing
                             boolean found = false;
                             while (!found) {
                                 headBucketRequest = HeadBucketRequest.builder()
-                                        .bucket(BUCKET)
-                                        .build();
+                                    .bucket(BUCKET)
+                                    .build();
                                 try {
                                     client.headBucket(headBucketRequest);
                                     found = true;
@@ -1422,24 +1421,24 @@ public class S3StoreIT {
                 void setUp() throws InterruptedException {
                     synchronized (mutex) {
                         HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                                .bucket("test-bucket")
-                                .build();
+                            .bucket("test-bucket")
+                            .build();
 
                         try {
                             client.headBucket(headBucketRequest);
                         } catch (NoSuchBucketException e) {
 
                             CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                    .bucket("test-bucket")
-                                    .build();
+                                .bucket("test-bucket")
+                                .build();
                             client.createBucket(bucketRequest);
 
                             // wait for bucket to be created before continuing
                             boolean found = false;
                             while (!found) {
                                 headBucketRequest = HeadBucketRequest.builder()
-                                        .bucket(BUCKET)
-                                        .build();
+                                    .bucket(BUCKET)
+                                    .build();
                                 try {
                                     client.headBucket(headBucketRequest);
                                     found = true;
@@ -1481,24 +1480,24 @@ public class S3StoreIT {
                 void setUp() throws InterruptedException {
                     synchronized (mutex) {
                         HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                                .bucket("test-bucket")
-                                .build();
+                            .bucket("test-bucket")
+                            .build();
 
                         try {
                             client.headBucket(headBucketRequest);
                         } catch (NoSuchBucketException e) {
 
                             CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                    .bucket("test-bucket")
-                                    .build();
+                                .bucket("test-bucket")
+                                .build();
                             client.createBucket(bucketRequest);
 
                             // wait for bucket to be created before continuing
                             boolean found = false;
                             while (!found) {
                                 headBucketRequest = HeadBucketRequest.builder()
-                                        .bucket(BUCKET)
-                                        .build();
+                                    .bucket(BUCKET)
+                                    .build();
                                 try {
                                     client.headBucket(headBucketRequest);
                                     found = true;
@@ -1544,24 +1543,24 @@ public class S3StoreIT {
                     void setUp() throws InterruptedException {
                         synchronized (mutex) {
                             HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                                    .bucket("test-bucket")
-                                    .build();
+                                .bucket("test-bucket")
+                                .build();
 
                             try {
                                 client.headBucket(headBucketRequest);
                             } catch (NoSuchBucketException e) {
 
                                 CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                        .bucket("test-bucket")
-                                        .build();
+                                    .bucket("test-bucket")
+                                    .build();
                                 client.createBucket(bucketRequest);
 
                                 // wait for bucket to be created before continuing
                                 boolean found = false;
                                 while (!found) {
                                     headBucketRequest = HeadBucketRequest.builder()
-                                            .bucket(BUCKET)
-                                            .build();
+                                        .bucket(BUCKET)
+                                        .build();
                                     try {
                                         client.headBucket(headBucketRequest);
                                         found = true;
