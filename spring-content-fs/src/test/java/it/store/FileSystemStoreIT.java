@@ -1,15 +1,11 @@
 package it.store;
 
-import com.github.f4b6a3.uuid.UuidCreator;
-import jakarta.persistence.*;
 import net.bytebuddy.utility.RandomString;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.content.commons.annotations.ContentId;
-import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.io.DeletableResource;
 import org.springframework.content.commons.property.PropertyPath;
 import org.springframework.content.commons.store.*;
@@ -23,7 +19,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.WritableResource;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
@@ -51,8 +46,8 @@ public class FileSystemStoreIT {
     private DualContentJpaStringIdRepository repo;
     private DualContentJpaStringIdStore store;
 
-    private EmbeddedRepository embeddedRepo;
-    private EmbeddedStore embeddedStore;
+    private EmbeddedContentJpaStringIdRepository embeddedRepo;
+    private EmbeddedContentJpaStringIdStore embeddedStore;
 
     private String resourceLocation;
 
@@ -64,8 +59,8 @@ public class FileSystemStoreIT {
 
         repo = context.getBean(DualContentJpaStringIdRepository.class);
         store = context.getBean(DualContentJpaStringIdStore.class);
-        embeddedRepo = context.getBean(EmbeddedRepository.class);
-        embeddedStore = context.getBean(EmbeddedStore.class);
+        embeddedRepo = context.getBean(EmbeddedContentJpaStringIdRepository.class);
+        embeddedStore = context.getBean(EmbeddedContentJpaStringIdStore.class);
         resourceLocation = new RandomString(5).nextString();
     }
 
@@ -76,15 +71,9 @@ public class FileSystemStoreIT {
         }
     }
 
-    public interface EmbeddedRepository extends JpaRepository<EntityWithEmbeddedContent, String> {
-    }
-
-    public interface EmbeddedStore extends ContentStore<EntityWithEmbeddedContent, String> {
-    }
-
     @Configuration
-    @EnableJpaRepositories(basePackages = {TestSupportPackages.JPA, "it.store"}, considerNestedRepositories = true)
-    @EnableFileSystemStores(basePackages = {TestSupportPackages.JPA, "it.store"})
+    @EnableJpaRepositories(basePackages = TestSupportPackages.JPA, considerNestedRepositories = true)
+    @EnableFileSystemStores(basePackages = TestSupportPackages.JPA)
     @Import(InfrastructureConfig.class)
     public static class TestConfig {
     }
@@ -121,7 +110,7 @@ public class FileSystemStoreIT {
 
             LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
             factory.setJpaVendorAdapter(vendorAdapter);
-            factory.setPackagesToScan("it.store", TestSupportPackages.JPA);
+            factory.setPackagesToScan(TestSupportPackages.JPA);
             factory.setDataSource(dataSource());
 
             return factory;
@@ -133,57 +122,6 @@ public class FileSystemStoreIT {
             JpaTransactionManager txManager = new JpaTransactionManager();
             txManager.setEntityManagerFactory(entityManagerFactory().getObject());
             return txManager;
-        }
-    }
-
-    @Entity
-    @Table(name = "entity_with_embedded")
-    public static class EntityWithEmbeddedContent {
-        @Id
-        private String id = UuidCreator.getTimeOrdered().toString();
-
-        @Embedded
-        private EmbeddedContent content;
-
-        public String getId() {
-            return id;
-        }
-
-        public void setId(String id) {
-            this.id = id;
-        }
-
-        public EmbeddedContent getContent() {
-            return content;
-        }
-
-        public void setContent(EmbeddedContent content) {
-            this.content = content;
-        }
-    }
-
-    @Embeddable
-    public static class EmbeddedContent {
-        @ContentId
-        private String contentId;
-
-        @ContentLength
-        private Long contentLen;
-
-        public String getContentId() {
-            return contentId;
-        }
-
-        public void setContentId(String contentId) {
-            this.contentId = contentId;
-        }
-
-        public Long getContentLen() {
-            return contentLen;
-        }
-
-        public void setContentLen(Long contentLen) {
-            this.contentLen = contentLen;
         }
     }
 
@@ -381,9 +319,10 @@ public class FileSystemStoreIT {
             assertThat(new File(loader.getRootResource().getPath(), contentId).exists()).isTrue();
             String renditionId = entity.getRenditionId();
             assertThat(new File(loader.getRootResource().getPath(), renditionId).exists()).isTrue();
-            store.setContent(entity, new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()));
-            store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Updated Spring Content World!</html>".getBytes()));
-            entity = repo.save(entity);
+            entity = store.setContent(entity,
+                    new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()));
+            entity = store.setContent(entity, PropertyPath.from("rendition"),
+                    new ByteArrayInputStream("<html>Hello Updated Spring Content World!</html>".getBytes()));
 
             try (InputStream content = store.getContent(entity)) {
                 boolean matches = IOUtils.contentEquals(new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), content);
@@ -404,9 +343,10 @@ public class FileSystemStoreIT {
 
         @Test
         void shouldStoreOnlyTheNewContent() throws IOException {
-            store.setContent(entity, new ByteArrayInputStream("Hello Spring World!".getBytes()));
-            store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring World!</html>".getBytes()));
-            entity = repo.save(entity);
+            entity = store.setContent(entity,
+                    new ByteArrayInputStream("Hello Spring World!".getBytes()));
+            entity = store.setContent(entity, PropertyPath.from("rendition"),
+                    new ByteArrayInputStream("<html>Hello Spring World!</html>".getBytes()));
 
             try (InputStream content = store.getContent(entity)) {
                 boolean matches = IOUtils.contentEquals(new ByteArrayInputStream("Hello Spring World!".getBytes()), content);
@@ -425,8 +365,9 @@ public class FileSystemStoreIT {
             String contentId = entity.getContentId();
             assertThat(new File(loader.getRootResource().getPath(), contentId).exists()).isTrue();
 
-            store.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), new SetContentParams(-1, true, SetContentParams.ContentDisposition.CreateNew));
-            entity = repo.save(entity);
+            entity = store.setContent(entity, PropertyPath.from("content"),
+                    new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()),
+                    new SetContentParams(-1, true, SetContentParams.ContentDisposition.CreateNew));
 
             try (InputStream content = store.getContent(entity)) {
                 boolean matches = IOUtils.contentEquals(new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), content);
@@ -527,13 +468,13 @@ public class FileSystemStoreIT {
 
         @Test
         void shouldReturnNullWhenContentIsFetched() throws IOException {
-            EntityWithEmbeddedContent embedded = embeddedRepo.save(new EntityWithEmbeddedContent());
+            EmbeddedContentJpaStringIdEntity embedded = embeddedRepo.save(new EmbeddedContentJpaStringIdEntity());
             assertThat(embeddedStore.getContent(embedded, PropertyPath.from("content"))).isNull();
         }
 
         @Test
         void shouldBeSuccessfulWhenContentIsSet() throws IOException {
-            EntityWithEmbeddedContent embedded = embeddedRepo.save(new EntityWithEmbeddedContent());
+            EmbeddedContentJpaStringIdEntity embedded = embeddedRepo.save(new EmbeddedContentJpaStringIdEntity());
             embeddedStore.setContent(embedded, PropertyPath.from("content"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
             try (InputStream is = embeddedStore.getContent(embedded, PropertyPath.from("content"))) {
                 assertThat(IOUtils.contentEquals(is, new ByteArrayInputStream("Hello Spring Content World!".getBytes()))).isTrue();
@@ -542,7 +483,7 @@ public class FileSystemStoreIT {
 
         @Test
         void shouldReturnNullWhenContentIsUnset() {
-            EntityWithEmbeddedContent embedded = embeddedRepo.save(new EntityWithEmbeddedContent());
+            EmbeddedContentJpaStringIdEntity embedded = embeddedRepo.save(new EmbeddedContentJpaStringIdEntity());
             assertThat(embeddedStore.unsetContent(embedded, PropertyPath.from("content"))).isSameAs(embedded);
         }
     }

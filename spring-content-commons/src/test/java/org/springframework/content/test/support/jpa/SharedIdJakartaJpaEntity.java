@@ -3,6 +3,9 @@ package org.springframework.content.test.support.jpa;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+
+import java.util.UUID;
+
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.test.support.ContentAccessor;
@@ -22,6 +25,10 @@ public class SharedIdJakartaJpaEntity implements ContentAccessor<String> {
 
     @ContentLength
     private Long contentLen;
+
+    public SharedIdJakartaJpaEntity() {
+        this.contentId = UUID.randomUUID().toString();
+    }
 
     @Override
     public String getContentId() {
