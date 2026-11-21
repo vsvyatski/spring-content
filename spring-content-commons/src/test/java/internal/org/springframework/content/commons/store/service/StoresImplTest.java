@@ -10,7 +10,7 @@ import org.springframework.content.commons.store.Store;
 import org.springframework.content.commons.storeservice.StoreFilter;
 import org.springframework.content.commons.storeservice.StoreInfo;
 import org.springframework.content.commons.storeservice.Stores;
-import org.springframework.content.commons.testsupport.CommonsTestStores;
+import org.springframework.content.test.support.CommonsTestStores;
 import org.springframework.context.ApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;

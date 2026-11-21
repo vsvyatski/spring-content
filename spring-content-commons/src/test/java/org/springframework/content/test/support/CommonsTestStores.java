@@ -1,4 +1,4 @@
-package org.springframework.content.commons.testsupport;
+package org.springframework.content.test.support;
 
 import org.springframework.content.commons.store.AssociativeStore;
 import org.springframework.content.commons.store.ContentStore;

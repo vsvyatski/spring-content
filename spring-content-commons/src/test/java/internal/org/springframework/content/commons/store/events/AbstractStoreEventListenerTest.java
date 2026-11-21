@@ -9,7 +9,7 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.commons.store.events.*;
 import org.springframework.content.commons.store.events.testsupport.StoreEventSource;
-import org.springframework.content.commons.testsupport.CommonsTestStores;
+import org.springframework.content.test.support.CommonsTestStores;
 
 import java.io.InputStream;
 import java.io.Serializable;

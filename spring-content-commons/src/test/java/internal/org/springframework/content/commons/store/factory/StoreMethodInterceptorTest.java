@@ -17,7 +17,7 @@ import org.springframework.content.commons.store.AssociativeStore;
 import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.commons.store.Store;
 import org.springframework.content.commons.store.events.*;
-import org.springframework.content.commons.testsupport.CommonsTestStores;
+import org.springframework.content.test.support.CommonsTestStores;
 import org.springframework.content.test.support.UuidSingleContentFields;
 import org.springframework.content.test.support.UuidSingleContentStore;
 import org.springframework.context.ApplicationEventPublisher;
