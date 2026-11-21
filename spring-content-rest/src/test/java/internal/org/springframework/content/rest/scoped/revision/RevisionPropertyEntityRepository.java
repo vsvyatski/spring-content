@@ -9,7 +9,6 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
  */
 @SuppressWarnings("unused") // classpath / store component scan
 @RepositoryRestResource(path = "tEntities")
-public interface RevisionPropertyEntityRepository
-    extends JpaRepository<RevisionPropertyEntity, Long>,
+public interface RevisionPropertyEntityRepository extends JpaRepository<RevisionPropertyEntity, Long>,
         RevisionRepository<RevisionPropertyEntity, Long, Integer> {
 }

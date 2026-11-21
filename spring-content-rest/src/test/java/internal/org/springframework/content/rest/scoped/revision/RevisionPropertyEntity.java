@@ -5,21 +5,23 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import org.hibernate.envers.Audited;
+import org.jspecify.annotations.Nullable;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.annotations.MimeType;
+import org.springframework.content.test.support.ContentAccessor;
 
 /**
  * Envers revision REST tests. Field layout matches
- * {@link org.springframework.content.test.support.jpa.SingleContentJpaLongIdEntity} + MIME; kept standalone because
- * Envers cannot audit through an unaudited {@code @Entity} superclass and revision content REST returns 404 when
- * extending {@link org.springframework.content.test.support.SingleContentFields} without a JPA embeddable split.
+ * {@link org.springframework.content.test.support.jpa.SingleContentJpaLongIdEntity} + MIME; implements
+ * {@link ContentAccessor} without extending {@link org.springframework.content.test.support.SingleContentFields} so
+ * Envers and revision content REST behave correctly.
  *
  * @author Vladimir Svyatski
  */
 @Entity
 @Audited
-public class RevisionPropertyEntity {
+public class RevisionPropertyEntity implements ContentAccessor<String> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -45,19 +47,23 @@ public class RevisionPropertyEntity {
         this.id = id;
     }
 
-    public String getContentId() {
+    @Override
+    public @Nullable String getContentId() {
         return contentId;
     }
 
-    public void setContentId(String contentId) {
+    @Override
+    public void setContentId(@Nullable String contentId) {
         this.contentId = contentId;
     }
 
-    public Long getContentLen() {
+    @Override
+    public @Nullable Long getContentLen() {
         return contentLen;
     }
 
-    public void setContentLen(Long contentLen) {
+    @Override
+    public void setContentLen(@Nullable Long contentLen) {
         this.contentLen = contentLen;
     }
 
