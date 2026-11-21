@@ -31,7 +31,6 @@ public class DefaultMongoStoreImplTest {
     private PlacementService placer;
 
     private InputStream content;
-    private InputStream result;
     private Exception e;
 
     @Nested
@@ -198,7 +197,7 @@ public class DefaultMongoStoreImplTest {
                     void brokenStream() throws IOException {
                         when(resource.getInputStream()).thenThrow(new IOException("get-ioexception"));
                         try {
-                            result = mongoContentRepoImpl.getContent(property);
+                            mongoContentRepoImpl.getContent(property);
                         } catch (Exception ex) {
                             e = ex;
                         }

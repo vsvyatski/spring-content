@@ -163,10 +163,11 @@ public class DefaultJpaStoreImplTest {
                         blobResourceLoader = mock(BlobResourceLoader.class);
                         resource = mock(GenericBlobResource.class);
 
+                        id = "12345";
                         entity = new SingleContentFields();
-                        entity.setContentId("12345");
+                        entity.setContentId(id);
 
-                        when(blobResourceLoader.getResource(entity.getContentId()))
+                        when(blobResourceLoader.getResource(id))
                             .thenReturn(resource);
 
                         stream = new ByteArrayInputStream(
@@ -184,7 +185,7 @@ public class DefaultJpaStoreImplTest {
 
                     @Test
                     void shouldUseTheBlobResourceFactoryToCreateANewBlobResource() {
-                        verify(blobResourceLoader).getResource(entity.getContentId());
+                        verify(blobResourceLoader).getResource(id);
                     }
 
                     @Test
@@ -200,10 +201,11 @@ public class DefaultJpaStoreImplTest {
                         blobResourceLoader = mock(BlobResourceLoader.class);
                         resource = mock(GenericBlobResource.class);
 
+                        id = "12345";
                         entity = new SingleContentFields();
-                        entity.setContentId("12345");
+                        entity.setContentId(id);
 
-                        when(blobResourceLoader.getResource(entity.getContentId()))
+                        when(blobResourceLoader.getResource(id))
                             .thenReturn(resource);
 
                         when(resource.getInputStream())
@@ -361,10 +363,11 @@ public class DefaultJpaStoreImplTest {
                     blobResourceLoader = mock(BlobResourceLoader.class);
                     blobResource = mock(GenericBlobResource.class);
 
+                    id = "12345";
                     entity = new SingleContentFields();
-                    entity.setContentId("12345");
+                    entity.setContentId(id);
 
-                    when(blobResourceLoader.getResource(entity.getContentId()))
+                    when(blobResourceLoader.getResource(id))
                         .thenReturn(blobResource);
 
                     store = spy(new DefaultJpaStoreImpl<>(blobResourceLoader, null, 8096));
@@ -387,10 +390,11 @@ public class DefaultJpaStoreImplTest {
                         blobResourceLoader = mock(BlobResourceLoader.class);
                         blobResource = mock(GenericBlobResource.class);
 
+                        id = "12345";
                         entity = new SingleContentFields();
-                        entity.setContentId("12345");
+                        entity.setContentId(id);
 
-                        when(blobResourceLoader.getResource(entity.getContentId()))
+                        when(blobResourceLoader.getResource(id))
                             .thenReturn(blobResource);
 
                         doThrow(new IOException("unset-ioexception")).when(blobResource).delete();

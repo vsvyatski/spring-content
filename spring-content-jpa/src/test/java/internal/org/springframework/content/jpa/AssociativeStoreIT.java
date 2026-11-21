@@ -71,7 +71,7 @@ public class AssociativeStoreIT {
             boot(configClass);
             saveNewDocument();
             assertThat(document.getContentId()).isNull();
-            assertThat(store.getResource(document)).isNull();
+            ContentStoreIT.assertNullResource(store.getResource(document));
         }
 
         @Nested

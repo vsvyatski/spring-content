@@ -1,5 +1,7 @@
 package org.springframework.content.test.support;
 
+import org.jspecify.annotations.Nullable;
+
 import java.io.Serializable;
 
 /**
@@ -9,11 +11,11 @@ import java.io.Serializable;
  */
 public interface ContentAccessor<CID extends Serializable> {
 
-    CID getContentId();
+    @Nullable CID getContentId();
 
-    void setContentId(CID contentId);
+    void setContentId(@Nullable CID contentId);
 
-    Long getContentLen();
+    @Nullable Long getContentLen();
 
-    void setContentLen(Long contentLen);
+    void setContentLen(@Nullable Long contentLen);
 }

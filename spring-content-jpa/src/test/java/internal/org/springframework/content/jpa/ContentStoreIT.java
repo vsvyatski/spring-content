@@ -8,8 +8,10 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.content.commons.property.PropertyPath;
 import org.springframework.content.commons.store.SetContentParams;
 import org.springframework.content.commons.store.UnsetContentParams;
+import org.springframework.content.test.support.NullableAssertions;
 import org.springframework.content.test.support.jpa.*;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.core.io.Resource;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
@@ -66,7 +68,12 @@ public class ContentStoreIT {
      * ContentStore#getContent may return null; call through here for null-marked assertions.
      */
     public static void assertNullInputStream(@Nullable InputStream content) {
-        assertThat(content).isNull();
+        NullableAssertions.assertNull(content);
+    }
+
+    /** AssociativeStore#getResource may return null; call through here for null-marked assertions. */
+    public static void assertNullResource(@Nullable Resource resource) {
+        NullableAssertions.assertNull(resource);
     }
 
     protected boolean hasContent(NestedDualContentJpaStringIdEntity claim, PropertyPath path) {

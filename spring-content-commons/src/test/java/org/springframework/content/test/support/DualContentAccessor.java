@@ -1,5 +1,7 @@
 package org.springframework.content.test.support;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Dual content-property accessors (default content plus rendition).
  *
@@ -7,15 +9,15 @@ package org.springframework.content.test.support;
  */
 public interface DualContentAccessor extends ContentAccessor<String> {
 
-    String getRenditionId();
+    @Nullable String getRenditionId();
 
     // set via BeanUtils / store metadata, not direct calls
     @SuppressWarnings("unused")
-    void setRenditionId(String renditionId);
+    void setRenditionId(@Nullable String renditionId);
 
-    Long getRenditionLen();
+    @Nullable Long getRenditionLen();
 
     // set via BeanUtils / store metadata, not direct calls
     @SuppressWarnings("unused")
-    void setRenditionLen(Long renditionLen);
+    void setRenditionLen(@Nullable Long renditionLen);
 }

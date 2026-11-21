@@ -23,6 +23,7 @@ import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration;
 import org.springframework.data.mongodb.core.SimpleMongoClientDatabaseFactory;
 import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
+import org.springframework.content.test.support.NullableAssertions;
 import org.springframework.content.test.support.TestSupportPackages;
 import org.springframework.content.test.support.mongo.*;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
@@ -300,7 +301,7 @@ public class MongoStoreIT {
                     @Test
                     void shouldNotHaveAnAssociatedResource() {
                         assertThat(entity.getContentId()).isNull();
-                        assertThat(store.getResource(entity)).isNull();
+                        NullableAssertions.assertNull(store.getResource(entity));
                     }
                 }
 
@@ -604,13 +605,15 @@ public class MongoStoreIT {
                 @Test
                 void shouldHaveContentMetadata() {
                     // content
-                    assertThat(entity.getContentId()).isNotNull();
-                    assertThat(entity.getContentId().trim().length()).isGreaterThan(0);
+                    String contentId = entity.getContentId();
+                    assertThat(contentId).isNotNull();
+                    assertThat(contentId.trim().length()).isGreaterThan(0);
                     assertThat(entity.getContentLen()).isEqualTo(27L);
 
                     //rendition
-                    assertThat(entity.getRenditionId()).isNotNull();
-                    assertThat(entity.getRenditionId().trim().length()).isGreaterThan(0);
+                    String renditionId = entity.getRenditionId();
+                    assertThat(renditionId).isNotNull();
+                    assertThat(renditionId.trim().length()).isGreaterThan(0);
                     assertThat(entity.getRenditionLen()).isEqualTo(27L);
                 }
             }
@@ -742,6 +745,7 @@ public class MongoStoreIT {
                 @Test
                 void shouldHaveTheUpdatedContent() throws IOException {
                     String contentId = entity.getContentId();
+                    assertThat(contentId).isNotNull();
                     assertThat(gridFsTemplate.getResource(contentId).exists()).isTrue();
 
                     store.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), new SetContentParams(-1, true, SetContentParams.ContentDisposition.CreateNew));
@@ -756,7 +760,9 @@ public class MongoStoreIT {
 
                     assertThat(entity.getContentId()).isNotEqualTo(contentId);
 
-                    assertThat(gridFsTemplate.getResource(entity.getContentId()).exists()).isTrue();
+                    String newContentId = entity.getContentId();
+                    assertThat(newContentId).isNotNull();
+                    assertThat(gridFsTemplate.getResource(newContentId).exists()).isTrue();
                 }
             }
 
@@ -782,7 +788,9 @@ public class MongoStoreIT {
                     store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
                     store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
 
-                    resourceLocation = entity.getContentId();
+                    String storedContentId = entity.getContentId();
+                    assertThat(storedContentId).isNotNull();
+                    resourceLocation = storedContentId;
                     entity = store.unsetContent(entity);
                     entity = store.unsetContent(entity, PropertyPath.from("rendition"));
                     entity = repo.save(entity);
@@ -797,7 +805,7 @@ public class MongoStoreIT {
                 void shouldHaveNoContent() throws IOException {
                     //content
                     try (InputStream content = store.getContent(entity)) {
-                        assertThat(content).isNull();
+                        NullableAssertions.assertNull(content);
                     }
 
                     assertThat(entity.getContentId()).isNull();
@@ -807,7 +815,7 @@ public class MongoStoreIT {
 
                     //rendition
                     try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
-                        assertThat(content).isNull();
+                        NullableAssertions.assertNull(content);
                     }
 
                     assertThat(entity.getRenditionId()).isNull();
@@ -837,7 +845,9 @@ public class MongoStoreIT {
                     store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
                     store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
 
-                    resourceLocation = entity.getContentId();
+                    String storedContentId = entity.getContentId();
+                    assertThat(storedContentId).isNotNull();
+                    resourceLocation = storedContentId;
                     entity = store.unsetContent(entity, PropertyPath.from("content"), new UnsetContentParams(UnsetContentParams.Disposition.Keep));
                     entity = repo.save(entity);
                 }
@@ -851,7 +861,7 @@ public class MongoStoreIT {
                 void shouldHaveNoContent() throws IOException {
                     //content
                     try (InputStream content = store.getContent(entity)) {
-                        assertThat(content).isNull();
+                        NullableAssertions.assertNull(content);
                     }
 
                     assertThat(entity.getContentId()).isNull();
@@ -1016,6 +1026,7 @@ public class MongoStoreIT {
                     sharedIdContentIdEntity = sharedIdStore.setContent(sharedIdContentIdEntity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
                     sharedIdContentIdEntity = sharedIdRepository.save(sharedIdContentIdEntity);
                     String id = sharedIdContentIdEntity.getContentId();
+                    assertThat(id).isNotNull();
                     sharedIdContentIdEntity = sharedIdStore.unsetContent(sharedIdContentIdEntity);
                     assertThat(sharedIdContentIdEntity.getContentId()).isEqualTo(id);
                     assertThat(sharedIdContentIdEntity.getContentLen()).isNull();
@@ -1060,6 +1071,7 @@ public class MongoStoreIT {
                     SharedIdSpringMongoDocument = SharedIdSpringMongoStore.setContent(SharedIdSpringMongoDocument, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
                     SharedIdSpringMongoDocument = SharedIdSpringMongoRepository.save(SharedIdSpringMongoDocument);
                     String id = SharedIdSpringMongoDocument.getContentId();
+                    assertThat(id).isNotNull();
                     SharedIdSpringMongoDocument = SharedIdSpringMongoStore.unsetContent(SharedIdSpringMongoDocument);
                     assertThat(SharedIdSpringMongoDocument.getContentId()).isEqualTo(id);
                     assertThat(SharedIdSpringMongoDocument.getContentLen()).isNull();

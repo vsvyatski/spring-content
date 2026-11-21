@@ -2,6 +2,7 @@ package internal.org.springframework.content.mongo.config;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -39,7 +40,6 @@ public class EnableMongoStoresTest {
     @EnableMongoStores(basePackages = TestSupportPackages.MONGO)
     @Import(InfrastructureConfig.class)
     public static class TestConfig {
-        //
     }
 
     @Configuration
@@ -48,12 +48,7 @@ public class EnableMongoStoresTest {
     public static class ConverterConfig {
         @Bean
         public MongoStoreConverter<UUID, String> uuidConverter() {
-            return new MongoStoreConverter<>() {
-                @Override
-                public String convert(UUID source) {
-                    return String.format("/%s", source.toString().replace("-", "/"));
-                }
-            };
+            return source -> String.format("/%s", source.toString().replace("-", "/"));
         }
     }
 
@@ -61,12 +56,12 @@ public class EnableMongoStoresTest {
     public static class InfrastructureConfig extends AbstractMongoClientConfiguration {
 
         @Override
-        protected String getDatabaseName() {
+        protected @NonNull String getDatabaseName() {
             return "spring-content";
         }
 
         @Bean
-        public MongoClient mongoClient() {
+        public @NonNull MongoClient mongoClient() {
             return MongoClients.create("mongodb://localhost:27017");
         }
 
@@ -76,7 +71,7 @@ public class EnableMongoStoresTest {
         }
 
         @Bean
-        public MongoDatabaseFactory mongoDbFactory() {
+        public @NonNull MongoDatabaseFactory mongoDbFactory() {
             return new SimpleMongoClientDatabaseFactory(mongoClient(), getDatabaseName());
         }
     }
@@ -153,5 +148,4 @@ public class EnableMongoStoresTest {
             }
         }
     }
-
 }

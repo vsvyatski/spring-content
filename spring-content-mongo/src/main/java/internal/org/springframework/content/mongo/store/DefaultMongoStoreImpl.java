@@ -82,6 +82,9 @@ public class DefaultMongoStoreImpl<S, SID extends Serializable>
         }
 
         SID contentId = (SID) BeanUtils.getFieldWithAnnotation(entity, ContentId.class);
+        if (contentId == null) {
+            return null;
+        }
         return this.getResource(contentId);
     }
 
@@ -111,7 +114,9 @@ public class DefaultMongoStoreImpl<S, SID extends Serializable>
         }
 
         SID contentId = (SID) property.getContentId(entity);
-
+        if (contentId == null) {
+            return null;
+        }
         return this.getResource(contentId);
     }
 
