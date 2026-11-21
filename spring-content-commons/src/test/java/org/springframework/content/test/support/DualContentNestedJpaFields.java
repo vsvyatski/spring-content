@@ -1,19 +1,21 @@
-package internal.org.springframework.content.jpa.support.models;
-
-import jakarta.persistence.Embeddable;
+package org.springframework.content.test.support;
 
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.annotations.MimeType;
 
-@Embeddable
-public class ClaimForm {
+/**
+ * Dual content field names used by nested JPA embeddable ITs ({@code contentLength}, primitive {@code renditionLen}).
+ *
+ * @author Vladimir Svyatski
+ */
+public class DualContentNestedJpaFields implements DualContentAccessor {
 
     @ContentId
     private String contentId;
 
     @ContentLength
-    private Long contentLength = 0L;
+    private Long contentLength;
 
     @MimeType
     private String contentMimeType = "text/plain";
@@ -24,10 +26,15 @@ public class ClaimForm {
     @ContentLength
     private long renditionLen;
 
+    public DualContentNestedJpaFields() {
+    }
+
+    @Override
     public String getContentId() {
         return contentId;
     }
 
+    @Override
     public void setContentId(String contentId) {
         this.contentId = contentId;
     }
@@ -48,25 +55,33 @@ public class ClaimForm {
         this.contentMimeType = contentMimeType;
     }
 
+    @Override
+    public Long getContentLen() {
+        return contentLength;
+    }
+
+    @Override
+    public void setContentLen(Long contentLen) {
+        this.contentLength = contentLen;
+    }
+
+    @Override
     public String getRenditionId() {
         return renditionId;
     }
 
+    @Override
     public void setRenditionId(String renditionId) {
         this.renditionId = renditionId;
     }
 
-    public long getRenditionLen() {
+    @Override
+    public Long getRenditionLen() {
         return renditionLen;
     }
 
-    public void setRenditionLen(long renditionLen) {
-        this.renditionLen = renditionLen;
-    }
-
-    // Ensure we can handle entities with "computed" getters; i.e. getters that
-    // dont have an associated field
-    public boolean getIsActive() {
-        return true;
+    @Override
+    public void setRenditionLen(Long renditionLen) {
+        this.renditionLen = renditionLen != null ? renditionLen : 0L;
     }
 }

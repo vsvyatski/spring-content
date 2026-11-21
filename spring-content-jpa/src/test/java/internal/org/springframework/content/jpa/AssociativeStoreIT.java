@@ -5,9 +5,9 @@ import internal.org.springframework.content.jpa.StoreIT.H2Config;
 import internal.org.springframework.content.jpa.StoreIT.HSQLConfig;
 import internal.org.springframework.content.jpa.StoreIT.MySqlConfig;
 import internal.org.springframework.content.jpa.StoreIT.PostgresConfig;
-import internal.org.springframework.content.jpa.support.models.Document;
-import internal.org.springframework.content.jpa.support.repositories.DocumentRepository;
-import internal.org.springframework.content.jpa.support.stores.DocumentAssociativeStore;
+import org.springframework.content.test.support.jpa.DualContentMimeJpaAssociativeStore;
+import org.springframework.content.test.support.jpa.DualContentMimeJpaStringIdEntity;
+import org.springframework.content.test.support.jpa.DualContentMimeJpaStringIdRepository;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -41,12 +41,12 @@ public class AssociativeStoreIT {
 
     private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
-    private DocumentRepository repo;
-    private DocumentAssociativeStore store;
+    private DualContentMimeJpaStringIdRepository repo;
+    private DualContentMimeJpaAssociativeStore store;
 
     private PlatformTransactionManager txn;
 
-    private Document document;
+    private DualContentMimeJpaStringIdEntity document;
     private Resource resource;
     private String resourceId;
 
@@ -62,14 +62,13 @@ public class AssociativeStoreIT {
         context.register(configClass);
         context.refresh();
 
-        repo = context.getBean(DocumentRepository.class);
-        store = context.getBean(DocumentAssociativeStore.class);
+        repo = context.getBean(DualContentMimeJpaStringIdRepository.class);
+        store = context.getBean(DualContentMimeJpaAssociativeStore.class);
         txn = context.getBean(PlatformTransactionManager.class);
     }
 
     private void saveNewDocument() {
-        document = new Document();
-        document = repo.save(document);
+        document = repo.save(new DualContentMimeJpaStringIdEntity());
     }
 
     private void prepareResource() {

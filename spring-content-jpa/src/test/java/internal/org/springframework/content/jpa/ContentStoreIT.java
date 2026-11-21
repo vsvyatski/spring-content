@@ -1,12 +1,12 @@
 package internal.org.springframework.content.jpa;
 
 import internal.org.springframework.content.jpa.StoreIT.*;
-import internal.org.springframework.content.jpa.support.models.Claim;
-import internal.org.springframework.content.jpa.support.models.ClaimForm;
-import internal.org.springframework.content.jpa.support.repositories.ClaimRepository;
-import internal.org.springframework.content.jpa.support.stores.ClaimStore;
 import org.apache.commons.io.IOUtils;
 import org.springframework.content.test.support.jpa.EmbeddedContentJpaStringIdEntity;
+import org.springframework.content.test.support.jpa.NestedDualContentJpaEmbeddable;
+import org.springframework.content.test.support.jpa.NestedDualContentJpaStringIdEntity;
+import org.springframework.content.test.support.jpa.NestedDualContentJpaStringIdRepository;
+import org.springframework.content.test.support.jpa.NestedDualContentJpaStringIdStore;
 import org.springframework.content.test.support.jpa.EmbeddedContentJpaStringIdRepository;
 import org.springframework.content.test.support.jpa.EmbeddedContentJpaStringIdStore;
 import org.junit.jupiter.api.Nested;
@@ -37,9 +37,9 @@ public class ContentStoreIT {
             MySqlConfig.class,
             PostgresConfig.class
     };
-    protected ClaimRepository claimRepo;
-    protected ClaimStore claimFormStore;
-    protected Claim claim;
+    protected NestedDualContentJpaStringIdRepository claimRepo;
+    protected NestedDualContentJpaStringIdStore claimFormStore;
+    protected NestedDualContentJpaStringIdEntity claim;
     protected Object id;
     // for Postgres (large object api operations must be in a transaction)
     private PlatformTransactionManager ptm;
@@ -59,7 +59,7 @@ public class ContentStoreIT {
         return null;
     }
 
-    protected boolean hasContent(Claim claim, PropertyPath path) {
+    protected boolean hasContent(NestedDualContentJpaStringIdEntity claim, PropertyPath path) {
 
         if (claim == null) {
             return false;
@@ -81,8 +81,8 @@ public class ContentStoreIT {
     }
 
     protected void deleteAllClaimFormsContent() {
-        Iterable<Claim> existingClaims = claimRepo.findAll();
-        for (Claim existingClaim : existingClaims) {
+        Iterable<NestedDualContentJpaStringIdEntity> existingClaims = claimRepo.findAll();
+        for (NestedDualContentJpaStringIdEntity existingClaim : existingClaims) {
             if (existingClaim.getClaimForm() != null && (hasContent(existingClaim, PropertyPath.from("claimForm/content")) || hasContent(existingClaim, PropertyPath.from("claimForm/rendition")))) {
                 claimFormStore.unsetContent(existingClaim, PropertyPath.from("claimForm/content"));
                 claimFormStore.unsetContent(existingClaim, PropertyPath.from("claimForm/rendition"));
@@ -117,17 +117,17 @@ public class ContentStoreIT {
         context.refresh();
 
         ptm = context.getBean(PlatformTransactionManager.class);
-        claimRepo = context.getBean(ClaimRepository.class);
-        claimFormStore = context.getBean(ClaimStore.class);
+        claimRepo = context.getBean(NestedDualContentJpaStringIdRepository.class);
+        claimFormStore = context.getBean(NestedDualContentJpaStringIdStore.class);
 
         if (ptm == null) {
             ptm = mock(PlatformTransactionManager.class);
         }
 
-        claim = new Claim();
+        claim = new NestedDualContentJpaStringIdEntity();
         claim.setFirstName("John");
         claim.setLastName("Smith");
-        claim.setClaimForm(new ClaimForm());
+        claim.setClaimForm(new NestedDualContentJpaEmbeddable());
         claim = claimRepo.save(claim);
     }
 
@@ -303,7 +303,7 @@ public class ContentStoreIT {
                     claimFormStore.unsetContent(claim, PropertyPath.from("claimForm/content"));
                     claimFormStore.unsetContent(claim, PropertyPath.from("claimForm/rendition"));
                     claim = claimRepo.save(claim);
-                    ClaimForm deletedClaimForm = new ClaimForm();
+                    NestedDualContentJpaEmbeddable deletedClaimForm = new NestedDualContentJpaEmbeddable();
                     deletedClaimForm.setContentId((String) id);
 
                     // content
@@ -350,7 +350,7 @@ public class ContentStoreIT {
                     id = claim.getClaimForm().getContentId();
                     claimFormStore.unsetContent(claim, PropertyPath.from("claimForm/content"), new UnsetContentParams(UnsetContentParams.Disposition.Keep));
                     claim = claimRepo.save(claim);
-                    ClaimForm deletedClaimForm = new ClaimForm();
+                    NestedDualContentJpaEmbeddable deletedClaimForm = new NestedDualContentJpaEmbeddable();
                     deletedClaimForm.setContentId((String) id);
 
                     // content

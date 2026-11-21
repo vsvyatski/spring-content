@@ -1,6 +1,5 @@
 package internal.org.springframework.content.s3.it;
 
-import jakarta.persistence.*;
 import net.bytebuddy.utility.RandomString;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterEach;
@@ -13,12 +12,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.persistence.autoconfigure.EntityScan;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.content.commons.annotations.ContentId;
-import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.io.DeletableResource;
 import org.springframework.content.commons.io.RangeableResource;
 import org.springframework.content.commons.property.PropertyPath;
-import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.commons.store.SetContentParams;
 import org.springframework.content.commons.store.StoreAccessException;
 import org.springframework.content.commons.store.UnsetContentParams;
@@ -29,7 +25,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.WritableResource;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -41,8 +36,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.util.Arrays;
-import java.util.UUID;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -78,18 +71,12 @@ public class S3StoreIT {
     private SharedIdJakartaJpaStore sharedIdStore;
     // Embedded content tests
     @Autowired
-    private EmbeddedRepository embeddedRepo;
+    private EmbeddedContentJpaStringIdRepository embeddedRepo;
     @Autowired
-    private EmbeddedStore embeddedStore;
-
-    public interface EmbeddedRepository extends JpaRepository<EntityWithEmbeddedContent, String> {
-    }
-
-    public interface EmbeddedStore extends ContentStore<EntityWithEmbeddedContent, String> {
-    }
+    private EmbeddedContentJpaStringIdStore embeddedStore;
 
     @SpringBootApplication(scanBasePackages = {"internal.org.springframework.content.s3.it", TestSupportPackages.JPA})
-    @EntityScan(basePackages = {TestSupportPackages.JPA, "internal.org.springframework.content.s3.it"})
+    @EntityScan(basePackages = TestSupportPackages.JPA)
     @EnableJpaRepositories(basePackages = {TestSupportPackages.JPA, "internal.org.springframework.content.s3.it"}, considerNestedRepositories = true)
     @EnableS3Stores(basePackages = {TestSupportPackages.JPA, "internal.org.springframework.content.s3.it"})
     static class Application {
@@ -104,59 +91,6 @@ public class S3StoreIT {
             public S3Client amazonS3() throws URISyntaxException {
                 return LocalStack.getAmazonS3Client();
             }
-        }
-    }
-
-    @Entity
-    @Table(name = "entity_with_embedded")
-    public static class EntityWithEmbeddedContent {
-
-        @Id
-        private String id = UUID.randomUUID().toString();
-
-        @Embedded
-        private EmbeddedContent content;
-
-        public String getId() {
-            return id;
-        }
-
-        public void setId(String id) {
-            this.id = id;
-        }
-
-        public EmbeddedContent getContent() {
-            return content;
-        }
-
-        public void setContent(EmbeddedContent content) {
-            this.content = content;
-        }
-    }
-
-    @Embeddable
-    public static class EmbeddedContent {
-
-        @ContentId
-        private String contentId;
-
-        @ContentLength
-        private Long contentLen;
-
-        public String getContentId() {
-            return contentId;
-        }
-
-        public void setContentId(String contentId) {
-            this.contentId = contentId;
-        }
-
-        public Long getContentLen() {
-            return contentLen;
-        }
-
-        public void setContentLen(Long contentLen) {
-            this.contentLen = contentLen;
         }
     }
 
@@ -1587,23 +1521,23 @@ public class S3StoreIT {
 
                     @Test
                     void shouldReturnNullWhenContentIsFetched() throws IOException {
-                        EntityWithEmbeddedContent entity = embeddedRepo.save(new EntityWithEmbeddedContent());
-                        assertThat(embeddedStore.getContent(entity, PropertyPath.from("content"))).isNull();
+                        EmbeddedContentJpaStringIdEntity embedded = embeddedRepo.save(new EmbeddedContentJpaStringIdEntity());
+                        assertThat(embeddedStore.getContent(embedded, PropertyPath.from("content"))).isNull();
                     }
 
                     @Test
                     void shouldBeSuccessfulWhenContentIsSet() throws IOException {
-                        EntityWithEmbeddedContent entity = embeddedRepo.save(new EntityWithEmbeddedContent());
-                        embeddedStore.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-                        try (InputStream is = embeddedStore.getContent(entity, PropertyPath.from("content"))) {
+                        EmbeddedContentJpaStringIdEntity embedded = embeddedRepo.save(new EmbeddedContentJpaStringIdEntity());
+                        embeddedStore.setContent(embedded, PropertyPath.from("content"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                        try (InputStream is = embeddedStore.getContent(embedded, PropertyPath.from("content"))) {
                             assertThat(IOUtils.contentEquals(is, new ByteArrayInputStream("Hello Spring Content World!".getBytes()))).isTrue();
                         }
                     }
 
                     @Test
                     void shouldReturnNullWhenContentIsUnset() {
-                        EntityWithEmbeddedContent entity = embeddedRepo.save(new EntityWithEmbeddedContent());
-                        assertThat(embeddedStore.unsetContent(entity, PropertyPath.from("content"))).isSameAs(entity);
+                        EmbeddedContentJpaStringIdEntity embedded = embeddedRepo.save(new EmbeddedContentJpaStringIdEntity());
+                        assertThat(embeddedStore.unsetContent(embedded, PropertyPath.from("content"))).isSameAs(embedded);
                     }
                 }
             }

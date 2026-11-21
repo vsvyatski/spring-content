@@ -1,22 +1,31 @@
-package internal.org.springframework.content.jpa.support.models;
+package org.springframework.content.test.support.jpa;
 
-import com.github.f4b6a3.uuid.UuidCreator;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 
+import java.util.UUID;
+
+/**
+ * JPA root entity with embedded dual content for {@code claimForm/*} property-path store ITs.
+ *
+ * @author Vladimir Svyatski
+ */
 @Entity
-public class Claim {
+public class NestedDualContentJpaStringIdEntity {
 
     @Id
     @org.springframework.data.annotation.Id
-    private String claimId = UuidCreator.getTimeOrdered().toString();
+    private String claimId = UUID.randomUUID().toString();
 
     private String lastName;
     private String firstName;
 
     @Embedded
-    private ClaimForm claimForm = new ClaimForm();
+    private NestedDualContentJpaEmbeddable claimForm = new NestedDualContentJpaEmbeddable();
+
+    public NestedDualContentJpaStringIdEntity() {
+    }
 
     public String getClaimId() {
         return claimId;
@@ -42,11 +51,11 @@ public class Claim {
         this.firstName = firstName;
     }
 
-    public ClaimForm getClaimForm() {
+    public NestedDualContentJpaEmbeddable getClaimForm() {
         return claimForm;
     }
 
-    public void setClaimForm(ClaimForm claimForm) {
+    public void setClaimForm(NestedDualContentJpaEmbeddable claimForm) {
         this.claimForm = claimForm;
     }
 }
