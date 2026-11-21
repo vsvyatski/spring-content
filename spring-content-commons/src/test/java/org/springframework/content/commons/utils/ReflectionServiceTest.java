@@ -10,8 +10,6 @@ import static org.mockito.Mockito.verify;
 
 public class ReflectionServiceTest {
 
-    private ReflectionService reflectionService;
-
     // mocks
     private HelloWorldService service;
 
@@ -27,10 +25,10 @@ public class ReflectionServiceTest {
             void setUp() {
                 service = mock(HelloWorldService.class);
 
-                reflectionService = new ReflectionServiceImpl();
-                reflectionService.invokeMethod(ReflectionUtils
-                        .findMethod(HelloWorldService.class, "helloWorld"), service,
-                    new Object[]{});
+                ReflectionService reflectionService = new ReflectionServiceImpl();
+                reflectionService.invokeMethod(
+                    ReflectionUtils.findMethod(HelloWorldService.class, "helloWorld"), service
+                );
             }
 
             @Test
