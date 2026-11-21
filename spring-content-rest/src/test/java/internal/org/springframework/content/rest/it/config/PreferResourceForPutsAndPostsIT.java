@@ -1,7 +1,6 @@
 package internal.org.springframework.content.rest.it.config;
 
 import internal.org.springframework.content.rest.it.SecurityConfiguration;
-import internal.org.springframework.content.rest.support.AuditedNestedContentEntity;
 import internal.org.springframework.content.rest.support.UuidSingleContentEntity;
 import internal.org.springframework.content.rest.support.mockstore.EnableMockStores;
 import internal.org.springframework.content.rest.support.mockstore.MockContentStore;
@@ -60,16 +59,12 @@ public class PreferResourceForPutsAndPostsIT {
     private PreferResourceForPutsAndPostsRepository repo;
 
     @Autowired
-    private PreferResourceForPutsAndPostsStore store;
-
-    @Autowired
     private WebApplicationContext webApplicationContext;
-
-    private AuditedNestedContentEntity existingClaim;
 
     public interface PreferResourceForPutsAndPostsRepository extends CrudRepository<UuidSingleContentEntity, Long> {
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     private interface PreferResourceForPutsAndPostsStore extends MockContentStore<UuidSingleContentEntity, UUID> {
     }
 
@@ -91,17 +86,17 @@ public class PreferResourceForPutsAndPostsIT {
         public static class AppConfig {
 
             @Value("/org/springframework/content/jpa/schema-drop-h2.sql")
-            private ClassPathResource dropReopsitoryTables;
+            private ClassPathResource dropRepositoryTables;
 
             @Value("/org/springframework/content/jpa/schema-h2.sql")
-            private ClassPathResource dataReopsitorySchema;
+            private ClassPathResource dataRepositorySchema;
 
             @Bean
             DataSourceInitializer datasourceInitializer(DataSource dataSource) {
                 ResourceDatabasePopulator databasePopulator = new ResourceDatabasePopulator();
 
-                databasePopulator.addScript(dropReopsitoryTables);
-                databasePopulator.addScript(dataReopsitorySchema);
+                databasePopulator.addScript(dropRepositoryTables);
+                databasePopulator.addScript(dataRepositorySchema);
                 databasePopulator.setIgnoreFailedDrops(true);
 
                 DataSourceInitializer initializer = new DataSourceInitializer();
@@ -140,12 +135,7 @@ public class PreferResourceForPutsAndPostsIT {
 
             @Bean
             public ContentRestConfigurer configurer() {
-                return new ContentRestConfigurer() {
-                    @Override
-                    public void configure(RestConfiguration config) {
-                        config.forDomainType(UuidSingleContentEntity.class).putAndPostPreferResource();
-                    }
-                };
+                return config -> config.forDomainType(UuidSingleContentEntity.class).putAndPostPreferResource();
             }
         }
     }
@@ -159,18 +149,18 @@ public class PreferResourceForPutsAndPostsIT {
 
         @Test
         void shouldUseTheSetContentSResourceMethod() {
-            UuidSingleContentEntity tentity = new UuidSingleContentEntity();
-            tentity = repo.save(tentity);
+            UuidSingleContentEntity entity = new UuidSingleContentEntity();
+            entity = repo.save(entity);
 
             given()
                 .contentType("text/plain")
                 .body("some content".getBytes())
                 .when()
-                .post("/testEntities/" + tentity.getId());
+                .post("/testEntities/" + entity.getId());
 
             MockStoreFactoryBean storeFactory = context.getBean(MockStoreFactoryBean.class);
 
-            verify(storeFactory.getMock()).setContent(org.mockito.ArgumentMatchers.isA(UuidSingleContentEntity.class), org.mockito.ArgumentMatchers.isA(PropertyPath.class), (Resource) org.mockito.ArgumentMatchers.isA(Resource.class));
+            verify(storeFactory.getMock()).setContent(org.mockito.ArgumentMatchers.isA(UuidSingleContentEntity.class), org.mockito.ArgumentMatchers.isA(PropertyPath.class), org.mockito.ArgumentMatchers.isA(Resource.class));
         }
     }
 }

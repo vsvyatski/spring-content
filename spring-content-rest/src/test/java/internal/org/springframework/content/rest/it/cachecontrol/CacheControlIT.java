@@ -16,13 +16,11 @@ import org.springframework.boot.data.mongodb.autoconfigure.DataMongoRepositories
 import org.springframework.boot.mongodb.autoconfigure.MongoAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.content.fs.config.EnableFileSystemStores;
 import org.springframework.content.fs.io.FileSystemResourceLoader;
 import org.springframework.content.fs.store.FileSystemContentStore;
 import org.springframework.content.rest.config.ContentRestConfigurer;
 import org.springframework.content.rest.config.RestConfiguration;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -55,10 +53,6 @@ import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 @ExtendWith(SpringExtension.class)
 public class CacheControlIT {
 
-    @LocalServerPort
-    int port;
-    @Autowired
-    private ApplicationContext context;
     @Autowired
     private CacheControlRepository repo;
     @Autowired
