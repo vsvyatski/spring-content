@@ -3,6 +3,7 @@ package internal.org.springframework.content.azure.it;
 import com.azure.storage.blob.BlobServiceClientBuilder;
 import org.testcontainers.containers.GenericContainer;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -29,6 +30,8 @@ public class Azurite extends GenericContainer<Azurite> implements Serializable {
     private static final String ACC_NAME = "AccountName=" + DEV_ACC_NAME;
     private static final String ACC_KEY =
             "AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==";
+    @Serial
+    private static final long serialVersionUID = -7332684868398332492L;
 
     private Azurite() {
         super(DOCKER_IMAGE_NAME);
