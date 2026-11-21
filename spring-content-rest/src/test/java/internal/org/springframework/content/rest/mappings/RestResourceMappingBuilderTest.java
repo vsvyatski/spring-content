@@ -9,6 +9,7 @@ import org.springframework.content.commons.annotations.MimeType;
 import org.springframework.content.commons.annotations.OriginalFileName;
 import org.springframework.content.commons.mappingcontext.ClassWalker;
 import org.springframework.content.rest.RestResource;
+import org.springframework.content.test.support.UuidSingleContentFields;
 
 import java.util.UUID;
 
@@ -52,6 +53,21 @@ public class RestResourceMappingBuilderTest {
         private @ContentId UUID idcardFrontId;
         private @ContentLength Long idcardFrontLen;
         private @MimeType String idcardFrontMimeType;
+    }
+
+    public static class InheritedUuidContentOnly extends UuidSingleContentFields {
+    }
+
+    @Nested
+    class GivenInheritedContentIdOnSuperclassOnly {
+        @Test
+        void shouldMapRootContentInLooseMode() {
+            RestResourceMappingBuilder visitor = new RestResourceMappingBuilder((restResourceAnnotation) -> restResourceAnnotation.path());
+            ClassWalker walker = new ClassWalker(visitor);
+            walker.accept(InheritedUuidContentOnly.class);
+
+            assertThat(visitor.getMappings()).containsEntry("content", "content");
+        }
     }
 
     @Nested

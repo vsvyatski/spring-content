@@ -4,6 +4,7 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 
 import java.lang.reflect.Field;
@@ -33,6 +34,21 @@ public final class ContentPropertyUtils {
 
     public static boolean isPrimitiveContentPropertyClass(Class<?> clazz) {
         return clazz.isPrimitive() || clazz.equals(UUID.class) || clazz.equals(String.class);
+    }
+
+    /**
+     * Counts {@link ContentId} fields on {@code type} and its superclasses (declared fields per level).
+     */
+    public static int contentIdFieldCount(Class<?> type) {
+        int count = 0;
+        for (Class<?> current = type; current != null && current != Object.class; current = current.getSuperclass()) {
+            for (Field field : current.getDeclaredFields()) {
+                if (field.isAnnotationPresent(ContentId.class)) {
+                    count++;
+                }
+            }
+        }
+        return count;
     }
 
     public static boolean isWrapperType(Class<?> type) {

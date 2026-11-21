@@ -8,6 +8,8 @@ import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.annotations.MimeType;
 import org.springframework.content.commons.annotations.OriginalFileName;
 import org.springframework.core.convert.TypeDescriptor;
+import org.springframework.content.test.support.SingleContentFields;
+import org.springframework.content.test.support.UuidSingleContentFields;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 
 import java.util.UUID;
@@ -16,24 +18,27 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class ClassWalkerTest {
 
-    @SuppressWarnings("unused") // fixture shape for ClassWalker hierarchy tests
-    public static class TestClass {
+    /**
+     * Hierarchy root; primary content from {@link SingleContentFields}.
+     */
+    @SuppressWarnings("unused")
+    public static class RootWithNestedContent extends SingleContentFields {
 
-        @ContentId
-        private String contentId;
-        @ContentLength
-        private Long contentLength;
         @MimeType
         private Long contentMimeType;
         @OriginalFileName
         private Long contentOriginalFileName;
-        private TestSubClass child;
+        private NestedContentChild child;
 
-        private TestCamelCasedProperty camelCaseProperty;
-        private OtherTestCamelCasedProperty otherCamelCaseProperty;
+        private CamelCasedContentProperty camelCaseProperty;
+        private PluralizedCamelCasedContentProperty otherCamelCaseProperty;
     }
 
-    public static class TestSubClass {
+    /**
+     * Nested level; {@code long} / {@code int} lengths exercise {@link TypeDescriptor} primitives.
+     */
+    @SuppressWarnings("unused")
+    public static class NestedContentChild {
         @ContentId
         private String contentId;
         @ContentLength
@@ -42,10 +47,11 @@ public class ClassWalkerTest {
         private Long contentMimeType;
         @OriginalFileName
         private Long contentOriginalFileName;
-        private TestSubSubClass subChild;
+        private NestedContentGrandchild subChild;
     }
 
-    public static class TestSubSubClass {
+    @SuppressWarnings("unused")
+    public static class NestedContentGrandchild {
         @ContentId
         private String contentId;
         @ContentLength
@@ -56,6 +62,10 @@ public class ClassWalkerTest {
         private Long contentOriginalFileName;
     }
 
+    /**
+     * Uncorrelated attribute names; not shared test-jar shape.
+     */
+    @SuppressWarnings("unused")
     public static class UncorrelatedAttrClass {
         private @Id
         @GeneratedValue Long id;
@@ -67,50 +77,62 @@ public class ClassWalkerTest {
         private String title;
     }
 
-    public static class CorrelatedAttrClass {
+    @SuppressWarnings("unused")
+    public static class CorrelatedAttrClass extends UuidSingleContentFields {
+
         private @Id
         @GeneratedValue Long id;
         private String name;
-        private @ContentId UUID contentId;
-        private @ContentLength Long contentLen;
         private @MimeType String contentMimeType;
         private @OriginalFileName String contentOriginalFileName;
         private String title;
     }
 
-    public static class TestClass2 {
+    @SuppressWarnings("unused")
+    public static class WrapperWithUncorrelatedChild {
         private UncorrelatedAttrClass child;
     }
 
-    public static class TestClass3 {
+    @SuppressWarnings("unused")
+    public static class EntityWithNonContentRelations {
 
         @OneToOne
-        private TestSubClass oneToOne;
+        private NestedContentChild oneToOne;
         @OneToMany
-        private TestSubClass oneToMany;
+        private NestedContentChild oneToMany;
         @ManyToOne
-        private TestSubClass manyToOne;
+        private NestedContentChild manyToOne;
         @ManyToMany
-        private TestSubClass manyToMany;
+        private NestedContentChild manyToMany;
         @DBRef
-        private TestSubClass docRef;
+        private NestedContentChild docRef;
     }
 
-    public static class TestClass4 extends TestSubSubClass {
+    @SuppressWarnings("unused")
+    public static class SubclassOfNestedContentGrandchild extends NestedContentGrandchild {
     }
 
-    public static class TestClass5 {
+    /**
+     * No declared content fields; {@link ContentId} comes only from {@link UuidSingleContentFields}.
+     */
+    @SuppressWarnings("unused")
+    public static class InheritedUuidContentOnly extends UuidSingleContentFields {
+    }
+
+    @SuppressWarnings("unused")
+    public static class EntityWithTwoUncorrelatedChildren {
         private UncorrelatedAttrClass child1;
         private UncorrelatedAttrClass child2;
     }
 
-    public static class TestClass6 {
-        private TestMultipleAttrs child;
+    @SuppressWarnings("unused")
+    public static class WrapperWithPrimaryAndPreviewChild {
+        private PrimaryAndPreviewContent child;
     }
 
-    public static class TestMultipleAttrs {
-        private @ContentId UUID contentId;
-        private @ContentLength Long contentLen;
+    @SuppressWarnings("unused")
+    public static class PrimaryAndPreviewContent extends UuidSingleContentFields {
+
         private @MimeType String contentMimeType;
         private @OriginalFileName String contentOriginalFileName;
 
@@ -120,18 +142,21 @@ public class ClassWalkerTest {
         private @OriginalFileName String previewOriginalFileName;
     }
 
-    public static class TestClass7 {
-        private TestClass6 child;
+    @SuppressWarnings("unused")
+    public static class NestedWrapperWithPrimaryAndPreviewChild {
+        private WrapperWithPrimaryAndPreviewChild child;
     }
 
-    private static class TestCamelCasedProperty {
+    @SuppressWarnings("unused")
+    private static class CamelCasedContentProperty {
         private @ContentId UUID camelCasePropertyId;
         private @ContentLength Long camelCasePropertyLen;
         private @MimeType String camelCasePropertyMimeType;
         private @OriginalFileName String camelCasePropertyOriginalFileName;
     }
 
-    private static class OtherTestCamelCasedProperty {
+    @SuppressWarnings("unused")
+    private static class PluralizedCamelCasedContentProperty {
         private @ContentId UUID camelCasePropertyIds;
         private @ContentLength Long camelCasePropertyLens;
         private @MimeType String camelCasePropertyMimetypes;
@@ -144,13 +169,13 @@ public class ClassWalkerTest {
         void shouldVisitAllFields() {
             ContentPropertyMappingContextVisitor visitor = new ContentPropertyMappingContextVisitor("/", ".");
             ClassWalker walker = new ClassWalker(visitor);
-            walker.accept(TestClass.class);
+            walker.accept(RootWithNestedContent.class);
 
             ContentProperty expectedProperty = new ContentProperty();
             expectedProperty.setContentPropertyPath("content");
             expectedProperty.setContentIdPropertyPath("contentId");
             expectedProperty.setContentIdType(TypeDescriptor.valueOf(String.class));
-            expectedProperty.setContentLengthPropertyPath("contentLength");
+            expectedProperty.setContentLengthPropertyPath("contentLen");
             expectedProperty.setContentLengthType(TypeDescriptor.valueOf(Long.class));
             expectedProperty.setMimeTypePropertyPath("contentMimeType");
             expectedProperty.setOriginalFileNamePropertyPath("contentOriginalFileName");
@@ -244,7 +269,7 @@ public class ClassWalkerTest {
         void shouldReturnTwoContentProperties() {
             ContentPropertyMappingContextVisitor visitor = new ContentPropertyMappingContextVisitor("/", ".");
             ClassWalker walker = new ClassWalker(visitor);
-            walker.accept(TestClass2.class);
+            walker.accept(WrapperWithUncorrelatedChild.class);
 
             ContentProperty expectedProperty = new ContentProperty();
             expectedProperty.setContentPropertyPath("child.content");
@@ -264,9 +289,28 @@ public class ClassWalkerTest {
         void shouldNotTraverseThem() {
             ContentPropertyMappingContextVisitor visitor = new ContentPropertyMappingContextVisitor("/", ".");
             ClassWalker walker = new ClassWalker(visitor);
-            walker.accept(TestClass3.class);
+            walker.accept(EntityWithNonContentRelations.class);
 
             assertThat(visitor.getProperties().size()).isEqualTo(0);
+        }
+    }
+
+    @Nested
+    class GivenInheritedContentIdOnSuperclassOnly {
+        @Test
+        void shouldCollapseToSingleContentProperty() {
+            ContentPropertyMappingContextVisitor visitor = new ContentPropertyMappingContextVisitor("/", ".");
+            ClassWalker walker = new ClassWalker(visitor);
+            walker.accept(InheritedUuidContentOnly.class);
+
+            assertThat(visitor.getProperties()).hasSize(1);
+            ContentProperty expected = new ContentProperty();
+            expected.setContentPropertyPath("content");
+            expected.setContentIdPropertyPath("contentId");
+            expected.setContentIdType(TypeDescriptor.valueOf(UUID.class));
+            expected.setContentLengthPropertyPath("contentLen");
+            expected.setContentLengthType(TypeDescriptor.valueOf(Long.class));
+            assertThat(visitor.getProperties()).containsEntry("content", expected);
         }
     }
 
@@ -276,7 +320,7 @@ public class ClassWalkerTest {
         void shouldVisitThem() {
             ContentPropertyMappingContextVisitor visitor = new ContentPropertyMappingContextVisitor("/", ".");
             ClassWalker walker = new ClassWalker(visitor);
-            walker.accept(TestClass4.class);
+            walker.accept(SubclassOfNestedContentGrandchild.class);
 
             ContentProperty expectedProperty = new ContentProperty();
             expectedProperty.setContentPropertyPath("content");
@@ -296,7 +340,7 @@ public class ClassWalkerTest {
         void shouldReturnTwoContentProperties() {
             ContentPropertyMappingContextVisitor visitor = new ContentPropertyMappingContextVisitor("/", ".");
             ClassWalker walker = new ClassWalker(visitor);
-            walker.accept(TestClass5.class);
+            walker.accept(EntityWithTwoUncorrelatedChildren.class);
 
             ContentProperty expectedProperty = new ContentProperty();
             expectedProperty.setContentPropertyPath("child1.content");
@@ -326,7 +370,7 @@ public class ClassWalkerTest {
         void shouldReturnTwoContentProperties() {
             ContentPropertyMappingContextVisitor visitor = new ContentPropertyMappingContextVisitor("/", ".");
             ClassWalker walker = new ClassWalker(visitor);
-            walker.accept(TestClass6.class);
+            walker.accept(WrapperWithPrimaryAndPreviewChild.class);
 
             ContentProperty expectedProperty = new ContentProperty();
             expectedProperty.setContentPropertyPath("child.content");
@@ -356,7 +400,7 @@ public class ClassWalkerTest {
         void shouldReturnTwoContentProperties() {
             ContentPropertyMappingContextVisitor visitor = new ContentPropertyMappingContextVisitor("/", ".");
             ClassWalker walker = new ClassWalker(visitor);
-            walker.accept(TestClass7.class);
+            walker.accept(NestedWrapperWithPrimaryAndPreviewChild.class);
 
             ContentProperty expectedProperty = new ContentProperty();
             expectedProperty.setContentPropertyPath("child.child.content");

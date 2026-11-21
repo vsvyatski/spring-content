@@ -32,13 +32,7 @@ public class RestResourceMappingBuilder implements ClassVisitor {
     @Override
     public boolean visitClass(String path, Class<?> klazz) {
         visited.put(klazz + ":" + path(segments), false);
-        int numContentIds = 0;
-        for (Field field : klazz.getDeclaredFields()) {
-            if (field.isAnnotationPresent(ContentId.class)) {
-                numContentIds++;
-            }
-        }
-        looseModes.put(klazz + ":" + path(segments), numContentIds == 1);
+        looseModes.put(klazz + ":" + path(segments), ContentPropertyUtils.contentIdFieldCount(klazz) == 1);
         return true;
     }
 

@@ -6,6 +6,8 @@ import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.annotations.MimeType;
 import org.springframework.content.commons.annotations.OriginalFileName;
+import org.springframework.content.commons.utils.ContentPropertyUtils;
+import org.springframework.core.ResolvableType;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.util.StringUtils;
 
@@ -56,19 +58,18 @@ public class ContentPropertyMappingContextVisitor implements ClassVisitor {
 
         properties.put(key(path, klazz), new HashMap<String, ContentProperty>());
 
-        int numContentIds = 0;
-        for (Field field : klazz.getDeclaredFields()) {
-            if (field.isAnnotationPresent(ContentId.class)) {
-                numContentIds++;
-            }
-        }
-        looseModes.put(klazz, numContentIds == 1);
+        looseModes.put(klazz, ContentPropertyUtils.contentIdFieldCount(klazz) == 1);
         LOGGER.trace(String.format("Loose mode enabled: %s", looseModes.get(klazz)));
         return true;
     }
 
     private String key(String path, Class<?> klazz) {
         return klazz.getCanonicalName() + "." + path;
+    }
+
+    private static TypeDescriptor typeDescriptorForField(Field field, Class<?> klazz) {
+        Class<?> resolved = ResolvableType.forField(field, klazz).resolve();
+        return TypeDescriptor.valueOf(resolved != null ? resolved : field.getType());
     }
 
     @Override
@@ -124,7 +125,7 @@ public class ContentPropertyMappingContextVisitor implements ClassVisitor {
                 ContentProperty property = classProperties.computeIfAbsent(propertyName, k -> new ContentProperty());
                 updateContentProperty(property::setContentPropertyPath, fullyQualify(path, ClassWalker.propertyName(f.getName()), this.getContentPropertySeparator()));
                 updateContentProperty(property::setContentIdPropertyPath, fullyQualify(path, f.getName(), this.getContentPropertySeparator()));
-                property.setContentIdType(TypeDescriptor.valueOf(f.getType()));
+                property.setContentIdType(typeDescriptorForField(f, klazz));
             }
         } else if (f.isAnnotationPresent(ContentLength.class)) {
             LOGGER.trace(String.format("%s.%s is @ContentLength", f.getDeclaringClass().getCanonicalName(), f.getName()));
@@ -133,7 +134,7 @@ public class ContentPropertyMappingContextVisitor implements ClassVisitor {
                 Map<String, ContentProperty> classProperties = properties.get(key(path, klazz));
                 ContentProperty property = classProperties.computeIfAbsent(propertyName, k -> new ContentProperty());
                 updateContentProperty(property::setContentLengthPropertyPath, fullyQualify(path, f.getName(), this.getContentPropertySeparator()));
-                property.setContentLengthType(TypeDescriptor.valueOf(f.getType()));
+                property.setContentLengthType(typeDescriptorForField(f, klazz));
             }
         } else if (f.isAnnotationPresent(MimeType.class)) {
             LOGGER.trace(String.format("%s.%s is @MimeType", f.getDeclaringClass().getCanonicalName(), f.getName()));
