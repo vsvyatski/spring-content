@@ -168,6 +168,8 @@ When changing a store implementation, run that module’s `*Test` and, if behavi
 
 ## Coding conventions
 
+- **Java 17 only** — see `.cursor/rules/java-17.mdc`. No Java 8/11 language level, no `javax.*` EE APIs in new code, no
+  legacy JDK patterns when modern ones fit.
 - Follow repo `.editorconfig`: `insert_final_newline = true` and `trim_trailing_whitespace = true` on every edited file
   (including new files created in a change).
 - Match surrounding Spring Framework style (formatter: Eclipse `eclipse-code-formatter.xml` when present). Tabs vs

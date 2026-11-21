@@ -1,0 +1,27 @@
+---
+description: Java 17 baseline — no older language level or javax-era APIs
+globs: "**/*.java"
+alwaysApply: true
+---
+
+# Java 17
+
+This reactor builds with **Java 17** (`release` 17 in the parent POM). All new and edited Java must stay **17-compatible**
+and must not reintroduce pre-17 habits.
+
+## Do
+
+- Use **Jakarta** namespaces (`jakarta.persistence.*`, `jakarta.servlet.*`, etc.), not `javax.*` for EE APIs.
+- Use **`java.time`** for dates/times; match existing code in the file you edit.
+- Use Java 17 features when they simplify code and match surrounding style: `record`, text blocks, `switch` expressions,
+  pattern matching for `instanceof`, `sealed` where the codebase already does.
+- Keep module `maven-compiler-plugin` / `release` at **17** (or inherit from parent).
+
+## Do not
+
+- Target or assume **Java 8/11** language level, `--release` below 17, or `source`/`target` 1.8.
+- Add **`javax.*`** persistence/servlet/validation imports in new code.
+- Use obsolete collections/APIs (`Vector`, `Hashtable`, raw `Enumeration` patterns) when modern equivalents exist.
+- Use **preview or incubator** language features unless Vladimir explicitly asks and the POM enables them.
+
+When in doubt, match neighboring files and `AGENTS.md`; default floor is **17**, not “lowest common denominator.”
