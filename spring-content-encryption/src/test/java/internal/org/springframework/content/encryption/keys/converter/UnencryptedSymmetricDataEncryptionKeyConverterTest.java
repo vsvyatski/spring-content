@@ -11,9 +11,9 @@ public class UnencryptedSymmetricDataEncryptionKeyConverterTest {
     @Test
     public void encodesAndDecodes() {
         var key = new UnencryptedSymmetricDataEncryptionKey(
-                "ABC",
-                new byte[5],
-                DatatypeConverter.parseHexBinary("ff504000f523659020")
+            "ABC",
+            new byte[5],
+            DatatypeConverter.parseHexBinary("ff504000f523659020")
         );
 
         var encoded = UnencryptedSymmetricDataEncryptionKeyConverter.convert(key);
@@ -26,9 +26,9 @@ public class UnencryptedSymmetricDataEncryptionKeyConverterTest {
     @Test
     public void handlesEmptyObject() {
         var key = new UnencryptedSymmetricDataEncryptionKey(
-                "",
-                new byte[0],
-                new byte[0]
+            "",
+            new byte[0],
+            new byte[0]
         );
 
         var encoded = UnencryptedSymmetricDataEncryptionKeyConverter.convert(key);
@@ -41,12 +41,12 @@ public class UnencryptedSymmetricDataEncryptionKeyConverterTest {
     @Test
     public void doesNotDecodeDifferentType() {
         var encryptedKey = new EncryptedSymmetricDataEncryptionKey(
-                "test",
-                "123",
-                "8",
-                "ABC",
-                new byte[5],
-                new byte[4]
+            "test",
+            "123",
+            "8",
+            "ABC",
+            new byte[5],
+            new byte[4]
         );
 
         var encoded = EncryptedSymmetricDataEncryptionKeyConverter.convert(encryptedKey);

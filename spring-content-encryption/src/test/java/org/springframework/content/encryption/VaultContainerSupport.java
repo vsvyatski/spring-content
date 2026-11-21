@@ -30,8 +30,8 @@ public final class VaultContainerSupport {
     @SuppressWarnings("resource")
     private static VaultContainer startVault() {
         VaultContainer container = new VaultContainer("hashicorp/vault:1.1.3")
-                .withVaultToken("my-root-token")
-                .withInitCommand("secrets enable transit");
+            .withVaultToken("my-root-token")
+            .withInitCommand("secrets enable transit");
         container.start();
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             if (container.isRunning()) {

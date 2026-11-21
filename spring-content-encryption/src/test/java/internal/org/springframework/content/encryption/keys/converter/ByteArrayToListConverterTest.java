@@ -14,7 +14,7 @@ public class ByteArrayToListConverterTest {
 
     private static final ConfigurableConversionService conversionService = new DefaultConversionService();
     private static final TypeDescriptor STRING_LIST_TYPE = TypeDescriptor.collection(List.class,
-            TypeDescriptor.valueOf(String.class));
+        TypeDescriptor.valueOf(String.class));
 
     static {
         conversionService.addConverter(new ByteArrayToListConverter(conversionService));
