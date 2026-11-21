@@ -3,7 +3,6 @@ package internal.org.springframework.content.rest.storeresolver;
 import internal.org.springframework.content.rest.scoped.storeresolver.StoreResolverEntityFsStore;
 import internal.org.springframework.content.rest.scoped.storeresolver.StoreResolverEntityJpaStore;
 import internal.org.springframework.content.rest.scoped.storeresolver.StoreResolverEntityRepository;
-import org.springframework.content.test.support.jpa.fixture.SingleContentJpaLongIdMimeEntity;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpStatus;
@@ -15,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.content.test.support.jpa.fixture.SingleContentJpaLongIdMimeEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.context.WebApplicationContext;
 

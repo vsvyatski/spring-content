@@ -1,9 +1,9 @@
 package it.rest.revisions;
 
-import internal.org.springframework.content.rest.support.config.JpaInfrastructureConfig;
+import internal.org.springframework.content.rest.scoped.revision.RevisionPropertyEntity;
 import internal.org.springframework.content.rest.scoped.revision.RevisionPropertyEntityRepository;
 import internal.org.springframework.content.rest.scoped.revision.RevisionPropertyEntityStore;
-import internal.org.springframework.content.rest.scoped.revision.RevisionPropertyEntity;
+import internal.org.springframework.content.rest.support.config.JpaInfrastructureConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
