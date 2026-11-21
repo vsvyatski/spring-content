@@ -7,15 +7,14 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.content.commons.annotations.ContentId;
-import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.jpa.config.EnableJpaStores;
 import org.springframework.content.jpa.io.BlobResourceLoader;
+import org.springframework.content.test.support.TestSupportPackages;
+import org.springframework.content.test.support.jpa.DualContentJpaStringIdStore;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.annotation.Id;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.orm.jpa.JpaTransactionManager;
@@ -30,11 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class EnableJpaStoresTest {
 
-    private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-
-    public interface TestEntityContentRepository
-            extends ContentStore<TestEntity, String> {
-    }
+    private AnnotationConfigApplicationContext context;
 
     @Configuration
     @EnableJpaStores(basePackages = "contains.no.jpa.repositories")
@@ -43,7 +38,7 @@ public class EnableJpaStoresTest {
     }
 
     @Configuration
-    @EnableJpaStores
+    @EnableJpaStores(basePackages = TestSupportPackages.JPA)
     @Import(InfrastructureConfig.class)
     public static class TestConfig {
     }
@@ -65,7 +60,7 @@ public class EnableJpaStoresTest {
 
             LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
             factory.setJpaVendorAdapter(vendorAdapter);
-            factory.setPackagesToScan(getClass().getPackage().getName());
+            factory.setPackagesToScan(TestSupportPackages.JPA);
             factory.setDataSource(dataSource());
 
             return factory;
@@ -85,6 +80,7 @@ public class EnableJpaStoresTest {
         class GivenAContextAndAConfigurationWithAJpaContentRepositoryBean {
             @BeforeEach
             void setUp() {
+                context = new AnnotationConfigApplicationContext();
                 context.register(TestConfig.class);
                 context.refresh();
             }
@@ -96,7 +92,7 @@ public class EnableJpaStoresTest {
 
             @Test
             void shouldHaveAContentRepositoryBean() {
-                assertThat(context.getBean(TestEntityContentRepository.class)).isNotNull();
+                assertThat(context.getBean(DualContentJpaStringIdStore.class)).isNotNull();
             }
 
             @Test
@@ -142,15 +138,9 @@ public class EnableJpaStoresTest {
 
             @Test
             void shouldNotContainAnyJpaRepositoryBeans() {
-                assertThat(context.getBeanNamesForType(TestEntityContentRepository.class)).isEmpty();
+                assertThat(context.getBeanNamesForType(DualContentJpaStringIdStore.class)).isEmpty();
             }
         }
     }
-
-    public static class TestEntity {
-        @Id
-        private String id;
-        @ContentId
-        private String contentId;
-    }
 }
+

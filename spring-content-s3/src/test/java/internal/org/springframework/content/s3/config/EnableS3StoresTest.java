@@ -7,11 +7,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.content.commons.annotations.ContentId;
-import org.springframework.content.commons.store.AssociativeStore;
-import org.springframework.content.commons.store.ContentStore;
-import org.springframework.content.s3.S3ObjectId;
 import org.springframework.content.s3.config.EnableS3Stores;
+import org.springframework.content.test.support.SingleContentFields;
+import org.springframework.content.test.support.TestSupportPackages;
+import org.springframework.content.test.support.s3.SingleContentS3Store;
 import org.springframework.content.s3.config.MultiTenantS3ClientProvider;
 import org.springframework.content.s3.config.S3StoreConfigurer;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -43,14 +42,6 @@ public class EnableS3StoresTest {
 
     private AnnotationConfigApplicationContext context;
 
-    @SuppressWarnings("unused") // classpath / store component scan
-    public interface TestEntityStore extends AssociativeStore<TestEntity, S3ObjectId> {
-    }
-
-    public interface TestEntityContentRepository
-            extends ContentStore<TestEntity, String> {
-    }
-
     @Configuration
     @EnableS3Stores(basePackages = "contains.no.fs.repositores")
     @Import(InfrastructureConfig.class)
@@ -58,13 +49,13 @@ public class EnableS3StoresTest {
     }
 
     @Configuration
-    @EnableS3Stores
+    @EnableS3Stores(basePackages = TestSupportPackages.S3)
     @Import(InfrastructureConfig.class)
     public static class TestConfig {
     }
 
     @Configuration
-    @EnableS3Stores
+    @EnableS3Stores(basePackages = TestSupportPackages.S3)
     @Import(InfrastructureConfig.class)
     public static class ConverterConfig {
         @Bean
@@ -74,18 +65,7 @@ public class EnableS3StoresTest {
     }
 
     @Configuration
-    @EnableS3Stores
-    @Import(InfrastructureConfig.class)
-    public static class TestConverterConfig {
-        @Bean
-        public S3StoreConfigurer configurer() {
-            return registry -> {
-            };
-        }
-    }
-
-    @Configuration
-    @EnableS3Stores
+    @EnableS3Stores(basePackages = TestSupportPackages.S3)
     @Import(InfrastructureConfig.class)
     public static class MultiTenantConfig {
         @Bean
@@ -124,7 +104,7 @@ public class EnableS3StoresTest {
 
             @Test
             void shouldHaveAContentRepositoryBean() {
-                assertThat(context.getBean(TestEntityContentRepository.class)).isNotNull();
+                assertThat(context.getBean(SingleContentS3Store.class)).isNotNull();
             }
 
             @Test
@@ -171,7 +151,7 @@ public class EnableS3StoresTest {
 
             @Test
             void shouldNotContainsAnyS3RepositoryBeans() {
-                assertThat(context.getBeanNamesForType(TestEntityContentRepository.class)).isEmpty();
+                assertThat(context.getBeanNamesForType(SingleContentS3Store.class)).isEmpty();
             }
         }
 
@@ -193,8 +173,8 @@ public class EnableS3StoresTest {
 
             @Test
             void shouldUseTheCorrectClient() {
-                TestEntityContentRepository repo = context.getBean(TestEntityContentRepository.class);
-                TestEntity entity = new TestEntity();
+                SingleContentS3Store repo = context.getBean(SingleContentS3Store.class);
+                SingleContentFields entity = new SingleContentFields();
                 entity.setContentId("12345");
                 Resource r = repo.getResource(entity);
                 assertThat(((S3StoreResource) r).getClient()).isEqualTo(client);
@@ -202,16 +182,5 @@ public class EnableS3StoresTest {
         }
     }
 
-    public static class TestEntity {
-        @ContentId
-        private String contentId;
-
-        public String getContentId() {
-            return contentId;
-        }
-
-        public void setContentId(String contentId) {
-            this.contentId = contentId;
-        }
-    }
 }
+

@@ -1,16 +1,14 @@
 package internal.org.springframework.content.gcs.config;
 
-import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.contrib.nio.testing.LocalStorageHelper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.content.commons.annotations.ContentId;
-import org.springframework.content.commons.store.AssociativeStore;
-import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.gcs.config.EnableGCPStorage;
+import org.springframework.content.test.support.TestSupportPackages;
+import org.springframework.content.test.support.gcs.SingleContentGcsStore;
 import org.springframework.content.gcs.config.GCPStorageConfigurer;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -28,13 +26,6 @@ public class EnableGCPStorageTest {
     static GCPStorageConfigurer configurer;
     private AnnotationConfigApplicationContext context;
 
-    @SuppressWarnings("unused") // classpath / store component scan
-    public interface TestEntityStore extends AssociativeStore<TestEntity, BlobId> {
-    }
-
-    public interface TestEntityContentStore extends ContentStore<TestEntity, String> {
-    }
-
     @Configuration
     @EnableGCPStorage(basePackages = "contains.no.fs.repositores")
     @Import(InfrastructureConfig.class)
@@ -42,13 +33,13 @@ public class EnableGCPStorageTest {
     }
 
     @Configuration
-    @EnableGCPStorage
+    @EnableGCPStorage(basePackages = TestSupportPackages.GCS)
     @Import(InfrastructureConfig.class)
     public static class TestConfig {
     }
 
     @Configuration
-    @EnableGCPStorage
+    @EnableGCPStorage(basePackages = TestSupportPackages.GCS)
     @Import(InfrastructureConfig.class)
     public static class ConverterConfig {
         @Bean
@@ -58,35 +49,11 @@ public class EnableGCPStorageTest {
     }
 
     @Configuration
-    @EnableGCPStorage
-    @Import(InfrastructureConfig.class)
-    public static class TestConverterConfig {
-        @Bean
-        public GCPStorageConfigurer configurer() {
-            return registry -> {
-            };
-        }
-    }
-
-    @Configuration
     public static class InfrastructureConfig {
 
         @Bean
         public static Storage storage() {
             return LocalStorageHelper.getOptions().getService();
-        }
-    }
-
-    public static class TestEntity {
-        @ContentId
-        private String contentId;
-
-        public String getContentId() {
-            return contentId;
-        }
-
-        public void setContentId(String contentId) {
-            this.contentId = contentId;
         }
     }
 
@@ -108,7 +75,7 @@ public class EnableGCPStorageTest {
 
             @Test
             void shouldHaveAContentStoreBean() {
-                assertThat(context.getBean(TestEntityContentStore.class)).isNotNull();
+                assertThat(context.getBean(SingleContentGcsStore.class)).isNotNull();
             }
 
             @Test
@@ -154,9 +121,10 @@ public class EnableGCPStorageTest {
             }
 
             @Test
-            void shouldNotContainsAnyS3RepositoryBeans() {
-                assertThat(context.getBeanNamesForType(TestEntityContentStore.class)).isEmpty();
+            void shouldNotContainsAnyGcsStoreBeans() {
+                assertThat(context.getBeanNamesForType(SingleContentGcsStore.class)).isEmpty();
             }
         }
     }
 }
+

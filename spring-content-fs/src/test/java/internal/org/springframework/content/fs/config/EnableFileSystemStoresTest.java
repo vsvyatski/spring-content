@@ -5,9 +5,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.content.commons.annotations.ContentId;
-import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.fs.config.EnableFileSystemStores;
+import org.springframework.content.test.support.TestSupportPackages;
+import org.springframework.content.test.support.fs.SingleContentFsStore;
 import org.springframework.content.fs.config.FileSystemStoreConfigurer;
 import org.springframework.content.fs.config.FileSystemStoreConverter;
 import org.springframework.content.fs.io.FileSystemResourceLoader;
@@ -29,9 +29,6 @@ public class EnableFileSystemStoresTest {
     static FileSystemStoreConfigurer configurer;
     private AnnotationConfigApplicationContext context;
 
-    public interface TestEntityContentRepository extends ContentStore<TestEntity, String> {
-    }
-
     @Configuration
     @EnableFileSystemStores(basePackages = "contains.no.fs.repositories")
     @PropertySource("classpath:/test.properties")
@@ -39,7 +36,7 @@ public class EnableFileSystemStoresTest {
     }
 
     @Configuration
-    @EnableFileSystemStores
+    @EnableFileSystemStores(basePackages = TestSupportPackages.FS)
     @PropertySource("classpath:/test.properties")
     public static class TestConfig {
 
@@ -53,7 +50,7 @@ public class EnableFileSystemStoresTest {
     }
 
     @Configuration
-    @EnableFileSystemStores
+    @EnableFileSystemStores(basePackages = TestSupportPackages.FS)
     @PropertySource("classpath:/test.properties")
     public static class ConverterConfig {
 
@@ -76,11 +73,6 @@ public class EnableFileSystemStoresTest {
         }
     }
 
-    public static class TestEntity {
-        @ContentId
-        private String contentId;
-    }
-
     @Nested
     class EnableFileSystemStoresCases {
         @Nested
@@ -99,7 +91,7 @@ public class EnableFileSystemStoresTest {
 
             @Test
             void shouldHaveAContentRepositoryBean() {
-                assertThat(context.getBean(TestEntityContentRepository.class)).isNotNull();
+                assertThat(context.getBean(SingleContentFsStore.class)).isNotNull();
             }
 
             @Test
@@ -151,8 +143,9 @@ public class EnableFileSystemStoresTest {
 
             @Test
             void shouldNotContainAnyFilesystemRepositoryBeans() {
-                assertThat(context.getBeanNamesForType(TestEntityContentRepository.class)).isEmpty();
+                assertThat(context.getBeanNamesForType(SingleContentFsStore.class)).isEmpty();
             }
         }
     }
 }
+

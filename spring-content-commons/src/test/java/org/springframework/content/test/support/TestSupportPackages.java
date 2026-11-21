@@ -13,6 +13,14 @@ public final class TestSupportPackages {
 
     public static final String MONGO = ROOT + ".mongo";
 
+    public static final String FS = ROOT + ".fs";
+
+    public static final String S3 = ROOT + ".s3";
+
+    public static final String GCS = ROOT + ".gcs";
+
+    public static final String AZURE = ROOT + ".azure";
+
     private TestSupportPackages() {
     }
 }

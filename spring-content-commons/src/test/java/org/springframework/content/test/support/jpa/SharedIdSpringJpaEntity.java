@@ -1,13 +1,13 @@
 package org.springframework.content.test.support.jpa;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.test.support.ContentAccessor;
-import org.springframework.data.annotation.Id;
 
 /**
- * JPA entity whose Spring Data {@code @Id} is also the {@code @ContentId}.
+ * JPA entity whose Spring Data and Jakarta {@code @Id} are also the {@code @ContentId}.
  *
  * @author Vladimir Svyatski
  */
@@ -15,6 +15,7 @@ import org.springframework.data.annotation.Id;
 public class SharedIdSpringJpaEntity implements ContentAccessor {
 
     @Id
+    @org.springframework.data.annotation.Id
     @ContentId
     private String contentId;
 

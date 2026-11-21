@@ -43,7 +43,7 @@ public class EnableMongoStoresTest {
     }
 
     @Configuration
-    @EnableMongoStores
+    @EnableMongoStores(basePackages = TestSupportPackages.MONGO)
     @Import(InfrastructureConfig.class)
     public static class ConverterConfig {
         @Bean

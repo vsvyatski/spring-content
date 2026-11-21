@@ -9,8 +9,8 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.content.azure.config.AzureStorageConfigurer;
 import org.springframework.content.azure.config.EnableAzureStorage;
-import org.springframework.content.commons.annotations.ContentId;
-import org.springframework.content.commons.store.ContentStore;
+import org.springframework.content.test.support.TestSupportPackages;
+import org.springframework.content.test.support.azure.SingleContentAzureStore;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -38,9 +38,6 @@ public class EnableAzureStorageTest {
 
     private AnnotationConfigApplicationContext context;
 
-    public interface TestEntityContentStore extends ContentStore<TestEntity, String> {
-    }
-
     @Configuration
     @EnableAzureStorage(basePackages = "contains.no.fs.repositores")
     @Import(InfrastructureConfig.class)
@@ -48,13 +45,13 @@ public class EnableAzureStorageTest {
     }
 
     @Configuration
-    @EnableAzureStorage
+    @EnableAzureStorage(basePackages = TestSupportPackages.AZURE)
     @Import(InfrastructureConfig.class)
     public static class TestConfig {
     }
 
     @Configuration
-    @EnableAzureStorage
+    @EnableAzureStorage(basePackages = TestSupportPackages.AZURE)
     @Import(InfrastructureConfig.class)
     public static class ConverterConfig {
         @Bean
@@ -64,34 +61,10 @@ public class EnableAzureStorageTest {
     }
 
     @Configuration
-    @EnableAzureStorage
-    @Import(InfrastructureConfig.class)
-    public static class TestConverterConfig {
-        @Bean
-        public AzureStorageConfigurer configurer() {
-            return registry -> {
-            };
-        }
-    }
-
-    @Configuration
     public static class InfrastructureConfig {
         @Bean
         public BlobServiceClientBuilder builder() {
             return builder;
-        }
-    }
-
-    public static class TestEntity {
-        @ContentId
-        private String contentId;
-
-        public String getContentId() {
-            return contentId;
-        }
-
-        public void setContentId(String contentId) {
-            this.contentId = contentId;
         }
     }
 
@@ -113,7 +86,7 @@ public class EnableAzureStorageTest {
 
             @Test
             void shouldHaveAContentStoreBean() {
-                assertThat(context.getBean(TestEntityContentStore.class)).isNotNull();
+                assertThat(context.getBean(SingleContentAzureStore.class)).isNotNull();
             }
 
             @Test
@@ -160,8 +133,9 @@ public class EnableAzureStorageTest {
 
             @Test
             void shouldNotContainsAnyAzureStorageBeans() {
-                assertThat(context.getBeanNamesForType(TestEntityContentStore.class)).isEmpty();
+                assertThat(context.getBeanNamesForType(SingleContentAzureStore.class)).isEmpty();
             }
         }
     }
 }
+
