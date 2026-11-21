@@ -101,7 +101,7 @@ public class EncryptionIT {
                         .contentType("text/plain")
                         .body("Hello Client-side encryption World!")
                         .when()
-                        .post("/fsFiles/" + f.getId() + "/content")
+                        .post("/files/" + f.getId() + "/content")
                         .then()
                         .statusCode(HttpStatus.SC_CREATED);
                 }
@@ -124,7 +124,7 @@ public class EncryptionIT {
                     MockMvcResponse response =
                         given()
                             .header("accept", "text/plain")
-                            .get("/fsFiles/" + f.getId() + "/content")
+                            .get("/files/" + f.getId() + "/content")
                             .then()
                             .statusCode(HttpStatus.SC_OK)
                             .extract().response();
@@ -138,7 +138,7 @@ public class EncryptionIT {
                         given()
                             .header("accept", "text/plain")
                             .header("range", "bytes=16-27")
-                            .get("/fsFiles/" + f.getId() + "/content")
+                            .get("/files/" + f.getId() + "/content")
                             .then()
                             .statusCode(HttpStatus.SC_PARTIAL_CONTENT)
                             .extract().response();
@@ -160,7 +160,7 @@ public class EncryptionIT {
                         .contentType("text/plain")
                         .body("Hello Client-side encryption World!")
                         .when()
-                        .post("/fsFiles/" + f.getId() + "/content")
+                        .post("/files/" + f.getId() + "/content")
                         .then()
                         .statusCode(HttpStatus.SC_CREATED);
                 }
@@ -171,7 +171,7 @@ public class EncryptionIT {
                     String contentId = f.getContentId().toString();
 
                     given()
-                        .delete("/fsFiles/" + f.getId() + "/content")
+                        .delete("/files/" + f.getId() + "/content")
                         .then()
                         .statusCode(HttpStatus.SC_NO_CONTENT);
 

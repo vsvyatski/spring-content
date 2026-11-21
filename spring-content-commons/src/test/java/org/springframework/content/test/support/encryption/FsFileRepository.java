@@ -6,6 +6,6 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 /**
  * @author Vladimir Svyatski
  */
-@RepositoryRestResource(path = "fsFiles")
+@RepositoryRestResource(path = "files")
 public interface FsFileRepository extends CrudRepository<FsFile, Long> {
 }
