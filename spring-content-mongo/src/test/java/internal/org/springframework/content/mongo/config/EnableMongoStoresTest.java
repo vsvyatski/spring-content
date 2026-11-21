@@ -48,7 +48,14 @@ public class EnableMongoStoresTest {
     public static class ConverterConfig {
         @Bean
         public MongoStoreConverter<UUID, String> uuidConverter() {
-            return source -> String.format("/%s", source.toString().replace("-", "/"));
+            // Not a lambda: PlacementServiceImpl resolves Converter<S,T> from converter.getClass().
+            //noinspection Convert2Lambda
+            return new MongoStoreConverter<>() {
+                @Override
+                public String convert(@NonNull UUID source) {
+                    return String.format("/%s", source.toString().replace("-", "/"));
+                }
+            };
         }
     }
 
