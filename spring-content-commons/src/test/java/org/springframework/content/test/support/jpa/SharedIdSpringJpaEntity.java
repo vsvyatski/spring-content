@@ -12,7 +12,7 @@ import org.springframework.content.test.support.ContentAccessor;
  * @author Vladimir Svyatski
  */
 @Entity
-public class SharedIdSpringJpaEntity implements ContentAccessor {
+public class SharedIdSpringJpaEntity implements ContentAccessor<String> {
 
     @Id
     @org.springframework.data.annotation.Id

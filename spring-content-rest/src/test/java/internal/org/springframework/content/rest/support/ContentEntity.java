@@ -1,16 +1,24 @@
 package internal.org.springframework.content.rest.support;
 
+import org.springframework.content.test.support.ContentAccessor;
+
 import java.util.UUID;
 
-public interface ContentEntity {
+public interface ContentEntity extends ContentAccessor<UUID> {
 
     Long getId();
 
     void setId(Long id);
 
-    UUID getContentId();
+    @Override
+    default Long getContentLen() {
+        return getLen();
+    }
 
-    void setContentId(UUID id);
+    @Override
+    default void setContentLen(Long contentLen) {
+        setLen(contentLen);
+    }
 
     Long getLen();
 

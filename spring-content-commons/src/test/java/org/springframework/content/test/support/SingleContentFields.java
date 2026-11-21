@@ -5,7 +5,7 @@ package org.springframework.content.test.support;
  *
  * @author Vladimir Svyatski
  */
-public class SingleContentFields extends ContentFields<String> implements ContentAccessor {
+public class SingleContentFields extends ContentFields<String> implements ContentAccessor<String> {
 
     public SingleContentFields() {
     }

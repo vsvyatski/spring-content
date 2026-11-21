@@ -37,9 +37,9 @@ import static org.mockito.Mockito.*;
 
 public class DefaultS3StoreImplTest {
 
-    private DefaultS3StoreImpl<ContentAccessor, String> s3StoreImpl;
-    private DefaultS3StoreImpl<ContentAccessor, S3ObjectId> s3ObjectIdBasedStore;
-    private DefaultS3StoreImpl<ContentAccessor, CustomContentId> customS3ContentIdBasedStore;
+    private DefaultS3StoreImpl<ContentAccessor<String>, String> s3StoreImpl;
+    private DefaultS3StoreImpl<ContentAccessor<String>, S3ObjectId> s3ObjectIdBasedStore;
+    private DefaultS3StoreImpl<ContentAccessor<String>, CustomContentId> customS3ContentIdBasedStore;
 
     private GenericApplicationContext context = new GenericApplicationContext();
     private ResourceLoader loader;
@@ -49,7 +49,7 @@ public class DefaultS3StoreImplTest {
     private String defaultBucket;
 
     private CustomContentId customId;
-    private ContentAccessor entity;
+    private ContentAccessor<String> entity;
 
     private WritableResource resource;
     private Resource r, nonExistentResource;

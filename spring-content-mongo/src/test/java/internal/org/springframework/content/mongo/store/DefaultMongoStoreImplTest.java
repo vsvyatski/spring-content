@@ -25,7 +25,7 @@ public class DefaultMongoStoreImplTest {
 
     private DefaultMongoStoreImpl<Object, String> mongoContentRepoImpl;
     private GridFsTemplate gridFsTemplate;
-    private ContentAccessor property;
+    private ContentAccessor<String> property;
     private GridFsResource resource;
     private Resource inputResource;
     private PlacementService placer;

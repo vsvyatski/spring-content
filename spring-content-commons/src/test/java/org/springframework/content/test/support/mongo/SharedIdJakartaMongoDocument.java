@@ -10,7 +10,7 @@ import org.springframework.content.test.support.ContentAccessor;
  *
  * @author Vladimir Svyatski
  */
-public class SharedIdJakartaMongoDocument implements ContentAccessor {
+public class SharedIdJakartaMongoDocument implements ContentAccessor<String> {
 
     @Id
     @ContentId

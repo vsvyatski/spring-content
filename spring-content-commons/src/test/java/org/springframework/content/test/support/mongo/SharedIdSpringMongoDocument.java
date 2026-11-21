@@ -10,7 +10,7 @@ import org.springframework.data.annotation.Id;
  *
  * @author Vladimir Svyatski
  */
-public class SharedIdSpringMongoDocument implements ContentAccessor {
+public class SharedIdSpringMongoDocument implements ContentAccessor<String> {
 
     @Id
     @ContentId

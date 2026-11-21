@@ -30,7 +30,7 @@ public class DefaultJpaStoreImplTest {
 
     private BlobResourceLoader blobResourceLoader;
 
-    private ContentAccessor entity;
+    private ContentAccessor<String> entity;
     private SharedIdJakartaJpaEntity jakartaAnnotatedEntity;
     private SharedIdSpringJpaEntity springAnnotatedEntity;
     private InputStream stream;

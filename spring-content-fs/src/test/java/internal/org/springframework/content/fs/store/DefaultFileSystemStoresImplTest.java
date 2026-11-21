@@ -31,10 +31,10 @@ import static org.mockito.Mockito.*;
 public class DefaultFileSystemStoresImplTest {
     private static final String CONTENT_ID = "abcd-efgh";
 
-    private DefaultFileSystemStoreImpl<ContentAccessor, String> filesystemContentRepoImpl;
+    private DefaultFileSystemStoreImpl<ContentAccessor<String>, String> filesystemContentRepoImpl;
     private FileSystemResourceLoader loader;
     private PlacementService placer;
-    private ContentAccessor entity;
+    private ContentAccessor<String> entity;
 
     private Resource resource, inputResource;
     private WritableResource writeableResource;

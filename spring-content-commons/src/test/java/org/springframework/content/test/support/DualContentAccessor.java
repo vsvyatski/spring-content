@@ -5,7 +5,7 @@ package org.springframework.content.test.support;
  *
  * @author Vladimir Svyatski
  */
-public interface DualContentAccessor extends ContentAccessor {
+public interface DualContentAccessor extends ContentAccessor<String> {
 
     String getRenditionId();
 

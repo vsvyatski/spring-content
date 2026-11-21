@@ -14,7 +14,7 @@ import org.springframework.content.test.support.ContentAccessor;
  */
 @Entity
 @Table(name = "shared_id_entity")
-public class SharedIdJakartaJpaEntity implements ContentAccessor {
+public class SharedIdJakartaJpaEntity implements ContentAccessor<String> {
 
     @Id
     @ContentId

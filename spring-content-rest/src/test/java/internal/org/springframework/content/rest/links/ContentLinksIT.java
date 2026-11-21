@@ -40,8 +40,8 @@ public class ContentLinksIT {
                 this.setMvc(mvc);
                 this.setUrl("/api/testEntity3s/" + testEntity3.getId());
                 this.setLinkRel("jsonMappedContentEntity");
-                    this.setExpectedLinkRegex("http://localhost/api/testEntity3s/" + testEntity3.getId());
-                }
+                this.setExpectedLinkRegex("http://localhost/api/testEntity3s/" + testEntity3.getId());
+            }
 
                 @Test
                 void shouldProvideAResponseWithAContentLink() throws Exception {
@@ -67,8 +67,8 @@ public class ContentLinksIT {
                 this.setMvc(mvc);
                 this.setUrl("/api/testEntity5s/" + testEntity5.getId());
                 this.setLinkRel("content");
-                this.setExpectedLinkRegex(                        format("http://localhost/contentApi/testEntity5s/%s/content", testEntity5.getId()));
-                }
+                this.setExpectedLinkRegex(format("http://localhost/contentApi/testEntity5s/%s/content", testEntity5.getId()));
+            }
 
                 @Test
                 void shouldProvideAResponseWithAContentLink() throws Exception {
@@ -78,7 +78,7 @@ public class ContentLinksIT {
 
         @Nested
         @NestedTestConfiguration(NestedTestConfiguration.EnclosingConfiguration.INHERIT)
-        @DisplayName("given a store specifying a linkrel and an entity a nested content property")
+        @DisplayName("given a store and an entity with a nested content property")
         class GivenAStoreSpecifyingALinkrelAndAnEntityANestedContentPropertyContentLinkTests extends ContentLinkTests {
             @Autowired
             private WebApplicationContext context;
@@ -95,8 +95,8 @@ public class ContentLinksIT {
                 this.setMvc(mvc);
                 this.setUrl("/api/files/" + testEntity2.getId());
                 this.setLinkRel("child");
-                    this.setExpectedLinkRegex(format("http://localhost/contentApi/files/%s/child", testEntity2.getId()));
-                }
+                this.setExpectedLinkRegex(format("http://localhost/contentApi/files/%s/child", testEntity2.getId()));
+            }
 
                 @Test
                 void shouldProvideAResponseWithAContentLink() throws Exception {
@@ -106,7 +106,7 @@ public class ContentLinksIT {
 
         @Nested
         @NestedTestConfiguration(NestedTestConfiguration.EnclosingConfiguration.INHERIT)
-        @DisplayName("given a store specifying a linkrel and an entity with nested content properties")
+        @DisplayName("given a store and an entity with nested content properties")
         class GivenAStoreSpecifyingALinkrelAndAnEntityWithNestedContentPropertiesContentLinkTe extends ContentLinkTests {
             @Autowired
             private WebApplicationContext context;
@@ -126,7 +126,7 @@ public class ContentLinksIT {
                 this.setMvc(mvc);
                 this.setUrl("/api/testEntity10s/" + testEntity10.getId());
                 this.setLinkRel("child/content");
-                this.setExpectedLinkRegex(                            format("http://localhost/contentApi/testEntity10s/%s/child/content", testEntity10.getId()));
+                this.setExpectedLinkRegex(format("http://localhost/contentApi/testEntity10s/%s/child/content", testEntity10.getId()));
             }
 
             @Test

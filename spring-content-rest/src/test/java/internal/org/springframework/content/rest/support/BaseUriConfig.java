@@ -37,7 +37,7 @@ public class BaseUriConfig extends JpaInfrastructureConfig {
     @Bean
     public File filesystemRoot() {
         File baseDir = new File(System.getProperty("java.io.tmpdir"));
-        File filesystemRoot = new File(baseDir, "spring-content-controller-tests");
+        File filesystemRoot = new File(baseDir, "spring-content-links-tests");
         filesystemRoot.mkdirs();
         return filesystemRoot;
     }
