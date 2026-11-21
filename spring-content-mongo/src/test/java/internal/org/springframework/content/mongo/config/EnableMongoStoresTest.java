@@ -8,9 +8,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.content.mongo.config.EnableMongoStores;
+import org.springframework.content.mongo.config.MongoStoreConverter;
 import org.springframework.content.test.support.TestSupportPackages;
 import org.springframework.content.test.support.mongo.SingleContentMongoStore;
-import org.springframework.content.mongo.config.MongoStoreConverter;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -120,11 +120,11 @@ public class EnableMongoStoresTest {
             @Test
             void shouldUseThatConverter() {
                 ConversionService converters = (ConversionService) context
-                        .getBean("mongoStorePlacementService");
+                    .getBean("mongoStorePlacementService");
                 assertThat(converters.convert(
-                        UUID.fromString(
-                                "e49d5464-26ce-11e7-93ae-92361f002671"),
-                        String.class)).isEqualTo("/e49d5464/26ce/11e7/93ae/92361f002671");
+                    UUID.fromString(
+                        "e49d5464-26ce-11e7-93ae-92361f002671"),
+                    String.class)).isEqualTo("/e49d5464/26ce/11e7/93ae/92361f002671");
             }
         }
 
