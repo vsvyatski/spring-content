@@ -106,17 +106,9 @@ public class GCPStorageWithEntityConverterIT {
         @Bean
         public GCPStorageConfigurer configurer() {
             return registry -> {
-                registry.addConverter(new Converter<ContentPropertyInfo<GcsBucketMimeEntity, Serializable>, BlobId>() {
-                    @Override
-                    public BlobId convert(ContentPropertyInfo<GcsBucketMimeEntity, Serializable> info) {
-                        return BlobId.of(OTHER_OTHER_BUCKET, info.contentId().toString());
-                    }
-                });
-                registry.addConverter(new Converter<ContentPropertyInfo<FakeEntity, Serializable>, BlobId>() {
-                    @Override
-                    public BlobId convert(ContentPropertyInfo<FakeEntity, Serializable> info) {
-                        throw new IllegalStateException("wrong converter called");
-                    }
+                registry.addConverter((Converter<ContentPropertyInfo<GcsBucketMimeEntity, Serializable>, BlobId>) info -> BlobId.of(OTHER_OTHER_BUCKET, info.contentId().toString()));
+                registry.addConverter((Converter<ContentPropertyInfo<FakeEntity, Serializable>, BlobId>) info -> {
+                    throw new IllegalStateException("wrong converter called");
                 });
             };
         }
