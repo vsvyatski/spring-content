@@ -33,8 +33,8 @@ public class StoreConfig extends JpaInfrastructureConfig {
         return RepositoryRestConfigurer.withConfig((config, corsRegistry) -> {
 
             corsRegistry.addMapping("/**") //
-                    .allowedMethods("GET", "PUT", "POST") //
-                    .allowedOrigins("http://far.far.away");
+                .allowedMethods("GET", "PUT", "POST") //
+                .allowedOrigins("http://far.far.away");
 
             config.withEntityLookup().forRepository(NaturalIdContentEntityRepository.class, NaturalIdContentEntity::getName, NaturalIdContentEntityRepository::findByName);
         });
@@ -47,8 +47,8 @@ public class StoreConfig extends JpaInfrastructureConfig {
             @Override
             public void configure(RestConfiguration config) {
                 config.getCorsRegistry().addMapping("/**") //
-                        .allowedMethods("GET", "PUT", "POST") //
-                        .allowedOrigins("http://far.far.away");
+                    .allowedMethods("GET", "PUT", "POST") //
+                    .allowedOrigins("http://far.far.away");
             }
         };
     }
@@ -89,7 +89,7 @@ public class StoreConfig extends JpaInfrastructureConfig {
                     input = "";
                 }
                 return new ByteArrayInputStream(
-                        String.format("<html><body>%s</body></html>", input).getBytes());
+                    String.format("<html><body>%s</body></html>", input).getBytes());
             }
         };
     }
@@ -117,7 +117,7 @@ public class StoreConfig extends JpaInfrastructureConfig {
                     input = "";
                 }
                 return new ByteArrayInputStream(
-                        String.format("<html><body>Hello Spring Content World!</body></html>", input).getBytes());
+                    String.format("<html><body>%s</body></html>", input).getBytes(StandardCharsets.UTF_8));
             }
         };
     }

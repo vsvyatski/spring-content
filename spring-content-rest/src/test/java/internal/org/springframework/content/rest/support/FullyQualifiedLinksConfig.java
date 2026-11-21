@@ -100,7 +100,7 @@ public class FullyQualifiedLinksConfig extends JpaInfrastructureConfig {
                     input = "";
                 }
                 return new ByteArrayInputStream(
-                        String.format("<html><body>Hello Spring Content World!</body></html>", input).getBytes());
+                        String.format("<html><body>%s</body></html>", input).getBytes(StandardCharsets.UTF_8));
             }
         };
     }
