@@ -26,7 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class TransactionIT {
 
-    private static Class<?>[] CONFIG_CLASSES = new Class[]{
+    private static final Class<?>[] CONFIG_CLASSES = new Class[]{
             H2Config.class,
             HSQLConfig.class,
             MySqlConfig.class,
@@ -35,14 +35,7 @@ public class TransactionIT {
 //            StoreIT.OracleConfig.class
     };
 
-    private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-
-    // for postgres (large object api operations must be in a transaction)
-    private PlatformTransactionManager ptm;
-
-    private SingleContentJpaLongIdRepository repo;
     private SingleContentJpaLongIdStore store;
-    private DbService dbService;
 
     private SingleContentJpaLongIdEntity entity;
 
@@ -59,8 +52,8 @@ public class TransactionIT {
     public static class DbService {
 
         @Transactional
-        public SingleContentJpaLongIdEntity doSomeDbStuff(SingleContentJpaLongIdStore store, SingleContentJpaLongIdEntity entity) {
-            entity = store.setContent(entity, new ByteArrayInputStream("Spring Content World!".getBytes()));
+        public void doSomeDbStuff(SingleContentJpaLongIdStore store, SingleContentJpaLongIdEntity entity) {
+            store.setContent(entity, new ByteArrayInputStream("Spring Content World!".getBytes()));
             throw new RuntimeException("badness");
         }
     }
@@ -74,16 +67,17 @@ public class TransactionIT {
         @ParameterizedTest(name = "{0}")
         @MethodSource("internal.org.springframework.content.jpa.TransactionIT#databaseConfigs")
         void shouldNotCommitChangesToContent(Class<?> configClass) {
-            context = new AnnotationConfigApplicationContext();
+            AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
             context.register(StoreIT.TestConfig.class);
             context.register(DbServiceConfig.class);
             context.register(configClass);
             context.refresh();
 
-            repo = context.getBean(SingleContentJpaLongIdRepository.class);
+            SingleContentJpaLongIdRepository repo = context.getBean(SingleContentJpaLongIdRepository.class);
             store = context.getBean(SingleContentJpaLongIdStore.class);
-            dbService = context.getBean(DbService.class);
-            ptm = context.getBean(PlatformTransactionManager.class);
+            DbService dbService = context.getBean(DbService.class);
+            // for Postgres (large object api operations must be in a transaction)
+            PlatformTransactionManager ptm = context.getBean(PlatformTransactionManager.class);
 
             entity = new SingleContentJpaLongIdEntity();
             entity = repo.save(entity);
@@ -92,12 +86,12 @@ public class TransactionIT {
 
             try {
                 try {
-                    entity = dbService.doSomeDbStuff(store, entity);
+                    dbService.doSomeDbStuff(store, entity);
                 } catch (Exception e) {
                     ContentStoreIT.runInTransaction(ptm, () -> {
                         try (InputStream result = store.getContent(entity)) {
                             ContentStoreIT.assertNullInputStream(result);
-                        } catch (IOException e1) {
+                        } catch (IOException ignored) {
                         }
                     });
                 }
