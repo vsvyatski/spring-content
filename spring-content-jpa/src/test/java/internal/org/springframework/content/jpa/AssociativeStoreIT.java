@@ -39,8 +39,6 @@ public class AssociativeStoreIT {
             PostgresConfig.class
     };
 
-    private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-
     private DualContentMimeJpaStringIdRepository repo;
     private DualContentMimeJpaAssociativeStore store;
 
@@ -57,7 +55,7 @@ public class AssociativeStoreIT {
     }
 
     private void boot(Class<?> configClass) {
-        context = new AnnotationConfigApplicationContext();
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
         context.register(StoreIT.TestConfig.class);
         context.register(configClass);
         context.refresh();
@@ -98,7 +96,7 @@ public class AssociativeStoreIT {
             class WhenTheResourceIsAssociated {
                 @ParameterizedTest(name = "{0}")
                 @MethodSource("internal.org.springframework.content.jpa.AssociativeStoreIT#databaseConfigs")
-                void shouldBeRecordedAsSuchOnTheEntitysContentId(Class<?> configClass) {
+                void shouldBeRecordedAsSuchOnEntityContentId(Class<?> configClass) {
                     boot(configClass);
                     saveNewDocument();
                     prepareResource();
@@ -137,7 +135,7 @@ public class AssociativeStoreIT {
                 class WhenTheResourceIsUnassociated {
                     @ParameterizedTest(name = "{0}")
                     @MethodSource("internal.org.springframework.content.jpa.AssociativeStoreIT#databaseConfigs")
-                    void shouldResetTheEntitysContentId(Class<?> configClass) {
+                    void shouldResetEntityContentId(Class<?> configClass) {
                         boot(configClass);
                         saveNewDocument();
                         prepareResource();

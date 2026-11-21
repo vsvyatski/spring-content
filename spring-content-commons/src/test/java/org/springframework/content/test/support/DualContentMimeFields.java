@@ -1,5 +1,6 @@
 package org.springframework.content.test.support;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.content.commons.annotations.MimeType;
 
 /**
@@ -24,11 +25,11 @@ public class DualContentMimeFields extends DualContentFields {
     }
 
     /** Alias matching legacy JPA embeddable bean names in content store ITs. */
-    public Long getContentLength() {
+    public @Nullable Long getContentLength() {
         return getContentLen();
     }
 
-    public void setContentLength(Long contentLength) {
+    public void setContentLength(@Nullable Long contentLength) {
         setContentLen(contentLength);
     }
 }

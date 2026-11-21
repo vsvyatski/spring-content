@@ -1,5 +1,6 @@
 package org.springframework.content.test.support;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.annotations.MimeType;
@@ -39,11 +40,11 @@ public class DualContentNestedJpaFields implements DualContentAccessor {
         this.contentId = contentId;
     }
 
-    public Long getContentLength() {
+    public @Nullable Long getContentLength() {
         return contentLength;
     }
 
-    public void setContentLength(Long contentLength) {
+    public void setContentLength(@Nullable Long contentLength) {
         this.contentLength = contentLength;
     }
 
@@ -56,12 +57,12 @@ public class DualContentNestedJpaFields implements DualContentAccessor {
     }
 
     @Override
-    public Long getContentLen() {
+    public @Nullable Long getContentLen() {
         return contentLength;
     }
 
     @Override
-    public void setContentLen(Long contentLen) {
+    public void setContentLen(@Nullable Long contentLen) {
         this.contentLength = contentLen;
     }
 

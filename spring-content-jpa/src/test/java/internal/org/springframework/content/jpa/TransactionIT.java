@@ -94,12 +94,11 @@ public class TransactionIT {
                 try {
                     entity = dbService.doSomeDbStuff(store, entity);
                 } catch (Exception e) {
-                    ContentStoreIT.doInTransaction(ptm, () -> {
+                    ContentStoreIT.runInTransaction(ptm, () -> {
                         try (InputStream result = store.getContent(entity)) {
-                            assertThat(result).isNull();
+                            ContentStoreIT.assertNullInputStream(result);
                         } catch (IOException e1) {
                         }
-                        return null;
                     });
                 }
             } finally {

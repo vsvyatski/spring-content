@@ -57,21 +57,14 @@ public class StoreIT {
 //			OracleConfig.class
     };
 
-    private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-
     // for postgres (large object api operations must be in a transaction)
     private PlatformTransactionManager ptm;
 
     private DocumentStore store;
 
     private Resource r;
-    private Exception e;
 
     private TransactionStatus status;
-
-    public static String getContextName(Class<?> configClass) {
-        return configClass.getSimpleName().replaceAll("Config", "");
-    }
 
     protected String getId() {
         RandomString random = new RandomString(5);
@@ -428,7 +421,7 @@ public class StoreIT {
     }
 
     private void bootStoreContext(Class<?> configClass) {
-        context = new AnnotationConfigApplicationContext();
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
         context.register(TestConfig.class);
         context.register(configClass);
         context.refresh();
@@ -451,6 +444,7 @@ public class StoreIT {
             status = ptm.getTransaction(new DefaultTransactionDefinition());
 
             try {
+                r = store.getResource(getId());
                 assertThat(r.exists()).isFalse();
             } finally {
                 ptm.commit(status);
@@ -532,7 +526,7 @@ public class StoreIT {
 
         @ParameterizedTest(name = "{0}")
         @MethodSource("internal.org.springframework.content.jpa.StoreIT#databaseConfigs")
-        void shouldNotExistAfterWriteWhenExpectingNoError(Class<?> configClass) throws IOException {
+        void shouldExistAfterWritingContent(Class<?> configClass) throws IOException {
             bootStoreContext(configClass);
 
             status = ptm.getTransaction(new DefaultTransactionDefinition());
@@ -544,7 +538,7 @@ public class StoreIT {
             }
 
             try {
-                assertThat(e).isNull();
+                assertThat(r.exists()).isTrue();
             } finally {
                 try {
                     ((DeletableResource) r).delete();
