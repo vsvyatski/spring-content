@@ -69,6 +69,9 @@
         <mysql-connector.version>26.10.0</mysql-connector.version>
         <ojdbc.version>23.26.4.0.0</ojdbc.version>
 
+        <!-- Align with spring-boot-dependencies when bumping ${springboot.version} -->
+        <maven-jar-plugin.version>3.5.1</maven-jar-plugin.version>
+
         <!--suppress UnresolvedMavenProperty -->
         <docs.output.dir>../target/generated-docs/refs/${env.BUILD_TYPE}/</docs.output.dir>
     </properties>
@@ -128,6 +131,15 @@
     </modules>
 
     <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>${maven-jar-plugin.version}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
