@@ -11,19 +11,16 @@ import java.util.Date;
 @EntityListeners(AuditingEntityListener.class)
 public class RestResourcePackageEntity {
 
-    @Id
-    @GeneratedValue
-    private Long id;
-
-    @Version
-    private Long version;
-
-    @LastModifiedDate
-    private Date modifiedDate;
-
     @Embedded
     @RestResource(linkRel = "package", path = "package")
     private final DualContentEmbeddedChild contentPackage = new DualContentEmbeddedChild();
+    @Id
+    @GeneratedValue
+    private Long id;
+    @Version
+    private Long version;
+    @LastModifiedDate
+    private Date modifiedDate;
 
     public RestResourcePackageEntity() {
     }

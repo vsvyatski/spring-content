@@ -14,7 +14,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.AdditionalAnswers;
-import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.fulltext.Attribute;
@@ -570,10 +569,10 @@ public class ContentSearchRestControllerIT {
                                 .accept("application/hal+json"))
                             .andExpect(status().isOk()).andReturn();
 
-                        verify(defaultLookupStrategy, never()).lookup(any(RootResourceInformation.class), any(RepositoryInformation.class), ArgumentMatchers.<List<Object>>any(),
-                            ArgumentMatchers.<List<Object>>any());
-                        verify(queryMethodsLookupStrategy, never()).lookup(any(RootResourceInformation.class), any(RepositoryInformation.class), ArgumentMatchers.<List<Object>>any(),
-                            ArgumentMatchers.<List<Object>>any());
+                        verify(defaultLookupStrategy, never()).lookup(any(RootResourceInformation.class), any(RepositoryInformation.class), anyList(),
+                            anyList());
+                        verify(queryMethodsLookupStrategy, never()).lookup(any(RootResourceInformation.class), any(RepositoryInformation.class), anyList(),
+                            anyList());
 
                         ReadableRepresentation halResponse = representationFactory
                             .readRepresentation("application/hal+json",
@@ -723,10 +722,10 @@ public class ContentSearchRestControllerIT {
                                 .accept("application/hal+json"))
                             .andExpect(status().isOk()).andReturn();
 
-                        verify(defaultLookupStrategy, never()).lookup(any(RootResourceInformation.class), any(RepositoryInformation.class), ArgumentMatchers.<List<Object>>any(),
-                            ArgumentMatchers.<List<Object>>any());
-                        verify(queryMethodsLookupStrategy).lookup(any(RootResourceInformation.class), any(RepositoryInformation.class), ArgumentMatchers.<List<Object>>any(),
-                            ArgumentMatchers.<List<Object>>any());
+                        verify(defaultLookupStrategy, never()).lookup(any(RootResourceInformation.class), any(RepositoryInformation.class), anyList(),
+                            anyList());
+                        verify(queryMethodsLookupStrategy).lookup(any(RootResourceInformation.class), any(RepositoryInformation.class), anyList(),
+                            anyList());
 
                         ReadableRepresentation halResponse = representationFactory
                             .readRepresentation("application/hal+json",
@@ -944,10 +943,10 @@ public class ContentSearchRestControllerIT {
                             .accept("application/hal+json"))
                         .andExpect(status().isOk()).andReturn();
 
-                    verify(defaultLookupStrategy).lookup(any(RootResourceInformation.class), any(RepositoryInformation.class), ArgumentMatchers.<List<Object>>any(),
-                            ArgumentMatchers.<List<Object>>any());
-                    verify(queryMethodsLookupStrategy, never()).lookup(any(RootResourceInformation.class), any(RepositoryInformation.class), ArgumentMatchers.<List<Object>>any(),
-                            ArgumentMatchers.<List<Object>>any());
+                    verify(defaultLookupStrategy).lookup(any(RootResourceInformation.class), any(RepositoryInformation.class), anyList(),
+                        anyList());
+                    verify(queryMethodsLookupStrategy, never()).lookup(any(RootResourceInformation.class), any(RepositoryInformation.class), anyList(),
+                        anyList());
 
                     ReadableRepresentation halResponse = representationFactory
                         .readRepresentation("application/hal+json",

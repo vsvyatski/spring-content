@@ -10,20 +10,16 @@ import java.util.Date;
 @EntityListeners(AuditingEntityListener.class)
 public class EmbeddedDualContentEntity {
 
+    @Embedded
+    private final DualContentEmbeddedChild child = new DualContentEmbeddedChild();
     @Id
     @GeneratedValue
     private Long id;
-
     private String name;
-
     @Version
     private Long version;
-
     @LastModifiedDate
     private Date modifiedDate;
-
-    @Embedded
-    private final DualContentEmbeddedChild child = new DualContentEmbeddedChild();
 
     public EmbeddedDualContentEntity() {
     }

@@ -10,20 +10,16 @@ import java.util.Date;
 @EntityListeners(AuditingEntityListener.class)
 public class EmbeddedChildContentEntity {
 
+    @Embedded
+    private final EmbeddedContentChild child = new EmbeddedContentChild();
     @Id
     @GeneratedValue
     private Long id;
-
     private String name;
-
     @Version
     private Long version;
-
     @LastModifiedDate
     private Date modifiedDate;
-
-    @Embedded
-    private final EmbeddedContentChild child = new EmbeddedContentChild();
 
     public EmbeddedChildContentEntity() {
     }

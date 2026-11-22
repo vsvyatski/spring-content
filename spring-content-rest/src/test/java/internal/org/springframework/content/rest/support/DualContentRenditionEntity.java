@@ -1,6 +1,9 @@
 package internal.org.springframework.content.rest.support;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Version;
 import org.springframework.content.commons.annotations.MimeType;
 import org.springframework.content.test.support.UuidDualContentFields;
 

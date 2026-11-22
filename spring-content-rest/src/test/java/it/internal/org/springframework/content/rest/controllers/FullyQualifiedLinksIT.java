@@ -1,10 +1,10 @@
 package it.internal.org.springframework.content.rest.controllers;
 
 import internal.org.springframework.content.rest.support.FullyQualifiedLinksConfig;
-import it.internal.org.springframework.content.rest.controllers.support.ContentTests;
 import internal.org.springframework.content.rest.support.UuidSingleContentEntity;
 import internal.org.springframework.content.rest.support.UuidSingleContentEntityRepository;
 import internal.org.springframework.content.rest.support.UuidSingleContentEntityStore;
+import it.internal.org.springframework.content.rest.controllers.support.ContentTests;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

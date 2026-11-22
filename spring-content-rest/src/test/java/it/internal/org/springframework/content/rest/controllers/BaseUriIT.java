@@ -1,11 +1,7 @@
 package it.internal.org.springframework.content.rest.controllers;
 
 import internal.org.springframework.content.rest.support.*;
-import it.internal.org.springframework.content.rest.controllers.support.ContentTests;
-import it.internal.org.springframework.content.rest.controllers.support.CorsTests;
-import it.internal.org.springframework.content.rest.controllers.support.EntityTests;
-import it.internal.org.springframework.content.rest.controllers.support.LastModifiedDateTests;
-import it.internal.org.springframework.content.rest.controllers.support.VersionTests;
+import it.internal.org.springframework.content.rest.controllers.support.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

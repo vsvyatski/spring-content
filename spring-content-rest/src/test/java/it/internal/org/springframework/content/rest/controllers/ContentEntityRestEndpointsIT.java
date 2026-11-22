@@ -1,9 +1,9 @@
 package it.internal.org.springframework.content.rest.controllers;
 
 import internal.org.springframework.content.rest.support.*;
+import internal.org.springframework.content.rest.support.EventListenerConfig.TestEventListener;
 import it.internal.org.springframework.content.rest.controllers.support.LastModifiedDateTests;
 import it.internal.org.springframework.content.rest.controllers.support.VersionTests;
-import internal.org.springframework.content.rest.support.EventListenerConfig.TestEventListener;
 import jakarta.servlet.ServletException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
