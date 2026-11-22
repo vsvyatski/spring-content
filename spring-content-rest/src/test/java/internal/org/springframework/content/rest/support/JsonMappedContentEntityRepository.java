@@ -4,7 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 @SuppressWarnings("unused") // classpath / store component scan
-@RepositoryRestResource(path = "testEntity3s")
+@RepositoryRestResource(path = "jsonMappedContentEntities")
 public interface JsonMappedContentEntityRepository extends JpaRepository<JsonMappedContentEntity, Long> {
 
     JsonMappedContentEntity save(JsonMappedContentEntity entity);

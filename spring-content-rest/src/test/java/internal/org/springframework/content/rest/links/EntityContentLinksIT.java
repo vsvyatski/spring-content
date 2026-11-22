@@ -45,10 +45,6 @@ public class EntityContentLinksIT {
     @Autowired
     private WebApplicationContext context;
 
-    private MockMvc mvc;
-
-    private JsonMappedContentEntity testEntity3;
-
     @Nested
     @NestedTestConfiguration(NestedTestConfiguration.EnclosingConfiguration.INHERIT)
     class EntityLinks {
@@ -58,14 +54,14 @@ public class EntityContentLinksIT {
         class WhenEntityLinksAreEnabledContentLinkTests extends ContentLinkTests {
             @BeforeEach
             void setUp() {
-                mvc = MockMvcBuilders.webAppContextSetup(context).build();
-                testEntity3 = new JsonMappedContentEntity();
+                MockMvc mvc = MockMvcBuilders.webAppContextSetup(context).build();
+                JsonMappedContentEntity testEntity3 = new JsonMappedContentEntity();
                 store3.setContent(testEntity3, TestSupportData.sampleTextStream());
                 testEntity3 = repository3.save(testEntity3);
                 this.setMvc(mvc);
-                this.setUrl("/testEntity3s/" + testEntity3.getId());
+                this.setUrl("/jsonMappedContentEntities/" + testEntity3.getId());
                 this.setLinkRel("content");
-                this.setExpectedLinkRegex(String.format("http://localhost/testEntity3s/%s/content", testEntity3.getId()));
+                this.setExpectedLinkRegex(String.format("http://localhost/jsonMappedContentEntities/%s/content", testEntity3.getId()));
             }
 
             @Test

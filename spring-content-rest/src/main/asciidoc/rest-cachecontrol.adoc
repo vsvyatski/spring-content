@@ -24,7 +24,7 @@ class CustomContentRestMvcConfiguration {
            public void configure(RestConfiguration config) {
                config
                    .cacheControl()
-                       .antMatcher("/testEntities/*", CacheControl.maxAge(Duration.ofSeconds(60)));
+                       .antMatcher("/uuidSingleContentEntities/*", CacheControl.maxAge(Duration.ofSeconds(60)));
            }
        };
    }

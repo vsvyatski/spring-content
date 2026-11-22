@@ -141,7 +141,7 @@ public class CacheControlIT {
 
                 return config -> config
                     .cacheControl()
-                    .antMatcher("/testEntities/*", CacheControl.maxAge(Duration.ofSeconds(60)));
+                    .antMatcher("/uuidSingleContentEntities/*", CacheControl.maxAge(Duration.ofSeconds(60)));
             }
         }
     }
@@ -164,7 +164,7 @@ public class CacheControlIT {
             given()
                 .accept("text/plain")
                 .when()
-                .get("/testEntities/" + entity.getId())
+                .get("/uuidSingleContentEntities/" + entity.getId())
                 .then()
                 .statusCode(200)
                 .header("Cache-Control", "max-age=60");
@@ -181,7 +181,7 @@ public class CacheControlIT {
             given()
                 .accept("text/plain")
                 .when()
-                .get("/testEntities/" + entity.getId() + "/content")
+                .get("/uuidSingleContentEntities/" + entity.getId() + "/content")
                 .then()
                 .statusCode(200)
                 .header("Cache-Control", "no-cache, no-store, max-age=0, must-revalidate");

@@ -88,7 +88,7 @@ public class BaseUriIT {
                     testEntity3.name = "tests";
                     testEntity3 = repo3.save(testEntity3);
                     this.setMvc(mvc);
-                    this.setUrl("/api/testEntity3s/" + testEntity3.id);
+                    this.setUrl("/api/jsonMappedContentEntities/" + testEntity3.id);
                     this.setEntity(testEntity3);
                     this.setRepository(repo3);
                     this.setLinkRel("testEntity3");
@@ -105,7 +105,7 @@ public class BaseUriIT {
                     testEntity3.name = "tests";
                     testEntity3 = repo3.save(testEntity3);
                     this.setMvc(mvc);
-                    this.setUrl("/contentApi/testEntity3s/" + testEntity3.getId());
+                    this.setUrl("/contentApi/jsonMappedContentEntities/" + testEntity3.getId());
                     this.setEntity(testEntity3);
                     this.setRepository(repo3);
                     this.setStore(store3);
@@ -120,7 +120,7 @@ public class BaseUriIT {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
                     testEntity = repository.save(new UuidSingleContentEntity());
                     this.setMvc(mvc);
-                    this.setUrl("/contentApi/testEntitiesContent/" + testEntity.getId());
+                    this.setUrl("/contentApi/uuidSingleContentEntitiesContent/" + testEntity.getId());
                     this.setEntity(testEntity);
                     this.setRepository(repository);
                     this.setStore(contentStore);
@@ -135,7 +135,7 @@ public class BaseUriIT {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
                     testEntity = repository.save(new UuidSingleContentEntity());
                     this.setMvc(mvc);
-                    this.setUrl("/contentApi/testEntitiesContent/" + testEntity.getId());
+                    this.setUrl("/contentApi/uuidSingleContentEntitiesContent/" + testEntity.getId());
                 }
             }
 
@@ -149,11 +149,11 @@ public class BaseUriIT {
                     testEntity4 = store4.setContent(testEntity4, TestSupportData.sampleTextStream());
                     testEntity4.mimeType = "text/plain";
                     testEntity4 = repo4.save(testEntity4);
-                    String url = "/contentApi/testEntity4s/" + testEntity4.getId();
+                    String url = "/contentApi/oneToOneLinkedContentEntities/" + testEntity4.getId();
                     this.setEntity(testEntity4);
                     this.setMvc(mvc);
                     this.setUrl(url);
-                    this.setCollectionUrl("/api/testEntity4s");
+                    this.setCollectionUrl("/api/oneToOneLinkedContentEntities");
                     this.setContentLinkRel("content");
                     this.setRepo(repo4);
                     this.setStore(store4);
@@ -172,7 +172,7 @@ public class BaseUriIT {
                     testEntity4 = store4.setContent(testEntity4, new ByteArrayInputStream(content.getBytes()));
                     testEntity4.mimeType = "text/plain";
                     testEntity4 = repo4.save(testEntity4);
-                    String url = "/contentApi/testEntity4s/" + testEntity4.getId();
+                    String url = "/contentApi/oneToOneLinkedContentEntities/" + testEntity4.getId();
                     this.setMvc(mvc);
                     this.setUrl(url);
                     this.setLastModifiedDate(testEntity4.getModifiedDate());

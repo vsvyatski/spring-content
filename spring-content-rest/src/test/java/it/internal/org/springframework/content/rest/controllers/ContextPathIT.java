@@ -90,7 +90,7 @@ public class ContextPathIT {
                     testEntity3.name = "tests";
                     testEntity3 = repo3.save(testEntity3);
                     this.setMvc(mvc);
-                    this.setUrl("/contextPath/testEntity3s/" + testEntity3.getId());
+                    this.setUrl("/contextPath/jsonMappedContentEntities/" + testEntity3.getId());
                     this.setEntity(testEntity3);
                     this.setRepository(repo3);
                     this.setStore(store3);

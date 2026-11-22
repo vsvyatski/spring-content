@@ -37,9 +37,9 @@ public class ContentLinksIT {
                 store3.setContent(testEntity3, TestSupportData.sampleTextStream());
                 testEntity3 = repository3.save(testEntity3);
                 this.setMvc(mvc);
-                this.setUrl("/api/testEntity3s/" + testEntity3.getId());
+                this.setUrl("/api/jsonMappedContentEntities/" + testEntity3.getId());
                 this.setLinkRel("jsonMappedContentEntity");
-                this.setExpectedLinkRegex("http://localhost/api/testEntity3s/" + testEntity3.getId());
+                this.setExpectedLinkRegex("http://localhost/api/jsonMappedContentEntities/" + testEntity3.getId());
             }
 
             @Test
@@ -64,9 +64,9 @@ public class ContentLinksIT {
                 store5.setContent(testEntity5, PropertyPath.from("content"), TestSupportData.sampleTextStream());
                 testEntity5 = repository5.save(testEntity5);
                 this.setMvc(mvc);
-                this.setUrl("/api/testEntity5s/" + testEntity5.getId());
+                this.setUrl("/api/dualContentRenditionEntities/" + testEntity5.getId());
                 this.setLinkRel("content");
-                this.setExpectedLinkRegex(format("http://localhost/contentApi/testEntity5s/%s/content", testEntity5.getId()));
+                this.setExpectedLinkRegex(format("http://localhost/contentApi/dualContentRenditionEntities/%s/content", testEntity5.getId()));
             }
 
             @Test
@@ -123,9 +123,9 @@ public class ContentLinksIT {
                 testEntity10.getChild().setPreviewMimeType("text/plain");
                 testEntity10 = repository10.save(testEntity10);
                 this.setMvc(mvc);
-                this.setUrl("/api/testEntity10s/" + testEntity10.getId());
+                this.setUrl("/api/embeddedDualContentEntities/" + testEntity10.getId());
                 this.setLinkRel("child/content");
-                this.setExpectedLinkRegex(format("http://localhost/contentApi/testEntity10s/%s/child/content", testEntity10.getId()));
+                this.setExpectedLinkRegex(format("http://localhost/contentApi/embeddedDualContentEntities/%s/child/content", testEntity10.getId()));
             }
 
             @Test

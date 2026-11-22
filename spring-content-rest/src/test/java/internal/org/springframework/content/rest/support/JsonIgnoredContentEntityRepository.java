@@ -4,6 +4,6 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 @SuppressWarnings("unused") // classpath / store component scan
-@RepositoryRestResource(path = "testEntity9s")
+@RepositoryRestResource(path = "jsonIgnoredContentEntities")
 public interface JsonIgnoredContentEntityRepository extends CrudRepository<JsonIgnoredContentEntity, Long> {
 }

@@ -43,10 +43,10 @@ public class ContentLinkRelIT {
                     contentStore.setContent(entity, TestSupportData.sampleTextStream());
                     entity = repository.save(entity);
                     this.setMvc(mvc);
-                    this.setUrl("/api/testEntities/" + entity.getId());
+                    this.setUrl("/api/uuidSingleContentEntities/" + entity.getId());
                     this.setLinkRel("foo/content");
                     this.setExpectedLinkRegex(
-                        format("http://localhost/contentApi/testEntitiesContent/%s/content", entity.getId()));
+                        format("http://localhost/contentApi/uuidSingleContentEntitiesContent/%s/content", entity.getId()));
                 }
 
                 @Test
@@ -71,10 +71,10 @@ public class ContentLinkRelIT {
                         TestSupportData.sampleTextStream());
                     entity = repository5.save(entity);
                     this.setMvc(mvc);
-                    this.setUrl("/api/testEntity5s/" + entity.getId());
+                    this.setUrl("/api/dualContentRenditionEntities/" + entity.getId());
                     this.setLinkRel("foo/content");
                     this.setExpectedLinkRegex(
-                        format("http://localhost/contentApi/testEntity5s/%s/content", entity.getId()));
+                        format("http://localhost/contentApi/dualContentRenditionEntities/%s/content", entity.getId()));
                 }
 
                 @Test
@@ -132,10 +132,10 @@ public class ContentLinkRelIT {
                         TestSupportData.sampleTextStream());
                     entity = repository10.save(entity);
                     this.setMvc(mvc);
-                    this.setUrl("/api/testEntity10s/" + entity.getId());
+                    this.setUrl("/api/embeddedDualContentEntities/" + entity.getId());
                     this.setLinkRel("foo/child/content");
                     this.setExpectedLinkRegex(
-                        format("http://localhost/contentApi/testEntity10s/%s/child/content", entity.getId()));
+                        format("http://localhost/contentApi/embeddedDualContentEntities/%s/child/content", entity.getId()));
                 }
 
                 @Test

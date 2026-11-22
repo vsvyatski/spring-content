@@ -194,7 +194,7 @@ public class EmbeddedIdTest {
 
             MockHttpServletResponse response =
                 mvc.perform(
-                        get("/testEntities/" + entity.getId()).
+                        get("/uuidSingleContentEntities/" + entity.getId()).
                             accept("text/plain")).
                     andExpect(status().isOk()).
                     andReturn().getResponse();

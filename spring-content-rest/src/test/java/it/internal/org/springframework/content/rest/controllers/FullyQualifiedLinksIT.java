@@ -56,7 +56,7 @@ public class FullyQualifiedLinksIT {
                 testEntity3 = repo3.save(new UuidSingleContentEntity());
                 testEntity3 = repo3.save(testEntity3);
                 this.setMvc(mvc);
-                this.setUrl("/testEntitiesContent/" + testEntity3.getId() + "/content");
+                this.setUrl("/uuidSingleContentEntitiesContent/" + testEntity3.getId() + "/content");
                 this.setEntity(testEntity3);
                 this.setRepository(repo3);
                 this.setStore(store3);

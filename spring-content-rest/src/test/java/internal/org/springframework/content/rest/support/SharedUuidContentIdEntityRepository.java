@@ -6,6 +6,6 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import java.util.UUID;
 
 @SuppressWarnings("unused") // classpath / store component scan
-@RepositoryRestResource(path = "testEntity6s")
+@RepositoryRestResource(path = "sharedUuidContentIdEntities")
 public interface SharedUuidContentIdEntityRepository extends CrudRepository<SharedUuidContentIdEntity, UUID> {
 }

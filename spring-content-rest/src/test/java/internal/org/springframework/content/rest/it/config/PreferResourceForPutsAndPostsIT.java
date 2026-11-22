@@ -156,7 +156,7 @@ public class PreferResourceForPutsAndPostsIT {
                 .contentType("text/plain")
                 .body("some content".getBytes())
                 .when()
-                .post("/testEntities/" + entity.getId());
+                .post("/uuidSingleContentEntities/" + entity.getId());
 
             MockStoreFactoryBean storeFactory = context.getBean(MockStoreFactoryBean.class);
 

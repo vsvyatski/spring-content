@@ -157,7 +157,7 @@ public class ContentLinksWithProjectionsIT {
 
                 @Test
                 void shouldProvideAResponseWithAContentLink() throws Exception {
-                    MockHttpServletResponse response = mvc.perform(get("/tEntities/" + testEntity.getId() + "?projection=customTEntity")
+                    MockHttpServletResponse response = mvc.perform(get("/projectedContentEntities/" + testEntity.getId() + "?projection=customTEntity")
                             .accept("application/hal+json"))
                         .andExpect(status().isOk()).andReturn().getResponse();
                     assertThat(response).isNotNull();
@@ -169,7 +169,7 @@ public class ContentLinksWithProjectionsIT {
 
                     assertThat(halResponse).isNotNull();
                     assertThat(halResponse.getLinksByRel("content")).isNotNull();
-                    assertThat(halResponse.getLinksByRel("content")).extracting("href").contains("http://localhost/tEntities/" + testEntity.getId() + "/content");
+                    assertThat(halResponse.getLinksByRel("content")).extracting("href").contains("http://localhost/projectedContentEntities/" + testEntity.getId() + "/content");
                 }
             }
         }

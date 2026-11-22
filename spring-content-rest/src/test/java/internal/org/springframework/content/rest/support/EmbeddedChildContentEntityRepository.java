@@ -4,6 +4,6 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 @SuppressWarnings("unused") // classpath / store component scan
-@RepositoryRestResource(path = "testEntity8s")
+@RepositoryRestResource(path = "embeddedChildContentEntities")
 public interface EmbeddedChildContentEntityRepository extends CrudRepository<EmbeddedChildContentEntity, Long> {
 }

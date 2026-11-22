@@ -10,7 +10,7 @@ import java.util.UUID;
  * @author Vladimir Svyatski
  */
 @SuppressWarnings("unused") // classpath / store component scan
-@StoreRestResource(path = "tEntities")
+@StoreRestResource(path = "projectedContentEntities")
 public interface ProjectedContentEntityStore
     extends FileSystemContentStore<SingleContentJpaLongIdUuidNamedEntity, UUID> {
 }

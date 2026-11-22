@@ -8,7 +8,7 @@ import org.springframework.content.rest.StoreRestResource;
 import java.io.InputStream;
 import java.util.UUID;
 
-@StoreRestResource(path = "testEntity5s")
+@StoreRestResource(path = "dualContentRenditionEntities")
 public interface DualContentRenditionEntityStore extends FileSystemContentStore<DualContentRenditionEntity, UUID> {
 
     @RestResource(exported = false, paths = {"rendition"})

@@ -154,7 +154,7 @@ public class MethodNotAllowedExceptionIT {
             given()
                 .accept("text/plain")
                 .when()
-                .get("/tEntities/" + entity.getId())
+                .get("/unexportedStoreMethodsEntities/" + entity.getId())
                 .then()
                 .statusCode(405);
         }
@@ -176,7 +176,7 @@ public class MethodNotAllowedExceptionIT {
                 .contentType("text/plain")
                 .body("some content".getBytes())
                 .when()
-                .post("/tEntities/" + entity.getId())
+                .post("/unexportedStoreMethodsEntities/" + entity.getId())
                 .then()
                 .statusCode(405);
         }
@@ -198,7 +198,7 @@ public class MethodNotAllowedExceptionIT {
             given()
                 .accept("text/plain")
                 .when()
-                .delete("/tEntities/" + entity.getId())
+                .delete("/unexportedStoreMethodsEntities/" + entity.getId())
                 .then()
                 .statusCode(405);
         }
@@ -220,7 +220,7 @@ public class MethodNotAllowedExceptionIT {
             given()
                 .accept("text/plain")
                 .when()
-                .get("/tEntity2s/" + entity.getId() + "/content")
+                .get("/unexportedContentPropertyEntities/" + entity.getId() + "/content")
                 .then()
                 .statusCode(405);
 
@@ -228,14 +228,14 @@ public class MethodNotAllowedExceptionIT {
                 .contentType("text/plain")
                 .body("some content".getBytes())
                 .when()
-                .post("/tEntity2s/" + entity.getId() + "/content")
+                .post("/unexportedContentPropertyEntities/" + entity.getId() + "/content")
                 .then()
                 .statusCode(405);
 
             given()
                 .accept("text/plain")
                 .when()
-                .delete("/tEntity2s/" + entity.getId() + "/content")
+                .delete("/unexportedContentPropertyEntities/" + entity.getId() + "/content")
                 .then()
                 .statusCode(405);
         }

@@ -8,6 +8,6 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
  * @author Vladimir Svyatski
  */
 @SuppressWarnings("unused") // classpath / store component scan
-@RepositoryRestResource(path = "tEntities")
+@RepositoryRestResource(path = "projectedContentEntities")
 public interface ProjectedContentEntityRepository extends JpaRepository<SingleContentJpaLongIdUuidNamedEntity, Long> {
 }

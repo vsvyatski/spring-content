@@ -94,10 +94,10 @@ public class ContextPathContentLinksIT {
                 store3.setContent(testEntity3, TestSupportData.sampleTextStream());
                 testEntity3 = repository3.save(testEntity3);
                 this.setMvc(mvc);
-                this.setUrl("/contextPath/testEntity3s/" + testEntity3.getId());
+                this.setUrl("/contextPath/jsonMappedContentEntities/" + testEntity3.getId());
                 this.setContextPath("/contextPath");
                 this.setLinkRel("jsonMappedContentEntity");
-                this.setExpectedLinkRegex("http://localhost/contextPath/testEntity3s/" + testEntity3.getId());
+                this.setExpectedLinkRegex("http://localhost/contextPath/jsonMappedContentEntities/" + testEntity3.getId());
             }
 
             @Test

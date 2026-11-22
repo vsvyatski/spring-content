@@ -7,7 +7,7 @@ import org.springframework.content.rest.StoreRestResource;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
 @CrossOrigin(origins = "http://www.someurl.com")
-@StoreRestResource(path = "testEntitiesContent", linkRel = "foo")
+@StoreRestResource(path = "uuidSingleContentEntitiesContent", linkRel = "foo")
 public interface LinkRelUuidSingleContentEntityStore extends FileSystemContentStore<UuidSingleContentEntity, Long>,
     Renderable<UuidSingleContentEntity> {
 }

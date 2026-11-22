@@ -135,23 +135,23 @@ public class ContentSearchRestControllerIT {
 
     @RepositoryRestResource(path = "repoWithNoLookupStrategy")
     public interface RepositoryWithNoLookupStrategy
-        extends CrudRepository<TestEntity2, String> {
+        extends CrudRepository<NoLookupStrategySearchEntity, String> {
     }
 
     @SuppressWarnings("unused") // classpath / store component scan
-    public interface TestEntity2SearchableStore
-        extends FileSystemContentStore<TestEntity2, String>, Searchable<String> {
+    public interface NoLookupStrategySearchEntitySearchableStore
+        extends FileSystemContentStore<NoLookupStrategySearchEntity, String>, Searchable<String> {
     }
 
     @RepositoryRestResource(path = "repoWithCustomSearchReturnType")
     @SuppressWarnings("unused") // classpath / store component scan
     public interface RepositoryWithCustomSearchReturnType
-        extends CrudRepository<TestEntity3, String> {
+        extends CrudRepository<CustomSearchReturnTypeEntity, String> {
     }
 
     @SuppressWarnings("unused") // classpath / store component scan
-    public interface TestEntity3SearchableStore
-        extends FileSystemContentStore<TestEntity3, String>, Searchable<CustomResult> {
+    public interface CustomSearchReturnTypeEntitySearchableStore
+        extends FileSystemContentStore<CustomSearchReturnTypeEntity, String>, Searchable<CustomResult> {
     }
 
     @Configuration
@@ -244,13 +244,13 @@ public class ContentSearchRestControllerIT {
     }
 
     @Entity
-    public static class TestEntity2 {
+    public static class NoLookupStrategySearchEntity {
         @Id
         private String id = UUID.randomUUID().toString();
         @ContentId
         private String contentId = UUID.randomUUID().toString();
 
-        public TestEntity2() {
+        public NoLookupStrategySearchEntity() {
         }
 
         public String getId() {
@@ -271,13 +271,13 @@ public class ContentSearchRestControllerIT {
     }
 
     @Entity
-    public static class TestEntity3 {
+    public static class CustomSearchReturnTypeEntity {
         @Id
         private String id = UUID.randomUUID().toString();
         @ContentId
         private String contentId = UUID.randomUUID().toString();
 
-        public TestEntity3() {
+        public CustomSearchReturnTypeEntity() {
         }
 
         public String getId() {
@@ -908,10 +908,10 @@ public class ContentSearchRestControllerIT {
                     queryMethodsLookupStrategy = spy(new QueryMethodsEntityLookupStrategy());
                     controller.setQueryMethodsEntityLookupStrategy(queryMethodsLookupStrategy);
 
-                    TestEntity2 entity5 = new TestEntity2();
+                    NoLookupStrategySearchEntity entity5 = new NoLookupStrategySearchEntity();
                     repoWithNoLookupStrategy.save(entity5);
 
-                    TestEntity2 entity6 = new TestEntity2();
+                    NoLookupStrategySearchEntity entity6 = new NoLookupStrategySearchEntity();
                     repoWithNoLookupStrategy.save(entity6);
 
                     internalResults = new ArrayList<>();
@@ -940,12 +940,12 @@ public class ContentSearchRestControllerIT {
                             new StringReader(result.getResponse()
                                 .getContentAsString()));
                     assertThat(halResponse
-                        .getResourcesByRel("testEntity2s").size()).isEqualTo(2);
+                        .getResourcesByRel("noLookupStrategySearchEntities").size()).isEqualTo(2);
                     String id1 = halResponse
-                        .getResourcesByRel("testEntity2s").get(0)
+                        .getResourcesByRel("noLookupStrategySearchEntities").get(0)
                         .getValue("contentId").toString();
                     String id2 = halResponse
-                        .getResourcesByRel("testEntity2s").get(1)
+                        .getResourcesByRel("noLookupStrategySearchEntities").get(1)
                         .getValue("contentId").toString();
                     assertThat(contentIds).contains(id1);
                     assertThat(contentIds).contains(id2);

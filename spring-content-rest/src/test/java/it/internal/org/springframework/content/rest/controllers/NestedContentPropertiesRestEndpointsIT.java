@@ -93,7 +93,7 @@ public class NestedContentPropertiesRestEndpointsIT {
                 @Test
                 void shouldReturn404() throws Exception {
                     mvc.perform(
-                            get("/testEntity10s/9999999/foo"))
+                            get("/embeddedDualContentEntities/9999999/foo"))
                         .andExpect(status().isNotFound());
                 }
             }
@@ -110,7 +110,7 @@ public class NestedContentPropertiesRestEndpointsIT {
                 @Test
                 void shouldReturn404() throws Exception {
                     mvc.perform(
-                            get("/testEntity10s/" + testEntity10.getId() + "/doesnotexist"))
+                            get("/embeddedDualContentEntities/" + testEntity10.getId() + "/doesnotexist"))
                         .andExpect(status().isNotFound());
                 }
             }
@@ -129,7 +129,7 @@ public class NestedContentPropertiesRestEndpointsIT {
                     @Test
                     void shouldReturn404() throws Exception {
                         mvc.perform(
-                                get("/testEntity10s/" + testEntity10.getId() + "/child"))
+                                get("/embeddedDualContentEntities/" + testEntity10.getId() + "/child"))
                             .andExpect(status().isNotFound());
                     }
                 }
@@ -146,7 +146,7 @@ public class NestedContentPropertiesRestEndpointsIT {
                     @Test
                     void shouldCreateTheContent() throws Exception {
                         mvc.perform(
-                                put("/testEntity10s/" + testEntity10.getId() + "/child/content")
+                                put("/embeddedDualContentEntities/" + testEntity10.getId() + "/child/content")
                                     .content("Hello New Spring Content World!")
                                     .contentType("text/plain"))
                             .andExpect(status().is2xxSuccessful());
@@ -161,7 +161,7 @@ public class NestedContentPropertiesRestEndpointsIT {
                         }
 
                         mvc.perform(
-                                put("/testEntity10s/" + testEntity10.getId() + "/child/preview")
+                                put("/embeddedDualContentEntities/" + testEntity10.getId() + "/child/preview")
                                     .content("Hello New Spring Content Preview World!")
                                     .contentType("text/plain"))
                             .andExpect(status().is2xxSuccessful());
@@ -190,7 +190,7 @@ public class NestedContentPropertiesRestEndpointsIT {
                     void shouldSetTheContentAndReturn201() throws Exception {
                         String content = "{\"content\":\"Hello New Spring Content World!\"}";
                         mvc.perform(
-                                put("/testEntity10s/" + testEntity10.getId() + "/child/content")
+                                put("/embeddedDualContentEntities/" + testEntity10.getId() + "/child/content")
                                     .content(content)
                                     .contentType("application/json"))
                             .andExpect(status().isCreated());
@@ -227,14 +227,14 @@ public class NestedContentPropertiesRestEndpointsIT {
                         }
                         testEntity10 = repository.save(testEntity10);
                         versionTests.setMvc(mvc);
-                        versionTests.setUrl("/testEntity10s/" + testEntity10.getId() + "/child/content");
-                        versionTests.setCollectionUrl("/testEntity10s");
+                        versionTests.setUrl("/embeddedDualContentEntities/" + testEntity10.getId() + "/child/content");
+                        versionTests.setCollectionUrl("/embeddedDualContentEntities");
                         versionTests.setContentLinkRel("child/content");
                         versionTests.setRepo(repository);
                         versionTests.setStore(store);
                         versionTests.setEtag(format("\"%s\"", testEntity10.getVersion()));
                         lastModifiedDateTests.setMvc(mvc);
-                        lastModifiedDateTests.setUrl("/testEntity10s/" + testEntity10.getId() + "/child/content");
+                        lastModifiedDateTests.setUrl("/embeddedDualContentEntities/" + testEntity10.getId() + "/child/content");
                         lastModifiedDateTests.setLastModifiedDate(testEntity10.getModifiedDate());
                         lastModifiedDateTests.setEtag(testEntity10.getVersion().toString());
                         lastModifiedDateTests.setContent(content);
@@ -243,7 +243,7 @@ public class NestedContentPropertiesRestEndpointsIT {
                     @Test
                     void shouldReturnTheContent() throws Exception {
                         MockHttpServletResponse response = mvc
-                            .perform(get("/testEntity10s/" + testEntity10.getId() + "/child/content")
+                            .perform(get("/embeddedDualContentEntities/" + testEntity10.getId() + "/child/content")
                                 .accept("text/plain"))
                             .andExpect(status().isOk())
                             .andExpect(header().string("etag", is("\"1\"")))
@@ -274,14 +274,14 @@ public class NestedContentPropertiesRestEndpointsIT {
                         }
                         testEntity10 = repository.save(testEntity10);
                         versionTests.setMvc(mvc);
-                        versionTests.setUrl("/testEntity10s/" + testEntity10.getId() + "/child/content");
-                        versionTests.setCollectionUrl("/testEntity10s");
+                        versionTests.setUrl("/embeddedDualContentEntities/" + testEntity10.getId() + "/child/content");
+                        versionTests.setCollectionUrl("/embeddedDualContentEntities");
                         versionTests.setContentLinkRel("child/content");
                         versionTests.setRepo(repository);
                         versionTests.setStore(store);
                         versionTests.setEtag(format("\"%s\"", testEntity10.getVersion()));
                         lastModifiedDateTests.setMvc(mvc);
-                        lastModifiedDateTests.setUrl("/testEntity10s/" + testEntity10.getId() + "/child/content");
+                        lastModifiedDateTests.setUrl("/embeddedDualContentEntities/" + testEntity10.getId() + "/child/content");
                         lastModifiedDateTests.setLastModifiedDate(testEntity10.getModifiedDate());
                         lastModifiedDateTests.setEtag(testEntity10.getVersion().toString());
                         lastModifiedDateTests.setContent(content);
@@ -291,7 +291,7 @@ public class NestedContentPropertiesRestEndpointsIT {
                     void shouldReturnTheRenditionAnd200() throws Exception {
                         MockHttpServletResponse response = mvc
                             .perform(get(
-                                "/testEntity10s/" + testEntity10.getId()
+                                "/embeddedDualContentEntities/" + testEntity10.getId()
                                     + "/child/content")
                                 .accept("text/html"))
                             .andExpect(status().isOk()).andReturn()
@@ -320,14 +320,14 @@ public class NestedContentPropertiesRestEndpointsIT {
                         }
                         testEntity10 = repository.save(testEntity10);
                         versionTests.setMvc(mvc);
-                        versionTests.setUrl("/testEntity10s/" + testEntity10.getId() + "/child/content");
-                        versionTests.setCollectionUrl("/testEntity10s");
+                        versionTests.setUrl("/embeddedDualContentEntities/" + testEntity10.getId() + "/child/content");
+                        versionTests.setCollectionUrl("/embeddedDualContentEntities");
                         versionTests.setContentLinkRel("child/content");
                         versionTests.setRepo(repository);
                         versionTests.setStore(store);
                         versionTests.setEtag(format("\"%s\"", testEntity10.getVersion()));
                         lastModifiedDateTests.setMvc(mvc);
-                        lastModifiedDateTests.setUrl("/testEntity10s/" + testEntity10.getId() + "/child/content");
+                        lastModifiedDateTests.setUrl("/embeddedDualContentEntities/" + testEntity10.getId() + "/child/content");
                         lastModifiedDateTests.setLastModifiedDate(testEntity10.getModifiedDate());
                         lastModifiedDateTests.setEtag(testEntity10.getVersion().toString());
                         lastModifiedDateTests.setContent(content);
@@ -336,7 +336,7 @@ public class NestedContentPropertiesRestEndpointsIT {
                     @Test
                     void shouldReturnTheOriginalContentAnd200() throws Exception {
                         MockHttpServletResponse response = mvc
-                            .perform(get("/testEntity10s/"
+                            .perform(get("/embeddedDualContentEntities/"
                                 + testEntity10.getId()
                                 + "/child/content").accept(
                                 new String[]{"text/xml",
@@ -367,14 +367,14 @@ public class NestedContentPropertiesRestEndpointsIT {
                         }
                         testEntity10 = repository.save(testEntity10);
                         versionTests.setMvc(mvc);
-                        versionTests.setUrl("/testEntity10s/" + testEntity10.getId() + "/child/content");
-                        versionTests.setCollectionUrl("/testEntity10s");
+                        versionTests.setUrl("/embeddedDualContentEntities/" + testEntity10.getId() + "/child/content");
+                        versionTests.setCollectionUrl("/embeddedDualContentEntities");
                         versionTests.setContentLinkRel("child/content");
                         versionTests.setRepo(repository);
                         versionTests.setStore(store);
                         versionTests.setEtag(format("\"%s\"", testEntity10.getVersion()));
                         lastModifiedDateTests.setMvc(mvc);
-                        lastModifiedDateTests.setUrl("/testEntity10s/" + testEntity10.getId() + "/child/content");
+                        lastModifiedDateTests.setUrl("/embeddedDualContentEntities/" + testEntity10.getId() + "/child/content");
                         lastModifiedDateTests.setLastModifiedDate(testEntity10.getModifiedDate());
                         lastModifiedDateTests.setEtag(testEntity10.getVersion().toString());
                         lastModifiedDateTests.setContent(content);
@@ -383,7 +383,7 @@ public class NestedContentPropertiesRestEndpointsIT {
                     @Test
                     void shouldCreateTheContent() throws Exception {
                         mvc.perform(
-                                put("/testEntity10s/" + testEntity10.getId() + "/child/content")
+                                put("/embeddedDualContentEntities/" + testEntity10.getId() + "/child/content")
                                     .content("Hello New Spring Content World!")
                                     .contentType("text/plain"))
                             .andExpect(status().is2xxSuccessful());
@@ -415,14 +415,14 @@ public class NestedContentPropertiesRestEndpointsIT {
                         }
                         testEntity10 = repository.save(testEntity10);
                         versionTests.setMvc(mvc);
-                        versionTests.setUrl("/testEntity10s/" + testEntity10.getId() + "/child/content");
-                        versionTests.setCollectionUrl("/testEntity10s");
+                        versionTests.setUrl("/embeddedDualContentEntities/" + testEntity10.getId() + "/child/content");
+                        versionTests.setCollectionUrl("/embeddedDualContentEntities");
                         versionTests.setContentLinkRel("child/content");
                         versionTests.setRepo(repository);
                         versionTests.setStore(store);
                         versionTests.setEtag(format("\"%s\"", testEntity10.getVersion()));
                         lastModifiedDateTests.setMvc(mvc);
-                        lastModifiedDateTests.setUrl("/testEntity10s/" + testEntity10.getId() + "/child/content");
+                        lastModifiedDateTests.setUrl("/embeddedDualContentEntities/" + testEntity10.getId() + "/child/content");
                         lastModifiedDateTests.setLastModifiedDate(testEntity10.getModifiedDate());
                         lastModifiedDateTests.setEtag(testEntity10.getVersion().toString());
                         lastModifiedDateTests.setContent(content);
@@ -431,7 +431,7 @@ public class NestedContentPropertiesRestEndpointsIT {
                     @Test
                     void shouldDeleteTheContent() throws Exception {
                         mvc.perform(delete(
-                                "/testEntity10s/" + testEntity10.getId() + "/child/content"))
+                                "/embeddedDualContentEntities/" + testEntity10.getId() + "/child/content"))
                             .andExpect(status().isNoContent());
 
                         Optional<EmbeddedDualContentEntity> fetched = repository.findById(testEntity10.getId());
@@ -461,7 +461,7 @@ public class NestedContentPropertiesRestEndpointsIT {
                 MockMultipartFile file2 = new MockMultipartFile("child/preview", "preview.txt", "text/plain", previewContent.getBytes());
 
                 // POST the new content
-                MockHttpServletResponse response = mvc.perform(multipart("/testEntity10s")
+                MockHttpServletResponse response = mvc.perform(multipart("/embeddedDualContentEntities")
                         .file(file1)
                         .file(file2)
                         .param("name", "foo")

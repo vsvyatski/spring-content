@@ -102,7 +102,7 @@ public class RevisionPropertyRestEndpointsIT {
                 @Test
                 void shouldReturnA404() throws Exception {
                     mvc.perform(
-                            get("/tEntities/" + testEntity.getId() + "/revisions/1/content").
+                            get("/revisionPropertyEntities/" + testEntity.getId() + "/revisions/1/content").
                                 accept("text/plain")).
                         andExpect(status().isNotFound());
                 }
@@ -129,7 +129,7 @@ public class RevisionPropertyRestEndpointsIT {
 
                     MockHttpServletResponse response =
                         mvc.perform(
-                                get("/tEntities/" + testEntity.getId() + "/revisions/" + revisionId + "/content").
+                                get("/revisionPropertyEntities/" + testEntity.getId() + "/revisions/" + revisionId + "/content").
                                     accept("text/plain")).
                             andExpect(status().isOk()).
                             andReturn().getResponse();

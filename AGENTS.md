@@ -160,8 +160,8 @@ Change version for the whole reactor with:
   inner `TestEntity` types. `EnableJpaStoresTest` asserts `DualContentJpaStringIdStore` (dual `@ContentId` entity in the
   test-jar); other backends use single-content store marker interfaces. REST module fixtures live under
   `internal.org.springframework.content.rest.support` with purpose names (e.g. `JsonMappedContentEntity`);
-  `@RepositoryRestResource(path = …)` keeps legacy collection paths such as `testEntity3s` where tests depend on
-  them.
+  `@RepositoryRestResource(path = …)` uses purpose-driven collection paths aligned with fixture type names (for
+  example `jsonMappedContentEntities`).
 
 When changing a store implementation, run that module’s `*Test` and, if behavior or IO/SQL is involved, the matching
 `*IT`.

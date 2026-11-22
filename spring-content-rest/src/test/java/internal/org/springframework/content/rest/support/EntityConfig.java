@@ -16,7 +16,7 @@ public class EntityConfig {
         @Autowired
         private JsonMappedContentEntityRepository repo;
 
-        @RequestMapping(value = "/testEntity3s/{id}/softDelete", method = RequestMethod.DELETE)
+        @RequestMapping(value = "/jsonMappedContentEntities/{id}/softDelete", method = RequestMethod.DELETE)
         public void softDelete(@PathVariable("id") Long id) {
             repo.findById(id).orElseThrow();
             // set delete flag

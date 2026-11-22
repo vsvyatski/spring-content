@@ -17,18 +17,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class RestResourceMappingBuilderTest {
 
+    @SuppressWarnings("unused") // reflective ClassWalker fixture
     public static class TestSubClass {
         @RestResource(path = "two")
         private TestSubSubClass child;
         private TestSubSubClass childWithout;
     }
 
+    @SuppressWarnings("unused") // reflective ClassWalker fixture
     public static class TestClass {
         @RestResource(path = "one")
         private TestSubClass child;
         private TestSubClass childWithout;
     }
 
+    @SuppressWarnings("unused") // reflective ClassWalker fixture
     public static class TestSubSubClass {
         @RestResource(path = "three")
         private @ContentId UUID contentId;
@@ -44,7 +47,7 @@ public class RestResourceMappingBuilderTest {
         private @MimeType String previewMimeType;
         private @OriginalFileName String previewOriginalFileName;
 
-        @RestResource(exported = true)
+        @RestResource
         private @ContentId UUID thumbnailId;
         private @ContentLength Long thumbnailLen;
         private @MimeType String thumbnailMimeType;
@@ -62,7 +65,7 @@ public class RestResourceMappingBuilderTest {
     class GivenInheritedContentIdOnSuperclassOnly {
         @Test
         void shouldMapRootContentInLooseMode() {
-            RestResourceMappingBuilder visitor = new RestResourceMappingBuilder((restResourceAnnotation) -> restResourceAnnotation.path());
+            RestResourceMappingBuilder visitor = new RestResourceMappingBuilder(RestResource::path);
             ClassWalker walker = new ClassWalker(visitor);
             walker.accept(InheritedUuidContentOnly.class);
 
@@ -74,7 +77,7 @@ public class RestResourceMappingBuilderTest {
     class RestResourceMappingBuilderCases {
         @Test
         void shouldCreateAMapOfContentPropertyPathsToRequestMappingPaths() {
-            RestResourceMappingBuilder visitor = new RestResourceMappingBuilder((restResourceAnnotation) -> restResourceAnnotation.path());
+            RestResourceMappingBuilder visitor = new RestResourceMappingBuilder(RestResource::path);
             ClassWalker walker = new ClassWalker(visitor);
             walker.accept(TestClass.class);
 

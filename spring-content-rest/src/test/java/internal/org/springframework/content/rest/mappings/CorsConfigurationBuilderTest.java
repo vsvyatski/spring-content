@@ -28,7 +28,7 @@ public class CorsConfigurationBuilderTest {
     public interface StoreWithOrigins extends Store<UUID> {
     }
 
-    @CrossOrigin(origins = {})
+    @CrossOrigin()
     public interface StoreWithEmptyOrigins extends Store<UUID> {
     }
 
@@ -36,7 +36,7 @@ public class CorsConfigurationBuilderTest {
     public interface StoreWithAllowedHeaders extends Store<UUID> {
     }
 
-    @CrossOrigin(allowedHeaders = {})
+    @CrossOrigin()
     public interface StoreWithEmptyAllowedHeaders extends Store<UUID> {
     }
 
@@ -44,7 +44,7 @@ public class CorsConfigurationBuilderTest {
     public interface StoreWithExposedHeaders extends Store<UUID> {
     }
 
-    @CrossOrigin(exposedHeaders = {})
+    @CrossOrigin()
     public interface StoreWithEmptyExposedHeaders extends Store<UUID> {
     }
 
@@ -53,7 +53,7 @@ public class CorsConfigurationBuilderTest {
     public interface StoreWithAllowedMethods extends Store<UUID> {
     }
 
-    @CrossOrigin(methods = {})
+    @CrossOrigin()
     public interface StoreWithEmptyAllowedMethods extends Store<UUID> {
     }
 
@@ -69,7 +69,7 @@ public class CorsConfigurationBuilderTest {
     public interface StoreWithMisconfiguredAllowCredentials extends Store<UUID> {
     }
 
-    @CrossOrigin(allowCredentials = "")
+    @CrossOrigin()
     public interface StoreWithEmptyAllowCredentials extends Store<UUID> {
     }
 

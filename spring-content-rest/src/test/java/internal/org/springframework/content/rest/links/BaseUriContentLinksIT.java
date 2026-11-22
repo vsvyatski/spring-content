@@ -61,9 +61,9 @@ public class BaseUriContentLinksIT {
                 store3.setContent(testEntity3, TestSupportData.sampleTextStream());
                 testEntity3 = repository3.save(testEntity3);
                 this.setMvc(mvc);
-                this.setUrl("/api/testEntity3s/" + testEntity3.getId());
+                this.setUrl("/api/jsonMappedContentEntities/" + testEntity3.getId());
                 this.setLinkRel("content");
-                this.setExpectedLinkRegex(format("http://localhost/contentApi/testEntity3s/%s/content", testEntity3.getId()));
+                this.setExpectedLinkRegex(format("http://localhost/contentApi/jsonMappedContentEntities/%s/content", testEntity3.getId()));
             }
 
             @Test

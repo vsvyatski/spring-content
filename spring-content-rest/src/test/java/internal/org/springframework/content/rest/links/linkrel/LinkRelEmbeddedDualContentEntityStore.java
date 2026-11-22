@@ -7,7 +7,7 @@ import org.springframework.content.rest.StoreRestResource;
 
 import java.util.UUID;
 
-@StoreRestResource(path = "testEntity10s", linkRel = "foo")
+@StoreRestResource(path = "embeddedDualContentEntities", linkRel = "foo")
 public interface LinkRelEmbeddedDualContentEntityStore extends FileSystemContentStore<EmbeddedDualContentEntity, UUID>,
     Renderable<EmbeddedDualContentEntity> {
 }

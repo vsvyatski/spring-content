@@ -113,7 +113,7 @@ public class Application {
 
         @Bean
         public ContentRestConfigurer contentRestConfigurer() {
-            return config -> config.addStoreResolver("tEntities", stores -> {
+            return config -> config.addStoreResolver("storeResolverEntities", stores -> {
                 for (StoreInfo info : stores) {
                     if (info.getImplementation(FileSystemContentStore.class) != null) {
                         return info;

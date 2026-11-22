@@ -96,7 +96,7 @@ public class RestResourceMappedRestEndpointsIT {
                 @Test
                 void shouldReturn404() throws Exception {
                     mvc.perform(
-                            get("/testEntity11s/9999999/package/content"))
+                            get("/restResourcePackageEntities/9999999/package/content"))
                         .andExpect(status().isNotFound());
                 }
             }
@@ -113,7 +113,7 @@ public class RestResourceMappedRestEndpointsIT {
                 @Test
                 void shouldReturn404() throws Exception {
                     mvc.perform(
-                            get("/testEntity11s/" + testEntity11.getId() + "/doesnotexist"))
+                            get("/restResourcePackageEntities/" + testEntity11.getId() + "/doesnotexist"))
                         .andExpect(status().isNotFound());
                 }
             }
@@ -132,7 +132,7 @@ public class RestResourceMappedRestEndpointsIT {
                     @Test
                     void shouldReturn404() throws Exception {
                         mvc.perform(
-                                get("/testEntity11s/" + testEntity11.getId() + "/package/content"))
+                                get("/restResourcePackageEntities/" + testEntity11.getId() + "/package/content"))
                             .andExpect(status().isNotFound());
                     }
                 }
@@ -149,7 +149,7 @@ public class RestResourceMappedRestEndpointsIT {
                     @Test
                     void shouldCreateTheContent() throws Exception {
                         mvc.perform(
-                                put("/testEntity11s/" + testEntity11.getId() + "/package/content")
+                                put("/restResourcePackageEntities/" + testEntity11.getId() + "/package/content")
                                     .content("Hello New Spring Content World!")
                                     .contentType("text/plain"))
                             .andExpect(status().is2xxSuccessful());
@@ -178,7 +178,7 @@ public class RestResourceMappedRestEndpointsIT {
                     void shouldSetTheContentAndReturn201() throws Exception {
                         String content = "{\"content\":\"Hello New Spring Content World!\"}";
                         mvc.perform(
-                                put("/testEntity11s/" + testEntity11.getId() + "/package/content")
+                                put("/restResourcePackageEntities/" + testEntity11.getId() + "/package/content")
                                     .content(content)
                                     .contentType("application/json"))
                             .andExpect(status().isCreated());
@@ -215,14 +215,14 @@ public class RestResourceMappedRestEndpointsIT {
                         }
                         testEntity11 = repo.save(testEntity11);
                         versionTests.setMvc(mvc);
-                        versionTests.setUrl("/testEntity11s/" + testEntity11.getId() + "/package/content");
-                        versionTests.setCollectionUrl("/testEntity11s");
+                        versionTests.setUrl("/restResourcePackageEntities/" + testEntity11.getId() + "/package/content");
+                        versionTests.setCollectionUrl("/restResourcePackageEntities");
                         versionTests.setContentLinkRel("package/content");
                         versionTests.setRepo(repo);
                         versionTests.setStore(store);
                         versionTests.setEtag(format("\"%s\"", testEntity11.getVersion()));
                         lastModifiedDateTests.setMvc(mvc);
-                        lastModifiedDateTests.setUrl("/testEntity11s/" + testEntity11.getId() + "/package/content");
+                        lastModifiedDateTests.setUrl("/restResourcePackageEntities/" + testEntity11.getId() + "/package/content");
                         lastModifiedDateTests.setLastModifiedDate(testEntity11.getModifiedDate());
                         lastModifiedDateTests.setEtag(testEntity11.getVersion().toString());
                         lastModifiedDateTests.setContent(content);
@@ -231,7 +231,7 @@ public class RestResourceMappedRestEndpointsIT {
                     @Test
                     void shouldReturnTheMappedContentLinks() throws Exception, JsonProcessingException {
                         MockHttpServletResponse res = mvc.perform(
-                                get("/testEntity11s/" + testEntity11.getId())
+                                get("/restResourcePackageEntities/" + testEntity11.getId())
                                     .accept("application/hal+json"))
                             .andExpect(status().is2xxSuccessful())
                             .andReturn().getResponse();
@@ -241,7 +241,7 @@ public class RestResourceMappedRestEndpointsIT {
 
                         Object val = parse(obj, "_links", "package/content", "href");
                         assertThat(val).isNotNull();
-                        assertThat(val.toString()).matches("http://localhost/testEntity11s/.*/package/content");
+                        assertThat(val.toString()).matches("http://localhost/restResourcePackageEntities/.*/package/content");
                     }
                 }
 
@@ -263,14 +263,14 @@ public class RestResourceMappedRestEndpointsIT {
                         }
                         testEntity11 = repo.save(testEntity11);
                         versionTests.setMvc(mvc);
-                        versionTests.setUrl("/testEntity11s/" + testEntity11.getId() + "/package/content");
-                        versionTests.setCollectionUrl("/testEntity11s");
+                        versionTests.setUrl("/restResourcePackageEntities/" + testEntity11.getId() + "/package/content");
+                        versionTests.setCollectionUrl("/restResourcePackageEntities");
                         versionTests.setContentLinkRel("package/content");
                         versionTests.setRepo(repo);
                         versionTests.setStore(store);
                         versionTests.setEtag(format("\"%s\"", testEntity11.getVersion()));
                         lastModifiedDateTests.setMvc(mvc);
-                        lastModifiedDateTests.setUrl("/testEntity11s/" + testEntity11.getId() + "/package/content");
+                        lastModifiedDateTests.setUrl("/restResourcePackageEntities/" + testEntity11.getId() + "/package/content");
                         lastModifiedDateTests.setLastModifiedDate(testEntity11.getModifiedDate());
                         lastModifiedDateTests.setEtag(testEntity11.getVersion().toString());
                         lastModifiedDateTests.setContent(content);
@@ -279,7 +279,7 @@ public class RestResourceMappedRestEndpointsIT {
                     @Test
                     void shouldReturnTheContent() throws Exception {
                         MockHttpServletResponse response = mvc
-                            .perform(get("/testEntity11s/" + testEntity11.getId() + "/package/content")
+                            .perform(get("/restResourcePackageEntities/" + testEntity11.getId() + "/package/content")
                                 .accept("text/plain"))
                             .andExpect(status().isOk())
                             .andExpect(header().string("etag", is("\"1\"")))
@@ -310,14 +310,14 @@ public class RestResourceMappedRestEndpointsIT {
                         }
                         testEntity11 = repo.save(testEntity11);
                         versionTests.setMvc(mvc);
-                        versionTests.setUrl("/testEntity11s/" + testEntity11.getId() + "/package/content");
-                        versionTests.setCollectionUrl("/testEntity11s");
+                        versionTests.setUrl("/restResourcePackageEntities/" + testEntity11.getId() + "/package/content");
+                        versionTests.setCollectionUrl("/restResourcePackageEntities");
                         versionTests.setContentLinkRel("package/content");
                         versionTests.setRepo(repo);
                         versionTests.setStore(store);
                         versionTests.setEtag(format("\"%s\"", testEntity11.getVersion()));
                         lastModifiedDateTests.setMvc(mvc);
-                        lastModifiedDateTests.setUrl("/testEntity11s/" + testEntity11.getId() + "/package/content");
+                        lastModifiedDateTests.setUrl("/restResourcePackageEntities/" + testEntity11.getId() + "/package/content");
                         lastModifiedDateTests.setLastModifiedDate(testEntity11.getModifiedDate());
                         lastModifiedDateTests.setEtag(testEntity11.getVersion().toString());
                         lastModifiedDateTests.setContent(content);
@@ -327,7 +327,7 @@ public class RestResourceMappedRestEndpointsIT {
                     void shouldReturnTheRenditionAnd200() throws Exception {
                         MockHttpServletResponse response = mvc
                             .perform(get(
-                                "/testEntity11s/" + testEntity11.getId() + "/package/content")
+                                "/restResourcePackageEntities/" + testEntity11.getId() + "/package/content")
                                 .accept("text/html"))
                             .andExpect(status().isOk()).andReturn()
                             .getResponse();
@@ -355,14 +355,14 @@ public class RestResourceMappedRestEndpointsIT {
                         }
                         testEntity11 = repo.save(testEntity11);
                         versionTests.setMvc(mvc);
-                        versionTests.setUrl("/testEntity11s/" + testEntity11.getId() + "/package/content");
-                        versionTests.setCollectionUrl("/testEntity11s");
+                        versionTests.setUrl("/restResourcePackageEntities/" + testEntity11.getId() + "/package/content");
+                        versionTests.setCollectionUrl("/restResourcePackageEntities");
                         versionTests.setContentLinkRel("package/content");
                         versionTests.setRepo(repo);
                         versionTests.setStore(store);
                         versionTests.setEtag(format("\"%s\"", testEntity11.getVersion()));
                         lastModifiedDateTests.setMvc(mvc);
-                        lastModifiedDateTests.setUrl("/testEntity11s/" + testEntity11.getId() + "/package/content");
+                        lastModifiedDateTests.setUrl("/restResourcePackageEntities/" + testEntity11.getId() + "/package/content");
                         lastModifiedDateTests.setLastModifiedDate(testEntity11.getModifiedDate());
                         lastModifiedDateTests.setEtag(testEntity11.getVersion().toString());
                         lastModifiedDateTests.setContent(content);
@@ -371,7 +371,7 @@ public class RestResourceMappedRestEndpointsIT {
                     @Test
                     void shouldReturnTheOriginalContentAnd200() throws Exception {
                         MockHttpServletResponse response = mvc
-                            .perform(get("/testEntity11s/" + testEntity11.getId() + "/package/content").accept(
+                            .perform(get("/restResourcePackageEntities/" + testEntity11.getId() + "/package/content").accept(
                                 new String[]{"text/xml",
                                     "text/plain"}))
                             .andExpect(status().isOk()).andReturn()
@@ -400,14 +400,14 @@ public class RestResourceMappedRestEndpointsIT {
                         }
                         testEntity11 = repo.save(testEntity11);
                         versionTests.setMvc(mvc);
-                        versionTests.setUrl("/testEntity11s/" + testEntity11.getId() + "/package/content");
-                        versionTests.setCollectionUrl("/testEntity11s");
+                        versionTests.setUrl("/restResourcePackageEntities/" + testEntity11.getId() + "/package/content");
+                        versionTests.setCollectionUrl("/restResourcePackageEntities");
                         versionTests.setContentLinkRel("package/content");
                         versionTests.setRepo(repo);
                         versionTests.setStore(store);
                         versionTests.setEtag(format("\"%s\"", testEntity11.getVersion()));
                         lastModifiedDateTests.setMvc(mvc);
-                        lastModifiedDateTests.setUrl("/testEntity11s/" + testEntity11.getId() + "/package/content");
+                        lastModifiedDateTests.setUrl("/restResourcePackageEntities/" + testEntity11.getId() + "/package/content");
                         lastModifiedDateTests.setLastModifiedDate(testEntity11.getModifiedDate());
                         lastModifiedDateTests.setEtag(testEntity11.getVersion().toString());
                         lastModifiedDateTests.setContent(content);
@@ -416,7 +416,7 @@ public class RestResourceMappedRestEndpointsIT {
                     @Test
                     void shouldCreateTheContent() throws Exception {
                         mvc.perform(
-                                put("/testEntity11s/" + testEntity11.getId() + "/package/content")
+                                put("/restResourcePackageEntities/" + testEntity11.getId() + "/package/content")
                                     .content("Hello New Spring Content World!")
                                     .contentType("text/plain"))
                             .andExpect(status().is2xxSuccessful());
@@ -447,14 +447,14 @@ public class RestResourceMappedRestEndpointsIT {
                         }
                         testEntity11 = repo.save(testEntity11);
                         versionTests.setMvc(mvc);
-                        versionTests.setUrl("/testEntity11s/" + testEntity11.getId() + "/package/content");
-                        versionTests.setCollectionUrl("/testEntity11s");
+                        versionTests.setUrl("/restResourcePackageEntities/" + testEntity11.getId() + "/package/content");
+                        versionTests.setCollectionUrl("/restResourcePackageEntities");
                         versionTests.setContentLinkRel("package/content");
                         versionTests.setRepo(repo);
                         versionTests.setStore(store);
                         versionTests.setEtag(format("\"%s\"", testEntity11.getVersion()));
                         lastModifiedDateTests.setMvc(mvc);
-                        lastModifiedDateTests.setUrl("/testEntity11s/" + testEntity11.getId() + "/package/content");
+                        lastModifiedDateTests.setUrl("/restResourcePackageEntities/" + testEntity11.getId() + "/package/content");
                         lastModifiedDateTests.setLastModifiedDate(testEntity11.getModifiedDate());
                         lastModifiedDateTests.setEtag(testEntity11.getVersion().toString());
                         lastModifiedDateTests.setContent(content);
@@ -463,7 +463,7 @@ public class RestResourceMappedRestEndpointsIT {
                     @Test
                     void shouldDeleteTheContent() throws Exception {
                         mvc.perform(delete(
-                                "/testEntity11s/" + testEntity11.getId() + "/package/content"))
+                                "/restResourcePackageEntities/" + testEntity11.getId() + "/package/content"))
                             .andExpect(status().isNoContent());
 
                         Optional<RestResourcePackageEntity> fetched = repo.findById(testEntity11.getId());

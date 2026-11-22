@@ -67,7 +67,7 @@ public class StoreResolverRestConfigurationIT {
                     .contentType("text/plain")
                     .body(newContent.getBytes())
                     .when()
-                    .post("/tEntities/" + tEntity.getId())
+                    .post("/storeResolverEntities/" + tEntity.getId())
                     .then()
                     .statusCode(HttpStatus.SC_CREATED);
 
