@@ -65,9 +65,6 @@ public class StoredRenditionsRestIT {
     @Autowired
     private WebApplicationContext context;
 
-    @Autowired
-    private TestEventHandler eventHandler;
-
     private MockMvc mvc;
 
     @Configuration
@@ -112,24 +109,20 @@ public class StoredRenditionsRestIT {
     public static class TestEventHandler {
 
         @Autowired
-        private DualContentRenditionEntityRepository repo;
-
-        @Autowired
         private DualContentRenditionEntityStore store;
 
         @HandleAfterSetContent
+        @SuppressWarnings("unused") // store event dispatch
         public void onAfterSetContent(AfterSetContentEvent event) throws IOException {
 
             DualContentRenditionEntity entity = (DualContentRenditionEntity) event.getSource();
 
-            long renderedLength = 0;
+            long renderedLength;
             try (InputStream inputStream = store.getContent(entity, PropertyPath.from("content"))) {
 
                 String renderedContent = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
 
-                // create and associate resource
                 UUID resourceId = UUID.randomUUID();
-                Resource r = store.getResource(resourceId);
                 store.associate(entity, PropertyPath.from("rendition"), resourceId);
 
                 try (OutputStream stream = ((WritableResource) store.getResource(entity, PropertyPath.from("rendition"))).getOutputStream()) {
@@ -144,6 +137,7 @@ public class StoredRenditionsRestIT {
         }
 
         @HandleBeforeUnsetContent
+        @SuppressWarnings("unused") // store event dispatch
         public void onBeforeUnsetContent(BeforeUnsetContentEvent event) throws IOException {
 
             DualContentRenditionEntity entity = (DualContentRenditionEntity) event.getSource();
@@ -173,7 +167,7 @@ public class StoredRenditionsRestIT {
 
                 @Test
                 void shouldStoreTheRendition() throws IOException {
-                    testEntity5 = repo.findById(testEntity5.getId()).get();
+                    testEntity5 = repo.findById(testEntity5.getId()).orElseThrow();
                     Resource r = store.getResource(testEntity5, PropertyPath.from("content"));
                     try (InputStream actual = r.getInputStream()) {
                         assertThat(IOUtils.toString(actual, StandardCharsets.UTF_8)).isEqualTo("foo");
@@ -198,8 +192,6 @@ public class StoredRenditionsRestIT {
 
                     @Test
                     void shouldGetTheStoredRendition() throws Exception {
-                        Long id = testEntity5.getId();
-
                         mvc.perform(
                                 get("/dualContentRenditionEntities/" + testEntity5.getId() + "/content")
                                     .accept("text/html"))
@@ -222,8 +214,6 @@ public class StoredRenditionsRestIT {
 
                     @Test
                     void shouldReturnA405() throws Exception {
-                        Long id = testEntity5.getId();
-
                         mvc.perform(
                                 get("/dualContentRenditionEntities/" + testEntity5.getId() + "/rendition")
                                     .accept("text/html"))
