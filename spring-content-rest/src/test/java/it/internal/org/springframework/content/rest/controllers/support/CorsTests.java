@@ -8,13 +8,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class Cors {
+public class CorsTests {
 
     private MockMvc mvc;
     private String url;
 
-    public static Cors tests() {
-        return new Cors();
+    public static CorsTests tests() {
+        return new CorsTests();
     }
 
     public MockMvc getMvc() {

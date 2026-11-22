@@ -4,8 +4,8 @@ import internal.org.springframework.content.rest.support.EmbeddedDualContentEnti
 import internal.org.springframework.content.rest.support.EmbeddedDualContentEntityRepository;
 import internal.org.springframework.content.rest.support.EmbeddedDualContentEntityStore;
 import internal.org.springframework.content.rest.support.StoreConfig;
-import it.internal.org.springframework.content.rest.controllers.support.LastModifiedDate;
-import it.internal.org.springframework.content.rest.controllers.support.Version;
+import it.internal.org.springframework.content.rest.controllers.support.LastModifiedDateTests;
+import it.internal.org.springframework.content.rest.controllers.support.VersionTests;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -68,8 +68,8 @@ public class NestedContentPropertiesRestEndpointsIT {
     @Autowired
     private WebApplicationContext context;
 
-    private Version versionTests;
-    private LastModifiedDate lastModifiedDateTests;
+    private VersionTests versionTests;
+    private LastModifiedDateTests lastModifiedDateTests;
 
     private MockMvc mvc;
 
@@ -249,7 +249,7 @@ public class NestedContentPropertiesRestEndpointsIT {
                                 .accept("text/plain"))
                             .andExpect(status().isOk())
                             .andExpect(header().string("etag", is("\"1\"")))
-                            .andExpect(header().string("last-modified", LastModifiedDate
+                            .andExpect(header().string("last-modified", LastModifiedDateTests
                                 .isWithinASecond(testEntity10.getModifiedDate())))
                             .andReturn().getResponse();
 

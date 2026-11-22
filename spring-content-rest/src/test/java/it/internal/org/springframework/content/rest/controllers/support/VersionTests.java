@@ -21,7 +21,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class Version {
+public class VersionTests {
 
     private MockMvc mvc;
     private String url;
@@ -32,8 +32,8 @@ public class Version {
     private String etag;
     private ContentEntity entity;
 
-    public static Version tests() {
-        return new Version();
+    public static VersionTests tests() {
+        return new VersionTests();
     }
 
     public void setMvc(MockMvc mvc) {

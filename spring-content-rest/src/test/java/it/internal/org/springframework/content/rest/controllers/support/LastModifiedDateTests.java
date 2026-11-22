@@ -25,7 +25,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public abstract class LastModifiedDate {
+public abstract class LastModifiedDateTests {
 
     private MockMvc mvc;
     private String url;
@@ -85,7 +85,7 @@ public abstract class LastModifiedDate {
     }
 
     public void setEtag(String etag) {
-        LastModifiedDate.this.etag = format("\"%s\"", etag);
+        LastModifiedDateTests.this.etag = format("\"%s\"", etag);
     }
 
     public void setContent(String content) {

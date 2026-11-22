@@ -1,7 +1,7 @@
 package it.internal.org.springframework.content.rest.controllers;
 
 import internal.org.springframework.content.rest.support.FullyQualifiedLinksConfig;
-import it.internal.org.springframework.content.rest.controllers.support.Content;
+import it.internal.org.springframework.content.rest.controllers.support.ContentTests;
 import internal.org.springframework.content.rest.support.UuidSingleContentEntity;
 import internal.org.springframework.content.rest.support.UuidSingleContentEntityRepository;
 import internal.org.springframework.content.rest.support.UuidSingleContentEntityStore;
@@ -44,13 +44,13 @@ public class FullyQualifiedLinksIT {
 
     private UuidSingleContentEntity testEntity3;
 
-    private Content contentTests;
+    private ContentTests contentTests;
 
     @Nested
     class ContextPathContentTests {
         @Nested
         @DisplayName("given an entity is the subject of a repository and storage")
-        class GivenAnEntityIsTheSubjectOfARepositoryAndStorageContent extends Content {
+        class GivenAnEntityIsTheSubjectOfARepositoryAndStorageContent extends ContentTests {
             @BeforeEach
             void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();

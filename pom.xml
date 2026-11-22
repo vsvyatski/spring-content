@@ -257,6 +257,9 @@
                     <include>**/*IT.*</include>
                     <include>**/*Tests.*</include>
                   </includes>
+                  <excludes>
+                    <exclude>**/it/**/controllers/support/**</exclude>
+                  </excludes>
                 </configuration>
               </execution>
             </executions>

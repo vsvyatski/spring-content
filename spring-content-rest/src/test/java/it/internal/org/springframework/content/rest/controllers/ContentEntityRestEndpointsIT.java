@@ -1,11 +1,11 @@
 package it.internal.org.springframework.content.rest.controllers;
 
 import internal.org.springframework.content.rest.support.*;
-import it.internal.org.springframework.content.rest.controllers.support.Content;
-import it.internal.org.springframework.content.rest.controllers.support.Cors;
-import it.internal.org.springframework.content.rest.controllers.support.Entity;
-import it.internal.org.springframework.content.rest.controllers.support.LastModifiedDate;
-import it.internal.org.springframework.content.rest.controllers.support.Version;
+import it.internal.org.springframework.content.rest.controllers.support.ContentTests;
+import it.internal.org.springframework.content.rest.controllers.support.CorsTests;
+import it.internal.org.springframework.content.rest.controllers.support.EntityTests;
+import it.internal.org.springframework.content.rest.controllers.support.LastModifiedDateTests;
+import it.internal.org.springframework.content.rest.controllers.support.VersionTests;
 import internal.org.springframework.content.rest.support.EventListenerConfig.TestEventListener;
 import jakarta.servlet.ServletException;
 import org.apache.commons.io.IOUtils;
@@ -112,12 +112,12 @@ public class ContentEntityRestEndpointsIT {
     private JsonIgnoredContentEntity testEntity9;
     private RestResourcePackageEntity testEntity11;
 
-    private Version version;
-    private LastModifiedDate lastModifiedDate;
+    private VersionTests version;
+    private LastModifiedDateTests lastModifiedDate;
 
-    private Entity entityTests;
-    private Content contentTests;
-    private Cors corsTests;
+    private EntityTests entityTests;
+    private ContentTests contentTests;
+    private CorsTests corsTests;
 
     @Nested
     class ContentEntityRESTEndpoints {
@@ -185,7 +185,7 @@ public class ContentEntityRestEndpointsIT {
 
             @Nested
             @DisplayName("given an entity with @Version")
-            class GivenAnEntityWithVersionVersion extends Version {
+            class GivenAnEntityWithVersionVersion extends VersionTests {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -207,7 +207,7 @@ public class ContentEntityRestEndpointsIT {
 
             @Nested
             @DisplayName("given an entity with @LastModifiedDate")
-            class GivenAnEntityWithLastModifiedDateLastModifiedDate extends LastModifiedDate {
+            class GivenAnEntityWithLastModifiedDateLastModifiedDate extends LastModifiedDateTests {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();

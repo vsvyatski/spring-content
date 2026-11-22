@@ -19,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class Entity {
+public class EntityTests {
 
     private MockMvc mvc;
     private String url;
@@ -27,8 +27,8 @@ public class Entity {
     private ContentEntity entity;
     private CrudRepository repository;
 
-    public static Entity tests() {
-        return new Entity();
+    public static EntityTests tests() {
+        return new EntityTests();
     }
 
     public MockMvc getMvc() {

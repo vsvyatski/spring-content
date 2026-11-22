@@ -6,8 +6,8 @@ import internal.org.springframework.content.rest.support.RestResourcePackageEnti
 import internal.org.springframework.content.rest.support.RestResourcePackageEntityRepository;
 import internal.org.springframework.content.rest.support.RestResourcePackageEntityStore;
 import internal.org.springframework.content.rest.support.StoreConfig;
-import it.internal.org.springframework.content.rest.controllers.support.LastModifiedDate;
-import it.internal.org.springframework.content.rest.controllers.support.Version;
+import it.internal.org.springframework.content.rest.controllers.support.LastModifiedDateTests;
+import it.internal.org.springframework.content.rest.controllers.support.VersionTests;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -69,8 +69,8 @@ public class RestResourceMappedRestEndpointsIT {
     @Autowired
     private WebApplicationContext context;
 
-    private Version versionTests;
-    private LastModifiedDate lastModifiedDateTests;
+    private VersionTests versionTests;
+    private LastModifiedDateTests lastModifiedDateTests;
 
     private MockMvc mvc;
 
@@ -285,7 +285,7 @@ public class RestResourceMappedRestEndpointsIT {
                                 .accept("text/plain"))
                             .andExpect(status().isOk())
                             .andExpect(header().string("etag", is("\"1\"")))
-                            .andExpect(header().string("last-modified", LastModifiedDate
+                            .andExpect(header().string("last-modified", LastModifiedDateTests
                                 .isWithinASecond(testEntity11.getModifiedDate())))
                             .andReturn().getResponse();
 

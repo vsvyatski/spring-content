@@ -1,7 +1,7 @@
 package it.internal.org.springframework.content.rest.controllers;
 
 import internal.org.springframework.content.rest.support.JsonMappedContentEntity;
-import it.internal.org.springframework.content.rest.controllers.support.Content;
+import it.internal.org.springframework.content.rest.controllers.support.ContentTests;
 import internal.org.springframework.content.rest.support.JsonMappedContentEntityRepository;
 import internal.org.springframework.content.rest.support.JsonMappedContentEntityStore;
 import internal.org.springframework.content.rest.support.TestRenditionConfig;
@@ -83,7 +83,7 @@ public class ContextPathIT {
         class GivenAnEntityIsTheSubjectOfARepositoryAndStorage {
             @Nested
             @DisplayName("given the repository and storage are exported to the same URI")
-            class GivenTheRepositoryAndStorageAreExportedToTheSameURIContent extends Content {
+            class GivenTheRepositoryAndStorageAreExportedToTheSameURIContent extends ContentTests {
                 @BeforeEach
                 void setUp() {
                     MockMvc mvc = MockMvcBuilders.webAppContextSetup(context).build();

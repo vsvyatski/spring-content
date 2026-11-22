@@ -1,11 +1,11 @@
 package it.internal.org.springframework.content.rest.controllers;
 
 import internal.org.springframework.content.rest.support.*;
-import it.internal.org.springframework.content.rest.controllers.support.Content;
-import it.internal.org.springframework.content.rest.controllers.support.Cors;
-import it.internal.org.springframework.content.rest.controllers.support.Entity;
-import it.internal.org.springframework.content.rest.controllers.support.LastModifiedDate;
-import it.internal.org.springframework.content.rest.controllers.support.Version;
+import it.internal.org.springframework.content.rest.controllers.support.ContentTests;
+import it.internal.org.springframework.content.rest.controllers.support.CorsTests;
+import it.internal.org.springframework.content.rest.controllers.support.EntityTests;
+import it.internal.org.springframework.content.rest.controllers.support.LastModifiedDateTests;
+import it.internal.org.springframework.content.rest.controllers.support.VersionTests;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -75,7 +75,7 @@ public class BaseUriIT {
         class GivenAnEntityIsTheSubjectOfARepositoryAndStorage {
             @Nested
             @DisplayName("given the repository and storage are exported to the same URI")
-            class GivenTheRepositoryAndStorageAreExportedToTheSameURIEntity extends Entity {
+            class GivenTheRepositoryAndStorageAreExportedToTheSameURIEntity extends EntityTests {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -92,7 +92,7 @@ public class BaseUriIT {
 
             @Nested
             @DisplayName("given the repository and storage are exported to the same URI")
-            class GivenTheRepositoryAndStorageAreExportedToTheSameURIContent extends Content {
+            class GivenTheRepositoryAndStorageAreExportedToTheSameURIContent extends ContentTests {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -109,7 +109,7 @@ public class BaseUriIT {
 
             @Nested
             @DisplayName("given the repository and storage are exported to different URIs")
-            class GivenTheRepositoryAndStorageAreExportedToDifferentURIsContent extends Content {
+            class GivenTheRepositoryAndStorageAreExportedToDifferentURIsContent extends ContentTests {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -124,7 +124,7 @@ public class BaseUriIT {
 
             @Nested
             @DisplayName("given the repository and storage are exported to different URIs")
-            class GivenTheRepositoryAndStorageAreExportedToDifferentURIsCors extends Cors {
+            class GivenTheRepositoryAndStorageAreExportedToDifferentURIsCors extends CorsTests {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -136,7 +136,7 @@ public class BaseUriIT {
 
             @Nested
             @DisplayName("given an entity with @Version")
-            class GivenAnEntityWithVersionVersion extends Version {
+            class GivenAnEntityWithVersionVersion extends VersionTests {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -158,7 +158,7 @@ public class BaseUriIT {
 
             @Nested
             @DisplayName("given an entity with @LastModifiedDate")
-            class GivenAnEntityWithLastModifiedDateLastModifiedDate extends LastModifiedDate {
+            class GivenAnEntityWithLastModifiedDateLastModifiedDate extends LastModifiedDateTests {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();

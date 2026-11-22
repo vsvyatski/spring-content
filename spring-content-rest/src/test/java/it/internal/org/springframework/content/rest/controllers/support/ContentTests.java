@@ -24,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class Content {
+public class ContentTests {
 
     private MockMvc mvc;
     private String url;
@@ -33,8 +33,8 @@ public class Content {
     private CrudRepository repository;
     private Store store;
 
-    public static Content tests() {
-        return new Content();
+    public static ContentTests tests() {
+        return new ContentTests();
     }
 
     public MockMvc getMvc() {

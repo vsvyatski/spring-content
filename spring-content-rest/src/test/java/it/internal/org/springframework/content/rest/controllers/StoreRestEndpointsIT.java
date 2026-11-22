@@ -1,7 +1,7 @@
 package it.internal.org.springframework.content.rest.controllers;
 
 import internal.org.springframework.content.rest.support.StoreConfig;
-import it.internal.org.springframework.content.rest.controllers.support.LastModifiedDate;
+import it.internal.org.springframework.content.rest.controllers.support.LastModifiedDateTests;
 import internal.org.springframework.content.rest.support.TestStore;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,7 +42,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 public class StoreRestEndpointsIT {
 
-    private final LastModifiedDate lastModifiedDate = new LastModifiedDate() {
+    private final LastModifiedDateTests lastModifiedDate = new LastModifiedDateTests() {
     };
     @Autowired
     TestStore store;
