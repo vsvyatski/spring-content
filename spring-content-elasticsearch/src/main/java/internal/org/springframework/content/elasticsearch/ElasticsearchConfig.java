@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-@Configuration
+@Configuration("springContentElasticsearchConfig")
 public class ElasticsearchConfig {
 
     @Autowired

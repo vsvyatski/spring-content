@@ -28,9 +28,9 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import javax.sql.DataSource;
 
 @SpringBootApplication(exclude = {
-        MongoAutoConfiguration.class,
-        DataMongoAutoConfiguration.class,
-        DataMongoRepositoriesAutoConfiguration.class
+    MongoAutoConfiguration.class,
+    DataMongoAutoConfiguration.class,
+    DataMongoRepositoriesAutoConfiguration.class
 })
 public class Application {
 

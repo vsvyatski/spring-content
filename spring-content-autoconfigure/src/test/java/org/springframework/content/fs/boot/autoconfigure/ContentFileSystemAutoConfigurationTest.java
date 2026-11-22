@@ -18,14 +18,14 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.content.fs.config.EnableFileSystemStores;
 import org.springframework.content.fs.io.FileSystemResourceLoader;
 import org.springframework.content.fs.store.FileSystemContentStore;
+import org.springframework.content.test.support.jpa.SingleContentJpaLongIdEntity;
 import org.springframework.context.annotation.Bean;
-import org.springframework.support.TestEntity;
 
 public class ContentFileSystemAutoConfigurationTest {
 
     private ApplicationContextRunner contextRunner;
 
-    public interface TestEntityContentRepository extends FileSystemContentStore<TestEntity, String> {
+    public interface TestEntityContentStore extends FileSystemContentStore<SingleContentJpaLongIdEntity, String> {
     }
 
     @SpringBootApplication(exclude = {SolrAutoConfiguration.class, SolrExtensionAutoConfiguration.class, S3ContentAutoConfiguration.class})
@@ -53,12 +53,12 @@ public class ContentFileSystemAutoConfigurationTest {
             @BeforeEach
             void setUp() {
                 contextRunner = new ApplicationContextRunner()
-                        .withConfiguration(AutoConfigurations.of(FileSystemContentAutoConfiguration.class));
+                    .withConfiguration(AutoConfigurations.of(FileSystemContentAutoConfiguration.class));
             }
 
             @Test
             void shouldLoadTheContext() {
-                contextRunner.withUserConfiguration(TestConfig.class).run((context) -> Assertions.assertThat(context).hasSingleBean(TestEntityContentRepository.class));
+                contextRunner.withUserConfiguration(TestConfig.class).run((context) -> Assertions.assertThat(context).hasSingleBean(TestEntityContentStore.class));
             }
         }
 
@@ -67,7 +67,7 @@ public class ContentFileSystemAutoConfigurationTest {
             @BeforeEach
             void setUp() {
                 contextRunner = new ApplicationContextRunner()
-                        .withConfiguration(AutoConfigurations.of(FileSystemContentAutoConfiguration.class));
+                    .withConfiguration(AutoConfigurations.of(FileSystemContentAutoConfiguration.class));
                 System.setProperty("spring.content.fs.filesystem-root", "${java.io.tmpdir}/UPPERCASE/NOTATION/");
             }
 
@@ -90,7 +90,7 @@ public class ContentFileSystemAutoConfigurationTest {
             @BeforeEach
             void setUp() {
                 contextRunner = new ApplicationContextRunner()
-                        .withConfiguration(AutoConfigurations.of(FileSystemContentAutoConfiguration.class));
+                    .withConfiguration(AutoConfigurations.of(FileSystemContentAutoConfiguration.class));
             }
 
             @Test
@@ -117,13 +117,13 @@ public class ContentFileSystemAutoConfigurationTest {
             @BeforeEach
             void setUp() {
                 contextRunner = new ApplicationContextRunner()
-                        .withConfiguration(AutoConfigurations.of(FileSystemContentAutoConfiguration.class));
+                    .withConfiguration(AutoConfigurations.of(FileSystemContentAutoConfiguration.class));
             }
 
             @Test
             void shouldLoadTheContext() {
                 contextRunner.withUserConfiguration(ConfigWithExplicitEnableFileSystemStores.class).run((context) -> {
-                    Assertions.assertThat(context).hasSingleBean(TestEntityContentRepository.class);
+                    Assertions.assertThat(context).hasSingleBean(TestEntityContentStore.class);
                     Assertions.assertThat(context).hasSingleBean(FileSystemResourceLoader.class);
                 });
             }

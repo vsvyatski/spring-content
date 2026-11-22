@@ -1,12 +1,12 @@
 package internal.org.springframework.content.rest.io;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.content.commons.io.DeletableResource;
 import org.springframework.content.commons.renditions.Renderable;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.WritableResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.jspecify.annotations.Nullable;
 import org.springframework.util.MimeType;
 import org.springframework.web.servlet.resource.HttpResource;
 
@@ -145,12 +145,12 @@ public class RenderableResourceImpl implements Resource, HttpResource, Renderabl
     }
 
     public OutputStream getOutputStream()
-            throws IOException {
+        throws IOException {
         return ((WritableResource) original).getOutputStream();
     }
 
     public void delete()
-            throws IOException {
+        throws IOException {
         ((DeletableResource) original).delete();
     }
 }

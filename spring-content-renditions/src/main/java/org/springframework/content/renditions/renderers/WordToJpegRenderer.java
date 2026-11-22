@@ -51,8 +51,8 @@ public class WordToJpegRenderer implements RenditionProvider {
             wordDoc = poi.xwpfDocument(fromInputSource);
         } catch (Exception e) {
             throw new RenditionException(String.format(
-                    "Unexpected error reading input attempting to get mime-type rendition %s",
-                    toMimeType), e);
+                "Unexpected error reading input attempting to get mime-type rendition %s",
+                toMimeType), e);
         }
 
         if (wordDoc != null) {
@@ -61,8 +61,8 @@ public class WordToJpegRenderer implements RenditionProvider {
                 return props.getThumbnailImage();
             } catch (Exception e) {
                 throw new RenditionException(String.format(
-                        "Unexpected error getting thumbnail for mime-type rendition %s",
-                        toMimeType), e);
+                    "Unexpected error getting thumbnail for mime-type rendition %s",
+                    toMimeType), e);
             }
         }
         return null;

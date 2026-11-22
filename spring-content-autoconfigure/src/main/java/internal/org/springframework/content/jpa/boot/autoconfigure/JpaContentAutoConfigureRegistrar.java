@@ -17,26 +17,26 @@ public class JpaContentAutoConfigureRegistrar extends JpaStoresRegistrar {
 
     @Override
     protected void registerContentStoreBeanDefinitions(
-            AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
+        AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
 
         AnnotationMetadata metadata = AnnotationMetadata.introspect(EnableJpaContentAutoConfiguration.class);
         AnnotationAttributes attributes = new AnnotationAttributes(
-                Objects.requireNonNull(metadata.getAnnotationAttributes(this.getAnnotation().getName())));
+            Objects.requireNonNull(metadata.getAnnotationAttributes(this.getAnnotation().getName())));
 
         String[] basePackages = this.getBasePackages();
 
         StoreCandidateComponentProvider scanner =
-                new StoreCandidateComponentProvider(false, this.getEnvironment());
+            new StoreCandidateComponentProvider(false, this.getEnvironment());
         scanner.setResourceLoader(this.getResourceLoader());
 
         Set<GenericBeanDefinition> definitions = StoreUtils.getStoreCandidates(
-                scanner,
-                this.getEnvironment(),
-                this.getResourceLoader(),
-                basePackages,
-                multipleStoreImplementationsDetected(),
-                this.getSignatureTypes(),
-                this.getOverridePropertyValue());
+            scanner,
+            this.getEnvironment(),
+            this.getResourceLoader(),
+            basePackages,
+            multipleStoreImplementationsDetected(),
+            this.getSignatureTypes(),
+            this.getOverridePropertyValue());
 
         this.buildAndRegisterDefinitions(importingClassMetadata, registry, attributes, basePackages, definitions);
     }

@@ -1,7 +1,7 @@
 package internal.org.springframework.content.rest.it.cachecontrol;
 
 import internal.org.springframework.content.rest.it.SecurityConfiguration;
-import internal.org.springframework.content.rest.support.TestEntity;
+import internal.org.springframework.content.rest.support.UuidSingleContentEntity;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -16,13 +16,11 @@ import org.springframework.boot.data.mongodb.autoconfigure.DataMongoRepositories
 import org.springframework.boot.mongodb.autoconfigure.MongoAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.content.fs.config.EnableFileSystemStores;
 import org.springframework.content.fs.io.FileSystemResourceLoader;
 import org.springframework.content.fs.store.FileSystemContentStore;
 import org.springframework.content.rest.config.ContentRestConfigurer;
 import org.springframework.content.rest.config.RestConfiguration;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -55,10 +53,6 @@ import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 @ExtendWith(SpringExtension.class)
 public class CacheControlIT {
 
-    @LocalServerPort
-    int port;
-    @Autowired
-    private ApplicationContext context;
     @Autowired
     private CacheControlRepository repo;
     @Autowired
@@ -66,16 +60,16 @@ public class CacheControlIT {
     @Autowired
     private WebApplicationContext webApplicationContext;
 
-    public interface CacheControlRepository extends CrudRepository<TestEntity, Long> {
+    public interface CacheControlRepository extends CrudRepository<UuidSingleContentEntity, Long> {
     }
 
-    private interface CacheControlStore extends FileSystemContentStore<TestEntity, UUID> {
+    private interface CacheControlStore extends FileSystemContentStore<UuidSingleContentEntity, UUID> {
     }
 
     @SpringBootApplication(exclude = {
-            MongoAutoConfiguration.class,
-            DataMongoAutoConfiguration.class,
-            DataMongoRepositoriesAutoConfiguration.class
+        MongoAutoConfiguration.class,
+        DataMongoAutoConfiguration.class,
+        DataMongoRepositoriesAutoConfiguration.class
     })
     public static class Application {
 
@@ -146,8 +140,8 @@ public class CacheControlIT {
             public ContentRestConfigurer configurer() {
 
                 return config -> config
-                        .cacheControl()
-                        .antMatcher("/testEntities/*", CacheControl.maxAge(Duration.ofSeconds(60)));
+                    .cacheControl()
+                    .antMatcher("/uuidSingleContentEntities/*", CacheControl.maxAge(Duration.ofSeconds(60)));
             }
         }
     }
@@ -161,36 +155,36 @@ public class CacheControlIT {
 
         @Test
         void givenThePatternMatchesItShouldApplyTheConfiguredCacheSettings() {
-            TestEntity entity = new TestEntity();
+            UuidSingleContentEntity entity = new UuidSingleContentEntity();
             entity = repo.save(entity);
             entity = store.setContent(entity, new ByteArrayInputStream("some content".getBytes()));
             entity.setMimeType("text/plain");
             entity = repo.save(entity);
 
             given()
-                    .accept("text/plain")
-                    .when()
-                    .get("/testEntities/" + entity.getId())
-                    .then()
-                    .statusCode(200)
-                    .header("Cache-Control", "max-age=60");
+                .accept("text/plain")
+                .when()
+                .get("/uuidSingleContentEntities/" + entity.getId())
+                .then()
+                .statusCode(200)
+                .header("Cache-Control", "max-age=60");
         }
 
         @Test
         void givenThePatternDoesntMatchItShouldNotApplyTheConfiguredCacheSettings() {
-            TestEntity entity = new TestEntity();
+            UuidSingleContentEntity entity = new UuidSingleContentEntity();
             entity = repo.save(entity);
             entity = store.setContent(entity, new ByteArrayInputStream("some content".getBytes()));
             entity.setMimeType("text/plain");
             entity = repo.save(entity);
 
             given()
-                    .accept("text/plain")
-                    .when()
-                    .get("/testEntities/" + entity.getId() + "/content")
-                    .then()
-                    .statusCode(200)
-                    .header("Cache-Control", "no-cache, no-store, max-age=0, must-revalidate");
+                .accept("text/plain")
+                .when()
+                .get("/uuidSingleContentEntities/" + entity.getId() + "/content")
+                .then()
+                .statusCode(200)
+                .header("Cache-Control", "no-cache, no-store, max-age=0, must-revalidate");
         }
     }
 }

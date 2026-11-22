@@ -44,10 +44,10 @@ public @interface EnableAzureStorage {
     Class<?>[] basePackageClasses() default {};
 
     /**
-     * Returns the {@link FactoryBean} class to be used for each repository instance.
+     * Returns the {@link FactoryBean} class to be used for each store instance.
      * Defaults to {@link AzureStorageFactoryBean}.
      *
-     * @return s3 store factory bean
+     * @return Azure content store factory bean class
      */
     Class<?> storeFactoryBeanClass() default AzureStorageFactoryBean.class;
 }

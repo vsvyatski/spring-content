@@ -1,0 +1,10 @@
+---
+description: Post-change code review uses standard Composer, not Composer fast
+alwaysApply: true
+---
+
+# Agent review
+
+After you change code, or when Vladimir asks for a review, launch one `generalPurpose` Task subagent with model
+`composer-2.5` to review — do not use `composer-2.5-fast`. Composer reports findings only; do not auto-fix unless
+asked.

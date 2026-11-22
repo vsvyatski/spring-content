@@ -21,15 +21,12 @@ import static org.mockito.Mockito.*;
 
 public class PdfToJpegRendererTest {
 
+    private final String toMimeType = "image/jpeg";
     private PDFService pdf;
     private PDDocument doc;
     private PDFRenderer pdfRenderer;
-
     private RenditionProvider renderer;
-
     private InputStream input;
-    private String mimeType;
-
     private Exception e;
 
     @Nested
@@ -82,7 +79,7 @@ public class PdfToJpegRendererTest {
 
                         when(doc.getNumberOfPages()).thenReturn(1);
                         try {
-                            renderer.convert(input, mimeType);
+                            renderer.convert(input, toMimeType);
                         } catch (Exception e) {
                             PdfToJpegRendererTest.this.e = e;
                         }
@@ -114,9 +111,9 @@ public class PdfToJpegRendererTest {
 
                             when(doc.getNumberOfPages()).thenReturn(1);
                             doThrow(IOException.class).when(pdfRenderer)
-                                    .renderImageWithDPI(0, 300, ImageType.RGB);
+                                .renderImageWithDPI(0, 300, ImageType.RGB);
                             try {
-                                renderer.convert(input, mimeType);
+                                renderer.convert(input, toMimeType);
                             } catch (Exception e) {
                                 PdfToJpegRendererTest.this.e = e;
                             }
@@ -151,7 +148,7 @@ public class PdfToJpegRendererTest {
 
                         doThrow(IOException.class).when(pdf).load(any());
                         try {
-                            renderer.convert(input, mimeType);
+                            renderer.convert(input, toMimeType);
                         } catch (Exception e) {
                             PdfToJpegRendererTest.this.e = e;
                         }
@@ -173,7 +170,7 @@ public class PdfToJpegRendererTest {
                     renderer = new PdfToJpegRenderer(pdf);
 
                     try {
-                        renderer.convert(input, mimeType);
+                        renderer.convert(input, toMimeType);
                     } catch (Exception e) {
                         PdfToJpegRendererTest.this.e = e;
                     }

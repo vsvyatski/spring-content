@@ -3,15 +3,12 @@ package org.springframework.content.rest.config;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.fs.config.EnableFileSystemStores;
 import org.springframework.content.fs.io.FileSystemResourceLoader;
 import org.springframework.content.fs.store.FileSystemContentStore;
+import org.springframework.content.test.support.mongo.SingleContentMongoDocument;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguration;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
@@ -26,16 +23,12 @@ import static org.mockito.Mockito.verify;
 
 public class RestConfigurationTest {
 
-    // mocks
     private static ContentRestConfigurer configurer;
     private AnnotationConfigWebApplicationContext context;
 
     @SuppressWarnings("unused") // classpath / store component scan
-    public interface TestEntityRepository extends MongoRepository<TestEntity, String> {
-    }
-
-    @SuppressWarnings("unused") // classpath / store component scan
-    public interface TestEntityContentRepository extends FileSystemContentStore<TestEntity, String> {
+    public interface SingleContentMongoDocumentFsStore
+        extends FileSystemContentStore<SingleContentMongoDocument, String> {
     }
 
     @Configuration
@@ -64,9 +57,9 @@ public class RestConfigurationTest {
                 context = new AnnotationConfigWebApplicationContext();
                 context.setServletContext(new MockServletContext());
                 context.register(TestConfig.class,
-                        DelegatingWebMvcConfiguration.class,
-                        RepositoryRestMvcConfiguration.class,
-                        RestConfiguration.class);
+                    DelegatingWebMvcConfiguration.class,
+                    RepositoryRestMvcConfiguration.class,
+                    RestConfiguration.class);
                 context.refresh();
             }
 
@@ -81,6 +74,11 @@ public class RestConfigurationTest {
             }
 
             @Test
+            void shouldRegisterFilesystemStoreForMongoDocument() {
+                assertThat(context.getBean(SingleContentMongoDocumentFsStore.class)).isNotNull();
+            }
+
+            @Test
             void shouldBeConfigurable() {
                 RestConfiguration config = context.getBean(RestConfiguration.class);
                 assertThat(config).isNotNull();
@@ -88,13 +86,5 @@ public class RestConfigurationTest {
                 verify(configurer).configure(config);
             }
         }
-    }
-
-    @Document
-    public class TestEntity {
-        @Id
-        private String id;
-        @ContentId
-        private String contentId;
     }
 }

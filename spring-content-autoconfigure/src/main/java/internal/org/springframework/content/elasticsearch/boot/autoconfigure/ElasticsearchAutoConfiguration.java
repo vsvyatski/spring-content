@@ -28,7 +28,7 @@ import java.net.URI;
 public class ElasticsearchAutoConfiguration {
 
     @ConditionalOnProperty(prefix = "spring.content.elasticsearch", name = "autoindex",
-            havingValue = "true", matchIfMissing = true)
+        havingValue = "true", matchIfMissing = true)
     @ConditionalOnMissingBean(ElasticsearchIndexer.class)
     @Bean
     public ElasticsearchIndexer elasticFulltextIndexerEventListener(IndexService<?> elasticFulltextIndexService) {

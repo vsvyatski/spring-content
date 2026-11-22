@@ -58,8 +58,8 @@ public class StoreFragmentDetector {
         provider.addIncludeFilter((reader, factory) -> true);
 
         return basePackages.stream()
-                .flatMap(it -> provider.findCandidateComponents(it).stream())
-                .collect(Collectors.toSet());
+            .flatMap(it -> provider.findCandidateComponents(it).stream())
+            .collect(Collectors.toSet());
     }
 
     public StoreFragmentDefinition detectCustomImplementation(String interfaceName, String storeInterface) {
@@ -74,7 +74,7 @@ public class StoreFragmentDetector {
 
         if (definitions.size() > 1) {
             LOGGER.info(String.format("Found implementations found for %s.  Using %s", interfaceName,
-                    definitions.get(0).getBeanClassName()));
+                definitions.get(0).getBeanClassName()));
         }
 
         StoreFragmentDefinition def = new StoreFragmentDefinition(interfaceName, definitions.get(0));
@@ -100,7 +100,7 @@ public class StoreFragmentDetector {
             String localName = shortName.substring(shortName.lastIndexOf('.') + 1);
 
             return localName.equals(getImplementationClassName(interfaceName))
-                    && basePackages.stream().anyMatch(beanPackage::startsWith);
+                && basePackages.stream().anyMatch(beanPackage::startsWith);
         }
 
         private String getImplementationClassName(String interfaceName) {

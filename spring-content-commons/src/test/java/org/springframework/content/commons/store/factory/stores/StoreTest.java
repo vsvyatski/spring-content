@@ -1,6 +1,6 @@
 package org.springframework.content.commons.store.factory.stores;
 
-import internal.org.springframework.content.commons.repository.AnnotatedStoreEventInvoker;
+import internal.org.springframework.content.commons.store.events.AnnotatedStoreEventInvoker;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.content.commons.store.AssociativeStore;
 import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.commons.store.Store;
-import org.springframework.content.commons.store.factory.testsupport.EnableTestStores;
+import org.springframework.content.test.support.factory.EnableTestStores;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
@@ -26,7 +26,7 @@ public class StoreTest {
     @Autowired
     private ApplicationContext context;
 
-    public interface TestContentRepository extends ContentStore<Object, Serializable> {
+    public interface TestContentStore extends ContentStore<Object, Serializable> {
     }
 
     public interface TestStore extends Store<URI> {
@@ -49,7 +49,7 @@ public class StoreTest {
         class GivenTheApplicationContext {
             @Test
             void shouldHaveAStoreBean() {
-                assertThat(context.getBean(TestContentRepository.class)).isNotNull();
+                assertThat(context.getBean(TestContentStore.class)).isNotNull();
             }
 
             @Test

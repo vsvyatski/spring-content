@@ -5,7 +5,6 @@ import internal.org.springframework.content.mongo.config.MongoStoreConfiguration
 import internal.org.springframework.content.mongo.config.MongoStoreFactoryBean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.mongodb.repository.support.MongoRepositoryFactoryBean;
 
 import java.lang.annotation.*;
 
@@ -39,10 +38,10 @@ public @interface EnableMongoStores {
     Class<?>[] basePackageClasses() default {};
 
     /**
-     * Returns the {@link FactoryBean} class to be used for each repository instance.
-     * Defaults to {@link MongoRepositoryFactoryBean}.
+     * Returns the {@link FactoryBean} class to be used for each store instance.
+     * Defaults to {@link MongoStoreFactoryBean}.
      *
-     * @return
+     * @return Mongo content store factory bean class
      */
     Class<?> storeFactoryBeanClass() default MongoStoreFactoryBean.class;
 

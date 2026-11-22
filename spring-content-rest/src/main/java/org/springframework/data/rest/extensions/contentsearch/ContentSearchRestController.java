@@ -114,11 +114,11 @@ public class ContentSearchRestController {
     @ResponseBody
     @RequestMapping(value = ENTITY_CONTENT_SEARCH_MAPPING, method = RequestMethod.GET)
     public CollectionModel<?> searchContent(
-            RootResourceInformation repoInfo,
-            DefaultedPageable pageable,
-            PersistentEntityResourceAssembler assembler,
-            @PathVariable("repository") String repository,
-            @RequestParam(name = "queryString") String queryString) {
+        RootResourceInformation repoInfo,
+        DefaultedPageable pageable,
+        PersistentEntityResourceAssembler assembler,
+        @PathVariable("repository") String repository,
+        @RequestParam(name = "queryString") String queryString) {
 
         return searchContentInternal(repoInfo, repository, pageable, assembler, "search", new String[]{queryString});
     }
@@ -209,12 +209,12 @@ public class ContentSearchRestController {
 
             if (!entityIds.isEmpty() && repositories != null) {
                 repositories.getRepositoryFor(domainClass)
-                        .ifPresent(r -> fetchEntitiesInBatches((CrudRepository<?, ?>) r, entityIds, results));
+                    .ifPresent(r -> fetchEntitiesInBatches((CrudRepository<?, ?>) r, entityIds, results));
             }
 
             if (!contentIds.isEmpty()) {
                 if (ri.getQueryMethods()
-                        .stream().noneMatch(m -> m.getAnnotation(FulltextEntityLookupQuery.class) != null)) {
+                    .stream().noneMatch(m -> m.getAnnotation(FulltextEntityLookupQuery.class) != null)) {
 
                     defaultLookupStrategy.lookup(repoInfo, ri, contentIds, results);
                 } else {

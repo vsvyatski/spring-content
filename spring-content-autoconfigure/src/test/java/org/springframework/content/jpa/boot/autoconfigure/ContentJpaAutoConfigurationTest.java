@@ -16,6 +16,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.content.jpa.config.EnableJpaStores;
 import org.springframework.content.jpa.store.JpaContentStore;
+import org.springframework.content.test.support.jpa.SingleContentJpaLongIdEntity;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -26,7 +27,6 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.Database;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
-import org.springframework.support.TestEntity;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
@@ -40,7 +40,7 @@ public class ContentJpaAutoConfigurationTest {
 
     private ApplicationContextRunner contextRunner;
 
-    public interface TestEntityContentRepository extends JpaContentStore<TestEntity, String> {
+    public interface TestEntityContentStore extends JpaContentStore<SingleContentJpaLongIdEntity, String> {
     }
 
     @Configuration
@@ -112,13 +112,13 @@ public class ContentJpaAutoConfigurationTest {
         void setUp() {
             initializer = mock(ContentJpaDatabaseInitializer.class);
             contextRunner = new ApplicationContextRunner()
-                    .withConfiguration(AutoConfigurations.of(JpaContentAutoConfiguration.class));
+                .withConfiguration(AutoConfigurations.of(JpaContentAutoConfiguration.class));
         }
 
         @Test
-        void shouldHaveAContentRepository() {
+        void shouldHaveAContentStore() {
             contextRunner.withUserConfiguration(TestConfig.class).run((context) -> {
-                Assertions.assertThat(context).hasSingleBean(TestEntityContentRepository.class);
+                Assertions.assertThat(context).hasSingleBean(TestEntityContentStore.class);
                 Assertions.assertThat(context).hasSingleBean(ContentJpaDatabaseInitializer.class);
                 Assertions.assertThat(context).hasBean("copyBufferSize");
             });
@@ -147,13 +147,13 @@ public class ContentJpaAutoConfigurationTest {
             void setUp() {
                 initializer = mock(ContentJpaDatabaseInitializer.class);
                 contextRunner = new ApplicationContextRunner()
-                        .withConfiguration(AutoConfigurations.of(JpaContentAutoConfiguration.class));
+                    .withConfiguration(AutoConfigurations.of(JpaContentAutoConfiguration.class));
             }
 
             @Test
             void shouldLoadTheContext() {
                 contextRunner.withUserConfiguration(ConfigWithExplicitEnableJpaStores.class).run((context) -> {
-                    Assertions.assertThat(context).hasSingleBean(TestEntityContentRepository.class);
+                    Assertions.assertThat(context).hasSingleBean(TestEntityContentStore.class);
                     Assertions.assertThat(context).hasSingleBean(ContentJpaProperties.class);
                     Assertions.assertThat(context).hasSingleBean(ContentJpaDatabaseInitializer.class);
                     Assertions.assertThat(context).hasBean("copyBufferSize");

@@ -2,20 +2,42 @@ package org.springframework.content.encryption;
 
 import org.testcontainers.vault.VaultContainer;
 
-public class VaultContainerSupport {
+/**
+ * Lazy singleton Vault Testcontainers instance for encryption ITs.
+ *
+ * @author Vladimir Svyatski
+ */
+public final class VaultContainerSupport {
 
-    private static VaultContainer vaultContainer;
+    private static volatile VaultContainer vaultContainer;
+
+    private VaultContainerSupport() {
+    }
 
     public static VaultContainer getVaultContainer() {
-
-        if (vaultContainer == null) {
-            vaultContainer = new VaultContainer("hashicorp/vault:1.1.3")
-                    .withVaultToken("my-root-token")
-                    .withInitCommand("secrets enable transit");
-
-            vaultContainer.start();
+        VaultContainer existing = vaultContainer;
+        if (existing != null) {
+            return existing;
         }
+        synchronized (VaultContainerSupport.class) {
+            if (vaultContainer == null) {
+                vaultContainer = startVault();
+            }
+            return vaultContainer;
+        }
+    }
 
-        return vaultContainer;
+    @SuppressWarnings("resource")
+    private static VaultContainer startVault() {
+        VaultContainer container = new VaultContainer("hashicorp/vault:1.1.3")
+            .withVaultToken("my-root-token")
+            .withInitCommand("secrets enable transit");
+        container.start();
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            if (container.isRunning()) {
+                container.stop();
+            }
+        }));
+        return container;
     }
 }

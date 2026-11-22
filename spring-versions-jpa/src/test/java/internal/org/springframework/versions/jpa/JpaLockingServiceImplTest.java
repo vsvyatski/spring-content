@@ -328,7 +328,7 @@ public class JpaLockingServiceImplTest {
 
                     entityId = "some-id";
 
-                    when(jdbcTemplate.query(anyString(), ArgumentMatchers.<RowMapper<String>>any())).thenReturn(Arrays.asList(new String[]{("some-principal"), "some-other-principal"}));
+                    when(jdbcTemplate.query(anyString(), ArgumentMatchers.<RowMapper<String>>any())).thenReturn(Arrays.asList(("some-principal"), "some-other-principal"));
 
                     locker = new JpaLockingServiceImpl(jdbcTemplate);
 

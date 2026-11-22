@@ -1,0 +1,53 @@
+package internal.org.springframework.content.commons.store.service;
+
+import org.springframework.content.commons.store.Store;
+import org.springframework.content.commons.storeservice.StoreInfo;
+
+import java.io.Serializable;
+import java.util.function.Supplier;
+
+public class StoreInfoImpl implements StoreInfo {
+
+    private final Class<? extends Store> storeInterface;
+    private final Class<?> storeDomainClass;
+    private Object storeImpl;
+    private Supplier<Store<Serializable>> storeSupplier;
+
+    public StoreInfoImpl(Class<? extends Store> interfaceClass, Class<?> storeDomainClass,
+                         Store<Serializable> storeImpl) {
+        this.storeInterface = interfaceClass;
+        this.storeDomainClass = storeDomainClass;
+        this.storeImpl = storeImpl;
+    }
+
+    public StoreInfoImpl(Class<? extends Store> interfaceClass, Class<?> storeDomainClass, Supplier<Store<Serializable>> storeSupplier) {
+        this.storeInterface = interfaceClass;
+        this.storeDomainClass = storeDomainClass;
+        this.storeSupplier = storeSupplier;
+    }
+
+    @Override
+    public Class<? extends Store> getInterface() {
+        return this.storeInterface;
+    }
+
+    @Override
+    public Class<?> getDomainObjectClass() {
+        return this.storeDomainClass;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> T getImplementation(Class<? extends T> clazz) {
+
+        if (storeImpl == null) {
+            storeImpl = storeSupplier.get();
+        }
+
+        if (storeImpl != null && clazz.isAssignableFrom(storeImpl.getClass())) {
+            return (T) storeImpl;
+        }
+
+        return null;
+    }
+}

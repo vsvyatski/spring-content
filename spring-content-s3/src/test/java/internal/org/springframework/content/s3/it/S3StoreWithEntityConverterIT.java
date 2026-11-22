@@ -1,32 +1,30 @@
 package internal.org.springframework.content.s3.it;
 
+import jakarta.persistence.Access;
+import jakarta.persistence.AccessType;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import net.bytebuddy.utility.RandomString;
+import jakarta.persistence.Table;
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
-import org.springframework.content.commons.annotations.ContentId;
-import org.springframework.content.commons.annotations.ContentLength;
-import org.springframework.content.commons.annotations.MimeType;
 import org.springframework.content.commons.config.ContentPropertyInfo;
 import org.springframework.content.commons.property.PropertyPath;
-import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.s3.Bucket;
 import org.springframework.content.s3.S3ObjectId;
 import org.springframework.content.s3.config.EnableS3Stores;
 import org.springframework.content.s3.config.S3StoreConfigurer;
+import org.springframework.content.test.support.FakeEntity;
+import org.springframework.content.test.support.TestSupportData;
+import org.springframework.content.test.support.TestSupportPackages;
+import org.springframework.content.test.support.jpa.DualContentJpaLongIdMimeEntity;
+import org.springframework.content.test.support.jpa.DualContentJpaLongIdMimeRepository;
+import org.springframework.content.test.support.jpa.DualContentJpaLongIdMimeStore;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.convert.converter.Converter;
-import org.springframework.core.convert.converter.ConverterRegistry;
-import org.springframework.core.io.Resource;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
@@ -40,13 +38,12 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
 
 import javax.sql.DataSource;
-import java.io.ByteArrayInputStream;
 import java.io.Serializable;
 import java.net.URISyntaxException;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -57,173 +54,71 @@ public class S3StoreWithEntityConverterIT {
     private static final String OTHER_BUCKET = "other-other-other-bucket";
     private static final String OTHER_OTHER_BUCKET = "other-other-bucket";
 
-    private static TestData[] testDataSets = null;
+    private static final TestData[] TEST_DATA_SETS = {
+        new TestData("Default Converter", new Class<?>[]{TestConfig.class}, OTHER_BUCKET),
+        new TestData("Custom Converter", new Class<?>[]{CustomConverterConfig.class, TestConfig.class}, OTHER_OTHER_BUCKET),
+    };
     private static S3Client s3ClientSpy;
 
     static {
         System.setProperty("spring.content.s3.bucket", BUCKET);
-
-        testDataSets = new TestData[]{
-                new TestData("Default Converter", new Class[]{TestConfig.class}, OTHER_BUCKET),
-                new TestData("Custom Converter", new Class[]{CustomConverterConfig.class, TestConfig.class}, OTHER_OTHER_BUCKET),
-        };
     }
 
-    private TestEntity entity;
-    private Resource genericResource;
-
-    private Exception e;
+    private DualContentJpaLongIdMimeEntity entity;
 
     private AnnotationConfigApplicationContext context;
 
-    private TestEntityRepository repo;
-    private TestEntityStore store;
+    private DualContentJpaLongIdMimeRepository repo;
+    private DualContentJpaLongIdMimeStore store;
     private S3Client client;
-    private String resourceLocation;
 
     static Stream<TestData> converterConfigs() {
-        return Stream.of(testDataSets);
+        return Stream.of(TEST_DATA_SETS);
     }
 
-    private void boot(TestData testDataSet) {
+    private void bootContext(TestData testDataSet) {
         context = new AnnotationConfigApplicationContext();
-        context.register(testDataSet.getConfig());
+        context.register(testDataSet.config());
         context.refresh();
 
-        repo = context.getBean(TestEntityRepository.class);
-        store = context.getBean(TestEntityStore.class);
+        repo = context.getBean(DualContentJpaLongIdMimeRepository.class);
+        store = context.getBean(DualContentJpaLongIdMimeStore.class);
         client = context.getBean(S3Client.class);
 
         try {
             HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                    .bucket(testDataSet.getBucket())
-                    .build();
+                .bucket(testDataSet.bucket())
+                .build();
 
             client.headBucket(headBucketRequest);
         } catch (NoSuchBucketException e) {
 
             CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                    .bucket(testDataSet.getBucket())
-                    .build();
+                .bucket(testDataSet.bucket())
+                .build();
             client.createBucket(bucketRequest);
         }
+    }
 
-        RandomString random = new RandomString(5);
-        resourceLocation = random.nextString();
-
+    private void saveEntityWithContent() {
         entity = new TestEntity();
         entity.setContentType("text/plain");
         entity = repo.save(entity);
 
-        store.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+        store.setContent(entity, PropertyPath.from("content"), TestSupportData.sampleTextStream());
     }
 
-    @Nested
-    class GivenAnEntityWithContent {
-        @ParameterizedTest(name = "{0}")
-        @MethodSource("internal.org.springframework.content.s3.it.S3StoreWithEntityConverterIT#converterConfigs")
-        void shouldStoreNewContentInBucket(TestData testDataSet) {
-            try {
-                boot(testDataSet);
-                ArgumentCaptor<PutObjectRequest> captor = ArgumentCaptor.forClass(PutObjectRequest.class);
-                verify(s3ClientSpy).putObject(captor.capture(), any(RequestBody.class));
-                assertThat(captor.getValue().bucket()).isEqualTo(testDataSet.getBucket());
-
-                HeadObjectRequest headObjectRequest = HeadObjectRequest.builder()
-                        .bucket(testDataSet.getBucket())
-                        .key(entity.getContentId().toString())
-                        .build();
-
-                client.headObject(headObjectRequest);
-            } finally {
-                context.close();
-            }
-        }
-
-        @ParameterizedTest(name = "{0}")
-        @MethodSource("internal.org.springframework.content.s3.it.S3StoreWithEntityConverterIT#converterConfigs")
-        void shouldHaveContentMetadata(TestData testDataSet) {
-            try {
-                boot(testDataSet);
-                // content
-                assertThat(entity.getContentId()).isNotNull();
-                assertThat(entity.getContentId().toString().trim().length()).isGreaterThan(0);
-                assertThat(entity.getContentLen()).isEqualTo(27L);
-            } finally {
-                context.close();
-            }
-        }
-
-        @Nested
-        class WhenContentIsDeleted {
-            @ParameterizedTest(name = "{0}")
-            @MethodSource("internal.org.springframework.content.s3.it.S3StoreWithEntityConverterIT#converterConfigs")
-            void shouldDeleteContentFromBucket(TestData testDataSet) {
-                try {
-                    boot(testDataSet);
-
-                    resourceLocation = entity.getContentId().toString();
-                    entity = store.unsetContent(entity, PropertyPath.from("content"));
-                    entity = repo.save(entity);
-                    ArgumentCaptor<DeleteObjectRequest> captor = ArgumentCaptor.forClass(DeleteObjectRequest.class);
-                    verify(s3ClientSpy).deleteObject(captor.capture());
-                    assertThat(captor.getValue().bucket()).isEqualTo(testDataSet.getBucket());
-
-                    HeadObjectRequest headObjectRequest = HeadObjectRequest.builder()
-                            .bucket(testDataSet.getBucket())
-                            .key(resourceLocation)
-                            .build();
-
-                    try {
-                        client.headObject(headObjectRequest);
-                        fail("expected object not to exist");
-                    } catch (NoSuchKeyException e) {
-                    }
-                } finally {
-                    context.close();
-                }
-            }
-        }
-    }
-
-    public interface TestEntityRepository extends JpaRepository<TestEntity, Long> {
-    }
-
-    public interface TestEntityStore extends ContentStore<TestEntity, String> {
-    }
-
-    private static class TestData {
-        private String name;
-        private Class[] config;
-        private String bucket;
-
-        public TestData(String name, Class[] config, String bucket) {
-            this.name = name;
-            this.config = config;
-            this.bucket = bucket;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public Class[] getConfig() {
-            return config;
-        }
-
-        public String getBucket() {
-            return bucket;
-        }
-
+    private record TestData(String name, Class<?>[] config, String bucket) {
         @Override
-        public String toString() {
+        public @NonNull String toString() {
             return name;
         }
     }
 
     @Configuration
-    @EnableJpaRepositories(basePackages = "internal.org.springframework.content.s3.it", considerNestedRepositories = true)
-    @EnableS3Stores(basePackages = "internal.org.springframework.content.s3.it")
+    @EnableJpaRepositories(basePackages = {TestSupportPackages.JPA, "internal.org.springframework.content.s3.it"},
+        considerNestedRepositories = true)
+    @EnableS3Stores(basePackages = {TestSupportPackages.JPA, "internal.org.springframework.content.s3.it"})
     @Import(InfrastructureConfig.class)
     public static class TestConfig {
 
@@ -239,25 +134,14 @@ public class S3StoreWithEntityConverterIT {
 
         @Bean
         public S3StoreConfigurer configurer() {
-            return new S3StoreConfigurer() {
-
-                @Override
-                public void configureS3StoreConverters(ConverterRegistry registry) {
-
-                    registry.addConverter(new Converter<ContentPropertyInfo<TestEntity, Serializable>, S3ObjectId>() {
-                        @Override
-                        public S3ObjectId convert(ContentPropertyInfo<TestEntity, Serializable> info) {
-                            return new S3ObjectId(OTHER_OTHER_BUCKET, info.contentId().toString());
-                        }
+            return registry -> {
+                registry.addConverter(
+                    (@NonNull ContentPropertyInfo<TestEntity, Serializable> info) ->
+                        new S3ObjectId(OTHER_OTHER_BUCKET, String.valueOf(info.contentId())));
+                registry.addConverter(
+                    (@NonNull ContentPropertyInfo<FakeEntity, Serializable> info) -> {
+                        throw new IllegalStateException("wrong converter called");
                     });
-
-                    registry.addConverter(new Converter<ContentPropertyInfo<FakeEntity, Serializable>, S3ObjectId>() {
-                        @Override
-                        public S3ObjectId convert(ContentPropertyInfo<FakeEntity, Serializable> info) {
-                            throw new IllegalStateException("wrong converter called");
-                        }
-                    });
-                }
             };
         }
     }
@@ -280,7 +164,7 @@ public class S3StoreWithEntityConverterIT {
 
             LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
             factory.setJpaVendorAdapter(vendorAdapter);
-            factory.setPackagesToScan("internal.org.springframework.content.s3.it");
+            factory.setPackagesToScan("internal.org.springframework.content.s3.it", TestSupportPackages.JPA);
             factory.setDataSource(dataSource());
 
             return factory;
@@ -295,106 +179,84 @@ public class S3StoreWithEntityConverterIT {
         }
     }
 
-    public static class FakeEntity {
-    }
-
+    /**
+     * S3 {@link Bucket} lives on a subtype; commons test-jar cannot depend on this module.
+     */
     @Entity
-    public static class TestEntity {
-
-        @Id
-        @GeneratedValue(strategy = GenerationType.AUTO)
-        private Long id;
+    @Table(name = "test_entity")
+    @Access(AccessType.FIELD)
+    public static class TestEntity extends DualContentJpaLongIdMimeEntity {
 
         @Bucket
-        private String bucket = "other-other-other-bucket";
+        @SuppressWarnings("unused") // read by S3 entity-level @Bucket mapping
+        private final String bucket = "other-other-other-bucket";
+    }
 
-        @ContentId
-        private String contentId;
+    @Nested
+    class GivenAnEntityWithContent {
+        @ParameterizedTest(name = "{0}")
+        @MethodSource("internal.org.springframework.content.s3.it.S3StoreWithEntityConverterIT#converterConfigs")
+        void shouldStoreNewContentInBucket(TestData testDataSet) {
+            try {
+                bootContext(testDataSet);
+                saveEntityWithContent();
+                ArgumentCaptor<PutObjectRequest> captor = ArgumentCaptor.forClass(PutObjectRequest.class);
+                verify(s3ClientSpy).putObject(captor.capture(), any(RequestBody.class));
+                assertThat(captor.getValue().bucket()).isEqualTo(testDataSet.bucket());
 
-        @ContentLength
-        private long contentLen;
-
-        @MimeType
-        private String contentType;
-
-        @ContentId
-        private String renditionId;
-
-        @ContentLength
-        private long renditionLen;
-
-        @MimeType
-        private String renditionContentType;
-
-        public TestEntity() {
+                String contentKey = entity.getContentId();
+                assertThat(contentKey).isNotNull();
+                client.headObject(HeadObjectRequest.builder()
+                    .bucket(testDataSet.bucket())
+                    .key(contentKey)
+                    .build());
+            } finally {
+                context.close();
+            }
         }
 
-        public TestEntity(String contentId) {
-            this.contentId = contentId;
+        @ParameterizedTest(name = "{0}")
+        @MethodSource("internal.org.springframework.content.s3.it.S3StoreWithEntityConverterIT#converterConfigs")
+        void shouldHaveContentMetadata(TestData testDataSet) {
+            try {
+                bootContext(testDataSet);
+                saveEntityWithContent();
+                // content
+                assertThat(entity.getContentId()).isNotNull();
+                assertThat(entity.getContentId().trim().length()).isGreaterThan(0);
+                assertThat(entity.getContentLen()).isEqualTo(27L);
+            } finally {
+                context.close();
+            }
         }
 
-        public Long getId() {
-            return id;
-        }
+        @Nested
+        class WhenContentIsDeleted {
+            @ParameterizedTest(name = "{0}")
+            @MethodSource("internal.org.springframework.content.s3.it.S3StoreWithEntityConverterIT#converterConfigs")
+            void shouldDeleteContentFromBucket(TestData testDataSet) {
+                try {
+                    bootContext(testDataSet);
+                    saveEntityWithContent();
 
-        public void setId(Long id) {
-            this.id = id;
-        }
+                    String resourceLocation = entity.getContentId();
+                    entity = store.unsetContent(entity, PropertyPath.from("content"));
+                    entity = repo.save(entity);
+                    ArgumentCaptor<DeleteObjectRequest> captor = ArgumentCaptor.forClass(DeleteObjectRequest.class);
+                    verify(s3ClientSpy).deleteObject(captor.capture());
+                    assertThat(captor.getValue().bucket()).isEqualTo(testDataSet.bucket());
 
-        public String getBucket() {
-            return bucket;
-        }
+                    HeadObjectRequest headObjectRequest = HeadObjectRequest.builder()
+                        .bucket(testDataSet.bucket())
+                        .key(resourceLocation)
+                        .build();
 
-        public void setBucket(String bucket) {
-            this.bucket = bucket;
-        }
-
-        public String getContentId() {
-            return contentId;
-        }
-
-        public void setContentId(String contentId) {
-            this.contentId = contentId;
-        }
-
-        public long getContentLen() {
-            return contentLen;
-        }
-
-        public void setContentLen(long contentLen) {
-            this.contentLen = contentLen;
-        }
-
-        public String getContentType() {
-            return contentType;
-        }
-
-        public void setContentType(String contentType) {
-            this.contentType = contentType;
-        }
-
-        public String getRenditionId() {
-            return renditionId;
-        }
-
-        public void setRenditionId(String renditionId) {
-            this.renditionId = renditionId;
-        }
-
-        public long getRenditionLen() {
-            return renditionLen;
-        }
-
-        public void setRenditionLen(long renditionLen) {
-            this.renditionLen = renditionLen;
-        }
-
-        public String getRenditionContentType() {
-            return renditionContentType;
-        }
-
-        public void setRenditionContentType(String renditionContentType) {
-            this.renditionContentType = renditionContentType;
+                    assertThatThrownBy(() -> client.headObject(headObjectRequest))
+                        .isInstanceOf(NoSuchKeyException.class);
+                } finally {
+                    context.close();
+                }
+            }
         }
     }
 }

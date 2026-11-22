@@ -98,9 +98,9 @@ public class S3StoreResource implements WritableResource, DeletableResource, Ran
     public void delete() {
         if (delegate.exists()) {
             DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
-                    .bucket(bucket)
-                    .key(delegate.getFilename())
-                    .build();
+                .bucket(bucket)
+                .key(delegate.getFilename())
+                .build();
 
             client.deleteObject(deleteObjectRequest);
         }

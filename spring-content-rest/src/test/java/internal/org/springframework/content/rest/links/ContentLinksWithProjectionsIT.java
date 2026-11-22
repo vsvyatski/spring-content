@@ -3,25 +3,21 @@ package internal.org.springframework.content.rest.links;
 import com.theoryinpractise.halbuilder.api.ReadableRepresentation;
 import com.theoryinpractise.halbuilder.api.RepresentationFactory;
 import com.theoryinpractise.halbuilder.standard.StandardRepresentationFactory;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import internal.org.springframework.content.rest.scoped.projection.ProjectedContentEntityRepository;
+import internal.org.springframework.content.rest.scoped.projection.ProjectedContentEntityStore;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.content.commons.annotations.ContentId;
-import org.springframework.content.commons.annotations.ContentLength;
-import org.springframework.content.commons.annotations.MimeType;
 import org.springframework.content.fs.config.EnableFileSystemStores;
 import org.springframework.content.fs.io.FileSystemResourceLoader;
-import org.springframework.content.fs.store.FileSystemContentStore;
 import org.springframework.content.rest.config.HypermediaConfiguration;
 import org.springframework.content.rest.config.RestConfiguration;
+import org.springframework.content.test.support.TestSupportData;
+import org.springframework.content.test.support.jpa.fixture.SingleContentJpaLongIdUuidNamedEntity;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.rest.core.config.Projection;
 import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguration;
@@ -45,10 +41,8 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfiguration;
 
 import javax.sql.DataSource;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.StringReader;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -56,103 +50,42 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebAppConfiguration
 @ContextConfiguration(classes = {
-        ContentLinksWithProjectionsIT.StoreConfig.class,
-        DelegatingWebMvcConfiguration.class,
-        RepositoryRestMvcConfiguration.class,
-        RestConfiguration.class,
-        HypermediaConfiguration.class})
+    ContentLinksWithProjectionsIT.StoreConfig.class,
+    DelegatingWebMvcConfiguration.class,
+    RepositoryRestMvcConfiguration.class,
+    RestConfiguration.class,
+    HypermediaConfiguration.class})
 @Transactional
 @ActiveProfiles("store")
 @ExtendWith(SpringExtension.class)
 public class ContentLinksWithProjectionsIT {
 
     @Autowired
-    TEntityRepository repository;
+    ProjectedContentEntityRepository repository;
 
     @Autowired
-    TEntityStore store;
+    ProjectedContentEntityStore store;
 
     @Autowired
     private WebApplicationContext context;
 
     private MockMvc mvc;
 
-    private TEntity testEntity;
+    private SingleContentJpaLongIdUuidNamedEntity testEntity;
 
     @Projection(
-            name = "customTEntity",
-            types = {TEntity.class})
+        name = "customTEntity",
+        types = {SingleContentJpaLongIdUuidNamedEntity.class})
     @SuppressWarnings("unused") // Spring Data REST projection
     public interface CustomTEntity {
 
         String getName();
     }
 
-    public interface TEntityRepository extends JpaRepository<TEntity, Long> {
-    }
-
-    public interface TEntityStore extends FileSystemContentStore<TEntity, UUID> {
-    }
-
-    @Entity
-    public static class TEntity {
-
-        @Id
-        @GeneratedValue
-        private Long id;
-        private String name;
-        private @ContentId UUID contentId;
-        private @ContentLength Long len;
-        private @MimeType String mimeType;
-
-        public TEntity() {
-        }
-
-        public Long getId() {
-            return id;
-        }
-
-        public void setId(Long id) {
-            this.id = id;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public UUID getContentId() {
-            return contentId;
-        }
-
-        public void setContentId(UUID contentId) {
-            this.contentId = contentId;
-        }
-
-        public Long getLen() {
-            return len;
-        }
-
-        public void setLen(Long len) {
-            this.len = len;
-        }
-
-        public String getMimeType() {
-            return mimeType;
-        }
-
-        public void setMimeType(String mimeType) {
-            this.mimeType = mimeType;
-        }
-    }
-
     @Configuration
-    @EnableJpaRepositories(basePackages = "internal.org.springframework.content.rest.links", considerNestedRepositories = true)
+    @EnableJpaRepositories(basePackages = "internal.org.springframework.content.rest.scoped.projection", considerNestedRepositories = true)
     @EnableTransactionManagement
-    @EnableFileSystemStores(basePackages = "internal.org.springframework.content.rest.links")
+    @EnableFileSystemStores(basePackages = "internal.org.springframework.content.rest.scoped.projection")
 //    @Profile("store")
     public static class StoreConfig /*extends JpaInfrastructureConfig*/ {
 
@@ -181,7 +114,7 @@ public class ContentLinksWithProjectionsIT {
 
         protected String[] packagesToScan() {
             return new String[]{
-                    "internal.org.springframework.content.rest.links"
+                "org.springframework.content.test.support.jpa.fixture"
             };
         }
 
@@ -199,7 +132,9 @@ public class ContentLinksWithProjectionsIT {
         public File filesystemRoot() {
             File baseDir = new File(System.getProperty("java.io.tmpdir"));
             File filesystemRoot = new File(baseDir, "spring-content-controller-tests");
-            filesystemRoot.mkdirs();
+            if (!filesystemRoot.mkdirs() && !filesystemRoot.isDirectory()) {
+                throw new IllegalStateException("Failed to create " + filesystemRoot);
+            }
             return filesystemRoot;
         }
     }
@@ -214,27 +149,27 @@ public class ContentLinksWithProjectionsIT {
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
-                    testEntity = new TEntity();
+                    testEntity = new SingleContentJpaLongIdUuidNamedEntity();
                     testEntity.setName("foo");
-                    testEntity = store.setContent(testEntity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                    testEntity = store.setContent(testEntity, TestSupportData.sampleTextStream());
                     testEntity = repository.save(testEntity);
                 }
 
                 @Test
                 void shouldProvideAResponseWithAContentLink() throws Exception {
-                    MockHttpServletResponse response = mvc.perform(get("/tEntities/" + testEntity.getId() + "?projection=customTEntity")
-                                    .accept("application/hal+json"))
-                            .andExpect(status().isOk()).andReturn().getResponse();
+                    MockHttpServletResponse response = mvc.perform(get("/projectedContentEntities/" + testEntity.getId() + "?projection=customTEntity")
+                            .accept("application/hal+json"))
+                        .andExpect(status().isOk()).andReturn().getResponse();
                     assertThat(response).isNotNull();
 
                     RepresentationFactory representationFactory = new StandardRepresentationFactory();
                     ReadableRepresentation halResponse = representationFactory
-                            .readRepresentation("application/hal+json",
-                                    new StringReader(response.getContentAsString()));
+                        .readRepresentation("application/hal+json",
+                            new StringReader(response.getContentAsString()));
 
                     assertThat(halResponse).isNotNull();
                     assertThat(halResponse.getLinksByRel("content")).isNotNull();
-                    assertThat(halResponse.getLinksByRel("content")).extracting("href").contains("http://localhost/tEntities/" + testEntity.getId() + "/content");
+                    assertThat(halResponse.getLinksByRel("content")).extracting("href").contains("http://localhost/projectedContentEntities/" + testEntity.getId() + "/content");
                 }
             }
         }

@@ -29,7 +29,7 @@ import static java.lang.String.format;
 
 @Transactional(readOnly = true)
 public class DefaultFileSystemStoreImpl<S, SID extends Serializable>
-        implements ContentStore<S, SID> {
+    implements ContentStore<S, SID> {
 
     private static final Log logger = LogFactory.getLog(DefaultFileSystemStoreImpl.class);
 
@@ -111,16 +111,16 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable>
     @Override
     public void unassociate(S entity) {
         BeanUtils.setFieldWithAnnotationConditionally(entity, ContentId.class, null,
-                field -> {
-                    for (Annotation annotation : field.getAnnotations()) {
-                        String canonicalName = annotation.annotationType().getCanonicalName();
-                        if ("org.springframework.data.annotation.Id".equals(canonicalName)
-                                || "jakarta.persistence.Id".equals(canonicalName)) {
-                            return false;
-                        }
+            field -> {
+                for (Annotation annotation : field.getAnnotations()) {
+                    String canonicalName = annotation.annotationType().getCanonicalName();
+                    if ("org.springframework.data.annotation.Id".equals(canonicalName)
+                        || "jakarta.persistence.Id".equals(canonicalName)) {
+                        return false;
                     }
-                    return true;
-                });
+                }
+                return true;
+            });
     }
 
     @Override
@@ -129,7 +129,7 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable>
             for (Annotation annotation : descriptor.getAnnotations()) {
                 String canonicalName = annotation.annotationType().getCanonicalName();
                 if ("org.springframework.data.annotation.Id".equals(canonicalName)
-                        || "jakarta.persistence.Id".equals(canonicalName)) {
+                    || "jakarta.persistence.Id".equals(canonicalName)) {
                     return false;
                 }
             }
@@ -175,11 +175,11 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable>
 
         try {
             BeanUtils.setFieldWithAnnotation(entity, ContentLength.class,
-                    resource.contentLength());
+                resource.contentLength());
         } catch (IOException e) {
             logger.error(format(
-                    "Unexpected error setting content length for content for resource %s",
-                    resource), e);
+                "Unexpected error setting content length for content for resource %s",
+                resource), e);
         }
 
         return entity;
@@ -202,21 +202,21 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable>
     public S setContent(S property, PropertyPath propertyPath, InputStream content, SetContentParams params) {
 
         ContentProperty contentProperty = this.mappingContext
-                .getContentProperty(property.getClass(), propertyPath.name());
+            .getContentProperty(property.getClass(), propertyPath.name());
         if (contentProperty == null) {
             throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.name()));
         }
 
         Object contentId = contentProperty.getContentId(property);
         if (contentId == null || params.disposition()
-                .equals(org.springframework.content.commons.store.SetContentParams.ContentDisposition.CreateNew)) {
+            .equals(org.springframework.content.commons.store.SetContentParams.ContentDisposition.CreateNew)) {
 
             Serializable newId = UuidCreator.getTimeOrdered().toString();
 
             Object convertedId = placer.convert(
-                    newId,
-                    TypeDescriptor.forObject(newId),
-                    contentProperty.getContentIdType(property));
+                newId,
+                TypeDescriptor.forObject(newId),
+                contentProperty.getContentIdType(property));
 
             contentProperty.setContentId(property, convertedId, null);
         }
@@ -341,7 +341,7 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable>
         Class<?> contentLenType = BeanUtils.getFieldWithAnnotationType(entity, ContentLength.class);
         if (contentLenType != null) {
             BeanUtils.setFieldWithAnnotation(entity, ContentLength.class,
-                    BeanUtils.getDefaultValueForType(contentLenType));
+                BeanUtils.getDefaultValueForType(contentLenType));
         }
 
         return entity;
@@ -376,17 +376,17 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable>
             unassociate(entity, propertyPath);
 
             property.setContentLength(entity,
-                    BeanUtils.getDefaultValueForType(property.getContentLengthType().getType()));
+                BeanUtils.getDefaultValueForType(property.getContentLengthType().getType()));
         }
         return entity;
     }
 
     private Object convertToExternalContentIdType(S property, Object contentId) {
         if (placer.canConvert(TypeDescriptor.forObject(contentId),
-                TypeDescriptor.valueOf(BeanUtils.getFieldWithAnnotationType(property,
-                        ContentId.class)))) {
+            TypeDescriptor.valueOf(BeanUtils.getFieldWithAnnotationType(property,
+                ContentId.class)))) {
             contentId = placer.convert(contentId, TypeDescriptor.forObject(contentId),
-                    TypeDescriptor.valueOf(BeanUtils.getFieldWithAnnotationType(property, ContentId.class)));
+                TypeDescriptor.valueOf(BeanUtils.getFieldWithAnnotationType(property, ContentId.class)));
             return contentId;
         }
         return contentId.toString();

@@ -7,14 +7,25 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontFormatException;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.font.FontRenderContext;
 import java.awt.font.LineBreakMeasurer;
 import java.awt.font.TextAttribute;
 import java.awt.font.TextLayout;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.text.AttributedCharacterIterator;
 import java.text.AttributedString;
 import java.util.ArrayList;
@@ -22,12 +33,14 @@ import java.util.ArrayList;
 @Service
 public class TextplainToJpegRenderer implements RenditionProvider {
 
-    //private static Log logger = LogFactory.getLog(WordToJpegRenderer.class);
-
     private static final int width = 272;
     private static final int margin = 5;
-    private static final String fontName = "Courier New";
     private static final int fontSize = 12;
+
+    private static final String FONT_RESOURCE =
+        "/org/springframework/content/renditions/fonts/JetBrainsMono-Regular.ttf";
+
+    private static final Font renderingFont = loadRenderingFont();
 
     private boolean wrapText = false;
 
@@ -36,6 +49,17 @@ public class TextplainToJpegRenderer implements RenditionProvider {
 
     public TextplainToJpegRenderer(boolean wrapText) {
         this.wrapText = wrapText;
+    }
+
+    private static Font loadRenderingFont() {
+        try (InputStream in = TextplainToJpegRenderer.class.getResourceAsStream(FONT_RESOURCE)) {
+            Assert.notNull(in, () -> "Bundled font not found on classpath: " + FONT_RESOURCE);
+            Font base = Font.createFont(Font.TRUETYPE_FONT, in);
+            return base.deriveFont(Font.PLAIN, (float) fontSize);
+        }
+        catch (IOException | FontFormatException e) {
+            throw new RenditionException("Error loading bundled font", e);
+        }
     }
 
     @Override
@@ -53,17 +77,12 @@ public class TextplainToJpegRenderer implements RenditionProvider {
 
         Assert.notNull(fromInputSource, "input source must not be null");
 
-        Font font;
-        try {
-            font = new Font(fontName, Font.PLAIN, fontSize);
-        } catch (Exception e) {
-            throw new RenditionException("Error creating font", e);
-        }
+        Font font = renderingFont;
 
         BufferedImage tempBuffer = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
         Graphics2D g = tempBuffer.createGraphics();
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                RenderingHints.VALUE_ANTIALIAS_ON);
+            RenderingHints.VALUE_ANTIALIAS_ON);
         g.setFont(font);
 
         FontRenderContext fc = g.getFontRenderContext();
@@ -101,9 +120,9 @@ public class TextplainToJpegRenderer implements RenditionProvider {
 
             AttributedString attribString = new AttributedString(line);
             attribString.addAttribute(TextAttribute.BACKGROUND, Color.WHITE, 0,
-                    line.length());
+                line.length());
             attribString.addAttribute(TextAttribute.FOREGROUND, Color.BLACK, 0,
-                    line.length());
+                line.length());
             attribString.addAttribute(TextAttribute.FONT, font, 0, line.length());
 
             AttributedCharacterIterator aci = attribString.getIterator();
@@ -111,11 +130,11 @@ public class TextplainToJpegRenderer implements RenditionProvider {
 
             while (lbm.getPosition() < line.length()) {
                 BufferedImage lineBuffer = new BufferedImage(width, lineHeight,
-                        BufferedImage.TYPE_INT_ARGB);
+                    BufferedImage.TYPE_INT_ARGB);
 
                 Graphics2D g1 = lineBuffer.createGraphics();
                 g1.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                        RenderingHints.VALUE_ANTIALIAS_ON);
+                    RenderingHints.VALUE_ANTIALIAS_ON);
 
                 TextLayout layout = lbm.nextLayout(width - margin);
 
@@ -154,7 +173,7 @@ public class TextplainToJpegRenderer implements RenditionProvider {
 
         for (int i = 0; i < images.size(); i++) {
             g.drawImage(images.get(i), 0, margin + (i * lineHeight),
-                    null);
+                null);
         }
 
         OutputStream out = new FileOutputStream(fileName);

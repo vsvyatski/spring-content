@@ -1,27 +1,27 @@
 package it.store;
 
-import com.github.f4b6a3.uuid.UuidCreator;
-import jakarta.persistence.*;
-import net.bytebuddy.utility.RandomString;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.content.commons.annotations.ContentId;
-import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.io.DeletableResource;
 import org.springframework.content.commons.property.PropertyPath;
-import org.springframework.content.commons.store.*;
+import org.springframework.content.commons.store.GetResourceParams;
+import org.springframework.content.commons.store.SetContentParams;
+import org.springframework.content.commons.store.StoreAccessException;
+import org.springframework.content.commons.store.UnsetContentParams;
 import org.springframework.content.fs.config.EnableFileSystemStores;
 import org.springframework.content.fs.io.FileSystemResourceLoader;
+import org.springframework.content.test.support.TestSupportData;
+import org.springframework.content.test.support.TestSupportPackages;
+import org.springframework.content.test.support.jpa.*;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.WritableResource;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
@@ -40,17 +40,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class FileSystemStoreIT {
 
-    private FileSystemStoreIT.TEntity entity;
+    private DualContentJpaStringIdEntity entity;
     private Resource genericResource;
     private Exception e;
 
     private AnnotationConfigApplicationContext context;
 
-    private TestEntityRepository repo;
-    private TestEntityStore store;
+    private DualContentJpaStringIdRepository repo;
+    private DualContentJpaStringIdStore store;
 
-    private EmbeddedRepository embeddedRepo;
-    private EmbeddedStore embeddedStore;
+    private EmbeddedContentJpaStringIdRepository embeddedRepo;
+    private EmbeddedContentJpaStringIdStore embeddedStore;
 
     private String resourceLocation;
 
@@ -60,11 +60,11 @@ public class FileSystemStoreIT {
         context.register(TestConfig.class);
         context.refresh();
 
-        repo = context.getBean(TestEntityRepository.class);
-        store = context.getBean(TestEntityStore.class);
-        embeddedRepo = context.getBean(EmbeddedRepository.class);
-        embeddedStore = context.getBean(EmbeddedStore.class);
-        resourceLocation = new RandomString(5).nextString();
+        repo = context.getBean(DualContentJpaStringIdRepository.class);
+        store = context.getBean(DualContentJpaStringIdStore.class);
+        embeddedRepo = context.getBean(EmbeddedContentJpaStringIdRepository.class);
+        embeddedStore = context.getBean(EmbeddedContentJpaStringIdStore.class);
+        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
     }
 
     @AfterEach
@@ -74,37 +74,9 @@ public class FileSystemStoreIT {
         }
     }
 
-    public interface ContentProperty {
-        String getContentId();
-
-        void setContentId(String contentId);
-
-        Long getContentLen();
-
-        void setContentLen(Long contentLen);
-    }
-
-    public interface TestEntityRepository extends JpaRepository<TEntity, String> {
-    }
-
-    public interface TestEntityStore extends ContentStore<TEntity, String> {
-    }
-
-    public interface SharedIdRepository extends JpaRepository<SharedIdContentIdEntity, String> {
-    }
-
-    public interface SharedIdStore extends ContentStore<SharedIdContentIdEntity, String> {
-    }
-
-    public interface EmbeddedRepository extends JpaRepository<EntityWithEmbeddedContent, String> {
-    }
-
-    public interface EmbeddedStore extends ContentStore<EntityWithEmbeddedContent, String> {
-    }
-
     @Configuration
-    @EnableJpaRepositories(considerNestedRepositories = true)
-    @EnableFileSystemStores
+    @EnableJpaRepositories(basePackages = TestSupportPackages.JPA, considerNestedRepositories = true)
+    @EnableFileSystemStores(basePackages = TestSupportPackages.JPA)
     @Import(InfrastructureConfig.class)
     public static class TestConfig {
     }
@@ -141,7 +113,7 @@ public class FileSystemStoreIT {
 
             LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
             factory.setJpaVendorAdapter(vendorAdapter);
-            factory.setPackagesToScan("it.store");
+            factory.setPackagesToScan(TestSupportPackages.JPA);
             factory.setDataSource(dataSource());
 
             return factory;
@@ -153,148 +125,6 @@ public class FileSystemStoreIT {
             JpaTransactionManager txManager = new JpaTransactionManager();
             txManager.setEntityManagerFactory(entityManagerFactory().getObject());
             return txManager;
-        }
-    }
-
-    @Entity
-    @Table(name = "tEntity")
-    public static class TEntity implements ContentProperty {
-
-        @Id
-        private String id = UuidCreator.getTimeOrdered().toString();
-
-        @ContentId
-        private String contentId;
-
-        @ContentLength
-        private Long contentLen;
-
-        @ContentId
-        private String renditionId;
-
-        @ContentLength
-        private long renditionLen;
-
-        public TEntity() {
-        }
-
-        @Override
-        public String getContentId() {
-            return this.contentId;
-        }
-
-        @Override
-        public void setContentId(String contentId) {
-            this.contentId = contentId;
-        }
-
-        @Override
-        public Long getContentLen() {
-            return contentLen;
-        }
-
-        @Override
-        public void setContentLen(Long contentLen) {
-            this.contentLen = contentLen;
-        }
-
-        public String getRenditionId() {
-            return this.renditionId;
-        }
-
-        public void setRenditionId(String renditionId) {
-            this.renditionId = renditionId;
-        }
-
-        public long getRenditionLen() {
-            return renditionLen;
-        }
-
-        public void setRenditionLen(long renditionLen) {
-            this.renditionLen = renditionLen;
-        }
-    }
-
-    @Entity
-    @Table(name = "shared_id_entity")
-    public static class SharedIdContentIdEntity implements ContentProperty {
-
-        @Id
-        @ContentId
-        private String contentId = UuidCreator.getTimeOrdered().toString();
-
-        @ContentLength
-        private Long contentLen;
-
-        @Override
-        public String getContentId() {
-            return this.contentId;
-        }
-
-        @Override
-        public void setContentId(String contentId) {
-            this.contentId = contentId;
-        }
-
-        @Override
-        public Long getContentLen() {
-            return contentLen;
-        }
-
-        @Override
-        public void setContentLen(Long contentLen) {
-            this.contentLen = contentLen;
-        }
-    }
-
-    @Entity
-    @Table(name = "entity_with_embedded")
-    public static class EntityWithEmbeddedContent {
-        @Id
-        private String id = UuidCreator.getTimeOrdered().toString();
-
-        @Embedded
-        private EmbeddedContent content;
-
-        public String getId() {
-            return id;
-        }
-
-        public void setId(String id) {
-            this.id = id;
-        }
-
-        public EmbeddedContent getContent() {
-            return content;
-        }
-
-        public void setContent(EmbeddedContent content) {
-            this.content = content;
-        }
-    }
-
-    @Embeddable
-    public static class EmbeddedContent {
-        @ContentId
-        private String contentId;
-
-        @ContentLength
-        private Long contentLen;
-
-        public String getContentId() {
-            return contentId;
-        }
-
-        public void setContentId(String contentId) {
-            this.contentId = contentId;
-        }
-
-        public Long getContentLen() {
-            return contentLen;
-        }
-
-        public void setContentLen(Long contentLen) {
-            this.contentLen = contentLen;
         }
     }
 
@@ -325,10 +155,10 @@ public class FileSystemStoreIT {
 
         @Test
         void shouldStoreThatContent() throws IOException {
-            write(genericResource, "Hello Spring Content World!");
+            write(genericResource, TestSupportData.SAMPLE_TEXT_PAYLOAD);
 
             assertThat(genericResource.exists()).isTrue();
-            try (InputStream expected = new ByteArrayInputStream("Hello Spring Content World!".getBytes())) {
+            try (InputStream expected = TestSupportData.sampleTextStream()) {
                 try (InputStream actual = genericResource.getInputStream()) {
                     assertThat(IOUtils.contentEquals(expected, actual)).isTrue();
                 }
@@ -337,11 +167,11 @@ public class FileSystemStoreIT {
 
         @Test
         void shouldStoreThatUpdatedContent() throws IOException {
-            write(genericResource, "Hello Spring Content World!");
-            write(genericResource, "Hello Updated Spring Content World!");
+            write(genericResource, TestSupportData.SAMPLE_TEXT_PAYLOAD);
+            write(genericResource, TestSupportData.SAMPLE_UPDATED_TEXT_PAYLOAD);
 
             assertThat(genericResource.exists()).isTrue();
-            try (InputStream expected = new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes())) {
+            try (InputStream expected = TestSupportData.sampleUpdatedTextStream()) {
                 try (InputStream actual = genericResource.getInputStream()) {
                     assertThat(IOUtils.contentEquals(expected, actual)).isTrue();
                 }
@@ -351,7 +181,7 @@ public class FileSystemStoreIT {
         @Test
         void shouldNotExistOnceDeleted() {
             try {
-                write(genericResource, "Hello Spring Content World!");
+                write(genericResource, TestSupportData.SAMPLE_TEXT_PAYLOAD);
                 ((DeletableResource) genericResource).delete();
             } catch (Exception ex) {
                 e = ex;
@@ -373,7 +203,7 @@ public class FileSystemStoreIT {
 
         @BeforeEach
         void setUp() {
-            entity = repo.save(new TEntity());
+            entity = repo.save(new DualContentJpaStringIdEntity());
         }
 
         @Test
@@ -456,20 +286,20 @@ public class FileSystemStoreIT {
 
         @BeforeEach
         void setUp() {
-            entity = repo.save(new TEntity());
-            store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-            store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
+            entity = repo.save(new DualContentJpaStringIdEntity());
+            store.setContent(entity, TestSupportData.sampleTextStream());
+            store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleHtmlRenditionStream());
         }
 
         @Test
         void shouldBeAbleToStoreNewContent() {
             try (InputStream content = store.getContent(entity)) {
-                assertThat(IOUtils.contentEquals(new ByteArrayInputStream("Hello Spring Content World!".getBytes()), content)).isTrue();
+                assertThat(IOUtils.contentEquals(TestSupportData.sampleTextStream(), content)).isTrue();
             } catch (IOException ignored) {
             }
 
             try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
-                assertThat(IOUtils.contentEquals(new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()), content)).isTrue();
+                assertThat(IOUtils.contentEquals(TestSupportData.sampleHtmlRenditionStream(), content)).isTrue();
             } catch (IOException ignored) {
             }
         }
@@ -492,17 +322,18 @@ public class FileSystemStoreIT {
             assertThat(new File(loader.getRootResource().getPath(), contentId).exists()).isTrue();
             String renditionId = entity.getRenditionId();
             assertThat(new File(loader.getRootResource().getPath(), renditionId).exists()).isTrue();
-            store.setContent(entity, new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()));
-            store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Updated Spring Content World!</html>".getBytes()));
-            entity = repo.save(entity);
+            entity = store.setContent(entity,
+                TestSupportData.sampleUpdatedTextStream());
+            entity = store.setContent(entity, PropertyPath.from("rendition"),
+                TestSupportData.sampleUpdatedHtmlRenditionStream());
 
             try (InputStream content = store.getContent(entity)) {
-                boolean matches = IOUtils.contentEquals(new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), content);
+                boolean matches = IOUtils.contentEquals(TestSupportData.sampleUpdatedTextStream(), content);
                 assertThat(matches).isTrue();
             }
 
             try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
-                boolean matches = IOUtils.contentEquals(new ByteArrayInputStream("<html>Hello Updated Spring Content World!</html>".getBytes()), content);
+                boolean matches = IOUtils.contentEquals(TestSupportData.sampleUpdatedHtmlRenditionStream(), content);
                 assertThat(matches).isTrue();
             }
 
@@ -515,17 +346,18 @@ public class FileSystemStoreIT {
 
         @Test
         void shouldStoreOnlyTheNewContent() throws IOException {
-            store.setContent(entity, new ByteArrayInputStream("Hello Spring World!".getBytes()));
-            store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring World!</html>".getBytes()));
-            entity = repo.save(entity);
+            entity = store.setContent(entity,
+                TestSupportData.samplePartialUpdateStream());
+            entity = store.setContent(entity, PropertyPath.from("rendition"),
+                TestSupportData.samplePartialUpdateHtmlRenditionStream());
 
             try (InputStream content = store.getContent(entity)) {
-                boolean matches = IOUtils.contentEquals(new ByteArrayInputStream("Hello Spring World!".getBytes()), content);
+                boolean matches = IOUtils.contentEquals(TestSupportData.samplePartialUpdateStream(), content);
                 assertThat(matches).isTrue();
             }
 
             try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
-                boolean matches = IOUtils.contentEquals(new ByteArrayInputStream("<html>Hello Spring World!</html>".getBytes()), content);
+                boolean matches = IOUtils.contentEquals(TestSupportData.samplePartialUpdateHtmlRenditionStream(), content);
                 assertThat(matches).isTrue();
             }
         }
@@ -536,11 +368,12 @@ public class FileSystemStoreIT {
             String contentId = entity.getContentId();
             assertThat(new File(loader.getRootResource().getPath(), contentId).exists()).isTrue();
 
-            store.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), new SetContentParams(-1, true, SetContentParams.ContentDisposition.CreateNew));
-            entity = repo.save(entity);
+            entity = store.setContent(entity, PropertyPath.from("content"),
+                TestSupportData.sampleUpdatedTextStream(),
+                new SetContentParams(-1, true, SetContentParams.ContentDisposition.CreateNew));
 
             try (InputStream content = store.getContent(entity)) {
-                boolean matches = IOUtils.contentEquals(new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), content);
+                boolean matches = IOUtils.contentEquals(TestSupportData.sampleUpdatedTextStream(), content);
                 assertThat(matches).isTrue();
             }
 
@@ -568,7 +401,7 @@ public class FileSystemStoreIT {
             }
 
             assertThat(entity.getRenditionId()).isNull();
-            assertThat(entity.getRenditionLen()).isEqualTo(0L);
+            assertThat(entity.getRenditionLen()).isNull();
 
             FileSystemResourceLoader loader = context.getBean(FileSystemResourceLoader.class);
             assertThat(new File(loader.getRootResource().getPath(), resourceLocation).exists()).isFalse();
@@ -623,12 +456,12 @@ public class FileSystemStoreIT {
 
         @Test
         void shouldNotResetTheIdField() {
-            SharedIdRepository sharedIdRepository = context.getBean(SharedIdRepository.class);
-            SharedIdStore sharedIdStore = context.getBean(SharedIdStore.class);
+            SharedIdJakartaJpaRepository sharedIdRepository = context.getBean(SharedIdJakartaJpaRepository.class);
+            SharedIdJakartaJpaStore sharedIdStore = context.getBean(SharedIdJakartaJpaStore.class);
 
-            SharedIdContentIdEntity sharedIdContentIdEntity = sharedIdRepository.save(new SharedIdContentIdEntity());
+            SharedIdJakartaJpaEntity sharedIdContentIdEntity = sharedIdRepository.save(new SharedIdJakartaJpaEntity());
 
-            sharedIdContentIdEntity = sharedIdStore.setContent(sharedIdContentIdEntity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+            sharedIdContentIdEntity = sharedIdStore.setContent(sharedIdContentIdEntity, TestSupportData.sampleTextStream());
             sharedIdContentIdEntity = sharedIdRepository.save(sharedIdContentIdEntity);
             String id = sharedIdContentIdEntity.getContentId();
             sharedIdContentIdEntity = sharedIdStore.unsetContent(sharedIdContentIdEntity);
@@ -638,22 +471,22 @@ public class FileSystemStoreIT {
 
         @Test
         void shouldReturnNullWhenContentIsFetched() throws IOException {
-            EntityWithEmbeddedContent embedded = embeddedRepo.save(new EntityWithEmbeddedContent());
+            EmbeddedContentJpaStringIdEntity embedded = embeddedRepo.save(new EmbeddedContentJpaStringIdEntity());
             assertThat(embeddedStore.getContent(embedded, PropertyPath.from("content"))).isNull();
         }
 
         @Test
         void shouldBeSuccessfulWhenContentIsSet() throws IOException {
-            EntityWithEmbeddedContent embedded = embeddedRepo.save(new EntityWithEmbeddedContent());
-            embeddedStore.setContent(embedded, PropertyPath.from("content"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+            EmbeddedContentJpaStringIdEntity embedded = embeddedRepo.save(new EmbeddedContentJpaStringIdEntity());
+            embeddedStore.setContent(embedded, PropertyPath.from("content"), TestSupportData.sampleTextStream());
             try (InputStream is = embeddedStore.getContent(embedded, PropertyPath.from("content"))) {
-                assertThat(IOUtils.contentEquals(is, new ByteArrayInputStream("Hello Spring Content World!".getBytes()))).isTrue();
+                assertThat(IOUtils.contentEquals(is, TestSupportData.sampleTextStream())).isTrue();
             }
         }
 
         @Test
         void shouldReturnNullWhenContentIsUnset() {
-            EntityWithEmbeddedContent embedded = embeddedRepo.save(new EntityWithEmbeddedContent());
+            EmbeddedContentJpaStringIdEntity embedded = embeddedRepo.save(new EmbeddedContentJpaStringIdEntity());
             assertThat(embeddedStore.unsetContent(embedded, PropertyPath.from("content"))).isSameAs(embedded);
         }
     }

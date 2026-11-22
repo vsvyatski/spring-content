@@ -4,14 +4,16 @@ import org.apache.poi.openxml4j.exceptions.NotOfficeXmlFileException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.content.test.support.TestSupportData;
 import org.springframework.renditions.poi.POIService;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class POIServiceTest {
 
@@ -39,7 +41,7 @@ public class POIServiceTest {
             }
 
             @Nested
-            class GivenANullInputstream {
+            class GivenNullInputStream {
                 @BeforeEach
                 void setUp() {
                     poi = new POIServiceImpl();
@@ -47,34 +49,25 @@ public class POIServiceTest {
 
                 @Test
                 void shouldThrowAnException() {
-                    try {
-                        poi.xwpfDocument(stream);
-                        fail("no exception thrown");
-                    } catch (Exception e) {
-                        assertThat(e).isNotNull();
-                        assertThat(e).isInstanceOf(IllegalArgumentException.class);
-                    }
+                    assertThatThrownBy(() -> poi.xwpfDocument(stream))
+                        .isInstanceOf(IllegalArgumentException.class);
                 }
             }
 
             @Nested
-            class GivenAnInvalidInputstream {
+            class GivenInvalidInputStream {
                 @BeforeEach
                 void setUp() {
                     poi = new POIServiceImpl();
 
-                    stream = new ByteArrayInputStream("asdhg".getBytes());
+                    stream = new ByteArrayInputStream(
+                        TestSupportData.SAMPLE_INVALID_OFFICE_XML_PAYLOAD.getBytes(StandardCharsets.UTF_8));
                 }
 
                 @Test
                 void shouldThrowAnException() {
-                    try {
-                        poi.xwpfDocument(stream);
-                        fail("no exception thrown");
-                    } catch (Exception e) {
-                        assertThat(e).isNotNull();
-                        assertThat(e).isInstanceOf(NotOfficeXmlFileException.class);
-                    }
+                    assertThatThrownBy(() -> poi.xwpfDocument(stream))
+                        .isInstanceOf(NotOfficeXmlFileException.class);
                 }
             }
         }

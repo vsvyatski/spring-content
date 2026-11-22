@@ -57,7 +57,7 @@ public static class ApplicationConfig {
            @Override
            public void configure(RestConfiguration config) {
            
-               config.forDomainType(TestEntity.class).setSetContentResolver(new Resolver<Method, HttpHeaders>(){
+               config.forDomainType(Example.class).setSetContentResolver(new Resolver<Method, HttpHeaders>(){
 
                 @Override
                 public boolean resolve(Method method, HttpHeaders context) {

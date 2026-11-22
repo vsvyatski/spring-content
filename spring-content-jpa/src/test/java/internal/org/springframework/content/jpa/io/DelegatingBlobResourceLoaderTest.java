@@ -29,9 +29,6 @@ public class DelegatingBlobResourceLoaderTest {
 
     private BlobResourceLoader customLoader;
 
-    private JdbcTemplate template;
-    private PlatformTransactionManager txnMgr;
-
     private Resource resource;
 
     @Nested
@@ -47,8 +44,7 @@ public class DelegatingBlobResourceLoaderTest {
                     DatabaseMetaData metadata = mock(DatabaseMetaData.class);
                     when(ds.getConnection()).thenReturn(conn);
                     when(conn.getMetaData()).thenReturn(metadata);
-                    when(metadata.getDatabaseProductName())
-                            .thenReturn("my-custom-db");
+                    when(metadata.getDatabaseProductName()).thenReturn("my-custom-db");
 
                     customLoader = mock(BlobResourceLoader.class);
                     when(customLoader.getDatabaseName()).thenReturn("my-custom-db");
@@ -67,7 +63,7 @@ public class DelegatingBlobResourceLoaderTest {
             }
 
             @Nested
-            class GivenADatasourceThatDoesnTHaveAMatchingBlobResourceLoader {
+            class GivenADatasourceThatDoesntHaveAMatchingBlobResourceLoader {
                 @BeforeEach
                 void setUp() throws SQLException {
                     ds = mock(DataSource.class);
@@ -75,13 +71,12 @@ public class DelegatingBlobResourceLoaderTest {
                     DatabaseMetaData metadata = mock(DatabaseMetaData.class);
                     when(ds.getConnection()).thenReturn(conn);
                     when(conn.getMetaData()).thenReturn(metadata);
-                    when(metadata.getDatabaseProductName())
-                            .thenReturn("SomeOtherDatabase");
+                    when(metadata.getDatabaseProductName()).thenReturn("SomeOtherDatabase");
 
                     loaders = new ArrayList<>();
                     loaders.add(new CustomizableBlobResourceLoader(
-                            mock(JdbcTemplate.class),
-                            mock(PlatformTransactionManager.class)));
+                        mock(JdbcTemplate.class),
+                        mock(PlatformTransactionManager.class)));
 
                     service = new DelegatingBlobResourceLoader(ds, loaders);
                     resource = service.getResource("some-id");

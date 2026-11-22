@@ -54,7 +54,7 @@ public class ElasticsearchAutoConfigurationTest {
         @Test
         void shouldCreateAClient() {
             final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-                    .withConfiguration(AutoConfigurations.of(ElasticsearchAutoConfiguration.class));
+                .withConfiguration(AutoConfigurations.of(ElasticsearchAutoConfiguration.class));
 
             contextRunner.withUserConfiguration(ContextWithoutClientBean.class).run((context) -> {
                 assertThat(context).hasSingleBean(ElasticsearchClient.class);
@@ -73,11 +73,11 @@ public class ElasticsearchAutoConfigurationTest {
         @Test
         void shouldUseThatClient() {
             final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-                    .withConfiguration(AutoConfigurations.of(ElasticsearchAutoConfiguration.class));
+                .withConfiguration(AutoConfigurations.of(ElasticsearchAutoConfiguration.class));
 
             contextRunner.withUserConfiguration(ContextWithClientBean.class)
-                    .run((context) ->
-                            assertThat(context).getBean(ElasticsearchClient.class).isEqualTo(client));
+                .run((context) ->
+                    assertThat(context).getBean(ElasticsearchClient.class).isEqualTo(client));
         }
     }
 
@@ -96,11 +96,11 @@ public class ElasticsearchAutoConfigurationTest {
         @Test
         void shouldNotConfigureTheIndexingEventHandler() {
             final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-                    .withConfiguration(AutoConfigurations.of(ElasticsearchAutoConfiguration.class));
+                .withConfiguration(AutoConfigurations.of(ElasticsearchAutoConfiguration.class));
 
             contextRunner.withUserConfiguration(ContextWithClientBean.class)
-                    .run((context) ->
-                            assertThat(context).doesNotHaveBean(ElasticsearchIndexer.class));
+                .run((context) ->
+                    assertThat(context).doesNotHaveBean(ElasticsearchIndexer.class));
         }
     }
 
@@ -119,11 +119,11 @@ public class ElasticsearchAutoConfigurationTest {
         @Test
         void shouldLoadTheContext() {
             final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-                    .withConfiguration(AutoConfigurations.of(ElasticsearchAutoConfiguration.class));
+                .withConfiguration(AutoConfigurations.of(ElasticsearchAutoConfiguration.class));
 
             contextRunner.withUserConfiguration(ContextWithClientBean.class)
-                    .run((context) ->
-                            assertThat(context).hasSingleBean(ElasticsearchIndexer.class));
+                .run((context) ->
+                    assertThat(context).hasSingleBean(ElasticsearchIndexer.class));
         }
     }
 
@@ -132,11 +132,11 @@ public class ElasticsearchAutoConfigurationTest {
         @Test
         void shouldLoadTheContextAndNotThrowABeanDefinitionOverrideException() {
             final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-                    .withConfiguration(AutoConfigurations.of(ElasticsearchAutoConfiguration.class));
+                .withConfiguration(AutoConfigurations.of(ElasticsearchAutoConfiguration.class));
 
             contextRunner.withUserConfiguration(ContextWithEnablement.class)
-                    .run((context) ->
-                            assertThat(context).hasSingleBean(ElasticsearchClient.class));
+                .run((context) ->
+                    assertThat(context).hasSingleBean(ElasticsearchClient.class));
         }
     }
 }

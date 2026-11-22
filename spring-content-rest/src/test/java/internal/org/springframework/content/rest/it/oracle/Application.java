@@ -28,9 +28,9 @@ import javax.sql.DataSource;
 import java.util.TimeZone;
 
 @SpringBootApplication(exclude = {
-        MongoAutoConfiguration.class,
-        DataMongoAutoConfiguration.class,
-        DataMongoRepositoriesAutoConfiguration.class
+    MongoAutoConfiguration.class,
+    DataMongoAutoConfiguration.class,
+    DataMongoRepositoriesAutoConfiguration.class
 })
 public class Application {
 
@@ -94,7 +94,7 @@ public class Application {
 
         @Bean
         public PlatformTransactionManager transactionManager(
-                LocalContainerEntityManagerFactoryBean entityManagerFactory) {
+            LocalContainerEntityManagerFactoryBean entityManagerFactory) {
 
             JpaTransactionManager txManager = new JpaTransactionManager();
             txManager.setEntityManagerFactory(entityManagerFactory.getObject());

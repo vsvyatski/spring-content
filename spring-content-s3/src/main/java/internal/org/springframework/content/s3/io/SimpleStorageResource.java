@@ -108,7 +108,7 @@ public class SimpleStorageResource extends AbstractResource implements WritableR
     @Override
     public InputStream getInputStream() throws IOException {
         GetObjectRequest.Builder getObjectRequestBuilder = GetObjectRequest.builder()
-                .bucket(this.bucketName).key(this.objectName);
+            .bucket(this.bucketName).key(this.objectName);
         if (this.versionId != null) {
             getObjectRequestBuilder.versionId(this.versionId);
         }
@@ -125,8 +125,8 @@ public class SimpleStorageResource extends AbstractResource implements WritableR
                         throw new IOException("Received HTTP 206, but missing a Content-Range header. Only single-part responses are supported.");
                     }
                     return PartialContentInputStream.fromContentRange(
-                            getObjectResponse,
-                            contentRange
+                        getObjectResponse,
+                        contentRange
                     );
                 case 200: // OK -> this is a full response
                     return getObjectResponse;
@@ -160,22 +160,22 @@ public class SimpleStorageResource extends AbstractResource implements WritableR
     @Override
     public URL getURL() {
         return this.amazonS3.utilities().getUrl(GetUrlRequest.builder()
-                .bucket(this.bucketName).key(this.objectName).build());
+            .bucket(this.bucketName).key(this.objectName).build());
     }
 
     @Override
     public File getFile() throws IOException {
         throw new UnsupportedOperationException(
-                "Amazon S3 resource can not be resolved to java.io.File objects.Use "
-                        + "getInputStream() to retrieve the contents of the object!");
+            "Amazon S3 resource can not be resolved to java.io.File objects.Use "
+                + "getInputStream() to retrieve the contents of the object!");
     }
 
     private HeadObjectResponse getRequiredObjectMetadata() throws FileNotFoundException {
         HeadObjectResponse metadata = getObjectMetadata();
         if (metadata == null) {
             StringBuilder builder = new StringBuilder().append("Resource with bucket='")
-                    .append(this.bucketName).append("' and objectName='")
-                    .append(this.objectName);
+                .append(this.bucketName).append("' and objectName='")
+                .append(this.objectName);
             if (this.versionId != null) {
                 builder.append("' and versionId='");
                 builder.append(this.versionId);
@@ -201,19 +201,19 @@ public class SimpleStorageResource extends AbstractResource implements WritableR
     public SimpleStorageResource createRelative(String relativePath) throws IOException {
         String relativeKey = this.objectName + "/" + relativePath;
         return new SimpleStorageResource(this.amazonS3, this.bucketName, relativeKey,
-                this.taskExecutor);
+            this.taskExecutor);
     }
 
     private HeadObjectResponse getObjectMetadata() {
         if (this.objectMetadata == null) {
             try {
                 HeadObjectRequest.Builder headObjectRequestBuilder = HeadObjectRequest
-                        .builder().bucket(this.bucketName).key(this.objectName);
+                    .builder().bucket(this.bucketName).key(this.objectName);
                 if (this.versionId != null) {
                     headObjectRequestBuilder.versionId(this.versionId);
                 }
                 this.objectMetadata = this.amazonS3
-                        .headObject(headObjectRequestBuilder.build());
+                    .headObject(headObjectRequestBuilder.build());
             } catch (S3Exception e) {
                 // Catch 404 (object not found) and 301 (bucket not found, moved
                 // permanently)
@@ -245,7 +245,7 @@ public class SimpleStorageResource extends AbstractResource implements WritableR
 
         SimpleStorageOutputStream() {
             this.completionService = new ExecutorCompletionService<>(
-                    new ExecutorServiceAdapter(SimpleStorageResource.this.taskExecutor));
+                new ExecutorServiceAdapter(SimpleStorageResource.this.taskExecutor));
         }
 
         @Override
@@ -254,13 +254,13 @@ public class SimpleStorageResource extends AbstractResource implements WritableR
                 if (this.currentOutputStream.size() == BUFFER_SIZE) {
                     initiateMultiPartIfNeeded();
                     this.completionService.submit(new UploadPartResultCallable(
-                            SimpleStorageResource.this.amazonS3,
-                            this.currentOutputStream.toByteArray(),
-                            this.currentOutputStream.size(),
-                            SimpleStorageResource.this.bucketName,
-                            SimpleStorageResource.this.objectName,
-                            this.multiPartUploadResult.uploadId(),
-                            this.partNumberCounter++));
+                        SimpleStorageResource.this.amazonS3,
+                        this.currentOutputStream.toByteArray(),
+                        this.currentOutputStream.size(),
+                        SimpleStorageResource.this.bucketName,
+                        SimpleStorageResource.this.objectName,
+                        this.multiPartUploadResult.uploadId(),
+                        this.partNumberCounter++));
                     this.currentOutputStream.reset();
                 }
                 this.currentOutputStream.write(b);
@@ -294,14 +294,14 @@ public class SimpleStorageResource extends AbstractResource implements WritableR
                 md5Digest = BinaryUtils.toBase64(messageDigest.digest(content));
             } catch (NoSuchAlgorithmException e) {
                 throw new IllegalStateException(
-                        "MessageDigest could not be initialized because it uses an unknown algorithm",
-                        e);
+                    "MessageDigest could not be initialized because it uses an unknown algorithm",
+                    e);
             }
 
             PutObjectRequest.Builder requestBuilder = PutObjectRequest.builder()
-                    .bucket(SimpleStorageResource.this.bucketName)
-                    .key(SimpleStorageResource.this.objectName)
-                    .contentMD5(md5Digest);
+                .bucket(SimpleStorageResource.this.bucketName)
+                .key(SimpleStorageResource.this.objectName)
+                .contentMD5(md5Digest);
 
             if (SimpleStorageResource.this.contentType != null) {
                 requestBuilder.contentType(SimpleStorageResource.this.contentType);
@@ -315,21 +315,21 @@ public class SimpleStorageResource extends AbstractResource implements WritableR
 
         private void finishMultiPartUpload() throws IOException {
             this.completionService.submit(new UploadPartResultCallable(
-                    SimpleStorageResource.this.amazonS3,
-                    this.currentOutputStream.toByteArray(),
-                    this.currentOutputStream.size(),
-                    SimpleStorageResource.this.bucketName,
-                    SimpleStorageResource.this.objectName,
-                    this.multiPartUploadResult.uploadId(), this.partNumberCounter));
+                SimpleStorageResource.this.amazonS3,
+                this.currentOutputStream.toByteArray(),
+                this.currentOutputStream.size(),
+                SimpleStorageResource.this.bucketName,
+                SimpleStorageResource.this.objectName,
+                this.multiPartUploadResult.uploadId(), this.partNumberCounter));
             try {
                 CompletedMultipartUpload multipartUpload = CompletedMultipartUpload
-                        .builder().parts(getCompletedMultiParts()).build();
+                    .builder().parts(getCompletedMultiParts()).build();
                 SimpleStorageResource.this.amazonS3
-                        .completeMultipartUpload(CompleteMultipartUploadRequest.builder()
-                                .bucket(this.multiPartUploadResult.bucket())
-                                .key(this.multiPartUploadResult.key())
-                                .multipartUpload(multipartUpload)
-                                .uploadId(this.multiPartUploadResult.uploadId()).build());
+                    .completeMultipartUpload(CompleteMultipartUploadRequest.builder()
+                        .bucket(this.multiPartUploadResult.bucket())
+                        .key(this.multiPartUploadResult.key())
+                        .multipartUpload(multipartUpload)
+                        .uploadId(this.multiPartUploadResult.uploadId()).build());
             } catch (ExecutionException e) {
                 abortMultiPartUpload();
                 throw new IOException("Multi part upload failed ", e.getCause());
@@ -344,34 +344,34 @@ public class SimpleStorageResource extends AbstractResource implements WritableR
         private void initiateMultiPartIfNeeded() {
             if (this.multiPartUploadResult == null) {
                 CreateMultipartUploadRequest.Builder requestBuilder = CreateMultipartUploadRequest.builder()
-                        .bucket(SimpleStorageResource.this.bucketName)
-                        .key(SimpleStorageResource.this.objectName);
+                    .bucket(SimpleStorageResource.this.bucketName)
+                    .key(SimpleStorageResource.this.objectName);
 
                 if (SimpleStorageResource.this.contentType != null) {
                     requestBuilder.contentType(SimpleStorageResource.this.contentType);
                 }
 
                 this.multiPartUploadResult = SimpleStorageResource.this.amazonS3
-                        .createMultipartUpload(requestBuilder.build());
+                    .createMultipartUpload(requestBuilder.build());
             }
         }
 
         private void abortMultiPartUpload() {
             if (isMultiPartUpload()) {
                 SimpleStorageResource.this.amazonS3
-                        .abortMultipartUpload(AbortMultipartUploadRequest.builder()
-                                .bucket(this.multiPartUploadResult.bucket())
-                                .key(this.multiPartUploadResult.key())
-                                .uploadId(this.multiPartUploadResult.uploadId()).build());
+                    .abortMultipartUpload(AbortMultipartUploadRequest.builder()
+                        .bucket(this.multiPartUploadResult.bucket())
+                        .key(this.multiPartUploadResult.key())
+                        .uploadId(this.multiPartUploadResult.uploadId()).build());
             }
         }
 
         private List<CompletedPart> getCompletedMultiParts()
-                throws ExecutionException, InterruptedException {
+            throws ExecutionException, InterruptedException {
             List<CompletedPart> result = new ArrayList<>(this.partNumberCounter);
             for (int i = 0; i < this.partNumberCounter; i++) {
                 Future<CompletedPart> uploadPartResultFuture = this.completionService
-                        .take();
+                    .take();
                 result.add(uploadPartResultFuture.get());
             }
             return result;
@@ -410,15 +410,15 @@ public class SimpleStorageResource extends AbstractResource implements WritableR
             public CompletedPart call() throws Exception {
                 try {
                     final UploadPartResponse uploadPartResponse = this.amazonS3
-                            .uploadPart(
-                                    UploadPartRequest.builder().bucket(this.bucketName)
-                                            .key(this.key).uploadId(this.uploadId)
-                                            .partNumber(this.partNumber).build(),
-                                    RequestBody.fromInputStream(
-                                            new ByteArrayInputStream(this.content),
-                                            this.contentLength));
+                        .uploadPart(
+                            UploadPartRequest.builder().bucket(this.bucketName)
+                                .key(this.key).uploadId(this.uploadId)
+                                .partNumber(this.partNumber).build(),
+                            RequestBody.fromInputStream(
+                                new ByteArrayInputStream(this.content),
+                                this.contentLength));
                     return CompletedPart.builder().partNumber(this.partNumber)
-                            .eTag(uploadPartResponse.eTag()).build();
+                        .eTag(uploadPartResponse.eTag()).build();
 
                 } finally {
                     // Release the memory, as the callable may still live inside the

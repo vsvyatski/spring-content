@@ -3,23 +3,21 @@ package org.springframework.content.solr;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.content.commons.annotations.ContentId;
-import org.springframework.content.commons.annotations.ContentLength;
-import org.springframework.content.commons.annotations.MimeType;
 import org.springframework.content.commons.search.IndexService;
 import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.commons.store.StoreAccessException;
 import org.springframework.content.commons.store.events.AfterSetContentEvent;
 import org.springframework.content.commons.store.events.BeforeUnsetContentEvent;
+import org.springframework.content.test.support.FakeEntity;
+import org.springframework.content.test.support.SingleContentFields;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static org.springframework.content.test.support.TestSupportData.SAMPLE_CONTENT_ID;
 
 @SuppressWarnings("unchecked")
 public class SolrIndexerStoreEventHandlerTest {
@@ -38,16 +36,11 @@ public class SolrIndexerStoreEventHandlerTest {
     private StoreAccessException sae;
     private Throwable e;
 
-    public static class ContentEntity {
-        @ContentId
-        public String contentId;
-        @ContentLength
-        public Long contentLen;
-        @MimeType
-        public String mimeType;
-    }
-
-    public static class NotAContentEntity {
+    private static SingleContentFields sampleContentEntity() {
+        SingleContentFields entity = new SingleContentFields();
+        entity.setContentId(SAMPLE_CONTENT_ID);
+        entity.setContentLen(128L);
+        return entity;
     }
 
     @Nested
@@ -63,10 +56,7 @@ public class SolrIndexerStoreEventHandlerTest {
                     indexer = mock(IndexService.class);
                     handler = new SolrIndexerStoreEventHandler(indexer);
 
-                    contentEntity = new ContentEntity();
-                    ((ContentEntity) contentEntity).contentId = UUID.randomUUID().toString();
-                    ((ContentEntity) contentEntity).contentLen = 128L;
-                    ((ContentEntity) contentEntity).mimeType = "text/plain";
+                    contentEntity = sampleContentEntity();
 
                     when(store.getContent(eq(contentEntity))).thenReturn(content);
 
@@ -93,10 +83,7 @@ public class SolrIndexerStoreEventHandlerTest {
                         indexer = mock(IndexService.class);
                         handler = new SolrIndexerStoreEventHandler(indexer);
 
-                        contentEntity = new ContentEntity();
-                        ((ContentEntity) contentEntity).contentId = UUID.randomUUID().toString();
-                        ((ContentEntity) contentEntity).contentLen = 128L;
-                        ((ContentEntity) contentEntity).mimeType = "text/plain";
+                        contentEntity = sampleContentEntity();
 
                         when(store.getContent(eq(contentEntity))).thenReturn(content);
 
@@ -127,7 +114,7 @@ public class SolrIndexerStoreEventHandlerTest {
                     indexer = mock(IndexService.class);
                     handler = new SolrIndexerStoreEventHandler(indexer);
 
-                    contentEntity = new ContentEntity();
+                    contentEntity = new SingleContentFields();
                     try {
                         afterSetEvent = new AfterSetContentEvent(contentEntity, store);
                         handler.onAfterSetContent(afterSetEvent);
@@ -152,7 +139,7 @@ public class SolrIndexerStoreEventHandlerTest {
                     indexer = mock(IndexService.class);
                     handler = new SolrIndexerStoreEventHandler(indexer);
 
-                    contentEntity = new NotAContentEntity();
+                    contentEntity = new FakeEntity();
                     try {
                         afterSetEvent = new AfterSetContentEvent(contentEntity, store);
                         handler.onAfterSetContent(afterSetEvent);
@@ -180,10 +167,7 @@ public class SolrIndexerStoreEventHandlerTest {
                     indexer = mock(IndexService.class);
                     handler = new SolrIndexerStoreEventHandler(indexer);
 
-                    contentEntity = new ContentEntity();
-                    ((ContentEntity) contentEntity).contentId = UUID.randomUUID().toString();
-                    ((ContentEntity) contentEntity).contentLen = 128L;
-                    ((ContentEntity) contentEntity).mimeType = "text/plain";
+                    contentEntity = sampleContentEntity();
 
                     try {
                         beforeUnsetEvent = new BeforeUnsetContentEvent(contentEntity, store);
@@ -208,10 +192,7 @@ public class SolrIndexerStoreEventHandlerTest {
                         indexer = mock(IndexService.class);
                         handler = new SolrIndexerStoreEventHandler(indexer);
 
-                        contentEntity = new ContentEntity();
-                        ((ContentEntity) contentEntity).contentId = UUID.randomUUID().toString();
-                        ((ContentEntity) contentEntity).contentLen = 128L;
-                        ((ContentEntity) contentEntity).mimeType = "text/plain";
+                        contentEntity = sampleContentEntity();
 
                         sae = new StoreAccessException("badness");
                         doThrow(sae).when(indexer).unindex(any());
@@ -240,7 +221,7 @@ public class SolrIndexerStoreEventHandlerTest {
                     indexer = mock(IndexService.class);
                     handler = new SolrIndexerStoreEventHandler(indexer);
 
-                    contentEntity = new ContentEntity();
+                    contentEntity = new SingleContentFields();
                     try {
                         beforeUnsetEvent = new BeforeUnsetContentEvent(contentEntity, store);
                         handler.onBeforeUnsetContent(beforeUnsetEvent);
@@ -265,7 +246,7 @@ public class SolrIndexerStoreEventHandlerTest {
                     indexer = mock(IndexService.class);
                     handler = new SolrIndexerStoreEventHandler(indexer);
 
-                    contentEntity = new NotAContentEntity();
+                    contentEntity = new FakeEntity();
                     try {
                         beforeUnsetEvent = new BeforeUnsetContentEvent(contentEntity, store);
                         handler.onBeforeUnsetContent(beforeUnsetEvent);

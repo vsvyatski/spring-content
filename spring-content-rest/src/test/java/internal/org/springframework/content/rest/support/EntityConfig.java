@@ -11,12 +11,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public class EntityConfig {
 
     @RepositoryRestController
-    public class EntityController {
+    public static class EntityController {
 
         @Autowired
-        private TestEntity3Repository repo;
+        private JsonMappedContentEntityRepository repo;
 
-        @RequestMapping(value = "/testEntity3s/{id}/softDelete", method = RequestMethod.DELETE)
+        @RequestMapping(value = "/jsonMappedContentEntities/{id}/softDelete", method = RequestMethod.DELETE)
         public void softDelete(@PathVariable("id") Long id) {
             repo.findById(id).orElseThrow();
             // set delete flag

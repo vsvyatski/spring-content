@@ -1,6 +1,8 @@
 package internal.org.springframework.content.rest.storeresolver;
 
-import internal.org.springframework.content.rest.support.TestEntity2;
+import internal.org.springframework.content.rest.scoped.storeresolver.StoreResolverEntityFsStore;
+import internal.org.springframework.content.rest.scoped.storeresolver.StoreResolverEntityJpaStore;
+import internal.org.springframework.content.rest.scoped.storeresolver.StoreResolverEntityRepository;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpStatus;
@@ -11,7 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.content.test.support.jpa.fixture.SingleContentJpaLongIdMimeEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -23,24 +25,20 @@ import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SpringBootTest(classes = Application.class, webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = Application.class, webEnvironment = WebEnvironment.MOCK)
 @ExtendWith(SpringExtension.class)
 public class StoreResolverRestConfigurationIT {
 
-    @LocalServerPort
-    int port;
     @Autowired
-    private Application.TEntityRepository repo;
+    private StoreResolverEntityRepository repo;
     @Autowired
-    private Application.TEntityJpaStore jpaStore;
+    private StoreResolverEntityJpaStore jpaStore;
     @Autowired
-    private Application.TEntityFsStore fsStore;
+    private StoreResolverEntityFsStore fsStore;
     @Autowired
     private WebApplicationContext webApplicationContext;
 
-    private Application.TEntity tEntity;
-
-    private TestEntity2 existingClaim;
+    private SingleContentJpaLongIdMimeEntity tEntity;
 
     @Nested
     class JpaRest {
@@ -50,7 +48,7 @@ public class StoreResolverRestConfigurationIT {
             void setUp() {
                 RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
 
-                tEntity = new Application.TEntity();
+                tEntity = new SingleContentJpaLongIdMimeEntity();
                 tEntity = repo.save(tEntity);
             }
 
@@ -63,12 +61,12 @@ public class StoreResolverRestConfigurationIT {
                 String newContent = "This is some new content";
 
                 given()
-                        .contentType("text/plain")
-                        .body(newContent.getBytes())
-                        .when()
-                        .post("/tEntities/" + tEntity.getId())
-                        .then()
-                        .statusCode(HttpStatus.SC_CREATED);
+                    .contentType("text/plain")
+                    .body(newContent.getBytes())
+                    .when()
+                    .post("/storeResolverEntities/" + tEntity.getId())
+                    .then()
+                    .statusCode(HttpStatus.SC_CREATED);
 
                 // refetch
                 tEntity = repo.findById(tEntity.getId()).orElse(null);

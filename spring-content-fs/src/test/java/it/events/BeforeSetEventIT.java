@@ -5,13 +5,14 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.annotations.HandleBeforeSetContent;
 import org.springframework.content.commons.annotations.StoreEventHandler;
-import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.commons.store.events.BeforeSetContentEvent;
 import org.springframework.content.fs.config.EnableFileSystemStores;
 import org.springframework.content.fs.io.FileSystemResourceLoader;
+import org.springframework.content.test.support.SingleContentFields;
+import org.springframework.content.test.support.TestSupportPackages;
+import org.springframework.content.test.support.fs.SingleContentFsStore;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
@@ -34,13 +35,10 @@ public class BeforeSetEventIT {
     static TestConfig.ExampleAnnotatedEventHandler ev;
 
     @Autowired
-    private TestEntityContentStore store;
-
-    public interface TestEntityContentStore extends ContentStore<TestEntity, String> {
-    }
+    private SingleContentFsStore store;
 
     @Configuration
-    @EnableFileSystemStores
+    @EnableFileSystemStores(basePackages = TestSupportPackages.FS)
     public static class TestConfig {
 
         @Bean
@@ -65,26 +63,13 @@ public class BeforeSetEventIT {
         }
     }
 
-    public static class TestEntity {
-        @ContentId
-        private String contentId;
-
-        public String getContentId() {
-            return contentId;
-        }
-
-        public void setContentId(String contentId) {
-            this.contentId = contentId;
-        }
-    }
-
     @Nested
     class BeforeSetEventInputStreamAccessCases {
         @Nested
         class WhenTheContentInputStreamIsConsumedByABeforeSetEvent {
             @Test
             void shouldStillSetTheContentInTheStore() throws IOException {
-                TestEntity te = new TestEntity();
+                SingleContentFields te = new SingleContentFields();
                 ByteArrayInputStream bais = new ByteArrayInputStream("Still here!".getBytes());
                 te = store.setContent(te, bais);
                 IOUtils.closeQuietly(bais);
@@ -92,7 +77,7 @@ public class BeforeSetEventIT {
                     assertThat("Still here!").isEqualTo(IOUtils.toString(foo, Charset.defaultCharset()));
                 }
 
-                verify(ev, times(1));
+                verify(ev, times(1)).handleBeforeSetContentEvent(any(BeforeSetContentEvent.class));
             }
         }
     }

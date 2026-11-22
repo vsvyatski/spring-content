@@ -26,7 +26,6 @@ import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfigu
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.Date;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,15 +33,15 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebAppConfiguration
-@ContextConfiguration(classes = {StoreConfig.class, DelegatingWebMvcConfiguration.class,
-        RepositoryRestMvcConfiguration.class, RestConfiguration.class})
+@ContextConfiguration(classes = {
+    StoreConfig.class, DelegatingWebMvcConfiguration.class,
+    RepositoryRestMvcConfiguration.class, RestConfiguration.class
+})
 @Transactional
 @ActiveProfiles("store")
 @ExtendWith(SpringExtension.class)
 public class StoreRestEndpointsIT {
 
-    private final LastModifiedDate lastModifiedDate = new LastModifiedDate() {
-    };
     @Autowired
     TestStore store;
     @Autowired
@@ -62,7 +61,7 @@ public class StoreRestEndpointsIT {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                     path = "/" + UUID.randomUUID() + ".txt";
-                    request = "/teststore" + path;
+                    request = "/testStore" + path;
                 }
 
                 @Test
@@ -78,7 +77,7 @@ public class StoreRestEndpointsIT {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                     path = "/" + UUID.randomUUID() + ".txt";
-                    request = "/teststore" + path;
+                    request = "/testStore" + path;
                 }
 
                 @Test
@@ -86,13 +85,13 @@ public class StoreRestEndpointsIT {
                     String content = "New multi-part content";
 
                     mvc.perform(multipart(request).file(new MockMultipartFile("file",
-                                    "test-file.txt", "text/plain", content.getBytes())))
-                            .andExpect(status().isCreated());
+                            "test-file.txt", "text/plain", content.getBytes())))
+                        .andExpect(status().isCreated());
 
                     Resource r = store.getResource(path);
                     assertThat(IOUtils.contentEquals(
-                            new ByteArrayInputStream("New multi-part content".getBytes()),
-                            r.getInputStream())).isTrue();
+                        new ByteArrayInputStream("New multi-part content".getBytes()),
+                        r.getInputStream())).isTrue();
                     assertThat(r.contentLength()).isEqualTo(Long.valueOf(content.length()));
                 }
             }
@@ -104,7 +103,7 @@ public class StoreRestEndpointsIT {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                     path = "/" + UUID.randomUUID() + ".txt";
-                    request = "/teststore" + path;
+                    request = "/testStore" + path;
                 }
 
                 @Test
@@ -121,24 +120,19 @@ public class StoreRestEndpointsIT {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                 path = "/" + UUID.randomUUID() + ".txt";
-                request = "/teststore" + path;
+                request = "/testStore" + path;
                 Resource r = store.getResource(path);
                 if (r instanceof WritableResource) {
                     IOUtils.copy(
-                            new ByteArrayInputStream("Existing content".getBytes()),
-                            ((WritableResource) r).getOutputStream());
+                        new ByteArrayInputStream("Existing content".getBytes()),
+                        ((WritableResource) r).getOutputStream());
                 }
-
-                lastModifiedDate.setMvc(mvc);
-                lastModifiedDate.setUrl("/teststore" + path);
-                lastModifiedDate.setLastModifiedDate(new Date(r.lastModified()));
-                lastModifiedDate.setContent("Existing content");
             }
 
             @Test
             void shouldReturnTheResourceSContent() throws Exception {
                 MockHttpServletResponse response = mvc.perform(get(request))
-                        .andExpect(status().isOk()).andReturn().getResponse();
+                    .andExpect(status().isOk()).andReturn().getResponse();
 
                 assertThat(response).isNotNull();
                 assertThat(response.getContentAsString()).isEqualTo("Existing content");
@@ -147,9 +141,9 @@ public class StoreRestEndpointsIT {
             @Test
             void shouldReturnAByteRangeWhenRequested() throws Exception {
                 MockHttpServletResponse response = mvc
-                        .perform(get(request).header("range", "bytes=9-12"))
-                        .andExpect(status().isPartialContent()).andReturn()
-                        .getResponse();
+                    .perform(get(request).header("range", "bytes=9-12"))
+                    .andExpect(status().isPartialContent()).andReturn()
+                    .getResponse();
 
                 assertThat(response).isNotNull();
                 assertThat(response.getContentAsString()).isEqualTo("cont");
@@ -158,12 +152,12 @@ public class StoreRestEndpointsIT {
             @Test
             void shouldOverwriteTheResourceSContent() throws Exception {
                 mvc.perform(put(request).content("New Existing content")
-                        .contentType("text/plain")).andExpect(status().isOk());
+                    .contentType("text/plain")).andExpect(status().isOk());
 
                 Resource r = store.getResource(path);
                 assertThat(IOUtils.contentEquals(
-                        new ByteArrayInputStream("New Existing content".getBytes()),
-                        r.getInputStream())).isTrue();
+                    new ByteArrayInputStream("New Existing content".getBytes()),
+                    r.getInputStream())).isTrue();
             }
 
             @Test
@@ -181,18 +175,13 @@ public class StoreRestEndpointsIT {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                     path = "/" + UUID.randomUUID() + ".txt";
-                    request = "/teststore" + path;
+                    request = "/testStore" + path;
                     Resource r = store.getResource(path);
                     if (r instanceof WritableResource) {
                         IOUtils.copy(
-                                new ByteArrayInputStream("Existing content".getBytes()),
-                                ((WritableResource) r).getOutputStream());
+                            new ByteArrayInputStream("Existing content".getBytes()),
+                            ((WritableResource) r).getOutputStream());
                     }
-
-                    lastModifiedDate.setMvc(mvc);
-                    lastModifiedDate.setUrl("/teststore" + path);
-                    lastModifiedDate.setLastModifiedDate(new Date(r.lastModified()));
-                    lastModifiedDate.setContent("Existing content");
                 }
 
                 @Test
@@ -200,14 +189,14 @@ public class StoreRestEndpointsIT {
                     String content = "New multi-part content";
 
                     mvc.perform(multipart(request).file(new MockMultipartFile("file",
-                                    "tests-file.txt", "text/plain", content.getBytes())))
-                            .andExpect(status().isOk());
+                            "tests-file.txt", "text/plain", content.getBytes())))
+                        .andExpect(status().isOk());
 
                     Resource r = store.getResource(path);
                     assertThat(IOUtils.contentEquals(
-                            new ByteArrayInputStream(
-                                    "New multi-part content".getBytes()),
-                            r.getInputStream())).isTrue();
+                        new ByteArrayInputStream(
+                            "New multi-part content".getBytes()),
+                        r.getInputStream())).isTrue();
                     assertThat(r.contentLength()).isEqualTo(Long.valueOf(content.length()));
                 }
             }
@@ -220,19 +209,19 @@ public class StoreRestEndpointsIT {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                 path = "/a/b/" + UUID.randomUUID() + ".txt";
-                request = "/teststore" + path;
+                request = "/testStore" + path;
                 Resource r = store.getResource(path);
                 if (r instanceof WritableResource) {
                     IOUtils.copy(
-                            new ByteArrayInputStream("Existing content".getBytes()),
-                            ((WritableResource) r).getOutputStream());
+                        new ByteArrayInputStream("Existing content".getBytes()),
+                        ((WritableResource) r).getOutputStream());
                 }
             }
 
             @Test
             void shouldReturnTheResourceSContent() throws Exception {
                 MockHttpServletResponse response = mvc.perform(get(request))
-                        .andExpect(status().isOk()).andReturn().getResponse();
+                    .andExpect(status().isOk()).andReturn().getResponse();
 
                 assertThat(response).isNotNull();
                 assertThat(response.getContentAsString()).isEqualTo("Existing content");
@@ -241,9 +230,9 @@ public class StoreRestEndpointsIT {
             @Test
             void shouldReturnAByteRangeWhenRequested() throws Exception {
                 MockHttpServletResponse response = mvc
-                        .perform(get(request).header("range", "bytes=9-12"))
-                        .andExpect(status().isPartialContent()).andReturn()
-                        .getResponse();
+                    .perform(get(request).header("range", "bytes=9-12"))
+                    .andExpect(status().isPartialContent()).andReturn()
+                    .getResponse();
 
                 assertThat(response).isNotNull();
                 assertThat(response.getContentAsString()).isEqualTo("cont");
@@ -252,12 +241,12 @@ public class StoreRestEndpointsIT {
             @Test
             void shouldOverwriteTheResourceSContent() throws Exception {
                 mvc.perform(put(request).content("New Existing content")
-                        .contentType("text/plain")).andExpect(status().isOk());
+                    .contentType("text/plain")).andExpect(status().isOk());
 
                 Resource r = store.getResource(path);
                 assertThat(IOUtils.contentEquals(
-                        new ByteArrayInputStream("New Existing content".getBytes()),
-                        r.getInputStream())).isTrue();
+                    new ByteArrayInputStream("New Existing content".getBytes()),
+                    r.getInputStream())).isTrue();
             }
 
             @Test
@@ -275,22 +264,22 @@ public class StoreRestEndpointsIT {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                     path = "/a/b/" + UUID.randomUUID() + ".txt";
-                    request = "/teststore" + path;
+                    request = "/testStore" + path;
                     Resource r = store.getResource(path);
                     if (r instanceof WritableResource) {
                         IOUtils.copy(
-                                new ByteArrayInputStream("Existing content".getBytes()),
-                                ((WritableResource) r).getOutputStream());
+                            new ByteArrayInputStream("Existing content".getBytes()),
+                            ((WritableResource) r).getOutputStream());
                     }
                 }
 
                 @Test
                 void shouldReturnTheResourceSContent() throws Exception {
                     MockHttpServletResponse response = mvc
-                            .perform(get(request).accept(new String[]{"text/html",
-                                    "application/xhtml+xml", "application/xml;q=0.9",
-                                    "image/webp", "image/apng", "*/*;q=0.8"}))
-                            .andExpect(status().isOk()).andReturn().getResponse();
+                        .perform(get(request).accept("text/html",
+                            "application/xhtml+xml", "application/xml;q=0.9",
+                            "image/webp", "image/apng", "*/*;q=0.8"))
+                        .andExpect(status().isOk()).andReturn().getResponse();
 
                     assertThat(response).isNotNull();
                     assertThat(response.getContentAsString()).isEqualTo("Existing content");
@@ -304,12 +293,12 @@ public class StoreRestEndpointsIT {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                     path = "/a/b/" + UUID.randomUUID() + ".txt";
-                    request = "/teststore" + path;
+                    request = "/testStore" + path;
                     Resource r = store.getResource(path);
                     if (r instanceof WritableResource) {
                         IOUtils.copy(
-                                new ByteArrayInputStream("Existing content".getBytes()),
-                                ((WritableResource) r).getOutputStream());
+                            new ByteArrayInputStream("Existing content".getBytes()),
+                            ((WritableResource) r).getOutputStream());
                     }
                 }
 
@@ -318,14 +307,14 @@ public class StoreRestEndpointsIT {
                     String content = "New multi-part content";
 
                     mvc.perform(multipart(request).file(new MockMultipartFile("file",
-                                    "tests-file.txt", "text/plain", content.getBytes())))
-                            .andExpect(status().isOk());
+                            "tests-file.txt", "text/plain", content.getBytes())))
+                        .andExpect(status().isOk());
 
                     Resource r = store.getResource(path);
                     assertThat(IOUtils.contentEquals(
-                            new ByteArrayInputStream(
-                                    "New multi-part content".getBytes()),
-                            r.getInputStream())).isTrue();
+                        new ByteArrayInputStream(
+                            "New multi-part content".getBytes()),
+                        r.getInputStream())).isTrue();
                     assertThat(r.contentLength()).isEqualTo(Long.valueOf(content.length()));
                 }
             }

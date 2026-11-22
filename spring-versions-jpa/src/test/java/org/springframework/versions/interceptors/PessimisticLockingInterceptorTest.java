@@ -29,34 +29,13 @@ public class PessimisticLockingInterceptorTest {
     private AuthenticationFacade auth;
     private ProxyMethodInvocation mi;
 
-    private Object result;
     private Exception e;
-
-    private TestEntity entity;
-
-    private Authentication principal, lockOwner;
 
     public static class TestEntity {
         @Id
         private Long id = 0L;
 
         public TestEntity() {
-        }
-
-        public Long getId() {
-            return id;
-        }
-
-        public void setId(Long id) {
-            this.id = id;
-        }
-    }
-
-    public static class TestEntity2 {
-        @org.springframework.data.annotation.Id
-        private Long id = 0L;
-
-        public TestEntity2() {
         }
 
         public Long getId() {
@@ -85,8 +64,6 @@ public class PessimisticLockingInterceptorTest {
 
                             mi = mock(ProxyMethodInvocation.class);
 
-                            mi = mock(ProxyMethodInvocation.class);
-
                             when(mi.getMethod()).thenReturn(ReflectionUtils.findMethod(ContentStore.class, "setContent", Object.class, InputStream.class));
                             when(mi.getArguments()).thenReturn(new Object[]{new TestEntity(), new ByteArrayInputStream("".getBytes())});
 
@@ -95,7 +72,7 @@ public class PessimisticLockingInterceptorTest {
                             interceptor = new PessimisticLockingInterceptor(locker, auth);
 
                             try {
-                                result = interceptor.invoke(mi);
+                                interceptor.invoke(mi);
                             } catch (Exception e) {
                                 PessimisticLockingInterceptorTest.this.e = e;
                             }
@@ -110,12 +87,12 @@ public class PessimisticLockingInterceptorTest {
 
                     @Nested
                     class WhenThePrincipalIsTheLockOwner {
+                        private Authentication principal;
+
                         @BeforeEach
                         void setUp() throws Throwable {
                             locker = mock(LockingService.class);
                             auth = mock(AuthenticationFacade.class);
-
-                            mi = mock(ProxyMethodInvocation.class);
 
                             mi = mock(ProxyMethodInvocation.class);
 
@@ -130,7 +107,7 @@ public class PessimisticLockingInterceptorTest {
                             interceptor = new PessimisticLockingInterceptor(locker, auth);
 
                             try {
-                                result = interceptor.invoke(mi);
+                                interceptor.invoke(mi);
                             } catch (Exception e) {
                                 PessimisticLockingInterceptorTest.this.e = e;
                             }
@@ -153,13 +130,11 @@ public class PessimisticLockingInterceptorTest {
 
                             mi = mock(ProxyMethodInvocation.class);
 
-                            mi = mock(ProxyMethodInvocation.class);
-
                             when(mi.getMethod()).thenReturn(ReflectionUtils.findMethod(ContentStore.class, "setContent", Object.class, InputStream.class));
                             when(mi.getArguments()).thenReturn(new Object[]{new TestEntity(), new ByteArrayInputStream("".getBytes())});
 
-                            lockOwner = mock(Authentication.class);
-                            principal = mock(Authentication.class);
+                            Authentication lockOwner = mock(Authentication.class);
+                            Authentication principal = mock(Authentication.class);
                             when(auth.getAuthentication()).thenReturn(principal);
                             when(locker.lockOwner(0L)).thenReturn(lockOwner);
                             when(locker.isLockOwner(eq(0L), any())).thenReturn(false);
@@ -167,7 +142,7 @@ public class PessimisticLockingInterceptorTest {
                             interceptor = new PessimisticLockingInterceptor(locker, auth);
 
                             try {
-                                result = interceptor.invoke(mi);
+                                interceptor.invoke(mi);
                             } catch (Exception e) {
                                 PessimisticLockingInterceptorTest.this.e = e;
                             }
@@ -180,7 +155,7 @@ public class PessimisticLockingInterceptorTest {
                     }
 
                     @Nested
-                    class WhenTheEntityDoesnTHaveAnID {
+                    class WhenTheEntityDoesntHaveAnID {
                         @BeforeEach
                         void setUp() throws Throwable {
                             locker = mock(LockingService.class);
@@ -188,17 +163,13 @@ public class PessimisticLockingInterceptorTest {
 
                             mi = mock(ProxyMethodInvocation.class);
 
-                            mi = mock(ProxyMethodInvocation.class);
-
                             when(mi.getMethod()).thenReturn(ReflectionUtils.findMethod(ContentStore.class, "setContent", Object.class, InputStream.class));
-                            when(mi.getArguments()).thenReturn(new Object[]{new TestEntity(), new ByteArrayInputStream("".getBytes())});
-
                             when(mi.getArguments()).thenReturn(new Object[]{new Object(), new ByteArrayInputStream("".getBytes())});
 
                             interceptor = new PessimisticLockingInterceptor(locker, auth);
 
                             try {
-                                result = interceptor.invoke(mi);
+                                interceptor.invoke(mi);
                             } catch (Exception e) {
                                 PessimisticLockingInterceptorTest.this.e = e;
                             }

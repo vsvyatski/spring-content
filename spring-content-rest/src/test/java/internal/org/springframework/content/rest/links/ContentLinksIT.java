@@ -4,156 +4,133 @@ import internal.org.springframework.content.rest.support.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.content.commons.property.PropertyPath;
-import org.springframework.content.rest.config.HypermediaConfiguration;
-import org.springframework.content.rest.config.RestConfiguration;
-import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguration;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.content.test.support.TestSupportData;
+import org.springframework.test.context.NestedTestConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfiguration;
-
-import java.io.ByteArrayInputStream;
 
 import static java.lang.String.format;
 
-@WebAppConfiguration
-@ContextConfiguration(classes = {
-        BaseUriConfig.class,
-        DelegatingWebMvcConfiguration.class,
-        RepositoryRestMvcConfiguration.class,
-        RestConfiguration.class,
-        HypermediaConfiguration.class})
-@Transactional
-@ActiveProfiles("store")
-@ExtendWith(SpringExtension.class)
+@ContentLinkIntegrationTest
 public class ContentLinksIT {
 
-    @Autowired
-    TestEntityRepository repository;
-    @Autowired
-    TestEntityContentRepository contentRepository;
-
-    @Autowired
-    TestEntity5Repository repository5;
-    @Autowired
-    TestEntity5Store store5;
-
-    @Autowired
-    TestEntity2Repository repository2;
-    @Autowired
-    TestEntity2Store store2;
-
-    @Autowired
-    TestEntity10Repository repository10;
-    @Autowired
-    TestEntity10Store store10;
-
-    @Autowired
-    TestEntity3Repository repository3;
-    @Autowired
-    TestEntity3ContentRepository contentRepository3;
-
-    @Autowired
-    private WebApplicationContext context;
-
-    private MockMvc mvc;
-
-    private TestEntity testEntity;
-    private TestEntity3 testEntity3;
-    private TestEntity5 testEntity5;
-    private TestEntity2 testEntity2;
-    private TestEntity10 testEntity10;
-
-    private ContentLinkTests contentLinkTests;
-
     @Nested
-    class NoLinkrel {
+    @NestedTestConfiguration(NestedTestConfiguration.EnclosingConfiguration.INHERIT)
+    class NoLinkRel {
         @Nested
+        @NestedTestConfiguration(NestedTestConfiguration.EnclosingConfiguration.INHERIT)
         @DisplayName("given a store and an entity with a top-level uncorrelated content property")
         class GivenAStoreAndAnEntityWithATopLevelUncorrelatedContentPropertyContentLinkTests extends ContentLinkTests {
+            @Autowired
+            private WebApplicationContext context;
+
             @BeforeEach
             void setUp() {
-                mvc = MockMvcBuilders.webAppContextSetup(context).build();
-                testEntity3 = new TestEntity3();
-                contentRepository3.setContent(testEntity3, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                MockMvc mvc = MockMvcBuilders.webAppContextSetup(context).build();
+                JsonMappedContentEntityRepository repository3 = context.getBean(JsonMappedContentEntityRepository.class);
+                JsonMappedContentEntityStore store3 = context.getBean(JsonMappedContentEntityStore.class);
+                JsonMappedContentEntity testEntity3 = new JsonMappedContentEntity();
+                store3.setContent(testEntity3, TestSupportData.sampleTextStream());
                 testEntity3 = repository3.save(testEntity3);
                 this.setMvc(mvc);
-                this.setRepository(repository3);
-                this.setStore(contentRepository3);
-                this.setTestEntity(testEntity3);
-                this.setUrl("/api/testEntity3s/" + testEntity3.getId());
-                this.setLinkRel("testEntity3");
-                this.setExpectedLinkRegex("http://localhost/api/testEntity3s/" + testEntity3.getId());
+                this.setUrl("/api/jsonMappedContentEntities/" + testEntity3.getId());
+                this.setLinkRel("jsonMappedContentEntity");
+                this.setExpectedLinkRegex("http://localhost/api/jsonMappedContentEntities/" + testEntity3.getId());
+            }
+
+            @Test
+            void shouldProvideAResponseWithAContentLink() throws Exception {
+                assertContentLinkInHalResponse();
             }
         }
 
         @Nested
+        @NestedTestConfiguration(NestedTestConfiguration.EnclosingConfiguration.INHERIT)
         @DisplayName("given a store and an entity with top-level correlated content properties")
         class GivenAStoreAndAnEntityWithTopLevelCorrelatedContentPropertiesContentLinkTests extends ContentLinkTests {
+            @Autowired
+            private WebApplicationContext context;
+
             @BeforeEach
             void setUp() {
-                mvc = MockMvcBuilders.webAppContextSetup(context).build();
-                testEntity5 = new TestEntity5();
-                store5.setContent(testEntity5, PropertyPath.from("content"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                MockMvc mvc = MockMvcBuilders.webAppContextSetup(context).build();
+                DualContentRenditionEntityRepository repository5 = context.getBean(DualContentRenditionEntityRepository.class);
+                DualContentRenditionEntityStore store5 = context.getBean(DualContentRenditionEntityStore.class);
+                DualContentRenditionEntity testEntity5 = new DualContentRenditionEntity();
+                store5.setContent(testEntity5, PropertyPath.from("content"), TestSupportData.sampleTextStream());
                 testEntity5 = repository5.save(testEntity5);
                 this.setMvc(mvc);
-                this.setRepository(repository5);
-                this.setStore(store5);
-                this.setTestEntity(testEntity5);
-                this.setUrl("/api/testEntity5s/" + testEntity5.getId());
+                this.setUrl("/api/dualContentRenditionEntities/" + testEntity5.getId());
                 this.setLinkRel("content");
-                this.setExpectedLinkRegex(format("http://localhost/contentApi/testEntity5s/%s/content", testEntity5.getId()));
+                this.setExpectedLinkRegex(format("http://localhost/contentApi/dualContentRenditionEntities/%s/content", testEntity5.getId()));
+            }
+
+            @Test
+            void shouldProvideAResponseWithAContentLink() throws Exception {
+                assertContentLinkInHalResponse();
             }
         }
 
         @Nested
-        @DisplayName("given a store specifying a linkrel and an entity a nested content property")
+        @NestedTestConfiguration(NestedTestConfiguration.EnclosingConfiguration.INHERIT)
+        @DisplayName("given a store and an entity with a nested content property")
         class GivenAStoreSpecifyingALinkrelAndAnEntityANestedContentPropertyContentLinkTests extends ContentLinkTests {
+            @Autowired
+            private WebApplicationContext context;
+
             @BeforeEach
             void setUp() {
-                mvc = MockMvcBuilders.webAppContextSetup(context).build();
-                testEntity2 = new TestEntity2();
+                MockMvc mvc = MockMvcBuilders.webAppContextSetup(context).build();
+                AuditedNestedContentEntityRepository repository2 = context.getBean(AuditedNestedContentEntityRepository.class);
+                AuditedNestedContentEntityStore store2 = context.getBean(AuditedNestedContentEntityStore.class);
+                AuditedNestedContentEntity testEntity2 = new AuditedNestedContentEntity();
                 testEntity2.getChild().setMimeType("text/plain");
-                store2.setContent(testEntity2, PropertyPath.from("child"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                store2.setContent(testEntity2, PropertyPath.from("child"), TestSupportData.sampleTextStream());
                 testEntity2 = repository2.save(testEntity2);
                 this.setMvc(mvc);
-                this.setRepository(repository2);
-                this.setStore(store2);
-                this.setTestEntity(testEntity2);
                 this.setUrl("/api/files/" + testEntity2.getId());
                 this.setLinkRel("child");
                 this.setExpectedLinkRegex(format("http://localhost/contentApi/files/%s/child", testEntity2.getId()));
             }
+
+            @Test
+            void shouldProvideAResponseWithAContentLink() throws Exception {
+                assertContentLinkInHalResponse();
+            }
         }
 
         @Nested
-        @DisplayName("given a store specifying a linkrel and an entity with nested content properties")
-        class GivenAStoreSpecifyingALinkrelAndAnEntityWithNestedContentPropertiesContentLinkTe extends ContentLinkTests {
+        @NestedTestConfiguration(NestedTestConfiguration.EnclosingConfiguration.INHERIT)
+        @DisplayName("given a store and an entity with nested content properties")
+        class GivenStoreSpecifyingLinkRelAndEntityWithNestedContentPropertiesContentLinkTest extends ContentLinkTests {
+            @Autowired
+            private WebApplicationContext context;
+
             @BeforeEach
             void setUp() {
-                mvc = MockMvcBuilders.webAppContextSetup(context).build();
-                testEntity10 = new TestEntity10();
-                store10.setContent(testEntity10, PropertyPath.from("child/content"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                MockMvc mvc = MockMvcBuilders.webAppContextSetup(context).build();
+                EmbeddedDualContentEntityRepository repository10 = context.getBean(EmbeddedDualContentEntityRepository.class);
+                EmbeddedDualContentEntityStore store10 = context.getBean(EmbeddedDualContentEntityStore.class);
+                EmbeddedDualContentEntity testEntity10 = new EmbeddedDualContentEntity();
+                store10.setContent(testEntity10, PropertyPath.from("child/content"), TestSupportData.sampleTextStream());
                 testEntity10.getChild().setContentMimeType("text/plain");
                 testEntity10.getChild().setContentFileName("test");
-                store10.setContent(testEntity10, PropertyPath.from("child/preview"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                store10.setContent(testEntity10, PropertyPath.from("child/preview"), TestSupportData.sampleTextStream());
                 testEntity10.getChild().setPreviewMimeType("text/plain");
                 testEntity10 = repository10.save(testEntity10);
                 this.setMvc(mvc);
-                this.setRepository(repository10);
-                this.setStore(store10);
-                this.setTestEntity(testEntity10);
-                this.setUrl("/api/testEntity10s/" + testEntity10.getId());
+                this.setUrl("/api/embeddedDualContentEntities/" + testEntity10.getId());
                 this.setLinkRel("child/content");
-                this.setExpectedLinkRegex(format("http://localhost/contentApi/testEntity10s/%s/child/content", testEntity10.getId()));
+                this.setExpectedLinkRegex(format("http://localhost/contentApi/embeddedDualContentEntities/%s/child/content", testEntity10.getId()));
+            }
+
+            @Test
+            void shouldProvideAResponseWithAContentLink() throws Exception {
+                assertContentLinkInHalResponse();
             }
         }
     }

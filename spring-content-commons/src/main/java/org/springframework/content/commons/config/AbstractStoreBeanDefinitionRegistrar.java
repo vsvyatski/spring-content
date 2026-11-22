@@ -4,9 +4,10 @@ import internal.org.springframework.content.commons.config.StoreFragment;
 import internal.org.springframework.content.commons.config.StoreFragmentDefinition;
 import internal.org.springframework.content.commons.config.StoreFragmentDetector;
 import internal.org.springframework.content.commons.config.StoreFragmentsFactoryBean;
-import internal.org.springframework.content.commons.repository.AnnotatedStoreEventInvoker;
+import internal.org.springframework.content.commons.store.events.AnnotatedStoreEventInvoker;
 import internal.org.springframework.content.commons.utils.StoreCandidateComponentProvider;
 import internal.org.springframework.content.commons.utils.StoreUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jspecify.annotations.NonNull;
@@ -55,7 +56,7 @@ import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 
 public abstract class AbstractStoreBeanDefinitionRegistrar
-        implements ImportBeanDefinitionRegistrar, EnvironmentAware, ResourceLoaderAware, BeanFactoryAware {
+    implements ImportBeanDefinitionRegistrar, EnvironmentAware, ResourceLoaderAware, BeanFactoryAware {
 
     public static final String DOMAIN_CLASS_PROPERTY = "domainClass";
     public static final String ID_CLASS_PROPERTY = "idClass";
@@ -105,7 +106,7 @@ public abstract class AbstractStoreBeanDefinitionRegistrar
         Assert.notNull(importingClassMetadata, "AnnotationMetadata must not be null!");
         Assert.notNull(registry, "BeanDefinitionRegistry must not be null!");
         Assert.isTrue(registry instanceof ConfigurableListableBeanFactory,
-                "BeanDefinitionRegistry must be instance of ConfigurableListableBeanFactory");
+            "BeanDefinitionRegistry must be instance of ConfigurableListableBeanFactory");
 
         BeanDefinition annotatedStoreEventHandlerDef = createBeanDefinition();
         if (!registry.containsBeanDefinition("annotatedStoreEventHandler")) {
@@ -121,20 +122,20 @@ public abstract class AbstractStoreBeanDefinitionRegistrar
                                                        BeanDefinitionRegistry registry) {
 
         AnnotationAttributes attributes = new AnnotationAttributes(Objects
-                .requireNonNull(importingClassMetadata.getAnnotationAttributes(getAnnotation().getName())));
+            .requireNonNull(importingClassMetadata.getAnnotationAttributes(getAnnotation().getName())));
         String[] basePackages = this.getBasePackages(attributes, importingClassMetadata);
 
         StoreCandidateComponentProvider scanner = new StoreCandidateComponentProvider(false, environment);
         scanner.setResourceLoader(resourceLoader);
 
         Set<GenericBeanDefinition> definitions = StoreUtils.getStoreCandidates(
-                scanner,
-                environment,
-                resourceLoader,
-                basePackages,
-                multipleStoreImplementationsDetected(),
-                this.getSignatureTypes(),
-                this.getOverridePropertyValue());
+            scanner,
+            environment,
+            resourceLoader,
+            basePackages,
+            multipleStoreImplementationsDetected(),
+            this.getSignatureTypes(),
+            this.getOverridePropertyValue());
 
         buildAndRegisterDefinitions(importingClassMetadata, registry, attributes, basePackages, definitions);
     }
@@ -159,7 +160,7 @@ public abstract class AbstractStoreBeanDefinitionRegistrar
             MetadataReaderFactory metadataReaderFactory = new CachingMetadataReaderFactory(resourceLoader);
 
             String storeInterface = definition.getBeanClassName();
-            String[] interfaces = new String[0];
+            String[] interfaces = ArrayUtils.EMPTY_STRING_ARRAY;
             try {
                 assert storeInterface != null;
                 interfaces = metadataReaderFactory.getMetadataReader(storeInterface).getClassMetadata().getInterfaceNames();
@@ -178,12 +179,12 @@ public abstract class AbstractStoreBeanDefinitionRegistrar
 
             final Class<? extends Store> storeClassFinal = storeClass;
             List<String> fragmentBeanNames = Arrays.stream(interfaces)
-                    .filter(isCandidate)
-                    .map(iface -> detector.detectCustomImplementation(iface, storeInterface))
-                    .peek(it -> registerStoreFragmentImplementation(registry, importingClassMetadata, it, storeClassFinal, domainClass, idClass))
-                    .peek(it -> registerStoreFragment(registry, importingClassMetadata, it))
-                    .map(StoreFragmentDefinition::getFragmentBeanName)
-                    .collect(Collectors.toList());
+                .filter(isCandidate)
+                .map(iface -> detector.detectCustomImplementation(iface, storeInterface))
+                .peek(it -> registerStoreFragmentImplementation(registry, importingClassMetadata, it, storeClassFinal, domainClass, idClass))
+                .peek(it -> registerStoreFragment(registry, importingClassMetadata, it))
+                .map(StoreFragmentDefinition::getFragmentBeanName)
+                .collect(Collectors.toList());
 
             BeanDefinitionBuilder fragmentsBuilder = BeanDefinitionBuilder.rootBeanDefinition(StoreFragmentsFactoryBean.class);
             fragmentsBuilder.addConstructorArgValue(fragmentBeanNames);
@@ -199,7 +200,7 @@ public abstract class AbstractStoreBeanDefinitionRegistrar
     protected String[] getBasePackages(AnnotationAttributes attributes,
                                        AnnotationMetadata importingClassMetadata) {
         return StoreUtils.getBasePackages(attributes, /* default */ new String[]{
-                ClassUtils.getPackageName(importingClassMetadata.getClassName())});
+            ClassUtils.getPackageName(importingClassMetadata.getClassName())});
     }
 
     protected BeanDefinition createBeanDefinition() {
@@ -215,7 +216,7 @@ public abstract class AbstractStoreBeanDefinitionRegistrar
     protected Class<? extends Store> loadStoreClass(ConfigurableListableBeanFactory registry,
                                                     BeanDefinition definition) throws ClassNotFoundException {
         Class<?> candidateStoreClass = ClassUtils.forName(Objects.requireNonNull(definition.getBeanClassName()),
-                registry.getBeanClassLoader());
+            registry.getBeanClassLoader());
         if (!Store.class.isAssignableFrom(candidateStoreClass) && !ReactiveContentStore.class.isAssignableFrom(candidateStoreClass)) {
             throw new IllegalStateException(String.format("Store class %s is not assignable from Store or ReactiveContentStore", definition.getBeanClassName()));
         }
@@ -237,20 +238,20 @@ public abstract class AbstractStoreBeanDefinitionRegistrar
 
         try {
             Class<?> ifaceClass = ClassUtils.forName(fragmentDefinition.getInterfaceName(),
-                    ((ConfigurableListableBeanFactory) registry).getBeanClassLoader());
+                ((ConfigurableListableBeanFactory) registry).getBeanClassLoader());
             Class<?> implClass = ClassUtils.forName(Objects.requireNonNull(
-                            fragmentDefinition.getBeanDefinition().getBeanClassName()),
-                    ((ConfigurableListableBeanFactory) registry).getBeanClassLoader());
+                    fragmentDefinition.getBeanDefinition().getBeanClassName()),
+                ((ConfigurableListableBeanFactory) registry).getBeanClassLoader());
             Class<?> storeClass = ClassUtils.forName(fragmentDefinition.getStoreInterfaceName(),
-                    ((ConfigurableListableBeanFactory) registry).getBeanClassLoader());
+                ((ConfigurableListableBeanFactory) registry).getBeanClassLoader());
 
             Method method = ReflectionUtils.findMethod(implClass, "setGenericArguments", Class[].class);
             if (method != null) {
                 List<TypeInformation<?>> types = Objects.requireNonNull(
-                        TypeInformation.of(storeClass).getSuperTypeInformation(ifaceClass)).getTypeArguments();
+                    TypeInformation.of(storeClass).getSuperTypeInformation(ifaceClass)).getTypeArguments();
                 List<Class<?>> genericArguments = types.stream().map(TypeInformation::getType).collect(toList());
                 fragmentDefinition.getBeanDefinition().getPropertyValues()
-                        .add("genericArguments", genericArguments.toArray(new Class[]{}));
+                    .add("genericArguments", genericArguments.toArray(new Class[]{}));
             }
         } catch (ClassNotFoundException e) {
             logger.error("Failed setting fragment generic arguments", e);
@@ -258,8 +259,8 @@ public abstract class AbstractStoreBeanDefinitionRegistrar
 
         try {
             Class<?> implClass = ClassUtils.forName(Objects.requireNonNull(
-                            fragmentDefinition.getBeanDefinition().getBeanClassName()),
-                    ((ConfigurableListableBeanFactory) registry).getBeanClassLoader());
+                    fragmentDefinition.getBeanDefinition().getBeanClassName()),
+                ((ConfigurableListableBeanFactory) registry).getBeanClassLoader());
             Method method = ReflectionUtils.findMethod(implClass, "setDomainClass", Class.class);
             if (method != null) {
                 fragmentDefinition.getBeanDefinition().getPropertyValues().add(DOMAIN_CLASS_PROPERTY, domainClass);
@@ -270,7 +271,7 @@ public abstract class AbstractStoreBeanDefinitionRegistrar
 
         try {
             Class<?> implClass = ClassUtils.forName(fragmentDefinition.getBeanDefinition().getBeanClassName(),
-                    ((ConfigurableListableBeanFactory) registry).getBeanClassLoader());
+                ((ConfigurableListableBeanFactory) registry).getBeanClassLoader());
             Method method = ReflectionUtils.findMethod(implClass, "setIdClass", Class.class);
             if (method != null) {
                 fragmentDefinition.getBeanDefinition().getPropertyValues().add(ID_CLASS_PROPERTY, idClass);
@@ -281,11 +282,11 @@ public abstract class AbstractStoreBeanDefinitionRegistrar
 
         try {
             Class<?> implClass = ClassUtils.forName(fragmentDefinition.getBeanDefinition().getBeanClassName(),
-                    ((ConfigurableListableBeanFactory) registry).getBeanClassLoader());
+                ((ConfigurableListableBeanFactory) registry).getBeanClassLoader());
             Method method = ReflectionUtils.findMethod(implClass, "setStoreInterfaceClass", Class.class);
             if (method != null) {
                 fragmentDefinition.getBeanDefinition().getPropertyValues()
-                        .add(STORE_INTERFACE_CLASS_PROPERTY, storeInterfaceClass);
+                    .add(STORE_INTERFACE_CLASS_PROPERTY, storeInterfaceClass);
             }
         } catch (ClassNotFoundException e) {
             logger.error("Failed setting fragment ID class", e);
@@ -315,7 +316,7 @@ public abstract class AbstractStoreBeanDefinitionRegistrar
     protected boolean multipleStoreImplementationsDetected() {
 
         boolean multipleModulesFound = SpringFactoriesLoader
-                .loadFactoryNames(AbstractStoreFactoryBean.class, resourceLoader.getClassLoader()).size() > 1;
+            .loadFactoryNames(AbstractStoreFactoryBean.class, resourceLoader.getClassLoader()).size() > 1;
 
         if (multipleModulesFound) {
             logger.info("Multiple store modules detected.  Entering strict resolution mode");
@@ -353,10 +354,10 @@ public abstract class AbstractStoreBeanDefinitionRegistrar
         public boolean test(String s) {
 
             if (Store.class.getName().equals(s) ||
-                    AssociativeStore.class.getName().equals(s) ||
-                    ContentStore.class.getName().equals(s) ||
-                    ReactiveContentStore.class.getName().equals(s) ||
-                    s.startsWith("java.")) {
+                AssociativeStore.class.getName().equals(s) ||
+                ContentStore.class.getName().equals(s) ||
+                ReactiveContentStore.class.getName().equals(s) ||
+                s.startsWith("java.")) {
 
                 return false;
             }

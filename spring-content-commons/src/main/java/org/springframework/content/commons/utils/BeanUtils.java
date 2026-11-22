@@ -21,7 +21,7 @@ public final class BeanUtils {
 
     public static boolean hasFieldWithAnnotation(Object domainObj,
                                                  Class<? extends Annotation> annotationClass)
-            throws SecurityException, BeansException {
+        throws SecurityException, BeansException {
 
         Field field = findFieldWithAnnotation(domainObj, annotationClass);
         return field != null && field.getAnnotation(annotationClass) != null;
@@ -29,14 +29,14 @@ public final class BeanUtils {
 
     public static Field findFieldWithAnnotation(Object domainObj,
                                                 Class<? extends Annotation> annotationClass)
-            throws SecurityException, BeansException {
+        throws SecurityException, BeansException {
         BeanWrapper wrapper = new BeanWrapperImpl(domainObj);
         return findFieldWithAnnotation(domainObj.getClass(), annotationClass, wrapper);
     }
 
     public static Field findFieldWithAnnotation(Class<?> domainObjClass,
                                                 Class<? extends Annotation> annotationClass)
-            throws SecurityException, BeansException {
+        throws SecurityException, BeansException {
 
         BeanWrapper wrapper = new BeanWrapperImpl(domainObjClass);
         return findFieldWithAnnotation(domainObjClass, annotationClass, wrapper);
@@ -115,7 +115,7 @@ public final class BeanUtils {
 
     public static Class<?> getFieldWithAnnotationType(Object domainObj,
                                                       Class<? extends Annotation> annotationClass)
-            throws SecurityException, BeansException {
+        throws SecurityException, BeansException {
         Class<?> type = null;
 
         Field field = findFieldWithAnnotation(domainObj, annotationClass);
@@ -127,14 +127,14 @@ public final class BeanUtils {
     }
 
     public static Object getFieldWithAnnotation(Object domainObj, Class<? extends Annotation> annotationClass)
-            throws SecurityException, BeansException {
+        throws SecurityException, BeansException {
         Object value;
 
         Field field = findFieldWithAnnotation(domainObj, annotationClass);
         if (field != null && field.getAnnotation(annotationClass) != null) {
             try {
                 PropertyDescriptor descriptor = org.springframework.beans.BeanUtils
-                        .getPropertyDescriptor(domainObj.getClass(), field.getName());
+                    .getPropertyDescriptor(domainObj.getClass(), field.getName());
                 if (descriptor != null) {
                     BeanWrapper wrapper = new BeanWrapperImpl(domainObj);
                     value = wrapper.getPropertyValue(field.getName());
@@ -192,7 +192,7 @@ public final class BeanUtils {
     public static void setFieldWithAnnotation(Object domainObj,
                                               Class<? extends Annotation> annotationClass, Object value) {
         setFieldWithAnnotationConditionally(domainObj, annotationClass, value,
-                MATCHING_CONDITION);
+            MATCHING_CONDITION);
     }
 
     /**
@@ -210,10 +210,10 @@ public final class BeanUtils {
 
         Field field = findFieldWithAnnotation(domainObj, annotationClass);
         if (field != null && field.getAnnotation(annotationClass) != null
-                && condition.matches(field)) {
+            && condition.matches(field)) {
             try {
                 PropertyDescriptor descriptor = org.springframework.beans.BeanUtils
-                        .getPropertyDescriptor(domainObj.getClass(), field.getName());
+                    .getPropertyDescriptor(domainObj.getClass(), field.getName());
                 if (descriptor != null) {
                     BeanWrapper wrapper = new BeanWrapperImpl(domainObj);
                     wrapper.setPropertyValue(field.getName(), value);

@@ -14,15 +14,15 @@ public abstract class ContentPropertyInfoTypeDescriptor {
 
     public static TypeDescriptor withGenerics(Object entity, ContentProperty property) {
         ResolvableType contentPropertyInfoResolvableType = ResolvableType.forClassWithGenerics(ContentPropertyInfo.class,
-                entity.getClass(), property.getContentIdType(entity).getObjectType());
+            entity.getClass(), property.getContentIdType(entity).getObjectType());
         return new TypeDescriptor(contentPropertyInfoResolvableType, null,
-                null);  // type annotations are not relevant for conversion of ContentPropertyInfo
+            null);  // type annotations are not relevant for conversion of ContentPropertyInfo
     }
 
     public static TypeDescriptor withGenerics(Class<?> entityClass, Class<?> contentIdClass) {
         ResolvableType contentPropertyInfoResolvableType = ResolvableType.forClassWithGenerics(ContentPropertyInfo.class,
-                entityClass, contentIdClass);
+            entityClass, contentIdClass);
         return new TypeDescriptor(contentPropertyInfoResolvableType, null,
-                null); // type annotations are not relevant for conversion of ContentPropertyInfo
+            null); // type annotations are not relevant for conversion of ContentPropertyInfo
     }
 }

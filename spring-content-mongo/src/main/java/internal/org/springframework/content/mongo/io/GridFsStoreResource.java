@@ -19,7 +19,7 @@ import static org.springframework.data.mongodb.core.query.Query.query;
 import static org.springframework.data.mongodb.gridfs.GridFsCriteria.whereFilename;
 
 public class GridFsStoreResource
-        implements Resource, WritableResource, DeletableResource {
+    implements Resource, WritableResource, DeletableResource {
 
     private static Log logger = LogFactory.getLog(GridFsStoreResource.class);
 
@@ -29,7 +29,7 @@ public class GridFsStoreResource
 
     public GridFsStoreResource(Resource delegate, GridFsTemplate gridfs) {
         Assert.isInstanceOf(GridFsResource.class,
-                "delegate must be an instance of GridFsResource");
+            "delegate must be an instance of GridFsResource");
         this.delegate = (GridFsResource) delegate;
         this.gridfs = gridfs;
     }
@@ -178,7 +178,7 @@ public class GridFsStoreResource
             latch.await();
         } catch (InterruptedException e) {
             logger.warn(String.format("waiting for countdown latch for resource %s",
-                    resource.getFilename()), e);
+                resource.getFilename()), e);
         }
 
         return synchronizedOutputStream;

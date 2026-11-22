@@ -31,7 +31,7 @@ public class S3ObjectId implements Serializable {
     public S3ObjectId(String bucket, String key, String versionId) {
         if (bucket == null || key == null)
             throw new IllegalArgumentException(
-                    "bucket and key must be specified");
+                "bucket and key must be specified");
         this.bucket = bucket;
         this.key = key;
         this.versionId = versionId;
@@ -56,6 +56,6 @@ public class S3ObjectId implements Serializable {
     @Override
     public String toString() {
         return "bucket: " + bucket + ", key: " + key + ", versionId: "
-                + versionId;
+            + versionId;
     }
 }

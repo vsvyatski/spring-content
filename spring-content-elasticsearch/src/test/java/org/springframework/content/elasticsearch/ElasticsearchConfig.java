@@ -4,6 +4,7 @@ import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.content.commons.renditions.RenditionProvider;
 import org.springframework.content.jpa.config.EnableJpaStores;
+import org.springframework.content.test.support.TestSupportPackages;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.ConversionService;
@@ -26,14 +27,14 @@ import java.io.InputStream;
 
 @Configuration
 @EnableElasticsearchFulltextIndexing
-@EnableJpaRepositories(considerNestedRepositories = true)
-@EnableJpaStores
+@EnableJpaRepositories(basePackages = TestSupportPackages.FULLTEXT)
+@EnableJpaStores(basePackages = TestSupportPackages.FULLTEXT)
 public class ElasticsearchConfig {
 
     @Value("/org/springframework/content/jpa/schema-drop-hsqldb.sql")
-    private Resource dropReopsitoryTables;
+    private Resource dropRepositoryTables;
     @Value("/org/springframework/content/jpa/schema-hsqldb.sql")
-    private Resource dataReopsitorySchema;
+    private Resource dataRepositorySchema;
 
     @Bean
     public ConversionService conversionService() {
@@ -80,7 +81,7 @@ public class ElasticsearchConfig {
 
         LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
         factory.setJpaVendorAdapter(vendorAdapter);
-        factory.setPackagesToScan("org.springframework.content.elasticsearch");
+        factory.setPackagesToScan(TestSupportPackages.FULLTEXT);
         factory.setDataSource(dataSource());
 
         return factory;
@@ -96,10 +97,10 @@ public class ElasticsearchConfig {
     @Bean
     DataSourceInitializer datasourceInitializer(DataSource dataSource) {
         ResourceDatabasePopulator databasePopulator =
-                new ResourceDatabasePopulator();
+            new ResourceDatabasePopulator();
 
-        databasePopulator.addScript(dropReopsitoryTables);
-        databasePopulator.addScript(dataReopsitorySchema);
+        databasePopulator.addScript(dropRepositoryTables);
+        databasePopulator.addScript(dataRepositorySchema);
         databasePopulator.setIgnoreFailedDrops(true);
 
         DataSourceInitializer initializer = new DataSourceInitializer();

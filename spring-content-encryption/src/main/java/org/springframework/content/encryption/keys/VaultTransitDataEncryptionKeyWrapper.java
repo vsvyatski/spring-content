@@ -25,7 +25,7 @@ public class VaultTransitDataEncryptionKeyWrapper implements DataEncryptionKeyWr
     public boolean supports(StoredDataEncryptionKey storedDataEncryptionKey) {
         if (storedDataEncryptionKey instanceof EncryptedSymmetricDataEncryptionKey dek) {
             return Objects.equals(dek.wrappingAlgorithm(), WRAPPING_ALGORITHM)
-                    && Objects.equals(dek.wrappingKeyId(), wrappingKeyId);
+                && Objects.equals(dek.wrappingKeyId(), wrappingKeyId);
         }
         return false;
     }
@@ -35,26 +35,26 @@ public class VaultTransitDataEncryptionKeyWrapper implements DataEncryptionKeyWr
         var plainText = Plaintext.of(dataEncryptionParameters.secretKey().getEncoded());
         var encryptedKey = transitOperations.encrypt(wrappingKeyId, plainText);
         return new EncryptedSymmetricDataEncryptionKey(
-                WRAPPING_ALGORITHM,
-                wrappingKeyId,
-                Integer.toString(encryptedKey.getContext().getKeyVersion()),
-                dataEncryptionParameters.secretKey().getAlgorithm(),
-                encryptedKey.getCiphertext().getBytes(StandardCharsets.UTF_8),
-                dataEncryptionParameters.initializationVector()
+            WRAPPING_ALGORITHM,
+            wrappingKeyId,
+            Integer.toString(encryptedKey.getContext().getKeyVersion()),
+            dataEncryptionParameters.secretKey().getAlgorithm(),
+            encryptedKey.getCiphertext().getBytes(StandardCharsets.UTF_8),
+            dataEncryptionParameters.initializationVector()
         );
     }
 
     @Override
     public EncryptionParameters unwrapEncryptionKey(EncryptedSymmetricDataEncryptionKey encryptedDataEncryptionKey) {
         var cipherText = Ciphertext.of(
-                new String(encryptedDataEncryptionKey.encryptedKeyData(), StandardCharsets.UTF_8)
+            new String(encryptedDataEncryptionKey.encryptedKeyData(), StandardCharsets.UTF_8)
         );
 
         var decryptedKey = transitOperations.decrypt(wrappingKeyId, cipherText);
 
         return new EncryptionParameters(
-                new SecretKeySpec(decryptedKey.getPlaintext(), encryptedDataEncryptionKey.dataEncryptionAlgorithm()),
-                encryptedDataEncryptionKey.initializationVector()
+            new SecretKeySpec(decryptedKey.getPlaintext(), encryptedDataEncryptionKey.dataEncryptionAlgorithm()),
+            encryptedDataEncryptionKey.initializationVector()
         );
     }
 }

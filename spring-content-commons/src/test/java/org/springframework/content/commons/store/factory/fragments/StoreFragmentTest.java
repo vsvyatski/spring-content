@@ -4,8 +4,9 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.content.commons.fragments.ContentStoreAware;
 import org.springframework.content.commons.store.ContentStore;
-import org.springframework.content.commons.store.factory.testsupport.EnableTestStores;
+import org.springframework.content.test.support.factory.EnableTestStores;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -40,7 +41,7 @@ public class StoreFragmentTest {
         }
     }
 
-    public static class CustomizationImpl implements Customization {
+    public static class CustomizationImpl implements Customization, ContentStoreAware {
 
         @Autowired
         private String bean;
@@ -65,6 +66,7 @@ public class StoreFragmentTest {
             return domainClass;
         }
 
+        @Override
         public void setDomainClass(Class<?> domainClass) {
             this.domainClass = domainClass;
         }
@@ -73,8 +75,13 @@ public class StoreFragmentTest {
             return idClass;
         }
 
+        @Override
         public void setIdClass(Class<?> idClass) {
             this.idClass = idClass;
+        }
+
+        @Override
+        public void setContentStore(ContentStore<Object, Serializable> store) {
         }
     }
 

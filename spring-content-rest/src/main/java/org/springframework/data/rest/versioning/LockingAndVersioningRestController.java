@@ -73,7 +73,7 @@ public class LockingAndVersioningRestController {
     public ResponseEntity<EntityModel<?>> lock(RootResourceInformation repoInfo,
                                                @PathVariable("repository") String repository,
                                                @PathVariable("id") String id, Principal principal)
-            throws ResourceNotFoundException, HttpRequestMethodNotSupportedException {
+        throws ResourceNotFoundException, HttpRequestMethodNotSupportedException {
 
         Object domainObj = repoInfo.getInvoker().invokeFindById(id).get();
 
@@ -91,7 +91,7 @@ public class LockingAndVersioningRestController {
     public ResponseEntity<EntityModel<?>> unlock(RootResourceInformation repoInfo,
                                                  @PathVariable("repository") String repository,
                                                  @PathVariable("id") String id, Principal principal)
-            throws ResourceNotFoundException, HttpRequestMethodNotSupportedException {
+        throws ResourceNotFoundException, HttpRequestMethodNotSupportedException {
 
         Object domainObj = repoInfo.getInvoker().invokeFindById(id).get();
 
@@ -112,7 +112,7 @@ public class LockingAndVersioningRestController {
                                                   @RequestBody VersionInfo info,
                                                   Principal principal,
                                                   PersistentEntityResourceAssembler assembler)
-            throws ResourceNotFoundException, HttpRequestMethodNotSupportedException {
+        throws ResourceNotFoundException, HttpRequestMethodNotSupportedException {
 
         Object domainObj = repoInfo.getInvoker().invokeFindById(id).get();
 
@@ -130,7 +130,7 @@ public class LockingAndVersioningRestController {
     public CollectionModel<?> findAllLatestVersion(RootResourceInformation repoInfo,
                                                    PersistentEntityResourceAssembler assembler,
                                                    @PathVariable("repository") String repository)
-            throws ResourceNotFoundException, HttpRequestMethodNotSupportedException {
+        throws ResourceNotFoundException, HttpRequestMethodNotSupportedException {
 
         RepositoryInformation repositoryInfo = RepositoryUtils.findRepositoryInformation(repositories, repository);
         Class<?> domainType = repositoryInfo.getDomainType();
@@ -149,7 +149,7 @@ public class LockingAndVersioningRestController {
                                               @PathVariable("repository") String repository,
                                               @PathVariable("id") String id,
                                               Sort sort)
-            throws ResourceNotFoundException, HttpRequestMethodNotSupportedException {
+        throws ResourceNotFoundException, HttpRequestMethodNotSupportedException {
 
         Object domainObj = repoInfo.getInvoker().invokeFindById(id).get();
 

@@ -17,14 +17,14 @@ public final class StoreInterfaceUtils {
     }
 
     public static Pair<Optional<Class<?>>, Class<? extends Serializable>> getStoreTypes(
-            Class<?> storeClass) {
+        Class<?> storeClass) {
         List<TypeInformation<?>> types = null;
 
         Class<?>[] candidateStoreClasses = new Class<?>[]{
-                ContentStore.class,
-                AssociativeStore.class,
-                Store.class,
-                ReactiveContentStore.class
+            ContentStore.class,
+            AssociativeStore.class,
+            Store.class,
+            ReactiveContentStore.class
         };
         for (Class<?> candidateStoreClass : candidateStoreClasses) {
             try {

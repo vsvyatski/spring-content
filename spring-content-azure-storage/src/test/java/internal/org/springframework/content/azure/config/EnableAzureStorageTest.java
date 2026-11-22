@@ -9,8 +9,8 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.content.azure.config.AzureStorageConfigurer;
 import org.springframework.content.azure.config.EnableAzureStorage;
-import org.springframework.content.commons.annotations.ContentId;
-import org.springframework.content.commons.store.ContentStore;
+import org.springframework.content.test.support.TestSupportPackages;
+import org.springframework.content.test.support.azure.SingleContentAzureStore;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,8 +25,6 @@ public class EnableAzureStorageTest {
 
     private static final BlobServiceClientBuilder builder = Azurite.getBlobServiceClientBuilder();
     private static final BlobContainerClient client = builder.buildClient().getBlobContainerClient("test");
-    // mocks
-    static AzureStorageConfigurer configurer;
 
     static {
         if (!client.exists()) {
@@ -36,41 +34,28 @@ public class EnableAzureStorageTest {
         System.setProperty("spring.content.azure.bucket", "azure-test-bucket");
     }
 
+    private AzureStorageConfigurer configurer;
     private AnnotationConfigApplicationContext context;
 
-    public interface TestEntityContentStore extends ContentStore<TestEntity, String> {
-    }
-
     @Configuration
-    @EnableAzureStorage(basePackages = "contains.no.fs.repositores")
+    @EnableAzureStorage(basePackages = "contains.no.azure.repositories")
     @Import(InfrastructureConfig.class)
     public static class EmptyConfig {
     }
 
     @Configuration
-    @EnableAzureStorage
+    @EnableAzureStorage(basePackages = TestSupportPackages.AZURE)
     @Import(InfrastructureConfig.class)
     public static class TestConfig {
     }
 
     @Configuration
-    @EnableAzureStorage
+    @EnableAzureStorage(basePackages = TestSupportPackages.AZURE)
     @Import(InfrastructureConfig.class)
     public static class ConverterConfig {
         @Bean
         public AzureStorageConfigurer configurer() {
-            return configurer;
-        }
-    }
-
-    @Configuration
-    @EnableAzureStorage
-    @Import(InfrastructureConfig.class)
-    public static class TestConverterConfig {
-        @Bean
-        public AzureStorageConfigurer configurer() {
-            return registry -> {
-            };
+            return mock(AzureStorageConfigurer.class);
         }
     }
 
@@ -79,19 +64,6 @@ public class EnableAzureStorageTest {
         @Bean
         public BlobServiceClientBuilder builder() {
             return builder;
-        }
-    }
-
-    public static class TestEntity {
-        @ContentId
-        private String contentId;
-
-        public String getContentId() {
-            return contentId;
-        }
-
-        public void setContentId(String contentId) {
-            this.contentId = contentId;
         }
     }
 
@@ -113,7 +85,7 @@ public class EnableAzureStorageTest {
 
             @Test
             void shouldHaveAContentStoreBean() {
-                assertThat(context.getBean(TestEntityContentStore.class)).isNotNull();
+                assertThat(context.getBean(SingleContentAzureStore.class)).isNotNull();
             }
 
             @Test
@@ -126,11 +98,10 @@ public class EnableAzureStorageTest {
         class GivenAContextWithAConfigurer {
             @BeforeEach
             void setUp() {
-                configurer = mock(AzureStorageConfigurer.class);
-
                 context = new AnnotationConfigApplicationContext();
                 context.register(ConverterConfig.class);
                 context.refresh();
+                configurer = context.getBean(AzureStorageConfigurer.class);
             }
 
             @AfterEach
@@ -160,8 +131,9 @@ public class EnableAzureStorageTest {
 
             @Test
             void shouldNotContainsAnyAzureStorageBeans() {
-                assertThat(context.getBeanNamesForType(TestEntityContentStore.class)).isEmpty();
+                assertThat(context.getBeanNamesForType(SingleContentAzureStore.class)).isEmpty();
             }
         }
     }
 }
+

@@ -45,10 +45,10 @@ public class SimpleStorageProtocolResolver implements ProtocolResolver, Initiali
     public Resource resolve(String location, ResourceLoader resourceLoader) {
         if (SimpleStorageNameUtils.isSimpleStorageResource(location)) {
             return new SimpleStorageResource(this.amazonS3,
-                    SimpleStorageNameUtils.getBucketNameFromLocation(location),
-                    SimpleStorageNameUtils.getObjectNameFromLocation(location),
-                    this.taskExecutor,
-                    SimpleStorageNameUtils.getVersionIdFromLocation(location));
+                SimpleStorageNameUtils.getBucketNameFromLocation(location),
+                SimpleStorageNameUtils.getObjectNameFromLocation(location),
+                this.taskExecutor,
+                SimpleStorageNameUtils.getVersionIdFromLocation(location));
         } else {
             return null;
         }

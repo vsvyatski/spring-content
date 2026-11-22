@@ -24,8 +24,8 @@ import java.util.List;
 import java.util.Optional;
 
 public class EncryptingContentStoreImpl<S, SID extends Serializable> implements
-        org.springframework.content.commons.store.ContentStore<S, SID>,
-        ContentStoreAware {
+    org.springframework.content.commons.store.ContentStore<S, SID>,
+    ContentStoreAware {
 
     private final MappingContext mappingContext;
     private final List<EncryptingContentStoreConfigurer<S>> configurers;
@@ -34,8 +34,8 @@ public class EncryptingContentStoreImpl<S, SID extends Serializable> implements
 
     @Autowired
     public EncryptingContentStoreImpl(
-            @Autowired(required = false) MappingContext mappingContext,
-            List<EncryptingContentStoreConfigurer<S>> configurers
+        @Autowired(required = false) MappingContext mappingContext,
+        List<EncryptingContentStoreConfigurer<S>> configurers
     ) {
         this.mappingContext = Optional.ofNullable(mappingContext).orElseGet(() -> new MappingContext("/", "."));
         this.configurers = configurers;
@@ -52,13 +52,13 @@ public class EncryptingContentStoreImpl<S, SID extends Serializable> implements
         Assert.notNull(cryptoService, "cryptoService not set");
 
         return cryptoService.encrypt(entity, propertyPath, content,
-                (e, s) -> storeDelegate.setContent(e, propertyPath, s));
+            (e, s) -> storeDelegate.setContent(e, propertyPath, s));
     }
 
     @Override
     public S setContent(S entity, PropertyPath propertyPath, InputStream inputStream, long l) {
         return this.setContent(entity, propertyPath, inputStream,
-                new org.springframework.content.commons.store.SetContentParams(l, true, org.springframework.content.commons.store.SetContentParams.ContentDisposition.Overwrite));
+            new org.springframework.content.commons.store.SetContentParams(l, true, org.springframework.content.commons.store.SetContentParams.ContentDisposition.Overwrite));
     }
 
     @Override
@@ -67,7 +67,7 @@ public class EncryptingContentStoreImpl<S, SID extends Serializable> implements
         Assert.notNull(cryptoService, "cryptoService not set");
 
         return cryptoService.encrypt(entity, propertyPath, content,
-                (e, s) -> storeDelegate.setContent(e, propertyPath, s, params));
+            (e, s) -> storeDelegate.setContent(e, propertyPath, s, params));
     }
 
     @Override
@@ -85,7 +85,7 @@ public class EncryptingContentStoreImpl<S, SID extends Serializable> implements
 
         try {
             return cryptoService.encrypt(entity, propertyPath, resource.getInputStream(),
-                    (e, s) -> storeDelegate.setContent(e, propertyPath, new InputStreamResource(s)));
+                (e, s) -> storeDelegate.setContent(e, propertyPath, new InputStreamResource(s)));
         } catch (IOException e) {
             throw new StoreAccessException("error encrypting resource", e);
         }
@@ -99,7 +99,7 @@ public class EncryptingContentStoreImpl<S, SID extends Serializable> implements
     @Override
     public S unsetContent(S entity, PropertyPath propertyPath) {
         return unsetContent(entity, propertyPath,
-                new org.springframework.content.commons.store.UnsetContentParams(org.springframework.content.commons.store.UnsetContentParams.Disposition.Remove));
+            new org.springframework.content.commons.store.UnsetContentParams(org.springframework.content.commons.store.UnsetContentParams.Disposition.Remove));
     }
 
     @Override
@@ -132,7 +132,7 @@ public class EncryptingContentStoreImpl<S, SID extends Serializable> implements
         Assert.notNull(cryptoService, "cryptoService not set");
 
         return cryptoService.decrypt(entity, propertyPath, null, () -> storeDelegate.getResource(entity, propertyPath))
-                .getInputStream();
+            .getInputStream();
     }
 
     @Override
@@ -158,7 +158,7 @@ public class EncryptingContentStoreImpl<S, SID extends Serializable> implements
         Assert.notNull(cryptoService, "cryptoService not set");
 
         return cryptoService.decrypt(entity, propertyPath, params,
-                () -> storeDelegate.getResource(entity, propertyPath));
+            () -> storeDelegate.getResource(entity, propertyPath));
     }
 
     @Override

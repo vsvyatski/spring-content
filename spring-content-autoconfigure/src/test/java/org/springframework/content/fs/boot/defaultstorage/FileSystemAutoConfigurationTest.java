@@ -29,7 +29,7 @@ public class FileSystemAutoConfigurationTest {
             @BeforeEach
             void setUp() {
                 contextRunner = new ApplicationContextRunner()
-                        .withConfiguration(AutoConfigurations.of(FileSystemContentAutoConfiguration.class));
+                    .withConfiguration(AutoConfigurations.of(FileSystemContentAutoConfiguration.class));
                 System.setProperty("spring.content.storage.type.default", "fs");
             }
 
@@ -41,8 +41,8 @@ public class FileSystemAutoConfigurationTest {
             @Test
             void shouldCreateAnFileSystemResourceLoaderBean() {
                 contextRunner
-                        .withUserConfiguration(TestConfig.class).run((context) ->
-                                Assertions.assertThat(context).hasSingleBean(FileSystemResourceLoader.class));
+                    .withUserConfiguration(TestConfig.class).run((context) ->
+                        Assertions.assertThat(context).hasSingleBean(FileSystemResourceLoader.class));
             }
         }
 
@@ -51,7 +51,7 @@ public class FileSystemAutoConfigurationTest {
             @BeforeEach
             void setUp() {
                 contextRunner = new ApplicationContextRunner()
-                        .withConfiguration(AutoConfigurations.of(FileSystemContentAutoConfiguration.class));
+                    .withConfiguration(AutoConfigurations.of(FileSystemContentAutoConfiguration.class));
                 System.setProperty("spring.content.storage.type.default", "s3");
             }
 
@@ -63,7 +63,7 @@ public class FileSystemAutoConfigurationTest {
             @Test
             void shouldNotCreateAnFileSystemResourceLoaderBean() {
                 contextRunner.withUserConfiguration(TestConfig.class).run((context) ->
-                        Assertions.assertThat(context).doesNotHaveBean(FileSystemResourceLoader.class));
+                    Assertions.assertThat(context).doesNotHaveBean(FileSystemResourceLoader.class));
             }
         }
 
@@ -72,13 +72,13 @@ public class FileSystemAutoConfigurationTest {
             @BeforeEach
             void setUp() {
                 contextRunner = new ApplicationContextRunner()
-                        .withConfiguration(AutoConfigurations.of(FileSystemContentAutoConfiguration.class));
+                    .withConfiguration(AutoConfigurations.of(FileSystemContentAutoConfiguration.class));
             }
 
             @Test
             void shouldCreateAnFileSystemResourceLoaderBean() {
                 contextRunner.withUserConfiguration(TestConfig.class)
-                        .run((context) -> Assertions.assertThat(context).hasSingleBean(FileSystemResourceLoader.class));
+                    .run((context) -> Assertions.assertThat(context).hasSingleBean(FileSystemResourceLoader.class));
             }
         }
     }

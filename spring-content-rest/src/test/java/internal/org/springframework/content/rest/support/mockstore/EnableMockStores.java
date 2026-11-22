@@ -38,14 +38,17 @@ public @interface EnableMockStores {
      *
      * @return the base package classes
      */
+    // annotation attribute; read by store registrar
+    @SuppressWarnings("unused")
     Class<?>[] basePackageClasses() default {};
 
     /**
-     * Returns the {@link FactoryBean} class to be used for each repository instance.
+     * Returns the {@link FactoryBean} class to be used for each store instance.
      * Defaults to {@link MockStoreFactoryBean}.
      *
-     * @return content repository factory bean class
+     * @return content store factory bean class
      */
+    // annotation attribute; read by store registrar
+    @SuppressWarnings("unused")
     Class<?> storeFactoryBeanClass() default MockStoreFactoryBean.class;
-
 }

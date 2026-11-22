@@ -1,0 +1,11 @@
+{
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true,
+  "[powershell]": {
+    "files.eol": "\n"
+  },
+  "[java]": {
+    "editor.tabSize": 4,
+    "editor.insertSpaces": true
+  }
+}

@@ -34,17 +34,17 @@ class ContentCryptoService<S, DEK extends StoredDataEncryptionKey> {
 
     // As per https://www.rfc-editor.org/rfc/rfc9110.html#name-range; single-range support only
     private static final Pattern RANGE_PATTERN =
-            Pattern.compile("\\Abytes=(?<firstPos>[0-9]*)-(?<lastPos>[0-9]*)\\Z");
+        Pattern.compile("\\Abytes=(?<firstPos>[0-9]*)-(?<lastPos>[0-9]*)\\Z");
     private final MappingContext mappingContext;
     private final DataEncryptionKeyAccessor<S, DEK> dataEncryptionKeyAccessor;
     private final List<DataEncryptionKeyWrapper<DEK>> dataEncryptionKeyWrappers;
     private final ContentEncryptionEngine encryptionEngine;
 
     ContentCryptoService(
-            MappingContext mappingContext,
-            DataEncryptionKeyAccessor<S, DEK> dataEncryptionKeyAccessor,
-            List<DataEncryptionKeyWrapper<DEK>> dataEncryptionKeyWrappers,
-            ContentEncryptionEngine encryptionEngine) {
+        MappingContext mappingContext,
+        DataEncryptionKeyAccessor<S, DEK> dataEncryptionKeyAccessor,
+        List<DataEncryptionKeyWrapper<DEK>> dataEncryptionKeyWrappers,
+        ContentEncryptionEngine encryptionEngine) {
         this.mappingContext = mappingContext;
         this.dataEncryptionKeyAccessor = dataEncryptionKeyAccessor;
         this.dataEncryptionKeyWrappers = dataEncryptionKeyWrappers;
@@ -52,7 +52,7 @@ class ContentCryptoService<S, DEK extends StoredDataEncryptionKey> {
     }
 
     private static InputStreamRequestParameters parseRangePattern(String range, Resource resource)
-            throws IOException {
+        throws IOException {
         if (range == null || range.isEmpty()) {
             return InputStreamRequestParameters.full();
         }
@@ -67,20 +67,20 @@ class ContentCryptoService<S, DEK extends StoredDataEncryptionKey> {
                 return InputStreamRequestParameters.startingFrom(contentLength - Long.parseUnsignedLong(lastPosStr));
             } else {
                 return new InputStreamRequestParameters(
-                        Long.parseUnsignedLong(firstPosStr),
-                        lastPosStr.isEmpty() ? null : Long.parseUnsignedLong(lastPosStr)
+                    Long.parseUnsignedLong(firstPosStr),
+                    lastPosStr.isEmpty() ? null : Long.parseUnsignedLong(lastPosStr)
                 );
             }
         } else {
             throw new StoreAccessException(String.format(
-                    "Range request '%s' is not supported. Only a single byte-range is supported".formatted(range)
+                "Range request '%s' is not supported. Only a single byte-range is supported".formatted(range)
             ));
         }
     }
 
     private static String constructRangePattern(InputStreamRequestParameters parameters) {
         return "bytes=" + parameters.startByteOffset() + "-" +
-                Optional.ofNullable(parameters.endByteOffset()).map(Long::toUnsignedString).orElse("");
+            Optional.ofNullable(parameters.endByteOffset()).map(Long::toUnsignedString).orElse("");
     }
 
     public S encrypt(S entity, PropertyPath propertyPath, InputStream plainText, BiFunction<S, InputStream, S> contentSetter) {
@@ -92,8 +92,8 @@ class ContentCryptoService<S, DEK extends StoredDataEncryptionKey> {
 
         var encryptionParameters = encryptionEngine.createNewParameters();
         var encryptedKeys = dataEncryptionKeyWrappers.stream()
-                .map(wrapper -> wrapper.wrapEncryptionKey(encryptionParameters))
-                .toList();
+            .map(wrapper -> wrapper.wrapEncryptionKey(encryptionParameters))
+            .toList();
 
 
         var encryptedStream = encryptionEngine.encrypt(plainText, encryptionParameters);
@@ -140,7 +140,7 @@ class ContentCryptoService<S, DEK extends StoredDataEncryptionKey> {
                 return resource.getInputStream();
             } catch (IOException ex) {
                 throw new StoreAccessException(
-                        String.format("Content property %s can not be accessed".formatted(propertyPath.name())), ex
+                    String.format("Content property %s can not be accessed".formatted(propertyPath.name())), ex
                 );
             }
         }, encryptionParameters, finalRequestParams), resource);

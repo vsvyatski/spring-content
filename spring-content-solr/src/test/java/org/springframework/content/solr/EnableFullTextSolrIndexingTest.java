@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.content.commons.search.IndexService;
-import org.springframework.content.commons.search.Searchable;
 import org.springframework.content.fs.config.EnableFileSystemStores;
 import org.springframework.content.fs.io.FileSystemResourceLoader;
 import org.springframework.context.ApplicationContext;
@@ -39,7 +38,6 @@ public class EnableFullTextSolrIndexingTest {
 
         @Bean
         public SolrClient solrClient() {
-            // noinspection resource
             return new HttpJdkSolrClient.Builder("http://some/url").build();
         }
 

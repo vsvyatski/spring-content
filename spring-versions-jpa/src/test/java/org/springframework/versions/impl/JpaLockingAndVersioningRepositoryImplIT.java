@@ -1,10 +1,6 @@
 package org.springframework.versions.impl;
 
 import internal.org.springframework.versions.LockingService;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Version;
 import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -20,7 +16,6 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
@@ -38,14 +33,21 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.versions.*;
+import org.springframework.versions.LockOwnerException;
+import org.springframework.versions.LockingAndVersioningException;
+import org.springframework.versions.VersionInfo;
 import org.springframework.versions.jpa.config.JpaLockingAndVersioningConfig;
+import org.springframework.versions.test.support.VersioningTestPackages;
+import org.springframework.versions.test.support.jpa.VersioningJpaLongIdEntity;
+import org.springframework.versions.test.support.jpa.VersioningJpaLongIdRepository;
+import org.springframework.versions.test.support.jpa.VersioningJpaSiblingEntity;
+import org.springframework.versions.test.support.jpa.VersioningJpaSiblingRepository;
 
 import javax.sql.DataSource;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @ContextConfiguration(classes = {JpaLockingAndVersioningRepositoryImplIT.TestConfig.class})
 @ExtendWith(SpringExtension.class)
@@ -57,40 +59,24 @@ public class JpaLockingAndVersioningRepositoryImplIT {
     @Autowired
     private LockingService lockingService;
 
-    private TestRepository repo;
+    private VersioningJpaLongIdRepository repo;
 
-    private TestEntity e1, e2, e3, e1v11, e1v12, e2v2, e3wc, entityForDeletion, result;
+    private VersioningJpaLongIdEntity e1, e2, e3, e1v11, e1v12, e2v2, e3wc, entityForDeletion, result;
 
     private Exception e;
 
-    /// ///////////////////////////////////////////////
     // this entity and repository ensure that multiple repositories can implement LockingAndVersioningRepository at the same time
     @Autowired
-    private OtherTestRepository otherRepo;
+    private VersioningJpaSiblingRepository otherRepo;
 
     private static void setupSecurityContext(String principal, boolean isAuthenticated) {
-        SecurityContext sc = new SecurityContext() {
-            @Override
-            public Authentication getAuthentication() {
-                return new MockAuthentication(principal, isAuthenticated);
-            }
-
-            @Override
-            public void setAuthentication(Authentication authentication) {
-            }
-        };
-
+        SecurityContext sc = SecurityContextHolder.createEmptyContext();
+        sc.setAuthentication(new MockAuthentication(principal, isAuthenticated));
         SecurityContextHolder.setContext(sc);
     }
 
-    public interface TestRepository extends JpaRepository<TestEntity, Long>, LockingAndVersioningRepository<TestEntity> {
-    }
-
-    public interface OtherTestRepository extends JpaRepository<OtherTestEntity, Long>, LockingAndVersioningRepository<OtherTestEntity> {
-    }
-
     @Configuration
-    @EnableJpaRepositories(considerNestedRepositories = true)
+    @EnableJpaRepositories(basePackages = VersioningTestPackages.JPA)
     @Import({H2Config.class, JpaLockingAndVersioningConfig.class})
     public static class TestConfig {
     }
@@ -118,7 +104,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
 
             LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
             factory.setJpaVendorAdapter(vendorAdapter);
-            factory.setPackagesToScan(getClass().getPackage().getName());
+            factory.setPackagesToScan(VersioningTestPackages.JPA);
             factory.setDataSource(dataSource());
 
             return factory;
@@ -144,109 +130,6 @@ public class JpaLockingAndVersioningRepositoryImplIT {
             initializer.setDatabasePopulator(databasePopulator);
 
             return initializer;
-        }
-    }
-
-    @Entity
-    public static class TestEntity {
-        @Id
-        @GeneratedValue
-        private Long xid;
-        @Version
-        private Long version;
-        @AncestorId
-        private Long xAncestorId;
-        @AncestorRootId
-        private Long xAncestorRootId;
-        @SuccessorId
-        private Long xSuccessorId;
-        @LockOwner
-        private String xLockOwner;
-        @VersionNumber
-        private String versionNo;
-        @VersionLabel
-        private String versionLabel;
-
-        public TestEntity() {
-        }
-
-        public Long getXid() {
-            return xid;
-        }
-
-        public void setXid(Long xid) {
-            this.xid = xid;
-        }
-
-        public Long getVersion() {
-            return version;
-        }
-
-        public void setVersion(Long version) {
-            this.version = version;
-        }
-
-        public Long getXAncestorId() {
-            return xAncestorId;
-        }
-
-        public void setXAncestorId(Long xAncestorId) {
-            this.xAncestorId = xAncestorId;
-        }
-
-        public Long getXAncestorRootId() {
-            return xAncestorRootId;
-        }
-
-        public void setXAncestorRootId(Long xAncestorRootId) {
-            this.xAncestorRootId = xAncestorRootId;
-        }
-
-        public Long getXSuccessorId() {
-            return xSuccessorId;
-        }
-
-        public void setXSuccessorId(Long xSuccessorId) {
-            this.xSuccessorId = xSuccessorId;
-        }
-
-        public String getXLockOwner() {
-            return xLockOwner;
-        }
-
-        public void setXLockOwner(String xLockOwner) {
-            this.xLockOwner = xLockOwner;
-        }
-
-        public String getVersionNo() {
-            return versionNo;
-        }
-
-        public void setVersionNo(String versionNo) {
-            this.versionNo = versionNo;
-        }
-
-        public String getVersionLabel() {
-            return versionLabel;
-        }
-
-        public void setVersionLabel(String versionLabel) {
-            this.versionLabel = versionLabel;
-        }
-    }
-
-    @Entity
-    public static class OtherTestEntity {
-        @Id
-        @GeneratedValue
-        private Long id;
-
-        public Long getId() {
-            return id;
-        }
-
-        public void setId(Long id) {
-            this.id = id;
         }
     }
 
@@ -293,13 +176,13 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                 class GivenANullPrincipal {
                     @BeforeEach
                     void setUp() {
-                        repo = context.getBean(TestRepository.class);
+                        repo = context.getBean(VersioningJpaLongIdRepository.class);
 
-                        e1 = new TestEntity();
-                        e2 = new TestEntity();
+                        e1 = new VersioningJpaLongIdEntity();
+                        e2 = new VersioningJpaLongIdEntity();
 
                         // ensure the other instantiate fragment is valid
-                        otherRepo.save(new OtherTestEntity());
+                        otherRepo.save(new VersioningJpaSiblingEntity());
 
                         setupSecurityContext("some-principal", true);
 
@@ -322,13 +205,13 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                 class GivenTheEntityIsNew {
                     @BeforeEach
                     void setUp() {
-                        repo = context.getBean(TestRepository.class);
+                        repo = context.getBean(VersioningJpaLongIdRepository.class);
 
-                        e1 = new TestEntity();
-                        e2 = new TestEntity();
+                        e1 = new VersioningJpaLongIdEntity();
+                        e2 = new VersioningJpaLongIdEntity();
 
                         // ensure the other instantiate fragment is valid
-                        otherRepo.save(new OtherTestEntity());
+                        otherRepo.save(new VersioningJpaSiblingEntity());
 
                         setupSecurityContext("some-principal", true);
 
@@ -351,13 +234,13 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     class WhenTheObjectIsNotLocked {
                         @BeforeEach
                         void setUp() {
-                            repo = context.getBean(TestRepository.class);
+                            repo = context.getBean(VersioningJpaLongIdRepository.class);
 
-                            e1 = new TestEntity();
-                            e2 = new TestEntity();
+                            e1 = new VersioningJpaLongIdEntity();
+                            e2 = new VersioningJpaLongIdEntity();
 
                             // ensure the other instantiate fragment is valid
-                            otherRepo.save(new OtherTestEntity());
+                            otherRepo.save(new VersioningJpaSiblingEntity());
 
                             setupSecurityContext("some-principal", true);
 
@@ -386,13 +269,13 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     class WhenTheLockIsAlreadyTaken {
                         @BeforeEach
                         void setUp() {
-                            repo = context.getBean(TestRepository.class);
+                            repo = context.getBean(VersioningJpaLongIdRepository.class);
 
-                            e1 = new TestEntity();
-                            e2 = new TestEntity();
+                            e1 = new VersioningJpaLongIdEntity();
+                            e2 = new VersioningJpaLongIdEntity();
 
                             // ensure the other instantiate fragment is valid
-                            otherRepo.save(new OtherTestEntity());
+                            otherRepo.save(new VersioningJpaSiblingEntity());
 
                             setupSecurityContext("some-principal", true);
 
@@ -420,13 +303,13 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     class WhenTheLockIsAlreadyHeld {
                         @BeforeEach
                         void setUp() {
-                            repo = context.getBean(TestRepository.class);
+                            repo = context.getBean(VersioningJpaLongIdRepository.class);
 
-                            e1 = new TestEntity();
-                            e2 = new TestEntity();
+                            e1 = new VersioningJpaLongIdEntity();
+                            e2 = new VersioningJpaLongIdEntity();
 
                             // ensure the other instantiate fragment is valid
-                            otherRepo.save(new OtherTestEntity());
+                            otherRepo.save(new VersioningJpaSiblingEntity());
 
                             setupSecurityContext("some-principal", true);
 
@@ -454,13 +337,13 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     class WhenThePrincipalIsNotAuthenticated {
                         @BeforeEach
                         void setUp() {
-                            repo = context.getBean(TestRepository.class);
+                            repo = context.getBean(VersioningJpaLongIdRepository.class);
 
-                            e1 = new TestEntity();
-                            e2 = new TestEntity();
+                            e1 = new VersioningJpaLongIdEntity();
+                            e2 = new VersioningJpaLongIdEntity();
 
                             // ensure the other instantiate fragment is valid
-                            otherRepo.save(new OtherTestEntity());
+                            otherRepo.save(new VersioningJpaSiblingEntity());
 
                             setupSecurityContext("some-principal", true);
 
@@ -489,13 +372,13 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                 class GivenANullPrincipal {
                     @BeforeEach
                     void setUp() {
-                        repo = context.getBean(TestRepository.class);
+                        repo = context.getBean(VersioningJpaLongIdRepository.class);
 
-                        e1 = new TestEntity();
-                        e2 = new TestEntity();
+                        e1 = new VersioningJpaLongIdEntity();
+                        e2 = new VersioningJpaLongIdEntity();
 
                         // ensure the other instantiate fragment is valid
-                        otherRepo.save(new OtherTestEntity());
+                        otherRepo.save(new VersioningJpaSiblingEntity());
 
                         setupSecurityContext("some-principal", true);
 
@@ -518,13 +401,13 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                 class GivenTheEntityIsNew {
                     @BeforeEach
                     void setUp() {
-                        repo = context.getBean(TestRepository.class);
+                        repo = context.getBean(VersioningJpaLongIdRepository.class);
 
-                        e1 = new TestEntity();
-                        e2 = new TestEntity();
+                        e1 = new VersioningJpaLongIdEntity();
+                        e2 = new VersioningJpaLongIdEntity();
 
                         // ensure the other instantiate fragment is valid
-                        otherRepo.save(new OtherTestEntity());
+                        otherRepo.save(new VersioningJpaSiblingEntity());
 
                         setupSecurityContext("some-principal", true);
 
@@ -547,13 +430,13 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     class GivenThePrincipalIsTheLockOwner {
                         @BeforeEach
                         void setUp() {
-                            repo = context.getBean(TestRepository.class);
+                            repo = context.getBean(VersioningJpaLongIdRepository.class);
 
-                            e1 = new TestEntity();
-                            e2 = new TestEntity();
+                            e1 = new VersioningJpaLongIdEntity();
+                            e2 = new VersioningJpaLongIdEntity();
 
                             // ensure the other instantiate fragment is valid
-                            otherRepo.save(new OtherTestEntity());
+                            otherRepo.save(new VersioningJpaSiblingEntity());
 
                             setupSecurityContext("some-principal", true);
 
@@ -585,13 +468,13 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     class GivenThePrincipalIsNotTheLockOwner {
                         @BeforeEach
                         void setUp() {
-                            repo = context.getBean(TestRepository.class);
+                            repo = context.getBean(VersioningJpaLongIdRepository.class);
 
-                            e1 = new TestEntity();
-                            e2 = new TestEntity();
+                            e1 = new VersioningJpaLongIdEntity();
+                            e2 = new VersioningJpaLongIdEntity();
 
                             // ensure the other instantiate fragment is valid
-                            otherRepo.save(new OtherTestEntity());
+                            otherRepo.save(new VersioningJpaSiblingEntity());
 
                             setupSecurityContext("some-principal", true);
 
@@ -619,13 +502,13 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     class GivenThePrincipalIsNotAuthenticated {
                         @BeforeEach
                         void setUp() {
-                            repo = context.getBean(TestRepository.class);
+                            repo = context.getBean(VersioningJpaLongIdRepository.class);
 
-                            e1 = new TestEntity();
-                            e2 = new TestEntity();
+                            e1 = new VersioningJpaLongIdEntity();
+                            e2 = new VersioningJpaLongIdEntity();
 
                             // ensure the other instantiate fragment is valid
-                            otherRepo.save(new OtherTestEntity());
+                            otherRepo.save(new VersioningJpaSiblingEntity());
 
                             setupSecurityContext("some-principal", true);
 
@@ -658,15 +541,15 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         class GivenThereIsNoLockOwner {
                             @BeforeEach
                             void setUp() {
-                                repo = context.getBean(TestRepository.class);
+                                repo = context.getBean(VersioningJpaLongIdRepository.class);
 
-                                e1 = new TestEntity();
-                                e2 = new TestEntity();
+                                e1 = new VersioningJpaLongIdEntity();
+                                e2 = new VersioningJpaLongIdEntity();
 
                                 // ensure the other instantiate fragment is valid
-                                otherRepo.save(new OtherTestEntity());
+                                otherRepo.save(new VersioningJpaSiblingEntity());
 
-                                e3 = new TestEntity();
+                                e3 = new VersioningJpaLongIdEntity();
 
                                 setupSecurityContext("some-principal", true);
 
@@ -691,15 +574,15 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         class GivenThePrincipalIsTheLockOwner {
                             @BeforeEach
                             void setUp() {
-                                repo = context.getBean(TestRepository.class);
+                                repo = context.getBean(VersioningJpaLongIdRepository.class);
 
-                                e1 = new TestEntity();
-                                e2 = new TestEntity();
+                                e1 = new VersioningJpaLongIdEntity();
+                                e2 = new VersioningJpaLongIdEntity();
 
                                 // ensure the other instantiate fragment is valid
-                                otherRepo.save(new OtherTestEntity());
+                                otherRepo.save(new VersioningJpaSiblingEntity());
 
-                                e3 = new TestEntity();
+                                e3 = new VersioningJpaLongIdEntity();
 
                                 setupSecurityContext("some-principal", true);
 
@@ -725,15 +608,15 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         class GivenThePrincipalIsNotTheLockOwner {
                             @BeforeEach
                             void setUp() {
-                                repo = context.getBean(TestRepository.class);
+                                repo = context.getBean(VersioningJpaLongIdRepository.class);
 
-                                e1 = new TestEntity();
-                                e2 = new TestEntity();
+                                e1 = new VersioningJpaLongIdEntity();
+                                e2 = new VersioningJpaLongIdEntity();
 
                                 // ensure the other instantiate fragment is valid
-                                otherRepo.save(new OtherTestEntity());
+                                otherRepo.save(new VersioningJpaSiblingEntity());
 
-                                e3 = new TestEntity();
+                                e3 = new VersioningJpaLongIdEntity();
 
                                 setupSecurityContext("some-principal", true);
 
@@ -759,15 +642,15 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         class GivenThereIsNoLockOwner {
                             @BeforeEach
                             void setUp() {
-                                repo = context.getBean(TestRepository.class);
+                                repo = context.getBean(VersioningJpaLongIdRepository.class);
 
-                                e1 = new TestEntity();
-                                e2 = new TestEntity();
+                                e1 = new VersioningJpaLongIdEntity();
+                                e2 = new VersioningJpaLongIdEntity();
 
                                 // ensure the other instantiate fragment is valid
-                                otherRepo.save(new OtherTestEntity());
+                                otherRepo.save(new VersioningJpaSiblingEntity());
 
-                                e3 = new TestEntity();
+                                e3 = new VersioningJpaLongIdEntity();
 
                                 setupSecurityContext("some-principal", true);
 
@@ -797,15 +680,15 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         class GivenThereIsNoLockOwner {
                             @BeforeEach
                             void setUp() {
-                                repo = context.getBean(TestRepository.class);
+                                repo = context.getBean(VersioningJpaLongIdRepository.class);
 
-                                e1 = new TestEntity();
-                                e2 = new TestEntity();
+                                e1 = new VersioningJpaLongIdEntity();
+                                e2 = new VersioningJpaLongIdEntity();
 
                                 // ensure the other instantiate fragment is valid
-                                otherRepo.save(new OtherTestEntity());
+                                otherRepo.save(new VersioningJpaSiblingEntity());
 
-                                e3 = new TestEntity();
+                                e3 = new VersioningJpaLongIdEntity();
 
                                 setupSecurityContext("some-principal", false);
 
@@ -830,15 +713,15 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         class GivenThereIsNoLockOwner {
                             @BeforeEach
                             void setUp() {
-                                repo = context.getBean(TestRepository.class);
+                                repo = context.getBean(VersioningJpaLongIdRepository.class);
 
-                                e1 = new TestEntity();
-                                e2 = new TestEntity();
+                                e1 = new VersioningJpaLongIdEntity();
+                                e2 = new VersioningJpaLongIdEntity();
 
                                 // ensure the other instantiate fragment is valid
-                                otherRepo.save(new OtherTestEntity());
+                                otherRepo.save(new VersioningJpaSiblingEntity());
 
-                                e3 = new TestEntity();
+                                e3 = new VersioningJpaLongIdEntity();
 
                                 setupSecurityContext("some-principal", false);
 
@@ -868,15 +751,15 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         class GivenThereIsNoLockOwner {
                             @BeforeEach
                             void setUp() {
-                                repo = context.getBean(TestRepository.class);
+                                repo = context.getBean(VersioningJpaLongIdRepository.class);
 
-                                e1 = new TestEntity();
-                                e2 = new TestEntity();
+                                e1 = new VersioningJpaLongIdEntity();
+                                e2 = new VersioningJpaLongIdEntity();
 
                                 // ensure the other instantiate fragment is valid
-                                otherRepo.save(new OtherTestEntity());
+                                otherRepo.save(new VersioningJpaSiblingEntity());
 
-                                e3 = new TestEntity();
+                                e3 = new VersioningJpaLongIdEntity();
 
                                 try {
                                     result = repo.save(e3);
@@ -899,13 +782,13 @@ public class JpaLockingAndVersioningRepositoryImplIT {
             class FindAllVersions {
                 @BeforeEach
                 void setUp() {
-                    repo = context.getBean(TestRepository.class);
+                    repo = context.getBean(VersioningJpaLongIdRepository.class);
 
-                    e1 = new TestEntity();
-                    e2 = new TestEntity();
+                    e1 = new VersioningJpaLongIdEntity();
+                    e2 = new VersioningJpaLongIdEntity();
 
                     // ensure the other instantiate fragment is valid
-                    otherRepo.save(new OtherTestEntity());
+                    otherRepo.save(new VersioningJpaSiblingEntity());
 
                     setupSecurityContext("some-principal", true);
 
@@ -922,14 +805,14 @@ public class JpaLockingAndVersioningRepositoryImplIT {
 
                 @Test
                 void shouldReturnTheVersionSeries() {
-                    List<TestEntity> results = repo.findAllVersions(e1, Sort.by(Order.desc("id")));
+                    List<VersioningJpaLongIdEntity> results = repo.findAllVersions(e1, Sort.by(Order.desc("id")));
                     assertThat(results.size()).isEqualTo(2);
                     assertThat(results).extracting("xid").contains(e1.getXid(), e1v11.getXid());
                 }
 
                 @Test
                 void shouldReturnTheOrderedVersionSeries() {
-                    List<TestEntity> results = repo.findAllVersions(e1, Sort.by(Order.desc("id")));
+                    List<VersioningJpaLongIdEntity> results = repo.findAllVersions(e1, Sort.by(Order.desc("id")));
                     assertThat(results.size()).isEqualTo(2);
                     assertThat(results).extracting("xid").containsExactly(e1v11.getXid(), e1.getXid());
                 }
@@ -939,13 +822,13 @@ public class JpaLockingAndVersioningRepositoryImplIT {
             class FindAllLatestVersions {
                 @BeforeEach
                 void setUp() {
-                    repo = context.getBean(TestRepository.class);
+                    repo = context.getBean(VersioningJpaLongIdRepository.class);
 
-                    e1 = new TestEntity();
-                    e2 = new TestEntity();
+                    e1 = new VersioningJpaLongIdEntity();
+                    e2 = new VersioningJpaLongIdEntity();
 
                     // ensure the other instantiate fragment is valid
-                    otherRepo.save(new OtherTestEntity());
+                    otherRepo.save(new VersioningJpaSiblingEntity());
 
                     setupSecurityContext("some-principal", true);
 
@@ -965,10 +848,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
 
                 @Test
                 void shouldReturnOnlyTheLatestVersionOfTheEntities() {
-                    List<TestEntity> results = repo.findAllVersionsLatest((Class<TestEntity>) e1.getClass());
-                    assertThat(results).extracting("xid").contains(e1v11.getXid(), e2v2.getXid()).doesNotContain(e3wc.getXid());
-
-                    results = repo.findAllVersionsLatest(TestEntity.class);
+                    List<VersioningJpaLongIdEntity> results = repo.findAllVersionsLatest(VersioningJpaLongIdEntity.class);
                     assertThat(results).extracting("xid").contains(e1v11.getXid(), e2v2.getXid()).doesNotContain(e3wc.getXid());
                 }
             }
@@ -979,13 +859,13 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                 class WhenTheEntityIsNew {
                     @BeforeEach
                     void setUp() {
-                        repo = context.getBean(TestRepository.class);
+                        repo = context.getBean(VersioningJpaLongIdRepository.class);
 
-                        e1 = new TestEntity();
-                        e2 = new TestEntity();
+                        e1 = new VersioningJpaLongIdEntity();
+                        e2 = new VersioningJpaLongIdEntity();
 
                         // ensure the other instantiate fragment is valid
-                        otherRepo.save(new OtherTestEntity());
+                        otherRepo.save(new VersioningJpaSiblingEntity());
 
                         setupSecurityContext("some-principal", true);
 
@@ -1010,13 +890,13 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         class WhenTheEntityIsNotYetPartOfAVersionTree {
                             @BeforeEach
                             void setUp() {
-                                repo = context.getBean(TestRepository.class);
+                                repo = context.getBean(VersioningJpaLongIdRepository.class);
 
-                                e1 = new TestEntity();
-                                e2 = new TestEntity();
+                                e1 = new VersioningJpaLongIdEntity();
+                                e2 = new VersioningJpaLongIdEntity();
 
                                 // ensure the other instantiate fragment is valid
-                                otherRepo.save(new OtherTestEntity());
+                                otherRepo.save(new VersioningJpaSiblingEntity());
 
                                 setupSecurityContext("some-principal", true);
 
@@ -1047,13 +927,13 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     class GivenThePrincipalIsNotTheLockOwner {
                         @BeforeEach
                         void setUp() {
-                            repo = context.getBean(TestRepository.class);
+                            repo = context.getBean(VersioningJpaLongIdRepository.class);
 
-                            e1 = new TestEntity();
-                            e2 = new TestEntity();
+                            e1 = new VersioningJpaLongIdEntity();
+                            e2 = new VersioningJpaLongIdEntity();
 
                             // ensure the other instantiate fragment is valid
-                            otherRepo.save(new OtherTestEntity());
+                            otherRepo.save(new VersioningJpaSiblingEntity());
 
                             setupSecurityContext("some-principal", true);
 
@@ -1080,13 +960,13 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     class GivenThePrincipalIsUnauthenticated {
                         @BeforeEach
                         void setUp() {
-                            repo = context.getBean(TestRepository.class);
+                            repo = context.getBean(VersioningJpaLongIdRepository.class);
 
-                            e1 = new TestEntity();
-                            e2 = new TestEntity();
+                            e1 = new VersioningJpaLongIdEntity();
+                            e2 = new VersioningJpaLongIdEntity();
 
                             // ensure the other instantiate fragment is valid
-                            otherRepo.save(new OtherTestEntity());
+                            otherRepo.save(new VersioningJpaSiblingEntity());
 
                             setupSecurityContext("some-principal", true);
 
@@ -1112,13 +992,13 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     class GivenTheEntityIsNotTheCurrentVersion {
                         @BeforeEach
                         void setUp() {
-                            repo = context.getBean(TestRepository.class);
+                            repo = context.getBean(VersioningJpaLongIdRepository.class);
 
-                            e1 = new TestEntity();
-                            e2 = new TestEntity();
+                            e1 = new VersioningJpaLongIdEntity();
+                            e2 = new VersioningJpaLongIdEntity();
 
                             // ensure the other instantiate fragment is valid
-                            otherRepo.save(new OtherTestEntity());
+                            otherRepo.save(new VersioningJpaSiblingEntity());
 
                             setupSecurityContext("some-principal", true);
 
@@ -1148,13 +1028,13 @@ public class JpaLockingAndVersioningRepositoryImplIT {
             class IsPrivateWorkingCopy {
                 @BeforeEach
                 void setUp() {
-                    repo = context.getBean(TestRepository.class);
+                    repo = context.getBean(VersioningJpaLongIdRepository.class);
 
-                    e1 = new TestEntity();
-                    e2 = new TestEntity();
+                    e1 = new VersioningJpaLongIdEntity();
+                    e2 = new VersioningJpaLongIdEntity();
 
                     // ensure the other instantiate fragment is valid
-                    otherRepo.save(new OtherTestEntity());
+                    otherRepo.save(new VersioningJpaSiblingEntity());
 
                     setupSecurityContext("some-principal", true);
                 }
@@ -1168,7 +1048,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                 void shouldReturnTrue() {
                     e1 = repo.save(e1);
                     e1 = repo.lock(e1);
-                    TestEntity wc = repo.workingCopy(e1);
+                    VersioningJpaLongIdEntity wc = repo.workingCopy(e1);
                     assertThat(repo.isPrivateWorkingCopy(wc)).isTrue();
                 }
             }
@@ -1177,13 +1057,13 @@ public class JpaLockingAndVersioningRepositoryImplIT {
             class FindWorkingCopy {
                 @BeforeEach
                 void setUp() {
-                    repo = context.getBean(TestRepository.class);
+                    repo = context.getBean(VersioningJpaLongIdRepository.class);
 
-                    e1 = new TestEntity();
-                    e2 = new TestEntity();
+                    e1 = new VersioningJpaLongIdEntity();
+                    e2 = new VersioningJpaLongIdEntity();
 
                     // ensure the other instantiate fragment is valid
-                    otherRepo.save(new OtherTestEntity());
+                    otherRepo.save(new VersioningJpaSiblingEntity());
 
                     setupSecurityContext("some-principal", true);
                 }
@@ -1192,7 +1072,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                 void shouldReturnTrue() {
                     e1 = repo.save(e1);
                     e1 = repo.lock(e1);
-                    TestEntity wc = repo.workingCopy(e1);
+                    VersioningJpaLongIdEntity wc = repo.workingCopy(e1);
                     assertThat(repo.findWorkingCopy(wc)).hasFieldOrPropertyWithValue("xid", wc.getXid());
                 }
             }
@@ -1203,13 +1083,13 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                 class GivenNoPrincipal {
                     @BeforeEach
                     void setUp() {
-                        repo = context.getBean(TestRepository.class);
+                        repo = context.getBean(VersioningJpaLongIdRepository.class);
 
-                        e1 = new TestEntity();
-                        e2 = new TestEntity();
+                        e1 = new VersioningJpaLongIdEntity();
+                        e2 = new VersioningJpaLongIdEntity();
 
                         // ensure the other instantiate fragment is valid
-                        otherRepo.save(new OtherTestEntity());
+                        otherRepo.save(new VersioningJpaSiblingEntity());
 
                         setupSecurityContext(null, false);
                         entityForDeletion = e1;
@@ -1231,13 +1111,13 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                 class GivenAnUnauthenticatedPrincipal {
                     @BeforeEach
                     void setUp() {
-                        repo = context.getBean(TestRepository.class);
+                        repo = context.getBean(VersioningJpaLongIdRepository.class);
 
-                        e1 = new TestEntity();
-                        e2 = new TestEntity();
+                        e1 = new VersioningJpaLongIdEntity();
+                        e2 = new VersioningJpaLongIdEntity();
 
                         // ensure the other instantiate fragment is valid
-                        otherRepo.save(new OtherTestEntity());
+                        otherRepo.save(new VersioningJpaSiblingEntity());
 
                         setupSecurityContext("some-principal", false);
                         entityForDeletion = e1;
@@ -1263,13 +1143,13 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         class GivenThePrincipalIsTheLockOwner {
                             @BeforeEach
                             void setUp() {
-                                repo = context.getBean(TestRepository.class);
+                                repo = context.getBean(VersioningJpaLongIdRepository.class);
 
-                                e1 = new TestEntity();
-                                e2 = new TestEntity();
+                                e1 = new VersioningJpaLongIdEntity();
+                                e2 = new VersioningJpaLongIdEntity();
 
                                 // ensure the other instantiate fragment is valid
-                                otherRepo.save(new OtherTestEntity());
+                                otherRepo.save(new VersioningJpaSiblingEntity());
 
                                 setupSecurityContext("some-principal", true);
 
@@ -1295,13 +1175,13 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         class GivenThePrincipalIsNotTheLockOwner {
                             @BeforeEach
                             void setUp() {
-                                repo = context.getBean(TestRepository.class);
+                                repo = context.getBean(VersioningJpaLongIdRepository.class);
 
-                                e1 = new TestEntity();
-                                e2 = new TestEntity();
+                                e1 = new VersioningJpaLongIdEntity();
+                                e2 = new VersioningJpaLongIdEntity();
 
                                 // ensure the other instantiate fragment is valid
-                                otherRepo.save(new OtherTestEntity());
+                                otherRepo.save(new VersioningJpaSiblingEntity());
 
                                 setupSecurityContext("some-principal", true);
 
@@ -1328,13 +1208,13 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         class GivenThereIsNoLock {
                             @BeforeEach
                             void setUp() {
-                                repo = context.getBean(TestRepository.class);
+                                repo = context.getBean(VersioningJpaLongIdRepository.class);
 
-                                e1 = new TestEntity();
-                                e2 = new TestEntity();
+                                e1 = new VersioningJpaLongIdEntity();
+                                e2 = new VersioningJpaLongIdEntity();
 
                                 // ensure the other instantiate fragment is valid
-                                otherRepo.save(new OtherTestEntity());
+                                otherRepo.save(new VersioningJpaSiblingEntity());
 
                                 setupSecurityContext("some-principal", true);
 
@@ -1360,13 +1240,13 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     class GivenTheEntityIsNotTheHead {
                         @BeforeEach
                         void setUp() {
-                            repo = context.getBean(TestRepository.class);
+                            repo = context.getBean(VersioningJpaLongIdRepository.class);
 
-                            e1 = new TestEntity();
-                            e2 = new TestEntity();
+                            e1 = new VersioningJpaLongIdEntity();
+                            e2 = new VersioningJpaLongIdEntity();
 
                             // ensure the other instantiate fragment is valid
-                            otherRepo.save(new OtherTestEntity());
+                            otherRepo.save(new VersioningJpaSiblingEntity());
 
                             setupSecurityContext("some-principal", true);
 
@@ -1393,13 +1273,13 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     class GivenTheEntityIsTheHeadOfAVersionSeriesOf3VersionsAndTheAncestorIsNotAncestralRo {
                         @BeforeEach
                         void setUp() {
-                            repo = context.getBean(TestRepository.class);
+                            repo = context.getBean(VersioningJpaLongIdRepository.class);
 
-                            e1 = new TestEntity();
-                            e2 = new TestEntity();
+                            e1 = new VersioningJpaLongIdEntity();
+                            e2 = new VersioningJpaLongIdEntity();
 
                             // ensure the other instantiate fragment is valid
-                            otherRepo.save(new OtherTestEntity());
+                            otherRepo.save(new VersioningJpaSiblingEntity());
 
                             setupSecurityContext("some-principal", true);
 
@@ -1423,7 +1303,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
 
                         @Test
                         void shouldReInstateTheAncestorAsTheHead() {
-                            e1v11 = repo.findById(e1v11.getXid()).get();
+                            e1v11 = repo.findById(e1v11.getXid()).orElseThrow();
                             assertThat(e1v11.getXSuccessorId()).isNull();
                         }
 
@@ -1442,13 +1322,13 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     class GivenTheEntityIsTheHeadOfAVersionTreeOf2VersionsAncestorIsAncestralRoot {
                         @BeforeEach
                         void setUp() {
-                            repo = context.getBean(TestRepository.class);
+                            repo = context.getBean(VersioningJpaLongIdRepository.class);
 
-                            e1 = new TestEntity();
-                            e2 = new TestEntity();
+                            e1 = new VersioningJpaLongIdEntity();
+                            e2 = new VersioningJpaLongIdEntity();
 
                             // ensure the other instantiate fragment is valid
-                            otherRepo.save(new OtherTestEntity());
+                            otherRepo.save(new VersioningJpaSiblingEntity());
 
                             setupSecurityContext("some-principal", true);
 
@@ -1472,7 +1352,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
 
                         @Test
                         void shouldReInstateTheAncestorAsTheHead() {
-                            e1 = repo.findById(e1.getXid()).get();
+                            e1 = repo.findById(e1.getXid()).orElseThrow();
                             assertThat(e1.getXSuccessorId()).isNull();
                         }
                     }
@@ -1485,13 +1365,13 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                 class GivenNoPrincipal {
                     @BeforeEach
                     void setUp() {
-                        repo = context.getBean(TestRepository.class);
+                        repo = context.getBean(VersioningJpaLongIdRepository.class);
 
-                        e1 = new TestEntity();
-                        e2 = new TestEntity();
+                        e1 = new VersioningJpaLongIdEntity();
+                        e2 = new VersioningJpaLongIdEntity();
 
                         // ensure the other instantiate fragment is valid
-                        otherRepo.save(new OtherTestEntity());
+                        otherRepo.save(new VersioningJpaSiblingEntity());
 
                         setupSecurityContext("some-principal", true);
 
@@ -1505,12 +1385,8 @@ public class JpaLockingAndVersioningRepositoryImplIT {
 
                     @Test
                     void shouldThrowASecurityException() {
-                        try {
-                            repo.deleteAllVersions(e1v11);
-                            fail("expected security exception");
-                        } catch (Exception e) {
-                            assertThat(e).isInstanceOf(SecurityException.class);
-                        }
+                        assertThatThrownBy(() -> repo.deleteAllVersions(e1v11))
+                            .isInstanceOf(SecurityException.class);
                     }
                 }
 
@@ -1518,13 +1394,13 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                 class GivenAnUnauthenticatedPrincipal {
                     @BeforeEach
                     void setUp() {
-                        repo = context.getBean(TestRepository.class);
+                        repo = context.getBean(VersioningJpaLongIdRepository.class);
 
-                        e1 = new TestEntity();
-                        e2 = new TestEntity();
+                        e1 = new VersioningJpaLongIdEntity();
+                        e2 = new VersioningJpaLongIdEntity();
 
                         // ensure the other instantiate fragment is valid
-                        otherRepo.save(new OtherTestEntity());
+                        otherRepo.save(new VersioningJpaSiblingEntity());
 
                         setupSecurityContext("some-principal", true);
 
@@ -1538,12 +1414,8 @@ public class JpaLockingAndVersioningRepositoryImplIT {
 
                     @Test
                     void shouldThrowASecurityException() {
-                        try {
-                            repo.deleteAllVersions(e1v11);
-                            fail("expected security exception");
-                        } catch (Exception e) {
-                            assertThat(e).isInstanceOf(SecurityException.class);
-                        }
+                        assertThatThrownBy(() -> repo.deleteAllVersions(e1v11))
+                            .isInstanceOf(SecurityException.class);
                     }
                 }
 
@@ -1555,13 +1427,13 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         class GivenThePrincipalIsTheLockOwner {
                             @BeforeEach
                             void setUp() {
-                                repo = context.getBean(TestRepository.class);
+                                repo = context.getBean(VersioningJpaLongIdRepository.class);
 
-                                e1 = new TestEntity();
-                                e2 = new TestEntity();
+                                e1 = new VersioningJpaLongIdEntity();
+                                e2 = new VersioningJpaLongIdEntity();
 
                                 // ensure the other instantiate fragment is valid
-                                otherRepo.save(new OtherTestEntity());
+                                otherRepo.save(new VersioningJpaSiblingEntity());
 
                                 setupSecurityContext("some-principal", true);
 
@@ -1590,13 +1462,13 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         class GivenThePrincipalIsNotTheLockOwner {
                             @BeforeEach
                             void setUp() {
-                                repo = context.getBean(TestRepository.class);
+                                repo = context.getBean(VersioningJpaLongIdRepository.class);
 
-                                e1 = new TestEntity();
-                                e2 = new TestEntity();
+                                e1 = new VersioningJpaLongIdEntity();
+                                e2 = new VersioningJpaLongIdEntity();
 
                                 // ensure the other instantiate fragment is valid
-                                otherRepo.save(new OtherTestEntity());
+                                otherRepo.save(new VersioningJpaSiblingEntity());
 
                                 setupSecurityContext("some-principal", true);
 
@@ -1613,13 +1485,9 @@ public class JpaLockingAndVersioningRepositoryImplIT {
 
                             @Test
                             void shouldFailToDeleteTheEntity() {
-                                try {
-                                    repo.deleteAllVersions(e1v11);
-                                    fail("expected lockownerexception");
-                                } catch (Exception e) {
-                                    assertThat(e).isInstanceOf(LockOwnerException.class);
-                                    assertThat(e.getMessage()).contains("not lock owner");
-                                }
+                                assertThatThrownBy(() -> repo.deleteAllVersions(e1v11))
+                                    .isInstanceOf(LockOwnerException.class)
+                                    .hasMessageContaining("not lock owner");
                             }
                         }
 
@@ -1627,13 +1495,13 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         class GivenThereIsNoLock {
                             @BeforeEach
                             void setUp() {
-                                repo = context.getBean(TestRepository.class);
+                                repo = context.getBean(VersioningJpaLongIdRepository.class);
 
-                                e1 = new TestEntity();
-                                e2 = new TestEntity();
+                                e1 = new VersioningJpaLongIdEntity();
+                                e2 = new VersioningJpaLongIdEntity();
 
                                 // ensure the other instantiate fragment is valid
-                                otherRepo.save(new OtherTestEntity());
+                                otherRepo.save(new VersioningJpaSiblingEntity());
 
                                 setupSecurityContext("some-principal", true);
 
@@ -1661,13 +1529,13 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     class GivenTheEntityIsNotTheHead {
                         @BeforeEach
                         void setUp() {
-                            repo = context.getBean(TestRepository.class);
+                            repo = context.getBean(VersioningJpaLongIdRepository.class);
 
-                            e1 = new TestEntity();
-                            e2 = new TestEntity();
+                            e1 = new VersioningJpaLongIdEntity();
+                            e2 = new VersioningJpaLongIdEntity();
 
                             // ensure the other instantiate fragment is valid
-                            otherRepo.save(new OtherTestEntity());
+                            otherRepo.save(new VersioningJpaSiblingEntity());
 
                             setupSecurityContext("some-principal", true);
 
@@ -1681,13 +1549,9 @@ public class JpaLockingAndVersioningRepositoryImplIT {
 
                         @Test
                         void shouldFail() {
-                            try {
-                                repo.deleteAllVersions(e1);
-                                fail("expected lockingandversioningexception");
-                            } catch (Exception e) {
-                                assertThat(e).isInstanceOf(LockingAndVersioningException.class);
-                                assertThat(e.getMessage()).contains("not head");
-                            }
+                            assertThatThrownBy(() -> repo.deleteAllVersions(e1))
+                                .isInstanceOf(LockingAndVersioningException.class)
+                                .hasMessageContaining("not head");
                         }
                     }
                 }
@@ -1697,24 +1561,24 @@ public class JpaLockingAndVersioningRepositoryImplIT {
             class Issue2039 {
                 @BeforeEach
                 void setUp() {
-                    repo = context.getBean(TestRepository.class);
+                    repo = context.getBean(VersioningJpaLongIdRepository.class);
 
-                    e1 = new TestEntity();
-                    e2 = new TestEntity();
+                    e1 = new VersioningJpaLongIdEntity();
+                    e2 = new VersioningJpaLongIdEntity();
 
                     // ensure the other instantiate fragment is valid
-                    otherRepo.save(new OtherTestEntity());
+                    otherRepo.save(new VersioningJpaSiblingEntity());
 
                     setupSecurityContext("some-principal", true);
 
-                    e1 = repo.save(new TestEntity());
-                    e2 = repo.save(new TestEntity());
-                    e3 = repo.save(new TestEntity());
+                    e1 = repo.save(new VersioningJpaLongIdEntity());
+                    e2 = repo.save(new VersioningJpaLongIdEntity());
+                    e3 = repo.save(new VersioningJpaLongIdEntity());
                 }
 
                 @Test
                 void shouldReturnTheProvidedEntity() {
-                    List<TestEntity> results = repo.findAllVersions(e1, Sort.by(Order.desc("id")));
+                    List<VersioningJpaLongIdEntity> results = repo.findAllVersions(e1, Sort.by(Order.desc("id")));
                     assertThat(results.size()).isEqualTo(1);
                 }
 
@@ -1722,7 +1586,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                 void shouldDeleteJustTheProvidedEntity() {
                     repo.deleteAllVersions(e1);
 
-                    Optional<TestEntity> fetched = repo.findById(e1.getXid());
+                    Optional<VersioningJpaLongIdEntity> fetched = repo.findById(e1.getXid());
                     assertThat(fetched.isPresent()).isFalse();
                 }
             }

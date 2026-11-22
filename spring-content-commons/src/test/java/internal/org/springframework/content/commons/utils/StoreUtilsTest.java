@@ -60,12 +60,12 @@ public class StoreUtilsTest {
                     def2 = new GenericBeanDefinition();
                     def2.setBeanClassName(StoreBean2.class.getName());
 
-                    Set<BeanDefinition> defs = new HashSet<>();
-                    defs.add(def1);
-                    defs.add(def2);
+                    Set<BeanDefinition> definitions = new HashSet<>();
+                    definitions.add(def1);
+                    definitions.add(def2);
 
                     scanner = mock(StoreCandidateComponentProvider.class);
-                    when(scanner.findCandidateComponents(org.mockito.ArgumentMatchers.any())).thenReturn(defs);
+                    when(scanner.findCandidateComponents(org.mockito.ArgumentMatchers.any())).thenReturn(definitions);
 
                     identifyingTypes = new Class<?>[]{StoreUtilsTest.StoreType1.class};
 
@@ -80,7 +80,7 @@ public class StoreUtilsTest {
                 }
 
                 @Nested
-                class WhenTheStoreBeansCantBeMatchedAgainstSignatureTypesButTheRegistrarMatchesTheDefa {
+                class WhenStoreBeansCantBeMatchedAgainstSignatureTypesButRegistrarMatchesDefaults {
                     @BeforeEach
                     void setUp() {
                         env = mock(Environment.class);
@@ -94,16 +94,14 @@ public class StoreUtilsTest {
                         def2 = new GenericBeanDefinition();
                         def2.setBeanClassName(StoreBean2.class.getName());
 
-                        Set<BeanDefinition> defs = new HashSet<>();
-                        defs.add(def1);
-                        defs.add(def2);
+                        Set<BeanDefinition> definitions = new HashSet<>();
+                        definitions.add(def1);
+                        definitions.add(def2);
 
                         scanner = mock(StoreCandidateComponentProvider.class);
-                        when(scanner.findCandidateComponents(org.mockito.ArgumentMatchers.any())).thenReturn(defs);
+                        when(scanner.findCandidateComponents(org.mockito.ArgumentMatchers.any())).thenReturn(definitions);
 
                         identifyingTypes = new Class<?>[]{StoreUtilsTest.StoreType1.class};
-
-                        multiStoreMode = true;
 
                         multiStoreMode = true;
 
@@ -121,7 +119,7 @@ public class StoreUtilsTest {
                 }
 
                 @Nested
-                class WhenTheStoreBeansCantBeMatchedAgainstSignatureTypesAndTheRegistrarDoesnTMatchThe {
+                class WhenTheStoreBeansCantBeMatchedAgainstSignatureTypesAndTheRegistrarDoesntMatchThe {
                     @BeforeEach
                     void setUp() {
                         env = mock(Environment.class);
@@ -135,16 +133,14 @@ public class StoreUtilsTest {
                         def2 = new GenericBeanDefinition();
                         def2.setBeanClassName(StoreBean2.class.getName());
 
-                        Set<BeanDefinition> defs = new HashSet<>();
-                        defs.add(def1);
-                        defs.add(def2);
+                        Set<BeanDefinition> definitions = new HashSet<>();
+                        definitions.add(def1);
+                        definitions.add(def2);
 
                         scanner = mock(StoreCandidateComponentProvider.class);
-                        when(scanner.findCandidateComponents(org.mockito.ArgumentMatchers.any())).thenReturn(defs);
+                        when(scanner.findCandidateComponents(org.mockito.ArgumentMatchers.any())).thenReturn(definitions);
 
                         identifyingTypes = new Class<?>[]{StoreUtilsTest.StoreType1.class};
-
-                        multiStoreMode = true;
 
                         multiStoreMode = true;
 
@@ -155,7 +151,7 @@ public class StoreUtilsTest {
                     }
 
                     @Test
-                    void shouldnTReturnAnyStores() {
+                    void shouldNotReturnAnyStores() {
                         Set<GenericBeanDefinition> beans = StoreUtils.getStoreCandidates(scanner, env, loader, basePackages, multiStoreMode, identifyingTypes, registrarId);
                         assertThat(beans).doesNotContain(def1);
                         assertThat(beans).doesNotContain(def2);
@@ -178,12 +174,12 @@ public class StoreUtilsTest {
                     def2 = new GenericBeanDefinition();
                     def2.setBeanClassName(StoreBean2.class.getName());
 
-                    Set<BeanDefinition> defs = new HashSet<>();
-                    defs.add(def1);
-                    defs.add(def2);
+                    Set<BeanDefinition> definitions = new HashSet<>();
+                    definitions.add(def1);
+                    definitions.add(def2);
 
                     scanner = mock(StoreCandidateComponentProvider.class);
-                    when(scanner.findCandidateComponents(org.mockito.ArgumentMatchers.any())).thenReturn(defs);
+                    when(scanner.findCandidateComponents(org.mockito.ArgumentMatchers.any())).thenReturn(definitions);
 
                     identifyingTypes = new Class<?>[]{StoreUtilsTest.StoreType1.class};
 

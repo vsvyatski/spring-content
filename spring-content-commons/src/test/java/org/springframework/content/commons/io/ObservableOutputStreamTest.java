@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.Mockito.*;
 
 public class ObservableOutputStreamTest {
@@ -20,7 +21,7 @@ public class ObservableOutputStreamTest {
 
     private OutputStream os;
 
-    private Exception exception;
+    private Throwable exception;
 
     @Nested
     class ObservableOutputStreamCases {
@@ -82,8 +83,8 @@ public class ObservableOutputStreamTest {
             @Test
             void shouldCallListenersOnClosedEventHandlerInOrder() {
                 InOrder inOrder = inOrder(observer1, observer2);
-                verify(observer1).closed();
-                verify(observer2).closed();
+                inOrder.verify(observer1).closed();
+                inOrder.verify(observer2).closed();
                 verifyNoMoreInteractions(observer1, observer2);
             }
         }
@@ -102,11 +103,7 @@ public class ObservableOutputStreamTest {
                 observable.addObservers(observer1);
                 observable.addObservers(observer2);
 
-                try {
-                    observable.close();
-                } catch (Exception e) {
-                    exception = e;
-                }
+                exception = catchThrowable(observable::close);
             }
 
             @Test

@@ -3,3 +3,5 @@
 ###############################################################################
 *.sh text eol=lf
 mvnw text eol=lf
+.editorconfig text eol=lf
+.idea/inspectionProfiles/*.xml text eol=lf

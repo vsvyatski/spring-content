@@ -17,19 +17,19 @@ public final class RepositoryUtils {
     public static String repositoryPath(RepositoryInformation info) {
         Class<?> clazz = info.getRepositoryInterface();
         RepositoryRestResource annotation = AnnotationUtils.findAnnotation(clazz,
-                RepositoryRestResource.class);
+            RepositoryRestResource.class);
         String path = annotation == null ? null : annotation.path().trim();
         path = StringUtils.hasText(path) ? path : English
-                .plural(StringUtils.uncapitalize(info.getDomainType().getSimpleName()));
+            .plural(StringUtils.uncapitalize(info.getDomainType().getSimpleName()));
         return path;
     }
 
     public static RepositoryInformation findRepositoryInformation(
-            Repositories repositories, String repository) {
+        Repositories repositories, String repository) {
         RepositoryInformation ri = null;
         for (Class<?> clazz : repositories) {
             Optional<RepositoryInformation> candidate = repositories
-                    .getRepositoryInformationFor(clazz);
+                .getRepositoryInformationFor(clazz);
             if (candidate.isPresent() == false) {
                 continue;
             }
@@ -42,7 +42,7 @@ public final class RepositoryUtils {
     }
 
     public static RepositoryInformation findRepositoryInformation(
-            Repositories repositories, Class<?> domainObjectClass) {
+        Repositories repositories, Class<?> domainObjectClass) {
         RepositoryInformation ri = null;
         for (Class<?> clazz : repositories) {
             if (clazz.equals(domainObjectClass)) {

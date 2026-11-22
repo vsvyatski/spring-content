@@ -10,6 +10,8 @@ import internal.org.springframework.content.rest.mappings.StoreByteRangeHttpRequ
 import internal.org.springframework.content.rest.utils.ControllerUtils;
 import internal.org.springframework.content.rest.utils.StoreUtils;
 import jakarta.servlet.http.HttpServletResponse;
+import org.apache.commons.lang3.ArrayUtils;
+import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.content.commons.mappingcontext.MappingContext;
@@ -56,16 +58,16 @@ public class RepositoryEntityMultipartController {
 
     private static final String ENTITY_POST_MAPPING = "/{repository}";
 
-    private RestConfiguration restConfig;
-    private RepositoryInvokerFactory repoInvokerFactory;
-    private ContentPropertyToRequestMappingContext requestMappingContext;
-    private MappingContext mappingContext;
-    private ContentPropertyToExportedContext exportedMappingContext;
-    private StoreByteRangeHttpRequestHandler byteRangeRestRequestHandler;
-    private Stores stores;
-    private SelfLinkProvider selfLinkProvider;
-    private HttpHeadersPreparer headersPreparer;
-    private ApplicationEventPublisher publisher;
+    private final RestConfiguration restConfig;
+    private final RepositoryInvokerFactory repoInvokerFactory;
+    private final ContentPropertyToRequestMappingContext requestMappingContext;
+    private final MappingContext mappingContext;
+    private final ContentPropertyToExportedContext exportedMappingContext;
+    private final StoreByteRangeHttpRequestHandler byteRangeRestRequestHandler;
+    private final Stores stores;
+    private final SelfLinkProvider selfLinkProvider;
+    private final HttpHeadersPreparer headersPreparer;
+    private final ApplicationEventPublisher publisher;
 
     @Autowired
     public RepositoryEntityMultipartController(RestConfiguration restConfig, RepositoryInvokerFactory repoInvokerFactory, ContentPropertyToRequestMappingContext requestMappingContext, SelfLinkProvider selfLinkProvider, Stores stores, MappingContext mappingContext, ContentPropertyToExportedContext exportedMappingContext, StoreByteRangeHttpRequestHandler byteRangeRestRequestHandler, @Qualifier("entityMultipartHttpMessageConverterConfigurer") RepositoryRestConfigurer configurer, HttpHeadersPreparer headersPreparer, ApplicationEventPublisher publisher) {
@@ -81,12 +83,11 @@ public class RepositoryEntityMultipartController {
         this.publisher = publisher;
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
     @ResponseBody
     @PostMapping(value = ENTITY_POST_MAPPING, consumes = "multipart/form-data")
     @Transactional
     public ResponseEntity<RepresentationModel<?>> createEntityAndContent(RootResourceInformation repoInfo, PersistentEntityResource payload, PersistentEntityResourceAssembler assembler, @PathVariable("repository") String repository, @RequestHeader HttpHeaders headers, MultipartHttpServletRequest req, HttpServletResponse resp)
-            throws IOException, MethodNotAllowedException, HttpRequestMethodNotSupportedException {
+        throws IOException, MethodNotAllowedException, HttpRequestMethodNotSupportedException {
 
         repoInfo.verifySupportedMethod(HttpMethod.POST, ResourceType.COLLECTION);
 
@@ -130,27 +131,20 @@ public class RepositoryEntityMultipartController {
             }
         }
 
-        Optional<PersistentEntityResource> resource = Optional.ofNullable(assembler.toFullResource(savedEntity));
+        Optional<PersistentEntityResource> resource = Optional.of(assembler.toFullResource(savedEntity));
         headers.setContentType(new MediaType("application", "hal+json"));
 
         HttpHeaders respHeaders = headersPreparer.prepareHeaders(resource);
-        String selfLink = selfLinkProvider.createSelfLinkFor(savedEntity).withSelfRel().expand(new Object[0]).getHref();
+        String selfLink = selfLinkProvider.createSelfLinkFor(savedEntity).withSelfRel().expand(ArrayUtils.EMPTY_OBJECT_ARRAY).getHref();
         respHeaders.setLocation(UriTemplate.of(selfLink).expand());
         return ControllerUtils.toResponseEntity(HttpStatus.CREATED, respHeaders, resource);
     }
 
-    private static class InternalWebRequest implements NativeWebRequest {
-
-        private final MultipartHttpServletRequest req;
-        private final HttpServletResponse resp;
-
-        public InternalWebRequest(MultipartHttpServletRequest req, HttpServletResponse resp) {
-            this.req = req;
-            this.resp = resp;
-        }
+    private record InternalWebRequest(MultipartHttpServletRequest req,
+                                      HttpServletResponse resp) implements NativeWebRequest {
 
         @Override
-        public Object getNativeRequest() {
+        public @NonNull Object getNativeRequest() {
             return req;
         }
 
@@ -170,47 +164,47 @@ public class RepositoryEntityMultipartController {
         }
 
         @Override
-        public String getHeader(String headerName) {
+        public String getHeader(@NonNull String headerName) {
             return req.getHeader(headerName);
         }
 
         @Override
-        public String[] getHeaderValues(String headerName) {
+        public String[] getHeaderValues(@NonNull String headerName) {
             throw new UnsupportedOperationException();
         }
 
         @Override
-        public Iterator<String> getHeaderNames() {
+        public @NonNull Iterator<String> getHeaderNames() {
             throw new UnsupportedOperationException();
         }
 
         @Override
-        public String getParameter(String paramName) {
+        public String getParameter(@NonNull String paramName) {
             throw new UnsupportedOperationException();
         }
 
         @Override
-        public String[] getParameterValues(String paramName) {
+        public String[] getParameterValues(@NonNull String paramName) {
             throw new UnsupportedOperationException();
         }
 
         @Override
-        public Iterator<String> getParameterNames() {
+        public @NonNull Iterator<String> getParameterNames() {
             throw new UnsupportedOperationException();
         }
 
         @Override
-        public Map<String, String[]> getParameterMap() {
+        public @NonNull Map<String, String[]> getParameterMap() {
             throw new UnsupportedOperationException();
         }
 
         @Override
-        public Locale getLocale() {
+        public @NonNull Locale getLocale() {
             throw new UnsupportedOperationException();
         }
 
         @Override
-        public String getContextPath() {
+        public @NonNull String getContextPath() {
             throw new UnsupportedOperationException();
         }
 
@@ -225,7 +219,7 @@ public class RepositoryEntityMultipartController {
         }
 
         @Override
-        public boolean isUserInRole(String role) {
+        public boolean isUserInRole(@NonNull String role) {
             throw new UnsupportedOperationException();
         }
 
@@ -240,7 +234,7 @@ public class RepositoryEntityMultipartController {
         }
 
         @Override
-        public boolean checkNotModified(String etag) {
+        public boolean checkNotModified(@NonNull String etag) {
             throw new UnsupportedOperationException();
         }
 
@@ -250,22 +244,22 @@ public class RepositoryEntityMultipartController {
         }
 
         @Override
-        public String getDescription(boolean includeClientInfo) {
+        public @NonNull String getDescription(boolean includeClientInfo) {
             throw new UnsupportedOperationException();
         }
 
         @Override
-        public Object getAttribute(String name, int scope) {
+        public Object getAttribute(@NonNull String name, int scope) {
             throw new UnsupportedOperationException();
         }
 
         @Override
-        public void setAttribute(String name, Object value, int scope) {
+        public void setAttribute(@NonNull String name, @NonNull Object value, int scope) {
             throw new UnsupportedOperationException();
         }
 
         @Override
-        public void removeAttribute(String name, int scope) {
+        public void removeAttribute(@NonNull String name, int scope) {
             throw new UnsupportedOperationException();
         }
 
@@ -275,27 +269,27 @@ public class RepositoryEntityMultipartController {
         }
 
         @Override
-        public void registerDestructionCallback(String name, Runnable callback, int scope) {
+        public void registerDestructionCallback(@NonNull String name, @NonNull Runnable callback, int scope) {
             throw new UnsupportedOperationException();
         }
 
         @Override
-        public Object resolveReference(String key) {
+        public Object resolveReference(@NonNull String key) {
             throw new UnsupportedOperationException();
         }
 
         @Override
-        public String getSessionId() {
+        public @NonNull String getSessionId() {
             throw new UnsupportedOperationException();
         }
 
         @Override
-        public Object getSessionMutex() {
+        public @NonNull Object getSessionMutex() {
             throw new UnsupportedOperationException();
         }
     }
 
-    private final class InputStreamResourceWithFilename extends InputStreamResource {
+    private static final class InputStreamResourceWithFilename extends InputStreamResource {
 
         private final String filename;
 

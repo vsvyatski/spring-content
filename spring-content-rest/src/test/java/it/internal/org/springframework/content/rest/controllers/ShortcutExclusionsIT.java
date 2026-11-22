@@ -3,8 +3,8 @@ package it.internal.org.springframework.content.rest.controllers;
 import com.theoryinpractise.halbuilder.api.ReadableRepresentation;
 import com.theoryinpractise.halbuilder.api.RepresentationFactory;
 import com.theoryinpractise.halbuilder.standard.StandardRepresentationFactory;
-import internal.org.springframework.content.rest.support.TestEntity3;
-import internal.org.springframework.content.rest.support.TestEntity3Repository;
+import internal.org.springframework.content.rest.support.JsonMappedContentEntity;
+import internal.org.springframework.content.rest.support.JsonMappedContentEntityRepository;
 import internal.org.springframework.content.rest.support.config.JpaInfrastructureConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -40,23 +40,22 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebAppConfiguration
 @ContextConfiguration(classes = {
-        ShortcutExclusionsIT.Config.class,
-        DelegatingWebMvcConfiguration.class,
-        RepositoryRestMvcConfiguration.class,
-        RestConfiguration.class})
+    ShortcutExclusionsIT.Config.class, DelegatingWebMvcConfiguration.class,
+    RepositoryRestMvcConfiguration.class, RestConfiguration.class
+})
 @Transactional
 @ExtendWith(SpringExtension.class)
 public class ShortcutExclusionsIT {
 
     @Autowired
-    private TestEntity3Repository repo;
+    private JsonMappedContentEntityRepository repo;
 
     @Autowired
     private WebApplicationContext context;
 
     private MockMvc mvc;
 
-    private TestEntity3 testEntity;
+    private JsonMappedContentEntity testEntity;
 
     @Configuration
     @EnableJpaRepositories(basePackages = "internal.org.springframework.content.rest.support")
@@ -67,13 +66,7 @@ public class ShortcutExclusionsIT {
         @Bean
         public ContentRestConfigurer contentRestConfigurer() {
 
-            return new ContentRestConfigurer() {
-
-                @Override
-                public void configure(RestConfiguration config) {
-                    config.shortcutExclusions().exclude("GET", MediaType.parseMediaType("*/*"));
-                }
-            };
+            return config -> config.shortcutExclusions().exclude("GET", MediaType.parseMediaType("*/*"));
         }
 
         @Bean
@@ -85,7 +78,9 @@ public class ShortcutExclusionsIT {
         public File filesystemRoot() {
             File baseDir = new File(System.getProperty("java.io.tmpdir"));
             File filesystemRoot = new File(baseDir, "spring-content-excluded-shortcut-links");
-            filesystemRoot.mkdirs();
+            if (!filesystemRoot.mkdirs() && !filesystemRoot.isDirectory()) {
+                throw new IllegalStateException("Failed to create " + filesystemRoot);
+            }
             return filesystemRoot;
         }
     }
@@ -98,22 +93,22 @@ public class ShortcutExclusionsIT {
             void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
-                testEntity = repo.save(new TestEntity3());
+                testEntity = repo.save(new JsonMappedContentEntity());
                 testEntity = repo.save(testEntity);
             }
 
             @Test
             void shouldReturnTheEntity() throws Exception {
                 MockHttpServletResponse response = mvc
-                        .perform(get("/testEntity3s/" + testEntity.getId())
-                                .accept("*/*"))
-                        .andExpect(status().isOk())
-                        .andReturn().getResponse();
+                    .perform(get("/jsonMappedContentEntities/" + testEntity.getId())
+                        .accept("*/*"))
+                    .andExpect(status().isOk())
+                    .andReturn().getResponse();
 
                 RepresentationFactory representationFactory = new StandardRepresentationFactory();
                 ReadableRepresentation halResponse = representationFactory
-                        .readRepresentation("application/hal+json",
-                                new StringReader(response.getContentAsString()));
+                    .readRepresentation("application/hal+json",
+                        new StringReader(response.getContentAsString()));
                 assertThat(halResponse.getLinks().size()).isGreaterThan(2);
                 assertThat(halResponse.getLinksByRel("testEntity3")).isNotNull();
             }

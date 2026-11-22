@@ -13,7 +13,7 @@ public class CorsConfigurationBuilder {
         CorsConfiguration config = new CorsConfiguration();
 
         CrossOrigin annotation = AnnotatedElementUtils
-                .findMergedAnnotation(storeInterface, CrossOrigin.class);
+            .findMergedAnnotation(storeInterface, CrossOrigin.class);
         if (annotation == null) {
             return null;
         }
@@ -52,9 +52,9 @@ public class CorsConfigurationBuilder {
             config.setAllowCredentials(false);
         } else if (!allowCredentials.isEmpty()) {
             throw new IllegalStateException(
-                    "@CrossOrigin's allowCredentials value must be \"true\", \"false\", "
-                            + "or an empty string (\"\"): current value is ["
-                            + allowCredentials + "]");
+                "@CrossOrigin's allowCredentials value must be \"true\", \"false\", "
+                    + "or an empty string (\"\"): current value is ["
+                    + allowCredentials + "]");
         }
 
         if (annotation.maxAge() >= 0) {

@@ -12,7 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class FileServiceTest {
 
@@ -20,6 +20,22 @@ public class FileServiceTest {
     private File file;
     private File parent;
     private Exception ex;
+
+    private void deleteFixture() {
+        if (parent != null) {
+            FileUtils.deleteQuietly(parent);
+        }
+    }
+
+    @SuppressWarnings("OverlyBroadCatchBlock")
+    private void mkdirsAndCaptureException() {
+        ex = null;
+        try {
+            fileService.mkdirs(file);
+        } catch (Exception caught) {
+            ex = caught;
+        }
+    }
 
     @Nested
     class Mkdirs {
@@ -33,16 +49,12 @@ public class FileServiceTest {
                 assertThat(file.exists()).isTrue();
 
                 fileService = new FileServiceImpl();
-                try {
-                    fileService.mkdirs(file);
-                } catch (Exception e) {
-                    ex = e;
-                }
+                mkdirsAndCaptureException();
             }
 
             @AfterEach
             void tearDown() {
-                file.delete();
+                deleteFixture();
             }
 
             @Test
@@ -61,16 +73,12 @@ public class FileServiceTest {
                 assertThat(file.exists()).isFalse();
 
                 fileService = new FileServiceImpl();
-                try {
-                    fileService.mkdirs(file);
-                } catch (Exception e) {
-                    ex = e;
-                }
+                mkdirsAndCaptureException();
             }
 
             @AfterEach
             void tearDown() {
-                file.delete();
+                deleteFixture();
             }
 
             @Test
@@ -91,20 +99,18 @@ public class FileServiceTest {
             void setUp() throws IOException {
                 parent = Files.createTempDirectory("commons-").toFile();
                 file = new File(parent, "something");
-                file.mkdirs();
+                if (!file.mkdirs() && !file.isDirectory()) {
+                    throw new IllegalStateException("Failed to create " + file);
+                }
                 assertThat(file.exists()).isTrue();
 
                 fileService = new FileServiceImpl();
-                try {
-                    fileService.mkdirs(file);
-                } catch (Exception e) {
-                    ex = e;
-                }
+                mkdirsAndCaptureException();
             }
 
             @AfterEach
             void tearDown() {
-                file.delete();
+                deleteFixture();
             }
 
             @Test
@@ -124,16 +130,12 @@ public class FileServiceTest {
                 assertThat(file.exists()).isFalse();
 
                 fileService = new FileServiceImpl();
-                try {
-                    fileService.mkdirs(file);
-                } catch (Exception e) {
-                    ex = e;
-                }
+                mkdirsAndCaptureException();
             }
 
             @AfterEach
             void tearDown() {
-                file.delete();
+                deleteFixture();
             }
 
             @Test
@@ -151,11 +153,7 @@ public class FileServiceTest {
                 parent = Files.createTempDirectory("commons-").toFile();
                 file = null;
                 fileService = new FileServiceImpl();
-                try {
-                    fileService.mkdirs(file);
-                } catch (Exception e) {
-                    ex = e;
-                }
+                mkdirsAndCaptureException();
             }
 
             @Test
@@ -190,12 +188,8 @@ public class FileServiceTest {
         void shouldRejectFiles() throws IOException {
             Path tempFile = Files.createTempFile(null, null);
 
-            try {
-                fileService.rmdirs(tempFile.toFile(), null);
-                fail("unexpected");
-            } catch (IOException e) {
-                assertThat(e).isNotNull();
-            }
+            assertThatThrownBy(() -> fileService.rmdirs(tempFile.toFile(), null))
+                .isInstanceOf(IOException.class);
         }
 
         @Test

@@ -1,6 +1,6 @@
 package org.springframework.content.rest.config;
 
-import internal.org.springframework.content.commons.storeservice.StoresImpl;
+import internal.org.springframework.content.commons.store.service.StoresImpl;
 import internal.org.springframework.content.rest.controllers.ResourceHandlerMethodArgumentResolver;
 import internal.org.springframework.content.rest.controllers.resolvers.DefaultEntityResolver;
 import internal.org.springframework.content.rest.controllers.resolvers.EntityResolvers;

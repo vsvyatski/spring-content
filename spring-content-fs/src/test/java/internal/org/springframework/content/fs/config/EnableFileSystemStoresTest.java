@@ -5,12 +5,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.content.commons.annotations.ContentId;
-import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.fs.config.EnableFileSystemStores;
 import org.springframework.content.fs.config.FileSystemStoreConfigurer;
 import org.springframework.content.fs.config.FileSystemStoreConverter;
 import org.springframework.content.fs.io.FileSystemResourceLoader;
+import org.springframework.content.test.support.TestSupportPackages;
+import org.springframework.content.test.support.fs.SingleContentFsStore;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,12 +25,8 @@ import static org.mockito.Mockito.verify;
 
 public class EnableFileSystemStoresTest {
 
-    // mocks
-    static FileSystemStoreConfigurer configurer;
+    private FileSystemStoreConfigurer configurer;
     private AnnotationConfigApplicationContext context;
-
-    public interface TestEntityContentRepository extends ContentStore<TestEntity, String> {
-    }
 
     @Configuration
     @EnableFileSystemStores(basePackages = "contains.no.fs.repositories")
@@ -39,7 +35,7 @@ public class EnableFileSystemStoresTest {
     }
 
     @Configuration
-    @EnableFileSystemStores
+    @EnableFileSystemStores(basePackages = TestSupportPackages.FS)
     @PropertySource("classpath:/test.properties")
     public static class TestConfig {
 
@@ -53,7 +49,7 @@ public class EnableFileSystemStoresTest {
     }
 
     @Configuration
-    @EnableFileSystemStores
+    @EnableFileSystemStores(basePackages = TestSupportPackages.FS)
     @PropertySource("classpath:/test.properties")
     public static class ConverterConfig {
 
@@ -67,7 +63,7 @@ public class EnableFileSystemStoresTest {
 
         @Bean
         public FileSystemStoreConfigurer configurer() {
-            return configurer;
+            return mock(FileSystemStoreConfigurer.class);
         }
 
         @Bean
@@ -76,15 +72,10 @@ public class EnableFileSystemStoresTest {
         }
     }
 
-    public static class TestEntity {
-        @ContentId
-        private String contentId;
-    }
-
     @Nested
     class EnableFileSystemStoresCases {
         @Nested
-        class GivenAContextAndAConfigurationWithAFilesystemContentRepositoryBean {
+        class GivenAContextAndAConfigurationWithAFilesystemContentStoreBean {
             @BeforeEach
             void setUp() {
                 context = new AnnotationConfigApplicationContext();
@@ -98,8 +89,8 @@ public class EnableFileSystemStoresTest {
             }
 
             @Test
-            void shouldHaveAContentRepositoryBean() {
-                assertThat(context.getBean(TestEntityContentRepository.class)).isNotNull();
+            void shouldHaveAContentStoreBean() {
+                assertThat(context.getBean(SingleContentFsStore.class)).isNotNull();
             }
 
             @Test
@@ -117,11 +108,10 @@ public class EnableFileSystemStoresTest {
         class GivenAContextWithAConfigurer {
             @BeforeEach
             void setUp() {
-                configurer = mock(FileSystemStoreConfigurer.class);
-
                 context = new AnnotationConfigApplicationContext();
                 context.register(ConverterConfig.class);
                 context.refresh();
+                configurer = context.getBean(FileSystemStoreConfigurer.class);
             }
 
             @AfterEach
@@ -151,8 +141,9 @@ public class EnableFileSystemStoresTest {
 
             @Test
             void shouldNotContainAnyFilesystemRepositoryBeans() {
-                assertThat(context.getBeanNamesForType(TestEntityContentRepository.class)).isEmpty();
+                assertThat(context.getBeanNamesForType(SingleContentFsStore.class)).isEmpty();
             }
         }
     }
 }
+

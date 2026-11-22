@@ -2,20 +2,20 @@ package internal.org.springframework.content.mongo.config;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.content.commons.annotations.ContentId;
-import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.mongo.config.EnableMongoStores;
 import org.springframework.content.mongo.config.MongoStoreConverter;
+import org.springframework.content.test.support.TestSupportPackages;
+import org.springframework.content.test.support.mongo.SingleContentMongoStore;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.convert.ConversionService;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.MongoDatabaseFactory;
 import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration;
 import org.springframework.data.mongodb.core.SimpleMongoClientDatabaseFactory;
@@ -30,30 +30,32 @@ public class EnableMongoStoresTest {
 
     private AnnotationConfigApplicationContext context;
 
-    public interface TestEntityContentRepository
-            extends ContentStore<TestEntity, String> {
-    }
-
     @Configuration
-    @EnableMongoStores(basePackages = "contains.no.mongo.repositores")
+    @EnableMongoStores(basePackages = "contains.no.mongo.repositories")
     @Import(InfrastructureConfig.class)
     public static class EmptyConfig {
     }
 
     @Configuration
-    @EnableMongoStores
+    @EnableMongoStores(basePackages = TestSupportPackages.MONGO)
     @Import(InfrastructureConfig.class)
     public static class TestConfig {
-        //
     }
 
     @Configuration
-    @EnableMongoStores
+    @EnableMongoStores(basePackages = TestSupportPackages.MONGO)
     @Import(InfrastructureConfig.class)
     public static class ConverterConfig {
         @Bean
         public MongoStoreConverter<UUID, String> uuidConverter() {
-            return source -> String.format("/%s", source.toString().replace("-", "/"));
+            // Not a lambda: PlacementServiceImpl resolves Converter<S,T> from converter.getClass().
+            //noinspection Convert2Lambda
+            return new MongoStoreConverter<>() {
+                @Override
+                public String convert(@NonNull UUID source) {
+                    return String.format("/%s", source.toString().replace("-", "/"));
+                }
+            };
         }
     }
 
@@ -61,12 +63,12 @@ public class EnableMongoStoresTest {
     public static class InfrastructureConfig extends AbstractMongoClientConfiguration {
 
         @Override
-        protected String getDatabaseName() {
+        protected @NonNull String getDatabaseName() {
             return "spring-content";
         }
 
         @Bean
-        public MongoClient mongoClient() {
+        public @NonNull MongoClient mongoClient() {
             return MongoClients.create("mongodb://localhost:27017");
         }
 
@@ -76,7 +78,7 @@ public class EnableMongoStoresTest {
         }
 
         @Bean
-        public MongoDatabaseFactory mongoDbFactory() {
+        public @NonNull MongoDatabaseFactory mongoDbFactory() {
             return new SimpleMongoClientDatabaseFactory(mongoClient(), getDatabaseName());
         }
     }
@@ -84,7 +86,7 @@ public class EnableMongoStoresTest {
     @Nested
     class EnableMongoStoresCases {
         @Nested
-        class GivenAnEnabledConfigurationWithAMongoContentRepositoryBean {
+        class GivenAnEnabledConfigurationWithAMongoContentStoreBean {
             @BeforeEach
             void setUp() {
                 context = new AnnotationConfigApplicationContext();
@@ -98,8 +100,8 @@ public class EnableMongoStoresTest {
             }
 
             @Test
-            void shouldHaveAMongoContentRepositoryBean() {
-                assertThat(context.getBean(TestEntityContentRepository.class)).isNotNull();
+            void shouldHaveAMongoContentStoreBean() {
+                assertThat(context.getBean(SingleContentMongoStore.class)).isNotNull();
             }
 
             @Test
@@ -125,16 +127,16 @@ public class EnableMongoStoresTest {
             @Test
             void shouldUseThatConverter() {
                 ConversionService converters = (ConversionService) context
-                        .getBean("mongoStorePlacementService");
+                    .getBean("mongoStorePlacementService");
                 assertThat(converters.convert(
-                        UUID.fromString(
-                                "e49d5464-26ce-11e7-93ae-92361f002671"),
-                        String.class)).isEqualTo("/e49d5464/26ce/11e7/93ae/92361f002671");
+                    UUID.fromString(
+                        "e49d5464-26ce-11e7-93ae-92361f002671"),
+                    String.class)).isEqualTo("/e49d5464/26ce/11e7/93ae/92361f002671");
             }
         }
 
         @Nested
-        class GivenAnEnabledConfigurationWithNoMongoContentRepositoryBeans {
+        class GivenAnEnabledConfigurationWithNoMongoContentStoreBeans {
             @BeforeEach
             void setUp() {
                 context = new AnnotationConfigApplicationContext();
@@ -149,15 +151,8 @@ public class EnableMongoStoresTest {
 
             @Test
             void shouldLoadTheContextButHaveNoMongoRepositoryBeans() {
-                assertThat(context.getBeanNamesForType(TestEntityContentRepository.class)).isEmpty();
+                assertThat(context.getBeanNamesForType(SingleContentMongoStore.class)).isEmpty();
             }
         }
-    }
-
-    public static class TestEntity {
-        @Id
-        private String id;
-        @ContentId
-        private String contentId;
     }
 }

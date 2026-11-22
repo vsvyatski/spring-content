@@ -33,25 +33,25 @@ public class StoreImpl implements ContentStore<Object, Serializable> {
     @Override
     public Object setContent(Object entity, InputStream content) {
         return this.internalSetContent(entity, null, content,
-                (actualContent) -> ((ContentStore) delegate).setContent(entity, actualContent));
+            (actualContent) -> ((ContentStore) delegate).setContent(entity, actualContent));
     }
 
     @Override
     public Object setContent(Object entity, PropertyPath propertyPath, InputStream content) {
         return this.internalSetContent(entity, propertyPath, content,
-                (actualContent) -> ((ContentStore) delegate).setContent(entity, propertyPath, actualContent));
+            (actualContent) -> ((ContentStore) delegate).setContent(entity, propertyPath, actualContent));
     }
 
     @Override
     public Object setContent(Object entity, PropertyPath propertyPath, InputStream content, long contentLen) {
         return this.internalSetContent(entity, propertyPath, content,
-                (actualContent) -> ((ContentStore) delegate).setContent(entity, propertyPath, actualContent, contentLen));
+            (actualContent) -> ((ContentStore) delegate).setContent(entity, propertyPath, actualContent, contentLen));
     }
 
     @Override
     public Object setContent(Object entity, PropertyPath propertyPath, InputStream content, SetContentParams params) {
         return this.internalSetContent(entity, propertyPath, content,
-                (actualContent) -> ((ContentStore) delegate).setContent(entity, propertyPath, actualContent, params));
+            (actualContent) -> ((ContentStore) delegate).setContent(entity, propertyPath, actualContent, params));
     }
 
     public Object internalSetContent(Object property, PropertyPath propertyPath, InputStream content, Function<InputStream, Object> invocation) {
@@ -101,13 +101,13 @@ public class StoreImpl implements ContentStore<Object, Serializable> {
     @Override
     public Object setContent(Object entity, Resource resourceContent) {
         return this.internalSetContent(entity, null, resourceContent,
-                () -> ((ContentStore) delegate).setContent(entity, resourceContent));
+            () -> ((ContentStore) delegate).setContent(entity, resourceContent));
     }
 
     @Override
     public Object setContent(Object entity, PropertyPath propertyPath, Resource resourceContent) {
         return this.internalSetContent(entity, propertyPath, resourceContent,
-                () -> ((ContentStore) delegate).setContent(entity, propertyPath, resourceContent));
+            () -> ((ContentStore) delegate).setContent(entity, propertyPath, resourceContent));
     }
 
     public Object internalSetContent(Object property, PropertyPath propertyPath, Resource resourceContent, Supplier invocation) {
@@ -161,7 +161,7 @@ public class StoreImpl implements ContentStore<Object, Serializable> {
     }
 
     public InputStream internalGetContent(Object entity, PropertyPath propertyPath, ThrowingSupplier<InputStream> invocation)
-            throws IOException {
+        throws IOException {
 
         BeforeGetContentEvent before = new BeforeGetContentEvent(entity, propertyPath, castToContentStore(this.delegate));
         publisher.publishEvent(before);

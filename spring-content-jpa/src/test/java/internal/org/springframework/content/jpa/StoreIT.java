@@ -1,7 +1,6 @@
 package internal.org.springframework.content.jpa;
 
-import internal.org.springframework.content.jpa.testsupport.stores.DocumentStore;
-import net.bytebuddy.utility.RandomString;
+import internal.org.springframework.content.jpa.support.stores.DocumentStore;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -9,6 +8,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.content.commons.io.DeletableResource;
 import org.springframework.content.jpa.config.EnableJpaStores;
+import org.springframework.content.test.support.TestSupportData;
+import org.springframework.content.test.support.TestSupportPackages;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,7 +31,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import javax.sql.DataSource;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -43,43 +43,52 @@ import static org.mockito.Mockito.mock;
 
 public class StoreIT {
 
-    static Stream<Class<?>> databaseConfigs() {
-        return Stream.of(CONFIG_CLASSES);
-    }
-
-    private static final Class<?>[] CONFIG_CLASSES = new Class[]{
-            H2Config.class,
-            HSQLConfig.class,
-            MySqlConfig.class,
-            PostgresConfig.class
+    /**
+     * Shared by JPA storage ITs; SqlServer/Oracle need Docker and stay commented until re-enabled (#2227).
+     */
+    public static final Class<?>[] DATABASE_CONFIG_CLASSES = {
+        H2Config.class,
+        HSQLConfig.class,
+        MySqlConfig.class,
+        PostgresConfig.class,
 //			SqlServerConfig.class,
 //			OracleConfig.class
     };
-
-    private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-
+    private static final String IT_PACKAGE = "internal.org.springframework.content.jpa";
     // for postgres (large object api operations must be in a transaction)
     private PlatformTransactionManager ptm;
 
     private DocumentStore store;
 
     private Resource r;
-    private Exception e;
 
     private TransactionStatus status;
 
-    public static String getContextName(Class<?> configClass) {
-        return configClass.getSimpleName().replaceAll("Config", "");
+    public static Stream<Class<?>> databaseConfigs() {
+        return Stream.of(DATABASE_CONFIG_CLASSES);
     }
 
     protected String getId() {
-        RandomString random = new RandomString(5);
-        return "/store-tests/" + random.nextString();
+        return "/store-tests/" + TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+    }
+
+    private void bootStoreContext(Class<?> configClass) {
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+        context.register(TestConfig.class);
+        context.register(configClass);
+        context.refresh();
+
+        ptm = context.getBean(PlatformTransactionManager.class);
+        store = context.getBean(DocumentStore.class);
+
+        if (ptm == null) {
+            ptm = mock(PlatformTransactionManager.class);
+        }
     }
 
     @Configuration
-    @EnableJpaRepositories(considerNestedRepositories = true)
-    @EnableJpaStores
+    @EnableJpaRepositories(basePackages = {IT_PACKAGE, TestSupportPackages.JPA}, considerNestedRepositories = true)
+    @EnableJpaStores(basePackages = {IT_PACKAGE, TestSupportPackages.JPA})
     public static class TestConfig {
     }
 
@@ -122,7 +131,7 @@ public class StoreIT {
 
             LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
             factory.setJpaVendorAdapter(vendorAdapter);
-            factory.setPackagesToScan(getClass().getPackage().getName());
+            factory.setPackagesToScan(IT_PACKAGE, TestSupportPackages.JPA);
             factory.setDataSource(dataSource());
 
             return factory;
@@ -175,7 +184,7 @@ public class StoreIT {
 
             LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
             factory.setJpaVendorAdapter(vendorAdapter);
-            factory.setPackagesToScan(getClass().getPackage().getName());
+            factory.setPackagesToScan(IT_PACKAGE, TestSupportPackages.JPA);
             factory.setDataSource(dataSource());
 
             return factory;
@@ -231,7 +240,7 @@ public class StoreIT {
 
             LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
             factory.setJpaVendorAdapter(vendorAdapter);
-            factory.setPackagesToScan(getClass().getPackage().getName());
+            factory.setPackagesToScan(IT_PACKAGE, TestSupportPackages.JPA);
             factory.setDataSource(dataSource);
 
             factory.setJpaVendorAdapter(vendorAdapter);
@@ -243,7 +252,7 @@ public class StoreIT {
 
         @Bean
         public PlatformTransactionManager transactionManager(
-                LocalContainerEntityManagerFactoryBean entityManagerFactory) {
+            LocalContainerEntityManagerFactoryBean entityManagerFactory) {
 
             JpaTransactionManager txManager = new JpaTransactionManager();
             txManager.setEntityManagerFactory(entityManagerFactory.getObject());
@@ -293,7 +302,7 @@ public class StoreIT {
 
             LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
             factory.setJpaVendorAdapter(vendorAdapter);
-            factory.setPackagesToScan(getClass().getPackage().getName());
+            factory.setPackagesToScan(IT_PACKAGE, TestSupportPackages.JPA);
             factory.setDataSource(dataSource());
 
             return factory;
@@ -349,7 +358,7 @@ public class StoreIT {
 
             LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
             factory.setJpaVendorAdapter(vendorAdapter);
-            factory.setPackagesToScan(getClass().getPackage().getName());
+            factory.setPackagesToScan(IT_PACKAGE, TestSupportPackages.JPA);
             factory.setDataSource(dataSource());
 
             return factory;
@@ -408,7 +417,7 @@ public class StoreIT {
 
             LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
             factory.setJpaVendorAdapter(vendorAdapter);
-            factory.setPackagesToScan(getClass().getPackage().getName());
+            factory.setPackagesToScan(IT_PACKAGE, TestSupportPackages.JPA);
             factory.setDataSource(dataSource);
 
             return factory;
@@ -416,25 +425,11 @@ public class StoreIT {
 
         @Bean
         public PlatformTransactionManager transactionManager(
-                LocalContainerEntityManagerFactoryBean entityManagerFactory) {
+            LocalContainerEntityManagerFactoryBean entityManagerFactory) {
 
             JpaTransactionManager txManager = new JpaTransactionManager();
             txManager.setEntityManagerFactory(entityManagerFactory.getObject());
             return txManager;
-        }
-    }
-
-    private void bootStoreContext(Class<?> configClass) {
-        context = new AnnotationConfigApplicationContext();
-        context.register(TestConfig.class);
-        context.register(configClass);
-        context.refresh();
-
-        ptm = context.getBean(PlatformTransactionManager.class);
-        store = context.getBean(DocumentStore.class);
-
-        if (ptm == null) {
-            ptm = mock(PlatformTransactionManager.class);
         }
     }
 
@@ -448,6 +443,7 @@ public class StoreIT {
             status = ptm.getTransaction(new DefaultTransactionDefinition());
 
             try {
+                r = store.getResource(getId());
                 assertThat(r.exists()).isFalse();
             } finally {
                 ptm.commit(status);
@@ -456,22 +452,21 @@ public class StoreIT {
 
         @ParameterizedTest(name = "{0}")
         @MethodSource("internal.org.springframework.content.jpa.StoreIT#databaseConfigs")
-        void shouldStoreThatContent(Class<?> configClass) {
+        void shouldStoreThatContent(Class<?> configClass) throws IOException {
             bootStoreContext(configClass);
 
             status = ptm.getTransaction(new DefaultTransactionDefinition());
 
             r = store.getResource(getId());
+            try (InputStream is = TestSupportData.sampleTextStream();
+                 OutputStream os = ((WritableResource) r).getOutputStream()) {
+                IOUtils.copy(is, os);
+            }
             try {
-                try {
-                    assertThat(r.exists()).isTrue();
-                } catch (Throwable t) {
-                    t.printStackTrace(System.err);
-                    throw t;
-                }
+                assertThat(r.exists()).isTrue();
 
                 boolean matches = false;
-                InputStream expected = new ByteArrayInputStream("Hello Spring Content World!".getBytes());
+                InputStream expected = TestSupportData.sampleTextStream();
                 InputStream actual = null;
                 try {
                     actual = r.getInputStream();
@@ -496,8 +491,12 @@ public class StoreIT {
             status = ptm.getTransaction(new DefaultTransactionDefinition());
 
             r = store.getResource(getId());
-            InputStream is = new ByteArrayInputStream("Hello Spring Content World!".getBytes());
-            try (OutputStream os = ((WritableResource) r).getOutputStream()) {
+            try (InputStream is = TestSupportData.sampleTextStream();
+                 OutputStream os = ((WritableResource) r).getOutputStream()) {
+                IOUtils.copy(is, os);
+            }
+            try (InputStream is = TestSupportData.sampleUpdatedTextStream();
+                 OutputStream os = ((WritableResource) r).getOutputStream()) {
                 IOUtils.copy(is, os);
             }
 
@@ -505,7 +504,7 @@ public class StoreIT {
                 assertThat(r.exists()).isTrue();
 
                 boolean matches = false;
-                InputStream expected = new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes());
+                InputStream expected = TestSupportData.sampleUpdatedTextStream();
                 InputStream actual = null;
                 try {
                     actual = r.getInputStream();
@@ -529,19 +528,19 @@ public class StoreIT {
 
         @ParameterizedTest(name = "{0}")
         @MethodSource("internal.org.springframework.content.jpa.StoreIT#databaseConfigs")
-        void shouldNotExistAfterWriteWhenExpectingNoError(Class<?> configClass) throws IOException {
+        void shouldExistAfterWritingContent(Class<?> configClass) throws IOException {
             bootStoreContext(configClass);
 
             status = ptm.getTransaction(new DefaultTransactionDefinition());
 
             r = store.getResource(getId());
-            InputStream is = new ByteArrayInputStream("Hello Spring Content World!".getBytes());
+            InputStream is = TestSupportData.sampleTextStream();
             try (OutputStream os = ((WritableResource) r).getOutputStream()) {
                 IOUtils.copy(is, os);
             }
 
             try {
-                assertThat(e).isNull();
+                assertThat(r.exists()).isTrue();
             } finally {
                 try {
                     ((DeletableResource) r).delete();

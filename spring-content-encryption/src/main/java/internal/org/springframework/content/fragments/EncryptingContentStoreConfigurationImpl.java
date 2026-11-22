@@ -50,7 +50,7 @@ class EncryptingContentStoreConfigurationImpl<S> implements EncryptingContentSto
 
     @Override
     public EncryptingContentStoreConfiguration<S> dataEncryptionKeyWrappers(
-            List<DataEncryptionKeyWrapper<? extends StoredDataEncryptionKey>> wrappers
+        List<DataEncryptionKeyWrapper<? extends StoredDataEncryptionKey>> wrappers
     ) {
         this.dataEncryptionKeyWrappers = List.copyOf(wrappers);
         return this;
@@ -104,10 +104,10 @@ class EncryptingContentStoreConfigurationImpl<S> implements EncryptingContentSto
             throw new IllegalStateException("No DataEncryptionKeyWrappers configured on store %s. Refusing to start as encrypted content would be unrecoverable.".formatted(storeClass));
         }
         return new ContentCryptoService(
-                mappingContext,
-                dataEncryptionKeyAccessor,
-                dataEncryptionKeyWrappers,
-                contentEncryptionEngine
+            mappingContext,
+            dataEncryptionKeyAccessor,
+            dataEncryptionKeyWrappers,
+            contentEncryptionEngine
         );
     }
 }

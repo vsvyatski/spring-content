@@ -34,9 +34,9 @@ public interface ContentEncryptionEngine {
      * @return A stream of unencrypted content
      */
     InputStream decrypt(
-            Function<InputStreamRequestParameters, InputStream> cipherText,
-            EncryptionParameters encryptionParameters,
-            InputStreamRequestParameters requestParameters
+        Function<InputStreamRequestParameters, InputStream> cipherText,
+        EncryptionParameters encryptionParameters,
+        InputStreamRequestParameters requestParameters
     );
 
     /**
@@ -51,8 +51,8 @@ public interface ContentEncryptionEngine {
      * Currently, a portion of the input stream can be requested by using byte offsets
      */
     record InputStreamRequestParameters(
-            long startByteOffset,
-            Long endByteOffset // can be null when we want to read the stream until the end
+        long startByteOffset,
+        Long endByteOffset // can be null when we want to read the stream until the end
     ) {
 
         public static InputStreamRequestParameters full() {

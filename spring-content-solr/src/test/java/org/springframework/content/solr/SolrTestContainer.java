@@ -25,11 +25,10 @@ public class SolrTestContainer extends SolrContainer {
 
     public static SolrClient getSolrClient() {
         String solrUrl = String.format(
-                CONNECTION_URL,
-                Singleton.INSTANCE.getHost(),
-                Singleton.INSTANCE.getMappedPort(SolrContainer.SOLR_PORT));
+            CONNECTION_URL,
+            Singleton.INSTANCE.getHost(),
+            Singleton.INSTANCE.getMappedPort(SolrContainer.SOLR_PORT));
 
-        // noinspection resource
         return new HttpJdkSolrClient.Builder(solrUrl).build();
     }
 

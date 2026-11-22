@@ -3,11 +3,10 @@ package internal.org.springframework.content.s3.store;
 import internal.org.springframework.content.s3.config.S3StoreConfiguration;
 import internal.org.springframework.content.s3.io.S3StoreResource;
 import internal.org.springframework.content.s3.io.SimpleStorageProtocolResolver;
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.content.commons.annotations.ContentId;
-import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.config.ContentPropertyInfo;
 import org.springframework.content.commons.io.RangeableResource;
 import org.springframework.content.commons.property.PropertyPath;
@@ -17,6 +16,10 @@ import org.springframework.content.commons.utils.PlacementServiceImpl;
 import org.springframework.content.s3.Bucket;
 import org.springframework.content.s3.S3ObjectId;
 import org.springframework.content.s3.config.MultiTenantS3ClientProvider;
+import org.springframework.content.test.support.ContentAccessor;
+import org.springframework.content.test.support.SingleContentFields;
+import org.springframework.content.test.support.jpa.SharedIdJakartaJpaEntity;
+import org.springframework.content.test.support.jpa.SharedIdSpringJpaEntity;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.core.convert.converter.Converter;
@@ -32,12 +35,13 @@ import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
+import static org.springframework.content.test.support.TestSupportData.SAMPLE_CONTENT_ID;
 
 public class DefaultS3StoreImplTest {
 
-    private DefaultS3StoreImpl<ContentProperty, String> s3StoreImpl;
-    private DefaultS3StoreImpl<ContentProperty, S3ObjectId> s3ObjectIdBasedStore;
-    private DefaultS3StoreImpl<ContentProperty, CustomContentId> customS3ContentIdBasedStore;
+    private DefaultS3StoreImpl<ContentAccessor<String>, String> s3StoreImpl;
+    private DefaultS3StoreImpl<ContentAccessor<String>, S3ObjectId> s3ObjectIdBasedStore;
+    private DefaultS3StoreImpl<ContentAccessor<String>, CustomContentId> customS3ContentIdBasedStore;
 
     private GenericApplicationContext context = new GenericApplicationContext();
     private ResourceLoader loader;
@@ -47,7 +51,7 @@ public class DefaultS3StoreImplTest {
     private String defaultBucket;
 
     private CustomContentId customId;
-    private ContentProperty entity;
+    private ContentAccessor<String> entity;
 
     private WritableResource resource;
     private Resource r, nonExistentResource;
@@ -56,117 +60,60 @@ public class DefaultS3StoreImplTest {
     private InputStream result;
     private Exception e;
 
-    public interface ContentProperty {
-        String getContentId();
-
-        void setContentId(String contentId);
-
-        long getContentLen();
-
-        void setContentLen(long contentLen);
+    @SuppressWarnings("DataFlowIssue")
+    private static S3ObjectId objectIdWithNullBucket(String key) {
+        return new S3ObjectId(null, key);
     }
 
-    public static class TestEntity implements ContentProperty {
-        @ContentId
-        private String contentId;
+    public static class TestEntityWithBucketAnnotation extends SingleContentFields {
+        @Bucket
+        private final String bucketId;
 
-        @ContentLength
-        private long contentLen;
-
-        public TestEntity() {
-            this.contentId = null;
+        public TestEntityWithBucketAnnotation(String bucketId) {
+            this.bucketId = bucketId;
         }
 
-        public TestEntity(String contentId) {
-            this.contentId = contentId;
-        }
-
-        @Override
-        public String getContentId() {
-            return this.contentId;
-        }
-
-        @Override
-        public void setContentId(String contentId) {
-            this.contentId = contentId;
-        }
-
-        @Override
-        public long getContentLen() {
-            return contentLen;
-        }
-
-        @Override
-        public void setContentLen(long contentLen) {
-            this.contentLen = contentLen;
+        @SuppressWarnings("unused") // read by {@link org.springframework.content.commons.utils.BeanUtils} for @Bucket
+        public String getBucketId() {
+            return bucketId;
         }
     }
 
-    public static class SharedIdContentIdEntity implements ContentProperty {
+    public record CustomContentId(String customer, String objectId) implements Serializable {
 
-        @jakarta.persistence.Id
-        @ContentId
-        private String contentId;
+        @Serial
+        private static final long serialVersionUID = 7340883227287556823L;
+    }
 
-        @ContentLength
-        private long contentLen;
-
-        public SharedIdContentIdEntity() {
-            this.contentId = null;
-        }
-
+    private static final class MatchingSingleContentFieldsStringContentPropertyInfoConverter
+        implements Converter<ContentPropertyInfo<SingleContentFields, String>, S3ObjectId> {
         @Override
-        public String getContentId() {
-            return this.contentId;
-        }
-
-        @Override
-        public void setContentId(String contentId) {
-            this.contentId = contentId;
-        }
-
-        @Override
-        public long getContentLen() {
-            return contentLen;
-        }
-
-        @Override
-        public void setContentLen(long contentLen) {
-            this.contentLen = contentLen;
+        public S3ObjectId convert(@NonNull ContentPropertyInfo<SingleContentFields, String> source) {
+            return new S3ObjectId("custom-bucket", "test-entity/custom-object-id-string-based");
         }
     }
 
-    public static class SharedSpringIdContentIdEntity implements ContentProperty {
-
-        @org.springframework.data.annotation.Id
-        @ContentId
-        private String contentId;
-
-        @ContentLength
-        private long contentLen;
-
-        public SharedSpringIdContentIdEntity() {
-            this.contentId = null;
-        }
-
+    private static final class NonMatchingUuidContentPropertyInfoConverter
+        implements Converter<ContentPropertyInfo<Object, UUID>, S3ObjectId> {
         @Override
-        public String getContentId() {
-            return this.contentId;
+        public S3ObjectId convert(@NonNull ContentPropertyInfo<Object, UUID> source) {
+            return new S3ObjectId("custom-bucket", "object/custom-object-id-uuid-based");
         }
+    }
 
+    private static final class NonMatchingBucketEntityContentPropertyInfoConverter
+        implements Converter<ContentPropertyInfo<TestEntityWithBucketAnnotation, String>, S3ObjectId> {
         @Override
-        public void setContentId(String contentId) {
-            this.contentId = contentId;
+        public S3ObjectId convert(@NonNull ContentPropertyInfo<TestEntityWithBucketAnnotation, String> source) {
+            return new S3ObjectId("custom-bucket", "test-entity-with-bucket/custom-object-id-string-based");
         }
+    }
 
+    private static final class NullBucketContentPropertyInfoConverter
+        implements Converter<ContentPropertyInfo<SingleContentFields, String>, S3ObjectId> {
         @Override
-        public long getContentLen() {
-            return contentLen;
-        }
-
-        @Override
-        public void setContentLen(long contentLen) {
-            this.contentLen = contentLen;
+        public S3ObjectId convert(@NonNull ContentPropertyInfo<SingleContentFields, String> source) {
+            return objectIdWithNullBucket("custom-object-id");
         }
     }
 
@@ -192,7 +139,7 @@ public class DefaultS3StoreImplTest {
 
                         placementService = new PlacementServiceImpl();
                         S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
-                        placementService.addConverter((Converter<String, String>) source -> "/some/object/id");
+                        placementService.addConverter(String.class, String.class, source -> "/some/object/id");
 
                         SimpleStorageProtocolResolver s3Protocol = new SimpleStorageProtocolResolver(client);
                         s3Protocol.afterPropertiesSet();
@@ -241,7 +188,8 @@ public class DefaultS3StoreImplTest {
 
                                     placementService = new PlacementServiceImpl();
                                     S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
-                                    placementService.addConverter((Converter<CustomContentId, S3ObjectId>) entity -> new S3ObjectId(entity.getCustomer(), entity.getObjectId()));
+                                    placementService.addConverter(CustomContentId.class, S3ObjectId.class,
+                                        entity -> new S3ObjectId(entity.customer(), entity.objectId()));
 
                                     SimpleStorageProtocolResolver s3Protocol = new SimpleStorageProtocolResolver(client);
                                     s3Protocol.afterPropertiesSet();
@@ -249,8 +197,8 @@ public class DefaultS3StoreImplTest {
                                     ((DefaultResourceLoader) loader).addProtocolResolver(s3Protocol);
 
                                     customId = new CustomContentId(
-                                            "some-customer",
-                                            "some-object-id");
+                                        "some-customer",
+                                        "some-object-id");
 
                                     customS3ContentIdBasedStore = new DefaultS3StoreImpl<>(context, loader, null, placementService, client, null);
 
@@ -378,11 +326,13 @@ public class DefaultS3StoreImplTest {
 
                                 defaultBucket = "default-defaultBucket";
 
-                                entity = new TestEntity("12345-67890");
+                                entity = new SingleContentFields();
+                                entity.setContentId(SAMPLE_CONTENT_ID);
 
                                 placementService = new PlacementServiceImpl();
                                 S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
-                                placementService.addConverter((Converter<S3ObjectId, String>) source -> "/" + source.getKey().replace("-", "/"));
+                                placementService.addConverter(S3ObjectId.class, String.class,
+                                    source -> "/" + source.getKey().replace("-", "/"));
 
                                 SimpleStorageProtocolResolver s3Protocol = new SimpleStorageProtocolResolver(client);
                                 s3Protocol.afterPropertiesSet();
@@ -424,8 +374,8 @@ public class DefaultS3StoreImplTest {
                                 defaultBucket = "default-defaultBucket";
 
                                 entity = new TestEntityWithBucketAnnotation(
-                                        "some-other-bucket");
-                                entity.setContentId("12345-67890");
+                                    "some-other-bucket");
+                                entity.setContentId(SAMPLE_CONTENT_ID);
 
                                 placementService = new PlacementServiceImpl();
                                 S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
@@ -449,7 +399,7 @@ public class DefaultS3StoreImplTest {
                                 assertThat(e).isNull();
                                 assertThat(r).isInstanceOf(S3StoreResource.class);
                                 assertThat(((S3StoreResource) r).getClient()).isEqualTo(client);
-                                assertThat(r.getDescription()).isEqualTo(format("Amazon s3 resource [bucket='%s' and object='%s']", "some-other-bucket", "12345-67890"));
+                                assertThat(r.getDescription()).isEqualTo(format("Amazon s3 resource [bucket='%s' and object='%s']", "some-other-bucket", SAMPLE_CONTENT_ID));
                             }
                         }
 
@@ -469,7 +419,7 @@ public class DefaultS3StoreImplTest {
 
                                 defaultBucket = "default-defaultBucket";
 
-                                entity = new TestEntity();
+                                entity = new SingleContentFields();
 
                                 s3StoreImpl = new DefaultS3StoreImpl<>(context, loader, null, placementService, client, null);
 
@@ -509,11 +459,13 @@ public class DefaultS3StoreImplTest {
 
                                 defaultBucket = "default-defaultBucket";
 
-                                entity = new TestEntity("12345-67890");
+                                entity = new SingleContentFields();
+                                entity.setContentId(SAMPLE_CONTENT_ID);
 
                                 placementService = new PlacementServiceImpl();
                                 S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
-                                placementService.addConverter((Converter<TestEntity, S3ObjectId>) source -> new S3ObjectId("custom-bucket", "custom-object-id"));
+                                placementService.addConverter(SingleContentFields.class, S3ObjectId.class,
+                                    source -> new S3ObjectId("custom-bucket", "custom-object-id"));
 
                                 SimpleStorageProtocolResolver s3Protocol = new SimpleStorageProtocolResolver(client);
                                 s3Protocol.afterPropertiesSet();
@@ -560,11 +512,13 @@ public class DefaultS3StoreImplTest {
 
                                 defaultBucket = null;
 
-                                entity = new TestEntity("12345-67890");
+                                entity = new SingleContentFields();
+                                entity.setContentId(SAMPLE_CONTENT_ID);
 
                                 placementService = new PlacementServiceImpl();
                                 S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
-                                placementService.addConverter((Converter<CustomContentId, S3ObjectId>) entity -> new S3ObjectId(null, entity.getObjectId()));
+                                placementService.addConverter(CustomContentId.class, S3ObjectId.class,
+                                    entity -> objectIdWithNullBucket(entity.objectId()));
 
                                 s3StoreImpl = new DefaultS3StoreImpl<>(context, loader, null, placementService, client, null);
 
@@ -606,11 +560,13 @@ public class DefaultS3StoreImplTest {
 
                                 defaultBucket = "default-defaultBucket";
 
-                                entity = new TestEntity("12345-67890");
+                                entity = new SingleContentFields();
+                                entity.setContentId(SAMPLE_CONTENT_ID);
 
                                 placementService = new PlacementServiceImpl();
                                 S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
-                                placementService.addConverter((Converter<S3ObjectId, String>) source -> "/" + source.getKey().replace("-", "/"));
+                                placementService.addConverter(S3ObjectId.class, String.class,
+                                    source -> "/" + source.getKey().replace("-", "/"));
 
                                 SimpleStorageProtocolResolver s3Protocol = new SimpleStorageProtocolResolver(client);
                                 s3Protocol.afterPropertiesSet();
@@ -652,8 +608,8 @@ public class DefaultS3StoreImplTest {
                                 defaultBucket = "default-defaultBucket";
 
                                 entity = new TestEntityWithBucketAnnotation(
-                                        "some-other-bucket");
-                                entity.setContentId("12345-67890");
+                                    "some-other-bucket");
+                                entity.setContentId(SAMPLE_CONTENT_ID);
 
                                 placementService = new PlacementServiceImpl();
                                 S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
@@ -677,7 +633,7 @@ public class DefaultS3StoreImplTest {
                                 assertThat(e).isNull();
                                 assertThat(r).isInstanceOf(S3StoreResource.class);
                                 assertThat(((S3StoreResource) r).getClient()).isEqualTo(client);
-                                assertThat(r.getDescription()).isEqualTo(format("Amazon s3 resource [bucket='%s' and object='%s']", "some-other-bucket", "12345-67890"));
+                                assertThat(r.getDescription()).isEqualTo(format("Amazon s3 resource [bucket='%s' and object='%s']", "some-other-bucket", SAMPLE_CONTENT_ID));
                             }
                         }
 
@@ -697,7 +653,7 @@ public class DefaultS3StoreImplTest {
 
                                 defaultBucket = "default-defaultBucket";
 
-                                entity = new TestEntity();
+                                entity = new SingleContentFields();
 
                                 s3StoreImpl = new DefaultS3StoreImpl<>(context, loader, null, placementService, client, null);
 
@@ -737,19 +693,20 @@ public class DefaultS3StoreImplTest {
 
                                 defaultBucket = "default-defaultBucket";
 
-                                entity = new TestEntity("12345-67890");
+                                entity = new SingleContentFields();
+                                entity.setContentId(SAMPLE_CONTENT_ID);
 
                                 placementService = new PlacementServiceImpl();
                                 S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
 
                                 // Converter that matches Entity and content ID types. Expected to be invoked.
-                                // Converter<ContentPropertyInfo<TestEntity, String>, S3ObjectId> instead of Converter<TestEntity, S3ObjectId> for #getResource
-                                placementService.addConverter((Converter<ContentPropertyInfo<TestEntity, String>, S3ObjectId>) source -> new S3ObjectId("custom-bucket", "test-entity/custom-object-id-string-based"));
-
+                                // Converter<ContentPropertyInfo<SingleContentFields, String>, S3ObjectId> instead of Converter<SingleContentFields, S3ObjectId> for #getResource
+                                placementService.addConverter(
+                                    new MatchingSingleContentFieldsStringContentPropertyInfoConverter());
                                 // Converter that does not match content ID type. Should not be invoked.
-                                placementService.addConverter((Converter<ContentPropertyInfo<Object, UUID>, S3ObjectId>) source -> new S3ObjectId("custom-bucket", "object/custom-object-id-uuid-based"));
+                                placementService.addConverter(new NonMatchingUuidContentPropertyInfoConverter());
                                 // Converter that does not match Entity type. Should not be invoked.
-                                placementService.addConverter((Converter<ContentPropertyInfo<TestEntityWithBucketAnnotation, String>, S3ObjectId>) source -> new S3ObjectId("custom-bucket", "test-entity-with-bucket/custom-object-id-string-based"));
+                                placementService.addConverter(new NonMatchingBucketEntityContentPropertyInfoConverter());
 
                                 SimpleStorageProtocolResolver s3Protocol = new SimpleStorageProtocolResolver(client);
                                 s3Protocol.afterPropertiesSet();
@@ -796,11 +753,12 @@ public class DefaultS3StoreImplTest {
 
                                 defaultBucket = null;
 
-                                entity = new TestEntity("12345-67890");
+                                entity = new SingleContentFields();
+                                entity.setContentId(SAMPLE_CONTENT_ID);
 
                                 placementService = new PlacementServiceImpl();
                                 S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
-                                placementService.addConverter((Converter<ContentPropertyInfo<TestEntity, String>, S3ObjectId>) source -> new S3ObjectId(null, "custom-object-id"));
+                                placementService.addConverter(new NullBucketContentPropertyInfoConverter());
 
                                 s3StoreImpl = new DefaultS3StoreImpl<>(context, loader, null, placementService, client, null);
 
@@ -834,17 +792,16 @@ public class DefaultS3StoreImplTest {
                     context = new GenericApplicationContext();
                     context.refresh();
 
-                    String id = "12345-67890";
-                    entity = new TestEntity();
+                    entity = new SingleContentFields();
 
                     s3StoreImpl = new DefaultS3StoreImpl<>(context, loader, null, placementService, client, null);
 
-                    s3StoreImpl.associate(entity, id);
+                    s3StoreImpl.associate(entity, SAMPLE_CONTENT_ID);
                 }
 
                 @Test
                 void shouldSetTheEntitySContentIDAttribute() {
-                    assertThat(entity.getContentId()).isEqualTo("12345-67890");
+                    assertThat(entity.getContentId()).isEqualTo(SAMPLE_CONTENT_ID);
                 }
             }
 
@@ -862,8 +819,8 @@ public class DefaultS3StoreImplTest {
                     context = new GenericApplicationContext();
                     context.refresh();
 
-                    entity = new TestEntity();
-                    entity.setContentId("12345-67890");
+                    entity = new SingleContentFields();
+                    entity.setContentId(SAMPLE_CONTENT_ID);
 
                     s3StoreImpl = new DefaultS3StoreImpl<>(context, loader, null, placementService, client, null);
 
@@ -899,18 +856,18 @@ public class DefaultS3StoreImplTest {
                                 context = new GenericApplicationContext();
                                 context.refresh();
 
-                                entity = new TestEntity();
+                                entity = new SingleContentFields();
                                 content = new ByteArrayInputStream(
-                                        "Hello content world!".getBytes());
+                                    "Hello content world!".getBytes());
 
                                 defaultBucket = "default-defaultBucket";
 
-                                entity.setContentId("abcd-efgh");
+                                entity.setContentId(SAMPLE_CONTENT_ID);
 
                                 placementService = new PlacementServiceImpl();
                                 S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
 
-                                when(loader.getResource(endsWith("abcd-efgh"))).thenReturn(resource);
+                                when(loader.getResource(endsWith(SAMPLE_CONTENT_ID))).thenReturn(resource);
                                 output = mock(OutputStream.class);
                                 when(resource.getOutputStream()).thenReturn(output);
 
@@ -929,7 +886,7 @@ public class DefaultS3StoreImplTest {
 
                             @Test
                             void shouldFetchTheResource() {
-                                verify(loader).getResource(eq("s3://default-defaultBucket/abcd-efgh"));
+                                verify(loader).getResource(eq("s3://default-defaultBucket/" + SAMPLE_CONTENT_ID));
                             }
 
                             @Test
@@ -941,7 +898,7 @@ public class DefaultS3StoreImplTest {
                             void shouldWriteToTheResourcesOutputStream() throws IOException {
                                 verify(resource).getOutputStream();
                                 verify(output, times(1)).write(any(byte[].class),
-                                        eq(0), eq(20));
+                                    eq(0), eq(20));
                             }
 
                             @Nested
@@ -958,18 +915,18 @@ public class DefaultS3StoreImplTest {
                                     context = new GenericApplicationContext();
                                     context.refresh();
 
-                                    entity = new TestEntity();
+                                    entity = new SingleContentFields();
                                     content = new ByteArrayInputStream(
-                                            "Hello content world!".getBytes());
+                                        "Hello content world!".getBytes());
 
                                     defaultBucket = "default-defaultBucket";
 
-                                    entity.setContentId("abcd-efgh");
+                                    entity.setContentId(SAMPLE_CONTENT_ID);
 
                                     placementService = new PlacementServiceImpl();
                                     S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
 
-                                    when(loader.getResource(endsWith("abcd-efgh"))).thenReturn(resource);
+                                    when(loader.getResource(endsWith(SAMPLE_CONTENT_ID))).thenReturn(resource);
                                     output = mock(OutputStream.class);
                                     when(resource.getOutputStream()).thenReturn(output);
 
@@ -1010,9 +967,9 @@ public class DefaultS3StoreImplTest {
                                 context = new GenericApplicationContext();
                                 context.refresh();
 
-                                entity = new TestEntity();
+                                entity = new SingleContentFields();
                                 content = new ByteArrayInputStream(
-                                        "Hello content world!".getBytes());
+                                    "Hello content world!".getBytes());
 
                                 defaultBucket = "default-defaultBucket";
 
@@ -1056,7 +1013,7 @@ public class DefaultS3StoreImplTest {
                             void shouldWriteToTheResourcesOutputStream() throws IOException {
                                 verify(resource).getOutputStream();
                                 verify(output, times(1)).write(any(byte[].class),
-                                        eq(0), eq(20));
+                                    eq(0), eq(20));
                             }
                         }
 
@@ -1074,9 +1031,9 @@ public class DefaultS3StoreImplTest {
                                 context = new GenericApplicationContext();
                                 context.refresh();
 
-                                entity = new TestEntity();
+                                entity = new SingleContentFields();
                                 content = new ByteArrayInputStream(
-                                        "Hello content world!".getBytes());
+                                    "Hello content world!".getBytes());
 
                                 defaultBucket = "default-defaultBucket";
 
@@ -1123,7 +1080,7 @@ public class DefaultS3StoreImplTest {
                     context = new GenericApplicationContext();
                     context.refresh();
 
-                    entity = new TestEntity();
+                    entity = new SingleContentFields();
                     content = new ByteArrayInputStream("Hello content world!".getBytes());
                     r = new InputStreamResource(content);
 
@@ -1155,7 +1112,7 @@ public class DefaultS3StoreImplTest {
                         context = new GenericApplicationContext();
                         context.refresh();
 
-                        entity = new TestEntity();
+                        entity = new SingleContentFields();
                         content = new ByteArrayInputStream("Hello content world!".getBytes());
                         r = new InputStreamResource(content);
 
@@ -1203,14 +1160,14 @@ public class DefaultS3StoreImplTest {
 
                                     defaultBucket = "default-defaultBucket";
 
-                                    entity = new TestEntity();
+                                    entity = new SingleContentFields();
                                     content = mock(InputStream.class);
-                                    entity.setContentId("abcd-efgh");
+                                    entity.setContentId(SAMPLE_CONTENT_ID);
 
                                     placementService = new PlacementServiceImpl();
                                     S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
 
-                                    when(loader.getResource(matches("^s3://default-defaultBucket/abcd-efgh"))).thenReturn(resource);
+                                    when(loader.getResource(matches("^s3://default-defaultBucket/" + SAMPLE_CONTENT_ID))).thenReturn(resource);
                                     when(resource.getInputStream()).thenReturn(content);
 
                                     when(resource.exists()).thenReturn(true);
@@ -1226,7 +1183,7 @@ public class DefaultS3StoreImplTest {
 
                                 @Test
                                 void shouldFetchTheResource() {
-                                    verify(loader).getResource(eq("s3://default-defaultBucket/abcd-efgh"));
+                                    verify(loader).getResource(eq("s3://default-defaultBucket/" + SAMPLE_CONTENT_ID));
                                 }
 
                                 @Test
@@ -1250,14 +1207,14 @@ public class DefaultS3StoreImplTest {
 
                                         defaultBucket = "default-defaultBucket";
 
-                                        entity = new TestEntity();
+                                        entity = new SingleContentFields();
                                         content = mock(InputStream.class);
-                                        entity.setContentId("abcd-efgh");
+                                        entity.setContentId(SAMPLE_CONTENT_ID);
 
                                         placementService = new PlacementServiceImpl();
                                         S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
 
-                                        when(loader.getResource(matches("^s3://default-defaultBucket/abcd-efgh"))).thenReturn(resource);
+                                        when(loader.getResource(matches("^s3://default-defaultBucket/" + SAMPLE_CONTENT_ID))).thenReturn(resource);
                                         when(resource.getInputStream()).thenReturn(content);
 
                                         when(resource.exists()).thenReturn(true);
@@ -1297,20 +1254,20 @@ public class DefaultS3StoreImplTest {
 
                                     defaultBucket = "default-defaultBucket";
 
-                                    entity = new TestEntity();
+                                    entity = new SingleContentFields();
                                     content = mock(InputStream.class);
-                                    entity.setContentId("abcd-efgh");
+                                    entity.setContentId(SAMPLE_CONTENT_ID);
 
                                     placementService = new PlacementServiceImpl();
                                     S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
 
-                                    when(loader.getResource(matches("^s3://default-defaultBucket/abcd-efgh"))).thenReturn(resource);
+                                    when(loader.getResource(matches("^s3://default-defaultBucket/" + SAMPLE_CONTENT_ID))).thenReturn(resource);
                                     when(resource.getInputStream()).thenReturn(content);
 
                                     nonExistentResource = mock(WritableResource.class);
                                     when(resource.exists()).thenReturn(true);
 
-                                    when(loader.getResource(endsWith("abcd-efgh"))).thenReturn(nonExistentResource);
+                                    when(loader.getResource(endsWith(SAMPLE_CONTENT_ID))).thenReturn(nonExistentResource);
 
                                     s3StoreImpl = spy(new DefaultS3StoreImpl<>(context, loader, null, placementService, client, null));
 
@@ -1323,7 +1280,7 @@ public class DefaultS3StoreImplTest {
 
                                 @Test
                                 void shouldFetchTheResource() {
-                                    verify(loader).getResource(eq("s3://default-defaultBucket/abcd-efgh"));
+                                    verify(loader).getResource(eq("s3://default-defaultBucket/" + SAMPLE_CONTENT_ID));
                                 }
 
                                 @Test
@@ -1348,14 +1305,14 @@ public class DefaultS3StoreImplTest {
 
                                     defaultBucket = "default-defaultBucket";
 
-                                    entity = new TestEntity();
+                                    entity = new SingleContentFields();
                                     content = mock(InputStream.class);
-                                    entity.setContentId("abcd-efgh");
+                                    entity.setContentId(SAMPLE_CONTENT_ID);
 
                                     placementService = new PlacementServiceImpl();
                                     S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
 
-                                    when(loader.getResource(matches("^s3://default-defaultBucket/abcd-efgh"))).thenReturn(resource);
+                                    when(loader.getResource(matches("^s3://default-defaultBucket/" + SAMPLE_CONTENT_ID))).thenReturn(resource);
                                     when(resource.getInputStream()).thenReturn(content);
 
                                     entity.setContentId(null);
@@ -1404,15 +1361,15 @@ public class DefaultS3StoreImplTest {
 
                                     defaultBucket = "default-defaultBucket";
 
-                                    entity = new TestEntity();
-                                    entity.setContentId("abcd-efgh");
+                                    entity = new SingleContentFields();
+                                    entity.setContentId(SAMPLE_CONTENT_ID);
                                     entity.setContentLen(100L);
                                     resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
 
                                     placementService = new PlacementServiceImpl();
                                     S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
 
-                                    when(loader.getResource(endsWith("abcd-efgh"))).thenReturn(resource);
+                                    when(loader.getResource(endsWith(SAMPLE_CONTENT_ID))).thenReturn(resource);
                                     when(resource.exists()).thenReturn(true);
 
                                     s3StoreImpl = spy(new DefaultS3StoreImpl<>(context, loader, null, placementService, client, null));
@@ -1426,7 +1383,7 @@ public class DefaultS3StoreImplTest {
 
                                 @Test
                                 void shouldFetchTheResource() {
-                                    verify(loader).getResource(eq("s3://default-defaultBucket/abcd-efgh"));
+                                    verify(loader).getResource(eq("s3://default-defaultBucket/" + SAMPLE_CONTENT_ID));
                                 }
 
                                 @Nested
@@ -1445,15 +1402,15 @@ public class DefaultS3StoreImplTest {
 
                                         defaultBucket = "default-defaultBucket";
 
-                                        entity = new TestEntity();
-                                        entity.setContentId("abcd-efgh");
+                                        entity = new SingleContentFields();
+                                        entity.setContentId(SAMPLE_CONTENT_ID);
                                         entity.setContentLen(100L);
                                         resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
 
                                         placementService = new PlacementServiceImpl();
                                         S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
 
-                                        when(loader.getResource(endsWith("abcd-efgh"))).thenReturn(resource);
+                                        when(loader.getResource(endsWith(SAMPLE_CONTENT_ID))).thenReturn(resource);
                                         when(resource.exists()).thenReturn(true);
 
                                         s3StoreImpl = spy(new DefaultS3StoreImpl<>(context, loader, null, placementService, client, null));
@@ -1468,7 +1425,7 @@ public class DefaultS3StoreImplTest {
                                     @Test
                                     void shouldResetTheMetadata() {
                                         assertThat(entity.getContentId()).isNull();
-                                        assertThat(entity.getContentLen()).isEqualTo(0L);
+                                        assertThat(entity.getContentLen()).isNull();
                                     }
                                 }
 
@@ -1488,19 +1445,19 @@ public class DefaultS3StoreImplTest {
 
                                         defaultBucket = "default-defaultBucket";
 
-                                        entity = new TestEntity();
-                                        entity.setContentId("abcd-efgh");
+                                        entity = new SingleContentFields();
+                                        entity.setContentId(SAMPLE_CONTENT_ID);
                                         entity.setContentLen(100L);
                                         resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
 
                                         placementService = new PlacementServiceImpl();
                                         S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
 
-                                        when(loader.getResource(endsWith("abcd-efgh"))).thenReturn(resource);
+                                        when(loader.getResource(endsWith(SAMPLE_CONTENT_ID))).thenReturn(resource);
                                         when(resource.exists()).thenReturn(true);
 
-                                        entity = new SharedIdContentIdEntity();
-                                        entity.setContentId("abcd-efgh");
+                                        entity = new SharedIdJakartaJpaEntity();
+                                        entity.setContentId(SAMPLE_CONTENT_ID);
 
                                         s3StoreImpl = spy(new DefaultS3StoreImpl<>(context, loader, null, placementService, client, null));
 
@@ -1513,8 +1470,8 @@ public class DefaultS3StoreImplTest {
 
                                     @Test
                                     void shouldNotResetTheContentIdMetadata() {
-                                        assertThat(entity.getContentId()).isEqualTo("abcd-efgh");
-                                        assertThat(entity.getContentLen()).isEqualTo(0L);
+                                        assertThat(entity.getContentId()).isEqualTo(SAMPLE_CONTENT_ID);
+                                        assertThat(entity.getContentLen()).isNull();
                                     }
                                 }
 
@@ -1534,19 +1491,19 @@ public class DefaultS3StoreImplTest {
 
                                         defaultBucket = "default-defaultBucket";
 
-                                        entity = new TestEntity();
-                                        entity.setContentId("abcd-efgh");
+                                        entity = new SingleContentFields();
+                                        entity.setContentId(SAMPLE_CONTENT_ID);
                                         entity.setContentLen(100L);
                                         resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
 
                                         placementService = new PlacementServiceImpl();
                                         S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
 
-                                        when(loader.getResource(endsWith("abcd-efgh"))).thenReturn(resource);
+                                        when(loader.getResource(endsWith(SAMPLE_CONTENT_ID))).thenReturn(resource);
                                         when(resource.exists()).thenReturn(true);
 
-                                        entity = new SharedSpringIdContentIdEntity();
-                                        entity.setContentId("abcd-efgh");
+                                        entity = new SharedIdSpringJpaEntity();
+                                        entity.setContentId(SAMPLE_CONTENT_ID);
 
                                         s3StoreImpl = spy(new DefaultS3StoreImpl<>(context, loader, null, placementService, client, null));
 
@@ -1559,8 +1516,8 @@ public class DefaultS3StoreImplTest {
 
                                     @Test
                                     void shouldNotResetTheContentIdMetadata() {
-                                        assertThat(entity.getContentId()).isEqualTo("abcd-efgh");
-                                        assertThat(entity.getContentLen()).isEqualTo(0L);
+                                        assertThat(entity.getContentId()).isEqualTo(SAMPLE_CONTENT_ID);
+                                        assertThat(entity.getContentLen()).isNull();
                                     }
                                 }
                             }
@@ -1581,8 +1538,8 @@ public class DefaultS3StoreImplTest {
 
                                     defaultBucket = "default-defaultBucket";
 
-                                    entity = new TestEntity();
-                                    entity.setContentId("abcd-efgh");
+                                    entity = new SingleContentFields();
+                                    entity.setContentId(SAMPLE_CONTENT_ID);
                                     entity.setContentLen(100L);
                                     resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
 
@@ -1590,7 +1547,7 @@ public class DefaultS3StoreImplTest {
                                     S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
 
                                     nonExistentResource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
-                                    when(loader.getResource(endsWith("abcd-efgh"))).thenReturn(nonExistentResource);
+                                    when(loader.getResource(endsWith(SAMPLE_CONTENT_ID))).thenReturn(nonExistentResource);
                                     when(nonExistentResource.exists()).thenReturn(false);
 
                                     s3StoreImpl = spy(new DefaultS3StoreImpl<>(context, loader, null, placementService, client, null));
@@ -1604,63 +1561,20 @@ public class DefaultS3StoreImplTest {
 
                                 @Test
                                 void shouldFetchTheResource() {
-                                    verify(loader).getResource(eq("s3://default-defaultBucket/abcd-efgh"));
+                                    verify(loader).getResource(eq("s3://default-defaultBucket/" + SAMPLE_CONTENT_ID));
                                 }
 
                                 @Test
                                 void shouldUnsetTheContent() {
                                     verify(client, never()).deleteObject(any(DeleteObjectRequest.class));
                                     assertThat(entity.getContentId()).isNull();
-                                    assertThat(entity.getContentLen()).isEqualTo(0L);
+                                    assertThat(entity.getContentLen()).isNull();
                                 }
                             }
                         }
                     }
                 }
             }
-        }
-    }
-
-    public static class TestEntityWithBucketAnnotation extends TestEntity {
-        @Bucket
-        private String bucketId;
-
-        public TestEntityWithBucketAnnotation(String bucketId) {
-            this.bucketId = bucketId;
-        }
-
-        public String getBucketId() {
-            return bucketId;
-        }
-
-        public void setBucketId(String bucketId) {
-            this.bucketId = bucketId;
-        }
-    }
-
-    public static class CustomContentId implements Serializable {
-        private String customer;
-        private String objectId;
-
-        public CustomContentId(String bucket, String objectId) {
-            this.customer = bucket;
-            this.objectId = objectId;
-        }
-
-        public String getCustomer() {
-            return customer;
-        }
-
-        public void setCustomer(String customer) {
-            this.customer = customer;
-        }
-
-        public String getObjectId() {
-            return objectId;
-        }
-
-        public void setObjectId(String objectId) {
-            this.objectId = objectId;
         }
     }
 }

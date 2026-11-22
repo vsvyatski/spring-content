@@ -1,5 +1,6 @@
 package internal.org.springframework.content.rest.support;
 
+import org.jspecify.annotations.NonNull;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.rest.core.event.AbstractRepositoryEventListener;
@@ -20,12 +21,12 @@ public class EventListenerConfig {
         private final List<Object> afterCreate = new ArrayList<>();
 
         @Override
-        protected void onBeforeCreate(Object entity) {
+        protected void onBeforeCreate(@NonNull Object entity) {
             beforeCreate.add(entity);
         }
 
         @Override
-        protected void onAfterCreate(Object entity) {
+        protected void onAfterCreate(@NonNull Object entity) {
             afterCreate.add(entity);
         }
 

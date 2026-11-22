@@ -1,7 +1,5 @@
 package it.typesupport;
 
-import com.github.f4b6a3.uuid.UuidCreator;
-import it.typesupport.model.*;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,6 +7,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.content.test.support.idtype.*;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -47,7 +46,7 @@ public class FsTypeSupportTest {
                 @BeforeEach
                 void setUp() {
                     entity = new UUIDBasedContentEntity();
-                    id = UuidCreator.getTimeOrdered();
+                    id = UUID.randomUUID();
                     ((UUIDBasedContentEntity) entity).setContentId((UUID) id);
 
                     uuidStore.setContent((UUIDBasedContentEntity) entity, new ByteArrayInputStream("uuid".getBytes()));
@@ -62,8 +61,8 @@ public class FsTypeSupportTest {
                 @Test
                 void shouldStoreTheContentSuccessfully() throws IOException {
                     assertThat(IOUtils.contentEquals(
-                            uuidStore.getContent((UUIDBasedContentEntity) entity),
-                            IOUtils.toInputStream("uuid", Charset.defaultCharset())
+                        uuidStore.getContent((UUIDBasedContentEntity) entity),
+                        IOUtils.toInputStream("uuid", Charset.defaultCharset())
                     )).isTrue();
                 }
             }
@@ -74,9 +73,9 @@ public class FsTypeSupportTest {
                 void setUp() {
                     entity = new UUIDBasedContentEntity();
                     uuidStore.setContent(
-                            (UUIDBasedContentEntity) entity,
-                            new ByteArrayInputStream("uuid".getBytes()
-                            ));
+                        (UUIDBasedContentEntity) entity,
+                        new ByteArrayInputStream("uuid".getBytes()
+                        ));
                 }
 
                 @AfterEach
@@ -88,8 +87,8 @@ public class FsTypeSupportTest {
                 @Test
                 void shouldStoreTheContentSuccessfully() throws IOException {
                     assertThat(IOUtils.contentEquals(
-                            uuidStore.getContent((UUIDBasedContentEntity) entity),
-                            IOUtils.toInputStream("uuid", Charset.defaultCharset())
+                        uuidStore.getContent((UUIDBasedContentEntity) entity),
+                        IOUtils.toInputStream("uuid", Charset.defaultCharset())
                     )).isTrue();
                 }
             }
@@ -120,8 +119,8 @@ public class FsTypeSupportTest {
                 @Test
                 void shouldStoreTheContentSuccessfully() throws IOException {
                     assertThat(IOUtils.contentEquals(
-                            uriStore.getContent((URIBasedContentEntity) entity),
-                            IOUtils.toInputStream("uri", Charset.defaultCharset())
+                        uriStore.getContent((URIBasedContentEntity) entity),
+                        IOUtils.toInputStream("uri", Charset.defaultCharset())
                     )).isTrue();
                 }
             }
@@ -152,8 +151,8 @@ public class FsTypeSupportTest {
                 @Test
                 void shouldStoreTheContentSuccessfully() throws IOException {
                     assertThat(IOUtils.contentEquals(
-                            longStore.getContent((LongBasedContentEntity) entity),
-                            IOUtils.toInputStream("long", Charset.defaultCharset())
+                        longStore.getContent((LongBasedContentEntity) entity),
+                        IOUtils.toInputStream("long", Charset.defaultCharset())
                     )).isTrue();
                 }
             }
@@ -184,8 +183,8 @@ public class FsTypeSupportTest {
                 @Test
                 void shouldStoreTheContentSuccessfully() throws IOException {
                     assertThat(IOUtils.contentEquals(
-                            bigIntStore.getContent((BigIntegerBasedContentEntity) entity),
-                            IOUtils.toInputStream("big-int", Charset.defaultCharset())
+                        bigIntStore.getContent((BigIntegerBasedContentEntity) entity),
+                        IOUtils.toInputStream("big-int", Charset.defaultCharset())
                     )).isTrue();
                 }
             }

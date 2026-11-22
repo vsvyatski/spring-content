@@ -34,7 +34,7 @@ import java.lang.annotation.Annotation;
 import static java.lang.String.format;
 
 public class DefaultJpaStoreImpl<S, SID extends Serializable>
-        implements ContentStore<S, SID> {
+    implements ContentStore<S, SID> {
 
     private static final Log logger = LogFactory.getLog(DefaultJpaStoreImpl.class);
 
@@ -102,7 +102,7 @@ public class DefaultJpaStoreImpl<S, SID extends Serializable>
             for (Annotation annotation : descriptor.getAnnotations()) {
                 String canonicalName = annotation.annotationType().getCanonicalName();
                 if ("jakarta.persistence.Id".equals(canonicalName)
-                        || "org.springframework.data.annotation.Id".equals(canonicalName)) {
+                    || "org.springframework.data.annotation.Id".equals(canonicalName)) {
                     return false;
                 }
             }
@@ -121,7 +121,7 @@ public class DefaultJpaStoreImpl<S, SID extends Serializable>
             for (Annotation annotation : field.getAnnotations()) {
                 String canonicalName = annotation.annotationType().getCanonicalName();
                 if ("jakarta.persistence.Id".equals(canonicalName)
-                        || "org.springframework.data.annotation.Id".equals(canonicalName)) {
+                    || "org.springframework.data.annotation.Id".equals(canonicalName)) {
                     return false;
                 }
             }
@@ -199,7 +199,7 @@ public class DefaultJpaStoreImpl<S, SID extends Serializable>
         }
 
         BeanUtils.setFieldWithAnnotation(entity, ContentId.class,
-                ((BlobResource) resource).getId());
+            ((BlobResource) resource).getId());
         BeanUtils.setFieldWithAnnotation(entity, ContentLength.class, contentLen);
 
         return entity;
@@ -349,11 +349,11 @@ public class DefaultJpaStoreImpl<S, SID extends Serializable>
     protected Object convertToExternalContentIdType(S property, Object contentId) {
         ConversionService converter = new DefaultConversionService();
         if (converter.canConvert(TypeDescriptor.forObject(contentId),
-                TypeDescriptor.valueOf(BeanUtils.getFieldWithAnnotationType(property,
-                        ContentId.class)))) {
+            TypeDescriptor.valueOf(BeanUtils.getFieldWithAnnotationType(property,
+                ContentId.class)))) {
             contentId = converter.convert(contentId, TypeDescriptor.forObject(contentId),
-                    TypeDescriptor.valueOf(BeanUtils.getFieldWithAnnotationType(property,
-                            ContentId.class)));
+                TypeDescriptor.valueOf(BeanUtils.getFieldWithAnnotationType(property,
+                    ContentId.class)));
             return contentId;
         }
         return contentId.toString();
@@ -362,9 +362,9 @@ public class DefaultJpaStoreImpl<S, SID extends Serializable>
     private Object convertToExternalContentIdType(Object contentId, TypeDescriptor contentIdType) {
         ConversionService converter = new DefaultConversionService();
         if (converter.canConvert(TypeDescriptor.forObject(contentId),
-                contentIdType)) {
+            contentIdType)) {
             contentId = converter.convert(contentId, TypeDescriptor.forObject(contentId),
-                    contentIdType);
+                contentIdType);
             return contentId;
         }
         return contentId.toString();

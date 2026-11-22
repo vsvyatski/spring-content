@@ -41,7 +41,7 @@ import static java.lang.String.format;
 
 @Transactional
 public class DefaultAzureStorageImpl<S, SID extends Serializable>
-        implements ContentStore<S, SID> {
+    implements ContentStore<S, SID> {
 
     private static final Log logger = LogFactory.getLog(DefaultAzureStorageImpl.class);
 
@@ -181,21 +181,21 @@ public class DefaultAzureStorageImpl<S, SID extends Serializable>
     public void unassociate(Object entity) {
 
         BeanUtils.setFieldWithAnnotationConditionally(entity, ContentId.class, null,
-                new Condition() {
-                    @Override
-                    public boolean matches(Field field) {
-                        for (Annotation annotation : field.getAnnotations()) {
-                            if ("jakarta.persistence.Id".equals(
-                                    annotation.annotationType().getCanonicalName())
-                                    || "org.springframework.data.annotation.Id"
-                                    .equals(annotation.annotationType()
-                                            .getCanonicalName())) {
-                                return false;
-                            }
+            new Condition() {
+                @Override
+                public boolean matches(Field field) {
+                    for (Annotation annotation : field.getAnnotations()) {
+                        if ("jakarta.persistence.Id".equals(
+                            annotation.annotationType().getCanonicalName())
+                            || "org.springframework.data.annotation.Id"
+                            .equals(annotation.annotationType()
+                                .getCanonicalName())) {
+                            return false;
                         }
-                        return true;
                     }
-                });
+                    return true;
+                }
+            });
     }
 
     @Override
@@ -211,10 +211,10 @@ public class DefaultAzureStorageImpl<S, SID extends Serializable>
             public boolean matches(TypeDescriptor descriptor) {
                 for (Annotation annotation : descriptor.getAnnotations()) {
                     if ("jakarta.persistence.Id".equals(
-                            annotation.annotationType().getCanonicalName())
-                            || "org.springframework.data.annotation.Id"
-                            .equals(annotation.annotationType()
-                                    .getCanonicalName())) {
+                        annotation.annotationType().getCanonicalName())
+                        || "org.springframework.data.annotation.Id"
+                        .equals(annotation.annotationType()
+                            .getCanonicalName())) {
                         return false;
                     }
                 }
@@ -233,9 +233,9 @@ public class DefaultAzureStorageImpl<S, SID extends Serializable>
             Serializable newId = UUID.randomUUID().toString();
 
             Object convertedId = placementService.convert(
-                    newId,
-                    TypeDescriptor.forObject(newId),
-                    TypeDescriptor.valueOf(BeanUtils.getFieldWithAnnotationType(entity, ContentId.class)));
+                newId,
+                TypeDescriptor.forObject(newId),
+                TypeDescriptor.valueOf(BeanUtils.getFieldWithAnnotationType(entity, ContentId.class)));
 
             BeanUtils.setFieldWithAnnotation(entity, ContentId.class, convertedId);
         }
@@ -286,9 +286,9 @@ public class DefaultAzureStorageImpl<S, SID extends Serializable>
             Serializable newId = UUID.randomUUID().toString();
 
             Object convertedId = placementService.convert(
-                    newId,
-                    TypeDescriptor.forObject(newId),
-                    property.getContentIdType(entity));
+                newId,
+                TypeDescriptor.forObject(newId),
+                property.getContentIdType(entity));
 
             property.setContentId(entity, convertedId, null);
         }
@@ -400,21 +400,21 @@ public class DefaultAzureStorageImpl<S, SID extends Serializable>
 
         // reset content fields
         BeanUtils.setFieldWithAnnotationConditionally(entity, ContentId.class, null,
-                new Condition() {
-                    @Override
-                    public boolean matches(Field field) {
-                        for (Annotation annotation : field.getAnnotations()) {
-                            if ("jakarta.persistence.Id".equals(
-                                    annotation.annotationType().getCanonicalName())
-                                    || "org.springframework.data.annotation.Id"
-                                    .equals(annotation.annotationType()
-                                            .getCanonicalName())) {
-                                return false;
-                            }
+            new Condition() {
+                @Override
+                public boolean matches(Field field) {
+                    for (Annotation annotation : field.getAnnotations()) {
+                        if ("jakarta.persistence.Id".equals(
+                            annotation.annotationType().getCanonicalName())
+                            || "org.springframework.data.annotation.Id"
+                            .equals(annotation.annotationType()
+                                .getCanonicalName())) {
+                            return false;
                         }
-                        return true;
                     }
-                });
+                    return true;
+                }
+            });
 
         Class<?> contentLenType = BeanUtils.getFieldWithAnnotationType(entity, ContentLength.class);
         if (contentLenType != null) {
@@ -458,10 +458,10 @@ public class DefaultAzureStorageImpl<S, SID extends Serializable>
                 public boolean matches(TypeDescriptor descriptor) {
                     for (Annotation annotation : descriptor.getAnnotations()) {
                         if ("jakarta.persistence.Id".equals(
-                                annotation.annotationType().getCanonicalName())
-                                || "org.springframework.data.annotation.Id"
-                                .equals(annotation.annotationType()
-                                        .getCanonicalName())) {
+                            annotation.annotationType().getCanonicalName())
+                            || "org.springframework.data.annotation.Id"
+                            .equals(annotation.annotationType()
+                                .getCanonicalName())) {
                             return false;
                         }
                     }

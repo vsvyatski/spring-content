@@ -1,6 +1,7 @@
 package it.internal.org.springframework.content.rest.controllers;
 
 import internal.org.springframework.content.rest.support.*;
+import it.internal.org.springframework.content.rest.controllers.support.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -8,6 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.content.rest.config.HypermediaConfiguration;
 import org.springframework.content.rest.config.RestConfiguration;
+import org.springframework.content.test.support.TestSupportData;
 import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -25,12 +27,12 @@ import static java.lang.String.format;
 
 @WebAppConfiguration
 @ContextConfiguration(classes = {
-        BaseUriConfig.class,
-        EntityConfig.class,
-        DelegatingWebMvcConfiguration.class,
-        RepositoryRestMvcConfiguration.class,
-        RestConfiguration.class,
-        HypermediaConfiguration.class})
+    BaseUriConfig.class,
+    EntityConfig.class,
+    DelegatingWebMvcConfiguration.class,
+    RepositoryRestMvcConfiguration.class,
+    RestConfiguration.class,
+    HypermediaConfiguration.class})
 @Transactional
 @ActiveProfiles("store")
 @ExtendWith(SpringExtension.class)
@@ -38,40 +40,30 @@ public class BaseUriIT {
 
     // different exported URI
     @Autowired
-    private TestEntityRepository repository;
+    private UuidSingleContentEntityRepository repository;
     @Autowired
-    private TestEntityContentRepository contentRepository;
+    private UuidSingleContentEntityStore contentStore;
 
     // same exported URI
     @Autowired
-    private TestEntity3Repository repo3;
+    private JsonMappedContentEntityRepository repo3;
     @Autowired
-    private TestEntity3ContentRepository store3;
+    private JsonMappedContentEntityStore store3;
 
     // same exported URI
     @Autowired
-    private TestEntity4Repository repo4;
+    private OneToOneLinkedContentEntityRepository repo4;
     @Autowired
-    private TestEntity4ContentRepository store4;
-
-    @Autowired
-    private TestStore store;
+    private OneToOneLinkedContentEntityStore store4;
 
     @Autowired
     private WebApplicationContext context;
 
     private MockMvc mvc;
 
-    private TestEntity testEntity;
-    private TestEntity3 testEntity3;
-    private TestEntity4 testEntity4;
-
-    private Version version;
-    private LastModifiedDate lastModifiedDate;
-
-    private Entity entityTests;
-    private Content contentTests;
-    private Cors corsTests;
+    private UuidSingleContentEntity testEntity;
+    private JsonMappedContentEntity testEntity3;
+    private OneToOneLinkedContentEntity testEntity4;
 
     @Nested
     class BaseUriContentTests {
@@ -79,15 +71,15 @@ public class BaseUriIT {
         class GivenAnEntityIsTheSubjectOfARepositoryAndStorage {
             @Nested
             @DisplayName("given the repository and storage are exported to the same URI")
-            class GivenTheRepositoryAndStorageAreExportedToTheSameURIEntity extends Entity {
+            class GivenTheRepositoryAndStorageAreExportedToTheSameURIEntity extends EntityTests {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
-                    testEntity3 = repo3.save(new TestEntity3());
+                    testEntity3 = repo3.save(new JsonMappedContentEntity());
                     testEntity3.name = "tests";
                     testEntity3 = repo3.save(testEntity3);
                     this.setMvc(mvc);
-                    this.setUrl("/api/testEntity3s/" + testEntity3.id);
+                    this.setUrl("/api/jsonMappedContentEntities/" + testEntity3.id);
                     this.setEntity(testEntity3);
                     this.setRepository(repo3);
                     this.setLinkRel("testEntity3");
@@ -96,15 +88,15 @@ public class BaseUriIT {
 
             @Nested
             @DisplayName("given the repository and storage are exported to the same URI")
-            class GivenTheRepositoryAndStorageAreExportedToTheSameURIContent extends Content {
+            class GivenTheRepositoryAndStorageAreExportedToTheSameURIContent extends ContentTests {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
-                    testEntity3 = repo3.save(new TestEntity3());
+                    testEntity3 = repo3.save(new JsonMappedContentEntity());
                     testEntity3.name = "tests";
                     testEntity3 = repo3.save(testEntity3);
                     this.setMvc(mvc);
-                    this.setUrl("/contentApi/testEntity3s/" + testEntity3.getId());
+                    this.setUrl("/contentApi/jsonMappedContentEntities/" + testEntity3.getId());
                     this.setEntity(testEntity3);
                     this.setRepository(repo3);
                     this.setStore(store3);
@@ -113,46 +105,46 @@ public class BaseUriIT {
 
             @Nested
             @DisplayName("given the repository and storage are exported to different URIs")
-            class GivenTheRepositoryAndStorageAreExportedToDifferentURIsContent extends Content {
+            class GivenTheRepositoryAndStorageAreExportedToDifferentURIsContent extends ContentTests {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
-                    testEntity = repository.save(new TestEntity());
+                    testEntity = repository.save(new UuidSingleContentEntity());
                     this.setMvc(mvc);
-                    this.setUrl("/contentApi/testEntitiesContent/" + testEntity.getId());
+                    this.setUrl("/contentApi/uuidSingleContentEntitiesContent/" + testEntity.getId());
                     this.setEntity(testEntity);
                     this.setRepository(repository);
-                    this.setStore(contentRepository);
+                    this.setStore(contentStore);
                 }
             }
 
             @Nested
             @DisplayName("given the repository and storage are exported to different URIs")
-            class GivenTheRepositoryAndStorageAreExportedToDifferentURIsCors extends Cors {
+            class GivenTheRepositoryAndStorageAreExportedToDifferentURIsCors extends CorsTests {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
-                    testEntity = repository.save(new TestEntity());
+                    testEntity = repository.save(new UuidSingleContentEntity());
                     this.setMvc(mvc);
-                    this.setUrl("/contentApi/testEntitiesContent/" + testEntity.getId());
+                    this.setUrl("/contentApi/uuidSingleContentEntitiesContent/" + testEntity.getId());
                 }
             }
 
             @Nested
             @DisplayName("given an entity with @Version")
-            class GivenAnEntityWithVersionVersion extends Version {
+            class GivenAnEntityWithVersionVersion extends VersionTests {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
-                    testEntity4 = new TestEntity4();
-                    testEntity4 = store4.setContent(testEntity4, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                    testEntity4 = new OneToOneLinkedContentEntity();
+                    testEntity4 = store4.setContent(testEntity4, TestSupportData.sampleTextStream());
                     testEntity4.mimeType = "text/plain";
                     testEntity4 = repo4.save(testEntity4);
-                    String url = "/contentApi/testEntity4s/" + testEntity4.getId();
+                    String url = "/contentApi/oneToOneLinkedContentEntities/" + testEntity4.getId();
                     this.setEntity(testEntity4);
                     this.setMvc(mvc);
                     this.setUrl(url);
-                    this.setCollectionUrl("/api/testEntity4s");
+                    this.setCollectionUrl("/api/oneToOneLinkedContentEntities");
                     this.setContentLinkRel("content");
                     this.setRepo(repo4);
                     this.setStore(store4);
@@ -162,16 +154,16 @@ public class BaseUriIT {
 
             @Nested
             @DisplayName("given an entity with @LastModifiedDate")
-            class GivenAnEntityWithLastModifiedDateLastModifiedDate extends LastModifiedDate {
+            class GivenAnEntityWithLastModifiedDateLastModifiedDate extends LastModifiedDateTests {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
-                    String content = "Hello Spring Content LastModifiedDate World!";
-                    testEntity4 = new TestEntity4();
+                    String content = TestSupportData.SAMPLE_LAST_MODIFIED_DATE_PAYLOAD;
+                    testEntity4 = new OneToOneLinkedContentEntity();
                     testEntity4 = store4.setContent(testEntity4, new ByteArrayInputStream(content.getBytes()));
                     testEntity4.mimeType = "text/plain";
                     testEntity4 = repo4.save(testEntity4);
-                    String url = "/contentApi/testEntity4s/" + testEntity4.getId();
+                    String url = "/contentApi/oneToOneLinkedContentEntities/" + testEntity4.getId();
                     this.setMvc(mvc);
                     this.setUrl(url);
                     this.setLastModifiedDate(testEntity4.getModifiedDate());

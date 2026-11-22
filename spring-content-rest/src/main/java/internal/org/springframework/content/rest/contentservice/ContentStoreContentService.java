@@ -91,7 +91,7 @@ public class ContentStoreContentService implements ContentService {
 
     @Override
     public void getContent(HttpServletRequest request, HttpServletResponse response, HttpHeaders headers, Resource resource, MediaType resourceType)
-            throws ResponseStatusException, MethodNotAllowedException {
+        throws ResponseStatusException, MethodNotAllowedException {
 
         var storeResource = (AssociatedStoreResource) resource;
 
@@ -216,9 +216,9 @@ public class ContentStoreContentService implements ContentService {
             }
             int ordinal = config.getSetContentDisposition().ordinal();
             argsList.add(new SetContentParams(
-                    contentLength,
-                    true,
-                    SetContentParams.ContentDisposition.values()[ordinal]));
+                contentLength,
+                true,
+                SetContentParams.ContentDisposition.values()[ordinal]));
         }
 
         try {
@@ -339,7 +339,7 @@ public class ContentStoreContentService implements ContentService {
     }
 
     private Resource findStoredRendition(AssociatedStoreResource storeResource, MediaType acceptedMimeType)
-            throws IOException {
+        throws IOException {
 
         Resource storedRenditionResource = null;
 
@@ -372,16 +372,16 @@ public class ContentStoreContentService implements ContentService {
 
         static {
             SET_CONTENT_METHODS = new Method[]{
-                    ReflectionUtils.findMethod(ContentStore.class, "setContent", Object.class, PropertyPath.class, InputStream.class, SetContentParams.class),
-                    ReflectionUtils.findMethod(ContentStore.class, "setContent", Object.class, PropertyPath.class, Resource.class),
+                ReflectionUtils.findMethod(ContentStore.class, "setContent", Object.class, PropertyPath.class, InputStream.class, SetContentParams.class),
+                ReflectionUtils.findMethod(ContentStore.class, "setContent", Object.class, PropertyPath.class, Resource.class),
             };
 
             UNSET_CONTENT_METHODS = new Method[]{
-                    ReflectionUtils.findMethod(ContentStore.class, "unsetContent", Object.class, PropertyPath.class, UnsetContentParams.class),
+                ReflectionUtils.findMethod(ContentStore.class, "unsetContent", Object.class, PropertyPath.class, UnsetContentParams.class),
             };
 
             GET_CONTENT_METHODS = new Method[]{
-                    ReflectionUtils.findMethod(ContentStore.class, "getContent", Object.class, PropertyPath.class),
+                ReflectionUtils.findMethod(ContentStore.class, "getContent", Object.class, PropertyPath.class),
             };
         }
 

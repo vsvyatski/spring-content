@@ -29,7 +29,7 @@ public class StoreUtils {
 
         // Default configuration - return package of annotated class
         if (value.length == 0 && basePackages.length == 0
-                && basePackageClasses.length == 0) {
+            && basePackageClasses.length == 0) {
             return defaultPackages;
         }
 
@@ -62,8 +62,8 @@ public class StoreUtils {
             for (BeanDefinition candidate : candidates) {
 
                 boolean qualifiedForImplementation = !multiStoreMode ||
-                        candidateImplementsSignatureType(signatureTypes, candidate.getBeanClassName(), loader) ||
-                        registrarMatchesOverrideProperty(env.getProperty(SPRING_CONTENT_STORAGE_TYPE_DEFAULT), registrarOverridePropertyValue);
+                    candidateImplementsSignatureType(signatureTypes, candidate.getBeanClassName(), loader) ||
+                    registrarMatchesOverrideProperty(env.getProperty(SPRING_CONTENT_STORAGE_TYPE_DEFAULT), registrarOverridePropertyValue);
                 if (qualifiedForImplementation) {
                     result.add((GenericBeanDefinition) candidate);
                 }

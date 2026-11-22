@@ -1,0 +1,23 @@
+---
+description: Hard-wrap Markdown prose at 120 columns
+alwaysApply: true
+---
+
+# Markdown line length
+
+Hard-wrap prose at 120 columns. Keep the file's existing line endings.
+
+Leave these on one line, even when they run past 120:
+
+- Fenced code, including the fence lines.
+- Table rows, lines that start with `|`.
+
+Keep a Markdown link or an inline code span as one token, punctuation included.
+`` `build/` , `` stays together. Do not write `` `build/` , ``.
+
+Indent a wrapped list item to the width of its marker.
+
+```markdown
+- From the repo root, `.\mvnw.cmd -pl spring-content-commons test` runs that module's unit tests; add `-P tests` for
+  integration tests.
+```

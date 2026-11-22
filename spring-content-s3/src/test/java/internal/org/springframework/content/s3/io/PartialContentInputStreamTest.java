@@ -31,8 +31,8 @@ public class PartialContentInputStreamTest {
             @BeforeEach
             void setUp() {
                 inputStream = PartialContentInputStream.fromContentRange(
-                        new ByteArrayInputStream(FULL_DATA, 0, 4),
-                        "bytes 0-3/" + FULL_DATA.length // bytes in the range description are *inclusive*
+                    new ByteArrayInputStream(FULL_DATA, 0, 4),
+                    "bytes 0-3/" + FULL_DATA.length // bytes in the range description are *inclusive*
                 );
             }
 
@@ -100,8 +100,8 @@ public class PartialContentInputStreamTest {
             @BeforeEach
             void setUp() {
                 inputStream = PartialContentInputStream.fromContentRange(
-                        new ByteArrayInputStream(FULL_DATA, 10, FULL_DATA.length - 10),
-                        "bytes 10-" + FULL_DATA.length + "/*"
+                    new ByteArrayInputStream(FULL_DATA, 10, FULL_DATA.length - 10),
+                    "bytes 10-" + FULL_DATA.length + "/*"
                 );
             }
 
@@ -178,8 +178,8 @@ public class PartialContentInputStreamTest {
             @BeforeEach
             void setUp() {
                 inputStream = PartialContentInputStream.fromContentRange(
-                        new ByteArrayInputStream(FULL_DATA, 3, 4),
-                        "bytes 3-6/" + FULL_DATA.length // bytes in the range description are *inclusive*
+                    new ByteArrayInputStream(FULL_DATA, 3, 4),
+                    "bytes 3-6/" + FULL_DATA.length // bytes in the range description are *inclusive*
                 );
             }
 

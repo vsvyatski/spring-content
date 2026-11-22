@@ -1,17 +1,15 @@
 package internal.org.springframework.content.rest.it;
 
-import internal.org.springframework.content.rest.support.TestEntity2;
-import internal.org.springframework.content.rest.support.TestEntity2JpaStore;
-import internal.org.springframework.content.rest.support.TestEntity2Repository;
-import internal.org.springframework.content.rest.support.TestEntityChild;
+import internal.org.springframework.content.rest.support.AuditedNestedContentChild;
+import internal.org.springframework.content.rest.support.AuditedNestedContentEntity;
+import internal.org.springframework.content.rest.support.AuditedNestedContentEntityJpaStore;
+import internal.org.springframework.content.rest.support.AuditedNestedContentEntityRepository;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
-import net.bytebuddy.utility.RandomString;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.content.commons.property.PropertyPath;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -23,25 +21,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public abstract class AbstractRestIT {
 
-    @LocalServerPort
-    int port;
     @Autowired
-    private TestEntity2Repository claimRepo;
+    private AuditedNestedContentEntityRepository claimRepo;
     @Autowired
-    private TestEntity2JpaStore claimFormStore;
+    private AuditedNestedContentEntityJpaStore claimFormStore;
     @Autowired
     private WebApplicationContext webApplicationContext;
 
-    private TestEntity2 existingClaim;
-
-    public static String getContextName(Class<?> configClass) {
-        return configClass.getSimpleName().replaceAll("Config", "");
-    }
-
-    protected String getId() {
-        RandomString random = new RandomString(5);
-        return "/store-tests/" + random.nextString();
-    }
+    private AuditedNestedContentEntity existingClaim;
 
     @Nested
     class JpaRest {
@@ -54,19 +41,19 @@ public abstract class AbstractRestIT {
                     RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
 
                     // delete any existing claim forms
-                    Iterable<TestEntity2> existingClaims = claimRepo.findAll();
-                    for (TestEntity2 existingClaim : existingClaims) {
+                    Iterable<AuditedNestedContentEntity> existingClaims = claimRepo.findAll();
+                    for (AuditedNestedContentEntity existingClaim : existingClaims) {
                         if (existingClaim.getChild() != null) {
                             claimFormStore.unsetContent(existingClaim, PropertyPath.from("child"));
                         }
                     }
 
                     // and claims
-                    for (TestEntity2 existingClaim : existingClaims) {
+                    for (AuditedNestedContentEntity existingClaim : existingClaims) {
                         claimRepo.delete(existingClaim);
                     }
 
-                    existingClaim = new TestEntity2();
+                    existingClaim = new AuditedNestedContentEntity();
                     claimRepo.save(existingClaim);
                 }
 
@@ -74,29 +61,29 @@ public abstract class AbstractRestIT {
                 void shouldBePOSTableWithNewContentWith201Created() {
                     // assert content does not exist
                     when()
-                            .get("/files/" + existingClaim.getId() + "/child")
-                            .then()
-                            .assertThat()
-                            .statusCode(HttpStatus.SC_NOT_FOUND);
+                        .get("/files/" + existingClaim.getId() + "/child")
+                        .then()
+                        .assertThat()
+                        .statusCode(HttpStatus.SC_NOT_FOUND);
 
                     String newContent = "This is some new content";
 
                     // POST the new content
                     given()
-                            .contentType("text/plain")
-                            .body(newContent.getBytes())
-                            .when()
-                            .post("/files/" + existingClaim.getId() + "/child")
-                            .then()
-                            .statusCode(HttpStatus.SC_CREATED);
+                        .contentType("text/plain")
+                        .body(newContent.getBytes())
+                        .when()
+                        .post("/files/" + existingClaim.getId() + "/child")
+                        .then()
+                        .statusCode(HttpStatus.SC_CREATED);
 
                     // assert that it now exists
                     var response1 = given()
-                            .header("accept", "text/plain")
-                            .get("/files/" + existingClaim.getId() + "/child")
-                            .then()
-                            .statusCode(HttpStatus.SC_OK)
-                            .extract().response();
+                        .header("accept", "text/plain")
+                        .get("/files/" + existingClaim.getId() + "/child")
+                        .then()
+                        .statusCode(HttpStatus.SC_OK)
+                        .extract().response();
                     assertThat(response1.getContentType()).startsWith("text/plain");
                     assertThat(response1.asString()).isEqualTo(newContent);
                 }
@@ -108,22 +95,22 @@ public abstract class AbstractRestIT {
                         RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
 
                         // delete any existing claim forms
-                        Iterable<TestEntity2> existingClaims = claimRepo.findAll();
-                        for (TestEntity2 existingClaim : existingClaims) {
+                        Iterable<AuditedNestedContentEntity> existingClaims = claimRepo.findAll();
+                        for (AuditedNestedContentEntity existingClaim : existingClaims) {
                             if (existingClaim.getChild() != null) {
                                 claimFormStore.unsetContent(existingClaim, PropertyPath.from("child"));
                             }
                         }
 
                         // and claims
-                        for (TestEntity2 existingClaim : existingClaims) {
+                        for (AuditedNestedContentEntity existingClaim : existingClaims) {
                             claimRepo.delete(existingClaim);
                         }
 
-                        existingClaim = new TestEntity2();
+                        existingClaim = new AuditedNestedContentEntity();
                         claimRepo.save(existingClaim);
 
-                        existingClaim.setChild(new TestEntityChild());
+                        existingClaim.setChild(new AuditedNestedContentChild());
                         existingClaim.getChild().setMimeType("text/plain");
                         claimFormStore.setContent(existingClaim, PropertyPath.from("child"), new ByteArrayInputStream("This is plain text content!".getBytes()));
                         claimRepo.save(existingClaim);
@@ -132,11 +119,11 @@ public abstract class AbstractRestIT {
                     @Test
                     void shouldReturnTheContentWith200OK() {
                         var response2 = given()
-                                .header("accept", "text/plain")
-                                .get("/files/" + existingClaim.getId() + "/child")
-                                .then()
-                                .statusCode(HttpStatus.SC_OK)
-                                .extract().response();
+                            .header("accept", "text/plain")
+                            .get("/files/" + existingClaim.getId() + "/child")
+                            .then()
+                            .statusCode(HttpStatus.SC_OK)
+                            .extract().response();
                         assertThat(response2.getContentType()).startsWith("text/plain");
                         assertThat(response2.asString()).isEqualTo("This is plain text content!");
                     }
@@ -146,37 +133,37 @@ public abstract class AbstractRestIT {
                         String newContent = "This is new content";
 
                         given()
-                                .contentType("text/plain")
-                                .body(newContent.getBytes())
-                                .when()
-                                .post("/files/" + existingClaim.getId() + "/child")
-                                .then()
-                                .statusCode(HttpStatus.SC_OK);
+                            .contentType("text/plain")
+                            .body(newContent.getBytes())
+                            .when()
+                            .post("/files/" + existingClaim.getId() + "/child")
+                            .then()
+                            .statusCode(HttpStatus.SC_OK);
 
                         var response3 = given()
-                                .header("accept", "text/plain")
-                                .get("/files/" + existingClaim.getId() + "/child")
-                                .then()
-                                .statusCode(HttpStatus.SC_OK)
-                                .extract().response();
+                            .header("accept", "text/plain")
+                            .get("/files/" + existingClaim.getId() + "/child")
+                            .then()
+                            .statusCode(HttpStatus.SC_OK)
+                            .extract().response();
                         assertThat(response3.getContentType()).startsWith("text/plain");
                         assertThat(response3.asString()).isEqualTo(newContent);
                     }
 
                     @Test
-                    void shouldBeDELETEableWith204NoContent() {
+                    void shouldBeDeletableWith204NoContent() {
                         given()
-                                .delete("/files/" + existingClaim.getId() + "/child")
-                                .then()
-                                .assertThat()
-                                .statusCode(HttpStatus.SC_NO_CONTENT);
+                            .delete("/files/" + existingClaim.getId() + "/child")
+                            .then()
+                            .assertThat()
+                            .statusCode(HttpStatus.SC_NO_CONTENT);
 
                         // and make sure that it is really gone
                         when()
-                                .get("/files/" + existingClaim.getId() + "/child")
-                                .then()
-                                .assertThat()
-                                .statusCode(HttpStatus.SC_NOT_FOUND);
+                            .get("/files/" + existingClaim.getId() + "/child")
+                            .then()
+                            .assertThat()
+                            .statusCode(HttpStatus.SC_NOT_FOUND);
                     }
                 }
             }

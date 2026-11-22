@@ -1,0 +1,16 @@
+---
+description: Use only Grok and Composer in this workspace unless Vladimir says otherwise
+alwaysApply: true
+---
+
+# Agent models
+
+Unless Vladimir **explicitly** names another model or family in this thread:
+
+- **Implementing agent (main chat):** Grok — see `grok-effort.mdc` for effort and Fast limits.
+- **Subagents and reviews:** Composer (`composer-2.5`) — see `agent-review.mdc`.
+- **Forbidden by default:** Any other model (e.g. GPT, Claude, Gemini, Muse) and any `*-fast` slug or Fast picker mode.
+
+When spawning Task subagents, choose only Grok (Low/Medium, non-Fast) or `composer-2.5` (non-Fast) per the rules above.
+
+If a task clearly needs another model or Fast, say so once and wait for him to authorize — do not self-escalate.

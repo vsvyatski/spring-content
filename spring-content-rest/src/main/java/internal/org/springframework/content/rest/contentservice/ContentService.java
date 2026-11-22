@@ -12,11 +12,11 @@ import java.io.IOException;
 public interface ContentService {
 
     void getContent(HttpServletRequest request, HttpServletResponse response, HttpHeaders headers, Resource resource, MediaType resourceType)
-            throws MethodNotAllowedException;
+        throws MethodNotAllowedException;
 
     void setContent(HttpServletRequest request, HttpServletResponse response, HttpHeaders headers, Resource source, MediaType sourceMimeType, Resource target)
-            throws IOException, MethodNotAllowedException;
+        throws IOException, MethodNotAllowedException;
 
     void unsetContent(Resource resource)
-            throws MethodNotAllowedException;
+        throws MethodNotAllowedException;
 }

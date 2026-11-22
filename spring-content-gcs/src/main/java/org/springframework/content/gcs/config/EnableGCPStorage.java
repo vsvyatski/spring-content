@@ -44,10 +44,10 @@ public @interface EnableGCPStorage {
     Class<?>[] basePackageClasses() default {};
 
     /**
-     * Returns the {@link FactoryBean} class to be used for each repository instance.
+     * Returns the {@link FactoryBean} class to be used for each store instance.
      * Defaults to {@link GCPStorageFactoryBean}.
      *
-     * @return s3 store factory bean
+     * @return GCS store factory bean class
      */
     Class<?> storeFactoryBeanClass() default GCPStorageFactoryBean.class;
 }

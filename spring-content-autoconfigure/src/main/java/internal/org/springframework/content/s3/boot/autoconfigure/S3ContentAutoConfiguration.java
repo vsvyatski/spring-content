@@ -27,7 +27,7 @@ import java.net.URI;
 @AutoConfigureAfter({JpaVersionsAutoConfiguration.class})
 @ConditionalOnClass({S3StoreConfiguration.class, S3Client.class})
 @ConditionalOnProperty(prefix = "spring.content.storage.type", name = "default",
-        havingValue = "s3", matchIfMissing = true)
+    havingValue = "s3", matchIfMissing = true)
 public class S3ContentAutoConfiguration {
 
     @Bean
@@ -41,7 +41,7 @@ public class S3ContentAutoConfiguration {
 
         if (StringUtils.hasText(props.accessKey) && StringUtils.hasText(props.secretKey)) {
             AwsCredentialsProvider provider = StaticCredentialsProvider
-                    .create(AwsBasicCredentials.create(props.accessKey, props.secretKey));
+                .create(AwsBasicCredentials.create(props.accessKey, props.secretKey));
             builder.credentialsProvider(provider);
         }
 

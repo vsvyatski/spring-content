@@ -9,6 +9,7 @@ import org.springframework.content.commons.annotations.MimeType;
 import org.springframework.content.commons.annotations.OriginalFileName;
 import org.springframework.content.commons.mappingcontext.ClassWalker;
 import org.springframework.content.rest.RestResource;
+import org.springframework.content.test.support.UuidSingleContentFields;
 
 import java.util.UUID;
 
@@ -16,18 +17,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class RestResourceMappingBuilderTest {
 
+    @SuppressWarnings("unused") // reflective ClassWalker fixture
     public static class TestSubClass {
         @RestResource(path = "two")
         private TestSubSubClass child;
         private TestSubSubClass childWithout;
     }
 
+    @SuppressWarnings("unused") // reflective ClassWalker fixture
     public static class TestClass {
         @RestResource(path = "one")
         private TestSubClass child;
         private TestSubClass childWithout;
     }
 
+    @SuppressWarnings("unused") // reflective ClassWalker fixture
     public static class TestSubSubClass {
         @RestResource(path = "three")
         private @ContentId UUID contentId;
@@ -43,7 +47,7 @@ public class RestResourceMappingBuilderTest {
         private @MimeType String previewMimeType;
         private @OriginalFileName String previewOriginalFileName;
 
-        @RestResource(exported = true)
+        @RestResource
         private @ContentId UUID thumbnailId;
         private @ContentLength Long thumbnailLen;
         private @MimeType String thumbnailMimeType;
@@ -54,11 +58,26 @@ public class RestResourceMappingBuilderTest {
         private @MimeType String idcardFrontMimeType;
     }
 
+    public static class InheritedUuidContentOnly extends UuidSingleContentFields {
+    }
+
+    @Nested
+    class GivenInheritedContentIdOnSuperclassOnly {
+        @Test
+        void shouldMapRootContentInLooseMode() {
+            RestResourceMappingBuilder visitor = new RestResourceMappingBuilder(RestResource::path);
+            ClassWalker walker = new ClassWalker(visitor);
+            walker.accept(InheritedUuidContentOnly.class);
+
+            assertThat(visitor.getMappings()).containsEntry("content", "content");
+        }
+    }
+
     @Nested
     class RestResourceMappingBuilderCases {
         @Test
         void shouldCreateAMapOfContentPropertyPathsToRequestMappingPaths() {
-            RestResourceMappingBuilder visitor = new RestResourceMappingBuilder((restResourceAnnotation) -> restResourceAnnotation.path());
+            RestResourceMappingBuilder visitor = new RestResourceMappingBuilder(RestResource::path);
             ClassWalker walker = new ClassWalker(visitor);
             walker.accept(TestClass.class);
 

@@ -3,8 +3,9 @@ package org.springframework.content.elasticsearch;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.content.commons.renditions.RenditionProvider;
-import org.springframework.content.elasticsearch.ElasticsearchIT.Document;
 import org.springframework.content.jpa.config.EnableJpaStores;
+import org.springframework.content.test.support.TestSupportPackages;
+import org.springframework.content.test.support.fulltext.FulltextJpaUuidDocumentEntity;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.ConversionService;
@@ -30,14 +31,14 @@ import java.util.Map;
 
 @Configuration
 @EnableElasticsearchFulltextIndexing
-@EnableJpaRepositories(considerNestedRepositories = true)
-@EnableJpaStores
+@EnableJpaRepositories(basePackages = TestSupportPackages.FULLTEXT)
+@EnableJpaStores(basePackages = TestSupportPackages.FULLTEXT)
 public class CustomAttributesConfig {
 
     @Value("/org/springframework/content/jpa/schema-drop-hsqldb.sql")
-    private Resource dropReopsitoryTables;
+    private Resource dropRepositoryTables;
     @Value("/org/springframework/content/jpa/schema-hsqldb.sql")
-    private Resource dataReopsitorySchema;
+    private Resource dataRepositorySchema;
 
     @Bean
     public ConversionService conversionService() {
@@ -50,29 +51,19 @@ public class CustomAttributesConfig {
     }
 
     @Bean
-    public AttributeProvider<Document> attributeProvider() {
-        return new AttributeProvider<Document>() {
+    public AttributeProvider<FulltextJpaUuidDocumentEntity> attributeProvider() {
+        return entity -> {
 
-            @Override
-            public Map<String, String> synchronize(Document entity) {
-
-                Map<String, String> attrs = new HashMap<>();
-                attrs.put("title", entity.getTitle());
-                attrs.put("author", entity.getAuthor());
-                return attrs;
-            }
+            Map<String, String> attrs = new HashMap<>();
+            attrs.put("title", entity.getTitle());
+            attrs.put("author", entity.getAuthor());
+            return attrs;
         };
     }
 
     @Bean
     public FilterQueryProvider filterQueryProvider() {
-        return new FilterQueryProvider() {
-
-            @Override
-            public Map<String, Object> filterQueries(Class<?> entity) {
-                return Collections.singletonMap("author", "Buck Rogers");
-            }
-        };
+        return entity -> Collections.singletonMap("author", "Buck Rogers");
     }
 
     @Bean
@@ -110,7 +101,7 @@ public class CustomAttributesConfig {
 
         LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
         factory.setJpaVendorAdapter(vendorAdapter);
-        factory.setPackagesToScan("org.springframework.content.elasticsearch");
+        factory.setPackagesToScan(TestSupportPackages.FULLTEXT);
         factory.setDataSource(dataSource());
 
         return factory;
@@ -126,10 +117,10 @@ public class CustomAttributesConfig {
     @Bean
     DataSourceInitializer datasourceInitializer(DataSource dataSource) {
         ResourceDatabasePopulator databasePopulator =
-                new ResourceDatabasePopulator();
+            new ResourceDatabasePopulator();
 
-        databasePopulator.addScript(dropReopsitoryTables);
-        databasePopulator.addScript(dataReopsitorySchema);
+        databasePopulator.addScript(dropRepositoryTables);
+        databasePopulator.addScript(dataRepositorySchema);
         databasePopulator.setIgnoreFailedDrops(true);
 
         DataSourceInitializer initializer = new DataSourceInitializer();

@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.content.test.support.TestSupportData;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
@@ -48,10 +49,7 @@ public class PostgresBlobResourceIT {
 
     private JdbcTemplate template;
 
-    private String entityId = null;
     private long lobId;
-
-    private PostgresBlobResource r = null;
 
     @Configuration
     @EnableTransactionManagement
@@ -117,10 +115,10 @@ public class PostgresBlobResourceIT {
             class WhenTheContentIsDeleted {
                 @BeforeEach
                 void setUp() throws IOException, SQLException {
-                    entityId = UuidCreator.getTimeOrdered().toString();
+                    String entityId = UuidCreator.getTimeOrdered().toString();
                     template = new JdbcTemplate(ds);
 
-                    r = new PostgresBlobResource(entityId, template, txn);
+                    PostgresBlobResource r = new PostgresBlobResource(entityId, template, txn);
 
                     DataSource ds = PostgresBlobResourceIT.this.template.getDataSource();
                     assert ds != null;
@@ -129,7 +127,7 @@ public class PostgresBlobResourceIT {
                     TransactionStatus status = txn.getTransaction(new DefaultTransactionDefinition());
 
                     try (OutputStream os = r.getOutputStream()) {
-                        os.write("Hello Spring Content World!".getBytes());
+                        os.write(TestSupportData.sampleTextBytes());
                     }
 
                     txn.commit(status);

@@ -1,7 +1,5 @@
 package internal.org.springframework.content.s3.it;
 
-import jakarta.persistence.*;
-import net.bytebuddy.utility.RandomString;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,23 +9,22 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.persistence.autoconfigure.EntityScan;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.content.commons.annotations.ContentId;
-import org.springframework.content.commons.annotations.ContentLength;
-import org.springframework.content.commons.annotations.MimeType;
 import org.springframework.content.commons.io.DeletableResource;
 import org.springframework.content.commons.io.RangeableResource;
 import org.springframework.content.commons.property.PropertyPath;
-import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.commons.store.SetContentParams;
 import org.springframework.content.commons.store.StoreAccessException;
 import org.springframework.content.commons.store.UnsetContentParams;
 import org.springframework.content.s3.config.EnableS3Stores;
+import org.springframework.content.test.support.TestSupportData;
+import org.springframework.content.test.support.TestSupportPackages;
+import org.springframework.content.test.support.jpa.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.WritableResource;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -39,68 +36,72 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.util.Arrays;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest()
 @ExtendWith(SpringExtension.class)
 public class S3StoreIT {
 
     private static final String BUCKET = "test-bucket";
-    private static Object mutex = new Object();
+    private static final Object mutex = new Object();
 
     static {
         System.setProperty("spring.content.s3.bucket", BUCKET);
     }
 
-    static {
-        System.setProperty("spring.content.s3.bucket", "test-bucket");
-    }
-
     @Autowired
-    private TestEntityRepository repo;
+    private DualContentJpaLongIdMimeRepository repo;
     @Autowired
-    private TestEntityStore store;
+    private DualContentJpaLongIdMimeStore store;
     @Autowired
     private S3Client client;
     private String resourceLocation;
     private Resource genericResource;
-    private TestEntity entity;
+    private DualContentJpaLongIdMimeEntity entity;
     private Exception e;
     // Shared id tests
     @Autowired
-    private SharedIdRepository sharedIdRepository;
+    private SharedIdJakartaJpaRepository sharedIdRepository;
     @Autowired
-    private SharedIdStore sharedIdStore;
+    private SharedIdJakartaJpaStore sharedIdStore;
     // Embedded content tests
     @Autowired
-    private EmbeddedRepository embeddedRepo;
+    private EmbeddedContentJpaStringIdRepository embeddedRepo;
     @Autowired
-    private EmbeddedStore embeddedStore;
+    private EmbeddedContentJpaStringIdStore embeddedStore;
 
-    public interface TestEntityRepository extends JpaRepository<TestEntity, Long> {
+
+    private void ensureTestBucket() throws InterruptedException {
+        synchronized (mutex) {
+            HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
+                .bucket(BUCKET)
+                .build();
+            try {
+                client.headBucket(headBucketRequest);
+            } catch (NoSuchBucketException ignored) {
+                client.createBucket(CreateBucketRequest.builder().bucket(BUCKET).build());
+                boolean found = false;
+                while (!found) {
+                    headBucketRequest = HeadBucketRequest.builder().bucket(BUCKET).build();
+                    try {
+                        client.headBucket(headBucketRequest);
+                        found = true;
+                    } catch (NoSuchBucketException ignoredPoll) {
+                        // LocalStack: bucket not visible yet
+                    }
+                    System.out.println("sleeping...");
+                    Thread.sleep(100);
+                }
+            }
+        }
     }
 
-    public interface TestEntityStore extends ContentStore<TestEntity, String> {
-    }
-
-    public interface SharedIdRepository extends JpaRepository<SharedIdContentIdEntity, String> {
-    }
-
-    public interface SharedIdStore extends ContentStore<SharedIdContentIdEntity, String> {
-    }
-
-    public interface EmbeddedRepository extends JpaRepository<EntityWithEmbeddedContent, String> {
-    }
-
-    public interface EmbeddedStore extends ContentStore<EntityWithEmbeddedContent, String> {
-    }
-
-    @SpringBootApplication()
-    @EnableJpaRepositories(considerNestedRepositories = true)
-    @EnableS3Stores
+    @SpringBootApplication(scanBasePackages = {"internal.org.springframework.content.s3.it", TestSupportPackages.JPA})
+    @EntityScan(basePackages = TestSupportPackages.JPA)
+    @EnableJpaRepositories(basePackages = {TestSupportPackages.JPA, "internal.org.springframework.content.s3.it"}, considerNestedRepositories = true)
+    @EnableS3Stores(basePackages = {TestSupportPackages.JPA, "internal.org.springframework.content.s3.it"})
     static class Application {
         public static void main(String[] args) {
             SpringApplication.run(Application.class, args);
@@ -116,178 +117,6 @@ public class S3StoreIT {
         }
     }
 
-    @Entity
-    public static class TestEntity {
-
-        @Id
-        @GeneratedValue(strategy = GenerationType.AUTO)
-        private Long id;
-
-        @ContentId
-        private String contentId;
-
-        @ContentLength
-        private Long contentLen;
-
-        @MimeType
-        private String contentType;
-
-        @ContentId
-        private String renditionId;
-
-        @ContentLength
-        private long renditionLen;
-
-        @MimeType
-        private String renditionType;
-
-        public TestEntity() {
-        }
-
-        public TestEntity(String contentId) {
-            this.contentId = new String(contentId);
-        }
-
-        public Long getId() {
-            return id;
-        }
-
-        public void setId(Long id) {
-            this.id = id;
-        }
-
-        public String getContentId() {
-            return contentId;
-        }
-
-        public void setContentId(String contentId) {
-            this.contentId = contentId;
-        }
-
-        public Long getContentLen() {
-            return contentLen;
-        }
-
-        public void setContentLen(Long contentLen) {
-            this.contentLen = contentLen;
-        }
-
-        public String getContentType() {
-            return contentType;
-        }
-
-        public void setContentType(String contentType) {
-            this.contentType = contentType;
-        }
-
-        public String getRenditionId() {
-            return renditionId;
-        }
-
-        public void setRenditionId(String renditionId) {
-            this.renditionId = renditionId;
-        }
-
-        public long getRenditionLen() {
-            return renditionLen;
-        }
-
-        public void setRenditionLen(long renditionLen) {
-            this.renditionLen = renditionLen;
-        }
-
-        public String getRenditionType() {
-            return renditionType;
-        }
-
-        public void setRenditionType(String renditionType) {
-            this.renditionType = renditionType;
-        }
-    }
-
-    @Entity
-    public static class SharedIdContentIdEntity {
-
-        @jakarta.persistence.Id
-        @ContentId
-        private String contentId = UUID.randomUUID().toString();
-
-        @ContentLength
-        private long contentLen;
-
-        public SharedIdContentIdEntity() {
-        }
-
-        public String getContentId() {
-            return contentId;
-        }
-
-        public void setContentId(String contentId) {
-            this.contentId = contentId;
-        }
-
-        public long getContentLen() {
-            return contentLen;
-        }
-
-        public void setContentLen(long contentLen) {
-            this.contentLen = contentLen;
-        }
-    }
-
-    @Entity
-    @Table(name = "entity_with_embedded")
-    public static class EntityWithEmbeddedContent {
-
-        @Id
-        private String id = UUID.randomUUID().toString();
-
-        @Embedded
-        private EmbeddedContent content;
-
-        public String getId() {
-            return id;
-        }
-
-        public void setId(String id) {
-            this.id = id;
-        }
-
-        public EmbeddedContent getContent() {
-            return content;
-        }
-
-        public void setContent(EmbeddedContent content) {
-            this.content = content;
-        }
-    }
-
-    @Embeddable
-    public static class EmbeddedContent {
-
-        @ContentId
-        private String contentId;
-
-        @ContentLength
-        private Long contentLen;
-
-        public String getContentId() {
-            return contentId;
-        }
-
-        public void setContentId(String contentId) {
-            this.contentId = contentId;
-        }
-
-        public Long getContentLen() {
-            return contentLen;
-        }
-
-        public void setContentLen(Long contentLen) {
-            this.contentLen = contentLen;
-        }
-    }
-
     @Nested
     class S3StorageCases {
         @Nested
@@ -298,40 +127,9 @@ public class S3StoreIT {
                 class Tests {
                     @BeforeEach
                     void setUp() throws InterruptedException {
-                        synchronized (mutex) {
-                            HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                                    .bucket("test-bucket")
-                                    .build();
+                        ensureTestBucket();
 
-                            try {
-                                client.headBucket(headBucketRequest);
-                            } catch (NoSuchBucketException e) {
-
-                                CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                        .bucket("test-bucket")
-                                        .build();
-                                client.createBucket(bucketRequest);
-
-                                // wait for bucket to be created before continuing
-                                boolean found = false;
-                                while (!found) {
-                                    headBucketRequest = HeadBucketRequest.builder()
-                                            .bucket(BUCKET)
-                                            .build();
-                                    try {
-                                        client.headBucket(headBucketRequest);
-                                        found = true;
-                                    } catch (NoSuchBucketException e2) {
-                                    }
-
-                                    System.out.println("sleeping...");
-                                    Thread.sleep(100);
-                                }
-                            }
-                        }
-
-                        RandomString random = new RandomString(5);
-                        resourceLocation = random.nextString();
+                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                         genericResource = store.getResource(resourceLocation);
                     }
@@ -363,44 +161,13 @@ public class S3StoreIT {
                     class Tests {
                         @BeforeEach
                         void setUp() throws IOException, InterruptedException {
-                            synchronized (mutex) {
-                                HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                                        .bucket("test-bucket")
-                                        .build();
+                            ensureTestBucket();
 
-                                try {
-                                    client.headBucket(headBucketRequest);
-                                } catch (NoSuchBucketException e) {
-
-                                    CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                            .bucket("test-bucket")
-                                            .build();
-                                    client.createBucket(bucketRequest);
-
-                                    // wait for bucket to be created before continuing
-                                    boolean found = false;
-                                    while (!found) {
-                                        headBucketRequest = HeadBucketRequest.builder()
-                                                .bucket(BUCKET)
-                                                .build();
-                                        try {
-                                            client.headBucket(headBucketRequest);
-                                            found = true;
-                                        } catch (NoSuchBucketException e2) {
-                                        }
-
-                                        System.out.println("sleeping...");
-                                        Thread.sleep(100);
-                                    }
-                                }
-                            }
-
-                            RandomString random = new RandomString(5);
-                            resourceLocation = random.nextString();
+                            resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                             genericResource = store.getResource(resourceLocation);
 
-                            try (InputStream is = new ByteArrayInputStream("Hello Spring Content World!".getBytes())) {
+                            try (InputStream is = TestSupportData.sampleTextStream()) {
                                 try (OutputStream os = ((WritableResource) genericResource).getOutputStream()) {
                                     IOUtils.copy(is, os);
                                 }
@@ -416,12 +183,9 @@ public class S3StoreIT {
                         void shouldStoreThatContent() throws IOException {
                             assertThat(genericResource.exists()).isTrue();
 
-                            boolean matches = false;
-                            try (InputStream expected = new ByteArrayInputStream("Hello Spring Content World!".getBytes())) {
-                                try (InputStream actual = genericResource.getInputStream()) {
-                                    matches = IOUtils.contentEquals(expected, actual);
-                                    assertThat(matches).isTrue();
-                                }
+                            try (InputStream expected = TestSupportData.sampleTextStream();
+                                 InputStream actual = genericResource.getInputStream()) {
+                                assertThat(IOUtils.contentEquals(expected, actual)).isTrue();
                             }
                         }
                     }
@@ -430,50 +194,19 @@ public class S3StoreIT {
                     class GivenThatResourceIsThenUpdated {
                         @BeforeEach
                         void setUp() throws IOException, InterruptedException {
-                            synchronized (mutex) {
-                                HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                                        .bucket("test-bucket")
-                                        .build();
+                            ensureTestBucket();
 
-                                try {
-                                    client.headBucket(headBucketRequest);
-                                } catch (NoSuchBucketException e) {
-
-                                    CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                            .bucket("test-bucket")
-                                            .build();
-                                    client.createBucket(bucketRequest);
-
-                                    // wait for bucket to be created before continuing
-                                    boolean found = false;
-                                    while (!found) {
-                                        headBucketRequest = HeadBucketRequest.builder()
-                                                .bucket(BUCKET)
-                                                .build();
-                                        try {
-                                            client.headBucket(headBucketRequest);
-                                            found = true;
-                                        } catch (NoSuchBucketException e2) {
-                                        }
-
-                                        System.out.println("sleeping...");
-                                        Thread.sleep(100);
-                                    }
-                                }
-                            }
-
-                            RandomString random = new RandomString(5);
-                            resourceLocation = random.nextString();
+                            resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                             genericResource = store.getResource(resourceLocation);
 
-                            try (InputStream is = new ByteArrayInputStream("Hello Spring Content World!".getBytes())) {
+                            try (InputStream is = TestSupportData.sampleTextStream()) {
                                 try (OutputStream os = ((WritableResource) genericResource).getOutputStream()) {
                                     IOUtils.copy(is, os);
                                 }
                             }
 
-                            try (InputStream is = new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes())) {
+                            try (InputStream is = TestSupportData.sampleUpdatedTextStream()) {
                                 try (OutputStream os = ((WritableResource) genericResource).getOutputStream()) {
                                     IOUtils.copy(is, os);
                                 }
@@ -489,7 +222,7 @@ public class S3StoreIT {
                         void shouldStoreThatUpdatedContent() throws IOException {
                             assertThat(genericResource.exists()).isTrue();
 
-                            try (InputStream expected = new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes())) {
+                            try (InputStream expected = TestSupportData.sampleUpdatedTextStream()) {
                                 try (InputStream actual = genericResource.getInputStream()) {
                                     assertThat(IOUtils.contentEquals(expected, actual)).isTrue();
                                 }
@@ -501,44 +234,13 @@ public class S3StoreIT {
                     class GivenAByteRangeIsRequested {
                         @BeforeEach
                         void setUp() throws IOException, InterruptedException {
-                            synchronized (mutex) {
-                                HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                                        .bucket("test-bucket")
-                                        .build();
+                            ensureTestBucket();
 
-                                try {
-                                    client.headBucket(headBucketRequest);
-                                } catch (NoSuchBucketException e) {
-
-                                    CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                            .bucket("test-bucket")
-                                            .build();
-                                    client.createBucket(bucketRequest);
-
-                                    // wait for bucket to be created before continuing
-                                    boolean found = false;
-                                    while (!found) {
-                                        headBucketRequest = HeadBucketRequest.builder()
-                                                .bucket(BUCKET)
-                                                .build();
-                                        try {
-                                            client.headBucket(headBucketRequest);
-                                            found = true;
-                                        } catch (NoSuchBucketException e2) {
-                                        }
-
-                                        System.out.println("sleeping...");
-                                        Thread.sleep(100);
-                                    }
-                                }
-                            }
-
-                            RandomString random = new RandomString(5);
-                            resourceLocation = random.nextString();
+                            resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                             genericResource = store.getResource(resourceLocation);
 
-                            try (InputStream is = new ByteArrayInputStream("Hello Spring Content World!".getBytes())) {
+                            try (InputStream is = TestSupportData.sampleTextStream()) {
                                 try (OutputStream os = ((WritableResource) genericResource).getOutputStream()) {
                                     IOUtils.copy(is, os);
                                 }
@@ -554,7 +256,7 @@ public class S3StoreIT {
                         void shouldReturnAPartialContentInputStreamAndThePartialContent() throws IOException {
                             ((RangeableResource) genericResource).setRange("bytes=6-19");
 
-                            var expectedBytes = "Hello Spring Content World!".getBytes();
+                            var expectedBytes = TestSupportData.sampleTextBytes();
                             Arrays.fill(expectedBytes, 0, 6, (byte) 0); // First 5 bytes are absent
                             Arrays.fill(expectedBytes, 20, expectedBytes.length, (byte) 0); // Bytes after position 19 are absent
 
@@ -569,44 +271,13 @@ public class S3StoreIT {
                     class GivenThatResourceIsThenDeleted {
                         @BeforeEach
                         void setUp() throws IOException, InterruptedException {
-                            synchronized (mutex) {
-                                HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                                        .bucket("test-bucket")
-                                        .build();
+                            ensureTestBucket();
 
-                                try {
-                                    client.headBucket(headBucketRequest);
-                                } catch (NoSuchBucketException e) {
-
-                                    CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                            .bucket("test-bucket")
-                                            .build();
-                                    client.createBucket(bucketRequest);
-
-                                    // wait for bucket to be created before continuing
-                                    boolean found = false;
-                                    while (!found) {
-                                        headBucketRequest = HeadBucketRequest.builder()
-                                                .bucket(BUCKET)
-                                                .build();
-                                        try {
-                                            client.headBucket(headBucketRequest);
-                                            found = true;
-                                        } catch (NoSuchBucketException e2) {
-                                        }
-
-                                        System.out.println("sleeping...");
-                                        Thread.sleep(100);
-                                    }
-                                }
-                            }
-
-                            RandomString random = new RandomString(5);
-                            resourceLocation = random.nextString();
+                            resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                             genericResource = store.getResource(resourceLocation);
 
-                            try (InputStream is = new ByteArrayInputStream("Hello Spring Content World!".getBytes())) {
+                            try (InputStream is = TestSupportData.sampleTextStream()) {
                                 try (OutputStream os = ((WritableResource) genericResource).getOutputStream()) {
                                     IOUtils.copy(is, os);
                                 }
@@ -641,42 +312,11 @@ public class S3StoreIT {
                 class Tests {
                     @BeforeEach
                     void setUp() throws InterruptedException {
-                        synchronized (mutex) {
-                            HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                                    .bucket("test-bucket")
-                                    .build();
+                        ensureTestBucket();
 
-                            try {
-                                client.headBucket(headBucketRequest);
-                            } catch (NoSuchBucketException e) {
+                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
-                                CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                        .bucket("test-bucket")
-                                        .build();
-                                client.createBucket(bucketRequest);
-
-                                // wait for bucket to be created before continuing
-                                boolean found = false;
-                                while (!found) {
-                                    headBucketRequest = HeadBucketRequest.builder()
-                                            .bucket(BUCKET)
-                                            .build();
-                                    try {
-                                        client.headBucket(headBucketRequest);
-                                        found = true;
-                                    } catch (NoSuchBucketException e2) {
-                                    }
-
-                                    System.out.println("sleeping...");
-                                    Thread.sleep(100);
-                                }
-                            }
-                        }
-
-                        RandomString random = new RandomString(5);
-                        resourceLocation = random.nextString();
-
-                        entity = new TestEntity();
+                        entity = new DualContentJpaLongIdMimeEntity();
                         entity = repo.save(entity);
                     }
 
@@ -695,42 +335,11 @@ public class S3StoreIT {
                         class Tests {
                             @BeforeEach
                             void setUp() throws InterruptedException {
-                                synchronized (mutex) {
-                                    HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                                            .bucket("test-bucket")
-                                            .build();
+                                ensureTestBucket();
 
-                                    try {
-                                        client.headBucket(headBucketRequest);
-                                    } catch (NoSuchBucketException e) {
+                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
-                                        CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                                .bucket("test-bucket")
-                                                .build();
-                                        client.createBucket(bucketRequest);
-
-                                        // wait for bucket to be created before continuing
-                                        boolean found = false;
-                                        while (!found) {
-                                            headBucketRequest = HeadBucketRequest.builder()
-                                                    .bucket(BUCKET)
-                                                    .build();
-                                            try {
-                                                client.headBucket(headBucketRequest);
-                                                found = true;
-                                            } catch (NoSuchBucketException e2) {
-                                            }
-
-                                            System.out.println("sleeping...");
-                                            Thread.sleep(100);
-                                        }
-                                    }
-                                }
-
-                                RandomString random = new RandomString(5);
-                                resourceLocation = random.nextString();
-
-                                entity = new TestEntity();
+                                entity = new DualContentJpaLongIdMimeEntity();
                                 entity = repo.save(entity);
 
                                 genericResource = store.getResource(resourceLocation);
@@ -750,42 +359,11 @@ public class S3StoreIT {
                         class WhenTheResourceIsUnassociated {
                             @BeforeEach
                             void setUp() throws InterruptedException {
-                                synchronized (mutex) {
-                                    HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                                            .bucket("test-bucket")
-                                            .build();
+                                ensureTestBucket();
 
-                                    try {
-                                        client.headBucket(headBucketRequest);
-                                    } catch (NoSuchBucketException e) {
+                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
-                                        CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                                .bucket("test-bucket")
-                                                .build();
-                                        client.createBucket(bucketRequest);
-
-                                        // wait for bucket to be created before continuing
-                                        boolean found = false;
-                                        while (!found) {
-                                            headBucketRequest = HeadBucketRequest.builder()
-                                                    .bucket(BUCKET)
-                                                    .build();
-                                            try {
-                                                client.headBucket(headBucketRequest);
-                                                found = true;
-                                            } catch (NoSuchBucketException e2) {
-                                            }
-
-                                            System.out.println("sleeping...");
-                                            Thread.sleep(100);
-                                        }
-                                    }
-                                }
-
-                                RandomString random = new RandomString(5);
-                                resourceLocation = random.nextString();
-
-                                entity = new TestEntity();
+                                entity = new DualContentJpaLongIdMimeEntity();
                                 entity = repo.save(entity);
 
                                 genericResource = store.getResource(resourceLocation);
@@ -808,42 +386,11 @@ public class S3StoreIT {
                         class WhenAInvalidPropertyPathIsUsedToAssociateAResource {
                             @BeforeEach
                             void setUp() throws InterruptedException {
-                                synchronized (mutex) {
-                                    HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                                            .bucket("test-bucket")
-                                            .build();
+                                ensureTestBucket();
 
-                                    try {
-                                        client.headBucket(headBucketRequest);
-                                    } catch (NoSuchBucketException e) {
+                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
-                                        CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                                .bucket("test-bucket")
-                                                .build();
-                                        client.createBucket(bucketRequest);
-
-                                        // wait for bucket to be created before continuing
-                                        boolean found = false;
-                                        while (!found) {
-                                            headBucketRequest = HeadBucketRequest.builder()
-                                                    .bucket(BUCKET)
-                                                    .build();
-                                            try {
-                                                client.headBucket(headBucketRequest);
-                                                found = true;
-                                            } catch (NoSuchBucketException e2) {
-                                            }
-
-                                            System.out.println("sleeping...");
-                                            Thread.sleep(100);
-                                        }
-                                    }
-                                }
-
-                                RandomString random = new RandomString(5);
-                                resourceLocation = random.nextString();
-
-                                entity = new TestEntity();
+                                entity = new DualContentJpaLongIdMimeEntity();
                                 entity = repo.save(entity);
 
                                 genericResource = store.getResource(resourceLocation);
@@ -867,42 +414,11 @@ public class S3StoreIT {
                         class WhenAInvalidPropertyPathIsUsedToLoadAResource {
                             @BeforeEach
                             void setUp() throws InterruptedException {
-                                synchronized (mutex) {
-                                    HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                                            .bucket("test-bucket")
-                                            .build();
+                                ensureTestBucket();
 
-                                    try {
-                                        client.headBucket(headBucketRequest);
-                                    } catch (NoSuchBucketException e) {
+                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
-                                        CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                                .bucket("test-bucket")
-                                                .build();
-                                        client.createBucket(bucketRequest);
-
-                                        // wait for bucket to be created before continuing
-                                        boolean found = false;
-                                        while (!found) {
-                                            headBucketRequest = HeadBucketRequest.builder()
-                                                    .bucket(BUCKET)
-                                                    .build();
-                                            try {
-                                                client.headBucket(headBucketRequest);
-                                                found = true;
-                                            } catch (NoSuchBucketException e2) {
-                                            }
-
-                                            System.out.println("sleeping...");
-                                            Thread.sleep(100);
-                                        }
-                                    }
-                                }
-
-                                RandomString random = new RandomString(5);
-                                resourceLocation = random.nextString();
-
-                                entity = new TestEntity();
+                                entity = new DualContentJpaLongIdMimeEntity();
                                 entity = repo.save(entity);
 
                                 genericResource = store.getResource(resourceLocation);
@@ -926,42 +442,11 @@ public class S3StoreIT {
                         class WhenAInvalidPropertyPathIsUsedToUnassociateAResource {
                             @BeforeEach
                             void setUp() throws InterruptedException {
-                                synchronized (mutex) {
-                                    HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                                            .bucket("test-bucket")
-                                            .build();
+                                ensureTestBucket();
 
-                                    try {
-                                        client.headBucket(headBucketRequest);
-                                    } catch (NoSuchBucketException e) {
+                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
-                                        CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                                .bucket("test-bucket")
-                                                .build();
-                                        client.createBucket(bucketRequest);
-
-                                        // wait for bucket to be created before continuing
-                                        boolean found = false;
-                                        while (!found) {
-                                            headBucketRequest = HeadBucketRequest.builder()
-                                                    .bucket(BUCKET)
-                                                    .build();
-                                            try {
-                                                client.headBucket(headBucketRequest);
-                                                found = true;
-                                            } catch (NoSuchBucketException e2) {
-                                            }
-
-                                            System.out.println("sleeping...");
-                                            Thread.sleep(100);
-                                        }
-                                    }
-                                }
-
-                                RandomString random = new RandomString(5);
-                                resourceLocation = random.nextString();
-
-                                entity = new TestEntity();
+                                entity = new DualContentJpaLongIdMimeEntity();
                                 entity = repo.save(entity);
 
                                 genericResource = store.getResource(resourceLocation);
@@ -991,62 +476,29 @@ public class S3StoreIT {
             class Tests {
                 @BeforeEach
                 void setUp() throws InterruptedException {
-                    synchronized (mutex) {
-                        HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                                .bucket("test-bucket")
-                                .build();
+                    ensureTestBucket();
 
-                        try {
-                            client.headBucket(headBucketRequest);
-                        } catch (NoSuchBucketException e) {
+                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
-                            CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                    .bucket("test-bucket")
-                                    .build();
-                            client.createBucket(bucketRequest);
-
-                            // wait for bucket to be created before continuing
-                            boolean found = false;
-                            while (!found) {
-                                headBucketRequest = HeadBucketRequest.builder()
-                                        .bucket(BUCKET)
-                                        .build();
-                                try {
-                                    client.headBucket(headBucketRequest);
-                                    found = true;
-                                } catch (NoSuchBucketException e2) {
-                                }
-
-                                System.out.println("sleeping...");
-                                Thread.sleep(100);
-                            }
-                        }
-                    }
-
-                    RandomString random = new RandomString(5);
-                    resourceLocation = random.nextString();
-
-                    entity = new TestEntity();
-                    //                    entity.setContentType("text/plain");
-                    //                    entity.setContentType("text/html");
+                    entity = new DualContentJpaLongIdMimeEntity();
+                    entity.setContentType("text/plain");
+                    entity.setRenditionType("text/html");
                     entity = repo.save(entity);
 
-                    store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-                    store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
+                    store.setContent(entity, TestSupportData.sampleTextStream());
+                    store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleHtmlRenditionStream());
                 }
 
                 @Test
-                void shouldBeAbleToStoreNewContent() {
+                void shouldBeAbleToStoreNewContent() throws IOException {
                     // content
                     try (InputStream content = store.getContent(entity)) {
-                        assertThat(IOUtils.contentEquals(new ByteArrayInputStream("Hello Spring Content World!".getBytes()), content)).isTrue();
-                    } catch (IOException ioe) {
+                        assertThat(IOUtils.contentEquals(TestSupportData.sampleTextStream(), content)).isTrue();
                     }
 
                     //rendition
                     try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
-                        assertThat(IOUtils.contentEquals(new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()), content)).isTrue();
-                    } catch (IOException ioe) {
+                        assertThat(IOUtils.contentEquals(TestSupportData.sampleHtmlRenditionStream(), content)).isTrue();
                     }
                 }
 
@@ -1061,6 +513,17 @@ public class S3StoreIT {
                     assertThat(entity.getRenditionId()).isNotNull();
                     assertThat(entity.getRenditionId().trim().length()).isGreaterThan(0);
                     assertThat(entity.getRenditionLen()).isEqualTo(40L);
+
+                    assertThat(entity.getContentType()).isEqualTo("text/plain");
+                    assertThat(entity.getRenditionType()).isEqualTo("text/html");
+
+                    HeadObjectResponse contentHead = client.headObject(
+                        HeadObjectRequest.builder().bucket(BUCKET).key(entity.getContentId()).build());
+                    assertThat(contentHead.contentType()).isEqualTo("text/plain");
+
+                    HeadObjectResponse renditionHead = client.headObject(
+                        HeadObjectRequest.builder().bucket(BUCKET).key(entity.getRenditionId()).build());
+                    assertThat(renditionHead.contentType()).isEqualTo("text/html");
                 }
             }
 
@@ -1068,68 +531,33 @@ public class S3StoreIT {
             class WhenContentIsUpdated {
                 @BeforeEach
                 void setUp() throws InterruptedException {
-                    synchronized (mutex) {
-                        HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                                .bucket("test-bucket")
-                                .build();
+                    ensureTestBucket();
 
-                        try {
-                            client.headBucket(headBucketRequest);
-                        } catch (NoSuchBucketException e) {
+                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
-                            CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                    .bucket("test-bucket")
-                                    .build();
-                            client.createBucket(bucketRequest);
-
-                            // wait for bucket to be created before continuing
-                            boolean found = false;
-                            while (!found) {
-                                headBucketRequest = HeadBucketRequest.builder()
-                                        .bucket(BUCKET)
-                                        .build();
-                                try {
-                                    client.headBucket(headBucketRequest);
-                                    found = true;
-                                } catch (NoSuchBucketException e2) {
-                                }
-
-                                System.out.println("sleeping...");
-                                Thread.sleep(100);
-                            }
-                        }
-                    }
-
-                    RandomString random = new RandomString(5);
-                    resourceLocation = random.nextString();
-
-                    entity = new TestEntity();
-                    //                    entity.setContentType("text/plain");
-                    //                    entity.setContentType("text/html");
+                    entity = new DualContentJpaLongIdMimeEntity();
+                    entity.setContentType("text/plain");
+                    entity.setRenditionType("text/html");
                     entity = repo.save(entity);
 
-                    store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-                    store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
+                    store.setContent(entity, TestSupportData.sampleTextStream());
+                    store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleHtmlRenditionStream());
 
-                    store.setContent(entity, new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()));
-                    store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Updated Spring Content World!</html>".getBytes()));
+                    store.setContent(entity, TestSupportData.sampleUpdatedTextStream());
+                    store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleUpdatedHtmlRenditionStream());
                     entity = repo.save(entity);
                 }
 
                 @Test
                 void shouldHaveTheUpdatedContent() throws IOException {
                     //content
-                    boolean matches = false;
                     try (InputStream content = store.getContent(entity)) {
-                        matches = IOUtils.contentEquals(new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), content);
-                        assertThat(matches).isTrue();
+                        assertThat(IOUtils.contentEquals(TestSupportData.sampleUpdatedTextStream(), content)).isTrue();
                     }
 
                     //rendition
-                    matches = false;
                     try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
-                        matches = IOUtils.contentEquals(new ByteArrayInputStream("<html>Hello Updated Spring Content World!</html>".getBytes()), content);
-                        assertThat(matches).isTrue();
+                        assertThat(IOUtils.contentEquals(TestSupportData.sampleUpdatedHtmlRenditionStream(), content)).isTrue();
                     }
                 }
             }
@@ -1138,68 +566,33 @@ public class S3StoreIT {
             class WhenContentIsUpdatedWithShorterContent {
                 @BeforeEach
                 void setUp() throws InterruptedException {
-                    synchronized (mutex) {
-                        HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                                .bucket("test-bucket")
-                                .build();
+                    ensureTestBucket();
 
-                        try {
-                            client.headBucket(headBucketRequest);
-                        } catch (NoSuchBucketException e) {
+                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
-                            CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                    .bucket("test-bucket")
-                                    .build();
-                            client.createBucket(bucketRequest);
-
-                            // wait for bucket to be created before continuing
-                            boolean found = false;
-                            while (!found) {
-                                headBucketRequest = HeadBucketRequest.builder()
-                                        .bucket(BUCKET)
-                                        .build();
-                                try {
-                                    client.headBucket(headBucketRequest);
-                                    found = true;
-                                } catch (NoSuchBucketException e2) {
-                                }
-
-                                System.out.println("sleeping...");
-                                Thread.sleep(100);
-                            }
-                        }
-                    }
-
-                    RandomString random = new RandomString(5);
-                    resourceLocation = random.nextString();
-
-                    entity = new TestEntity();
-                    //                    entity.setContentType("text/plain");
-                    //                    entity.setContentType("text/html");
+                    entity = new DualContentJpaLongIdMimeEntity();
+                    entity.setContentType("text/plain");
+                    entity.setRenditionType("text/html");
                     entity = repo.save(entity);
 
-                    store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-                    store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
+                    store.setContent(entity, TestSupportData.sampleTextStream());
+                    store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleHtmlRenditionStream());
 
-                    store.setContent(entity, new ByteArrayInputStream("Hello Spring World!".getBytes()));
-                    store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring World!</html>".getBytes()));
+                    store.setContent(entity, TestSupportData.samplePartialUpdateStream());
+                    store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.samplePartialUpdateHtmlRenditionStream());
                     entity = repo.save(entity);
                 }
 
                 @Test
                 void shouldStoreOnlyTheNewContent() throws IOException {
                     //content
-                    boolean matches = false;
                     try (InputStream content = store.getContent(entity)) {
-                        matches = IOUtils.contentEquals(new ByteArrayInputStream("Hello Spring World!".getBytes()), content);
-                        assertThat(matches).isTrue();
+                        assertThat(IOUtils.contentEquals(TestSupportData.samplePartialUpdateStream(), content)).isTrue();
                     }
 
                     //rendition
-                    matches = false;
                     try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
-                        matches = IOUtils.contentEquals(new ByteArrayInputStream("<html>Hello Spring World!</html>".getBytes()), content);
-                        assertThat(matches).isTrue();
+                        assertThat(IOUtils.contentEquals(TestSupportData.samplePartialUpdateHtmlRenditionStream(), content)).isTrue();
                     }
                 }
             }
@@ -1208,48 +601,17 @@ public class S3StoreIT {
             class WhenContentIsUpdatedAndNotOverwritten {
                 @BeforeEach
                 void setUp() throws InterruptedException {
-                    synchronized (mutex) {
-                        HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                                .bucket("test-bucket")
-                                .build();
+                    ensureTestBucket();
 
-                        try {
-                            client.headBucket(headBucketRequest);
-                        } catch (NoSuchBucketException e) {
+                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
-                            CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                    .bucket("test-bucket")
-                                    .build();
-                            client.createBucket(bucketRequest);
-
-                            // wait for bucket to be created before continuing
-                            boolean found = false;
-                            while (!found) {
-                                headBucketRequest = HeadBucketRequest.builder()
-                                        .bucket(BUCKET)
-                                        .build();
-                                try {
-                                    client.headBucket(headBucketRequest);
-                                    found = true;
-                                } catch (NoSuchBucketException e2) {
-                                }
-
-                                System.out.println("sleeping...");
-                                Thread.sleep(100);
-                            }
-                        }
-                    }
-
-                    RandomString random = new RandomString(5);
-                    resourceLocation = random.nextString();
-
-                    entity = new TestEntity();
-                    //                    entity.setContentType("text/plain");
-                    //                    entity.setContentType("text/html");
+                    entity = new DualContentJpaLongIdMimeEntity();
+                    entity.setContentType("text/plain");
+                    entity.setRenditionType("text/html");
                     entity = repo.save(entity);
 
-                    store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-                    store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
+                    store.setContent(entity, TestSupportData.sampleTextStream());
+                    store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleHtmlRenditionStream());
                 }
 
                 @Test
@@ -1257,13 +619,11 @@ public class S3StoreIT {
                     String contentId = entity.getContentId();
                     client.headObject(HeadObjectRequest.builder().bucket(BUCKET).key(contentId).build());
 
-                    store.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), new SetContentParams(-1, true, SetContentParams.ContentDisposition.CreateNew));
+                    store.setContent(entity, PropertyPath.from("content"), TestSupportData.sampleUpdatedTextStream(), new SetContentParams(-1, true, SetContentParams.ContentDisposition.CreateNew));
                     entity = repo.save(entity);
 
-                    boolean matches = false;
                     try (InputStream content = store.getContent(entity)) {
-                        matches = IOUtils.contentEquals(new ByteArrayInputStream("Hello Updated Spring Content World!".getBytes()), content);
-                        assertThat(matches).isTrue();
+                        assertThat(IOUtils.contentEquals(TestSupportData.sampleUpdatedTextStream(), content)).isTrue();
                     }
 
                     assertThat(entity.getContentId()).isNotEqualTo(contentId);
@@ -1275,50 +635,20 @@ public class S3StoreIT {
             class WhenContentIsUnset {
                 @BeforeEach
                 void setUp() throws InterruptedException {
-                    synchronized (mutex) {
-                        HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                                .bucket("test-bucket")
-                                .build();
+                    ensureTestBucket();
 
-                        try {
-                            client.headBucket(headBucketRequest);
-                        } catch (NoSuchBucketException e) {
+                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
-                            CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                    .bucket("test-bucket")
-                                    .build();
-                            client.createBucket(bucketRequest);
-
-                            // wait for bucket to be created before continuing
-                            boolean found = false;
-                            while (!found) {
-                                headBucketRequest = HeadBucketRequest.builder()
-                                        .bucket(BUCKET)
-                                        .build();
-                                try {
-                                    client.headBucket(headBucketRequest);
-                                    found = true;
-                                } catch (NoSuchBucketException e2) {
-                                }
-
-                                System.out.println("sleeping...");
-                                Thread.sleep(100);
-                            }
-                        }
-                    }
-
-                    RandomString random = new RandomString(5);
-                    resourceLocation = random.nextString();
-
-                    entity = new TestEntity();
-                    //                    entity.setContentType("text/plain");
-                    //                    entity.setContentType("text/html");
+                    entity = new DualContentJpaLongIdMimeEntity();
+                    entity.setContentType("text/plain");
+                    entity.setRenditionType("text/html");
                     entity = repo.save(entity);
 
-                    store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-                    store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
+                    store.setContent(entity, TestSupportData.sampleTextStream());
+                    store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleHtmlRenditionStream());
 
-                    resourceLocation = entity.getContentId().toString();
+                    resourceLocation = entity.getContentId();
+                    assertThat(resourceLocation).isNotNull();
                     entity = store.unsetContent(entity);
                     entity = store.unsetContent(entity, PropertyPath.from("rendition"));
                     entity = repo.save(entity);
@@ -1334,11 +664,9 @@ public class S3StoreIT {
                     assertThat(entity.getContentId()).isNull();
                     assertThat(entity.getContentLen()).isNull();
 
-                    try {
-                        client.headObject(HeadObjectRequest.builder().bucket(BUCKET).key(resourceLocation).build());
-                        fail("expected content to be removed but is still exists");
-                    } catch (NoSuchKeyException nske) {
-                    }
+                    assertThatThrownBy(() -> client.headObject(
+                        HeadObjectRequest.builder().bucket(BUCKET).key(resourceLocation).build()))
+                        .isInstanceOf(NoSuchKeyException.class);
 
                     //rendition
                     try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
@@ -1346,7 +674,7 @@ public class S3StoreIT {
                     }
 
                     assertThat(entity.getRenditionId()).isNull();
-                    assertThat(entity.getRenditionLen()).isEqualTo(0L);
+                    assertThat(entity.getRenditionLen()).isNull();
                 }
             }
 
@@ -1354,50 +682,20 @@ public class S3StoreIT {
             class WhenContentIsUnsetButKept {
                 @BeforeEach
                 void setUp() throws InterruptedException {
-                    synchronized (mutex) {
-                        HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                                .bucket("test-bucket")
-                                .build();
+                    ensureTestBucket();
 
-                        try {
-                            client.headBucket(headBucketRequest);
-                        } catch (NoSuchBucketException e) {
+                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
-                            CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                    .bucket("test-bucket")
-                                    .build();
-                            client.createBucket(bucketRequest);
-
-                            // wait for bucket to be created before continuing
-                            boolean found = false;
-                            while (!found) {
-                                headBucketRequest = HeadBucketRequest.builder()
-                                        .bucket(BUCKET)
-                                        .build();
-                                try {
-                                    client.headBucket(headBucketRequest);
-                                    found = true;
-                                } catch (NoSuchBucketException e2) {
-                                }
-
-                                System.out.println("sleeping...");
-                                Thread.sleep(100);
-                            }
-                        }
-                    }
-
-                    RandomString random = new RandomString(5);
-                    resourceLocation = random.nextString();
-
-                    entity = new TestEntity();
-                    //                    entity.setContentType("text/plain");
-                    //                    entity.setContentType("text/html");
+                    entity = new DualContentJpaLongIdMimeEntity();
+                    entity.setContentType("text/plain");
+                    entity.setRenditionType("text/html");
                     entity = repo.save(entity);
 
-                    store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-                    store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
+                    store.setContent(entity, TestSupportData.sampleTextStream());
+                    store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleHtmlRenditionStream());
 
-                    resourceLocation = entity.getContentId().toString();
+                    resourceLocation = entity.getContentId();
+                    assertThat(resourceLocation).isNotNull();
                     entity = store.unsetContent(entity, PropertyPath.from("content"), new UnsetContentParams(UnsetContentParams.Disposition.Keep));
                     entity = repo.save(entity);
                 }
@@ -1420,48 +718,17 @@ public class S3StoreIT {
             class WhenAnInvalidPropertyPathIsUsedToSetContent {
                 @BeforeEach
                 void setUp() throws InterruptedException {
-                    synchronized (mutex) {
-                        HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                                .bucket("test-bucket")
-                                .build();
+                    ensureTestBucket();
 
-                        try {
-                            client.headBucket(headBucketRequest);
-                        } catch (NoSuchBucketException e) {
+                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
-                            CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                    .bucket("test-bucket")
-                                    .build();
-                            client.createBucket(bucketRequest);
-
-                            // wait for bucket to be created before continuing
-                            boolean found = false;
-                            while (!found) {
-                                headBucketRequest = HeadBucketRequest.builder()
-                                        .bucket(BUCKET)
-                                        .build();
-                                try {
-                                    client.headBucket(headBucketRequest);
-                                    found = true;
-                                } catch (NoSuchBucketException e2) {
-                                }
-
-                                System.out.println("sleeping...");
-                                Thread.sleep(100);
-                            }
-                        }
-                    }
-
-                    RandomString random = new RandomString(5);
-                    resourceLocation = random.nextString();
-
-                    entity = new TestEntity();
-                    //                    entity.setContentType("text/plain");
-                    //                    entity.setContentType("text/html");
+                    entity = new DualContentJpaLongIdMimeEntity();
+                    entity.setContentType("text/plain");
+                    entity.setRenditionType("text/html");
                     entity = repo.save(entity);
 
-                    store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-                    store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
+                    store.setContent(entity, TestSupportData.sampleTextStream());
+                    store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleHtmlRenditionStream());
                 }
 
                 @Test
@@ -1479,48 +746,17 @@ public class S3StoreIT {
             class WhenAnInvalidPropertyPathIsUsedToGetContent {
                 @BeforeEach
                 void setUp() throws InterruptedException {
-                    synchronized (mutex) {
-                        HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                                .bucket("test-bucket")
-                                .build();
+                    ensureTestBucket();
 
-                        try {
-                            client.headBucket(headBucketRequest);
-                        } catch (NoSuchBucketException e) {
+                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
-                            CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                    .bucket("test-bucket")
-                                    .build();
-                            client.createBucket(bucketRequest);
-
-                            // wait for bucket to be created before continuing
-                            boolean found = false;
-                            while (!found) {
-                                headBucketRequest = HeadBucketRequest.builder()
-                                        .bucket(BUCKET)
-                                        .build();
-                                try {
-                                    client.headBucket(headBucketRequest);
-                                    found = true;
-                                } catch (NoSuchBucketException e2) {
-                                }
-
-                                System.out.println("sleeping...");
-                                Thread.sleep(100);
-                            }
-                        }
-                    }
-
-                    RandomString random = new RandomString(5);
-                    resourceLocation = random.nextString();
-
-                    entity = new TestEntity();
-                    //                    entity.setContentType("text/plain");
-                    //                    entity.setContentType("text/html");
+                    entity = new DualContentJpaLongIdMimeEntity();
+                    entity.setContentType("text/plain");
+                    entity.setRenditionType("text/html");
                     entity = repo.save(entity);
 
-                    store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-                    store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
+                    store.setContent(entity, TestSupportData.sampleTextStream());
+                    store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleHtmlRenditionStream());
                 }
 
                 @Test
@@ -1538,48 +774,17 @@ public class S3StoreIT {
             class WhenAnInvalidPropertyPathIsUsedToUnsetContent {
                 @BeforeEach
                 void setUp() throws InterruptedException {
-                    synchronized (mutex) {
-                        HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                                .bucket("test-bucket")
-                                .build();
+                    ensureTestBucket();
 
-                        try {
-                            client.headBucket(headBucketRequest);
-                        } catch (NoSuchBucketException e) {
+                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
-                            CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                    .bucket("test-bucket")
-                                    .build();
-                            client.createBucket(bucketRequest);
-
-                            // wait for bucket to be created before continuing
-                            boolean found = false;
-                            while (!found) {
-                                headBucketRequest = HeadBucketRequest.builder()
-                                        .bucket(BUCKET)
-                                        .build();
-                                try {
-                                    client.headBucket(headBucketRequest);
-                                    found = true;
-                                } catch (NoSuchBucketException e2) {
-                                }
-
-                                System.out.println("sleeping...");
-                                Thread.sleep(100);
-                            }
-                        }
-                    }
-
-                    RandomString random = new RandomString(5);
-                    resourceLocation = random.nextString();
-
-                    entity = new TestEntity();
-                    //                    entity.setContentType("text/plain");
-                    //                    entity.setContentType("text/html");
+                    entity = new DualContentJpaLongIdMimeEntity();
+                    entity.setContentType("text/plain");
+                    entity.setRenditionType("text/html");
                     entity = repo.save(entity);
 
-                    store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-                    store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
+                    store.setContent(entity, TestSupportData.sampleTextStream());
+                    store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleHtmlRenditionStream());
                 }
 
                 @Test
@@ -1597,60 +802,29 @@ public class S3StoreIT {
             class WhenContentIsDeletedAndTheContentIdFieldIsSharedWithEntityId {
                 @BeforeEach
                 void setUp() throws InterruptedException {
-                    synchronized (mutex) {
-                        HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                                .bucket("test-bucket")
-                                .build();
+                    ensureTestBucket();
 
-                        try {
-                            client.headBucket(headBucketRequest);
-                        } catch (NoSuchBucketException e) {
+                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
-                            CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                    .bucket("test-bucket")
-                                    .build();
-                            client.createBucket(bucketRequest);
-
-                            // wait for bucket to be created before continuing
-                            boolean found = false;
-                            while (!found) {
-                                headBucketRequest = HeadBucketRequest.builder()
-                                        .bucket(BUCKET)
-                                        .build();
-                                try {
-                                    client.headBucket(headBucketRequest);
-                                    found = true;
-                                } catch (NoSuchBucketException e2) {
-                                }
-
-                                System.out.println("sleeping...");
-                                Thread.sleep(100);
-                            }
-                        }
-                    }
-
-                    RandomString random = new RandomString(5);
-                    resourceLocation = random.nextString();
-
-                    entity = new TestEntity();
-                    //                    entity.setContentType("text/plain");
-                    //                    entity.setContentType("text/html");
+                    entity = new DualContentJpaLongIdMimeEntity();
+                    entity.setContentType("text/plain");
+                    entity.setRenditionType("text/html");
                     entity = repo.save(entity);
 
-                    store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-                    store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
+                    store.setContent(entity, TestSupportData.sampleTextStream());
+                    store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleHtmlRenditionStream());
                 }
 
                 @Test
                 void shouldNotResetTheIdField() {
-                    SharedIdContentIdEntity sharedIdContentIdEntity = sharedIdRepository.save(new SharedIdContentIdEntity());
+                    SharedIdJakartaJpaEntity sharedIdContentIdEntity = sharedIdRepository.save(new SharedIdJakartaJpaEntity());
 
-                    sharedIdContentIdEntity = sharedIdStore.setContent(sharedIdContentIdEntity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
+                    sharedIdContentIdEntity = sharedIdStore.setContent(sharedIdContentIdEntity, TestSupportData.sampleTextStream());
                     sharedIdContentIdEntity = sharedIdRepository.save(sharedIdContentIdEntity);
                     String id = sharedIdContentIdEntity.getContentId();
                     sharedIdContentIdEntity = sharedIdStore.unsetContent(sharedIdContentIdEntity);
                     assertThat(sharedIdContentIdEntity.getContentId()).isEqualTo(id);
-                    assertThat(sharedIdContentIdEntity.getContentLen()).isEqualTo(0L);
+                    assertThat(sharedIdContentIdEntity.getContentLen()).isNull();
                 }
             }
 
@@ -1660,69 +834,38 @@ public class S3StoreIT {
                 class GivenAEntityWithANullEmbeddedContentObject {
                     @BeforeEach
                     void setUp() throws InterruptedException {
-                        synchronized (mutex) {
-                            HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                                    .bucket("test-bucket")
-                                    .build();
+                        ensureTestBucket();
 
-                            try {
-                                client.headBucket(headBucketRequest);
-                            } catch (NoSuchBucketException e) {
+                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
-                                CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                        .bucket("test-bucket")
-                                        .build();
-                                client.createBucket(bucketRequest);
-
-                                // wait for bucket to be created before continuing
-                                boolean found = false;
-                                while (!found) {
-                                    headBucketRequest = HeadBucketRequest.builder()
-                                            .bucket(BUCKET)
-                                            .build();
-                                    try {
-                                        client.headBucket(headBucketRequest);
-                                        found = true;
-                                    } catch (NoSuchBucketException e2) {
-                                    }
-
-                                    System.out.println("sleeping...");
-                                    Thread.sleep(100);
-                                }
-                            }
-                        }
-
-                        RandomString random = new RandomString(5);
-                        resourceLocation = random.nextString();
-
-                        entity = new TestEntity();
-                        //                    entity.setContentType("text/plain");
-                        //                    entity.setContentType("text/html");
+                        entity = new DualContentJpaLongIdMimeEntity();
+                        entity.setContentType("text/plain");
+                        entity.setRenditionType("text/html");
                         entity = repo.save(entity);
 
-                        store.setContent(entity, new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-                        store.setContent(entity, PropertyPath.from("rendition"), new ByteArrayInputStream("<html>Hello Spring Content World!</html>".getBytes()));
+                        store.setContent(entity, TestSupportData.sampleTextStream());
+                        store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleHtmlRenditionStream());
                     }
 
                     @Test
                     void shouldReturnNullWhenContentIsFetched() throws IOException {
-                        EntityWithEmbeddedContent entity = embeddedRepo.save(new EntityWithEmbeddedContent());
-                        assertThat(embeddedStore.getContent(entity, PropertyPath.from("content"))).isNull();
+                        EmbeddedContentJpaStringIdEntity embedded = embeddedRepo.save(new EmbeddedContentJpaStringIdEntity());
+                        assertThat(embeddedStore.getContent(embedded, PropertyPath.from("content"))).isNull();
                     }
 
                     @Test
                     void shouldBeSuccessfulWhenContentIsSet() throws IOException {
-                        EntityWithEmbeddedContent entity = embeddedRepo.save(new EntityWithEmbeddedContent());
-                        embeddedStore.setContent(entity, PropertyPath.from("content"), new ByteArrayInputStream("Hello Spring Content World!".getBytes()));
-                        try (InputStream is = embeddedStore.getContent(entity, PropertyPath.from("content"))) {
-                            assertThat(IOUtils.contentEquals(is, new ByteArrayInputStream("Hello Spring Content World!".getBytes()))).isTrue();
+                        EmbeddedContentJpaStringIdEntity embedded = embeddedRepo.save(new EmbeddedContentJpaStringIdEntity());
+                        embeddedStore.setContent(embedded, PropertyPath.from("content"), TestSupportData.sampleTextStream());
+                        try (InputStream is = embeddedStore.getContent(embedded, PropertyPath.from("content"))) {
+                            assertThat(IOUtils.contentEquals(is, TestSupportData.sampleTextStream())).isTrue();
                         }
                     }
 
                     @Test
                     void shouldReturnNullWhenContentIsUnset() {
-                        EntityWithEmbeddedContent entity = embeddedRepo.save(new EntityWithEmbeddedContent());
-                        assertThat(embeddedStore.unsetContent(entity, PropertyPath.from("content"))).isSameAs(entity);
+                        EmbeddedContentJpaStringIdEntity embedded = embeddedRepo.save(new EmbeddedContentJpaStringIdEntity());
+                        assertThat(embeddedStore.unsetContent(embedded, PropertyPath.from("content"))).isSameAs(embedded);
                     }
                 }
             }

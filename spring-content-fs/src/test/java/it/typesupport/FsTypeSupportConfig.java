@@ -1,9 +1,9 @@
 package it.typesupport;
 
-import it.typesupport.model.BigIntegerBasedContentEntityStore;
-import it.typesupport.model.LongBasedContentEntityStore;
-import it.typesupport.model.URIBasedContentEntityStore;
-import it.typesupport.model.UUIDBasedContentEntityStore;
+import org.springframework.content.test.support.idtype.BigIntegerBasedContentEntityStore;
+import org.springframework.content.test.support.idtype.LongBasedContentEntityStore;
+import org.springframework.content.test.support.idtype.URIBasedContentEntityStore;
+import org.springframework.content.test.support.idtype.UUIDBasedContentEntityStore;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

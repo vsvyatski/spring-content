@@ -5,8 +5,8 @@ want to hack on the code this document should help you get started.
 
 ## Code of Conduct
 
-This project adheres to the Contributor Covenant [code of conduct](CODE_OF_CONDUCT.md). By participating,
-you are expected to uphold this code. Please report unacceptable behavior to the Authors.
+This project adheres to the Contributor Covenant [code of conduct](CODE_OF_CONDUCT.md). By participating, you are
+expected to uphold this code. Report unacceptable behavior as described in that document's Reporting an Issue section.
 
 ## Using GitHub Issues
 

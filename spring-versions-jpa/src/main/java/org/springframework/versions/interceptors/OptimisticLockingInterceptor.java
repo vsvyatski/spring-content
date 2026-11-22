@@ -59,7 +59,7 @@ public class OptimisticLockingInterceptor implements MethodInterceptor {
         Object rc = null;
 
         if (getContentMethod.equals(methodInvocation.getMethod()) ||
-                getContentPropertyPathMethod.equals(methodInvocation.getMethod())) {
+            getContentPropertyPathMethod.equals(methodInvocation.getMethod())) {
             if (methodInvocation.getArguments().length > 0) {
                 Object[] args = methodInvocation.getArguments();
                 args[0] = lock(args[0]);
@@ -67,11 +67,11 @@ public class OptimisticLockingInterceptor implements MethodInterceptor {
                 rc = methodInvocation.proceed();
             }
         } else if (setContentMethod.equals(methodInvocation.getMethod()) ||
-                setContentPropertyPathMethod.equals(methodInvocation.getMethod()) ||
-                setContentMethodWithResource.equals(methodInvocation.getMethod()) ||
-                setContentMethodWithPropertyPathAndResource.equals(methodInvocation.getMethod()) ||
-                unsetContentMethod.equals(methodInvocation.getMethod()) ||
-                unsetContentPropertyPathMethod.equals(methodInvocation.getMethod())) {
+            setContentPropertyPathMethod.equals(methodInvocation.getMethod()) ||
+            setContentMethodWithResource.equals(methodInvocation.getMethod()) ||
+            setContentMethodWithPropertyPathAndResource.equals(methodInvocation.getMethod()) ||
+            unsetContentMethod.equals(methodInvocation.getMethod()) ||
+            unsetContentPropertyPathMethod.equals(methodInvocation.getMethod())) {
             if (methodInvocation.getArguments().length > 0) {
                 Object[] args = methodInvocation.getArguments();
                 args[0] = lock(args[0]);

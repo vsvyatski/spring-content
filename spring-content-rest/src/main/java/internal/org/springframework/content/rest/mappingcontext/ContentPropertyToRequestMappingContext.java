@@ -37,8 +37,8 @@ public class ContentPropertyToRequestMappingContext {
             mappings = resolveMappings(domainClass);
         }
         return mappings.entrySet()
-                .stream()
-                .collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
+            .stream()
+            .collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
     }
 
     private Map<String, String> resolveMappings(Class<?> domainClass) {

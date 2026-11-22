@@ -26,7 +26,7 @@ import static org.springframework.util.StringUtils.cleanPath;
  * with a slash).
  */
 public class FileSystemResourceLoader
-        extends org.springframework.core.io.FileSystemResourceLoader {
+    extends org.springframework.core.io.FileSystemResourceLoader {
 
     private static final Log logger = LogFactory.getLog(FileSystemResourceLoader.class);
 

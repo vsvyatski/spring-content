@@ -1,8 +1,7 @@
 package internal.org.springframework.content.rest.it.config;
 
 import internal.org.springframework.content.rest.it.SecurityConfiguration;
-import internal.org.springframework.content.rest.support.TestEntity;
-import internal.org.springframework.content.rest.support.TestEntity2;
+import internal.org.springframework.content.rest.support.UuidSingleContentEntity;
 import internal.org.springframework.content.rest.support.mockstore.EnableMockStores;
 import internal.org.springframework.content.rest.support.mockstore.MockContentStore;
 import internal.org.springframework.content.rest.support.mockstore.MockStoreFactoryBean;
@@ -60,23 +59,19 @@ public class PreferResourceForPutsAndPostsIT {
     private PreferResourceForPutsAndPostsRepository repo;
 
     @Autowired
-    private PreferResourceForPutsAndPostsStore store;
-
-    @Autowired
     private WebApplicationContext webApplicationContext;
 
-    private TestEntity2 existingClaim;
-
-    public interface PreferResourceForPutsAndPostsRepository extends CrudRepository<TestEntity, Long> {
+    public interface PreferResourceForPutsAndPostsRepository extends CrudRepository<UuidSingleContentEntity, Long> {
     }
 
-    private interface PreferResourceForPutsAndPostsStore extends MockContentStore<TestEntity, UUID> {
+    @SuppressWarnings("unused") // classpath / store component scan
+    private interface PreferResourceForPutsAndPostsStore extends MockContentStore<UuidSingleContentEntity, UUID> {
     }
 
     @SpringBootApplication(exclude = {
-            MongoAutoConfiguration.class,
-            DataMongoAutoConfiguration.class,
-            DataMongoRepositoriesAutoConfiguration.class
+        MongoAutoConfiguration.class,
+        DataMongoAutoConfiguration.class,
+        DataMongoRepositoriesAutoConfiguration.class
     })
     public static class Application {
 
@@ -91,17 +86,17 @@ public class PreferResourceForPutsAndPostsIT {
         public static class AppConfig {
 
             @Value("/org/springframework/content/jpa/schema-drop-h2.sql")
-            private ClassPathResource dropReopsitoryTables;
+            private ClassPathResource dropRepositoryTables;
 
             @Value("/org/springframework/content/jpa/schema-h2.sql")
-            private ClassPathResource dataReopsitorySchema;
+            private ClassPathResource dataRepositorySchema;
 
             @Bean
             DataSourceInitializer datasourceInitializer(DataSource dataSource) {
                 ResourceDatabasePopulator databasePopulator = new ResourceDatabasePopulator();
 
-                databasePopulator.addScript(dropReopsitoryTables);
-                databasePopulator.addScript(dataReopsitorySchema);
+                databasePopulator.addScript(dropRepositoryTables);
+                databasePopulator.addScript(dataRepositorySchema);
                 databasePopulator.setIgnoreFailedDrops(true);
 
                 DataSourceInitializer initializer = new DataSourceInitializer();
@@ -140,12 +135,7 @@ public class PreferResourceForPutsAndPostsIT {
 
             @Bean
             public ContentRestConfigurer configurer() {
-                return new ContentRestConfigurer() {
-                    @Override
-                    public void configure(RestConfiguration config) {
-                        config.forDomainType(TestEntity.class).putAndPostPreferResource();
-                    }
-                };
+                return config -> config.forDomainType(UuidSingleContentEntity.class).putAndPostPreferResource();
             }
         }
     }
@@ -159,18 +149,18 @@ public class PreferResourceForPutsAndPostsIT {
 
         @Test
         void shouldUseTheSetContentSResourceMethod() {
-            TestEntity tentity = new TestEntity();
-            tentity = repo.save(tentity);
+            UuidSingleContentEntity entity = new UuidSingleContentEntity();
+            entity = repo.save(entity);
 
             given()
-                    .contentType("text/plain")
-                    .body("some content".getBytes())
-                    .when()
-                    .post("/testEntities/" + tentity.getId());
+                .contentType("text/plain")
+                .body("some content".getBytes())
+                .when()
+                .post("/uuidSingleContentEntities/" + entity.getId());
 
             MockStoreFactoryBean storeFactory = context.getBean(MockStoreFactoryBean.class);
 
-            verify(storeFactory.getMock()).setContent(org.mockito.ArgumentMatchers.isA(TestEntity.class), org.mockito.ArgumentMatchers.isA(PropertyPath.class), (Resource) org.mockito.ArgumentMatchers.isA(Resource.class));
+            verify(storeFactory.getMock()).setContent(org.mockito.ArgumentMatchers.isA(UuidSingleContentEntity.class), org.mockito.ArgumentMatchers.isA(PropertyPath.class), org.mockito.ArgumentMatchers.isA(Resource.class));
         }
     }
 }

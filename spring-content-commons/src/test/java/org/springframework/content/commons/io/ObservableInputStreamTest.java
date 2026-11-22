@@ -41,17 +41,16 @@ public class ObservableInputStreamTest {
             @Nested
             class WhenTheInputStreamIsRead {
                 @BeforeEach
-                void setUp() throws IOException {
+                void setUp() {
                     fis = mock(FileInputStream.class);
                     observer = mock(InputStreamObserver.class);
 
                     ois = new ObservableInputStream(fis, observer);
-
-                    ois.read();
                 }
 
                 @Test
                 void shouldDelegateToTheUnderlyingInputStream() throws IOException {
+                    assertThat(ois.read()).isZero();
                     verify(fis).read();
                 }
             }

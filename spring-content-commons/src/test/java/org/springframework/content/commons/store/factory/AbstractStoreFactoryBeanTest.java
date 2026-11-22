@@ -18,11 +18,11 @@ public class AbstractStoreFactoryBeanTest {
     }
 
     public interface ContentStoreNotFirstInterfaceStore
-            extends Serializable, ContentStore<String, UUID> {
+        extends Serializable, ContentStore<String, UUID> {
     }
 
     public static class TestContentStoreFactory extends org.springframework.content.commons.store.factory.AbstractStoreFactoryBean {
-        protected TestContentStoreFactory(Class<? extends Store> storeInterface) {
+        protected TestContentStoreFactory(Class<? extends Store<Serializable>> storeInterface) {
             super(storeInterface);
         }
 
@@ -33,7 +33,7 @@ public class AbstractStoreFactoryBeanTest {
     }
 
     public static class TestConfigStoreImpl
-            implements ContentStore<Object, Serializable> {
+        implements ContentStore<Object, Serializable> {
 
         @Override
         public Object setContent(Object property, InputStream content) {
@@ -148,7 +148,7 @@ public class AbstractStoreFactoryBeanTest {
             @Test
             void whenContentStoreIsnTTheFirstExtendedInterfaceItStillGetTheDomainType() {
                 Class<?> domainClass = AbstractStoreFactoryBean.getDomainClass(
-                        ContentStoreNotFirstInterfaceStore.class);
+                    ContentStoreNotFirstInterfaceStore.class);
                 assertThat(domainClass).isEqualTo(String.class);
             }
         }

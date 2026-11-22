@@ -1,9 +1,10 @@
 package it.internal.org.springframework.content.rest.controllers;
 
 import internal.org.springframework.content.rest.support.FullyQualifiedLinksConfig;
-import internal.org.springframework.content.rest.support.TestEntity;
-import internal.org.springframework.content.rest.support.TestEntityContentRepository;
-import internal.org.springframework.content.rest.support.TestEntityRepository;
+import internal.org.springframework.content.rest.support.UuidSingleContentEntity;
+import internal.org.springframework.content.rest.support.UuidSingleContentEntityRepository;
+import internal.org.springframework.content.rest.support.UuidSingleContentEntityStore;
+import it.internal.org.springframework.content.rest.controllers.support.ContentTests;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -22,41 +23,34 @@ import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfigu
 
 @WebAppConfiguration
 @ContextConfiguration(classes = {
-        FullyQualifiedLinksConfig.class,
-        DelegatingWebMvcConfiguration.class,
-        RepositoryRestMvcConfiguration.class,
-        RestConfiguration.class})
+    FullyQualifiedLinksConfig.class, DelegatingWebMvcConfiguration.class,
+    RepositoryRestMvcConfiguration.class, RestConfiguration.class
+})
 @Transactional
 @ExtendWith(SpringExtension.class)
 public class FullyQualifiedLinksIT {
 
     @Autowired
-    private TestEntityRepository repo3;
+    private UuidSingleContentEntityRepository repo3;
 
     @Autowired
-    private TestEntityContentRepository store3;
+    private UuidSingleContentEntityStore store3;
 
     @Autowired
     private WebApplicationContext context;
-
-    private MockMvc mvc;
-
-    private TestEntity testEntity3;
-
-    private Content contentTests;
 
     @Nested
     class ContextPathContentTests {
         @Nested
         @DisplayName("given an entity is the subject of a repository and storage")
-        class GivenAnEntityIsTheSubjectOfARepositoryAndStorageContent extends Content {
+        class GivenAnEntityIsTheSubjectOfARepositoryAndStorageContent extends ContentTests {
             @BeforeEach
             void setUp() {
-                mvc = MockMvcBuilders.webAppContextSetup(context).build();
-                testEntity3 = repo3.save(new TestEntity());
+                MockMvc mvc = MockMvcBuilders.webAppContextSetup(context).build();
+                UuidSingleContentEntity testEntity3 = repo3.save(new UuidSingleContentEntity());
                 testEntity3 = repo3.save(testEntity3);
                 this.setMvc(mvc);
-                this.setUrl("/testEntitiesContent/" + testEntity3.getId() + "/content");
+                this.setUrl("/uuidSingleContentEntitiesContent/" + testEntity3.getId() + "/content");
                 this.setEntity(testEntity3);
                 this.setRepository(repo3);
                 this.setStore(store3);

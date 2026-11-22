@@ -23,8 +23,8 @@ public class AesCtrEncryptionEngineTest {
     private static final byte[] KEY = DatatypeConverter.parseHexBinary("2b7e151628aed2a6abf7158809cf4f3c");
     private static final byte[] IV = DatatypeConverter.parseHexBinary("f0f1f2f3f4f5f6f7f8f9fafbfcfdfeff");
     private static final EncryptionParameters PARAMS = new EncryptionParameters(
-            new SecretKeySpec(KEY, "AES"),
-            IV
+        new SecretKeySpec(KEY, "AES"),
+        IV
     );
     private static final byte[] BLOCK_1_PLAIN = DatatypeConverter.parseHexBinary("6bc1bee22e409f96e93d7e117393172a");
     private static final byte[] BLOCK_1_CIPHER = DatatypeConverter.parseHexBinary("874d6191b620e3261bef6864990db6ce");
@@ -97,8 +97,8 @@ public class AesCtrEncryptionEngineTest {
             void handlesAnIVThatStartsWithZeroes() throws IOException {
                 var engine = new AesCtrEncryptionEngine(128);
                 EncryptionParameters params = new EncryptionParameters(
-                        new SecretKeySpec(KEY, "AES"),
-                        DatatypeConverter.parseHexBinary("000000f3f4f5f6f7f8f9fafbfcfdfeff")
+                    new SecretKeySpec(KEY, "AES"),
+                    DatatypeConverter.parseHexBinary("000000f3f4f5f6f7f8f9fafbfcfdfeff")
                 );
 
                 var encrypted = engine.encrypt(new ByteArrayInputStream(PLAINTEXT), params);
@@ -119,8 +119,8 @@ public class AesCtrEncryptionEngineTest {
                 var engine = new AesCtrEncryptionEngine(128);
 
                 EncryptionParameters params = new EncryptionParameters(
-                        new SecretKeySpec(KEY, "AES"),
-                        DatatypeConverter.parseHexBinary("4ffffffffffffffffffffffffffffffe")
+                    new SecretKeySpec(KEY, "AES"),
+                    DatatypeConverter.parseHexBinary("4ffffffffffffffffffffffffffffffe")
                 );
 
                 var encrypted = engine.encrypt(new ByteArrayInputStream(PLAINTEXT), params);
@@ -141,8 +141,8 @@ public class AesCtrEncryptionEngineTest {
                 var engine = new AesCtrEncryptionEngine(128);
 
                 EncryptionParameters params = new EncryptionParameters(
-                        new SecretKeySpec(KEY, "AES"),
-                        DatatypeConverter.parseHexBinary("fffffffffffffffffffffffffffffffe")
+                    new SecretKeySpec(KEY, "AES"),
+                    DatatypeConverter.parseHexBinary("fffffffffffffffffffffffffffffffe")
                 );
 
                 var encrypted = engine.encrypt(new ByteArrayInputStream(PLAINTEXT), params);
@@ -167,9 +167,9 @@ public class AesCtrEncryptionEngineTest {
 
                 var offsetStart = BLOCK_1_PLAIN.length + BLOCK_2_PLAIN.length;
                 try (var decrypted = engine.decrypt(req -> {
-                            assertThat(req.startByteOffset()).isGreaterThan(0L);
-                            return onlyByteRange(new ByteArrayInputStream(CIPHERTEXT), req);
-                        }, PARAMS, InputStreamRequestParameters.startingFrom(offsetStart)
+                        assertThat(req.startByteOffset()).isGreaterThan(0L);
+                        return onlyByteRange(new ByteArrayInputStream(CIPHERTEXT), req);
+                    }, PARAMS, InputStreamRequestParameters.startingFrom(offsetStart)
                 )) {
 
                     // We have no use for the first bytes when we have not requested them
@@ -211,10 +211,10 @@ public class AesCtrEncryptionEngineTest {
                 var offsetEnd = BLOCK_1_PLAIN.length + BLOCK_2_PLAIN.length;
 
                 try (var decrypted = engine.decrypt(req -> {
-                            assertThat(req.startByteOffset()).isEqualTo(0L);
-                            assertThat(req.endByteOffset()).isLessThan(CIPHERTEXT.length); // We don't need to read the full ciphertext
-                            return onlyByteRange(new ByteArrayInputStream(CIPHERTEXT), req);
-                        }, PARAMS, new InputStreamRequestParameters(0, (long) offsetEnd)
+                        assertThat(req.startByteOffset()).isEqualTo(0L);
+                        assertThat(req.endByteOffset()).isLessThan(CIPHERTEXT.length); // We don't need to read the full ciphertext
+                        return onlyByteRange(new ByteArrayInputStream(CIPHERTEXT), req);
+                    }, PARAMS, new InputStreamRequestParameters(0, (long) offsetEnd)
                 )) {
                     var decryptedBytes = decrypted.readNBytes(offsetEnd);
 
@@ -229,10 +229,10 @@ public class AesCtrEncryptionEngineTest {
                 var offsetEnd = BLOCK_1_PLAIN.length + BLOCK_2_PLAIN.length + BLOCK_3_PLAIN.length / 2;
 
                 try (var decrypted = engine.decrypt(req -> {
-                            assertThat(req.startByteOffset()).isEqualTo(0L);
-                            assertThat(req.endByteOffset()).isLessThan(CIPHERTEXT.length); // We don't need to read the full ciphertext
-                            return onlyByteRange(new ByteArrayInputStream(CIPHERTEXT), req);
-                        }, PARAMS, new InputStreamRequestParameters(0, (long) offsetEnd)
+                        assertThat(req.startByteOffset()).isEqualTo(0L);
+                        assertThat(req.endByteOffset()).isLessThan(CIPHERTEXT.length); // We don't need to read the full ciphertext
+                        return onlyByteRange(new ByteArrayInputStream(CIPHERTEXT), req);
+                    }, PARAMS, new InputStreamRequestParameters(0, (long) offsetEnd)
                 )) {
 
                     var original = new ByteArrayInputStream(PLAINTEXT);

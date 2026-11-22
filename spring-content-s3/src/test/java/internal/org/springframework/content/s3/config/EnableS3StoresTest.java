@@ -7,13 +7,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.content.commons.annotations.ContentId;
-import org.springframework.content.commons.store.AssociativeStore;
-import org.springframework.content.commons.store.ContentStore;
-import org.springframework.content.s3.S3ObjectId;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.content.s3.config.EnableS3Stores;
 import org.springframework.content.s3.config.MultiTenantS3ClientProvider;
 import org.springframework.content.s3.config.S3StoreConfigurer;
+import org.springframework.content.test.support.SingleContentFields;
+import org.springframework.content.test.support.TestSupportPackages;
+import org.springframework.content.test.support.s3.SingleContentS3Store;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,64 +33,50 @@ import static org.mockito.Mockito.verify;
 public class EnableS3StoresTest {
 
     private static final String BUCKET = "aws-test-bucket";
-    // mocks
-    static S3StoreConfigurer configurer;
-    static S3Client client;
 
     static {
         System.setProperty("spring.content.s3.bucket", BUCKET);
     }
 
+    private S3StoreConfigurer configurer;
+    private S3Client client;
     private AnnotationConfigApplicationContext context;
 
-    @SuppressWarnings("unused") // classpath / store component scan
-    public interface TestEntityStore extends AssociativeStore<TestEntity, S3ObjectId> {
-    }
-
-    public interface TestEntityContentRepository
-            extends ContentStore<TestEntity, String> {
-    }
-
     @Configuration
-    @EnableS3Stores(basePackages = "contains.no.fs.repositores")
+    @EnableS3Stores(basePackages = "contains.no.s3.repositories")
     @Import(InfrastructureConfig.class)
     public static class EmptyConfig {
     }
 
     @Configuration
-    @EnableS3Stores
+    @EnableS3Stores(basePackages = TestSupportPackages.S3)
     @Import(InfrastructureConfig.class)
     public static class TestConfig {
     }
 
     @Configuration
-    @EnableS3Stores
+    @EnableS3Stores(basePackages = TestSupportPackages.S3)
     @Import(InfrastructureConfig.class)
     public static class ConverterConfig {
         @Bean
         public S3StoreConfigurer configurer() {
-            return configurer;
+            return mock(S3StoreConfigurer.class);
         }
     }
 
     @Configuration
-    @EnableS3Stores
-    @Import(InfrastructureConfig.class)
-    public static class TestConverterConfig {
-        @Bean
-        public S3StoreConfigurer configurer() {
-            return registry -> {
-            };
-        }
-    }
-
-    @Configuration
-    @EnableS3Stores
+    @EnableS3Stores(basePackages = TestSupportPackages.S3)
     @Import(InfrastructureConfig.class)
     public static class MultiTenantConfig {
+        @Bean("multiTenantClient")
+        public S3Client multiTenantClient() {
+            return mock(S3Client.class);
+        }
+
         @Bean
-        public MultiTenantS3ClientProvider s3Provider() {
-            return () -> client;
+        public MultiTenantS3ClientProvider s3Provider(
+            @Qualifier("multiTenantClient") S3Client multiTenantClient) {
+            return () -> multiTenantClient;
         }
     }
 
@@ -109,7 +95,7 @@ public class EnableS3StoresTest {
     @Nested
     class EnableS3StoresCases {
         @Nested
-        class GivenAContextAndAConfigurationWithAnS3ContentRepositoryBean {
+        class GivenAContextAndAConfigurationWithAnS3ContentStoreBean {
             @BeforeEach
             void setUp() {
                 context = new AnnotationConfigApplicationContext();
@@ -123,8 +109,8 @@ public class EnableS3StoresTest {
             }
 
             @Test
-            void shouldHaveAContentRepositoryBean() {
-                assertThat(context.getBean(TestEntityContentRepository.class)).isNotNull();
+            void shouldHaveAContentStoreBean() {
+                assertThat(context.getBean(SingleContentS3Store.class)).isNotNull();
             }
 
             @Test
@@ -137,11 +123,10 @@ public class EnableS3StoresTest {
         class GivenAContextWithAConfigurer {
             @BeforeEach
             void setUp() {
-                configurer = mock(S3StoreConfigurer.class);
-
                 context = new AnnotationConfigApplicationContext();
                 context.register(ConverterConfig.class);
                 context.refresh();
+                configurer = context.getBean(S3StoreConfigurer.class);
             }
 
             @AfterEach
@@ -171,7 +156,7 @@ public class EnableS3StoresTest {
 
             @Test
             void shouldNotContainsAnyS3RepositoryBeans() {
-                assertThat(context.getBeanNamesForType(TestEntityContentRepository.class)).isEmpty();
+                assertThat(context.getBeanNamesForType(SingleContentS3Store.class)).isEmpty();
             }
         }
 
@@ -179,11 +164,10 @@ public class EnableS3StoresTest {
         class GivenAContextWithAMultiTenantConfiguration {
             @BeforeEach
             void setUp() {
-                client = mock(S3Client.class);
-
                 context = new AnnotationConfigApplicationContext();
                 context.register(MultiTenantConfig.class);
                 context.refresh();
+                client = context.getBean("multiTenantClient", S3Client.class);
             }
 
             @AfterEach
@@ -193,8 +177,8 @@ public class EnableS3StoresTest {
 
             @Test
             void shouldUseTheCorrectClient() {
-                TestEntityContentRepository repo = context.getBean(TestEntityContentRepository.class);
-                TestEntity entity = new TestEntity();
+                SingleContentS3Store repo = context.getBean(SingleContentS3Store.class);
+                SingleContentFields entity = new SingleContentFields();
                 entity.setContentId("12345");
                 Resource r = repo.getResource(entity);
                 assertThat(((S3StoreResource) r).getClient()).isEqualTo(client);
@@ -202,16 +186,5 @@ public class EnableS3StoresTest {
         }
     }
 
-    public static class TestEntity {
-        @ContentId
-        private String contentId;
-
-        public String getContentId() {
-            return contentId;
-        }
-
-        public void setContentId(String contentId) {
-            this.contentId = contentId;
-        }
-    }
 }
+

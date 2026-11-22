@@ -28,7 +28,7 @@ public class StoreMethodInterceptor implements MethodInterceptor {
 
     static {
         setContentStoreMethod = ReflectionUtils.findMethod(ContentStoreAware.class,
-                "setContentStore", ContentStore.class);
+            "setContentStore", ContentStore.class);
         Assert.notNull(setContentStoreMethod, "setContentStore method not found");
     }
 
@@ -47,17 +47,17 @@ public class StoreMethodInterceptor implements MethodInterceptor {
 
         if (storeFragments != null) {
             var fragment = storeFragments.stream()
-                    .filter(it -> it.hasMethod(invocation.getMethod()))
-                    .findFirst();
+                .filter(it -> it.hasMethod(invocation.getMethod()))
+                .findFirst();
 
             if (fragment.isEmpty()) {
                 fragment = storeFragments.stream()
-                        .filter(it -> it.hasImplementationMethod(invocation.getMethod()))
-                        .findFirst();
+                    .filter(it -> it.hasImplementationMethod(invocation.getMethod()))
+                    .findFirst();
             }
 
             fragment.orElseThrow(() -> new IllegalStateException(
-                    format("No fragment found for method %s", invocation.getMethod())));
+                format("No fragment found for method %s", invocation.getMethod())));
 
             StoreFragment<?> f = fragment.get();
             if (f.hasImplementationMethod(setContentStoreMethod)) {
@@ -67,7 +67,7 @@ public class StoreMethodInterceptor implements MethodInterceptor {
 
             try {
                 return getMethod(invocation.getMethod(), f)
-                        .invoke(fragment.get().getImplementation(), invocation.getArguments());
+                    .invoke(fragment.get().getImplementation(), invocation.getArguments());
             } catch (InvocationTargetException ite) {
                 throw ite.getTargetException();
             }
@@ -80,15 +80,15 @@ public class StoreMethodInterceptor implements MethodInterceptor {
 
     /* package */ Method getMethod(Method invokedMethod, StoreFragment<?> fragment) {
         return methodCache.computeIfAbsent(invokedMethod,
-                key -> resolveImplementationMethod(invokedMethod, fragment));
+            key -> resolveImplementationMethod(invokedMethod, fragment));
     }
 
     private Method resolveImplementationMethod(Method invokedMethod, StoreFragment<?> fragment) {
 
         if (invokedMethod.getName().equals("getResource") &&
-                Serializable.class.isAssignableFrom(invokedMethod.getParameterTypes()[0])) {
+            Serializable.class.isAssignableFrom(invokedMethod.getParameterTypes()[0])) {
             return ReflectionUtils.findMethod(fragment.getImplementation().getClass(),
-                    "getResource", Serializable.class);
+                "getResource", Serializable.class);
         }
 
         for (Method candidate : fragment.getImplementation().getClass().getMethods()) {

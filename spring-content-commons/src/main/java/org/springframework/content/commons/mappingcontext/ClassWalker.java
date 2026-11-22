@@ -134,11 +134,11 @@ public class ClassWalker {
 
     private boolean isObject(Field field) {
         return !field.getType().isPrimitive() &&
-                !field.getType().equals(String.class) &&
-                !field.getType().equals(UUID.class) &&
-                !field.getType().isEnum() &&
-                !ContentPropertyUtils.isWrapperType(field.getType()) &&
-                !ContentPropertyUtils.isRelationshipField(field);
+            !field.getType().equals(String.class) &&
+            !field.getType().equals(UUID.class) &&
+            !field.getType().isEnum() &&
+            !ContentPropertyUtils.isWrapperType(field.getType()) &&
+            !ContentPropertyUtils.isRelationshipField(field);
     }
 
     private List<Field> getAllFields(List<Field> fields, Class<?> type) {

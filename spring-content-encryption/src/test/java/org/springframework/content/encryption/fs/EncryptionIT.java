@@ -1,14 +1,9 @@
 package org.springframework.content.encryption.fs;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import internal.org.springframework.content.rest.boot.autoconfigure.ContentRestAutoConfiguration;
 import internal.org.springframework.content.s3.boot.autoconfigure.S3ContentAutoConfiguration;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import io.restassured.module.mockmvc.response.MockMvcResponse;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,18 +15,15 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.content.commons.annotations.ContentId;
-import org.springframework.content.commons.annotations.ContentLength;
-import org.springframework.content.commons.annotations.MimeType;
 import org.springframework.content.encryption.config.EncryptingContentStoreConfigurer;
-import org.springframework.content.encryption.store.EncryptingContentStore;
 import org.springframework.content.fs.config.EnableFileSystemStores;
 import org.springframework.content.fs.io.FileSystemResourceLoader;
-import org.springframework.content.fs.store.FileSystemContentStore;
+import org.springframework.content.test.support.TestSupportPackages;
+import org.springframework.content.test.support.encryption.FsFile;
+import org.springframework.content.test.support.encryption.FsFileRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -41,7 +33,6 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Optional;
-import java.util.UUID;
 
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -51,10 +42,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class EncryptionIT {
 
     @Autowired
-    private FileRepository repo;
-
-    @Autowired
-    private FileContentStore3 store;
+    private FsFileRepository repo;
 
     @Autowired
     private java.io.File filesystemRoot;
@@ -64,16 +52,10 @@ public class EncryptionIT {
 
     private FsFile f;
 
-    public interface FileRepository extends CrudRepository<FsFile, Long> {
-    }
-
-    public interface FileContentStore3 extends FileSystemContentStore<FsFile, UUID>, EncryptingContentStore<FsFile, UUID> {
-    }
-
     @SpringBootApplication(exclude = {S3ContentAutoConfiguration.class})
     @ImportAutoConfiguration(ContentRestAutoConfiguration.class)
-    @EnableJpaRepositories(considerNestedRepositories = true)
-    @EnableFileSystemStores
+    @EnableJpaRepositories(basePackages = TestSupportPackages.ENCRYPTION, considerNestedRepositories = true)
+    @EnableFileSystemStores(basePackages = "org.springframework.content.encryption.fs")
     static class Application {
         public static void main(String[] args) {
             SpringApplication.run(Application.class, args);
@@ -97,76 +79,9 @@ public class EncryptionIT {
             }
 
             @Bean
-            public EncryptingContentStoreConfigurer<FileContentStore3> config() {
+            public EncryptingContentStoreConfigurer<EncryptedFsFileStore> config() {
                 return config -> config.encryptionKeyContentProperty("key");
             }
-        }
-    }
-
-    @Entity
-    public static class FsFile {
-        @Id
-        @GeneratedValue(strategy = GenerationType.AUTO)
-        private Long id;
-
-        private String name;
-
-        @JsonIgnore
-        private byte[] contentKey;
-
-        @ContentId
-        private UUID contentId;
-        @ContentLength
-        private long contentLength;
-        @MimeType
-        private String contentMimeType;
-
-        public Long getId() {
-            return id;
-        }
-
-        public void setId(Long id) {
-            this.id = id;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public byte[] getContentKey() {
-            return contentKey;
-        }
-
-        public void setContentKey(byte[] contentKey) {
-            this.contentKey = contentKey;
-        }
-
-        public UUID getContentId() {
-            return contentId;
-        }
-
-        public void setContentId(UUID contentId) {
-            this.contentId = contentId;
-        }
-
-        public long getContentLength() {
-            return contentLength;
-        }
-
-        public void setContentLength(long contentLength) {
-            this.contentLength = contentLength;
-        }
-
-        public String getContentMimeType() {
-            return contentMimeType;
-        }
-
-        public void setContentMimeType(String contentMimeType) {
-            this.contentMimeType = contentMimeType;
         }
     }
 
@@ -183,12 +98,12 @@ public class EncryptionIT {
                     f = repo.save(new FsFile());
 
                     given()
-                            .contentType("text/plain")
-                            .body("Hello Client-side encryption World!")
-                            .when()
-                            .post("/fsFiles/" + f.getId() + "/content")
-                            .then()
-                            .statusCode(HttpStatus.SC_CREATED);
+                        .contentType("text/plain")
+                        .body("Hello Client-side encryption World!")
+                        .when()
+                        .post("/files/" + f.getId() + "/content")
+                        .then()
+                        .statusCode(HttpStatus.SC_CREATED);
                 }
 
                 @Test
@@ -207,12 +122,12 @@ public class EncryptionIT {
                 @Test
                 void shouldBeRetrievedDecrypted() {
                     MockMvcResponse response =
-                            given()
-                                    .header("accept", "text/plain")
-                                    .get("/fsFiles/" + f.getId() + "/content")
-                                    .then()
-                                    .statusCode(HttpStatus.SC_OK)
-                                    .extract().response();
+                        given()
+                            .header("accept", "text/plain")
+                            .get("/files/" + f.getId() + "/content")
+                            .then()
+                            .statusCode(HttpStatus.SC_OK)
+                            .extract().response();
                     assertThat(response.getContentType()).startsWith("text/plain");
                     assertThat(response.asString()).isEqualTo("Hello Client-side encryption World!");
                 }
@@ -220,13 +135,13 @@ public class EncryptionIT {
                 @Test
                 void shouldHandleByteRangeRequests() {
                     MockMvcResponse r =
-                            given()
-                                    .header("accept", "text/plain")
-                                    .header("range", "bytes=16-27")
-                                    .get("/fsFiles/" + f.getId() + "/content")
-                                    .then()
-                                    .statusCode(HttpStatus.SC_PARTIAL_CONTENT)
-                                    .extract().response();
+                        given()
+                            .header("accept", "text/plain")
+                            .header("range", "bytes=16-27")
+                            .get("/files/" + f.getId() + "/content")
+                            .then()
+                            .statusCode(HttpStatus.SC_PARTIAL_CONTENT)
+                            .extract().response();
                     assertThat(r.getContentType()).startsWith("text/plain");
 
                     assertThat(r.asString()).isEqualTo("e encryption");
@@ -242,25 +157,25 @@ public class EncryptionIT {
                     f = repo.save(new FsFile());
 
                     given()
-                            .contentType("text/plain")
-                            .body("Hello Client-side encryption World!")
-                            .when()
-                            .post("/fsFiles/" + f.getId() + "/content")
-                            .then()
-                            .statusCode(HttpStatus.SC_CREATED);
+                        .contentType("text/plain")
+                        .body("Hello Client-side encryption World!")
+                        .when()
+                        .post("/files/" + f.getId() + "/content")
+                        .then()
+                        .statusCode(HttpStatus.SC_CREATED);
                 }
 
                 @Test
                 void itShouldRemoveTheContentAndClearTheContentKey() {
-                    f = repo.findById(f.getId()).get();
+                    f = repo.findById(f.getId()).orElseThrow();
                     String contentId = f.getContentId().toString();
 
                     given()
-                            .delete("/fsFiles/" + f.getId() + "/content")
-                            .then()
-                            .statusCode(HttpStatus.SC_NO_CONTENT);
+                        .delete("/files/" + f.getId() + "/content")
+                        .then()
+                        .statusCode(HttpStatus.SC_NO_CONTENT);
 
-                    f = repo.findById(f.getId()).get();
+                    f = repo.findById(f.getId()).orElseThrow();
                     assertThat(f.getContentKey()).isNull();
                     assertThat(new java.io.File(filesystemRoot, contentId).exists()).isFalse();
                 }

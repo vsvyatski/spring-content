@@ -74,7 +74,7 @@ public class StoreResourceImpl implements Resource, StoreResource {
 
     @Override
     public InputStream getInputStream()
-            throws IOException {
+        throws IOException {
         return delegate.getInputStream();
     }
 
@@ -100,43 +100,43 @@ public class StoreResourceImpl implements Resource, StoreResource {
 
     @Override
     public URL getURL()
-            throws IOException {
+        throws IOException {
         return delegate.getURL();
     }
 
     @Override
     public URI getURI()
-            throws IOException {
+        throws IOException {
         return delegate.getURI();
     }
 
     @Override
     public File getFile()
-            throws IOException {
+        throws IOException {
         return delegate.getFile();
     }
 
     @Override
     public ReadableByteChannel readableChannel()
-            throws IOException {
+        throws IOException {
         return delegate.readableChannel();
     }
 
     @Override
     public long contentLength()
-            throws IOException {
+        throws IOException {
         return delegate.contentLength();
     }
 
     @Override
     public long lastModified()
-            throws IOException {
+        throws IOException {
         return delegate.lastModified();
     }
 
     @Override
     public Resource createRelative(String relativePath)
-            throws IOException {
+        throws IOException {
         return delegate.createRelative(relativePath);
     }
 
@@ -157,19 +157,19 @@ public class StoreResourceImpl implements Resource, StoreResource {
 
     @Override
     public OutputStream getOutputStream()
-            throws IOException {
+        throws IOException {
         return ((WritableResource) delegate).getOutputStream();
     }
 
     @Override
     public WritableByteChannel writableChannel()
-            throws IOException {
+        throws IOException {
         return ((WritableResource) delegate).writableChannel();
     }
 
     @Override
     public void delete()
-            throws IOException {
+        throws IOException {
         ((DeletableResource) delegate).delete();
     }
 }

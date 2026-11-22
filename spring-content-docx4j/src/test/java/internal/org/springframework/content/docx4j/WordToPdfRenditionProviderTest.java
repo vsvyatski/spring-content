@@ -36,7 +36,7 @@ public class WordToPdfRenditionProviderTest {
         assertThat(((ObservableInputStream) converted).getObservers()).anyMatch(observer -> observer instanceof FileRemover);
 
         assertThat(pdfToText(converted).replaceAll("\\s+", " ").trim())
-                .isEqualTo("This is the Document Title and this is the document body.");
+            .isEqualTo("This is the Document Title and this is the document body.");
     }
 
     private String pdfToText(InputStream in) throws Exception {

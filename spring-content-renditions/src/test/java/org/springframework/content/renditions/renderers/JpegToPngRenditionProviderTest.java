@@ -12,6 +12,7 @@ import java.awt.image.DataBufferByte;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,11 +36,11 @@ public class JpegToPngRenditionProviderTest {
         InputStream converted = service.convert(this.getClass().getResourceAsStream("/sample.jpeg"), "image/png");
 
         assertThat(converted.available()).isGreaterThan(0);
-        assertThat(((ObservableInputStream) converted).getObservers()).anySatisfy(item -> {
-            assertThat(item).isInstanceOf(FileRemover.class);
-        });
+        assertThat(((ObservableInputStream) converted).getObservers())
+            .anySatisfy(item -> assertThat(item).isInstanceOf(FileRemover.class));
 
-        BufferedImage expectedImage = ImageIO.read(this.getClass().getResourceAsStream("/sample.png"));
+        BufferedImage expectedImage = ImageIO.read(
+            Objects.requireNonNull(this.getClass().getResourceAsStream("/sample.png")));
         byte[] expectedRastaData = ((DataBufferByte) expectedImage.getData().getDataBuffer()).getData();
 
         BufferedImage actualImage = ImageIO.read(converted);

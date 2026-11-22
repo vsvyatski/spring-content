@@ -21,14 +21,12 @@ import static org.mockito.Mockito.*;
 
 public class WordToJpegRendererTest {
 
+    private final String toMimeType = "image/jpeg";
     POIXMLProperties props;
     private POIService poi;
     private XWPFDocument doc;
     private RenditionProvider renderer;
-
     private InputStream input;
-    private String mimeType;
-
     private Exception e;
 
     @Nested
@@ -78,7 +76,7 @@ public class WordToJpegRendererTest {
                     input = new ByteArrayInputStream("".getBytes());
 
                     try {
-                        renderer.convert(input, mimeType);
+                        renderer.convert(input, toMimeType);
                     } catch (Exception e) {
                         WordToJpegRendererTest.this.e = e;
                     }
@@ -105,10 +103,10 @@ public class WordToJpegRendererTest {
 
                         doc = mock(XWPFDocument.class);
                         doThrow(NotOfficeXmlFileException.class).when(poi)
-                                .xwpfDocument(any());
+                            .xwpfDocument(any());
 
                         try {
-                            renderer.convert(input, mimeType);
+                            renderer.convert(input, toMimeType);
                         } catch (Exception e) {
                             WordToJpegRendererTest.this.e = e;
                         }
@@ -141,7 +139,7 @@ public class WordToJpegRendererTest {
                         doThrow(POIXMLException.class).when(doc).getProperties();
 
                         try {
-                            renderer.convert(input, mimeType);
+                            renderer.convert(input, toMimeType);
                         } catch (Exception e) {
                             WordToJpegRendererTest.this.e = e;
                         }
@@ -175,7 +173,7 @@ public class WordToJpegRendererTest {
                         doThrow(IOException.class).when(props).getThumbnailImage();
 
                         try {
-                            renderer.convert(input, mimeType);
+                            renderer.convert(input, toMimeType);
                         } catch (Exception e) {
                             WordToJpegRendererTest.this.e = e;
                         }
@@ -197,7 +195,7 @@ public class WordToJpegRendererTest {
                     renderer = new WordToJpegRenderer(poi);
 
                     try {
-                        renderer.convert(input, mimeType);
+                        renderer.convert(input, toMimeType);
                     } catch (Exception e) {
                         WordToJpegRendererTest.this.e = e;
                     }

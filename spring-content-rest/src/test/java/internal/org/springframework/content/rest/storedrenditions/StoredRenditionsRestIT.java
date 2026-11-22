@@ -1,9 +1,9 @@
 package internal.org.springframework.content.rest.storedrenditions;
 
+import internal.org.springframework.content.rest.support.DualContentRenditionEntity;
+import internal.org.springframework.content.rest.support.DualContentRenditionEntityRepository;
+import internal.org.springframework.content.rest.support.DualContentRenditionEntityStore;
 import internal.org.springframework.content.rest.support.StoreConfig;
-import internal.org.springframework.content.rest.support.TestEntity5;
-import internal.org.springframework.content.rest.support.TestEntity5Repository;
-import internal.org.springframework.content.rest.support.TestEntity5Store;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -56,17 +56,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class StoredRenditionsRestIT {
 
     @Autowired
-    private TestEntity5Repository repo;
+    private DualContentRenditionEntityRepository repo;
     @Autowired
-    private TestEntity5Store store;
+    private DualContentRenditionEntityStore store;
 
-    private TestEntity5 testEntity5;
+    private DualContentRenditionEntity testEntity5;
 
     @Autowired
     private WebApplicationContext context;
-
-    @Autowired
-    private TestEventHandler eventHandler;
 
     private MockMvc mvc;
 
@@ -102,7 +99,7 @@ public class StoredRenditionsRestIT {
                         input = "";
                     }
                     return new ByteArrayInputStream(
-                            String.format("\"<html><head><title>Dynamic Rendition</title></head><body>%s</body></html>\"", input).getBytes());
+                        String.format("\"<html><head><title>Dynamic Rendition</title></head><body>%s</body></html>\"", input).getBytes());
                 }
             };
         }
@@ -112,30 +109,26 @@ public class StoredRenditionsRestIT {
     public static class TestEventHandler {
 
         @Autowired
-        private TestEntity5Repository repo;
-
-        @Autowired
-        private TestEntity5Store store;
+        private DualContentRenditionEntityStore store;
 
         @HandleAfterSetContent
+        @SuppressWarnings("unused") // store event dispatch
         public void onAfterSetContent(AfterSetContentEvent event) throws IOException {
 
-            TestEntity5 entity = (TestEntity5) event.getSource();
+            DualContentRenditionEntity entity = (DualContentRenditionEntity) event.getSource();
 
-            long renderedLength = 0;
+            long renderedLength;
             try (InputStream inputStream = store.getContent(entity, PropertyPath.from("content"))) {
 
                 String renderedContent = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
 
-                // create and associate resource
                 UUID resourceId = UUID.randomUUID();
-                Resource r = store.getResource(resourceId);
                 store.associate(entity, PropertyPath.from("rendition"), resourceId);
 
                 try (OutputStream stream = ((WritableResource) store.getResource(entity, PropertyPath.from("rendition"))).getOutputStream()) {
                     renderedLength = IOUtils.copyLarge(
-                            new ByteArrayInputStream(String.format("<html><head><title>Stored Rendition</title></head><body>%s</body></html>", renderedContent).getBytes()),
-                            stream);
+                        new ByteArrayInputStream(String.format("<html><head><title>Stored Rendition</title></head><body>%s</body></html>", renderedContent).getBytes()),
+                        stream);
                 }
             }
 
@@ -144,9 +137,10 @@ public class StoredRenditionsRestIT {
         }
 
         @HandleBeforeUnsetContent
+        @SuppressWarnings("unused") // store event dispatch
         public void onBeforeUnsetContent(BeforeUnsetContentEvent event) throws IOException {
 
-            TestEntity5 entity = (TestEntity5) event.getSource();
+            DualContentRenditionEntity entity = (DualContentRenditionEntity) event.getSource();
 
             ((DeletableResource) store.getResource(entity, PropertyPath.from("rendition"))).delete();
 
@@ -166,14 +160,14 @@ public class StoredRenditionsRestIT {
                 void setUp() throws Exception {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
-                    testEntity5 = repo.save(new TestEntity5());
+                    testEntity5 = repo.save(new DualContentRenditionEntity());
 
-                    mvc.perform(put("/testEntity5s/" + testEntity5.getId() + "/content").content("foo").contentType("text/plain")).andExpect(status().is2xxSuccessful());
+                    mvc.perform(put("/dualContentRenditionEntities/" + testEntity5.getId() + "/content").content("foo").contentType("text/plain")).andExpect(status().is2xxSuccessful());
                 }
 
                 @Test
                 void shouldStoreTheRendition() throws IOException {
-                    testEntity5 = repo.findById(testEntity5.getId()).get();
+                    testEntity5 = repo.findById(testEntity5.getId()).orElseThrow();
                     Resource r = store.getResource(testEntity5, PropertyPath.from("content"));
                     try (InputStream actual = r.getInputStream()) {
                         assertThat(IOUtils.toString(actual, StandardCharsets.UTF_8)).isEqualTo("foo");
@@ -191,21 +185,19 @@ public class StoredRenditionsRestIT {
                     void setUp() throws Exception {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
-                        testEntity5 = repo.save(new TestEntity5());
+                        testEntity5 = repo.save(new DualContentRenditionEntity());
 
-                        mvc.perform(put("/testEntity5s/" + testEntity5.getId() + "/content").content("foo").contentType("text/plain")).andExpect(status().is2xxSuccessful());
+                        mvc.perform(put("/dualContentRenditionEntities/" + testEntity5.getId() + "/content").content("foo").contentType("text/plain")).andExpect(status().is2xxSuccessful());
                     }
 
                     @Test
                     void shouldGetTheStoredRendition() throws Exception {
-                        Long id = testEntity5.getId();
-
                         mvc.perform(
-                                        get("/testEntity5s/" + testEntity5.getId() + "/content")
-                                                .accept("text/html"))
-                                .andExpect(status().isOk())
-                                .andExpect(content().string(not("<html><head><title>Dynamic Rendition</title></head><body>foo</body></html>")))
-                                .andExpect(content().string("<html><head><title>Stored Rendition</title></head><body>foo</body></html>"));
+                                get("/dualContentRenditionEntities/" + testEntity5.getId() + "/content")
+                                    .accept("text/html"))
+                            .andExpect(status().isOk())
+                            .andExpect(content().string(not("<html><head><title>Dynamic Rendition</title></head><body>foo</body></html>")))
+                            .andExpect(content().string("<html><head><title>Stored Rendition</title></head><body>foo</body></html>"));
                     }
                 }
 
@@ -215,19 +207,17 @@ public class StoredRenditionsRestIT {
                     void setUp() throws Exception {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
-                        testEntity5 = repo.save(new TestEntity5());
+                        testEntity5 = repo.save(new DualContentRenditionEntity());
 
-                        mvc.perform(put("/testEntity5s/" + testEntity5.getId() + "/content").content("foo").contentType("text/plain")).andExpect(status().is2xxSuccessful());
+                        mvc.perform(put("/dualContentRenditionEntities/" + testEntity5.getId() + "/content").content("foo").contentType("text/plain")).andExpect(status().is2xxSuccessful());
                     }
 
                     @Test
                     void shouldReturnA405() throws Exception {
-                        Long id = testEntity5.getId();
-
                         mvc.perform(
-                                        get("/testEntity5s/" + testEntity5.getId() + "/rendition")
-                                                .accept("text/html"))
-                                .andExpect(status().isMethodNotAllowed());
+                                get("/dualContentRenditionEntities/" + testEntity5.getId() + "/rendition")
+                                    .accept("text/html"))
+                            .andExpect(status().isMethodNotAllowed());
                     }
                 }
 
@@ -237,18 +227,18 @@ public class StoredRenditionsRestIT {
                     void setUp() throws Exception {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
-                        testEntity5 = repo.save(new TestEntity5());
+                        testEntity5 = repo.save(new DualContentRenditionEntity());
 
-                        mvc.perform(put("/testEntity5s/" + testEntity5.getId() + "/content").content("foo").contentType("text/plain")).andExpect(status().is2xxSuccessful());
+                        mvc.perform(put("/dualContentRenditionEntities/" + testEntity5.getId() + "/content").content("foo").contentType("text/plain")).andExpect(status().is2xxSuccessful());
                     }
 
                     @Test
                     void shouldAlsoDeleteTheRendition() throws Exception {
                         Long id = testEntity5.getId();
 
-                        mvc.perform(delete("/testEntity5s/" + testEntity5.getId() + "/content")).andExpect(status().isNoContent());
+                        mvc.perform(delete("/dualContentRenditionEntities/" + testEntity5.getId() + "/content")).andExpect(status().isNoContent());
 
-                        Optional<TestEntity5> fetched = repo.findById(id);
+                        Optional<DualContentRenditionEntity> fetched = repo.findById(id);
                         assertThat(fetched.isPresent()).isTrue();
                         assertThat(fetched.get().getContentId()).isNull();
                         assertThat(fetched.get().getContentLen()).isNull();

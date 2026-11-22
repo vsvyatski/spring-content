@@ -32,21 +32,15 @@ public class RestResourceMappingBuilder implements ClassVisitor {
     @Override
     public boolean visitClass(String path, Class<?> klazz) {
         visited.put(klazz + ":" + path(segments), false);
-        int numContentIds = 0;
-        for (Field field : klazz.getDeclaredFields()) {
-            if (field.isAnnotationPresent(ContentId.class)) {
-                numContentIds++;
-            }
-        }
-        looseModes.put(klazz + ":" + path(segments), numContentIds == 1);
+        looseModes.put(klazz + ":" + path(segments), ContentPropertyUtils.contentIdFieldCount(klazz) == 1);
         return true;
     }
 
     @Override
     public boolean visitFieldBefore(String path, Class<?> klazz, Field f) {
         if (isObject(f) ||
-                (f.isAnnotationPresent(ContentId.class) && looseModes.get(klazz + ":" + path(segments)) == Boolean.FALSE ||
-                        f.isAnnotationPresent(ContentId.class) && looseModes.get(klazz + ":" + path(segments)) == Boolean.TRUE && segments.size() == 0)) {
+            (f.isAnnotationPresent(ContentId.class) && looseModes.get(klazz + ":" + path(segments)) == Boolean.FALSE ||
+                f.isAnnotationPresent(ContentId.class) && looseModes.get(klazz + ":" + path(segments)) == Boolean.TRUE && segments.size() == 0)) {
             RestResource restResource = f.getAnnotation(RestResource.class);
             if (restResource != null) {
                 String segment = segmentProvider.apply(restResource);
@@ -105,17 +99,17 @@ public class RestResourceMappingBuilder implements ClassVisitor {
 
     public Map<String, String> getInverseMappings() {
         return mappings.entrySet()
-                .stream()
-                .collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
+            .stream()
+            .collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
     }
 
     private boolean isObject(Field field) {
         return field.getType().isPrimitive() == false &&
-                field.getType().equals(String.class) == false &&
-                field.getType().equals(UUID.class) == false &&
-                field.getType().isEnum() == false &&
-                ContentPropertyUtils.isWrapperType(field.getType()) == false &&
-                ContentPropertyUtils.isRelationshipField(field) == false;
+            field.getType().equals(String.class) == false &&
+            field.getType().equals(UUID.class) == false &&
+            field.getType().isEnum() == false &&
+            ContentPropertyUtils.isWrapperType(field.getType()) == false &&
+            ContentPropertyUtils.isRelationshipField(field) == false;
     }
 
     private String path(Stack<String> segments) {

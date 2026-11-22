@@ -22,10 +22,10 @@ import javax.sql.DataSource;
 @AutoConfigureAfter({DataSourceAutoConfiguration.class, JpaVersionsAutoConfiguration.class})
 @ConditionalOnClass({DataSource.class, JpaStoresRegistrar.class})
 @ConditionalOnProperty(
-        prefix = "spring.content.storage.type",
-        name = "default",
-        havingValue = "jpa",
-        matchIfMissing = true)
+    prefix = "spring.content.storage.type",
+    name = "default",
+    havingValue = "jpa",
+    matchIfMissing = true)
 @EnableConfigurationProperties(ContentJpaProperties.class)
 public class JpaContentAutoConfiguration {
 

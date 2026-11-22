@@ -69,9 +69,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 // to behave differently in each tests
 @WebAppConfiguration
 @ContextConfiguration(classes = {
-        ContentSearchRestControllerIT.TestConfig.class,
-        DelegatingWebMvcConfiguration.class, RepositoryRestMvcConfiguration.class,
-        RestConfiguration.class})
+    ContentSearchRestControllerIT.TestConfig.class,
+    DelegatingWebMvcConfiguration.class, RepositoryRestMvcConfiguration.class,
+    RestConfiguration.class})
 @Transactional
 @ExtendWith(SpringExtension.class)
 public class ContentSearchRestControllerIT {
@@ -80,8 +80,7 @@ public class ContentSearchRestControllerIT {
     private static ReflectionService reflectionService;
     private static DefaultEntityLookupStrategy defaultLookupStrategy;
     private static QueryMethodsEntityLookupStrategy queryMethodsLookupStrategy;
-    @Autowired
-    private ContentSearchRestController controller;
+    private final RepresentationFactory representationFactory = new StandardRepresentationFactory();
     @Autowired
     private TestEntityWithSharedIdsRepository repository;
     @Autowired
@@ -89,11 +88,8 @@ public class ContentSearchRestControllerIT {
     @Autowired
     private RepositoryWithNoLookupStrategy repoWithNoLookupStrategy;
     @Autowired
-    private TestEntityWithSeparateIdsSearchableStore entityWithSeparateStore;
-    @Autowired
     private WebApplicationContext context;
     private MockMvc mvc;
-    private final RepresentationFactory representationFactory = new StandardRepresentationFactory();
     private TestEntityWithSharedId entity2;
     private List<String> sharedIds;
     private TestEntityWithSeparateId entity3;
@@ -101,7 +97,7 @@ public class ContentSearchRestControllerIT {
     private List<InternalResult> internalResults;
 
     @SuppressWarnings("unused") // classpath / store component scan
-    public interface TestEntityNoContentRepository extends CrudRepository<TestEntityNoContent, String> {
+    public interface TestEntityNoContentCrudRepository extends CrudRepository<TestEntityNoContent, String> {
     }
 
     @SuppressWarnings("unused") // classpath / store component scan
@@ -120,43 +116,46 @@ public class ContentSearchRestControllerIT {
     }
 
     public interface TestEntityWithSeparateIdsRepository
-            extends CrudRepository<TestEntityWithSeparateId, String> {
+        extends CrudRepository<TestEntityWithSeparateId, String> {
 
         @Query("select e from testEntitySeparateId e")
+        @SuppressWarnings("unused")
         List<TestEntityWithSeparateId> randomQueryMethod();
 
         @FulltextEntityLookupQuery
+        @SuppressWarnings("unused")
         List<TestEntityWithSeparateId> findAllByContentIdIn(@Param("contentIds") List<String> contentIds);
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntityWithSeparateIdsSearchableStore
-            extends FileSystemContentStore<TestEntityWithSeparateId, String>, Searchable<String> {
+        extends FileSystemContentStore<TestEntityWithSeparateId, String>, Searchable<String> {
     }
 
     @RepositoryRestResource(path = "repoWithNoLookupStrategy")
     public interface RepositoryWithNoLookupStrategy
-            extends CrudRepository<TestEntity2, String> {
+        extends CrudRepository<NoLookupStrategySearchEntity, String> {
     }
 
     @SuppressWarnings("unused") // classpath / store component scan
-    public interface TestEntity2SearchableStore
-            extends FileSystemContentStore<TestEntity2, String>, Searchable<String> {
+    public interface NoLookupStrategySearchEntitySearchableStore
+        extends FileSystemContentStore<NoLookupStrategySearchEntity, String>, Searchable<String> {
     }
 
     @RepositoryRestResource(path = "repoWithCustomSearchReturnType")
     @SuppressWarnings("unused") // classpath / store component scan
     public interface RepositoryWithCustomSearchReturnType
-            extends CrudRepository<TestEntity3, String> {
+        extends CrudRepository<CustomSearchReturnTypeEntity, String> {
     }
 
     @SuppressWarnings("unused") // classpath / store component scan
-    public interface TestEntity3SearchableStore
-            extends FileSystemContentStore<TestEntity3, String>, Searchable<CustomResult> {
+    public interface CustomSearchReturnTypeEntitySearchableStore
+        extends FileSystemContentStore<CustomSearchReturnTypeEntity, String>, Searchable<CustomResult> {
     }
 
     @Configuration
     @EnableJpaRepositories(basePackages = "it.rest.extensions.contentsearch",
-            considerNestedRepositories = true)
+        considerNestedRepositories = true)
     @EnableTransactionManagement
     @EnableFileSystemStores(basePackages = "it.rest.extensions.contentsearch")
     public static class TestConfig extends JpaInfrastructureConfig {
@@ -170,14 +169,16 @@ public class ContentSearchRestControllerIT {
         public File filesystemRoot() {
             File baseDir = new File(System.getProperty("java.io.tmpdir"));
             File filesystemRoot = new File(baseDir, "spring-content-search-controller-tests");
-            filesystemRoot.mkdirs();
+            if (!filesystemRoot.mkdirs() && !filesystemRoot.isDirectory()) {
+                throw new IllegalStateException("Failed to create " + filesystemRoot);
+            }
             return filesystemRoot;
         }
 
         @Override
         protected String[] packagesToScan() {
             return new String[]{
-                    "it.rest.extensions.contentsearch"
+                "it.rest.extensions.contentsearch"
             };
         }
     }
@@ -242,13 +243,13 @@ public class ContentSearchRestControllerIT {
     }
 
     @Entity
-    public static class TestEntity2 {
+    public static class NoLookupStrategySearchEntity {
         @Id
         private String id = UUID.randomUUID().toString();
         @ContentId
         private String contentId = UUID.randomUUID().toString();
 
-        public TestEntity2() {
+        public NoLookupStrategySearchEntity() {
         }
 
         public String getId() {
@@ -269,13 +270,13 @@ public class ContentSearchRestControllerIT {
     }
 
     @Entity
-    public static class TestEntity3 {
+    public static class CustomSearchReturnTypeEntity {
         @Id
         private String id = UUID.randomUUID().toString();
         @ContentId
         private String contentId = UUID.randomUUID().toString();
 
-        public TestEntity3() {
+        public CustomSearchReturnTypeEntity() {
         }
 
         public String getId() {
@@ -292,6 +293,64 @@ public class ContentSearchRestControllerIT {
 
         public void setContentId(String contentId) {
             this.contentId = contentId;
+        }
+    }
+
+    public static class CustomResult {
+
+        @ContentId
+        private String contentId;
+
+        @Highlight
+        private String highlight;
+
+        @Attribute(name = "foo")
+        private String foo;
+
+        @Attribute(name = "bar")
+        private String bar;
+
+        public CustomResult(String contentId, String highlight, String foo, String bar) {
+            this.contentId = contentId;
+            this.highlight = highlight;
+            this.foo = foo;
+            this.bar = bar;
+        }
+
+        public String getContentId() {
+            return contentId;
+        }
+
+        public void setContentId(String contentId) {
+            this.contentId = contentId;
+        }
+
+        @SuppressWarnings("unused")
+        public String getHighlight() {
+            return highlight;
+        }
+
+        @SuppressWarnings("unused")
+        public void setHighlight(String highlight) {
+            this.highlight = highlight;
+        }
+
+        public String getFoo() {
+            return foo;
+        }
+
+        public void setFoo(String foo) {
+            this.foo = foo;
+        }
+
+        @SuppressWarnings("unused")
+        public String getBar() {
+            return bar;
+        }
+
+        @SuppressWarnings("unused")
+        public void setBar(String bar) {
+            this.bar = bar;
         }
     }
 
@@ -318,10 +377,11 @@ public class ContentSearchRestControllerIT {
                 @Test
                 void shouldThrowAnException() throws Exception {
                     MvcResult result = mvc.perform(get(
-                                    "/testEntityNoContents/searchContent?queryString=one")
-                                    .accept("application/hal+json"))
-                            .andExpect(status().isNotFound()).andReturn();
+                            "/testEntityNoContents/searchContent?queryString=one")
+                            .accept("application/hal+json"))
+                        .andExpect(status().isNotFound()).andReturn();
 
+                    assertThat(result.getResolvedException()).isNotNull();
                     assertThat(result.getResolvedException().getMessage()).contains("no content");
                 }
             }
@@ -345,10 +405,11 @@ public class ContentSearchRestControllerIT {
                 @Test
                 void shouldThrowAResourceNotFoundException() throws Exception {
                     MvcResult result = mvc.perform(get(
-                                    "/testEntityNotSearchables/searchContent?queryString=one")
-                                    .accept("application/hal+json"))
-                            .andExpect(status().isNotFound()).andReturn();
+                            "/testEntityNotSearchables/searchContent?queryString=one")
+                            .accept("application/hal+json"))
+                        .andExpect(status().isNotFound()).andReturn();
 
+                    assertThat(result.getResolvedException()).isNotNull();
                     assertThat(result.getResolvedException().getMessage()).contains("not searchable");
                 }
             }
@@ -372,9 +433,9 @@ public class ContentSearchRestControllerIT {
                 @Test
                 void shouldReturnAResourceNotFoundException() throws Exception {
                     mvc.perform(get(
-                                    "/testEntityWithSharedIds/searchContent/invalidSearchMethod?keyword=one")
-                                    .accept("application/hal+json"))
-                            .andExpect(status().isNotFound()).andReturn();
+                            "/testEntityWithSharedIds/searchContent/invalidSearchMethod?keyword=one")
+                            .accept("application/hal+json"))
+                        .andExpect(status().isNotFound()).andReturn();
                 }
             }
 
@@ -397,8 +458,8 @@ public class ContentSearchRestControllerIT {
                 @Test
                 void shouldReturnABadRequestException() throws Exception {
                     mvc.perform(get("/testEntityWithSharedIds/searchContent")
-                                    .accept("application/hal+json"))
-                            .andExpect(status().isBadRequest());
+                            .accept("application/hal+json"))
+                        .andExpect(status().isBadRequest());
                 }
             }
 
@@ -421,8 +482,8 @@ public class ContentSearchRestControllerIT {
                 @Test
                 void shouldInvokeSearchWithThePageRequest() throws Exception {
                     mvc.perform(get("/testEntityWithSeparateIds/searchContent?queryString=else&page=1&size=1")
-                                    .accept("application/hal+json"))
-                            .andExpect(status().isOk()).andReturn();
+                            .accept("application/hal+json"))
+                        .andExpect(status().isOk()).andReturn();
 
                     Method m = ReflectionUtils.findMethod(Searchable.class, "search", String.class, Pageable.class);
                     PageRequest pageable = PageRequest.of(1, 1);
@@ -449,20 +510,21 @@ public class ContentSearchRestControllerIT {
                         controller.setQueryMethodsEntityLookupStrategy(queryMethodsLookupStrategy);
 
                         when(reflectionService.invokeMethod(any(), any(),
-                                eq("one"), isA(Pageable.class), eq(InternalResult.class))).thenReturn(Collections.EMPTY_LIST);
+                            eq("one"), isA(Pageable.class), eq(InternalResult.class)))
+                            .thenReturn(Collections.emptyList());
                     }
 
                     @Test
                     void shouldReturnAnEmptyResponseEntity() throws Exception {
                         MvcResult result = mvc.perform(get(
-                                        "/testEntityWithSharedIds/searchContent?queryString=one")
-                                        .accept("application/hal+json"))
-                                .andExpect(status().isOk()).andReturn();
+                                "/testEntityWithSharedIds/searchContent?queryString=one")
+                                .accept("application/hal+json"))
+                            .andExpect(status().isOk()).andReturn();
 
                         ReadableRepresentation halResponse = representationFactory
-                                .readRepresentation("application/hal+json",
-                                        new StringReader(result.getResponse()
-                                                .getContentAsString()));
+                            .readRepresentation("application/hal+json",
+                                new StringReader(result.getResponse()
+                                    .getContentAsString()));
                         assertThat(halResponse.getResources().size()).isEqualTo(0);
                     }
                 }
@@ -497,31 +559,33 @@ public class ContentSearchRestControllerIT {
                         sharedIds.add(entity2.getId());
 
                         when(reflectionService.invokeMethod(any(), any(),
-                                eq("two"))).thenReturn(internalResults);
+                            eq("two"))).thenReturn(internalResults);
                     }
 
                     @Test
                     void shouldReturnAResponseEntityWithTheEntity() throws Exception {
                         MvcResult result = mvc.perform(get(
-                                        "/testEntityWithSharedIds/searchContent?queryString=two")
-                                        .accept("application/hal+json"))
-                                .andExpect(status().isOk()).andReturn();
+                                "/testEntityWithSharedIds/searchContent?queryString=two")
+                                .accept("application/hal+json"))
+                            .andExpect(status().isOk()).andReturn();
 
-                        verify(defaultLookupStrategy, never()).lookup(any(RootResourceInformation.class), any(RepositoryInformation.class), any(List.class), any(List.class));
-                        verify(queryMethodsLookupStrategy, never()).lookup(any(RootResourceInformation.class), any(RepositoryInformation.class), any(List.class), any(List.class));
+                        verify(defaultLookupStrategy, never()).lookup(any(RootResourceInformation.class), any(RepositoryInformation.class), anyList(),
+                            anyList());
+                        verify(queryMethodsLookupStrategy, never()).lookup(any(RootResourceInformation.class), any(RepositoryInformation.class), anyList(),
+                            anyList());
 
                         ReadableRepresentation halResponse = representationFactory
-                                .readRepresentation("application/hal+json",
-                                        new StringReader(result.getResponse()
-                                                .getContentAsString()));
+                            .readRepresentation("application/hal+json",
+                                new StringReader(result.getResponse()
+                                    .getContentAsString()));
                         assertThat(halResponse
-                                .getResourcesByRel("testEntityWithSharedIds").size()).isEqualTo(2);
+                            .getResourcesByRel("testEntityWithSharedIds").size()).isEqualTo(2);
                         String id1 = halResponse
-                                .getResourcesByRel("testEntityWithSharedIds").get(0)
-                                .getValue("contentId").toString();
+                            .getResourcesByRel("testEntityWithSharedIds").get(0)
+                            .getValue("contentId").toString();
                         String id2 = halResponse
-                                .getResourcesByRel("testEntityWithSharedIds").get(1)
-                                .getValue("contentId").toString();
+                            .getResourcesByRel("testEntityWithSharedIds").get(1)
+                            .getValue("contentId").toString();
                         assertThat(sharedIds).contains(id1);
                         assertThat(sharedIds).contains(id2);
                         assertThat(id1).isNotEqualTo(id2);
@@ -557,25 +621,25 @@ public class ContentSearchRestControllerIT {
                         contentIds.add(entity2.getContentId());
 
                         when(reflectionService.invokeMethod(any(), any(),
-                                eq("else"))).thenReturn(internalResults);
+                            eq("else"))).thenReturn(internalResults);
                     }
 
                     @Test
                     void shouldFilterOutInvalidIDs() throws Exception {
                         MvcResult result = mvc.perform(get(
-                                        "/testEntityWithSharedIds/searchContent?queryString=else")
-                                        .accept("application/hal+json"))
-                                .andExpect(status().isOk()).andReturn();
+                                "/testEntityWithSharedIds/searchContent?queryString=else")
+                                .accept("application/hal+json"))
+                            .andExpect(status().isOk()).andReturn();
 
                         ReadableRepresentation halResponse = representationFactory
-                                .readRepresentation("application/hal+json",
-                                        new StringReader(result.getResponse()
-                                                .getContentAsString()));
+                            .readRepresentation("application/hal+json",
+                                new StringReader(result.getResponse()
+                                    .getContentAsString()));
                         assertThat(halResponse
-                                .getResourcesByRel("testEntityWithSharedIds").size()).isEqualTo(1);
+                            .getResourcesByRel("testEntityWithSharedIds").size()).isEqualTo(1);
                         String id1 = halResponse
-                                .getResourcesByRel("testEntityWithSharedIds").get(0)
-                                .getValue("contentId").toString();
+                            .getResourcesByRel("testEntityWithSharedIds").get(0)
+                            .getValue("contentId").toString();
                         assertThat(contentIds).contains(id1);
                     }
                 }
@@ -599,20 +663,21 @@ public class ContentSearchRestControllerIT {
                         controller.setQueryMethodsEntityLookupStrategy(queryMethodsLookupStrategy);
 
                         when(reflectionService.invokeMethod(any(), any(),
-                                eq("something"), isA(Pageable.class), eq(InternalResult.class))).thenReturn(Collections.EMPTY_LIST);
+                            eq("something"), isA(Pageable.class), eq(InternalResult.class)))
+                            .thenReturn(Collections.emptyList());
                     }
 
                     @Test
                     void shouldReturnAnEmptyResponseEntity() throws Exception {
                         MvcResult result = mvc.perform(get(
-                                        "/testEntityWithSeparateIds/searchContent?queryString=something")
-                                        .accept("application/hal+json"))
-                                .andExpect(status().isOk()).andReturn();
+                                "/testEntityWithSeparateIds/searchContent?queryString=something")
+                                .accept("application/hal+json"))
+                            .andExpect(status().isOk()).andReturn();
 
                         ReadableRepresentation halResponse = representationFactory
-                                .readRepresentation("application/hal+json",
-                                        new StringReader(result.getResponse()
-                                                .getContentAsString()));
+                            .readRepresentation("application/hal+json",
+                                new StringReader(result.getResponse()
+                                    .getContentAsString()));
                         assertThat(halResponse.getResources().size()).isEqualTo(0);
                     }
                 }
@@ -647,31 +712,33 @@ public class ContentSearchRestControllerIT {
                         contentIds.add(entity4.getContentId());
 
                         when(reflectionService.invokeMethod(any(), any(),
-                                eq("else"))).thenReturn(internalResults);
+                            eq("else"))).thenReturn(internalResults);
                     }
 
                     @Test
                     void shouldReturnAResponseEntityWithTheEntity() throws Exception {
                         MvcResult result = mvc.perform(get(
-                                        "/testEntityWithSeparateIds/searchContent?queryString=else")
-                                        .accept("application/hal+json"))
-                                .andExpect(status().isOk()).andReturn();
+                                "/testEntityWithSeparateIds/searchContent?queryString=else")
+                                .accept("application/hal+json"))
+                            .andExpect(status().isOk()).andReturn();
 
-                        verify(defaultLookupStrategy, never()).lookup(any(RootResourceInformation.class), any(RepositoryInformation.class), any(List.class), any(List.class));
-                        verify(queryMethodsLookupStrategy).lookup(any(RootResourceInformation.class), any(RepositoryInformation.class), any(List.class), any(List.class));
+                        verify(defaultLookupStrategy, never()).lookup(any(RootResourceInformation.class), any(RepositoryInformation.class), anyList(),
+                            anyList());
+                        verify(queryMethodsLookupStrategy).lookup(any(RootResourceInformation.class), any(RepositoryInformation.class), anyList(),
+                            anyList());
 
                         ReadableRepresentation halResponse = representationFactory
-                                .readRepresentation("application/hal+json",
-                                        new StringReader(result.getResponse()
-                                                .getContentAsString()));
+                            .readRepresentation("application/hal+json",
+                                new StringReader(result.getResponse()
+                                    .getContentAsString()));
                         assertThat(halResponse
-                                .getResourcesByRel("testEntityWithSeparateIds").size()).isEqualTo(2);
+                            .getResourcesByRel("testEntityWithSeparateIds").size()).isEqualTo(2);
                         String id1 = halResponse
-                                .getResourcesByRel("testEntityWithSeparateIds").get(0)
-                                .getValue("contentId").toString();
+                            .getResourcesByRel("testEntityWithSeparateIds").get(0)
+                            .getValue("contentId").toString();
                         String id2 = halResponse
-                                .getResourcesByRel("testEntityWithSeparateIds").get(1)
-                                .getValue("contentId").toString();
+                            .getResourcesByRel("testEntityWithSeparateIds").get(1)
+                            .getValue("contentId").toString();
                         assertThat(contentIds).contains(id1);
                         assertThat(contentIds).contains(id2);
                         assertThat(id1).isNotEqualTo(id2);
@@ -707,25 +774,25 @@ public class ContentSearchRestControllerIT {
                         contentIds.add(entity3.getContentId());
 
                         when(reflectionService.invokeMethod(any(), any(),
-                                eq("else"))).thenReturn(internalResults);
+                            eq("else"))).thenReturn(internalResults);
                     }
 
                     @Test
                     void shouldFilterOutInvalidIDs() throws Exception {
                         MvcResult result = mvc.perform(get(
-                                        "/testEntityWithSeparateIds/searchContent?queryString=else")
-                                        .accept("application/hal+json"))
-                                .andExpect(status().isOk()).andReturn();
+                                "/testEntityWithSeparateIds/searchContent?queryString=else")
+                                .accept("application/hal+json"))
+                            .andExpect(status().isOk()).andReturn();
 
                         ReadableRepresentation halResponse = representationFactory
-                                .readRepresentation("application/hal+json",
-                                        new StringReader(result.getResponse()
-                                                .getContentAsString()));
+                            .readRepresentation("application/hal+json",
+                                new StringReader(result.getResponse()
+                                    .getContentAsString()));
                         assertThat(halResponse
-                                .getResourcesByRel("testEntityWithSeparateIds").size()).isEqualTo(1);
+                            .getResourcesByRel("testEntityWithSeparateIds").size()).isEqualTo(1);
                         String id1 = halResponse
-                                .getResourcesByRel("testEntityWithSeparateIds").get(0)
-                                .getValue("contentId").toString();
+                            .getResourcesByRel("testEntityWithSeparateIds").get(0)
+                            .getValue("contentId").toString();
                         assertThat(contentIds).contains(id1);
                     }
                 }
@@ -752,40 +819,40 @@ public class ContentSearchRestControllerIT {
                     results.add(new CustomResult("67890", "<em>else altogether</em>", "foo2", "bar2"));
 
                     when(reflectionService.invokeMethod(any(), any(),
-                            eq("else"))).thenReturn(results);
+                        eq("else"))).thenReturn(results);
                 }
 
                 @Test
                 void shouldReturnAResponseEntityWithTheEntity() throws Exception {
                     MvcResult result = mvc.perform(get(
-                                    "/repoWithCustomSearchReturnType/searchContent?queryString=else")
-                                    .accept("application/hal+json"))
-                            .andExpect(status().isOk()).andReturn();
+                            "/repoWithCustomSearchReturnType/searchContent?queryString=else")
+                            .accept("application/hal+json"))
+                        .andExpect(status().isOk()).andReturn();
 
                     ReadableRepresentation halResponse = representationFactory
-                            .readRepresentation("application/hal+json",
-                                    new StringReader(result.getResponse()
-                                            .getContentAsString()));
+                        .readRepresentation("application/hal+json",
+                            new StringReader(result.getResponse()
+                                .getContentAsString()));
                     assertThat(halResponse
-                            .getResourcesByRel("customResults").size()).isEqualTo(2);
+                        .getResourcesByRel("customResults").size()).isEqualTo(2);
                     assertThat(halResponse
-                            .getResourcesByRel("customResults").get(0)
-                            .getValue("highlight").toString()).isEqualTo("<em>something else</em>");
+                        .getResourcesByRel("customResults").get(0)
+                        .getValue("highlight").toString()).isEqualTo("<em>something else</em>");
                     assertThat(halResponse
-                            .getResourcesByRel("customResults").get(0)
-                            .getValue("foo").toString()).isEqualTo("foo1");
+                        .getResourcesByRel("customResults").get(0)
+                        .getValue("foo").toString()).isEqualTo("foo1");
                     assertThat(halResponse
-                            .getResourcesByRel("customResults").get(0)
-                            .getValue("bar").toString()).isEqualTo("bar1");
+                        .getResourcesByRel("customResults").get(0)
+                        .getValue("bar").toString()).isEqualTo("bar1");
                     assertThat(halResponse
-                            .getResourcesByRel("customResults").get(1)
-                            .getValue("highlight").toString()).isEqualTo("<em>else altogether</em>");
+                        .getResourcesByRel("customResults").get(1)
+                        .getValue("highlight").toString()).isEqualTo("<em>else altogether</em>");
                     assertThat(halResponse
-                            .getResourcesByRel("customResults").get(1)
-                            .getValue("foo").toString()).isEqualTo("foo2");
+                        .getResourcesByRel("customResults").get(1)
+                        .getValue("foo").toString()).isEqualTo("foo2");
                     assertThat(halResponse
-                            .getResourcesByRel("customResults").get(1)
-                            .getValue("bar").toString()).isEqualTo("bar2");
+                        .getResourcesByRel("customResults").get(1)
+                        .getValue("bar").toString()).isEqualTo("bar2");
                 }
             }
 
@@ -809,31 +876,31 @@ public class ContentSearchRestControllerIT {
                     results.add(new CustomResult("12345", "<em>something else</em>", "foo1", "bar1"));
 
                     when(reflectionService.invokeMethod(any(), any(),
-                            eq("else"), isA(Pageable.class))).thenReturn(results);
+                        eq("else"), isA(Pageable.class))).thenReturn(results);
                 }
 
                 @Test
                 void shouldReturnAResponseEntityWithTheEntity() throws Exception {
                     MvcResult result = mvc.perform(get(
-                                    "/repoWithCustomSearchReturnType/searchContent?queryString=else&page=1&size=1")
-                                    .accept("application/hal+json"))
-                            .andExpect(status().isOk()).andReturn();
+                            "/repoWithCustomSearchReturnType/searchContent?queryString=else&page=1&size=1")
+                            .accept("application/hal+json"))
+                        .andExpect(status().isOk()).andReturn();
 
                     ReadableRepresentation halResponse = representationFactory
-                            .readRepresentation("application/hal+json",
-                                    new StringReader(result.getResponse()
-                                            .getContentAsString()));
+                        .readRepresentation("application/hal+json",
+                            new StringReader(result.getResponse()
+                                .getContentAsString()));
                     assertThat(halResponse
-                            .getResourcesByRel("customResults").size()).isEqualTo(1);
+                        .getResourcesByRel("customResults").size()).isEqualTo(1);
                     assertThat(halResponse
-                            .getResourcesByRel("customResults").get(0)
-                            .getValue("highlight").toString()).isEqualTo("<em>something else</em>");
+                        .getResourcesByRel("customResults").get(0)
+                        .getValue("highlight").toString()).isEqualTo("<em>something else</em>");
                     assertThat(halResponse
-                            .getResourcesByRel("customResults").get(0)
-                            .getValue("foo").toString()).isEqualTo("foo1");
+                        .getResourcesByRel("customResults").get(0)
+                        .getValue("foo").toString()).isEqualTo("foo1");
                     assertThat(halResponse
-                            .getResourcesByRel("customResults").get(0)
-                            .getValue("bar").toString()).isEqualTo("bar1");
+                        .getResourcesByRel("customResults").get(0)
+                        .getValue("bar").toString()).isEqualTo("bar1");
                 }
             }
 
@@ -852,10 +919,10 @@ public class ContentSearchRestControllerIT {
                     queryMethodsLookupStrategy = spy(new QueryMethodsEntityLookupStrategy());
                     controller.setQueryMethodsEntityLookupStrategy(queryMethodsLookupStrategy);
 
-                    TestEntity2 entity5 = new TestEntity2();
+                    NoLookupStrategySearchEntity entity5 = new NoLookupStrategySearchEntity();
                     repoWithNoLookupStrategy.save(entity5);
 
-                    TestEntity2 entity6 = new TestEntity2();
+                    NoLookupStrategySearchEntity entity6 = new NoLookupStrategySearchEntity();
                     repoWithNoLookupStrategy.save(entity6);
 
                     internalResults = new ArrayList<>();
@@ -872,25 +939,27 @@ public class ContentSearchRestControllerIT {
                 @Test
                 void shouldReturnAResponseWithTheEntity() throws Exception {
                     MvcResult result = mvc.perform(get(
-                                    "/repoWithNoLookupStrategy/searchContent?queryString=else")
-                                    .accept("application/hal+json"))
-                            .andExpect(status().isOk()).andReturn();
+                            "/repoWithNoLookupStrategy/searchContent?queryString=else")
+                            .accept("application/hal+json"))
+                        .andExpect(status().isOk()).andReturn();
 
-                    verify(defaultLookupStrategy).lookup(any(RootResourceInformation.class), any(RepositoryInformation.class), any(List.class), any(List.class));
-                    verify(queryMethodsLookupStrategy, never()).lookup(any(RootResourceInformation.class), any(RepositoryInformation.class), any(List.class), any(List.class));
+                    verify(defaultLookupStrategy).lookup(any(RootResourceInformation.class), any(RepositoryInformation.class), anyList(),
+                        anyList());
+                    verify(queryMethodsLookupStrategy, never()).lookup(any(RootResourceInformation.class), any(RepositoryInformation.class), anyList(),
+                        anyList());
 
                     ReadableRepresentation halResponse = representationFactory
-                            .readRepresentation("application/hal+json",
-                                    new StringReader(result.getResponse()
-                                            .getContentAsString()));
+                        .readRepresentation("application/hal+json",
+                            new StringReader(result.getResponse()
+                                .getContentAsString()));
                     assertThat(halResponse
-                            .getResourcesByRel("testEntity2s").size()).isEqualTo(2);
+                        .getResourcesByRel("noLookupStrategySearchEntities").size()).isEqualTo(2);
                     String id1 = halResponse
-                            .getResourcesByRel("testEntity2s").get(0)
-                            .getValue("contentId").toString();
+                        .getResourcesByRel("noLookupStrategySearchEntities").get(0)
+                        .getValue("contentId").toString();
                     String id2 = halResponse
-                            .getResourcesByRel("testEntity2s").get(1)
-                            .getValue("contentId").toString();
+                        .getResourcesByRel("noLookupStrategySearchEntities").get(1)
+                        .getValue("contentId").toString();
                     assertThat(contentIds).contains(id1);
                     assertThat(contentIds).contains(id2);
                     assertThat(id1).isNotEqualTo(id2);
@@ -933,60 +1002,6 @@ public class ContentSearchRestControllerIT {
 
                 assertThat(entities.size()).isEqualTo(500);
             }
-        }
-    }
-
-    public static class CustomResult {
-
-        @ContentId
-        private String contentId;
-
-        @Highlight
-        private String highlight;
-
-        @Attribute(name = "foo")
-        private String foo;
-
-        @Attribute(name = "bar")
-        private String bar;
-
-        public CustomResult(String contentId, String highlight, String foo, String bar) {
-            this.contentId = contentId;
-            this.highlight = highlight;
-            this.foo = foo;
-            this.bar = bar;
-        }
-
-        public String getContentId() {
-            return contentId;
-        }
-
-        public void setContentId(String contentId) {
-            this.contentId = contentId;
-        }
-
-        public String getHighlight() {
-            return highlight;
-        }
-
-        public void setHighlight(String highlight) {
-            this.highlight = highlight;
-        }
-
-        public String getFoo() {
-            return foo;
-        }
-
-        public void setFoo(String foo) {
-            this.foo = foo;
-        }
-
-        public String getBar() {
-            return bar;
-        }
-
-        public void setBar(String bar) {
-            this.bar = bar;
         }
     }
 }

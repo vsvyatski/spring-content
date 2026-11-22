@@ -149,12 +149,29 @@ Change version for the whole reactor with:
 - Naming: `*Test.java` = unit (always); `*IT.java` = integration (`-P tests` only)
 - Follow existing IT style: inner entity/store/repo types, `@Enable*Stores` + `@EnableJpaRepositories` test configs,
   assert streams with Commons IO + AssertJ
+- Test entities: provide a public no-arg constructor; add parameterized constructors only when a test calls
+  `new Entity(...)` with arguments (JPA and Spring Data materialize entities via the no-arg constructor)
+- `ContentStore` marker interfaces use a `*Store` suffix (e.g. `TestEntityContentStore`), not `*ContentRepository`.
+  Reserve `*Repository` for Spring Data `CrudRepository` / `JpaRepository` types only.
+- Shared fixtures live in `spring-content-commons` test-jar (`org.springframework.content.test.support.**`).
+  Reuse `TestSupportData` for synthetic content ids, default UTF-8 payloads (`sampleTextStream()`, etc.), and
+  `UNASSOCIATED_RESOURCE_LOCATION` instead of `RandomString` or letter-salad literals.
+  `@Enable*Stores` unit tests scan `TestSupportPackages` (`.jpa`, `.mongo`, `.fs`, `.s3`, `.gcs`, `.azure`) instead of
+  inner `TestEntity` types. `EnableJpaStoresTest` asserts `DualContentJpaStringIdStore` (dual `@ContentId` entity in the
+  test-jar); other backends use single-content store marker interfaces. REST module fixtures live under
+  `internal.org.springframework.content.rest.support` with purpose names (e.g. `JsonMappedContentEntity`);
+  `@RepositoryRestResource(path = …)` uses purpose-driven collection paths aligned with fixture type names (for
+  example `jsonMappedContentEntities`).
 
 When changing a store implementation, run that module’s `*Test` and, if behavior or IO/SQL is involved, the matching
 `*IT`.
 
 ## Coding conventions
 
+- **Java 17 only** — see `.cursor/rules/java-17.mdc`. No Java 8/11 language level, no `javax.*` EE APIs in new code, no
+  legacy JDK patterns when modern ones fit.
+- Follow repo `.editorconfig`: `insert_final_newline = true` and `trim_trailing_whitespace = true` on every edited file
+  (including new files created in a change).
 - Match surrounding Spring Framework style (formatter: Eclipse `eclipse-code-formatter.xml` when present). Tabs vs
   spaces: copy the file you are editing.
 - New `.java` files: Apache 2.0 header (copy from a neighboring file), class Javadoc with `@author`. Substantial edits:
@@ -179,8 +196,8 @@ Per-module AsciiDoc lives under `src/main/asciidoc/`. High-level notes in `READM
 ## Agent roles (this repo)
 
 - **Implement:** Grok in the parent chat. Pick Grok in the model picker.
-- **Review:** Composer (`composer-2.5-fast` subagent) after code changes, or when asked. See
-  `.cursor/rules/grok-dev-composer-review.mdc`.
+- **Review:** Composer (`composer-2.5` subagent, not Fast) after code changes, or when asked. See
+  `.cursor/rules/grok-dev-composer-review.mdc`, `agent-review.mdc`, and `agent-models.mdc`.
 
 ## Agent do / don’t
 

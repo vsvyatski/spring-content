@@ -16,17 +16,17 @@ public sealed interface StoredDataEncryptionKey {
      * @param initializationVector the IV for the encryption algorithm
      */
     record UnencryptedSymmetricDataEncryptionKey(
-            String algorithm,
-            byte[] keyData,
-            byte[] initializationVector
+        String algorithm,
+        byte[] keyData,
+        byte[] initializationVector
     ) implements StoredDataEncryptionKey {
 
         @Override
         public boolean equals(Object o) {
             return o instanceof UnencryptedSymmetricDataEncryptionKey other
-                    && Objects.equals(algorithm, other.algorithm)
-                    && Arrays.equals(keyData, other.keyData)
-                    && Arrays.equals(initializationVector, other.initializationVector);
+                && Objects.equals(algorithm, other.algorithm)
+                && Arrays.equals(keyData, other.keyData)
+                && Arrays.equals(initializationVector, other.initializationVector);
         }
 
         @Override
@@ -49,23 +49,23 @@ public sealed interface StoredDataEncryptionKey {
      * @param initializationVector    the IV for the encryption algorithm
      */
     record EncryptedSymmetricDataEncryptionKey(
-            String wrappingAlgorithm,
-            String wrappingKeyId,
-            String wrappingKeyVersion,
-            String dataEncryptionAlgorithm,
-            byte[] encryptedKeyData,
-            byte[] initializationVector
+        String wrappingAlgorithm,
+        String wrappingKeyId,
+        String wrappingKeyVersion,
+        String dataEncryptionAlgorithm,
+        byte[] encryptedKeyData,
+        byte[] initializationVector
     ) implements StoredDataEncryptionKey {
 
         @Override
         public boolean equals(Object o) {
             return o instanceof EncryptedSymmetricDataEncryptionKey other
-                    && Objects.equals(wrappingAlgorithm, other.wrappingAlgorithm)
-                    && Objects.equals(wrappingKeyId, other.wrappingKeyId)
-                    && Objects.equals(wrappingKeyVersion, other.wrappingKeyVersion)
-                    && Objects.equals(dataEncryptionAlgorithm, other.dataEncryptionAlgorithm)
-                    && Arrays.equals(encryptedKeyData, other.encryptedKeyData)
-                    && Arrays.equals(initializationVector, other.initializationVector);
+                && Objects.equals(wrappingAlgorithm, other.wrappingAlgorithm)
+                && Objects.equals(wrappingKeyId, other.wrappingKeyId)
+                && Objects.equals(wrappingKeyVersion, other.wrappingKeyVersion)
+                && Objects.equals(dataEncryptionAlgorithm, other.dataEncryptionAlgorithm)
+                && Arrays.equals(encryptedKeyData, other.encryptedKeyData)
+                && Arrays.equals(initializationVector, other.initializationVector);
         }
 
         @Override

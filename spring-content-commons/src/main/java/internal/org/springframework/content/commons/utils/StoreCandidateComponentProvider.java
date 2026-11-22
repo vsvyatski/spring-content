@@ -13,7 +13,7 @@ import org.springframework.core.type.filter.AssignableTypeFilter;
 import java.io.IOException;
 
 public class StoreCandidateComponentProvider
-        extends ClassPathScanningCandidateComponentProvider {
+    extends ClassPathScanningCandidateComponentProvider {
 
     public StoreCandidateComponentProvider(boolean useDefaultFilters, Environment env) {
         super(useDefaultFilters, env);
@@ -53,7 +53,7 @@ public class StoreCandidateComponentProvider
                              @NonNull MetadataReaderFactory metadataReaderFactory) throws IOException {
 
             return metadataReader.getClassMetadata().isInterface()
-                    && super.match(metadataReader, metadataReaderFactory);
+                && super.match(metadataReader, metadataReaderFactory);
         }
     }
 }

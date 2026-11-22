@@ -1,3 +1,16 @@
 {
-  "approvalMode": "unrestricted"
+  "approvalMode": "unrestricted",
+  "terminalAllowlist": [
+    "git",
+    "rg",
+    "gmake",
+    "cd",
+    "jar",
+    "javap",
+    "javac",
+    "Select-String",
+    "Select-Object",
+    "findstr",
+    "where"
+  ]
 }

@@ -15,7 +15,6 @@ import org.springframework.boot.hateoas.autoconfigure.HypermediaAutoConfiguratio
 import org.springframework.boot.security.autoconfigure.SecurityAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.annotations.MimeType;
@@ -47,19 +46,16 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(classes = {EmbeddedIdTest.Application.class},
-        webEnvironment = WebEnvironment.RANDOM_PORT)
+    webEnvironment = WebEnvironment.RANDOM_PORT)
 @EnableAutoConfiguration(exclude = {HypermediaAutoConfiguration.class, SecurityAutoConfiguration.class})
 @ExtendWith(SpringExtension.class)
 public class EmbeddedIdTest {
-
-    @LocalServerPort
-    private int serverPort;
 
     @Autowired
     private TestEntityRepository repo;
 
     @Autowired
-    private TestEntityContentRepository store;
+    private TestEntityContentStore store;
 
     @Autowired
     private WebApplicationContext context;
@@ -69,7 +65,7 @@ public class EmbeddedIdTest {
     public interface TestEntityRepository extends JpaRepository<TestEntity, TestEntityId> {
     }
 
-    public interface TestEntityContentRepository extends FileSystemContentStore<TestEntity, TestEntityId> {
+    public interface TestEntityContentStore extends FileSystemContentStore<TestEntity, TestEntityId> {
     }
 
     @SpringBootApplication
@@ -130,10 +126,12 @@ public class EmbeddedIdTest {
             this.contentId = contentId;
         }
 
+        @SuppressWarnings("unused")
         public long getContentLength() {
             return contentLength;
         }
 
+        @SuppressWarnings("unused")
         public void setContentLength(long contentLength) {
             this.contentLength = contentLength;
         }
@@ -193,11 +191,11 @@ public class EmbeddedIdTest {
             entity = repo.save(entity);
 
             MockHttpServletResponse response =
-                    mvc.perform(
-                                    get("/testEntities/" + entity.getId()).
-                                            accept("text/plain")).
-                            andExpect(status().isOk()).
-                            andReturn().getResponse();
+                mvc.perform(
+                        get("/uuidSingleContentEntities/" + entity.getId()).
+                            accept("text/plain")).
+                    andExpect(status().isOk()).
+                    andReturn().getResponse();
 
             assertThat(response).isNotNull();
             assertThat(response.getContentAsString()).isEqualTo(content);
