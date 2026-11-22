@@ -1,10 +1,10 @@
 package internal.org.springframework.versions.jpa;
 
-import jakarta.persistence.Id;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.versions.*;
+import internal.org.springframework.versions.jpa.VersioningService;
+import org.springframework.versions.test.support.VersioningUnitFields;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -14,72 +14,8 @@ public class JpaVersioningServiceImplTest {
 
     private Object result;
 
-    private TestEntity entity;
-    private TestEntity successor;
-
-    @SuppressWarnings("unused")
-    private static class TestEntity {
-        @Id
-        private Long id;
-        @AncestorId
-        private Long ancestorId;
-        @AncestorRootId
-        private Long ancestorRootId;
-        @SuccessorId
-        private Long successorId;
-        @VersionNumber
-        private String versionNo;
-        @VersionLabel
-        private String versionLabel;
-
-        public Long getId() {
-            return id;
-        }
-
-        public void setId(Long id) {
-            this.id = id;
-        }
-
-        public Long getAncestorId() {
-            return ancestorId;
-        }
-
-        public void setAncestorId(Long ancestorId) {
-            this.ancestorId = ancestorId;
-        }
-
-        public Long getAncestorRootId() {
-            return ancestorRootId;
-        }
-
-        public void setAncestorRootId(Long ancestorRootId) {
-            this.ancestorRootId = ancestorRootId;
-        }
-
-        public Long getSuccessorId() {
-            return successorId;
-        }
-
-        public void setSuccessorId(Long successorId) {
-            this.successorId = successorId;
-        }
-
-        public String getVersionNo() {
-            return versionNo;
-        }
-
-        public void setVersionNo(String versionNo) {
-            this.versionNo = versionNo;
-        }
-
-        public String getVersionLabel() {
-            return versionLabel;
-        }
-
-        public void setVersionLabel(String versionLabel) {
-            this.versionLabel = versionLabel;
-        }
-    }
+    private VersioningUnitFields entity;
+    private VersioningUnitFields successor;
 
     @Nested
     class JpaVersioningServiceImplCases {
@@ -87,7 +23,7 @@ public class JpaVersioningServiceImplTest {
         class EstablishAncestralRoot {
             @BeforeEach
             void setUp() {
-                entity = new TestEntity();
+                entity = new VersioningUnitFields();
                 entity.setId(100L);
 
                 versioner = new JpaVersioningServiceImpl(null);
@@ -115,8 +51,8 @@ public class JpaVersioningServiceImplTest {
         class EstablishAncestor {
             @BeforeEach
             void setUp() {
-                entity = new TestEntity();
-                successor = new TestEntity();
+                entity = new VersioningUnitFields();
+                successor = new VersioningUnitFields();
                 successor.setId(999L);
 
                 versioner = new JpaVersioningServiceImpl(null);
@@ -139,10 +75,10 @@ public class JpaVersioningServiceImplTest {
         class EstablishSuccessor {
             @BeforeEach
             void setUp() {
-                successor = new TestEntity();
-                TestEntity ancestralRoot = new TestEntity();
+                successor = new VersioningUnitFields();
+                VersioningUnitFields ancestralRoot = new VersioningUnitFields();
                 ancestralRoot.setId(1234L);
-                TestEntity ancestor = new TestEntity();
+                VersioningUnitFields ancestor = new VersioningUnitFields();
                 ancestor.setId(5678L);
                 String versionNo = "1.1";
                 String versionLabel = "a new version";
