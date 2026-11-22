@@ -16,9 +16,8 @@ import static org.mockito.Mockito.mock;
 
 public class S3StoreFactoryBeanTest {
 
-    private S3StoreFactoryBean factory;
-
     private final GenericApplicationContext context = new GenericApplicationContext();
+    private S3StoreFactoryBean factory;
     private S3Client client;
     private PlacementService placer;
 

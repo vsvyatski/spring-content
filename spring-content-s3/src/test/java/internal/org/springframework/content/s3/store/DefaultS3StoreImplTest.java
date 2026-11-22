@@ -3,6 +3,7 @@ package internal.org.springframework.content.s3.store;
 import internal.org.springframework.content.s3.config.S3StoreConfiguration;
 import internal.org.springframework.content.s3.io.S3StoreResource;
 import internal.org.springframework.content.s3.io.SimpleStorageProtocolResolver;
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -59,46 +60,60 @@ public class DefaultS3StoreImplTest {
     private InputStream result;
     private Exception e;
 
+    @SuppressWarnings("DataFlowIssue")
+    private static S3ObjectId objectIdWithNullBucket(String key) {
+        return new S3ObjectId(null, key);
+    }
+
     public static class TestEntityWithBucketAnnotation extends SingleContentFields {
         @Bucket
-        private String bucketId;
+        private final String bucketId;
 
         public TestEntityWithBucketAnnotation(String bucketId) {
             this.bucketId = bucketId;
         }
 
+        @SuppressWarnings("unused") // read by {@link org.springframework.content.commons.utils.BeanUtils} for @Bucket
         public String getBucketId() {
             return bucketId;
         }
+    }
 
-        public void setBucketId(String bucketId) {
-            this.bucketId = bucketId;
+    public record CustomContentId(String customer, String objectId) implements Serializable {
+
+        @Serial
+        private static final long serialVersionUID = 7340883227287556823L;
+    }
+
+    private static final class MatchingSingleContentFieldsStringContentPropertyInfoConverter
+        implements Converter<ContentPropertyInfo<SingleContentFields, String>, S3ObjectId> {
+        @Override
+        public S3ObjectId convert(@NonNull ContentPropertyInfo<SingleContentFields, String> source) {
+            return new S3ObjectId("custom-bucket", "test-entity/custom-object-id-string-based");
         }
     }
 
-    public static class CustomContentId implements Serializable {
-        private String customer;
-        private String objectId;
-
-        public CustomContentId(String bucket, String objectId) {
-            this.customer = bucket;
-            this.objectId = objectId;
+    private static final class NonMatchingUuidContentPropertyInfoConverter
+        implements Converter<ContentPropertyInfo<Object, UUID>, S3ObjectId> {
+        @Override
+        public S3ObjectId convert(@NonNull ContentPropertyInfo<Object, UUID> source) {
+            return new S3ObjectId("custom-bucket", "object/custom-object-id-uuid-based");
         }
+    }
 
-        public String getCustomer() {
-            return customer;
+    private static final class NonMatchingBucketEntityContentPropertyInfoConverter
+        implements Converter<ContentPropertyInfo<TestEntityWithBucketAnnotation, String>, S3ObjectId> {
+        @Override
+        public S3ObjectId convert(@NonNull ContentPropertyInfo<TestEntityWithBucketAnnotation, String> source) {
+            return new S3ObjectId("custom-bucket", "test-entity-with-bucket/custom-object-id-string-based");
         }
+    }
 
-        public void setCustomer(String customer) {
-            this.customer = customer;
-        }
-
-        public String getObjectId() {
-            return objectId;
-        }
-
-        public void setObjectId(String objectId) {
-            this.objectId = objectId;
+    private static final class NullBucketContentPropertyInfoConverter
+        implements Converter<ContentPropertyInfo<SingleContentFields, String>, S3ObjectId> {
+        @Override
+        public S3ObjectId convert(@NonNull ContentPropertyInfo<SingleContentFields, String> source) {
+            return objectIdWithNullBucket("custom-object-id");
         }
     }
 
@@ -174,7 +189,7 @@ public class DefaultS3StoreImplTest {
                                     placementService = new PlacementServiceImpl();
                                     S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
                                     placementService.addConverter(CustomContentId.class, S3ObjectId.class,
-                                        entity -> new S3ObjectId(entity.getCustomer(), entity.getObjectId()));
+                                        entity -> new S3ObjectId(entity.customer(), entity.objectId()));
 
                                     SimpleStorageProtocolResolver s3Protocol = new SimpleStorageProtocolResolver(client);
                                     s3Protocol.afterPropertiesSet();
@@ -503,7 +518,7 @@ public class DefaultS3StoreImplTest {
                                 placementService = new PlacementServiceImpl();
                                 S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
                                 placementService.addConverter(CustomContentId.class, S3ObjectId.class,
-                                    entity -> new S3ObjectId(null, entity.getObjectId()));
+                                    entity -> objectIdWithNullBucket(entity.objectId()));
 
                                 s3StoreImpl = new DefaultS3StoreImpl<>(context, loader, null, placementService, client, null);
 
@@ -687,33 +702,11 @@ public class DefaultS3StoreImplTest {
                                 // Converter that matches Entity and content ID types. Expected to be invoked.
                                 // Converter<ContentPropertyInfo<SingleContentFields, String>, S3ObjectId> instead of Converter<SingleContentFields, S3ObjectId> for #getResource
                                 placementService.addConverter(
-                                    new Converter<ContentPropertyInfo<SingleContentFields, String>, S3ObjectId>() {
-                                        @Override
-                                        public S3ObjectId convert(
-                                            ContentPropertyInfo<SingleContentFields, String> source) {
-                                            return new S3ObjectId("custom-bucket",
-                                                "test-entity/custom-object-id-string-based");
-                                        }
-                                    });
-
+                                    new MatchingSingleContentFieldsStringContentPropertyInfoConverter());
                                 // Converter that does not match content ID type. Should not be invoked.
-                                placementService.addConverter(
-                                    new Converter<ContentPropertyInfo<Object, UUID>, S3ObjectId>() {
-                                        @Override
-                                        public S3ObjectId convert(ContentPropertyInfo<Object, UUID> source) {
-                                            return new S3ObjectId("custom-bucket", "object/custom-object-id-uuid-based");
-                                        }
-                                    });
+                                placementService.addConverter(new NonMatchingUuidContentPropertyInfoConverter());
                                 // Converter that does not match Entity type. Should not be invoked.
-                                placementService.addConverter(
-                                    new Converter<ContentPropertyInfo<TestEntityWithBucketAnnotation, String>, S3ObjectId>() {
-                                        @Override
-                                        public S3ObjectId convert(
-                                            ContentPropertyInfo<TestEntityWithBucketAnnotation, String> source) {
-                                            return new S3ObjectId("custom-bucket",
-                                                "test-entity-with-bucket/custom-object-id-string-based");
-                                        }
-                                    });
+                                placementService.addConverter(new NonMatchingBucketEntityContentPropertyInfoConverter());
 
                                 SimpleStorageProtocolResolver s3Protocol = new SimpleStorageProtocolResolver(client);
                                 s3Protocol.afterPropertiesSet();
@@ -765,14 +758,7 @@ public class DefaultS3StoreImplTest {
 
                                 placementService = new PlacementServiceImpl();
                                 S3StoreConfiguration.addDefaultS3ObjectIdConverters(placementService, defaultBucket);
-                                placementService.addConverter(
-                                    new Converter<ContentPropertyInfo<SingleContentFields, String>, S3ObjectId>() {
-                                        @Override
-                                        public S3ObjectId convert(
-                                            ContentPropertyInfo<SingleContentFields, String> source) {
-                                            return new S3ObjectId(null, "custom-object-id");
-                                        }
-                                    });
+                                placementService.addConverter(new NullBucketContentPropertyInfoConverter());
 
                                 s3StoreImpl = new DefaultS3StoreImpl<>(context, loader, null, placementService, client, null);
 
@@ -806,12 +792,11 @@ public class DefaultS3StoreImplTest {
                     context = new GenericApplicationContext();
                     context.refresh();
 
-                    String id = SAMPLE_CONTENT_ID;
                     entity = new SingleContentFields();
 
                     s3StoreImpl = new DefaultS3StoreImpl<>(context, loader, null, placementService, client, null);
 
-                    s3StoreImpl.associate(entity, id);
+                    s3StoreImpl.associate(entity, SAMPLE_CONTENT_ID);
                 }
 
                 @Test
