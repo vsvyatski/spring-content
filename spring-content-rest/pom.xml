@@ -198,6 +198,14 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>io.github.vsvyatski</groupId>
+      <artifactId>spring-versions-jpa</artifactId>
+      <version>${project.parent.version}</version>
+      <type>test-jar</type>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>com.theoryinpractise</groupId>
       <artifactId>halbuilder-standard</artifactId>
       <version>4.1.2</version>

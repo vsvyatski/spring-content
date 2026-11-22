@@ -3,7 +3,6 @@ package it.rest.jpaversioning.mongostorage;
 import com.mongodb.client.MongoClient;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import io.restassured.path.json.JsonPath;
-import jakarta.persistence.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.http.HttpStatus;
@@ -16,11 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.persistence.autoconfigure.EntityScan;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.content.commons.annotations.ContentId;
-import org.springframework.content.commons.annotations.ContentLength;
-import org.springframework.content.commons.annotations.MimeType;
 import org.springframework.content.mongo.config.EnableMongoStores;
 import org.springframework.content.mongo.store.MongoContentStore;
 import org.springframework.content.rest.StoreRestResource;
@@ -59,8 +56,10 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationEn
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.versions.*;
+import org.springframework.versions.LockingAndVersioningRepository;
 import org.springframework.versions.jpa.config.JpaLockingAndVersioningConfig;
+import org.springframework.versions.test.support.VersioningTestPackages;
+import org.springframework.versions.test.support.jpa.VersionedJpaContentDocumentEntity;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.sql.DataSource;
@@ -80,17 +79,19 @@ public class LockingAndVersioningRestIT {
     @Autowired
     private WebApplicationContext webApplicationContext;
 
-    private VersionedDocument doc;
+    private VersionedJpaContentDocumentEntity doc;
 
-    public interface VersionedDocumentAndVersioningRepository extends JpaRepository<VersionedDocument, Long>, LockingAndVersioningRepository<VersionedDocument> {
+    public interface VersionedDocumentAndVersioningRepository extends JpaRepository<VersionedJpaContentDocumentEntity, Long>,
+        LockingAndVersioningRepository<VersionedJpaContentDocumentEntity> {
     }
 
     @StoreRestResource(path = "versionedDocumentsContent")
     @SuppressWarnings("unused") // classpath / store component scan
-    public interface VersionedDocumentStore extends MongoContentStore<VersionedDocument, UUID> {
+    public interface VersionedDocumentStore extends MongoContentStore<VersionedJpaContentDocumentEntity, UUID> {
     }
 
     @SpringBootApplication
+    @EntityScan(basePackages = VersioningTestPackages.JPA)
     @EnableJpaRepositories(considerNestedRepositories = true,
         basePackages = {"it.rest.jpaversioning.mongostorage", "org.springframework.versions"})
     @EnableTransactionManagement
@@ -162,7 +163,7 @@ public class LockingAndVersioningRestIT {
 
                 LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
                 factory.setJpaVendorAdapter(vendorAdapter);
-                factory.setPackagesToScan("it.rest.jpaversioning.mongostorage");
+                factory.setPackagesToScan("it.rest.jpaversioning.mongostorage", VersioningTestPackages.JPA);
                 factory.setDataSource(dataSource());
 
                 return factory;
@@ -232,167 +233,6 @@ public class LockingAndVersioningRestIT {
         }
     }
 
-    @Entity
-    @Access(AccessType.FIELD)
-    @Table(name = "VERSIONED_DOCUMENTS")
-    public static class VersionedDocument {
-
-        @Id
-        @GeneratedValue
-        private Long id;
-        @Version
-        private Long versionStamp;
-        @ContentId
-        private UUID contentId;
-        @ContentLength
-        private long contentLen;
-        @MimeType
-        private String mimeType;
-        @LockOwner
-        private String lockOwner;
-        @AncestorId
-        private Long ancestorId;
-        @AncestorRootId
-        private Long ancestralRootId;
-        @SuccessorId
-        private Long successorId;
-        @VersionNumber
-        private String version;
-        @VersionLabel
-        private String label;
-        private String data;
-
-        public VersionedDocument() {
-        }
-
-        /**
-         * Reflective entry point for {@link internal.org.springframework.versions.jpa.JpaCloningServiceImpl}.
-         * {@code id} is intentionally not copied so the successor row gets a new key on {@code persist}.
-         */
-        @SuppressWarnings({"unused", "CopyConstructorMissesField"})
-        public VersionedDocument(VersionedDocument doc) {
-            this.versionStamp = doc.versionStamp;
-            this.contentId = doc.contentId;
-            this.contentLen = doc.contentLen;
-            this.mimeType = doc.mimeType;
-            this.lockOwner = doc.lockOwner;
-            this.ancestorId = doc.ancestorId;
-            this.ancestralRootId = doc.ancestralRootId;
-            this.successorId = doc.successorId;
-            this.version = doc.version;
-            this.label = doc.label;
-            this.data = doc.data;
-        }
-
-        public Long getId() {
-            return id;
-        }
-
-        public void setId(Long id) {
-            this.id = id;
-        }
-
-        @SuppressWarnings("unused")
-        public Long getVersionStamp() {
-            return versionStamp;
-        }
-
-        @SuppressWarnings("unused")
-        public void setVersionStamp(Long versionStamp) {
-            this.versionStamp = versionStamp;
-        }
-
-        public UUID getContentId() {
-            return contentId;
-        }
-
-        public void setContentId(UUID contentId) {
-            this.contentId = contentId;
-        }
-
-        public long getContentLen() {
-            return contentLen;
-        }
-
-        public void setContentLen(long contentLen) {
-            this.contentLen = contentLen;
-        }
-
-        public String getMimeType() {
-            return mimeType;
-        }
-
-        public void setMimeType(String mimeType) {
-            this.mimeType = mimeType;
-        }
-
-        @SuppressWarnings("unused")
-        public String getLockOwner() {
-            return lockOwner;
-        }
-
-        @SuppressWarnings("unused")
-        public void setLockOwner(String lockOwner) {
-            this.lockOwner = lockOwner;
-        }
-
-        @SuppressWarnings("unused")
-        public Long getAncestorId() {
-            return ancestorId;
-        }
-
-        @SuppressWarnings("unused")
-        public void setAncestorId(Long ancestorId) {
-            this.ancestorId = ancestorId;
-        }
-
-        @SuppressWarnings("unused")
-        public Long getAncestralRootId() {
-            return ancestralRootId;
-        }
-
-        @SuppressWarnings("unused")
-        public void setAncestralRootId(Long ancestralRootId) {
-            this.ancestralRootId = ancestralRootId;
-        }
-
-        @SuppressWarnings("unused")
-        public Long getSuccessorId() {
-            return successorId;
-        }
-
-        @SuppressWarnings("unused")
-        public void setSuccessorId(Long successorId) {
-            this.successorId = successorId;
-        }
-
-        public String getVersion() {
-            return version;
-        }
-
-        public void setVersion(String version) {
-            this.version = version;
-        }
-
-        @SuppressWarnings("unused")
-        public String getLabel() {
-            return label;
-        }
-
-        @SuppressWarnings("unused")
-        public void setLabel(String label) {
-            this.label = label;
-        }
-
-        public String getData() {
-            return data;
-        }
-
-        public void setData(String data) {
-            this.data = data;
-        }
-    }
-
     @Nested
     class SpringContentRESTVersioningWithMongoStorage {
         @Nested
@@ -401,7 +241,7 @@ public class LockingAndVersioningRestIT {
             void setUp() {
                 RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
 
-                doc = new VersionedDocument();
+                doc = new VersionedJpaContentDocumentEntity();
                 doc.setData("John");
                 doc = repo.save(doc);
             }
