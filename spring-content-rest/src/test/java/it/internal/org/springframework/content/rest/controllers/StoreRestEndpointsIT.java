@@ -62,7 +62,7 @@ public class StoreRestEndpointsIT {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                     path = "/" + UUID.randomUUID() + ".txt";
-                    request = "/teststore" + path;
+                    request = "/testStore" + path;
                 }
 
                 @Test
@@ -78,7 +78,7 @@ public class StoreRestEndpointsIT {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                     path = "/" + UUID.randomUUID() + ".txt";
-                    request = "/teststore" + path;
+                    request = "/testStore" + path;
                 }
 
                 @Test
@@ -104,7 +104,7 @@ public class StoreRestEndpointsIT {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                     path = "/" + UUID.randomUUID() + ".txt";
-                    request = "/teststore" + path;
+                    request = "/testStore" + path;
                 }
 
                 @Test
@@ -121,7 +121,7 @@ public class StoreRestEndpointsIT {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                 path = "/" + UUID.randomUUID() + ".txt";
-                request = "/teststore" + path;
+                request = "/testStore" + path;
                 Resource r = store.getResource(path);
                 if (r instanceof WritableResource) {
                     IOUtils.copy(
@@ -130,7 +130,7 @@ public class StoreRestEndpointsIT {
                 }
 
                 lastModifiedDate.setMvc(mvc);
-                lastModifiedDate.setUrl("/teststore" + path);
+                lastModifiedDate.setUrl("/testStore" + path);
                 lastModifiedDate.setLastModifiedDate(new Date(r.lastModified()));
                 lastModifiedDate.setContent("Existing content");
             }
@@ -181,7 +181,7 @@ public class StoreRestEndpointsIT {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                     path = "/" + UUID.randomUUID() + ".txt";
-                    request = "/teststore" + path;
+                    request = "/testStore" + path;
                     Resource r = store.getResource(path);
                     if (r instanceof WritableResource) {
                         IOUtils.copy(
@@ -190,7 +190,7 @@ public class StoreRestEndpointsIT {
                     }
 
                     lastModifiedDate.setMvc(mvc);
-                    lastModifiedDate.setUrl("/teststore" + path);
+                    lastModifiedDate.setUrl("/testStore" + path);
                     lastModifiedDate.setLastModifiedDate(new Date(r.lastModified()));
                     lastModifiedDate.setContent("Existing content");
                 }
@@ -220,7 +220,7 @@ public class StoreRestEndpointsIT {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                 path = "/a/b/" + UUID.randomUUID() + ".txt";
-                request = "/teststore" + path;
+                request = "/testStore" + path;
                 Resource r = store.getResource(path);
                 if (r instanceof WritableResource) {
                     IOUtils.copy(
@@ -275,7 +275,7 @@ public class StoreRestEndpointsIT {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                     path = "/a/b/" + UUID.randomUUID() + ".txt";
-                    request = "/teststore" + path;
+                    request = "/testStore" + path;
                     Resource r = store.getResource(path);
                     if (r instanceof WritableResource) {
                         IOUtils.copy(
@@ -304,7 +304,7 @@ public class StoreRestEndpointsIT {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                     path = "/a/b/" + UUID.randomUUID() + ".txt";
-                    request = "/teststore" + path;
+                    request = "/testStore" + path;
                     Resource r = store.getResource(path);
                     if (r instanceof WritableResource) {
                         IOUtils.copy(
