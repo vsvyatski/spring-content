@@ -3,14 +3,8 @@ package internal.org.springframework.content.rest.support;
 import jakarta.persistence.*;
 import org.springframework.content.commons.annotations.MimeType;
 import org.springframework.content.test.support.UuidDualContentFields;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
-import java.util.Date;
 
 @Entity
-@EntityListeners(AuditingEntityListener.class)
 public class DualContentRenditionEntity extends UuidDualContentFields {
 
     @Id
@@ -28,11 +22,8 @@ public class DualContentRenditionEntity extends UuidDualContentFields {
     @Version
     private Long version;
 
-    @CreatedDate
-    private Date createdDate;
-
-    @LastModifiedDate
-    private Date modifiedDate;
+    public DualContentRenditionEntity() {
+    }
 
     public Long getId() {
         return id;
@@ -54,6 +45,7 @@ public class DualContentRenditionEntity extends UuidDualContentFields {
         return contentMimeType;
     }
 
+    @SuppressWarnings("unused")
     public void setContentMimeType(String contentMimeType) {
         this.contentMimeType = contentMimeType;
     }
@@ -72,21 +64,5 @@ public class DualContentRenditionEntity extends UuidDualContentFields {
 
     public void setVersion(Long version) {
         this.version = version;
-    }
-
-    public Date getCreatedDate() {
-        return createdDate;
-    }
-
-    public void setCreatedDate(Date createdDate) {
-        this.createdDate = createdDate;
-    }
-
-    public Date getModifiedDate() {
-        return modifiedDate;
-    }
-
-    public void setModifiedDate(Date modifiedDate) {
-        this.modifiedDate = modifiedDate;
     }
 }

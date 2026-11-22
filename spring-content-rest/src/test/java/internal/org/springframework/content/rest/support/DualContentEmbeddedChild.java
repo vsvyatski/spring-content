@@ -6,11 +6,16 @@ import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.annotations.MimeType;
 import org.springframework.content.commons.annotations.OriginalFileName;
+import org.springframework.content.test.support.UuidDualContentAccessor;
 
 import java.util.UUID;
 
+/**
+ * Nested dual content with {@code preview*} property names (REST property paths); implements {@link UuidDualContentAccessor}
+ * via those fields.
+ */
 @Embeddable
-public class DualContentEmbeddedChild {
+public class DualContentEmbeddedChild implements UuidDualContentAccessor {
 
     @ContentId
     public UUID contentId;
@@ -41,18 +46,22 @@ public class DualContentEmbeddedChild {
     public DualContentEmbeddedChild() {
     }
 
+    @Override
     public UUID getContentId() {
         return contentId;
     }
 
+    @Override
     public void setContentId(UUID contentId) {
         this.contentId = contentId;
     }
 
+    @Override
     public Long getContentLen() {
         return contentLen;
     }
 
+    @Override
     public void setContentLen(Long contentLen) {
         this.contentLen = contentLen;
     }
@@ -83,5 +92,25 @@ public class DualContentEmbeddedChild {
 
     public void setPreviewMimeType(String previewMimeType) {
         this.previewMimeType = previewMimeType;
+    }
+
+    @Override
+    public UUID getRenditionId() {
+        return previewId;
+    }
+
+    @Override
+    public void setRenditionId(UUID renditionId) {
+        this.previewId = renditionId;
+    }
+
+    @Override
+    public Long getRenditionLen() {
+        return previewLen;
+    }
+
+    @Override
+    public void setRenditionLen(Long renditionLen) {
+        this.previewLen = renditionLen;
     }
 }

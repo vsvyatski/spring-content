@@ -10,7 +10,7 @@ import java.util.UUID;
  *
  * @author Vladimir Svyatski
  */
-public class UuidDualContentFields extends UuidSingleContentFields {
+public class UuidDualContentFields extends UuidSingleContentFields implements UuidDualContentAccessor {
 
     @ContentId
     private UUID renditionId;
