@@ -19,10 +19,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfiguration;
@@ -52,11 +49,6 @@ public class ContentLinksResourceProcessorIT {
     @Autowired
     private ContentLinksResourceProcessor processor;
 
-    @Autowired
-    private WebApplicationContext context;
-
-    private MockMvc mvc;
-
     private PersistentEntityResource resource;
 
     @Nested
@@ -67,8 +59,6 @@ public class ContentLinksResourceProcessorIT {
             class Tests {
                 @BeforeEach
                 void setUp() {
-                    mvc = MockMvcBuilders.webAppContextSetup(context).build();
-
                     PersistentEntity<?, ?> persistentEntity = repositories.getPersistentEntity(OneToOneLinkedContentEntity.class);
 
                     OneToOneLinkedContentEntity obj = new OneToOneLinkedContentEntity();
@@ -94,8 +84,6 @@ public class ContentLinksResourceProcessorIT {
             class WhenFullyQualifiedLinksAreDisabledAndShortcutLinksAreEnabled {
                 @BeforeEach
                 void setUp() {
-                    mvc = MockMvcBuilders.webAppContextSetup(context).build();
-
                     PersistentEntity<?, ?> persistentEntity = repositories.getPersistentEntity(OneToOneLinkedContentEntity.class);
 
                     OneToOneLinkedContentEntity obj = new OneToOneLinkedContentEntity();
@@ -130,8 +118,6 @@ public class ContentLinksResourceProcessorIT {
             class WhenFullyQualifiedLinksAreDisabledAndShortcutLinksAreDisabled {
                 @BeforeEach
                 void setUp() {
-                    mvc = MockMvcBuilders.webAppContextSetup(context).build();
-
                     PersistentEntity<?, ?> persistentEntity = repositories.getPersistentEntity(OneToOneLinkedContentEntity.class);
 
                     OneToOneLinkedContentEntity obj = new OneToOneLinkedContentEntity();
@@ -168,8 +154,6 @@ public class ContentLinksResourceProcessorIT {
         class GivenAnEntityWithMultipleContentIdProperties {
             @BeforeEach
             void setUp() {
-                mvc = MockMvcBuilders.webAppContextSetup(context).build();
-
                 PersistentEntity<?, ?> persistentEntity = repositories.getPersistentEntity(DualContentRenditionEntity.class);
 
                 DualContentRenditionEntity obj = new DualContentRenditionEntity();
@@ -198,8 +182,6 @@ public class ContentLinksResourceProcessorIT {
         class GivenAnEntityWithAnEmbeddedObjectContainingContentIdProperties {
             @BeforeEach
             void setUp() {
-                mvc = MockMvcBuilders.webAppContextSetup(context).build();
-
                 PersistentEntity<?, ?> persistentEntity = repositories.getPersistentEntity(AuditedNestedContentEntity.class);
 
                 AuditedNestedContentEntity obj = new AuditedNestedContentEntity();
@@ -228,8 +210,6 @@ public class ContentLinksResourceProcessorIT {
         class GivenAnEntityWithEmbeddedObjectWithRestResourceCustomizationsIssue1049 {
             @BeforeEach
             void setUp() {
-                mvc = MockMvcBuilders.webAppContextSetup(context).build();
-
                 PersistentEntity<?, ?> persistentEntity = persistentEntities.getRequiredPersistentEntity(RestResourcePackageEntity.class);
 
                 RestResourcePackageEntity testEntity11 = new RestResourcePackageEntity();
@@ -255,8 +235,6 @@ public class ContentLinksResourceProcessorIT {
         class GivenTheEmbeddedObjectInAnEntityContainingContentIdProperties {
             @BeforeEach
             void setUp() {
-                mvc = MockMvcBuilders.webAppContextSetup(context).build();
-
                 PersistentEntity<?, ?> persistentEntity = persistentEntities.getRequiredPersistentEntity(AuditedNestedContentChild.class);
 
                 UUID contentId = UUID.randomUUID();

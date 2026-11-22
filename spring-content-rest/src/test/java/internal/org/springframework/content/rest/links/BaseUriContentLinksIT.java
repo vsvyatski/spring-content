@@ -47,10 +47,6 @@ public class BaseUriContentLinksIT {
     @Autowired
     private WebApplicationContext context;
 
-    private MockMvc mvc;
-
-    private JsonMappedContentEntity testEntity3;
-
     @Nested
     @NestedTestConfiguration(NestedTestConfiguration.EnclosingConfiguration.INHERIT)
     class GivenTheSpringContentBaseUriPropertyIsSetToContentApi {
@@ -60,8 +56,8 @@ public class BaseUriContentLinksIT {
         class GivenAnEntityAndAStoreWithADefaultStorePathContentLinkTests extends ContentLinkTests {
             @BeforeEach
             void setUp() {
-                mvc = MockMvcBuilders.webAppContextSetup(context).build();
-                testEntity3 = new JsonMappedContentEntity();
+                MockMvc mvc = MockMvcBuilders.webAppContextSetup(context).build();
+                JsonMappedContentEntity testEntity3 = new JsonMappedContentEntity();
                 store3.setContent(testEntity3, TestSupportData.sampleTextStream());
                 testEntity3 = repository3.save(testEntity3);
                 this.setMvc(mvc);

@@ -3,19 +3,19 @@ package it.internal.org.springframework.content.rest.controllers;
 import internal.org.springframework.content.rest.support.JsonMappedContentEntity;
 import internal.org.springframework.content.rest.support.JsonMappedContentEntityRepository;
 import internal.org.springframework.content.rest.support.JsonMappedContentEntityStore;
+import internal.org.springframework.content.rest.support.TestRenditionConfig;
 import internal.org.springframework.content.rest.support.config.JpaInfrastructureConfig;
-import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.content.commons.renditions.RenditionProvider;
 import org.springframework.content.fs.config.EnableFileSystemStores;
 import org.springframework.content.fs.io.FileSystemResourceLoader;
 import org.springframework.content.rest.config.RestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguration;
@@ -30,11 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfiguration;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 
 @WebAppConfiguration
 @ContextConfiguration(classes = {
@@ -57,6 +53,7 @@ public class ContextPathIT {
     private WebApplicationContext context;
 
     @Configuration
+    @Import(TestRenditionConfig.class)
     @EnableJpaRepositories(basePackages = "internal.org.springframework.content.rest.support")
     @EnableTransactionManagement
     @EnableFileSystemStores(basePackages = "internal.org.springframework.content.rest.support")
@@ -76,62 +73,6 @@ public class ContextPathIT {
                 throw new IllegalStateException("Failed to create " + filesystemRoot);
             }
             return filesystemRoot;
-        }
-
-        @Bean
-        public RenditionProvider textToHtml() {
-            return new RenditionProvider() {
-
-                @Override
-                public String consumes() {
-                    return "text/plain";
-                }
-
-                @Override
-                public String[] produces() {
-                    return new String[]{"text/html"};
-                }
-
-                @Override
-                public InputStream convert(InputStream fromInputSource, String toMimeType) {
-                    String input;
-                    try {
-                        input = IOUtils.toString(fromInputSource, StandardCharsets.UTF_8);
-                    } catch (IOException ignored) {
-                        input = "";
-                    }
-                    return new ByteArrayInputStream(
-                        String.format("<html><body>%s</body></html>", input).getBytes());
-                }
-            };
-        }
-
-        @Bean
-        public RenditionProvider htmlToHtml() {
-            return new RenditionProvider() {
-
-                @Override
-                public String consumes() {
-                    return "text/html";
-                }
-
-                @Override
-                public String[] produces() {
-                    return new String[]{"text/html"};
-                }
-
-                @Override
-                public InputStream convert(InputStream fromInputSource, String toMimeType) {
-                    String input;
-                    try {
-                        input = IOUtils.toString(fromInputSource, StandardCharsets.UTF_8);
-                    } catch (IOException ignored) {
-                        input = "";
-                    }
-                    return new ByteArrayInputStream(
-                        String.format("<html><body>%s</body></html>", input).getBytes());
-                }
-            };
         }
     }
 

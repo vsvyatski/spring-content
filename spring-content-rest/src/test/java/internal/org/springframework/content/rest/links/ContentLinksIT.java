@@ -20,7 +20,7 @@ public class ContentLinksIT {
 
     @Nested
     @NestedTestConfiguration(NestedTestConfiguration.EnclosingConfiguration.INHERIT)
-    class NoLinkrel {
+    class NoLinkRel {
         @Nested
         @NestedTestConfiguration(NestedTestConfiguration.EnclosingConfiguration.INHERIT)
         @DisplayName("given a store and an entity with a top-level uncorrelated content property")
@@ -106,7 +106,7 @@ public class ContentLinksIT {
         @Nested
         @NestedTestConfiguration(NestedTestConfiguration.EnclosingConfiguration.INHERIT)
         @DisplayName("given a store and an entity with nested content properties")
-        class GivenAStoreSpecifyingALinkrelAndAnEntityWithNestedContentPropertiesContentLinkTe extends ContentLinkTests {
+        class GivenStoreSpecifyingLinkRelAndEntityWithNestedContentPropertiesContentLinkTest extends ContentLinkTests {
             @Autowired
             private WebApplicationContext context;
 
