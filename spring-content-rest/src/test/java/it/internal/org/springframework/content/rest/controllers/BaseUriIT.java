@@ -1,6 +1,11 @@
 package it.internal.org.springframework.content.rest.controllers;
 
 import internal.org.springframework.content.rest.support.*;
+import it.internal.org.springframework.content.rest.controllers.support.Content;
+import it.internal.org.springframework.content.rest.controllers.support.Cors;
+import it.internal.org.springframework.content.rest.controllers.support.Entity;
+import it.internal.org.springframework.content.rest.controllers.support.LastModifiedDate;
+import it.internal.org.springframework.content.rest.controllers.support.Version;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -56,9 +61,6 @@ public class BaseUriIT {
     private OneToOneLinkedContentEntityStore store4;
 
     @Autowired
-    private TestStore store;
-
-    @Autowired
     private WebApplicationContext context;
 
     private MockMvc mvc;
@@ -66,13 +68,6 @@ public class BaseUriIT {
     private UuidSingleContentEntity testEntity;
     private JsonMappedContentEntity testEntity3;
     private OneToOneLinkedContentEntity testEntity4;
-
-    private Version version;
-    private LastModifiedDate lastModifiedDate;
-
-    private Entity entityTests;
-    private Content contentTests;
-    private Cors corsTests;
 
     @Nested
     class BaseUriContentTests {

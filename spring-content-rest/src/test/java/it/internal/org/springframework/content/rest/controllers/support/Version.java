@@ -1,4 +1,4 @@
-package it.internal.org.springframework.content.rest.controllers;
+package it.internal.org.springframework.content.rest.controllers.support;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;

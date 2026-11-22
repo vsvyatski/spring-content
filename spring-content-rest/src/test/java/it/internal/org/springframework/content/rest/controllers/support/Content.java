@@ -1,4 +1,4 @@
-package it.internal.org.springframework.content.rest.controllers;
+package it.internal.org.springframework.content.rest.controllers.support;
 
 import internal.org.springframework.content.rest.support.ContentEntity;
 import org.apache.commons.io.IOUtils;

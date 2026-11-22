@@ -1,4 +1,4 @@
-package it.internal.org.springframework.content.rest.controllers;
+package it.internal.org.springframework.content.rest.controllers.support;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;

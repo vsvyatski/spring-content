@@ -1,4 +1,4 @@
-package it.internal.org.springframework.content.rest.controllers;
+package it.internal.org.springframework.content.rest.controllers.support;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

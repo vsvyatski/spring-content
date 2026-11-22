@@ -1,6 +1,7 @@
 package it.internal.org.springframework.content.rest.controllers;
 
 import internal.org.springframework.content.rest.support.StoreConfig;
+import it.internal.org.springframework.content.rest.controllers.support.LastModifiedDate;
 import internal.org.springframework.content.rest.support.TestStore;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;

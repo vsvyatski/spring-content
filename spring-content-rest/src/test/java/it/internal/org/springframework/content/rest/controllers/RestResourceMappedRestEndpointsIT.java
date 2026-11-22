@@ -6,6 +6,8 @@ import internal.org.springframework.content.rest.support.RestResourcePackageEnti
 import internal.org.springframework.content.rest.support.RestResourcePackageEntityRepository;
 import internal.org.springframework.content.rest.support.RestResourcePackageEntityStore;
 import internal.org.springframework.content.rest.support.StoreConfig;
+import it.internal.org.springframework.content.rest.controllers.support.LastModifiedDate;
+import it.internal.org.springframework.content.rest.controllers.support.Version;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;

@@ -1,6 +1,11 @@
 package it.internal.org.springframework.content.rest.controllers;
 
 import internal.org.springframework.content.rest.support.*;
+import it.internal.org.springframework.content.rest.controllers.support.Content;
+import it.internal.org.springframework.content.rest.controllers.support.Cors;
+import it.internal.org.springframework.content.rest.controllers.support.Entity;
+import it.internal.org.springframework.content.rest.controllers.support.LastModifiedDate;
+import it.internal.org.springframework.content.rest.controllers.support.Version;
 import internal.org.springframework.content.rest.support.EventListenerConfig.TestEventListener;
 import jakarta.servlet.ServletException;
 import org.apache.commons.io.IOUtils;

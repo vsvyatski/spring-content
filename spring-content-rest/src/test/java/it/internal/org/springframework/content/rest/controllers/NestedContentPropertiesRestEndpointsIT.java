@@ -4,6 +4,8 @@ import internal.org.springframework.content.rest.support.EmbeddedDualContentEnti
 import internal.org.springframework.content.rest.support.EmbeddedDualContentEntityRepository;
 import internal.org.springframework.content.rest.support.EmbeddedDualContentEntityStore;
 import internal.org.springframework.content.rest.support.StoreConfig;
+import it.internal.org.springframework.content.rest.controllers.support.LastModifiedDate;
+import it.internal.org.springframework.content.rest.controllers.support.Version;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
