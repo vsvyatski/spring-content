@@ -6,6 +6,6 @@ import org.springframework.versions.LockingAndVersioningRepository;
 /**
  * @author Vladimir Svyatski
  */
-public interface VersioningJpaSiblingRepository
-    extends JpaRepository<VersioningJpaSiblingEntity, Long>, LockingAndVersioningRepository<VersioningJpaSiblingEntity> {
+public interface VersioningJpaSiblingRepository extends JpaRepository<VersioningJpaSiblingEntity, Long>,
+    LockingAndVersioningRepository<VersioningJpaSiblingEntity> {
 }

@@ -3,7 +3,6 @@ package internal.org.springframework.versions.jpa;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import internal.org.springframework.versions.jpa.VersioningService;
 import org.springframework.versions.test.support.VersioningUnitFields;
 
 import static org.assertj.core.api.Assertions.assertThat;
