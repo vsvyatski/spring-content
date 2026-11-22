@@ -1,13 +1,12 @@
 package it.internal.org.springframework.content.rest.controllers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import internal.org.springframework.content.rest.support.RestResourcePackageEntity;
 import internal.org.springframework.content.rest.support.RestResourcePackageEntityRepository;
 import internal.org.springframework.content.rest.support.RestResourcePackageEntityStore;
 import internal.org.springframework.content.rest.support.StoreConfig;
 import it.internal.org.springframework.content.rest.controllers.support.LastModifiedDateTests;
-import it.internal.org.springframework.content.rest.controllers.support.VersionTests;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -40,7 +39,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -49,11 +47,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebAppConfiguration
 @ContextConfiguration(classes = {
-    StoreConfig.class,
-    DelegatingWebMvcConfiguration.class,
-    RepositoryRestMvcConfiguration.class,
-    RestConfiguration.class,
-    HypermediaConfiguration.class})
+    StoreConfig.class, DelegatingWebMvcConfiguration.class, RepositoryRestMvcConfiguration.class,
+    RestConfiguration.class, HypermediaConfiguration.class
+})
 @Transactional
 @ActiveProfiles("store")
 @ExtendWith(SpringExtension.class)
@@ -69,15 +65,20 @@ public class RestResourceMappedRestEndpointsIT {
     @Autowired
     private WebApplicationContext context;
 
-    private VersionTests versionTests;
-    private LastModifiedDateTests lastModifiedDateTests;
-
     private MockMvc mvc;
 
     private Object parse(Map<String, Object> obj, String... path) {
+        if (path.length == 0) {
+            return obj;
+        }
         Object current = obj.get(path[0]);
-        if (current instanceof Map) {
-            current = parse((Map<String, Object>) current, Arrays.copyOfRange(path, 1, path.length));
+        if (path.length == 1) {
+            return current;
+        }
+        if (current instanceof Map<?, ?> nested) {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> map = (Map<String, Object>) nested;
+            return parse(map, Arrays.copyOfRange(path, 1, path.length));
         }
         return current;
     }
@@ -216,22 +217,10 @@ public class RestResourceMappedRestEndpointsIT {
                             out.write(content.getBytes());
                         }
                         testEntity11 = repo.save(testEntity11);
-                        versionTests.setMvc(mvc);
-                        versionTests.setUrl("/restResourcePackageEntities/" + testEntity11.getId() + "/package/content");
-                        versionTests.setCollectionUrl("/restResourcePackageEntities");
-                        versionTests.setContentLinkRel("package/content");
-                        versionTests.setRepo(repo);
-                        versionTests.setStore(store);
-                        versionTests.setEtag(format("\"%s\"", testEntity11.getVersion()));
-                        lastModifiedDateTests.setMvc(mvc);
-                        lastModifiedDateTests.setUrl("/restResourcePackageEntities/" + testEntity11.getId() + "/package/content");
-                        lastModifiedDateTests.setLastModifiedDate(testEntity11.getModifiedDate());
-                        lastModifiedDateTests.setEtag(testEntity11.getVersion().toString());
-                        lastModifiedDateTests.setContent(content);
                     }
 
                     @Test
-                    void shouldReturnTheMappedContentLinks() throws Exception, JsonProcessingException {
+                    void shouldReturnTheMappedContentLinks() throws Exception {
                         MockHttpServletResponse res = mvc.perform(
                                 get("/restResourcePackageEntities/" + testEntity11.getId())
                                     .accept("application/hal+json"))
@@ -239,7 +228,9 @@ public class RestResourceMappedRestEndpointsIT {
                             .andReturn().getResponse();
 
                         ObjectMapper mapper = new ObjectMapper();
-                        Map<String, Object> obj = mapper.readValue(res.getContentAsString(), Map.class);
+                        Map<String, Object> obj = mapper.readValue(res.getContentAsString(),
+                            new TypeReference<>() {
+                            });
 
                         Object val = parse(obj, "_links", "package/content", "href");
                         assertThat(val).isNotNull();
@@ -264,18 +255,6 @@ public class RestResourceMappedRestEndpointsIT {
                             out.write(content.getBytes());
                         }
                         testEntity11 = repo.save(testEntity11);
-                        versionTests.setMvc(mvc);
-                        versionTests.setUrl("/restResourcePackageEntities/" + testEntity11.getId() + "/package/content");
-                        versionTests.setCollectionUrl("/restResourcePackageEntities");
-                        versionTests.setContentLinkRel("package/content");
-                        versionTests.setRepo(repo);
-                        versionTests.setStore(store);
-                        versionTests.setEtag(format("\"%s\"", testEntity11.getVersion()));
-                        lastModifiedDateTests.setMvc(mvc);
-                        lastModifiedDateTests.setUrl("/restResourcePackageEntities/" + testEntity11.getId() + "/package/content");
-                        lastModifiedDateTests.setLastModifiedDate(testEntity11.getModifiedDate());
-                        lastModifiedDateTests.setEtag(testEntity11.getVersion().toString());
-                        lastModifiedDateTests.setContent(content);
                     }
 
                     @Test
@@ -311,18 +290,6 @@ public class RestResourceMappedRestEndpointsIT {
                             out.write(content.getBytes());
                         }
                         testEntity11 = repo.save(testEntity11);
-                        versionTests.setMvc(mvc);
-                        versionTests.setUrl("/restResourcePackageEntities/" + testEntity11.getId() + "/package/content");
-                        versionTests.setCollectionUrl("/restResourcePackageEntities");
-                        versionTests.setContentLinkRel("package/content");
-                        versionTests.setRepo(repo);
-                        versionTests.setStore(store);
-                        versionTests.setEtag(format("\"%s\"", testEntity11.getVersion()));
-                        lastModifiedDateTests.setMvc(mvc);
-                        lastModifiedDateTests.setUrl("/restResourcePackageEntities/" + testEntity11.getId() + "/package/content");
-                        lastModifiedDateTests.setLastModifiedDate(testEntity11.getModifiedDate());
-                        lastModifiedDateTests.setEtag(testEntity11.getVersion().toString());
-                        lastModifiedDateTests.setContent(content);
                     }
 
                     @Test
@@ -356,26 +323,14 @@ public class RestResourceMappedRestEndpointsIT {
                             out.write(content.getBytes());
                         }
                         testEntity11 = repo.save(testEntity11);
-                        versionTests.setMvc(mvc);
-                        versionTests.setUrl("/restResourcePackageEntities/" + testEntity11.getId() + "/package/content");
-                        versionTests.setCollectionUrl("/restResourcePackageEntities");
-                        versionTests.setContentLinkRel("package/content");
-                        versionTests.setRepo(repo);
-                        versionTests.setStore(store);
-                        versionTests.setEtag(format("\"%s\"", testEntity11.getVersion()));
-                        lastModifiedDateTests.setMvc(mvc);
-                        lastModifiedDateTests.setUrl("/restResourcePackageEntities/" + testEntity11.getId() + "/package/content");
-                        lastModifiedDateTests.setLastModifiedDate(testEntity11.getModifiedDate());
-                        lastModifiedDateTests.setEtag(testEntity11.getVersion().toString());
-                        lastModifiedDateTests.setContent(content);
                     }
 
                     @Test
                     void shouldReturnTheOriginalContentAnd200() throws Exception {
                         MockHttpServletResponse response = mvc
                             .perform(get("/restResourcePackageEntities/" + testEntity11.getId() + "/package/content").accept(
-                                new String[]{"text/xml",
-                                    "text/plain"}))
+                                "text/xml",
+                                "text/plain"))
                             .andExpect(status().isOk()).andReturn()
                             .getResponse();
 
@@ -401,18 +356,6 @@ public class RestResourceMappedRestEndpointsIT {
                             out.write(content.getBytes());
                         }
                         testEntity11 = repo.save(testEntity11);
-                        versionTests.setMvc(mvc);
-                        versionTests.setUrl("/restResourcePackageEntities/" + testEntity11.getId() + "/package/content");
-                        versionTests.setCollectionUrl("/restResourcePackageEntities");
-                        versionTests.setContentLinkRel("package/content");
-                        versionTests.setRepo(repo);
-                        versionTests.setStore(store);
-                        versionTests.setEtag(format("\"%s\"", testEntity11.getVersion()));
-                        lastModifiedDateTests.setMvc(mvc);
-                        lastModifiedDateTests.setUrl("/restResourcePackageEntities/" + testEntity11.getId() + "/package/content");
-                        lastModifiedDateTests.setLastModifiedDate(testEntity11.getModifiedDate());
-                        lastModifiedDateTests.setEtag(testEntity11.getVersion().toString());
-                        lastModifiedDateTests.setContent(content);
                     }
 
                     @Test
@@ -448,18 +391,6 @@ public class RestResourceMappedRestEndpointsIT {
                             out.write(content.getBytes());
                         }
                         testEntity11 = repo.save(testEntity11);
-                        versionTests.setMvc(mvc);
-                        versionTests.setUrl("/restResourcePackageEntities/" + testEntity11.getId() + "/package/content");
-                        versionTests.setCollectionUrl("/restResourcePackageEntities");
-                        versionTests.setContentLinkRel("package/content");
-                        versionTests.setRepo(repo);
-                        versionTests.setStore(store);
-                        versionTests.setEtag(format("\"%s\"", testEntity11.getVersion()));
-                        lastModifiedDateTests.setMvc(mvc);
-                        lastModifiedDateTests.setUrl("/restResourcePackageEntities/" + testEntity11.getId() + "/package/content");
-                        lastModifiedDateTests.setLastModifiedDate(testEntity11.getModifiedDate());
-                        lastModifiedDateTests.setEtag(testEntity11.getVersion().toString());
-                        lastModifiedDateTests.setContent(content);
                     }
 
                     @Test

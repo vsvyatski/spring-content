@@ -5,9 +5,7 @@ import internal.org.springframework.content.rest.support.EmbeddedDualContentEnti
 import internal.org.springframework.content.rest.support.EmbeddedDualContentEntityStore;
 import internal.org.springframework.content.rest.support.StoreConfig;
 import it.internal.org.springframework.content.rest.controllers.support.LastModifiedDateTests;
-import it.internal.org.springframework.content.rest.controllers.support.VersionTests;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -35,10 +33,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -47,11 +43,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebAppConfiguration
 @ContextConfiguration(classes = {
-    StoreConfig.class,
-    DelegatingWebMvcConfiguration.class,
-    RepositoryRestMvcConfiguration.class,
-    RestConfiguration.class,
-    HypermediaConfiguration.class
+    StoreConfig.class, DelegatingWebMvcConfiguration.class, RepositoryRestMvcConfiguration.class,
+    RestConfiguration.class, HypermediaConfiguration.class
 })
 @Transactional
 @ActiveProfiles("store")
@@ -68,16 +61,7 @@ public class NestedContentPropertiesRestEndpointsIT {
     @Autowired
     private WebApplicationContext context;
 
-    private VersionTests versionTests;
-    private LastModifiedDateTests lastModifiedDateTests;
-
     private MockMvc mvc;
-
-    private static String toHeaderDateFormat(Date dt) {
-        SimpleDateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
-        format.setTimeZone(TimeZone.getTimeZone("GMT"));
-        return format.format(dt);
-    }
 
     @Nested
     class NestedContentPropertiesRESTEndpoints {
@@ -228,18 +212,6 @@ public class NestedContentPropertiesRestEndpointsIT {
                             out.write(content.getBytes());
                         }
                         testEntity10 = repository.save(testEntity10);
-                        versionTests.setMvc(mvc);
-                        versionTests.setUrl("/embeddedDualContentEntities/" + testEntity10.getId() + "/child/content");
-                        versionTests.setCollectionUrl("/embeddedDualContentEntities");
-                        versionTests.setContentLinkRel("child/content");
-                        versionTests.setRepo(repository);
-                        versionTests.setStore(store);
-                        versionTests.setEtag(format("\"%s\"", testEntity10.getVersion()));
-                        lastModifiedDateTests.setMvc(mvc);
-                        lastModifiedDateTests.setUrl("/embeddedDualContentEntities/" + testEntity10.getId() + "/child/content");
-                        lastModifiedDateTests.setLastModifiedDate(testEntity10.getModifiedDate());
-                        lastModifiedDateTests.setEtag(testEntity10.getVersion().toString());
-                        lastModifiedDateTests.setContent(content);
                     }
 
                     @Test
@@ -275,18 +247,6 @@ public class NestedContentPropertiesRestEndpointsIT {
                             out.write(content.getBytes());
                         }
                         testEntity10 = repository.save(testEntity10);
-                        versionTests.setMvc(mvc);
-                        versionTests.setUrl("/embeddedDualContentEntities/" + testEntity10.getId() + "/child/content");
-                        versionTests.setCollectionUrl("/embeddedDualContentEntities");
-                        versionTests.setContentLinkRel("child/content");
-                        versionTests.setRepo(repository);
-                        versionTests.setStore(store);
-                        versionTests.setEtag(format("\"%s\"", testEntity10.getVersion()));
-                        lastModifiedDateTests.setMvc(mvc);
-                        lastModifiedDateTests.setUrl("/embeddedDualContentEntities/" + testEntity10.getId() + "/child/content");
-                        lastModifiedDateTests.setLastModifiedDate(testEntity10.getModifiedDate());
-                        lastModifiedDateTests.setEtag(testEntity10.getVersion().toString());
-                        lastModifiedDateTests.setContent(content);
                     }
 
                     @Test
@@ -321,18 +281,6 @@ public class NestedContentPropertiesRestEndpointsIT {
                             out.write(content.getBytes());
                         }
                         testEntity10 = repository.save(testEntity10);
-                        versionTests.setMvc(mvc);
-                        versionTests.setUrl("/embeddedDualContentEntities/" + testEntity10.getId() + "/child/content");
-                        versionTests.setCollectionUrl("/embeddedDualContentEntities");
-                        versionTests.setContentLinkRel("child/content");
-                        versionTests.setRepo(repository);
-                        versionTests.setStore(store);
-                        versionTests.setEtag(format("\"%s\"", testEntity10.getVersion()));
-                        lastModifiedDateTests.setMvc(mvc);
-                        lastModifiedDateTests.setUrl("/embeddedDualContentEntities/" + testEntity10.getId() + "/child/content");
-                        lastModifiedDateTests.setLastModifiedDate(testEntity10.getModifiedDate());
-                        lastModifiedDateTests.setEtag(testEntity10.getVersion().toString());
-                        lastModifiedDateTests.setContent(content);
                     }
 
                     @Test
@@ -341,8 +289,8 @@ public class NestedContentPropertiesRestEndpointsIT {
                             .perform(get("/embeddedDualContentEntities/"
                                 + testEntity10.getId()
                                 + "/child/content").accept(
-                                new String[]{"text/xml",
-                                    "text/plain"}))
+                                "text/xml",
+                                "text/plain"))
                             .andExpect(status().isOk()).andReturn()
                             .getResponse();
 
@@ -368,18 +316,6 @@ public class NestedContentPropertiesRestEndpointsIT {
                             out.write(content.getBytes());
                         }
                         testEntity10 = repository.save(testEntity10);
-                        versionTests.setMvc(mvc);
-                        versionTests.setUrl("/embeddedDualContentEntities/" + testEntity10.getId() + "/child/content");
-                        versionTests.setCollectionUrl("/embeddedDualContentEntities");
-                        versionTests.setContentLinkRel("child/content");
-                        versionTests.setRepo(repository);
-                        versionTests.setStore(store);
-                        versionTests.setEtag(format("\"%s\"", testEntity10.getVersion()));
-                        lastModifiedDateTests.setMvc(mvc);
-                        lastModifiedDateTests.setUrl("/embeddedDualContentEntities/" + testEntity10.getId() + "/child/content");
-                        lastModifiedDateTests.setLastModifiedDate(testEntity10.getModifiedDate());
-                        lastModifiedDateTests.setEtag(testEntity10.getVersion().toString());
-                        lastModifiedDateTests.setContent(content);
                     }
 
                     @Test
@@ -416,18 +352,6 @@ public class NestedContentPropertiesRestEndpointsIT {
                             out.write(content.getBytes());
                         }
                         testEntity10 = repository.save(testEntity10);
-                        versionTests.setMvc(mvc);
-                        versionTests.setUrl("/embeddedDualContentEntities/" + testEntity10.getId() + "/child/content");
-                        versionTests.setCollectionUrl("/embeddedDualContentEntities");
-                        versionTests.setContentLinkRel("child/content");
-                        versionTests.setRepo(repository);
-                        versionTests.setStore(store);
-                        versionTests.setEtag(format("\"%s\"", testEntity10.getVersion()));
-                        lastModifiedDateTests.setMvc(mvc);
-                        lastModifiedDateTests.setUrl("/embeddedDualContentEntities/" + testEntity10.getId() + "/child/content");
-                        lastModifiedDateTests.setLastModifiedDate(testEntity10.getModifiedDate());
-                        lastModifiedDateTests.setEtag(testEntity10.getVersion().toString());
-                        lastModifiedDateTests.setContent(content);
                     }
 
                     @Test

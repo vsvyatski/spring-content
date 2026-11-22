@@ -1,7 +1,6 @@
 package it.internal.org.springframework.content.rest.controllers;
 
 import internal.org.springframework.content.rest.support.StoreConfig;
-import it.internal.org.springframework.content.rest.controllers.support.LastModifiedDateTests;
 import internal.org.springframework.content.rest.support.TestStore;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,7 +26,6 @@ import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfigu
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.Date;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,15 +33,15 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebAppConfiguration
-@ContextConfiguration(classes = {StoreConfig.class, DelegatingWebMvcConfiguration.class,
-    RepositoryRestMvcConfiguration.class, RestConfiguration.class})
+@ContextConfiguration(classes = {
+    StoreConfig.class, DelegatingWebMvcConfiguration.class,
+    RepositoryRestMvcConfiguration.class, RestConfiguration.class
+})
 @Transactional
 @ActiveProfiles("store")
 @ExtendWith(SpringExtension.class)
 public class StoreRestEndpointsIT {
 
-    private final LastModifiedDateTests lastModifiedDate = new LastModifiedDateTests() {
-    };
     @Autowired
     TestStore store;
     @Autowired
@@ -129,11 +127,6 @@ public class StoreRestEndpointsIT {
                         new ByteArrayInputStream("Existing content".getBytes()),
                         ((WritableResource) r).getOutputStream());
                 }
-
-                lastModifiedDate.setMvc(mvc);
-                lastModifiedDate.setUrl("/testStore" + path);
-                lastModifiedDate.setLastModifiedDate(new Date(r.lastModified()));
-                lastModifiedDate.setContent("Existing content");
             }
 
             @Test
@@ -189,11 +182,6 @@ public class StoreRestEndpointsIT {
                             new ByteArrayInputStream("Existing content".getBytes()),
                             ((WritableResource) r).getOutputStream());
                     }
-
-                    lastModifiedDate.setMvc(mvc);
-                    lastModifiedDate.setUrl("/testStore" + path);
-                    lastModifiedDate.setLastModifiedDate(new Date(r.lastModified()));
-                    lastModifiedDate.setContent("Existing content");
                 }
 
                 @Test
@@ -288,9 +276,9 @@ public class StoreRestEndpointsIT {
                 @Test
                 void shouldReturnTheResourceSContent() throws Exception {
                     MockHttpServletResponse response = mvc
-                        .perform(get(request).accept(new String[]{"text/html",
+                        .perform(get(request).accept("text/html",
                             "application/xhtml+xml", "application/xml;q=0.9",
-                            "image/webp", "image/apng", "*/*;q=0.8"}))
+                            "image/webp", "image/apng", "*/*;q=0.8"))
                         .andExpect(status().isOk()).andReturn().getResponse();
 
                     assertThat(response).isNotNull();

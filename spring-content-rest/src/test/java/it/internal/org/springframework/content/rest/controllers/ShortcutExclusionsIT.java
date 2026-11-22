@@ -40,10 +40,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebAppConfiguration
 @ContextConfiguration(classes = {
-    ShortcutExclusionsIT.Config.class,
-    DelegatingWebMvcConfiguration.class,
-    RepositoryRestMvcConfiguration.class,
-    RestConfiguration.class})
+    ShortcutExclusionsIT.Config.class, DelegatingWebMvcConfiguration.class,
+    RepositoryRestMvcConfiguration.class, RestConfiguration.class
+})
 @Transactional
 @ExtendWith(SpringExtension.class)
 public class ShortcutExclusionsIT {
@@ -67,13 +66,7 @@ public class ShortcutExclusionsIT {
         @Bean
         public ContentRestConfigurer contentRestConfigurer() {
 
-            return new ContentRestConfigurer() {
-
-                @Override
-                public void configure(RestConfiguration config) {
-                    config.shortcutExclusions().exclude("GET", MediaType.parseMediaType("*/*"));
-                }
-            };
+            return config -> config.shortcutExclusions().exclude("GET", MediaType.parseMediaType("*/*"));
         }
 
         @Bean

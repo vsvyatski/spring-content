@@ -5,9 +5,7 @@ import internal.org.springframework.content.rest.support.EmbeddedChildContentEnt
 import internal.org.springframework.content.rest.support.EmbeddedChildContentEntityStore;
 import internal.org.springframework.content.rest.support.StoreConfig;
 import it.internal.org.springframework.content.rest.controllers.support.LastModifiedDateTests;
-import it.internal.org.springframework.content.rest.controllers.support.VersionTests;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -35,10 +33,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -67,16 +63,7 @@ public class NestedContentPropertyRestEndpointsIT {
     @Autowired
     private WebApplicationContext context;
 
-    private VersionTests versionTests;
-    private LastModifiedDateTests lastModifiedDateTests;
-
     private MockMvc mvc;
-
-    private static String toHeaderDateFormat(Date dt) {
-        SimpleDateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
-        format.setTimeZone(TimeZone.getTimeZone("GMT"));
-        return format.format(dt);
-    }
 
     @Nested
     class NestedContentPropertyRESTEndpoints {
@@ -247,18 +234,6 @@ public class NestedContentPropertyRestEndpointsIT {
                             out.write(content.getBytes());
                         }
                         testEntity8 = repository2.save(testEntity8);
-                        versionTests.setMvc(mvc);
-                        versionTests.setUrl("/embeddedChildContentEntities/" + testEntity8.getId() + "/child");
-                        versionTests.setCollectionUrl("/embeddedChildContentEntities");
-                        versionTests.setContentLinkRel("child");
-                        versionTests.setRepo(repository2);
-                        versionTests.setStore(store);
-                        versionTests.setEtag(format("\"%s\"", testEntity8.getVersion()));
-                        lastModifiedDateTests.setMvc(mvc);
-                        lastModifiedDateTests.setUrl("/embeddedChildContentEntities/" + testEntity8.getId() + "/child");
-                        lastModifiedDateTests.setLastModifiedDate(testEntity8.getModifiedDate());
-                        lastModifiedDateTests.setEtag(testEntity8.getVersion().toString());
-                        lastModifiedDateTests.setContent(content);
                     }
 
                     @Test
@@ -294,18 +269,6 @@ public class NestedContentPropertyRestEndpointsIT {
                             out.write(content.getBytes());
                         }
                         testEntity8 = repository2.save(testEntity8);
-                        versionTests.setMvc(mvc);
-                        versionTests.setUrl("/embeddedChildContentEntities/" + testEntity8.getId() + "/child");
-                        versionTests.setCollectionUrl("/embeddedChildContentEntities");
-                        versionTests.setContentLinkRel("child");
-                        versionTests.setRepo(repository2);
-                        versionTests.setStore(store);
-                        versionTests.setEtag(format("\"%s\"", testEntity8.getVersion()));
-                        lastModifiedDateTests.setMvc(mvc);
-                        lastModifiedDateTests.setUrl("/embeddedChildContentEntities/" + testEntity8.getId() + "/child");
-                        lastModifiedDateTests.setLastModifiedDate(testEntity8.getModifiedDate());
-                        lastModifiedDateTests.setEtag(testEntity8.getVersion().toString());
-                        lastModifiedDateTests.setContent(content);
                     }
 
                     @Test
@@ -340,18 +303,6 @@ public class NestedContentPropertyRestEndpointsIT {
                             out.write(content.getBytes());
                         }
                         testEntity8 = repository2.save(testEntity8);
-                        versionTests.setMvc(mvc);
-                        versionTests.setUrl("/embeddedChildContentEntities/" + testEntity8.getId() + "/child");
-                        versionTests.setCollectionUrl("/embeddedChildContentEntities");
-                        versionTests.setContentLinkRel("child");
-                        versionTests.setRepo(repository2);
-                        versionTests.setStore(store);
-                        versionTests.setEtag(format("\"%s\"", testEntity8.getVersion()));
-                        lastModifiedDateTests.setMvc(mvc);
-                        lastModifiedDateTests.setUrl("/embeddedChildContentEntities/" + testEntity8.getId() + "/child");
-                        lastModifiedDateTests.setLastModifiedDate(testEntity8.getModifiedDate());
-                        lastModifiedDateTests.setEtag(testEntity8.getVersion().toString());
-                        lastModifiedDateTests.setContent(content);
                     }
 
                     @Test
@@ -360,8 +311,8 @@ public class NestedContentPropertyRestEndpointsIT {
                             .perform(get("/embeddedChildContentEntities/"
                                 + testEntity8.getId()
                                 + "/child").accept(
-                                new String[]{"text/xml",
-                                    "text/plain"}))
+                                "text/xml",
+                                "text/plain"))
                             .andExpect(status().isOk()).andReturn()
                             .getResponse();
 
@@ -387,18 +338,6 @@ public class NestedContentPropertyRestEndpointsIT {
                             out.write(content.getBytes());
                         }
                         testEntity8 = repository2.save(testEntity8);
-                        versionTests.setMvc(mvc);
-                        versionTests.setUrl("/embeddedChildContentEntities/" + testEntity8.getId() + "/child");
-                        versionTests.setCollectionUrl("/embeddedChildContentEntities");
-                        versionTests.setContentLinkRel("child");
-                        versionTests.setRepo(repository2);
-                        versionTests.setStore(store);
-                        versionTests.setEtag(format("\"%s\"", testEntity8.getVersion()));
-                        lastModifiedDateTests.setMvc(mvc);
-                        lastModifiedDateTests.setUrl("/embeddedChildContentEntities/" + testEntity8.getId() + "/child");
-                        lastModifiedDateTests.setLastModifiedDate(testEntity8.getModifiedDate());
-                        lastModifiedDateTests.setEtag(testEntity8.getVersion().toString());
-                        lastModifiedDateTests.setContent(content);
                     }
 
                     @Test
@@ -435,18 +374,6 @@ public class NestedContentPropertyRestEndpointsIT {
                             out.write(content.getBytes());
                         }
                         testEntity8 = repository2.save(testEntity8);
-                        versionTests.setMvc(mvc);
-                        versionTests.setUrl("/embeddedChildContentEntities/" + testEntity8.getId() + "/child");
-                        versionTests.setCollectionUrl("/embeddedChildContentEntities");
-                        versionTests.setContentLinkRel("child");
-                        versionTests.setRepo(repository2);
-                        versionTests.setStore(store);
-                        versionTests.setEtag(format("\"%s\"", testEntity8.getVersion()));
-                        lastModifiedDateTests.setMvc(mvc);
-                        lastModifiedDateTests.setUrl("/embeddedChildContentEntities/" + testEntity8.getId() + "/child");
-                        lastModifiedDateTests.setLastModifiedDate(testEntity8.getModifiedDate());
-                        lastModifiedDateTests.setEtag(testEntity8.getVersion().toString());
-                        lastModifiedDateTests.setContent(content);
                     }
 
                     @Test
