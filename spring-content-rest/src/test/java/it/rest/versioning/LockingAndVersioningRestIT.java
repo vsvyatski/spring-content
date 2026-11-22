@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,25 +20,15 @@ import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.annotations.MimeType;
 import org.springframework.content.fs.config.EnableFileSystemStores;
-import org.springframework.content.fs.io.FileSystemResourceLoader;
 import org.springframework.content.fs.store.FileSystemContentStore;
 import org.springframework.content.rest.StoreRestResource;
 import org.springframework.content.rest.config.RestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.http.HttpMethod;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
-import org.springframework.jdbc.datasource.init.DataSourceInitializer;
-import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
-import org.springframework.orm.jpa.JpaTransactionManager;
-import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-import org.springframework.orm.jpa.vendor.Database;
-import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -52,17 +41,13 @@ import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequ
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.versions.*;
 import org.springframework.versions.jpa.config.JpaLockingAndVersioningConfig;
 import org.springframework.web.context.WebApplicationContext;
 
-import javax.sql.DataSource;
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.nio.file.Files;
 import java.util.UUID;
 
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
@@ -76,9 +61,6 @@ public class LockingAndVersioningRestIT {
     private VersionedDocumentAndVersioningRepository repo;
 
     @Autowired
-    private VersionedDocumentStore store;
-
-    @Autowired
     private WebApplicationContext webApplicationContext;
 
     private VersionedDocument doc;
@@ -87,6 +69,7 @@ public class LockingAndVersioningRestIT {
     }
 
     @StoreRestResource(path = "versionedDocumentsContent")
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface VersionedDocumentStore extends FileSystemContentStore<VersionedDocument, UUID> {
     }
 
@@ -100,73 +83,6 @@ public class LockingAndVersioningRestIT {
 
         public static void main(String[] args) {
             SpringApplication.run(Application.class, args);
-        }
-
-        public static class VersioningConfig {
-
-            @Value("/org/springframework/versions/jpa/schema-drop-hsqldb.sql")
-            private ClassPathResource dropRepositoryTables;
-            @Value("/org/springframework/versions/jpa/schema-hsqldb.sql")
-            private ClassPathResource dataRepositorySchema;
-
-            @Bean
-            File filesystemRoot() {
-                try {
-                    return Files.createTempDirectory("").toFile();
-                } catch (IOException ignored) {
-                }
-                return null;
-            }
-
-            @Bean
-            FileSystemResourceLoader fileSystemResourceLoader() {
-                return new FileSystemResourceLoader(filesystemRoot().getAbsolutePath());
-            }
-
-            @Bean
-            DataSourceInitializer datasourceInitializer(DataSource dataSource) {
-                ResourceDatabasePopulator databasePopulator =
-                    new ResourceDatabasePopulator();
-
-                databasePopulator.addScript(dropRepositoryTables);
-                databasePopulator.addScript(dataRepositorySchema);
-                databasePopulator.setIgnoreFailedDrops(true);
-
-                DataSourceInitializer initializer = new DataSourceInitializer();
-                initializer.setDataSource(dataSource);
-                initializer.setDatabasePopulator(databasePopulator);
-
-                return initializer;
-            }
-
-            @Bean
-            public DataSource dataSource() {
-                EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
-                return builder.setType(EmbeddedDatabaseType.HSQL).build();
-            }
-
-            @Bean
-            public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-
-                HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-                vendorAdapter.setDatabase(Database.HSQL);
-                vendorAdapter.setGenerateDdl(true);
-
-                LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
-                factory.setJpaVendorAdapter(vendorAdapter);
-                factory.setPackagesToScan("it.rest.versioning");
-                factory.setDataSource(dataSource());
-
-                return factory;
-            }
-
-            @Bean
-            public PlatformTransactionManager transactionManager() {
-
-                JpaTransactionManager txManager = new JpaTransactionManager();
-                txManager.setEntityManagerFactory(entityManagerFactory().getObject());
-                return txManager;
-            }
         }
     }
 
@@ -225,6 +141,7 @@ public class LockingAndVersioningRestIT {
     }
 
     @Entity
+    @Access(AccessType.FIELD)
     @Table(name = "VERSIONED_DOCUMENTS")
     public static class VersionedDocument {
 
@@ -256,20 +173,31 @@ public class LockingAndVersioningRestIT {
         public VersionedDocument() {
         }
 
+        /**
+         * Reflective entry point for {@link internal.org.springframework.versions.jpa.JpaCloningServiceImpl}.
+         * {@code id} is intentionally not copied so the successor row gets a new key on {@code persist}.
+         */
+        @SuppressWarnings({"unused", "CopyConstructorMissesField"})
+        public VersionedDocument(VersionedDocument doc) {
+            this.versionStamp = doc.versionStamp;
+            this.contentId = doc.contentId;
+            this.contentLen = doc.contentLen;
+            this.mimeType = doc.mimeType;
+            this.lockOwner = doc.lockOwner;
+            this.ancestorId = doc.ancestorId;
+            this.ancestralRootId = doc.ancestralRootId;
+            this.successorId = doc.successorId;
+            this.version = doc.version;
+            this.label = doc.label;
+            this.data = doc.data;
+        }
+
         public Long getId() {
             return id;
         }
 
         public void setId(Long id) {
             this.id = id;
-        }
-
-        public Long getVersionStamp() {
-            return versionStamp;
-        }
-
-        public void setVersionStamp(Long versionStamp) {
-            this.versionStamp = versionStamp;
         }
 
         public UUID getContentId() {
@@ -296,34 +224,52 @@ public class LockingAndVersioningRestIT {
             this.mimeType = mimeType;
         }
 
+        @SuppressWarnings("unused")
+        public Long getVersionStamp() {
+            return versionStamp;
+        }
+
+        @SuppressWarnings("unused")
+        public void setVersionStamp(Long versionStamp) {
+            this.versionStamp = versionStamp;
+        }
+
+        @SuppressWarnings("unused")
         public String getLockOwner() {
             return lockOwner;
         }
 
+        @SuppressWarnings("unused")
         public void setLockOwner(String lockOwner) {
             this.lockOwner = lockOwner;
         }
 
+        @SuppressWarnings("unused")
         public Long getAncestorId() {
             return ancestorId;
         }
 
+        @SuppressWarnings("unused")
         public void setAncestorId(Long ancestorId) {
             this.ancestorId = ancestorId;
         }
 
+        @SuppressWarnings("unused")
         public Long getAncestralRootId() {
             return ancestralRootId;
         }
 
+        @SuppressWarnings("unused")
         public void setAncestralRootId(Long ancestralRootId) {
             this.ancestralRootId = ancestralRootId;
         }
 
+        @SuppressWarnings("unused")
         public Long getSuccessorId() {
             return successorId;
         }
 
+        @SuppressWarnings("unused")
         public void setSuccessorId(Long successorId) {
             this.successorId = successorId;
         }
@@ -336,10 +282,12 @@ public class LockingAndVersioningRestIT {
             this.version = version;
         }
 
+        @SuppressWarnings("unused")
         public String getLabel() {
             return label;
         }
 
+        @SuppressWarnings("unused")
         public void setLabel(String label) {
             this.label = label;
         }

@@ -18,7 +18,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.annotations.MimeType;
@@ -76,8 +75,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(SpringExtension.class)
 public class LockingAndVersioningRestIT {
 
-    @LocalServerPort
-    int port;
     @Autowired
     private VersionedDocumentAndVersioningRepository repo;
     @Autowired
@@ -236,6 +233,7 @@ public class LockingAndVersioningRestIT {
     }
 
     @Entity
+    @Access(AccessType.FIELD)
     @Table(name = "VERSIONED_DOCUMENTS")
     public static class VersionedDocument {
 
@@ -267,12 +265,23 @@ public class LockingAndVersioningRestIT {
         public VersionedDocument() {
         }
 
+        /**
+         * Reflective entry point for {@link internal.org.springframework.versions.jpa.JpaCloningServiceImpl}.
+         * {@code id} is intentionally not copied so the successor row gets a new key on {@code persist}.
+         */
+        @SuppressWarnings({"unused", "CopyConstructorMissesField"})
         public VersionedDocument(VersionedDocument doc) {
-            this.setContentId(doc.getContentId());
-            this.setContentLen(doc.getContentLen());
-            this.setMimeType(doc.getMimeType());
-            this.setLockOwner(doc.getLockOwner());
-            this.setData(doc.getData());
+            this.versionStamp = doc.versionStamp;
+            this.contentId = doc.contentId;
+            this.contentLen = doc.contentLen;
+            this.mimeType = doc.mimeType;
+            this.lockOwner = doc.lockOwner;
+            this.ancestorId = doc.ancestorId;
+            this.ancestralRootId = doc.ancestralRootId;
+            this.successorId = doc.successorId;
+            this.version = doc.version;
+            this.label = doc.label;
+            this.data = doc.data;
         }
 
         public Long getId() {
@@ -283,10 +292,12 @@ public class LockingAndVersioningRestIT {
             this.id = id;
         }
 
+        @SuppressWarnings("unused")
         public Long getVersionStamp() {
             return versionStamp;
         }
 
+        @SuppressWarnings("unused")
         public void setVersionStamp(Long versionStamp) {
             this.versionStamp = versionStamp;
         }
@@ -315,34 +326,42 @@ public class LockingAndVersioningRestIT {
             this.mimeType = mimeType;
         }
 
+        @SuppressWarnings("unused")
         public String getLockOwner() {
             return lockOwner;
         }
 
+        @SuppressWarnings("unused")
         public void setLockOwner(String lockOwner) {
             this.lockOwner = lockOwner;
         }
 
+        @SuppressWarnings("unused")
         public Long getAncestorId() {
             return ancestorId;
         }
 
+        @SuppressWarnings("unused")
         public void setAncestorId(Long ancestorId) {
             this.ancestorId = ancestorId;
         }
 
+        @SuppressWarnings("unused")
         public Long getAncestralRootId() {
             return ancestralRootId;
         }
 
+        @SuppressWarnings("unused")
         public void setAncestralRootId(Long ancestralRootId) {
             this.ancestralRootId = ancestralRootId;
         }
 
+        @SuppressWarnings("unused")
         public Long getSuccessorId() {
             return successorId;
         }
 
+        @SuppressWarnings("unused")
         public void setSuccessorId(Long successorId) {
             this.successorId = successorId;
         }
@@ -355,10 +374,12 @@ public class LockingAndVersioningRestIT {
             this.version = version;
         }
 
+        @SuppressWarnings("unused")
         public String getLabel() {
             return label;
         }
 
+        @SuppressWarnings("unused")
         public void setLabel(String label) {
             this.label = label;
         }
