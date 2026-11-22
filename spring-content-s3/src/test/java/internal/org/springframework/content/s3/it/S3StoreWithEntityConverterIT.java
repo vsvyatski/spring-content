@@ -25,8 +25,6 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.convert.converter.Converter;
-import org.springframework.core.convert.converter.ConverterRegistry;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
@@ -56,16 +54,14 @@ public class S3StoreWithEntityConverterIT {
     private static final String OTHER_BUCKET = "other-other-other-bucket";
     private static final String OTHER_OTHER_BUCKET = "other-other-bucket";
 
-    private static TestData[] testDataSets = null;
+    private static final TestData[] TEST_DATA_SETS = {
+        new TestData("Default Converter", new Class<?>[]{TestConfig.class}, OTHER_BUCKET),
+        new TestData("Custom Converter", new Class<?>[]{CustomConverterConfig.class, TestConfig.class}, OTHER_OTHER_BUCKET),
+    };
     private static S3Client s3ClientSpy;
 
     static {
         System.setProperty("spring.content.s3.bucket", BUCKET);
-
-        testDataSets = new TestData[]{
-            new TestData("Default Converter", new Class<?>[]{TestConfig.class}, OTHER_BUCKET),
-            new TestData("Custom Converter", new Class<?>[]{CustomConverterConfig.class, TestConfig.class}, OTHER_OTHER_BUCKET),
-        };
     }
 
     private DualContentJpaLongIdMimeEntity entity;
@@ -77,7 +73,7 @@ public class S3StoreWithEntityConverterIT {
     private S3Client client;
 
     static Stream<TestData> converterConfigs() {
-        return Stream.of(testDataSets);
+        return Stream.of(TEST_DATA_SETS);
     }
 
     private void bootContext(TestData testDataSet) {
@@ -138,25 +134,14 @@ public class S3StoreWithEntityConverterIT {
 
         @Bean
         public S3StoreConfigurer configurer() {
-            return new S3StoreConfigurer() {
-
-                @Override
-                public void configureS3StoreConverters(ConverterRegistry registry) {
-
-                    registry.addConverter(new Converter<ContentPropertyInfo<TestEntity, Serializable>, S3ObjectId>() {
-                        @Override
-                        public S3ObjectId convert(ContentPropertyInfo<TestEntity, Serializable> info) {
-                            return new S3ObjectId(OTHER_OTHER_BUCKET, info.contentId().toString());
-                        }
+            return registry -> {
+                registry.addConverter(
+                    (@NonNull ContentPropertyInfo<TestEntity, Serializable> info) ->
+                        new S3ObjectId(OTHER_OTHER_BUCKET, String.valueOf(info.contentId())));
+                registry.addConverter(
+                    (@NonNull ContentPropertyInfo<FakeEntity, Serializable> info) -> {
+                        throw new IllegalStateException("wrong converter called");
                     });
-
-                    registry.addConverter(new Converter<ContentPropertyInfo<FakeEntity, Serializable>, S3ObjectId>() {
-                        @Override
-                        public S3ObjectId convert(ContentPropertyInfo<FakeEntity, Serializable> info) {
-                            throw new IllegalStateException("wrong converter called");
-                        }
-                    });
-                }
             };
         }
     }
@@ -219,12 +204,12 @@ public class S3StoreWithEntityConverterIT {
                 verify(s3ClientSpy).putObject(captor.capture(), any(RequestBody.class));
                 assertThat(captor.getValue().bucket()).isEqualTo(testDataSet.bucket());
 
-                HeadObjectRequest headObjectRequest = HeadObjectRequest.builder()
+                String contentKey = entity.getContentId();
+                assertThat(contentKey).isNotNull();
+                client.headObject(HeadObjectRequest.builder()
                     .bucket(testDataSet.bucket())
-                    .key(entity.getContentId().toString())
-                    .build();
-
-                client.headObject(headObjectRequest);
+                    .key(contentKey)
+                    .build());
             } finally {
                 context.close();
             }
@@ -238,7 +223,7 @@ public class S3StoreWithEntityConverterIT {
                 saveEntityWithContent();
                 // content
                 assertThat(entity.getContentId()).isNotNull();
-                assertThat(entity.getContentId().toString().trim().length()).isGreaterThan(0);
+                assertThat(entity.getContentId().trim().length()).isGreaterThan(0);
                 assertThat(entity.getContentLen()).isEqualTo(27L);
             } finally {
                 context.close();

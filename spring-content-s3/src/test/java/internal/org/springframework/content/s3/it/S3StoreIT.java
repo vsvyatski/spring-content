@@ -45,14 +45,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 public class S3StoreIT {
 
     private static final String BUCKET = "test-bucket";
-    private static Object mutex = new Object();
+    private static final Object mutex = new Object();
 
     static {
         System.setProperty("spring.content.s3.bucket", BUCKET);
-    }
-
-    static {
-        System.setProperty("spring.content.s3.bucket", "test-bucket");
     }
 
     @Autowired
@@ -75,6 +71,32 @@ public class S3StoreIT {
     private EmbeddedContentJpaStringIdRepository embeddedRepo;
     @Autowired
     private EmbeddedContentJpaStringIdStore embeddedStore;
+
+
+    private void ensureTestBucket() throws InterruptedException {
+        synchronized (mutex) {
+            HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
+                .bucket(BUCKET)
+                .build();
+            try {
+                client.headBucket(headBucketRequest);
+            } catch (NoSuchBucketException ignored) {
+                client.createBucket(CreateBucketRequest.builder().bucket(BUCKET).build());
+                boolean found = false;
+                while (!found) {
+                    headBucketRequest = HeadBucketRequest.builder().bucket(BUCKET).build();
+                    try {
+                        client.headBucket(headBucketRequest);
+                        found = true;
+                    } catch (NoSuchBucketException ignoredPoll) {
+                        // LocalStack: bucket not visible yet
+                    }
+                    System.out.println("sleeping...");
+                    Thread.sleep(100);
+                }
+            }
+        }
+    }
 
     @SpringBootApplication(scanBasePackages = {"internal.org.springframework.content.s3.it", TestSupportPackages.JPA})
     @EntityScan(basePackages = TestSupportPackages.JPA)
@@ -105,37 +127,7 @@ public class S3StoreIT {
                 class Tests {
                     @BeforeEach
                     void setUp() throws InterruptedException {
-                        synchronized (mutex) {
-                            HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                                .bucket("test-bucket")
-                                .build();
-
-                            try {
-                                client.headBucket(headBucketRequest);
-                            } catch (NoSuchBucketException e) {
-
-                                CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                    .bucket("test-bucket")
-                                    .build();
-                                client.createBucket(bucketRequest);
-
-                                // wait for bucket to be created before continuing
-                                boolean found = false;
-                                while (!found) {
-                                    headBucketRequest = HeadBucketRequest.builder()
-                                        .bucket(BUCKET)
-                                        .build();
-                                    try {
-                                        client.headBucket(headBucketRequest);
-                                        found = true;
-                                    } catch (NoSuchBucketException e2) {
-                                    }
-
-                                    System.out.println("sleeping...");
-                                    Thread.sleep(100);
-                                }
-                            }
-                        }
+                        ensureTestBucket();
 
                         resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
@@ -169,37 +161,7 @@ public class S3StoreIT {
                     class Tests {
                         @BeforeEach
                         void setUp() throws IOException, InterruptedException {
-                            synchronized (mutex) {
-                                HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                                    .bucket("test-bucket")
-                                    .build();
-
-                                try {
-                                    client.headBucket(headBucketRequest);
-                                } catch (NoSuchBucketException e) {
-
-                                    CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                        .bucket("test-bucket")
-                                        .build();
-                                    client.createBucket(bucketRequest);
-
-                                    // wait for bucket to be created before continuing
-                                    boolean found = false;
-                                    while (!found) {
-                                        headBucketRequest = HeadBucketRequest.builder()
-                                            .bucket(BUCKET)
-                                            .build();
-                                        try {
-                                            client.headBucket(headBucketRequest);
-                                            found = true;
-                                        } catch (NoSuchBucketException e2) {
-                                        }
-
-                                        System.out.println("sleeping...");
-                                        Thread.sleep(100);
-                                    }
-                                }
-                            }
+                            ensureTestBucket();
 
                             resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
@@ -221,12 +183,9 @@ public class S3StoreIT {
                         void shouldStoreThatContent() throws IOException {
                             assertThat(genericResource.exists()).isTrue();
 
-                            boolean matches = false;
-                            try (InputStream expected = TestSupportData.sampleTextStream()) {
-                                try (InputStream actual = genericResource.getInputStream()) {
-                                    matches = IOUtils.contentEquals(expected, actual);
-                                    assertThat(matches).isTrue();
-                                }
+                            try (InputStream expected = TestSupportData.sampleTextStream();
+                                 InputStream actual = genericResource.getInputStream()) {
+                                assertThat(IOUtils.contentEquals(expected, actual)).isTrue();
                             }
                         }
                     }
@@ -235,37 +194,7 @@ public class S3StoreIT {
                     class GivenThatResourceIsThenUpdated {
                         @BeforeEach
                         void setUp() throws IOException, InterruptedException {
-                            synchronized (mutex) {
-                                HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                                    .bucket("test-bucket")
-                                    .build();
-
-                                try {
-                                    client.headBucket(headBucketRequest);
-                                } catch (NoSuchBucketException e) {
-
-                                    CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                        .bucket("test-bucket")
-                                        .build();
-                                    client.createBucket(bucketRequest);
-
-                                    // wait for bucket to be created before continuing
-                                    boolean found = false;
-                                    while (!found) {
-                                        headBucketRequest = HeadBucketRequest.builder()
-                                            .bucket(BUCKET)
-                                            .build();
-                                        try {
-                                            client.headBucket(headBucketRequest);
-                                            found = true;
-                                        } catch (NoSuchBucketException e2) {
-                                        }
-
-                                        System.out.println("sleeping...");
-                                        Thread.sleep(100);
-                                    }
-                                }
-                            }
+                            ensureTestBucket();
 
                             resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
@@ -305,37 +234,7 @@ public class S3StoreIT {
                     class GivenAByteRangeIsRequested {
                         @BeforeEach
                         void setUp() throws IOException, InterruptedException {
-                            synchronized (mutex) {
-                                HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                                    .bucket("test-bucket")
-                                    .build();
-
-                                try {
-                                    client.headBucket(headBucketRequest);
-                                } catch (NoSuchBucketException e) {
-
-                                    CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                        .bucket("test-bucket")
-                                        .build();
-                                    client.createBucket(bucketRequest);
-
-                                    // wait for bucket to be created before continuing
-                                    boolean found = false;
-                                    while (!found) {
-                                        headBucketRequest = HeadBucketRequest.builder()
-                                            .bucket(BUCKET)
-                                            .build();
-                                        try {
-                                            client.headBucket(headBucketRequest);
-                                            found = true;
-                                        } catch (NoSuchBucketException e2) {
-                                        }
-
-                                        System.out.println("sleeping...");
-                                        Thread.sleep(100);
-                                    }
-                                }
-                            }
+                            ensureTestBucket();
 
                             resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
@@ -372,37 +271,7 @@ public class S3StoreIT {
                     class GivenThatResourceIsThenDeleted {
                         @BeforeEach
                         void setUp() throws IOException, InterruptedException {
-                            synchronized (mutex) {
-                                HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                                    .bucket("test-bucket")
-                                    .build();
-
-                                try {
-                                    client.headBucket(headBucketRequest);
-                                } catch (NoSuchBucketException e) {
-
-                                    CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                        .bucket("test-bucket")
-                                        .build();
-                                    client.createBucket(bucketRequest);
-
-                                    // wait for bucket to be created before continuing
-                                    boolean found = false;
-                                    while (!found) {
-                                        headBucketRequest = HeadBucketRequest.builder()
-                                            .bucket(BUCKET)
-                                            .build();
-                                        try {
-                                            client.headBucket(headBucketRequest);
-                                            found = true;
-                                        } catch (NoSuchBucketException e2) {
-                                        }
-
-                                        System.out.println("sleeping...");
-                                        Thread.sleep(100);
-                                    }
-                                }
-                            }
+                            ensureTestBucket();
 
                             resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
@@ -443,37 +312,7 @@ public class S3StoreIT {
                 class Tests {
                     @BeforeEach
                     void setUp() throws InterruptedException {
-                        synchronized (mutex) {
-                            HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                                .bucket("test-bucket")
-                                .build();
-
-                            try {
-                                client.headBucket(headBucketRequest);
-                            } catch (NoSuchBucketException e) {
-
-                                CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                    .bucket("test-bucket")
-                                    .build();
-                                client.createBucket(bucketRequest);
-
-                                // wait for bucket to be created before continuing
-                                boolean found = false;
-                                while (!found) {
-                                    headBucketRequest = HeadBucketRequest.builder()
-                                        .bucket(BUCKET)
-                                        .build();
-                                    try {
-                                        client.headBucket(headBucketRequest);
-                                        found = true;
-                                    } catch (NoSuchBucketException e2) {
-                                    }
-
-                                    System.out.println("sleeping...");
-                                    Thread.sleep(100);
-                                }
-                            }
-                        }
+                        ensureTestBucket();
 
                         resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
@@ -496,37 +335,7 @@ public class S3StoreIT {
                         class Tests {
                             @BeforeEach
                             void setUp() throws InterruptedException {
-                                synchronized (mutex) {
-                                    HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                                        .bucket("test-bucket")
-                                        .build();
-
-                                    try {
-                                        client.headBucket(headBucketRequest);
-                                    } catch (NoSuchBucketException e) {
-
-                                        CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                            .bucket("test-bucket")
-                                            .build();
-                                        client.createBucket(bucketRequest);
-
-                                        // wait for bucket to be created before continuing
-                                        boolean found = false;
-                                        while (!found) {
-                                            headBucketRequest = HeadBucketRequest.builder()
-                                                .bucket(BUCKET)
-                                                .build();
-                                            try {
-                                                client.headBucket(headBucketRequest);
-                                                found = true;
-                                            } catch (NoSuchBucketException e2) {
-                                            }
-
-                                            System.out.println("sleeping...");
-                                            Thread.sleep(100);
-                                        }
-                                    }
-                                }
+                                ensureTestBucket();
 
                                 resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
@@ -550,37 +359,7 @@ public class S3StoreIT {
                         class WhenTheResourceIsUnassociated {
                             @BeforeEach
                             void setUp() throws InterruptedException {
-                                synchronized (mutex) {
-                                    HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                                        .bucket("test-bucket")
-                                        .build();
-
-                                    try {
-                                        client.headBucket(headBucketRequest);
-                                    } catch (NoSuchBucketException e) {
-
-                                        CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                            .bucket("test-bucket")
-                                            .build();
-                                        client.createBucket(bucketRequest);
-
-                                        // wait for bucket to be created before continuing
-                                        boolean found = false;
-                                        while (!found) {
-                                            headBucketRequest = HeadBucketRequest.builder()
-                                                .bucket(BUCKET)
-                                                .build();
-                                            try {
-                                                client.headBucket(headBucketRequest);
-                                                found = true;
-                                            } catch (NoSuchBucketException e2) {
-                                            }
-
-                                            System.out.println("sleeping...");
-                                            Thread.sleep(100);
-                                        }
-                                    }
-                                }
+                                ensureTestBucket();
 
                                 resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
@@ -607,37 +386,7 @@ public class S3StoreIT {
                         class WhenAInvalidPropertyPathIsUsedToAssociateAResource {
                             @BeforeEach
                             void setUp() throws InterruptedException {
-                                synchronized (mutex) {
-                                    HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                                        .bucket("test-bucket")
-                                        .build();
-
-                                    try {
-                                        client.headBucket(headBucketRequest);
-                                    } catch (NoSuchBucketException e) {
-
-                                        CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                            .bucket("test-bucket")
-                                            .build();
-                                        client.createBucket(bucketRequest);
-
-                                        // wait for bucket to be created before continuing
-                                        boolean found = false;
-                                        while (!found) {
-                                            headBucketRequest = HeadBucketRequest.builder()
-                                                .bucket(BUCKET)
-                                                .build();
-                                            try {
-                                                client.headBucket(headBucketRequest);
-                                                found = true;
-                                            } catch (NoSuchBucketException e2) {
-                                            }
-
-                                            System.out.println("sleeping...");
-                                            Thread.sleep(100);
-                                        }
-                                    }
-                                }
+                                ensureTestBucket();
 
                                 resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
@@ -665,37 +414,7 @@ public class S3StoreIT {
                         class WhenAInvalidPropertyPathIsUsedToLoadAResource {
                             @BeforeEach
                             void setUp() throws InterruptedException {
-                                synchronized (mutex) {
-                                    HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                                        .bucket("test-bucket")
-                                        .build();
-
-                                    try {
-                                        client.headBucket(headBucketRequest);
-                                    } catch (NoSuchBucketException e) {
-
-                                        CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                            .bucket("test-bucket")
-                                            .build();
-                                        client.createBucket(bucketRequest);
-
-                                        // wait for bucket to be created before continuing
-                                        boolean found = false;
-                                        while (!found) {
-                                            headBucketRequest = HeadBucketRequest.builder()
-                                                .bucket(BUCKET)
-                                                .build();
-                                            try {
-                                                client.headBucket(headBucketRequest);
-                                                found = true;
-                                            } catch (NoSuchBucketException e2) {
-                                            }
-
-                                            System.out.println("sleeping...");
-                                            Thread.sleep(100);
-                                        }
-                                    }
-                                }
+                                ensureTestBucket();
 
                                 resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
@@ -723,37 +442,7 @@ public class S3StoreIT {
                         class WhenAInvalidPropertyPathIsUsedToUnassociateAResource {
                             @BeforeEach
                             void setUp() throws InterruptedException {
-                                synchronized (mutex) {
-                                    HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                                        .bucket("test-bucket")
-                                        .build();
-
-                                    try {
-                                        client.headBucket(headBucketRequest);
-                                    } catch (NoSuchBucketException e) {
-
-                                        CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                            .bucket("test-bucket")
-                                            .build();
-                                        client.createBucket(bucketRequest);
-
-                                        // wait for bucket to be created before continuing
-                                        boolean found = false;
-                                        while (!found) {
-                                            headBucketRequest = HeadBucketRequest.builder()
-                                                .bucket(BUCKET)
-                                                .build();
-                                            try {
-                                                client.headBucket(headBucketRequest);
-                                                found = true;
-                                            } catch (NoSuchBucketException e2) {
-                                            }
-
-                                            System.out.println("sleeping...");
-                                            Thread.sleep(100);
-                                        }
-                                    }
-                                }
+                                ensureTestBucket();
 
                                 resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
@@ -787,37 +476,7 @@ public class S3StoreIT {
             class Tests {
                 @BeforeEach
                 void setUp() throws InterruptedException {
-                    synchronized (mutex) {
-                        HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                            .bucket("test-bucket")
-                            .build();
-
-                        try {
-                            client.headBucket(headBucketRequest);
-                        } catch (NoSuchBucketException e) {
-
-                            CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                .bucket("test-bucket")
-                                .build();
-                            client.createBucket(bucketRequest);
-
-                            // wait for bucket to be created before continuing
-                            boolean found = false;
-                            while (!found) {
-                                headBucketRequest = HeadBucketRequest.builder()
-                                    .bucket(BUCKET)
-                                    .build();
-                                try {
-                                    client.headBucket(headBucketRequest);
-                                    found = true;
-                                } catch (NoSuchBucketException e2) {
-                                }
-
-                                System.out.println("sleeping...");
-                                Thread.sleep(100);
-                            }
-                        }
-                    }
+                    ensureTestBucket();
 
                     resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
@@ -831,17 +490,15 @@ public class S3StoreIT {
                 }
 
                 @Test
-                void shouldBeAbleToStoreNewContent() {
+                void shouldBeAbleToStoreNewContent() throws IOException {
                     // content
                     try (InputStream content = store.getContent(entity)) {
                         assertThat(IOUtils.contentEquals(TestSupportData.sampleTextStream(), content)).isTrue();
-                    } catch (IOException ioe) {
                     }
 
                     //rendition
                     try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
                         assertThat(IOUtils.contentEquals(TestSupportData.sampleHtmlRenditionStream(), content)).isTrue();
-                    } catch (IOException ioe) {
                     }
                 }
 
@@ -874,37 +531,7 @@ public class S3StoreIT {
             class WhenContentIsUpdated {
                 @BeforeEach
                 void setUp() throws InterruptedException {
-                    synchronized (mutex) {
-                        HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                            .bucket("test-bucket")
-                            .build();
-
-                        try {
-                            client.headBucket(headBucketRequest);
-                        } catch (NoSuchBucketException e) {
-
-                            CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                .bucket("test-bucket")
-                                .build();
-                            client.createBucket(bucketRequest);
-
-                            // wait for bucket to be created before continuing
-                            boolean found = false;
-                            while (!found) {
-                                headBucketRequest = HeadBucketRequest.builder()
-                                    .bucket(BUCKET)
-                                    .build();
-                                try {
-                                    client.headBucket(headBucketRequest);
-                                    found = true;
-                                } catch (NoSuchBucketException e2) {
-                                }
-
-                                System.out.println("sleeping...");
-                                Thread.sleep(100);
-                            }
-                        }
-                    }
+                    ensureTestBucket();
 
                     resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
@@ -924,17 +551,13 @@ public class S3StoreIT {
                 @Test
                 void shouldHaveTheUpdatedContent() throws IOException {
                     //content
-                    boolean matches = false;
                     try (InputStream content = store.getContent(entity)) {
-                        matches = IOUtils.contentEquals(TestSupportData.sampleUpdatedTextStream(), content);
-                        assertThat(matches).isTrue();
+                        assertThat(IOUtils.contentEquals(TestSupportData.sampleUpdatedTextStream(), content)).isTrue();
                     }
 
                     //rendition
-                    matches = false;
                     try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
-                        matches = IOUtils.contentEquals(TestSupportData.sampleUpdatedHtmlRenditionStream(), content);
-                        assertThat(matches).isTrue();
+                        assertThat(IOUtils.contentEquals(TestSupportData.sampleUpdatedHtmlRenditionStream(), content)).isTrue();
                     }
                 }
             }
@@ -943,37 +566,7 @@ public class S3StoreIT {
             class WhenContentIsUpdatedWithShorterContent {
                 @BeforeEach
                 void setUp() throws InterruptedException {
-                    synchronized (mutex) {
-                        HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                            .bucket("test-bucket")
-                            .build();
-
-                        try {
-                            client.headBucket(headBucketRequest);
-                        } catch (NoSuchBucketException e) {
-
-                            CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                .bucket("test-bucket")
-                                .build();
-                            client.createBucket(bucketRequest);
-
-                            // wait for bucket to be created before continuing
-                            boolean found = false;
-                            while (!found) {
-                                headBucketRequest = HeadBucketRequest.builder()
-                                    .bucket(BUCKET)
-                                    .build();
-                                try {
-                                    client.headBucket(headBucketRequest);
-                                    found = true;
-                                } catch (NoSuchBucketException e2) {
-                                }
-
-                                System.out.println("sleeping...");
-                                Thread.sleep(100);
-                            }
-                        }
-                    }
+                    ensureTestBucket();
 
                     resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
@@ -993,17 +586,13 @@ public class S3StoreIT {
                 @Test
                 void shouldStoreOnlyTheNewContent() throws IOException {
                     //content
-                    boolean matches = false;
                     try (InputStream content = store.getContent(entity)) {
-                        matches = IOUtils.contentEquals(TestSupportData.samplePartialUpdateStream(), content);
-                        assertThat(matches).isTrue();
+                        assertThat(IOUtils.contentEquals(TestSupportData.samplePartialUpdateStream(), content)).isTrue();
                     }
 
                     //rendition
-                    matches = false;
                     try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
-                        matches = IOUtils.contentEquals(TestSupportData.samplePartialUpdateHtmlRenditionStream(), content);
-                        assertThat(matches).isTrue();
+                        assertThat(IOUtils.contentEquals(TestSupportData.samplePartialUpdateHtmlRenditionStream(), content)).isTrue();
                     }
                 }
             }
@@ -1012,37 +601,7 @@ public class S3StoreIT {
             class WhenContentIsUpdatedAndNotOverwritten {
                 @BeforeEach
                 void setUp() throws InterruptedException {
-                    synchronized (mutex) {
-                        HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                            .bucket("test-bucket")
-                            .build();
-
-                        try {
-                            client.headBucket(headBucketRequest);
-                        } catch (NoSuchBucketException e) {
-
-                            CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                .bucket("test-bucket")
-                                .build();
-                            client.createBucket(bucketRequest);
-
-                            // wait for bucket to be created before continuing
-                            boolean found = false;
-                            while (!found) {
-                                headBucketRequest = HeadBucketRequest.builder()
-                                    .bucket(BUCKET)
-                                    .build();
-                                try {
-                                    client.headBucket(headBucketRequest);
-                                    found = true;
-                                } catch (NoSuchBucketException e2) {
-                                }
-
-                                System.out.println("sleeping...");
-                                Thread.sleep(100);
-                            }
-                        }
-                    }
+                    ensureTestBucket();
 
                     resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
@@ -1063,10 +622,8 @@ public class S3StoreIT {
                     store.setContent(entity, PropertyPath.from("content"), TestSupportData.sampleUpdatedTextStream(), new SetContentParams(-1, true, SetContentParams.ContentDisposition.CreateNew));
                     entity = repo.save(entity);
 
-                    boolean matches = false;
                     try (InputStream content = store.getContent(entity)) {
-                        matches = IOUtils.contentEquals(TestSupportData.sampleUpdatedTextStream(), content);
-                        assertThat(matches).isTrue();
+                        assertThat(IOUtils.contentEquals(TestSupportData.sampleUpdatedTextStream(), content)).isTrue();
                     }
 
                     assertThat(entity.getContentId()).isNotEqualTo(contentId);
@@ -1078,37 +635,7 @@ public class S3StoreIT {
             class WhenContentIsUnset {
                 @BeforeEach
                 void setUp() throws InterruptedException {
-                    synchronized (mutex) {
-                        HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                            .bucket("test-bucket")
-                            .build();
-
-                        try {
-                            client.headBucket(headBucketRequest);
-                        } catch (NoSuchBucketException e) {
-
-                            CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                .bucket("test-bucket")
-                                .build();
-                            client.createBucket(bucketRequest);
-
-                            // wait for bucket to be created before continuing
-                            boolean found = false;
-                            while (!found) {
-                                headBucketRequest = HeadBucketRequest.builder()
-                                    .bucket(BUCKET)
-                                    .build();
-                                try {
-                                    client.headBucket(headBucketRequest);
-                                    found = true;
-                                } catch (NoSuchBucketException e2) {
-                                }
-
-                                System.out.println("sleeping...");
-                                Thread.sleep(100);
-                            }
-                        }
-                    }
+                    ensureTestBucket();
 
                     resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
@@ -1120,7 +647,8 @@ public class S3StoreIT {
                     store.setContent(entity, TestSupportData.sampleTextStream());
                     store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleHtmlRenditionStream());
 
-                    resourceLocation = entity.getContentId().toString();
+                    resourceLocation = entity.getContentId();
+                    assertThat(resourceLocation).isNotNull();
                     entity = store.unsetContent(entity);
                     entity = store.unsetContent(entity, PropertyPath.from("rendition"));
                     entity = repo.save(entity);
@@ -1154,37 +682,7 @@ public class S3StoreIT {
             class WhenContentIsUnsetButKept {
                 @BeforeEach
                 void setUp() throws InterruptedException {
-                    synchronized (mutex) {
-                        HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                            .bucket("test-bucket")
-                            .build();
-
-                        try {
-                            client.headBucket(headBucketRequest);
-                        } catch (NoSuchBucketException e) {
-
-                            CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                .bucket("test-bucket")
-                                .build();
-                            client.createBucket(bucketRequest);
-
-                            // wait for bucket to be created before continuing
-                            boolean found = false;
-                            while (!found) {
-                                headBucketRequest = HeadBucketRequest.builder()
-                                    .bucket(BUCKET)
-                                    .build();
-                                try {
-                                    client.headBucket(headBucketRequest);
-                                    found = true;
-                                } catch (NoSuchBucketException e2) {
-                                }
-
-                                System.out.println("sleeping...");
-                                Thread.sleep(100);
-                            }
-                        }
-                    }
+                    ensureTestBucket();
 
                     resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
@@ -1196,7 +694,8 @@ public class S3StoreIT {
                     store.setContent(entity, TestSupportData.sampleTextStream());
                     store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleHtmlRenditionStream());
 
-                    resourceLocation = entity.getContentId().toString();
+                    resourceLocation = entity.getContentId();
+                    assertThat(resourceLocation).isNotNull();
                     entity = store.unsetContent(entity, PropertyPath.from("content"), new UnsetContentParams(UnsetContentParams.Disposition.Keep));
                     entity = repo.save(entity);
                 }
@@ -1219,37 +718,7 @@ public class S3StoreIT {
             class WhenAnInvalidPropertyPathIsUsedToSetContent {
                 @BeforeEach
                 void setUp() throws InterruptedException {
-                    synchronized (mutex) {
-                        HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                            .bucket("test-bucket")
-                            .build();
-
-                        try {
-                            client.headBucket(headBucketRequest);
-                        } catch (NoSuchBucketException e) {
-
-                            CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                .bucket("test-bucket")
-                                .build();
-                            client.createBucket(bucketRequest);
-
-                            // wait for bucket to be created before continuing
-                            boolean found = false;
-                            while (!found) {
-                                headBucketRequest = HeadBucketRequest.builder()
-                                    .bucket(BUCKET)
-                                    .build();
-                                try {
-                                    client.headBucket(headBucketRequest);
-                                    found = true;
-                                } catch (NoSuchBucketException e2) {
-                                }
-
-                                System.out.println("sleeping...");
-                                Thread.sleep(100);
-                            }
-                        }
-                    }
+                    ensureTestBucket();
 
                     resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
@@ -1277,37 +746,7 @@ public class S3StoreIT {
             class WhenAnInvalidPropertyPathIsUsedToGetContent {
                 @BeforeEach
                 void setUp() throws InterruptedException {
-                    synchronized (mutex) {
-                        HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                            .bucket("test-bucket")
-                            .build();
-
-                        try {
-                            client.headBucket(headBucketRequest);
-                        } catch (NoSuchBucketException e) {
-
-                            CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                .bucket("test-bucket")
-                                .build();
-                            client.createBucket(bucketRequest);
-
-                            // wait for bucket to be created before continuing
-                            boolean found = false;
-                            while (!found) {
-                                headBucketRequest = HeadBucketRequest.builder()
-                                    .bucket(BUCKET)
-                                    .build();
-                                try {
-                                    client.headBucket(headBucketRequest);
-                                    found = true;
-                                } catch (NoSuchBucketException e2) {
-                                }
-
-                                System.out.println("sleeping...");
-                                Thread.sleep(100);
-                            }
-                        }
-                    }
+                    ensureTestBucket();
 
                     resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
@@ -1335,37 +774,7 @@ public class S3StoreIT {
             class WhenAnInvalidPropertyPathIsUsedToUnsetContent {
                 @BeforeEach
                 void setUp() throws InterruptedException {
-                    synchronized (mutex) {
-                        HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                            .bucket("test-bucket")
-                            .build();
-
-                        try {
-                            client.headBucket(headBucketRequest);
-                        } catch (NoSuchBucketException e) {
-
-                            CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                .bucket("test-bucket")
-                                .build();
-                            client.createBucket(bucketRequest);
-
-                            // wait for bucket to be created before continuing
-                            boolean found = false;
-                            while (!found) {
-                                headBucketRequest = HeadBucketRequest.builder()
-                                    .bucket(BUCKET)
-                                    .build();
-                                try {
-                                    client.headBucket(headBucketRequest);
-                                    found = true;
-                                } catch (NoSuchBucketException e2) {
-                                }
-
-                                System.out.println("sleeping...");
-                                Thread.sleep(100);
-                            }
-                        }
-                    }
+                    ensureTestBucket();
 
                     resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
@@ -1393,37 +802,7 @@ public class S3StoreIT {
             class WhenContentIsDeletedAndTheContentIdFieldIsSharedWithEntityId {
                 @BeforeEach
                 void setUp() throws InterruptedException {
-                    synchronized (mutex) {
-                        HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                            .bucket("test-bucket")
-                            .build();
-
-                        try {
-                            client.headBucket(headBucketRequest);
-                        } catch (NoSuchBucketException e) {
-
-                            CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                .bucket("test-bucket")
-                                .build();
-                            client.createBucket(bucketRequest);
-
-                            // wait for bucket to be created before continuing
-                            boolean found = false;
-                            while (!found) {
-                                headBucketRequest = HeadBucketRequest.builder()
-                                    .bucket(BUCKET)
-                                    .build();
-                                try {
-                                    client.headBucket(headBucketRequest);
-                                    found = true;
-                                } catch (NoSuchBucketException e2) {
-                                }
-
-                                System.out.println("sleeping...");
-                                Thread.sleep(100);
-                            }
-                        }
-                    }
+                    ensureTestBucket();
 
                     resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
@@ -1455,37 +834,7 @@ public class S3StoreIT {
                 class GivenAEntityWithANullEmbeddedContentObject {
                     @BeforeEach
                     void setUp() throws InterruptedException {
-                        synchronized (mutex) {
-                            HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                                .bucket("test-bucket")
-                                .build();
-
-                            try {
-                                client.headBucket(headBucketRequest);
-                            } catch (NoSuchBucketException e) {
-
-                                CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                    .bucket("test-bucket")
-                                    .build();
-                                client.createBucket(bucketRequest);
-
-                                // wait for bucket to be created before continuing
-                                boolean found = false;
-                                while (!found) {
-                                    headBucketRequest = HeadBucketRequest.builder()
-                                        .bucket(BUCKET)
-                                        .build();
-                                    try {
-                                        client.headBucket(headBucketRequest);
-                                        found = true;
-                                    } catch (NoSuchBucketException e2) {
-                                    }
-
-                                    System.out.println("sleeping...");
-                                    Thread.sleep(100);
-                                }
-                            }
-                        }
+                        ensureTestBucket();
 
                         resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 

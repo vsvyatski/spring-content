@@ -4,7 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.content.commons.store.AssociativeStore;
-import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.commons.store.Store;
 import org.springframework.content.commons.utils.PlacementService;
 import org.springframework.context.support.GenericApplicationContext;
@@ -19,19 +18,16 @@ public class S3StoreFactoryBeanTest {
 
     private S3StoreFactoryBean factory;
 
-    private GenericApplicationContext context = new GenericApplicationContext();
+    private final GenericApplicationContext context = new GenericApplicationContext();
     private S3Client client;
     private PlacementService placer;
 
-    private Store store;
+    private Store<Serializable> store;
 
     public interface TestStore extends Store<Serializable> {
     }
 
     private interface TestAssociativeStore extends AssociativeStore<Object, Serializable> {
-    }
-
-    private interface TestContentStore extends ContentStore<Object, Serializable> {
     }
 
     @Nested
@@ -42,14 +38,13 @@ public class S3StoreFactoryBeanTest {
             class GivenAStore {
                 @BeforeEach
                 void setUp() {
-                    // noinspection resource
                     client = mock(S3Client.class);
                     placer = mock(PlacementService.class);
 
-                    context.registerBean("amazonS3", S3Client.class, () -> client);
+                    context.registerBean("s3Client", S3Client.class, () -> client);
                     context.refresh();
 
-                    factory = new S3StoreFactoryBean(S3StoreFactoryBeanTest.TestStore.class/*, context, client, placer*/);
+                    factory = new S3StoreFactoryBean(TestStore.class);
                     factory.setContext(context);
                     factory.setClient(client);
                     factory.setS3StorePlacementService(placer);
@@ -69,14 +64,13 @@ public class S3StoreFactoryBeanTest {
             class GivenAnAssociativeStore {
                 @BeforeEach
                 void setUp() {
-                    // noinspection resource
                     client = mock(S3Client.class);
                     placer = mock(PlacementService.class);
 
-                    context.registerBean("amazonS3", S3Client.class, () -> client);
+                    context.registerBean("s3Client", S3Client.class, () -> client);
                     context.refresh();
 
-                    factory = new S3StoreFactoryBean(S3StoreFactoryBeanTest.TestStore.class/*, context, client, placer*/);
+                    factory = new S3StoreFactoryBean(TestAssociativeStore.class);
                     factory.setContext(context);
                     factory.setClient(client);
                     factory.setS3StorePlacementService(placer);

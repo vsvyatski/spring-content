@@ -31,7 +31,6 @@ public final class LocalStack {
     private LocalStack() {
     }
 
-    @SuppressWarnings("resource")
     private static LocalStackContainer startLocalStack() {
         LocalStackContainer container = new LocalStackContainer(IMAGE_NAME);
         container.withServices(LocalStackContainer.Service.S3);
