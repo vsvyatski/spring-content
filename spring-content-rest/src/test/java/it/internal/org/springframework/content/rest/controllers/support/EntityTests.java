@@ -1,6 +1,5 @@
 package it.internal.org.springframework.content.rest.controllers.support;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.theoryinpractise.halbuilder.api.ReadableRepresentation;
 import com.theoryinpractise.halbuilder.api.RepresentationFactory;
@@ -25,7 +24,7 @@ public class EntityTests {
     private String url;
     private String linkRel;
     private ContentEntity entity;
-    private CrudRepository repository;
+    private CrudRepository<ContentEntity, Long> repository;
 
     public static EntityTests tests() {
         return new EntityTests();
@@ -39,16 +38,8 @@ public class EntityTests {
         this.mvc = mvc;
     }
 
-    public String getUrl() {
-        return url;
-    }
-
     public void setUrl(String url) {
         this.url = url;
-    }
-
-    public String getLinkRel() {
-        return linkRel;
     }
 
     public void setLinkRel(String linkRel) {
@@ -63,12 +54,9 @@ public class EntityTests {
         this.entity = entity;
     }
 
-    public CrudRepository getRepository() {
-        return repository;
-    }
-
-    public void setRepository(CrudRepository repository) {
-        this.repository = repository;
+    @SuppressWarnings("unchecked")
+    public void setRepository(CrudRepository<? extends ContentEntity, Long> repository) {
+        this.repository = (CrudRepository<ContentEntity, Long>) repository;
     }
 
     @Nested
@@ -94,7 +82,7 @@ public class EntityTests {
     @Nested
     class APUTToStoreIdWithAJsonBody {
         @Test
-        void shouldSetEntitiesDataAndReturn200() throws Exception, JsonProcessingException {
+        void shouldSetEntitiesDataAndReturn200() throws Exception {
             entity.setTitle("Spring Content");
             mvc.perform(put(url)
                     .content(new ObjectMapper().writeValueAsString(entity))

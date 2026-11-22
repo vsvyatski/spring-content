@@ -1,19 +1,18 @@
 package it.internal.org.springframework.content.rest.controllers.support;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import internal.org.springframework.content.rest.support.ContentEntity;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.content.commons.store.ContentStore;
-import org.springframework.content.commons.store.Store;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -27,8 +26,8 @@ public class VersionTests {
     private String url;
     private String collectionUrl;
     private String contentLinkRel;
-    private CrudRepository repo;
-    private Store store;
+    private CrudRepository<ContentEntity, Long> repo;
+    private ContentStore<ContentEntity, UUID> store;
     private String etag;
     private ContentEntity entity;
 
@@ -52,12 +51,14 @@ public class VersionTests {
         this.contentLinkRel = contentLinkRel;
     }
 
-    public void setRepo(CrudRepository repo) {
-        this.repo = repo;
+    @SuppressWarnings("unchecked")
+    public void setRepo(CrudRepository<?, Long> repo) {
+        this.repo = (CrudRepository<ContentEntity, Long>) repo;
     }
 
-    public void setStore(Store store) {
-        this.store = store;
+    @SuppressWarnings("unchecked")
+    public void setStore(ContentStore<?, ?> store) {
+        this.store = (ContentStore<ContentEntity, UUID>) store;
     }
 
     public void setEtag(String etag) {
@@ -71,7 +72,7 @@ public class VersionTests {
     @Nested
     class Issue1975 {
         @Test
-        void shouldAlwaysEvaluateIfMatchHeaderEvenAfterContentDeletion() throws Exception, JsonProcessingException {
+        void shouldAlwaysEvaluateIfMatchHeaderEvenAfterContentDeletion() throws Exception {
             String entityUrl = mvc.perform(post(collectionUrl).content("{}"))
                 .andExpect(status().is2xxSuccessful()).andReturn().getResponse().getHeader("Location");
             assertThat(entityUrl).isNotNull();
@@ -182,7 +183,7 @@ public class VersionTests {
                 assertThat(fetched.get().getContentId()).isNull();
                 assertThat(fetched.get().getLen()).isNull();
                 assertThat(fetched.get().getMimeType()).isNull();
-                assertThat(((ContentStore) store).getContent(fetched.get())).isNull();
+                assertThat(store.getContent(fetched.get())).isNull();
             }
         }
     }

@@ -34,7 +34,7 @@ public abstract class LastModifiedDateTests {
     private String content;
 
     public static Matcher<String> isWithinASecond(final Date expectedDate) {
-        return new TypeSafeMatcher<String>() {
+        return new TypeSafeMatcher<>() {
 
             @Override
             protected void describeMismatchSafely(String foo, Description description) {
@@ -65,10 +65,10 @@ public abstract class LastModifiedDateTests {
         return format.format(dt);
     }
 
-    private static Date addDays(Date dt, int n) {
+    private static Date dayBefore(Date dt) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(dt);
-        cal.add(Calendar.DATE, n);
+        cal.add(Calendar.DATE, -1);
         return cal.getTime();
     }
 
@@ -150,7 +150,7 @@ public abstract class LastModifiedDateTests {
         void shouldRespondWith412PreconditionFailed() throws Exception {
             mvc.perform(get(url)
                     .accept("text/plain")
-                    .header("if-unmodified-since", toHeaderDateFormat(addDays(lastModifiedDate, -1))))
+                    .header("if-unmodified-since", toHeaderDateFormat(dayBefore(lastModifiedDate))))
                 .andExpect(status().isPreconditionFailed())
                 .andReturn();
         }
@@ -175,7 +175,7 @@ public abstract class LastModifiedDateTests {
             mvc.perform(put(url)
                     .content("Hello Modified Spring Content World!")
                     .contentType("text/plain")
-                    .header("if-unmodified-since", toHeaderDateFormat(addDays(lastModifiedDate, -1))))
+                    .header("if-unmodified-since", toHeaderDateFormat(dayBefore(lastModifiedDate))))
                 .andExpect(status().isPreconditionFailed());
         }
     }
@@ -212,7 +212,7 @@ public abstract class LastModifiedDateTests {
         @Test
         void shouldRespondWith412PreconditionFailed() throws Exception {
             mvc.perform(delete(url)
-                    .header("if-unmodified-since", toHeaderDateFormat(addDays(lastModifiedDate, -1))))
+                    .header("if-unmodified-since", toHeaderDateFormat(dayBefore(lastModifiedDate))))
                 .andExpect(status().isPreconditionFailed());
         }
     }
