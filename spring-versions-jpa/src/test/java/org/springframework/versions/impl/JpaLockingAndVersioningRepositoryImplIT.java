@@ -63,23 +63,13 @@ public class JpaLockingAndVersioningRepositoryImplIT {
 
     private Exception e;
 
-    /// ///////////////////////////////////////////////
     // this entity and repository ensure that multiple repositories can implement LockingAndVersioningRepository at the same time
     @Autowired
     private OtherTestRepository otherRepo;
 
     private static void setupSecurityContext(String principal, boolean isAuthenticated) {
-        SecurityContext sc = new SecurityContext() {
-            @Override
-            public Authentication getAuthentication() {
-                return new MockAuthentication(principal, isAuthenticated);
-            }
-
-            @Override
-            public void setAuthentication(Authentication authentication) {
-            }
-        };
-
+        SecurityContext sc = SecurityContextHolder.createEmptyContext();
+        sc.setAuthentication(new MockAuthentication(principal, isAuthenticated));
         SecurityContextHolder.setContext(sc);
     }
 
@@ -148,6 +138,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
     }
 
     @Entity
+    @SuppressWarnings("unused")
     public static class TestEntity {
         @Id
         @GeneratedValue
@@ -965,10 +956,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
 
                 @Test
                 void shouldReturnOnlyTheLatestVersionOfTheEntities() {
-                    List<TestEntity> results = repo.findAllVersionsLatest((Class<TestEntity>) e1.getClass());
-                    assertThat(results).extracting("xid").contains(e1v11.getXid(), e2v2.getXid()).doesNotContain(e3wc.getXid());
-
-                    results = repo.findAllVersionsLatest(TestEntity.class);
+                    List<TestEntity> results = repo.findAllVersionsLatest(TestEntity.class);
                     assertThat(results).extracting("xid").contains(e1v11.getXid(), e2v2.getXid()).doesNotContain(e3wc.getXid());
                 }
             }
@@ -1423,7 +1411,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
 
                         @Test
                         void shouldReInstateTheAncestorAsTheHead() {
-                            e1v11 = repo.findById(e1v11.getXid()).get();
+                            e1v11 = repo.findById(e1v11.getXid()).orElseThrow();
                             assertThat(e1v11.getXSuccessorId()).isNull();
                         }
 
@@ -1472,7 +1460,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
 
                         @Test
                         void shouldReInstateTheAncestorAsTheHead() {
-                            e1 = repo.findById(e1.getXid()).get();
+                            e1 = repo.findById(e1.getXid()).orElseThrow();
                             assertThat(e1.getXSuccessorId()).isNull();
                         }
                     }

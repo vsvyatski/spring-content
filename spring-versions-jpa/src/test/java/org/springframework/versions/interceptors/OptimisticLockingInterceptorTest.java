@@ -32,6 +32,7 @@ public class OptimisticLockingInterceptorTest {
     private ProxyMethodInvocation mi;
     private Object entity;
 
+    @SuppressWarnings("unused")
     private static class TestEntity {
         @Version
         private Long version = 0L;
