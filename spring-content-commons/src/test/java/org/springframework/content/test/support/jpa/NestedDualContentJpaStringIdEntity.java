@@ -27,14 +27,17 @@ public class NestedDualContentJpaStringIdEntity {
     public NestedDualContentJpaStringIdEntity() {
     }
 
+    @SuppressWarnings("unused") // JPA id + CrudRepository
     public String getClaimId() {
         return claimId;
     }
 
+    @SuppressWarnings("unused")
     public void setClaimId(String claimId) {
         this.claimId = claimId;
     }
 
+    @SuppressWarnings("unused") // set in ContentStoreIT; not asserted
     public String getLastName() {
         return lastName;
     }
@@ -43,6 +46,7 @@ public class NestedDualContentJpaStringIdEntity {
         this.lastName = lastName;
     }
 
+    @SuppressWarnings("unused")
     public String getFirstName() {
         return firstName;
     }

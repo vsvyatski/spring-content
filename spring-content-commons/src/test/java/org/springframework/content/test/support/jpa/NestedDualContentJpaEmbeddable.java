@@ -15,6 +15,7 @@ public class NestedDualContentJpaEmbeddable extends DualContentNestedJpaFields {
     }
 
     // Computed getter without a backing field — mapping must ignore spurious properties.
+    @SuppressWarnings("unused") // BeanWrapper introspection on claimForm embeddable
     public boolean getIsActive() {
         return true;
     }

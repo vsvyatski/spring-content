@@ -5,5 +5,6 @@ import org.springframework.data.repository.CrudRepository;
 /**
  * @author Vladimir Svyatski
  */
-public interface DualContentMimeJpaStringIdRepository extends CrudRepository<DualContentMimeJpaStringIdEntity, String> {
+public interface DualContentMimeJpaStringIdRepository
+    extends CrudRepository<DualContentMimeJpaStringIdEntity, String> {
 }

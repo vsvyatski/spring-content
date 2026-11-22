@@ -5,5 +5,6 @@ import org.springframework.data.repository.CrudRepository;
 /**
  * @author Vladimir Svyatski
  */
-public interface NestedDualContentJpaStringIdRepository extends CrudRepository<NestedDualContentJpaStringIdEntity, String> {
+public interface NestedDualContentJpaStringIdRepository
+    extends CrudRepository<NestedDualContentJpaStringIdEntity, String> {
 }
