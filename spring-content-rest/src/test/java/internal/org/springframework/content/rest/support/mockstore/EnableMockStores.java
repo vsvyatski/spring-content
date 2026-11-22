@@ -38,6 +38,8 @@ public @interface EnableMockStores {
      *
      * @return the base package classes
      */
+    // annotation attribute; read by store registrar
+    @SuppressWarnings("unused")
     Class<?>[] basePackageClasses() default {};
 
     /**
@@ -46,6 +48,7 @@ public @interface EnableMockStores {
      *
      * @return content store factory bean class
      */
+    // annotation attribute; read by store registrar
+    @SuppressWarnings("unused")
     Class<?> storeFactoryBeanClass() default MockStoreFactoryBean.class;
-
 }
