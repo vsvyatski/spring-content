@@ -561,7 +561,7 @@ public class ContentEntityRestEndpointsIT {
                 String location = response.getHeader("Location");
 
                 Optional<RestResourcePackageEntity> fetchedEntity = repo11.findById(Long.valueOf(StringUtils.substringAfterLast(location, "/")));
-                assertThat(fetchedEntity.get().get_package().getContentId()).isNotNull();
+                assertThat(fetchedEntity.get().getContentPackage().getContentId()).isNotNull();
 
                 // assert entity now exists
                 mvc.perform(head(location))

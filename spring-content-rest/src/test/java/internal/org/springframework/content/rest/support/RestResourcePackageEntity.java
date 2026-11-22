@@ -2,7 +2,6 @@ package internal.org.springframework.content.rest.support;
 
 import jakarta.persistence.*;
 import org.springframework.content.rest.RestResource;
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -15,11 +14,16 @@ public class RestResourcePackageEntity {
     @Id
     @GeneratedValue
     private Long id;
-    private @Version Long version;
-    private @CreatedDate Date createdDate;
-    private @LastModifiedDate Date modifiedDate;
+
+    @Version
+    private Long version;
+
+    @LastModifiedDate
+    private Date modifiedDate;
+
+    @Embedded
     @RestResource(linkRel = "package", path = "package")
-    private @Embedded DualContentEmbeddedChild _package = new DualContentEmbeddedChild();
+    private final DualContentEmbeddedChild contentPackage = new DualContentEmbeddedChild();
 
     public RestResourcePackageEntity() {
     }
@@ -40,27 +44,16 @@ public class RestResourcePackageEntity {
         this.version = version;
     }
 
-    public Date getCreatedDate() {
-        return createdDate;
-    }
-
-    public void setCreatedDate(Date createdDate) {
-        this.createdDate = createdDate;
-    }
-
     public Date getModifiedDate() {
         return modifiedDate;
     }
 
+    @SuppressWarnings("unused")
     public void setModifiedDate(Date modifiedDate) {
         this.modifiedDate = modifiedDate;
     }
 
-    public DualContentEmbeddedChild get_package() {
-        return _package;
-    }
-
-    public void set_package(DualContentEmbeddedChild _package) {
-        this._package = _package;
+    public DualContentEmbeddedChild getContentPackage() {
+        return contentPackage;
     }
 }

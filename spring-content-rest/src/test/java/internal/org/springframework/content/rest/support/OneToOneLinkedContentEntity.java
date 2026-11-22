@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import org.springframework.content.commons.annotations.MimeType;
 import org.springframework.content.commons.annotations.OriginalFileName;
 import org.springframework.content.test.support.UuidSingleContentFields;
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -26,9 +25,6 @@ public class OneToOneLinkedContentEntity extends UuidSingleContentFields impleme
     @Version
     private Long version = 0L;
 
-    @CreatedDate
-    private Date createdDate;
-
     @LastModifiedDate
     private Date modifiedDate;
 
@@ -36,9 +32,6 @@ public class OneToOneLinkedContentEntity extends UuidSingleContentFields impleme
     private String originalFileName;
 
     private String title;
-
-    @OneToOne(mappedBy = "linkedContentEntity")
-    private JsonMappedContentEntity jsonMappedContentEntity;
 
     public OneToOneLinkedContentEntity() {
     }
@@ -79,18 +72,11 @@ public class OneToOneLinkedContentEntity extends UuidSingleContentFields impleme
         this.version = version;
     }
 
-    public Date getCreatedDate() {
-        return createdDate;
-    }
-
-    public void setCreatedDate(Date createdDate) {
-        this.createdDate = createdDate;
-    }
-
     public Date getModifiedDate() {
         return modifiedDate;
     }
 
+    @SuppressWarnings("unused")
     public void setModifiedDate(Date modifiedDate) {
         this.modifiedDate = modifiedDate;
     }
@@ -113,13 +99,5 @@ public class OneToOneLinkedContentEntity extends UuidSingleContentFields impleme
     @Override
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    public JsonMappedContentEntity getJsonMappedContentEntity() {
-        return jsonMappedContentEntity;
-    }
-
-    public void setJsonMappedContentEntity(JsonMappedContentEntity jsonMappedContentEntity) {
-        this.jsonMappedContentEntity = jsonMappedContentEntity;
     }
 }
