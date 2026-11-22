@@ -30,7 +30,9 @@ public final class TestSupportData {
      */
     public static final String UNASSOCIATED_RESOURCE_LOCATION = "unassociated-resource";
 
-    /** Non-Office bytes for parser and format negative tests. */
+    /**
+     * Non-Office bytes for parser and format negative tests.
+     */
     public static final String SAMPLE_INVALID_OFFICE_XML_PAYLOAD = "not-an-office-xml-file";
 
     /**
