@@ -15,7 +15,6 @@ import org.springframework.boot.hateoas.autoconfigure.HypermediaAutoConfiguratio
 import org.springframework.boot.security.autoconfigure.SecurityAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.annotations.MimeType;
@@ -51,9 +50,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @EnableAutoConfiguration(exclude = {HypermediaAutoConfiguration.class, SecurityAutoConfiguration.class})
 @ExtendWith(SpringExtension.class)
 public class EmbeddedIdTest {
-
-    @LocalServerPort
-    private int serverPort;
 
     @Autowired
     private TestEntityRepository repo;
@@ -130,10 +126,12 @@ public class EmbeddedIdTest {
             this.contentId = contentId;
         }
 
+        @SuppressWarnings("unused")
         public long getContentLength() {
             return contentLength;
         }
 
+        @SuppressWarnings("unused")
         public void setContentLength(long contentLength) {
             this.contentLength = contentLength;
         }

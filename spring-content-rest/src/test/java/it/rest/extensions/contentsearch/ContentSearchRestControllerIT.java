@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.AdditionalAnswers;
+import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.fulltext.Attribute;
@@ -82,15 +83,11 @@ public class ContentSearchRestControllerIT {
     private static QueryMethodsEntityLookupStrategy queryMethodsLookupStrategy;
     private final RepresentationFactory representationFactory = new StandardRepresentationFactory();
     @Autowired
-    private ContentSearchRestController controller;
-    @Autowired
     private TestEntityWithSharedIdsRepository repository;
     @Autowired
     private TestEntityWithSeparateIdsRepository entityWithSeparateRepository;
     @Autowired
     private RepositoryWithNoLookupStrategy repoWithNoLookupStrategy;
-    @Autowired
-    private TestEntityWithSeparateIdsSearchableStore entityWithSeparateStore;
     @Autowired
     private WebApplicationContext context;
     private MockMvc mvc;
@@ -123,12 +120,15 @@ public class ContentSearchRestControllerIT {
         extends CrudRepository<TestEntityWithSeparateId, String> {
 
         @Query("select e from testEntitySeparateId e")
+        @SuppressWarnings("unused")
         List<TestEntityWithSeparateId> randomQueryMethod();
 
         @FulltextEntityLookupQuery
+        @SuppressWarnings("unused")
         List<TestEntityWithSeparateId> findAllByContentIdIn(@Param("contentIds") List<String> contentIds);
     }
 
+    @SuppressWarnings("unused") // classpath / store component scan
     public interface TestEntityWithSeparateIdsSearchableStore
         extends FileSystemContentStore<TestEntityWithSeparateId, String>, Searchable<String> {
     }
@@ -326,10 +326,12 @@ public class ContentSearchRestControllerIT {
             this.contentId = contentId;
         }
 
+        @SuppressWarnings("unused")
         public String getHighlight() {
             return highlight;
         }
 
+        @SuppressWarnings("unused")
         public void setHighlight(String highlight) {
             this.highlight = highlight;
         }
@@ -342,10 +344,12 @@ public class ContentSearchRestControllerIT {
             this.foo = foo;
         }
 
+        @SuppressWarnings("unused")
         public String getBar() {
             return bar;
         }
 
+        @SuppressWarnings("unused")
         public void setBar(String bar) {
             this.bar = bar;
         }
@@ -378,6 +382,7 @@ public class ContentSearchRestControllerIT {
                             .accept("application/hal+json"))
                         .andExpect(status().isNotFound()).andReturn();
 
+                    assertThat(result.getResolvedException()).isNotNull();
                     assertThat(result.getResolvedException().getMessage()).contains("no content");
                 }
             }
@@ -405,6 +410,7 @@ public class ContentSearchRestControllerIT {
                             .accept("application/hal+json"))
                         .andExpect(status().isNotFound()).andReturn();
 
+                    assertThat(result.getResolvedException()).isNotNull();
                     assertThat(result.getResolvedException().getMessage()).contains("not searchable");
                 }
             }
@@ -505,7 +511,8 @@ public class ContentSearchRestControllerIT {
                         controller.setQueryMethodsEntityLookupStrategy(queryMethodsLookupStrategy);
 
                         when(reflectionService.invokeMethod(any(), any(),
-                            eq("one"), isA(Pageable.class), eq(InternalResult.class))).thenReturn(Collections.EMPTY_LIST);
+                            eq("one"), isA(Pageable.class), eq(InternalResult.class)))
+                            .thenReturn(Collections.emptyList());
                     }
 
                     @Test
@@ -563,8 +570,10 @@ public class ContentSearchRestControllerIT {
                                 .accept("application/hal+json"))
                             .andExpect(status().isOk()).andReturn();
 
-                        verify(defaultLookupStrategy, never()).lookup(any(RootResourceInformation.class), any(RepositoryInformation.class), any(List.class), any(List.class));
-                        verify(queryMethodsLookupStrategy, never()).lookup(any(RootResourceInformation.class), any(RepositoryInformation.class), any(List.class), any(List.class));
+                        verify(defaultLookupStrategy, never()).lookup(any(RootResourceInformation.class), any(RepositoryInformation.class), ArgumentMatchers.<List<Object>>any(),
+                            ArgumentMatchers.<List<Object>>any());
+                        verify(queryMethodsLookupStrategy, never()).lookup(any(RootResourceInformation.class), any(RepositoryInformation.class), ArgumentMatchers.<List<Object>>any(),
+                            ArgumentMatchers.<List<Object>>any());
 
                         ReadableRepresentation halResponse = representationFactory
                             .readRepresentation("application/hal+json",
@@ -655,7 +664,8 @@ public class ContentSearchRestControllerIT {
                         controller.setQueryMethodsEntityLookupStrategy(queryMethodsLookupStrategy);
 
                         when(reflectionService.invokeMethod(any(), any(),
-                            eq("something"), isA(Pageable.class), eq(InternalResult.class))).thenReturn(Collections.EMPTY_LIST);
+                            eq("something"), isA(Pageable.class), eq(InternalResult.class)))
+                            .thenReturn(Collections.emptyList());
                     }
 
                     @Test
@@ -713,8 +723,10 @@ public class ContentSearchRestControllerIT {
                                 .accept("application/hal+json"))
                             .andExpect(status().isOk()).andReturn();
 
-                        verify(defaultLookupStrategy, never()).lookup(any(RootResourceInformation.class), any(RepositoryInformation.class), any(List.class), any(List.class));
-                        verify(queryMethodsLookupStrategy).lookup(any(RootResourceInformation.class), any(RepositoryInformation.class), any(List.class), any(List.class));
+                        verify(defaultLookupStrategy, never()).lookup(any(RootResourceInformation.class), any(RepositoryInformation.class), ArgumentMatchers.<List<Object>>any(),
+                            ArgumentMatchers.<List<Object>>any());
+                        verify(queryMethodsLookupStrategy).lookup(any(RootResourceInformation.class), any(RepositoryInformation.class), ArgumentMatchers.<List<Object>>any(),
+                            ArgumentMatchers.<List<Object>>any());
 
                         ReadableRepresentation halResponse = representationFactory
                             .readRepresentation("application/hal+json",
@@ -932,8 +944,10 @@ public class ContentSearchRestControllerIT {
                             .accept("application/hal+json"))
                         .andExpect(status().isOk()).andReturn();
 
-                    verify(defaultLookupStrategy).lookup(any(RootResourceInformation.class), any(RepositoryInformation.class), any(List.class), any(List.class));
-                    verify(queryMethodsLookupStrategy, never()).lookup(any(RootResourceInformation.class), any(RepositoryInformation.class), any(List.class), any(List.class));
+                    verify(defaultLookupStrategy).lookup(any(RootResourceInformation.class), any(RepositoryInformation.class), ArgumentMatchers.<List<Object>>any(),
+                            ArgumentMatchers.<List<Object>>any());
+                    verify(queryMethodsLookupStrategy, never()).lookup(any(RootResourceInformation.class), any(RepositoryInformation.class), ArgumentMatchers.<List<Object>>any(),
+                            ArgumentMatchers.<List<Object>>any());
 
                     ReadableRepresentation halResponse = representationFactory
                         .readRepresentation("application/hal+json",
