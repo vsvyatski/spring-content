@@ -9,7 +9,8 @@ import java.io.InputStream;
 
 @SuppressWarnings("unused") // classpath / store component scan
 @StoreRestResource(path = "jsonMappedContentEntities")
-public interface JsonMappedContentEntityStore extends FileSystemContentStore<JsonMappedContentEntity, Long>, Renderable<JsonMappedContentEntity> {
+public interface JsonMappedContentEntityStore extends FileSystemContentStore<JsonMappedContentEntity, Long>,
+    Renderable<JsonMappedContentEntity> {
 
     @RestResource(exported = false)
     @Override

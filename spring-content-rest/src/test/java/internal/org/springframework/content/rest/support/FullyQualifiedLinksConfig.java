@@ -4,7 +4,6 @@ import internal.org.springframework.content.rest.support.config.JpaInfrastructur
 import org.springframework.content.fs.config.EnableFileSystemStores;
 import org.springframework.content.fs.io.FileSystemResourceLoader;
 import org.springframework.content.rest.config.ContentRestConfigurer;
-import org.springframework.content.rest.config.RestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -23,13 +22,7 @@ public class FullyQualifiedLinksConfig extends JpaInfrastructureConfig {
     @Bean
     public ContentRestConfigurer contentRestConfigurer() {
 
-        return new ContentRestConfigurer() {
-
-            @Override
-            public void configure(RestConfiguration config) {
-                config.setFullyQualifiedLinks(true);
-            }
-        };
+        return config -> config.setFullyQualifiedLinks(true);
     }
 
     @Bean

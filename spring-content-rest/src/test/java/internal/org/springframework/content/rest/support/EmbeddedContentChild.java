@@ -5,7 +5,6 @@ import org.hibernate.annotations.Formula;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.annotations.MimeType;
-import org.springframework.content.commons.annotations.OriginalFileName;
 import org.springframework.content.test.support.ContentAccessor;
 
 import java.util.UUID;
@@ -22,11 +21,9 @@ public class EmbeddedContentChild implements ContentAccessor<UUID> {
     @MimeType
     public String contentMimeType;
 
-    @OriginalFileName
-    public String contentFileName = "";
-
     // prevent EmbeddedContentChild from being return by hibernate as null
     @Formula("1")
+    @SuppressWarnings("unused")
     private int workaroundForBraindeadJpaImplementation;
 
     public EmbeddedContentChild() {
@@ -56,15 +53,8 @@ public class EmbeddedContentChild implements ContentAccessor<UUID> {
         return contentMimeType;
     }
 
+    @SuppressWarnings("unused")
     public void setContentMimeType(String mimeType) {
         this.contentMimeType = mimeType;
-    }
-
-    public String getContentFileName() {
-        return contentFileName;
-    }
-
-    public void setContentFileName(String fileName) {
-        this.contentFileName = fileName;
     }
 }

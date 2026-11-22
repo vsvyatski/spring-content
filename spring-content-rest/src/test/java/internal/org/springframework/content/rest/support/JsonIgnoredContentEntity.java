@@ -7,8 +7,6 @@ import jakarta.persistence.Id;
 import org.springframework.content.commons.annotations.MimeType;
 import org.springframework.content.test.support.UuidSingleContentFields;
 
-import java.util.UUID;
-
 @Entity
 public class JsonIgnoredContentEntity extends UuidSingleContentFields {
 
@@ -47,6 +45,7 @@ public class JsonIgnoredContentEntity extends UuidSingleContentFields {
         return hidden;
     }
 
+    @SuppressWarnings("unused")
     public void setHidden(String hidden) {
         this.hidden = hidden;
     }
@@ -55,6 +54,7 @@ public class JsonIgnoredContentEntity extends UuidSingleContentFields {
         return contentMimeType;
     }
 
+    @SuppressWarnings("unused")
     public void setContentMimeType(String contentMimeType) {
         this.contentMimeType = contentMimeType;
     }

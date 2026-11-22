@@ -6,5 +6,6 @@ import org.springframework.content.fs.store.FileSystemContentStore;
 import java.util.UUID;
 
 @SuppressWarnings("unused") // classpath / store component scan
-public interface EmbeddedChildContentEntityStore extends FileSystemContentStore<EmbeddedChildContentEntity, UUID>, Renderable<EmbeddedChildContentEntity> {
+public interface EmbeddedChildContentEntityStore extends FileSystemContentStore<EmbeddedChildContentEntity, UUID>,
+    Renderable<EmbeddedChildContentEntity> {
 }

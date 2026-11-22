@@ -6,6 +6,4 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 @SuppressWarnings("unused") // classpath / store component scan
 @RepositoryRestResource(path = "jsonMappedContentEntities")
 public interface JsonMappedContentEntityRepository extends JpaRepository<JsonMappedContentEntity, Long> {
-
-    JsonMappedContentEntity save(JsonMappedContentEntity entity);
 }

@@ -36,7 +36,7 @@ public class JsonMappedContentEntity extends UuidSingleContentFields implements 
     private List<String> things = new ArrayList<>();
 
     @OneToOne
-    @JoinColumn(name = "testEntity4", nullable = true)
+    @JoinColumn(name = "testEntity4")
     @JsonProperty("testEntity4")
     private OneToOneLinkedContentEntity linkedContentEntity;
 
@@ -65,6 +65,7 @@ public class JsonMappedContentEntity extends UuidSingleContentFields implements 
         return hidden;
     }
 
+    @SuppressWarnings("unused")
     public void setHidden(String hidden) {
         this.hidden = hidden;
     }
@@ -73,6 +74,7 @@ public class JsonMappedContentEntity extends UuidSingleContentFields implements 
         return yang;
     }
 
+    @SuppressWarnings("unused")
     public void setYang(String yang) {
         this.yang = yang;
     }
@@ -111,6 +113,7 @@ public class JsonMappedContentEntity extends UuidSingleContentFields implements 
         return things;
     }
 
+    @SuppressWarnings("unused")
     public void setThings(List<String> things) {
         this.things = things;
     }
@@ -119,6 +122,7 @@ public class JsonMappedContentEntity extends UuidSingleContentFields implements 
         return linkedContentEntity;
     }
 
+    @SuppressWarnings("unused")
     public void setLinkedContentEntity(OneToOneLinkedContentEntity linkedContentEntity) {
         this.linkedContentEntity = linkedContentEntity;
     }

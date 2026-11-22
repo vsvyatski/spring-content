@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public class EntityConfig {
 
     @RepositoryRestController
-    public class EntityController {
+    public static class EntityController {
 
         @Autowired
         private JsonMappedContentEntityRepository repo;

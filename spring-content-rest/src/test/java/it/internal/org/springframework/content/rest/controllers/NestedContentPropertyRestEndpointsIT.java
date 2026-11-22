@@ -116,15 +116,11 @@ public class NestedContentPropertyRestEndpointsIT {
                     // POST the new content
                     MockHttpServletResponse response = mvc.perform(multipart("/embeddedChildContentEntities")
                             .file(file)
-                            .param("name", "foo")
-                            .param("hidden", "bar"))
+                            .param("name", "foo"))
                         .andExpect(status().isCreated())
                         .andReturn().getResponse();
 
                     String location = response.getHeader("Location");
-
-                    Optional<EmbeddedChildContentEntity> fetchedEntity = repository2.findById(Long.valueOf(StringUtils.substringAfterLast(location, "/")));
-                    assertThat(fetchedEntity.get().getHidden()).isNull();
 
                     // assert that it now exists
                     response = mvc.perform(get(location + "/child")

@@ -1,8 +1,6 @@
 package internal.org.springframework.content.rest.support;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -15,13 +13,17 @@ public class EmbeddedChildContentEntity {
     @Id
     @GeneratedValue
     private Long id;
+
     private String name;
-    @JsonIgnore
-    private String hidden;
-    private @Version Long version;
-    private @CreatedDate Date createdDate;
-    private @LastModifiedDate Date modifiedDate;
-    private @Embedded EmbeddedContentChild child = new EmbeddedContentChild();
+
+    @Version
+    private Long version;
+
+    @LastModifiedDate
+    private Date modifiedDate;
+
+    @Embedded
+    private final EmbeddedContentChild child = new EmbeddedContentChild();
 
     public EmbeddedChildContentEntity() {
     }
@@ -42,14 +44,6 @@ public class EmbeddedChildContentEntity {
         this.name = name;
     }
 
-    public String getHidden() {
-        return hidden;
-    }
-
-    public void setHidden(String hidden) {
-        this.hidden = hidden;
-    }
-
     public Long getVersion() {
         return version;
     }
@@ -58,27 +52,16 @@ public class EmbeddedChildContentEntity {
         this.version = version;
     }
 
-    public Date getCreatedDate() {
-        return createdDate;
-    }
-
-    public void setCreatedDate(Date createdDate) {
-        this.createdDate = createdDate;
-    }
-
     public Date getModifiedDate() {
         return modifiedDate;
     }
 
+    @SuppressWarnings("unused")
     public void setModifiedDate(Date modifiedDate) {
         this.modifiedDate = modifiedDate;
     }
 
     public EmbeddedContentChild getChild() {
         return child;
-    }
-
-    public void setChild(EmbeddedContentChild child) {
-        this.child = child;
     }
 }
