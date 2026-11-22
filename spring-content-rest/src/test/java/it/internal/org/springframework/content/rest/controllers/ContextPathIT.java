@@ -1,11 +1,11 @@
 package it.internal.org.springframework.content.rest.controllers;
 
 import internal.org.springframework.content.rest.support.JsonMappedContentEntity;
-import it.internal.org.springframework.content.rest.controllers.support.ContentTests;
 import internal.org.springframework.content.rest.support.JsonMappedContentEntityRepository;
 import internal.org.springframework.content.rest.support.JsonMappedContentEntityStore;
 import internal.org.springframework.content.rest.support.TestRenditionConfig;
 import internal.org.springframework.content.rest.support.config.JpaInfrastructureConfig;
+import it.internal.org.springframework.content.rest.controllers.support.ContentTests;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -35,10 +35,8 @@ import java.io.File;
 
 @WebAppConfiguration
 @ContextConfiguration(classes = {
-    ContextPathIT.ContextPathConfig.class,
-    DelegatingWebMvcConfiguration.class,
-    RepositoryRestMvcConfiguration.class,
-    RestConfiguration.class})
+    ContextPathIT.ContextPathConfig.class, DelegatingWebMvcConfiguration.class,
+    RepositoryRestMvcConfiguration.class, RestConfiguration.class})
 @Transactional
 @ActiveProfiles("store")
 @ExtendWith(SpringExtension.class)

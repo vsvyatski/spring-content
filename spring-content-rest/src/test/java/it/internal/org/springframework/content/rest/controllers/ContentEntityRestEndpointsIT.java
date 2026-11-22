@@ -1,9 +1,6 @@
 package it.internal.org.springframework.content.rest.controllers;
 
 import internal.org.springframework.content.rest.support.*;
-import it.internal.org.springframework.content.rest.controllers.support.ContentTests;
-import it.internal.org.springframework.content.rest.controllers.support.CorsTests;
-import it.internal.org.springframework.content.rest.controllers.support.EntityTests;
 import it.internal.org.springframework.content.rest.controllers.support.LastModifiedDateTests;
 import it.internal.org.springframework.content.rest.controllers.support.VersionTests;
 import internal.org.springframework.content.rest.support.EventListenerConfig.TestEventListener;
@@ -61,14 +58,10 @@ public class ContentEntityRestEndpointsIT {
     // different exported URI
     @Autowired
     UuidSingleContentEntityRepository repository;
-    @Autowired
-    UuidSingleContentEntityStore contentStore;
 
     // same exported URI
     @Autowired
     JsonMappedContentEntityRepository repo3;
-    @Autowired
-    JsonMappedContentEntityStore store3;
 
     // same exported URI
     @Autowired
@@ -79,8 +72,6 @@ public class ContentEntityRestEndpointsIT {
     // shared @Id/@ContentId
     @Autowired
     SharedUuidContentIdEntityRepository repo6;
-    @Autowired
-    SharedUuidContentIdEntityStore store6;
 
     // single content property, correlated attributes
     @Autowired
@@ -91,11 +82,6 @@ public class ContentEntityRestEndpointsIT {
     // mapped content property
     @Autowired
     RestResourcePackageEntityRepository repo11;
-    @Autowired
-    RestResourcePackageEntityStore store11;
-
-    @Autowired
-    TestStore store;
 
     @Autowired
     TestEventListener eventListener;
@@ -110,14 +96,6 @@ public class ContentEntityRestEndpointsIT {
     private OneToOneLinkedContentEntity testEntity4;
     private SharedUuidContentIdEntity testEntity6;
     private JsonIgnoredContentEntity testEntity9;
-    private RestResourcePackageEntity testEntity11;
-
-    private VersionTests version;
-    private LastModifiedDateTests lastModifiedDate;
-
-    private EntityTests entityTests;
-    private ContentTests contentTests;
-    private CorsTests corsTests;
 
     @Nested
     class ContentEntityRESTEndpoints {
@@ -134,16 +112,6 @@ public class ContentEntityRestEndpointsIT {
                         testEntity3 = repo3.save(new JsonMappedContentEntity());
                         testEntity3.name = "tests";
                         testEntity3 = repo3.save(testEntity3);
-                        entityTests.setMvc(mvc);
-                        entityTests.setUrl("/jsonMappedContentEntities/" + testEntity3.id);
-                        entityTests.setEntity(testEntity3);
-                        entityTests.setRepository(repo3);
-                        entityTests.setLinkRel("testEntity3");
-                        contentTests.setMvc(mvc);
-                        contentTests.setUrl("/jsonMappedContentEntities/" + testEntity3.getId());
-                        contentTests.setEntity(testEntity3);
-                        contentTests.setRepository(repo3);
-                        contentTests.setStore(store3);
                     }
 
                     @Test
@@ -163,13 +131,6 @@ public class ContentEntityRestEndpointsIT {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
 
                         testEntity = repository.save(new UuidSingleContentEntity());
-                        contentTests.setMvc(mvc);
-                        contentTests.setUrl("/uuidSingleContentEntitiesContent/" + testEntity.getId());
-                        contentTests.setEntity(testEntity);
-                        contentTests.setRepository(repository);
-                        contentTests.setStore(contentStore);
-                        corsTests.setMvc(mvc);
-                        corsTests.setUrl("/uuidSingleContentEntitiesContent/" + testEntity.getId());
                     }
 
                     @Test
@@ -274,15 +235,19 @@ public class ContentEntityRestEndpointsIT {
                     .andReturn().getResponse();
 
                 String location = response.getHeader("Location");
+                assertThat(location).isNotNull();
 
-                Optional<JsonMappedContentEntity> fetchedEntity = repo3.findById(Long.valueOf(StringUtils.substringAfterLast(location, "/")));
-                assertThat(fetchedEntity.get().getName()).isEqualTo("foo");
-                assertThat(fetchedEntity.get().getHidden()).isNull();
-                assertThat(fetchedEntity.get().getYang()).isEqualTo("yang");
-                assertThat(fetchedEntity.get().getThings()).contains("one", "two");
-                assertThat(fetchedEntity.get().getLinkedContentEntity()).isNotNull();
-                assertThat(fetchedEntity.get().getLen()).isEqualTo(file.getSize());
-                assertThat(fetchedEntity.get().getOriginalFileName()).isEqualTo(file.getOriginalFilename());
+                Optional<JsonMappedContentEntity> fetchedEntity = repo3.findById(
+                    Long.valueOf(StringUtils.substringAfterLast(location, "/")));
+                assertThat(fetchedEntity).isPresent();
+                JsonMappedContentEntity saved = fetchedEntity.orElseThrow();
+                assertThat(saved.getName()).isEqualTo("foo");
+                assertThat(saved.getHidden()).isNull();
+                assertThat(saved.getYang()).isEqualTo("yang");
+                assertThat(saved.getThings()).contains("one", "two");
+                assertThat(saved.getLinkedContentEntity()).isNotNull();
+                assertThat(saved.getLen()).isEqualTo(file.getSize());
+                assertThat(saved.getOriginalFileName()).isEqualTo(file.getOriginalFilename());
 
                 // assert that it now exists
                 response = mvc.perform(get(location)
@@ -320,15 +285,17 @@ public class ContentEntityRestEndpointsIT {
                         .andReturn().getResponse();
 
                     String location = response.getHeader("Location");
+                    assertThat(location).isNotNull();
 
-                    // assert that the entity exists
                     Optional<OneToOneLinkedContentEntity> fetchedEntity = repo4.findById(
                         Long.valueOf(StringUtils.substringAfterLast(location, "/")));
-                    assertThat(fetchedEntity.get().getName()).isEqualTo("foo");
-                    assertThat(fetchedEntity.get().getTitle()).isEqualTo("bar");
-                    assertThat(fetchedEntity.get().getContentId()).isNotNull();
-                    assertThat(fetchedEntity.get().getLen()).isEqualTo(file.getSize());
-                    assertThat(fetchedEntity.get().getOriginalFileName()).isEqualTo(file.getOriginalFilename());
+                    assertThat(fetchedEntity).isPresent();
+                    OneToOneLinkedContentEntity saved = fetchedEntity.orElseThrow();
+                    assertThat(saved.getName()).isEqualTo("foo");
+                    assertThat(saved.getTitle()).isEqualTo("bar");
+                    assertThat(saved.getContentId()).isNotNull();
+                    assertThat(saved.getLen()).isEqualTo(file.getSize());
+                    assertThat(saved.getOriginalFileName()).isEqualTo(file.getOriginalFilename());
 
                     // assert that the content now exists
                     response = mvc.perform(get(location)
@@ -358,15 +325,17 @@ public class ContentEntityRestEndpointsIT {
                         .andReturn().getResponse();
 
                     String location = response.getHeader("Location");
+                    assertThat(location).isNotNull();
 
-                    // assert that the entity exists
                     Optional<OneToOneLinkedContentEntity> fetchedEntity = repo4.findById(
                         Long.valueOf(StringUtils.substringAfterLast(location, "/")));
-                    assertThat(fetchedEntity.get().getName()).isEqualTo("foo");
-                    assertThat(fetchedEntity.get().getTitle()).isEqualTo("bar");
-                    assertThat(fetchedEntity.get().getContentId()).isNull();
-                    assertThat(fetchedEntity.get().getLen()).isNull();
-                    assertThat(fetchedEntity.get().getOriginalFileName()).isNull();
+                    assertThat(fetchedEntity).isPresent();
+                    OneToOneLinkedContentEntity saved = fetchedEntity.orElseThrow();
+                    assertThat(saved.getName()).isEqualTo("foo");
+                    assertThat(saved.getTitle()).isEqualTo("bar");
+                    assertThat(saved.getContentId()).isNull();
+                    assertThat(saved.getLen()).isNull();
+                    assertThat(saved.getOriginalFileName()).isNull();
                 }
             }
         }
@@ -391,11 +360,12 @@ public class ContentEntityRestEndpointsIT {
                     .andExpect(status().isCreated());
 
                 Optional<JsonIgnoredContentEntity> fetched = repo9.findById(testEntity9.getId());
-                assertThat(fetched.isPresent()).isTrue();
-                assertThat(fetched.get().getContentId()).isNotNull();
-                assertThat(fetched.get().getContentLen()).isEqualTo(27L);
-                assertThat(fetched.get().getContentMimeType()).isEqualTo("text/plain");
-                assertThat(IOUtils.toString(store9.getContent(fetched.get()), Charset.defaultCharset())).isEqualTo(content);
+                assertThat(fetched).isPresent();
+                JsonIgnoredContentEntity saved = fetched.orElseThrow();
+                assertThat(saved.getContentId()).isNotNull();
+                assertThat(saved.getContentLen()).isEqualTo(27L);
+                assertThat(saved.getContentMimeType()).isEqualTo("text/plain");
+                assertThat(IOUtils.toString(store9.getContent(saved), Charset.defaultCharset())).isEqualTo(content);
 
                 MockHttpServletResponse response = mvc
                     .perform(get("/jsonIgnoredContentEntities/" + testEntity9.id)
@@ -431,9 +401,12 @@ public class ContentEntityRestEndpointsIT {
                     .andReturn().getResponse();
 
                 String location = response.getHeader("Location");
+                assertThat(location).isNotNull();
 
-                Optional<JsonIgnoredContentEntity> fetchedEntity = repo9.findById(Long.valueOf(StringUtils.substringAfterLast(location, "/")));
-                assertThat(fetchedEntity.get().getHidden()).isNull();
+                Optional<JsonIgnoredContentEntity> fetchedEntity = repo9.findById(
+                    Long.valueOf(StringUtils.substringAfterLast(location, "/")));
+                assertThat(fetchedEntity).isPresent();
+                assertThat(fetchedEntity.orElseThrow().getHidden()).isNull();
 
                 // assert entity now exists
                 mvc.perform(head(location))
@@ -449,7 +422,7 @@ public class ContentEntityRestEndpointsIT {
         }
 
         @Nested
-        class GivenAMultipartFormPOSTThatDoesnTIncludeTheContentProperty {
+        class GivenAMultipartFormPOSTThatDoesntIncludeTheContentProperty {
             @BeforeEach
             void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -471,16 +444,20 @@ public class ContentEntityRestEndpointsIT {
                     .andReturn().getResponse();
 
                 String location = response.getHeader("Location");
+                assertThat(location).isNotNull();
 
-                Optional<JsonMappedContentEntity> fetchedEntity = repo3.findById(Long.valueOf(StringUtils.substringAfterLast(location, "/")));
-                assertThat(fetchedEntity.get().getName()).isEqualTo("foo");
-                assertThat(fetchedEntity.get().getHidden()).isNull();
-                assertThat(fetchedEntity.get().getYang()).isEqualTo("yang");
-                assertThat(fetchedEntity.get().getThings()).contains("one", "two");
-                assertThat(fetchedEntity.get().getLinkedContentEntity()).isNotNull();
-                assertThat(fetchedEntity.get().getContentId()).isNull();
-                assertThat(fetchedEntity.get().getLen()).isNull();
-                assertThat(fetchedEntity.get().getOriginalFileName()).isNull();
+                Optional<JsonMappedContentEntity> fetchedEntity = repo3.findById(
+                    Long.valueOf(StringUtils.substringAfterLast(location, "/")));
+                assertThat(fetchedEntity).isPresent();
+                JsonMappedContentEntity saved = fetchedEntity.orElseThrow();
+                assertThat(saved.getName()).isEqualTo("foo");
+                assertThat(saved.getHidden()).isNull();
+                assertThat(saved.getYang()).isEqualTo("yang");
+                assertThat(saved.getThings()).contains("one", "two");
+                assertThat(saved.getLinkedContentEntity()).isNotNull();
+                assertThat(saved.getContentId()).isNull();
+                assertThat(saved.getLen()).isNull();
+                assertThat(saved.getOriginalFileName()).isNull();
             }
         }
 
@@ -496,14 +473,12 @@ public class ContentEntityRestEndpointsIT {
             @Test
             void shouldCreateANewEntityAndFireTheOnBeforeCreateOnAfterCreateEvents() throws Exception {
                 // POST the entity
-                MockHttpServletResponse response = mvc.perform(multipart("/jsonMappedContentEntities")
+                mvc.perform(multipart("/jsonMappedContentEntities")
                         .param("name", "foo foo")
                         .param("hidden", "bar bar")
                         .param("ying", "yang")
                         .param("things", "one", "two"))
-
-                    .andExpect(status().isCreated())
-                    .andReturn().getResponse();
+                    .andExpect(status().isCreated());
 
                 assertThat(eventListener.getBeforeCreate().size()).isEqualTo(1);
                 assertThat(eventListener.getAfterCreate().size()).isEqualTo(1);
@@ -564,9 +539,12 @@ public class ContentEntityRestEndpointsIT {
                     .andReturn().getResponse();
 
                 String location = response.getHeader("Location");
+                assertThat(location).isNotNull();
 
-                Optional<RestResourcePackageEntity> fetchedEntity = repo11.findById(Long.valueOf(StringUtils.substringAfterLast(location, "/")));
-                assertThat(fetchedEntity.get().getContentPackage().getContentId()).isNotNull();
+                Optional<RestResourcePackageEntity> fetchedEntity = repo11.findById(
+                    Long.valueOf(StringUtils.substringAfterLast(location, "/")));
+                assertThat(fetchedEntity).isPresent();
+                assertThat(fetchedEntity.orElseThrow().getContentPackage().getContentId()).isNotNull();
 
                 // assert entity now exists
                 mvc.perform(head(location))

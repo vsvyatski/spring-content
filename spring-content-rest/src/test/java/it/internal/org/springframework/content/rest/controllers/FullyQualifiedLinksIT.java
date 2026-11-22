@@ -23,10 +23,9 @@ import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfigu
 
 @WebAppConfiguration
 @ContextConfiguration(classes = {
-    FullyQualifiedLinksConfig.class,
-    DelegatingWebMvcConfiguration.class,
-    RepositoryRestMvcConfiguration.class,
-    RestConfiguration.class})
+    FullyQualifiedLinksConfig.class, DelegatingWebMvcConfiguration.class,
+    RepositoryRestMvcConfiguration.class, RestConfiguration.class
+})
 @Transactional
 @ExtendWith(SpringExtension.class)
 public class FullyQualifiedLinksIT {
@@ -40,12 +39,6 @@ public class FullyQualifiedLinksIT {
     @Autowired
     private WebApplicationContext context;
 
-    private MockMvc mvc;
-
-    private UuidSingleContentEntity testEntity3;
-
-    private ContentTests contentTests;
-
     @Nested
     class ContextPathContentTests {
         @Nested
@@ -53,8 +46,8 @@ public class FullyQualifiedLinksIT {
         class GivenAnEntityIsTheSubjectOfARepositoryAndStorageContent extends ContentTests {
             @BeforeEach
             void setUp() {
-                mvc = MockMvcBuilders.webAppContextSetup(context).build();
-                testEntity3 = repo3.save(new UuidSingleContentEntity());
+                MockMvc mvc = MockMvcBuilders.webAppContextSetup(context).build();
+                UuidSingleContentEntity testEntity3 = repo3.save(new UuidSingleContentEntity());
                 testEntity3 = repo3.save(testEntity3);
                 this.setMvc(mvc);
                 this.setUrl("/uuidSingleContentEntitiesContent/" + testEntity3.getId() + "/content");
