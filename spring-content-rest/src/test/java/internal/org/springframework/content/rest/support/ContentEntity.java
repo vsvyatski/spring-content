@@ -19,10 +19,6 @@ public interface ContentEntity extends ContentAccessor<UUID> {
         return getContentLen();
     }
 
-    default void setLen(Long len) {
-        setContentLen(len);
-    }
-
     String getMimeType();
 
     void setMimeType(String mimeType);

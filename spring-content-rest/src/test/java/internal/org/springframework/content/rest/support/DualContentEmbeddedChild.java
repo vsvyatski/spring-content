@@ -14,20 +14,28 @@ public class DualContentEmbeddedChild {
 
     @ContentId
     public UUID contentId;
+
     @ContentLength
     public Long contentLen;
+
     @MimeType
     public String contentMimeType;
+
     @OriginalFileName
     public String contentFileName = "";
+
     @ContentId
     public UUID previewId;
+
     @ContentLength
     public Long previewLen;
+
     @MimeType
     public String previewMimeType;
+
     // prevent EmbeddedContentChild from being return by hibernate as null
     @Formula("1")
+    @SuppressWarnings("unused")
     private int workaroundForBraindeadJpaImplementation;
 
     public DualContentEmbeddedChild() {
@@ -57,10 +65,6 @@ public class DualContentEmbeddedChild {
         this.contentMimeType = contentMimeType;
     }
 
-    public String getContentFileName() {
-        return contentFileName;
-    }
-
     public void setContentFileName(String contentFileName) {
         this.contentFileName = contentFileName;
     }
@@ -69,16 +73,8 @@ public class DualContentEmbeddedChild {
         return previewId;
     }
 
-    public void setPreviewId(UUID previewId) {
-        this.previewId = previewId;
-    }
-
     public Long getPreviewLen() {
         return previewLen;
-    }
-
-    public void setPreviewLen(Long previewLen) {
-        this.previewLen = previewLen;
     }
 
     public String getPreviewMimeType() {
@@ -87,13 +83,5 @@ public class DualContentEmbeddedChild {
 
     public void setPreviewMimeType(String previewMimeType) {
         this.previewMimeType = previewMimeType;
-    }
-
-    public int getWorkaroundForBraindeadJpaImplementation() {
-        return workaroundForBraindeadJpaImplementation;
-    }
-
-    public void setWorkaroundForBraindeadJpaImplementation(int workaroundForBraindeadJpaImplementation) {
-        this.workaroundForBraindeadJpaImplementation = workaroundForBraindeadJpaImplementation;
     }
 }

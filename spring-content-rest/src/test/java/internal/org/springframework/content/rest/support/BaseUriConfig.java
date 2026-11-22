@@ -5,7 +5,6 @@ import org.jspecify.annotations.NonNull;
 import org.springframework.content.fs.config.EnableFileSystemStores;
 import org.springframework.content.fs.io.FileSystemResourceLoader;
 import org.springframework.content.rest.config.ContentRestConfigurer;
-import org.springframework.content.rest.config.RestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -54,11 +53,6 @@ public class BaseUriConfig extends JpaInfrastructureConfig {
 
     @Bean
     public ContentRestConfigurer configurer() {
-        return new ContentRestConfigurer() {
-            @Override
-            public void configure(RestConfiguration config) {
-                config.setBaseUri(URI.create("/contentApi"));
-            }
-        };
+        return config -> config.setBaseUri(URI.create("/contentApi"));
     }
 }
