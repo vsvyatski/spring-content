@@ -1,8 +1,6 @@
 package internal.org.springframework.versions.jpa;
 
-import jakarta.persistence.EntityManager;
 import jakarta.persistence.Id;
-import jakarta.persistence.Version;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -16,16 +14,13 @@ public class JpaVersioningServiceImplTest {
 
     private Object result;
 
-    private EntityManager em;
-
     private TestEntity entity;
     private TestEntity successor;
 
+    @SuppressWarnings("unused")
     private static class TestEntity {
         @Id
         private Long id;
-        @Version
-        private Long version;
         @AncestorId
         private Long ancestorId;
         @AncestorRootId
@@ -43,14 +38,6 @@ public class JpaVersioningServiceImplTest {
 
         public void setId(Long id) {
             this.id = id;
-        }
-
-        public Long getVersion() {
-            return version;
-        }
-
-        public void setVersion(Long version) {
-            this.version = version;
         }
 
         public Long getAncestorId() {
@@ -101,8 +88,9 @@ public class JpaVersioningServiceImplTest {
             @BeforeEach
             void setUp() {
                 entity = new TestEntity();
+                entity.setId(100L);
 
-                versioner = new JpaVersioningServiceImpl(em);
+                versioner = new JpaVersioningServiceImpl(null);
 
                 result = versioner.establishAncestralRoot(entity);
             }
@@ -131,7 +119,7 @@ public class JpaVersioningServiceImplTest {
                 successor = new TestEntity();
                 successor.setId(999L);
 
-                versioner = new JpaVersioningServiceImpl(em);
+                versioner = new JpaVersioningServiceImpl(null);
 
                 result = versioner.establishAncestor(entity, successor);
             }
@@ -159,7 +147,7 @@ public class JpaVersioningServiceImplTest {
                 String versionNo = "1.1";
                 String versionLabel = "a new version";
 
-                versioner = new JpaVersioningServiceImpl(em);
+                versioner = new JpaVersioningServiceImpl(null);
 
                 result = versioner.establishSuccessor(successor, versionNo, versionLabel, ancestralRoot, ancestor);
             }
