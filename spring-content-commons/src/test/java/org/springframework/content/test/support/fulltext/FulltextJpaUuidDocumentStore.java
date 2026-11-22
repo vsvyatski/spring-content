@@ -9,6 +9,6 @@ import java.util.UUID;
 /**
  * @author Vladimir Svyatski
  */
-public interface FulltextJpaUuidDocumentStore
-    extends ContentStore<FulltextJpaUuidDocumentEntity, UUID>, Searchable<UUID>, Renderable<FulltextJpaUuidDocumentEntity> {
+public interface FulltextJpaUuidDocumentStore extends ContentStore<FulltextJpaUuidDocumentEntity, UUID>,
+    Searchable<UUID>, Renderable<FulltextJpaUuidDocumentEntity> {
 }

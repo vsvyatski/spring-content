@@ -9,8 +9,8 @@ import org.springframework.content.commons.annotations.MimeType;
 import org.springframework.content.test.support.UuidSingleContentFields;
 
 /**
- * JPA entity for encrypting store REST ITs (UUID content id, per-entity content encryption key). S3 ITs used to
- * name this type {@code File}; FS ITs {@code FsFile} — same shape, shared fixture.
+ * JPA entity for encrypting store REST ITs (UUID content id, per-entity content encryption key). S3 integration tests
+ * used to name this type {@code File}; FS ITs {@code FsFile} — same shape, shared fixture.
  *
  * @author Vladimir Svyatski
  */
@@ -52,6 +52,7 @@ public class FsFile extends UuidSingleContentFields {
         return contentKey;
     }
 
+    @SuppressWarnings("unused") // JPA + encrypting store
     public void setContentKey(byte[] contentKey) {
         this.contentKey = contentKey;
     }

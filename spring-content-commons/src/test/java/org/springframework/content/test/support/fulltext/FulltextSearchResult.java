@@ -33,10 +33,12 @@ public class FulltextSearchResult {
         this.contentId = contentId;
     }
 
+    @SuppressWarnings("unused") // SearchableImpl + AssertJ extracting in Solr/ES ITs
     public String getHighlight() {
         return highlight;
     }
 
+    @SuppressWarnings("unused")
     public void setHighlight(String highlight) {
         this.highlight = highlight;
     }
