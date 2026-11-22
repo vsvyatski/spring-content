@@ -101,6 +101,12 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>io.github.vsvyatski</groupId>
+      <artifactId>spring-content-jpa</artifactId>
+      <version>${project.parent.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.testcontainers</groupId>
       <artifactId>solr</artifactId>
       <version>${test-containers.version}</version>

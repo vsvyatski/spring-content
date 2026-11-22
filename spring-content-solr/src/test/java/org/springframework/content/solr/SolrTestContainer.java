@@ -29,7 +29,6 @@ public class SolrTestContainer extends SolrContainer {
             Singleton.INSTANCE.getHost(),
             Singleton.INSTANCE.getMappedPort(SolrContainer.SOLR_PORT));
 
-        // noinspection resource
         return new HttpJdkSolrClient.Builder(solrUrl).build();
     }
 
