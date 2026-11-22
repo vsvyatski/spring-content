@@ -1,40 +1,54 @@
 package internal.org.springframework.content.rest.support;
 
 import jakarta.persistence.*;
-import org.springframework.content.commons.annotations.ContentId;
-import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.annotations.MimeType;
 import org.springframework.content.commons.annotations.OriginalFileName;
+import org.springframework.content.test.support.UuidSingleContentFields;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.util.Date;
-import java.util.UUID;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-public class OneToOneLinkedContentEntity implements ContentEntity {
+public class OneToOneLinkedContentEntity extends UuidSingleContentFields implements ContentEntity {
+
     public @Id
-    @GeneratedValue Long id;
+    @GeneratedValue
+    Long id;
 
     public String name;
-    public @ContentId UUID contentId;
-    public @ContentLength Long len;
-    public @MimeType String mimeType;
-    private @Version Long version = 0L;
-    private @CreatedDate Date createdDate;
-    private @LastModifiedDate Date modifiedDate;
-    private @OriginalFileName String originalFileName;
+
+    public @MimeType
+    String mimeType;
+
+    @Version
+    private Long version = 0L;
+
+    @CreatedDate
+    private Date createdDate;
+
+    @LastModifiedDate
+    private Date modifiedDate;
+
+    @OriginalFileName
+    private String originalFileName;
+
     private String title;
 
     @OneToOne(mappedBy = "linkedContentEntity")
     private JsonMappedContentEntity jsonMappedContentEntity;
 
+    public OneToOneLinkedContentEntity() {
+    }
+
+    @Override
     public Long getId() {
         return id;
     }
 
+    @Override
     public void setId(Long id) {
         this.id = id;
     }
@@ -47,26 +61,12 @@ public class OneToOneLinkedContentEntity implements ContentEntity {
         this.name = name;
     }
 
-    public UUID getContentId() {
-        return contentId;
-    }
-
-    public void setContentId(UUID contentId) {
-        this.contentId = contentId;
-    }
-
-    public Long getLen() {
-        return len;
-    }
-
-    public void setLen(Long len) {
-        this.len = len;
-    }
-
+    @Override
     public String getMimeType() {
         return mimeType;
     }
 
+    @Override
     public void setMimeType(String mimeType) {
         this.mimeType = mimeType;
     }
@@ -95,18 +95,22 @@ public class OneToOneLinkedContentEntity implements ContentEntity {
         this.modifiedDate = modifiedDate;
     }
 
+    @Override
     public String getOriginalFileName() {
         return originalFileName;
     }
 
+    @Override
     public void setOriginalFileName(String originalFileName) {
         this.originalFileName = originalFileName;
     }
 
+    @Override
     public String getTitle() {
         return title;
     }
 
+    @Override
     public void setTitle(String title) {
         this.title = title;
     }

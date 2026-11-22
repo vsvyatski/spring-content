@@ -4,25 +4,24 @@ import org.springframework.content.test.support.ContentAccessor;
 
 import java.util.UUID;
 
+/**
+ * REST IT entities with a long surrogate key and UUID {@linkplain org.springframework.content.commons.annotations.ContentId}.
+ *
+ * @author Vladimir Svyatski
+ */
 public interface ContentEntity extends ContentAccessor<UUID> {
 
     Long getId();
 
     void setId(Long id);
 
-    @Override
-    default Long getContentLen() {
-        return getLen();
+    default Long getLen() {
+        return getContentLen();
     }
 
-    @Override
-    default void setContentLen(Long contentLen) {
-        setLen(contentLen);
+    default void setLen(Long len) {
+        setContentLen(len);
     }
-
-    Long getLen();
-
-    void setLen(Long len);
 
     String getMimeType();
 

@@ -6,17 +6,22 @@ import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.annotations.MimeType;
 import org.springframework.content.commons.annotations.OriginalFileName;
+import org.springframework.content.test.support.ContentAccessor;
 
 import java.util.UUID;
 
 @Embeddable
-public class EmbeddedContentChild {
+public class EmbeddedContentChild implements ContentAccessor<UUID> {
+
     @ContentId
     public UUID contentId;
+
     @ContentLength
     public Long contentLen;
+
     @MimeType
     public String contentMimeType;
+
     @OriginalFileName
     public String contentFileName = "";
 
@@ -24,18 +29,25 @@ public class EmbeddedContentChild {
     @Formula("1")
     private int workaroundForBraindeadJpaImplementation;
 
+    public EmbeddedContentChild() {
+    }
+
+    @Override
     public UUID getContentId() {
         return contentId;
     }
 
+    @Override
     public void setContentId(UUID contentId) {
         this.contentId = contentId;
     }
 
+    @Override
     public Long getContentLen() {
         return contentLen;
     }
 
+    @Override
     public void setContentLen(Long contentLen) {
         this.contentLen = contentLen;
     }

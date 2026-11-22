@@ -1,35 +1,38 @@
 package internal.org.springframework.content.rest.support;
 
 import jakarta.persistence.*;
-import org.springframework.content.commons.annotations.ContentId;
-import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.annotations.MimeType;
+import org.springframework.content.test.support.UuidDualContentFields;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.util.Date;
-import java.util.UUID;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-public class DualContentRenditionEntity {
-    public @Id
-    @GeneratedValue Long id;
+public class DualContentRenditionEntity extends UuidDualContentFields {
 
-    public String name;
+    @Id
+    @GeneratedValue
+    private Long id;
 
-    private @ContentId UUID contentId;
-    private @ContentLength Long contentLen;
-    private @MimeType String contentMimeType;
+    private String name;
 
-    private @ContentId UUID renditionId;
-    private @ContentLength Long renditionLen;
-    private @MimeType String renditionMimeType;
+    @MimeType
+    private String contentMimeType;
 
-    private @Version Long version;
-    private @CreatedDate Date createdDate;
-    private @LastModifiedDate Date modifiedDate;
+    @MimeType
+    private String renditionMimeType;
+
+    @Version
+    private Long version;
+
+    @CreatedDate
+    private Date createdDate;
+
+    @LastModifiedDate
+    private Date modifiedDate;
 
     public Long getId() {
         return id;
@@ -47,44 +50,12 @@ public class DualContentRenditionEntity {
         this.name = name;
     }
 
-    public UUID getContentId() {
-        return contentId;
-    }
-
-    public void setContentId(UUID contentId) {
-        this.contentId = contentId;
-    }
-
-    public Long getContentLen() {
-        return contentLen;
-    }
-
-    public void setContentLen(Long contentLen) {
-        this.contentLen = contentLen;
-    }
-
     public String getContentMimeType() {
         return contentMimeType;
     }
 
     public void setContentMimeType(String contentMimeType) {
         this.contentMimeType = contentMimeType;
-    }
-
-    public UUID getRenditionId() {
-        return renditionId;
-    }
-
-    public void setRenditionId(UUID renditionId) {
-        this.renditionId = renditionId;
-    }
-
-    public Long getRenditionLen() {
-        return renditionLen;
-    }
-
-    public void setRenditionLen(Long renditionLen) {
-        this.renditionLen = renditionLen;
     }
 
     public String getRenditionMimeType() {

@@ -2,42 +2,26 @@ package internal.org.springframework.content.rest.support;
 
 import jakarta.persistence.Embeddable;
 import org.hibernate.annotations.Formula;
-import org.springframework.content.commons.annotations.ContentId;
-import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.annotations.MimeType;
 import org.springframework.content.commons.annotations.OriginalFileName;
+import org.springframework.content.test.support.UuidSingleContentFields;
 
 import java.util.UUID;
 
 @Embeddable
-public class AuditedNestedContentChild {
-    @ContentId
-    public UUID contentId;
-    @ContentLength
-    public Long contentLen;
+public class AuditedNestedContentChild extends UuidSingleContentFields {
+
     @MimeType
-    public String mimeType;
+    private String mimeType;
+
     @OriginalFileName
-    public String fileName = "";
+    private String fileName = "";
 
     // prevent EmbeddedContentChild from being return by hibernate as null
     @Formula("1")
     private int workaroundForBraindeadJpaImplementation;
 
-    public UUID getContentId() {
-        return contentId;
-    }
-
-    public void setContentId(UUID contentId) {
-        this.contentId = contentId;
-    }
-
-    public Long getContentLen() {
-        return contentLen;
-    }
-
-    public void setContentLen(Long contentLen) {
-        this.contentLen = contentLen;
+    public AuditedNestedContentChild() {
     }
 
     public String getMimeType() {

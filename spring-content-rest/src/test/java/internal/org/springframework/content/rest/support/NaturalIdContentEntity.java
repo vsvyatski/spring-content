@@ -4,48 +4,39 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import org.hibernate.annotations.NaturalId;
-import org.springframework.content.commons.annotations.ContentId;
-import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.annotations.MimeType;
 import org.springframework.content.commons.annotations.OriginalFileName;
-
-import java.util.UUID;
+import org.springframework.content.test.support.UuidSingleContentFields;
 
 @Entity
-public class NaturalIdContentEntity implements ContentEntity {
+public class NaturalIdContentEntity extends UuidSingleContentFields implements ContentEntity {
 
     @Id
     @GeneratedValue
     private Long id;
-    @ContentId
-    private UUID contentId;
+
     @NaturalId
     private String name;
-    @ContentLength
-    private Long len;
+
     @MimeType
     private String mimeType;
+
     @OriginalFileName
     private String originalFileName;
+
     private String title;
 
     public NaturalIdContentEntity() {
     }
 
+    @Override
     public Long getId() {
         return id;
     }
 
+    @Override
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public UUID getContentId() {
-        return contentId;
-    }
-
-    public void setContentId(UUID contentId) {
-        this.contentId = contentId;
     }
 
     public String getName() {
@@ -56,34 +47,32 @@ public class NaturalIdContentEntity implements ContentEntity {
         this.name = name;
     }
 
-    public Long getLen() {
-        return len;
-    }
-
-    public void setLen(Long len) {
-        this.len = len;
-    }
-
+    @Override
     public String getMimeType() {
         return mimeType;
     }
 
+    @Override
     public void setMimeType(String mimeType) {
         this.mimeType = mimeType;
     }
 
+    @Override
     public String getOriginalFileName() {
         return originalFileName;
     }
 
+    @Override
     public void setOriginalFileName(String originalFileName) {
         this.originalFileName = originalFileName;
     }
 
+    @Override
     public String getTitle() {
         return title;
     }
 
+    @Override
     public void setTitle(String title) {
         this.title = title;
     }

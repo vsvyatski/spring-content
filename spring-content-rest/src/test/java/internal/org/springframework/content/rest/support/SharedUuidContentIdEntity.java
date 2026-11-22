@@ -6,11 +6,12 @@ import jakarta.persistence.Id;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.annotations.MimeType;
+import org.springframework.content.test.support.ContentAccessor;
 
 import java.util.UUID;
 
 @Entity
-public class SharedUuidContentIdEntity {
+public class SharedUuidContentIdEntity implements ContentAccessor<UUID> {
 
     @Id
     @GeneratedValue
@@ -23,6 +24,9 @@ public class SharedUuidContentIdEntity {
     @MimeType
     private String mimeType;
 
+    public SharedUuidContentIdEntity() {
+    }
+
     public UUID getId() {
         return id;
     }
@@ -31,10 +35,22 @@ public class SharedUuidContentIdEntity {
         this.id = id;
     }
 
+    @Override
+    public UUID getContentId() {
+        return id;
+    }
+
+    @Override
+    public void setContentId(UUID contentId) {
+        this.id = contentId;
+    }
+
+    @Override
     public Long getContentLen() {
         return contentLen;
     }
 
+    @Override
     public void setContentLen(Long contentLen) {
         this.contentLen = contentLen;
     }

@@ -3,28 +3,34 @@ package internal.org.springframework.content.rest.support;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import org.springframework.content.commons.annotations.ContentId;
-import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.annotations.MimeType;
 import org.springframework.content.commons.annotations.OriginalFileName;
+import org.springframework.content.test.support.UuidSingleContentFields;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Entity
-public class JsonMappedContentEntity implements ContentEntity {
+public class JsonMappedContentEntity extends UuidSingleContentFields implements ContentEntity {
+
     public @Id
-    @GeneratedValue Long id;
+    @GeneratedValue
+    Long id;
+
     public String name;
-    public @ContentId UUID contentId;
-    public @ContentLength Long len;
-    public @MimeType String mimeType;
+
+    public @MimeType
+    String mimeType;
+
     @JsonIgnore
     private String hidden;
+
     @JsonProperty("ying")
     private String yang;
-    private @OriginalFileName String originalFileName;
+
+    @OriginalFileName
+    private String originalFileName;
+
     private String title;
 
     private List<String> things = new ArrayList<>();
@@ -34,10 +40,15 @@ public class JsonMappedContentEntity implements ContentEntity {
     @JsonProperty("testEntity4")
     private OneToOneLinkedContentEntity linkedContentEntity;
 
+    public JsonMappedContentEntity() {
+    }
+
+    @Override
     public Long getId() {
         return id;
     }
 
+    @Override
     public void setId(Long id) {
         this.id = id;
     }
@@ -66,42 +77,32 @@ public class JsonMappedContentEntity implements ContentEntity {
         this.yang = yang;
     }
 
-    public UUID getContentId() {
-        return contentId;
-    }
-
-    public void setContentId(UUID contentId) {
-        this.contentId = contentId;
-    }
-
-    public Long getLen() {
-        return len;
-    }
-
-    public void setLen(Long len) {
-        this.len = len;
-    }
-
+    @Override
     public String getMimeType() {
         return mimeType;
     }
 
+    @Override
     public void setMimeType(String mimeType) {
         this.mimeType = mimeType;
     }
 
+    @Override
     public String getOriginalFileName() {
         return originalFileName;
     }
 
+    @Override
     public void setOriginalFileName(String originalFileName) {
         this.originalFileName = originalFileName;
     }
 
+    @Override
     public String getTitle() {
         return title;
     }
 
+    @Override
     public void setTitle(String title) {
         this.title = title;
     }
