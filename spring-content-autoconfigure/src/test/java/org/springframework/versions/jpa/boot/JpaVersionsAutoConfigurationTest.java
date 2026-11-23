@@ -54,7 +54,7 @@ public class JpaVersionsAutoConfigurationTest {
         SolrExtensionAutoConfiguration.class, S3ContentAutoConfiguration.class
     })
     @Import(JpaTestConfig.class)
-    public static class StarterConfig /*extends BaseConfig*/ {
+    public static class StarterConfig {
     }
 
     @SpringBootApplication(exclude = {
@@ -63,7 +63,7 @@ public class JpaVersionsAutoConfigurationTest {
     })
     @EnableJpaRepositories(basePackages = "org.springframework.versions")
     @Import(JpaTestConfig.class)
-    public static class StarterWithAnnotationConfig /*extends BaseConfig*/ {
+    public static class StarterWithAnnotationConfig {
     }
 
     @Nested

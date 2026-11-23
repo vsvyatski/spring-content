@@ -27,7 +27,6 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.Database;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -53,7 +52,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
     RepositoryRestMvcConfiguration.class, RestConfiguration.class, HypermediaConfiguration.class
 })
 @Transactional
-@ActiveProfiles("store")
 @ExtendWith(SpringExtension.class)
 public class ContentLinksWithProjectionsIT {
 
@@ -82,8 +80,7 @@ public class ContentLinksWithProjectionsIT {
         considerNestedRepositories = true)
     @EnableTransactionManagement
     @EnableFileSystemStores(basePackages = "internal.org.springframework.content.rest.scoped.projection")
-//    @Profile("store")
-    public static class StoreConfig /*extends JpaInfrastructureConfig*/ {
+    public static class StoreConfig {
 
         @Bean
         public DataSource dataSource() {
