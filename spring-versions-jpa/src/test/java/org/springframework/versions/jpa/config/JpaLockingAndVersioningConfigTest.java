@@ -46,7 +46,7 @@ public class JpaLockingAndVersioningConfigTest {
     }
 
     @Nested
-    class JpaLockingAndVersioningConfigCases {
+   class JpaLockingAndVersioningConfigCases {
         @BeforeEach
         void setUp() {
             context = new AnnotationConfigApplicationContext();

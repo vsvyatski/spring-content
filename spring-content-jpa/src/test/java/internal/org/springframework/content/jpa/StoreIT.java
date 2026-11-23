@@ -292,7 +292,7 @@ public class StoreIT {
     }
 
     @Nested
-    class Store {
+   class Store {
         @ParameterizedTest(name = "{0}")
         @MethodSource("internal.org.springframework.content.jpa.StoreIT#databaseConfigs")
         void shouldNotExistWhenResourceIsMissing(Class<?> configClass) {

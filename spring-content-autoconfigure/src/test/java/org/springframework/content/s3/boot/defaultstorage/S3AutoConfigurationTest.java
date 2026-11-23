@@ -5,6 +5,7 @@ import internal.org.springframework.content.s3.boot.autoconfigure.S3ContentAutoC
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -24,9 +25,10 @@ public class S3AutoConfigurationTest {
     }
 
     @Nested
-    class S3AutoConfigurationWithDefaultStorage {
+   class S3AutoConfigurationWithDefaultStorage {
         @Nested
-        class GivenADefaultStorageTypeOfS3 {
+        @DisplayName("Given a default storage type of s3")
+        class DefaultStorageTypeOfS3 {
             @BeforeEach
             void setUp() {
                 contextRunner = new ApplicationContextRunner()
@@ -48,7 +50,10 @@ public class S3AutoConfigurationTest {
         }
 
         @Nested
-        class GivenADefaultStorageTypeOtherThanS3 {
+
+        @DisplayName("Given a default storage type other than s3")
+
+        class DefaultStorageTypeOtherThanS3 {
             @BeforeEach
             void setUp() {
                 contextRunner = new ApplicationContextRunner()
@@ -69,7 +74,10 @@ public class S3AutoConfigurationTest {
         }
 
         @Nested
-        class GivenNoDefaultStorageType {
+
+        @DisplayName("Given no default storage type")
+
+        class NoDefaultStorageType {
             @BeforeEach
             void setUp() {
                 contextRunner = new ApplicationContextRunner()

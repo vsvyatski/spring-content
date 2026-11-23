@@ -4,6 +4,7 @@ import com.google.cloud.storage.Storage;
 import internal.org.springframework.content.gcs.it.GCSStorageContainer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.content.gcs.config.EnableGCPStorage;
@@ -57,9 +58,10 @@ public class EnableGCPStorageTest {
     }
 
     @Nested
-    class EnableGCPStorageCases {
+   class EnableGCPStorageCases {
         @Nested
-        class GivenAContextAndAConfigurationWithAnGCSContentStore {
+        @DisplayName("Given a context and a configuration with an gcs content store")
+        class ContextAndAConfigurationWithAnGCSContentStore {
             @BeforeEach
             void setUp() {
                 context = new AnnotationConfigApplicationContext();
@@ -84,7 +86,10 @@ public class EnableGCPStorageTest {
         }
 
         @Nested
-        class GivenAContextWithAConfigurer {
+
+        @DisplayName("Given a context with a configurer")
+
+        class ContextWithAConfigurer {
             @BeforeEach
             void setUp() {
                 context = new AnnotationConfigApplicationContext();
@@ -105,7 +110,10 @@ public class EnableGCPStorageTest {
         }
 
         @Nested
-        class GivenAContextWithAnEmptyConfiguration {
+
+        @DisplayName("Given a context with an empty configuration")
+
+        class ContextWithAnEmptyConfiguration {
             @BeforeEach
             void setUp() {
                 context = new AnnotationConfigApplicationContext();

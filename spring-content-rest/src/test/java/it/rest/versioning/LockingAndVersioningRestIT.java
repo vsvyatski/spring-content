@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.apache.http.HttpStatus;
 import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -142,9 +143,10 @@ public class LockingAndVersioningRestIT {
     }
 
     @Nested
-    class SpringContentRESTVersioning {
+   class SpringContentRESTVersioning {
         @Nested
-        class GivenAVersionableEntityWithContent {
+        @DisplayName("Given a versionable entity with content")
+        class VersionableEntityWithContent {
             @BeforeEach
             void setUp() {
                 RestAssuredMockMvc.webAppContextSetup(webApplicationContext);

@@ -5,6 +5,7 @@ import org.apache.poi.ooxml.POIXMLProperties;
 import org.apache.poi.openxml4j.exceptions.NotOfficeXmlFileException;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.content.commons.renditions.RenditionProvider;
@@ -30,7 +31,7 @@ public class WordToJpegRendererTest {
     private Exception e;
 
     @Nested
-    class WordToJpegRendererCases {
+   class WordToJpegRendererCases {
         @Nested
         class Consumes {
             @BeforeEach
@@ -62,7 +63,8 @@ public class WordToJpegRendererTest {
         @Nested
         class Convert {
             @Nested
-            class GivenAnInputStreamAndAMimetype {
+            @DisplayName("Given an input stream and a mimetype")
+            class InputStreamAndAMimetype {
                 @BeforeEach
                 void setUp() throws IOException {
                     poi = mock(POIService.class);
@@ -88,7 +90,10 @@ public class WordToJpegRendererTest {
                 }
 
                 @Nested
-                class WhenTheInputStreamIsNotAValidWordFile {
+
+                @DisplayName("When the input stream is not a valid word file")
+
+                class InputStreamIsNotAValidWordFile {
                     @BeforeEach
                     void setUp() throws IOException {
                         poi = mock(POIService.class);
@@ -120,7 +125,10 @@ public class WordToJpegRendererTest {
                 }
 
                 @Nested
-                class WhenTheWordDocumentFailsToReturnProperties {
+
+                @DisplayName("When the word document fails to return properties")
+
+                class WordDocumentFailsToReturnProperties {
                     @BeforeEach
                     void setUp() throws IOException {
                         poi = mock(POIService.class);
@@ -153,7 +161,10 @@ public class WordToJpegRendererTest {
                 }
 
                 @Nested
-                class WhenTheWordDocumentFailsToReturnAThumbnail {
+
+                @DisplayName("When the word document fails to return a thumbnail")
+
+                class WordDocumentFailsToReturnAThumbnail {
                     @BeforeEach
                     void setUp() throws IOException {
                         poi = mock(POIService.class);
@@ -188,7 +199,10 @@ public class WordToJpegRendererTest {
             }
 
             @Nested
-            class GivenANullInputStream {
+
+            @DisplayName("Given a null input stream")
+
+            class ullInputStream {
                 @BeforeEach
                 void setUp() {
                     poi = mock(POIService.class);

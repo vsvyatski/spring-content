@@ -51,7 +51,7 @@ public class EntityContentLinksIT {
         @Nested
         @NestedTestConfiguration(NestedTestConfiguration.EnclosingConfiguration.INHERIT)
         @DisplayName("when entity links are enabled")
-        class WhenEntityLinksAreEnabledContentLinkTests extends ContentLinkTests {
+        class EntityLinksAreEnabledContentLinkTests extends ContentLinkTests {
             @BeforeEach
             void setUp() {
                 MockMvc mvc = MockMvcBuilders.webAppContextSetup(context).build();

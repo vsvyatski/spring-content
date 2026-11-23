@@ -35,13 +35,15 @@ public class FsTypeSupportTest {
     Object id;
 
     @Nested
-    @DisplayName("java.util.UUID")
+
+    @DisplayName("Java.util.uuid")
+
     class JavaUtilUuid {
         @Nested
         @DisplayName("Given a content entity")
         class ContentEntity {
             @Nested
-            @DisplayName("Given the application sets the ID")
+            @DisplayName("Given the application sets the id")
             class ApplicationSetsId {
                 @BeforeEach
                 void setUp() {
@@ -68,7 +70,9 @@ public class FsTypeSupportTest {
             }
 
             @Nested
-            @DisplayName("Given Spring Content generates the ID")
+
+            @DisplayName("Given spring content generates the id")
+
             class StoreGeneratesId {
                 @BeforeEach
                 void setUp() {
@@ -97,13 +101,15 @@ public class FsTypeSupportTest {
     }
 
     @Nested
-    @DisplayName("java.net.URI")
+
+    @DisplayName("Java.net.uri")
+
     class JavaNetUri {
         @Nested
         @DisplayName("Given a content entity")
         class ContentEntity {
             @Nested
-            @DisplayName("Given the application sets the ID")
+            @DisplayName("Given the application sets the id")
             class ApplicationSetsId {
                 @BeforeEach
                 void setUp() throws URISyntaxException {
@@ -132,13 +138,15 @@ public class FsTypeSupportTest {
     }
 
     @Nested
-    @DisplayName("java.lang.Long")
+
+    @DisplayName("Java.lang.long")
+
     class JavaLangLong {
         @Nested
         @DisplayName("Given a content entity")
         class ContentEntity {
             @Nested
-            @DisplayName("Given the application sets the ID")
+            @DisplayName("Given the application sets the id")
             class ApplicationSetsId {
                 @BeforeEach
                 void setUp() {
@@ -167,13 +175,15 @@ public class FsTypeSupportTest {
     }
 
     @Nested
-    @DisplayName("java.math.BigInteger")
+
+    @DisplayName("Java.math.biginteger")
+
     class JavaMathBigInteger {
         @Nested
         @DisplayName("Given a content entity")
         class ContentEntity {
             @Nested
-            @DisplayName("Given the application sets the ID")
+            @DisplayName("Given the application sets the id")
             class ApplicationSetsId {
                 @BeforeEach
                 void setUp() {

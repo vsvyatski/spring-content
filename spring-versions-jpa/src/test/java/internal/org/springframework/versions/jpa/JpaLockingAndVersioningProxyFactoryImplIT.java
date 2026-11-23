@@ -5,6 +5,7 @@ import internal.org.springframework.versions.LockingService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.aop.Advisor;
@@ -69,13 +70,15 @@ public class JpaLockingAndVersioningProxyFactoryImplIT {
     }
 
     @Nested
-    class JpaLockingAndVersioningProxyFactoryImplCases {
+   class JpaLockingAndVersioningProxyFactoryImplCases {
         @Nested
-        class GivenAContextWithARepositoryAndAStore {
+        @DisplayName("Given a context with a repository and a store")
+        class ContextWithARepositoryAndAStore {
             @Nested
-            class Apply {
+           class Apply {
                 @Nested
-                class GivenNoExistingAdvise {
+                @DisplayName("Given no existing advise")
+                class NoExistingAdvise {
                     @BeforeEach
                     void setUp() {
                         context = new AnnotationConfigApplicationContext();
@@ -106,7 +109,10 @@ public class JpaLockingAndVersioningProxyFactoryImplIT {
                 }
 
                 @Nested
-                class GivenAnExistingTxnAdvise {
+
+                @DisplayName("Given an existing txn advise")
+
+                class ExistingTxnAdvise {
                     @BeforeEach
                     void setUp() {
                         context = new AnnotationConfigApplicationContext();

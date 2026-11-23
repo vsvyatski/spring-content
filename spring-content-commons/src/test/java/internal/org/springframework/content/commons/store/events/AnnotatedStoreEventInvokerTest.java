@@ -205,7 +205,7 @@ public class AnnotatedStoreEventInvokerTest {
     }
 
     @Nested
-    class PostProcessAfterInitialization {
+   class PostProcessAfterInitialization {
         @Nested
         @DisplayName("When initialized with a store event handler bean")
         class InitializedWithAStoreEventHandlerBean {
@@ -235,6 +235,7 @@ public class AnnotatedStoreEventInvokerTest {
             @Nested
 
             @DisplayName("When initialized with another event handler of highest priority")
+
             class InitializedWithAnotherEventHandlerOfHighestPriority {
                 private final HighestPriorityCustomEventHandler priorityHandler = new HighestPriorityCustomEventHandler();
 
@@ -256,7 +257,7 @@ public class AnnotatedStoreEventInvokerTest {
     }
 
     @Nested
-    class OnApplicationEvent {
+   class OnApplicationEvent {
 
         @ParameterizedTest
         @MethodSource("internal.org.springframework.content.commons.store.events.AnnotatedStoreEventInvokerTest#handlerInvocationCases")
@@ -283,6 +284,7 @@ public class AnnotatedStoreEventInvokerTest {
         @Nested
 
         @DisplayName("Given an event handler and an unknown event")
+
         class EventHandlerAndAnUnknownEvent {
             @Test
             void shouldNotCallAnEventHandler() {

@@ -7,6 +7,7 @@ import io.restassured.module.mockmvc.response.MockMvcResponse;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -149,11 +150,12 @@ public class CustomKeyAccessorEncryptionIT {
     }
 
     @Nested
-    class ClientSideEncryptionWithCustomKeyStorageCases {
+   class ClientSideEncryptionWithCustomKeyStorageCases {
         @Nested
-        class GivenContent {
+        @DisplayName("Given content")
+        class Content {
             @Nested
-            class Tests {
+           class Tests {
                 @BeforeEach
                 void setUp() {
                     RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
@@ -199,7 +201,10 @@ public class CustomKeyAccessorEncryptionIT {
             }
 
             @Nested
-            class WhenTheContentIsUnset {
+
+            @DisplayName("When the content is unset")
+
+            class ContentIsUnset {
                 @BeforeEach
                 void setUp() {
                     RestAssuredMockMvc.webAppContextSetup(webApplicationContext);

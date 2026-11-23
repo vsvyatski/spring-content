@@ -76,12 +76,13 @@ public class ContextPathIT {
     }
 
     @Nested
-    class ContextPathContentTests {
+   class ContextPathContentTests {
         @Nested
-        class GivenAnEntityIsTheSubjectOfARepositoryAndStorage {
+        @DisplayName("Given an entity is the subject of a repository and storage")
+        class EntityIsTheSubjectOfARepositoryAndStorage {
             @Nested
-            @DisplayName("given the repository and storage are exported to the same URI")
-            class GivenTheRepositoryAndStorageAreExportedToTheSameURIContent extends ContentTests {
+            @DisplayName("Given the repository and storage are exported to the same uri")
+            class RepositoryAndStorageAreExportedToTheSameURIContent extends ContentTests {
                 @BeforeEach
                 void setUp() {
                     MockMvc mvc = MockMvcBuilders.webAppContextSetup(context).build();

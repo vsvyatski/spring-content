@@ -5,6 +5,7 @@ import com.azure.storage.blob.BlobServiceClientBuilder;
 import internal.org.springframework.content.azure.it.Azurite;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.content.azure.config.AzureStorageConfigurer;
@@ -68,9 +69,10 @@ public class EnableAzureStorageTest {
     }
 
     @Nested
-    class EnableAzureStorageCases {
+   class EnableAzureStorageCases {
         @Nested
-        class GivenAContextAndAConfigurationWithAnAzureContentStore {
+        @DisplayName("Given a context and a configuration with an azure content store")
+        class ContextAndAConfigurationWithAnAzureContentStore {
             @BeforeEach
             void setUp() {
                 context = new AnnotationConfigApplicationContext();
@@ -95,7 +97,10 @@ public class EnableAzureStorageTest {
         }
 
         @Nested
-        class GivenAContextWithAConfigurer {
+
+        @DisplayName("Given a context with a configurer")
+
+        class ContextWithAConfigurer {
             @BeforeEach
             void setUp() {
                 context = new AnnotationConfigApplicationContext();
@@ -116,7 +121,10 @@ public class EnableAzureStorageTest {
         }
 
         @Nested
-        class GivenAContextWithAnEmptyConfiguration {
+
+        @DisplayName("Given a context with an empty configuration")
+
+        class ContextWithAnEmptyConfiguration {
             @BeforeEach
             void setUp() {
                 context = new AnnotationConfigApplicationContext();

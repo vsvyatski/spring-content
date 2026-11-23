@@ -4,6 +4,7 @@ import internal.org.springframework.content.s3.io.S3StoreResource;
 import internal.org.springframework.content.s3.it.LocalStack;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,9 +94,10 @@ public class EnableS3StoresTest {
     }
 
     @Nested
-    class EnableS3StoresCases {
+   class EnableS3StoresCases {
         @Nested
-        class GivenAContextAndAConfigurationWithAnS3ContentStoreBean {
+        @DisplayName("Given a context and a configuration with an s3content store bean")
+        class ContextAndAConfigurationWithAnS3ContentStoreBean {
             @BeforeEach
             void setUp() {
                 context = new AnnotationConfigApplicationContext();
@@ -120,7 +122,10 @@ public class EnableS3StoresTest {
         }
 
         @Nested
-        class GivenAContextWithAConfigurer {
+
+        @DisplayName("Given a context with a configurer")
+
+        class ContextWithAConfigurer {
             @BeforeEach
             void setUp() {
                 context = new AnnotationConfigApplicationContext();
@@ -141,7 +146,10 @@ public class EnableS3StoresTest {
         }
 
         @Nested
-        class GivenAContextWithAnEmptyConfiguration {
+
+        @DisplayName("Given a context with an empty configuration")
+
+        class ContextWithAnEmptyConfiguration {
             @BeforeEach
             void setUp() {
                 context = new AnnotationConfigApplicationContext();
@@ -161,7 +169,10 @@ public class EnableS3StoresTest {
         }
 
         @Nested
-        class GivenAContextWithAMultiTenantConfiguration {
+
+        @DisplayName("Given a context with a multi tenant configuration")
+
+        class ContextWithAMultiTenantConfiguration {
             @BeforeEach
             void setUp() {
                 context = new AnnotationConfigApplicationContext();

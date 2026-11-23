@@ -3,6 +3,7 @@ package internal.org.springframework.content.rest.utils;
 import internal.org.springframework.content.commons.store.service.StoreInfoImpl;
 import internal.org.springframework.content.rest.support.UuidSingleContentEntity;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.content.commons.store.ContentStore;
@@ -44,9 +45,10 @@ public class StoreUtilsTest {
     }
 
     @Nested
-    class StorePath {
+   class StorePath {
         @Nested
-        class GivenAContentStoreWithNoAnnotation {
+        @DisplayName("Given a content store with no annotation")
+        class ContentStoreWithNoAnnotation {
             @BeforeEach
             void setUp() {
                 ContentStore storeImpl = mock(TestContentStore.class);
@@ -62,7 +64,10 @@ public class StoreUtilsTest {
         }
 
         @Nested
-        class GivenAContentStoreWithAStoreRestResourceAnnotation {
+
+        @DisplayName("Given a content store with a store rest resource annotation")
+
+        class ContentStoreWithAStoreRestResourceAnnotation {
             @BeforeEach
             void setUp() {
                 ContentStore storeImpl = mock(ContentStoreWithAnnotation.class);
@@ -79,7 +84,10 @@ public class StoreUtilsTest {
         }
 
         @Nested
-        class GivenAContentStoreWithAStoreRestResourceAnnotationThatSpecifiesAPath {
+
+        @DisplayName("Given a content store with a store rest resource annotation that specifies a path")
+
+        class ContentStoreWithAStoreRestResourceAnnotationThatSpecifiesAPath {
             @BeforeEach
             void setUp() {
                 ContentStore storeImpl = mock(ContentStoreWithAnotherPath.class);
@@ -95,7 +103,10 @@ public class StoreUtilsTest {
         }
 
         @Nested
-        class GivenAStoreWithNoAnnotations {
+
+        @DisplayName("Given a store with no annotations")
+
+        class StoreWithNoAnnotations {
             @BeforeEach
             void setUp() {
                 Store storeImpl = mock(TestStore.class);
@@ -111,7 +122,10 @@ public class StoreUtilsTest {
         }
 
         @Nested
-        class GivenAStoreWithAStoreRestResourceAnnotation {
+
+        @DisplayName("Given a store with a store rest resource annotation")
+
+        class StoreWithAStoreRestResourceAnnotation {
             @BeforeEach
             void setUp() {
                 Store storeImpl = mock(TestStoreWithAnnotation.class);
@@ -127,7 +141,10 @@ public class StoreUtilsTest {
         }
 
         @Nested
-        class GivenAStoreWithAStoreRestResourceAnnotationWithAPathOfFoo {
+
+        @DisplayName("Given a store with a store rest resource annotation with a path of foo")
+
+        class StoreWithAStoreRestResourceAnnotationWithAPathOfFoo {
             @BeforeEach
             void setUp() {
                 Store storeImpl = mock(TestStoreWithPath.class);

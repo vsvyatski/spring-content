@@ -8,6 +8,7 @@ import internal.org.springframework.content.solr.boot.autoconfigure.SolrAutoConf
 import internal.org.springframework.content.solr.boot.autoconfigure.SolrExtensionAutoConfiguration;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
@@ -41,9 +42,10 @@ public class ContentRestAutoConfigurationTest {
     }
 
     @Nested
-    class ContentRestAutoConfigurationCases {
+   class ContentRestAutoConfigurationCases {
         @Nested
-        class GivenADefaultConfiguration {
+        @DisplayName("Given a default configuration")
+        class DefaultConfiguration {
             @Test
             void shouldLoadTheContext() {
                 AnnotationConfigServletWebApplicationContext context = new AnnotationConfigServletWebApplicationContext();
@@ -59,7 +61,10 @@ public class ContentRestAutoConfigurationTest {
         }
 
         @Nested
-        class GivenAnEnvironmentSpecifyingRestProperties {
+
+        @DisplayName("Given an environment specifying rest properties")
+
+        class EnvironmentSpecifyingRestProperties {
             @BeforeEach
             void setUp() {
                 System.setProperty("spring.content.rest.base-uri", "/contentApi");

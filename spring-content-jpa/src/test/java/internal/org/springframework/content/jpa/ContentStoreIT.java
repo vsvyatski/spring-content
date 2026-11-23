@@ -2,6 +2,7 @@ package internal.org.springframework.content.jpa;
 
 import org.apache.commons.io.IOUtils;
 import org.jspecify.annotations.Nullable;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -159,7 +160,10 @@ public class ContentStoreIT {
     }
 
     @Nested
-    class GivenAnEntityWithContent {
+
+    @DisplayName("Given an entity with content")
+
+    class EntityWithContent {
         @ParameterizedTest(name = "{0}")
         @MethodSource("internal.org.springframework.content.jpa.StoreIT#databaseConfigs")
         void shouldBeAbleToStoreNewContent(Class<?> configClass) {
@@ -209,7 +213,10 @@ public class ContentStoreIT {
         }
 
         @Nested
-        class WhenContentIsUpdated {
+
+        @DisplayName("When content is updated")
+
+        class ContentIsUpdated {
             @ParameterizedTest(name = "{0}")
             @MethodSource("internal.org.springframework.content.jpa.StoreIT#databaseConfigs")
             void shouldHaveTheUpdatedContent(Class<?> configClass) {
@@ -245,7 +252,10 @@ public class ContentStoreIT {
         }
 
         @Nested
-        class WhenContentIsUpdatedWithShorterContent {
+
+        @DisplayName("When content is updated with shorter content")
+
+        class ContentIsUpdatedWithShorterContent {
             @ParameterizedTest(name = "{0}")
             @MethodSource("internal.org.springframework.content.jpa.StoreIT#databaseConfigs")
             void shouldStoreOnlyTheNewContent(Class<?> configClass) {
@@ -281,7 +291,10 @@ public class ContentStoreIT {
         }
 
         @Nested
-        class WhenContentIsUpdatedAndNotOverwritten {
+
+        @DisplayName("When content is updated and not overwritten")
+
+        class ContentIsUpdatedAndNotOverwritten {
             @ParameterizedTest(name = "{0}")
             @MethodSource("internal.org.springframework.content.jpa.StoreIT#databaseConfigs")
             void shouldHaveTheUpdatedContent(Class<?> configClass) throws IOException {
@@ -307,7 +320,10 @@ public class ContentStoreIT {
         }
 
         @Nested
-        class WhenContentIsDeleted {
+
+        @DisplayName("When content is deleted")
+
+        class ContentIsDeleted {
             @ParameterizedTest(name = "{0}")
             @MethodSource("internal.org.springframework.content.jpa.StoreIT#databaseConfigs")
             void shouldHaveNoContent(Class<?> configClass) {
@@ -353,7 +369,10 @@ public class ContentStoreIT {
         }
 
         @Nested
-        class WhenContentIsDeletedWithKeepDisposition {
+
+        @DisplayName("When content is deleted with keep disposition")
+
+        class ContentIsDeletedWithKeepDisposition {
             @ParameterizedTest(name = "{0}")
             @MethodSource("internal.org.springframework.content.jpa.StoreIT#databaseConfigs")
             void shouldHaveNoContent(Class<?> configClass) {
@@ -389,7 +408,8 @@ public class ContentStoreIT {
         @Nested
         class EmbeddedContent {
             @Nested
-            class GivenAnEntityWithANullEmbeddedContentObject {
+            @DisplayName("Given an entity with a null embedded content object")
+            class EntityWithANullEmbeddedContentObject {
                 @ParameterizedTest(name = "{0}")
                 @MethodSource("internal.org.springframework.content.jpa.StoreIT#databaseConfigs")
                 void shouldReturnNullWhenContentIsFetched(Class<?> configClass) throws IOException {

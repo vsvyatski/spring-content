@@ -63,12 +63,12 @@ public class BaseUriIT {
     private OneToOneLinkedContentEntity testEntity4;
 
     @Nested
-    class BaseUriContentTests {
+   class BaseUriContentTests {
         @Nested
-        @DisplayName("Given an entity is the Subject of a repository and storage")
+        @DisplayName("Given an entity is the subject of a repository and storage")
         class EntityIsTheSubjectOfARepositoryAndStorage {
             @Nested
-            @DisplayName("Given the repository and storage are exported to the same URI")
+            @DisplayName("Given the repository and storage are exported to the same uri")
             class RepositoryAndStorageAreExportedToTheSameURIEntity extends EntityTests {
                 @BeforeEach
                 void setUp() {
@@ -85,7 +85,9 @@ public class BaseUriIT {
             }
 
             @Nested
-            @DisplayName("Given the repository and storage are exported to the same URI")
+
+            @DisplayName("Given the repository and storage are exported to the same uri")
+
             class RepositoryAndStorageAreExportedToTheSameURIContent extends ContentTests {
                 @BeforeEach
                 void setUp() {
@@ -102,7 +104,9 @@ public class BaseUriIT {
             }
 
             @Nested
-            @DisplayName("Given the repository and storage are exported to different URIs")
+
+            @DisplayName("Given the repository and storage are exported to different uris")
+
             class RepositoryAndStorageAreExportedToDifferentURIsContent extends ContentTests {
                 @BeforeEach
                 void setUp() {
@@ -117,7 +121,9 @@ public class BaseUriIT {
             }
 
             @Nested
-            @DisplayName("Given the repository and storage are exported to different URIs")
+
+            @DisplayName("Given the repository and storage are exported to different uris")
+
             class RepositoryAndStorageAreExportedToDifferentURIsCors extends CorsTests {
                 @BeforeEach
                 void setUp() {
@@ -129,7 +135,9 @@ public class BaseUriIT {
             }
 
             @Nested
-            @DisplayName("Given an entity with @Version")
+
+            @DisplayName("Given an entity with @version")
+
             class EntityWithVersion extends VersionTests {
                 @BeforeEach
                 void setUp() {
@@ -151,7 +159,9 @@ public class BaseUriIT {
             }
 
             @Nested
-            @DisplayName("Given an entity with @LastModifiedDate")
+
+            @DisplayName("Given an entity with @lastmodifieddate")
+
             class EntityWithLastModifiedDate extends LastModifiedDateTests {
                 @BeforeEach
                 void setUp() {

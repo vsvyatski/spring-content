@@ -4,6 +4,7 @@ import internal.org.springframework.content.elasticsearch.boot.autoconfigure.Ela
 import internal.org.springframework.content.solr.boot.autoconfigure.SolrAutoConfiguration;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,9 +23,10 @@ public class SolrAutoConfigurationTest {
     }
 
     @Nested
-    class Solr {
+   class Solr {
         @Nested
-        class GivenAnApplicationContextWithASolrClientBeanAndSolrAutoConfiguration {
+        @DisplayName("Given an application context with a solr client bean and solr auto configuration")
+        class ApplicationContextWithASolrClientBeanAndSolrAutoConfiguration {
             @BeforeEach
             void setUp() {
                 contextRunner = new ApplicationContextRunner()

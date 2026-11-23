@@ -2,6 +2,7 @@ package internal.org.springframework.content.solr;
 
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrServerException;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.content.commons.store.StoreAccessException;
@@ -32,9 +33,10 @@ public class SolrFulltextIndexServiceImplTest {
     private SolrProperties props;
 
     @Nested
-    class IndexCases {
+   class IndexCases {
         @Nested
-        class WhenSolrThrowsSolrServerException {
+        @DisplayName("When solr throws solr server exception")
+        class SolrThrowsSolrServerException {
             @Test
             void shouldThrowStoreAccessException() throws Exception {
                 Exception ex = new SolrServerException("badness");
@@ -60,7 +62,10 @@ public class SolrFulltextIndexServiceImplTest {
         }
 
         @Nested
-        class WhenSolrThrowsIOException {
+
+        @DisplayName("When solr throws io exception")
+
+        class SolrThrowsIOException {
             @Test
             void shouldThrowStoreAccessException() throws Exception {
                 Exception ex = new IOException("badness");
@@ -87,9 +92,10 @@ public class SolrFulltextIndexServiceImplTest {
     }
 
     @Nested
-    class UnindexCases {
+   class UnindexCases {
         @Nested
-        class WhenSolrThrowsSolrServerException {
+        @DisplayName("When solr throws solr server exception")
+        class SolrThrowsSolrServerException {
             @Test
             void shouldThrowStoreAccessException() throws Exception {
                 Exception ex = new SolrServerException("badness");
@@ -114,7 +120,10 @@ public class SolrFulltextIndexServiceImplTest {
         }
 
         @Nested
-        class WhenSolrThrowsIOException {
+
+        @DisplayName("When solr throws io exception")
+
+        class SolrThrowsIOException {
             @Test
             void shouldThrowStoreAccessException() throws Exception {
                 Exception ex = new IOException("badness");

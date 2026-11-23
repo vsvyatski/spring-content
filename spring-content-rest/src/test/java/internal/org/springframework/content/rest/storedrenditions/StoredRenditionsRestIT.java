@@ -6,6 +6,7 @@ import internal.org.springframework.content.rest.support.DualContentRenditionEnt
 import internal.org.springframework.content.rest.support.StoreConfig;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -151,11 +152,13 @@ public class StoredRenditionsRestIT {
     }
 
     @Nested
-    class StoredRenditions {
+   class StoredRenditions {
         @Nested
-        class GivenAnEntityWithAContentProperty {
+        @DisplayName("Given an entity with a content property")
+        class EntityWithAContentProperty {
             @Nested
-            class APUTToRepositoryIdContentProperty {
+            @DisplayName("PUT to repository id content property")
+            class PutToRepositoryIdContentProperty {
                 @BeforeEach
                 void setUp() throws Exception {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -180,7 +183,10 @@ public class StoredRenditionsRestIT {
                 }
 
                 @Nested
-                class AGETToRepositoryIdContentProperty {
+
+                @DisplayName("GET to repository id content property")
+
+                class GetToRepositoryIdContentProperty {
                     @BeforeEach
                     void setUp() throws Exception {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -202,7 +208,10 @@ public class StoredRenditionsRestIT {
                 }
 
                 @Nested
-                class AGETToRepositoryIdRenditionProperty {
+
+                @DisplayName("GET to repository id rendition property")
+
+                class GetToRepositoryIdRenditionProperty {
                     @BeforeEach
                     void setUp() throws Exception {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -222,7 +231,10 @@ public class StoredRenditionsRestIT {
                 }
 
                 @Nested
-                class ADELETEToRepositoryIdContentProperty {
+
+                @DisplayName("DELETE to repository id content property")
+
+                class DeleteToRepositoryIdContentProperty {
                     @BeforeEach
                     void setUp() throws Exception {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();

@@ -9,6 +9,7 @@ import internal.org.springframework.content.rest.support.StoreConfig;
 import it.internal.org.springframework.content.rest.controllers.support.LastModifiedDateTests;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -84,11 +85,13 @@ public class RestResourceMappedRestEndpointsIT {
     }
 
     @Nested
-    class RestResourceMappedRESTEndpoints {
+   class RestResourceMappedRESTEndpoints {
         @Nested
-        class GivenAnEntityWithASimpleContentProperty {
+        @DisplayName("Given an entity with a simple content property")
+        class EntityWithASimpleContentProperty {
             @Nested
-            class GivenARequestToANonExistentEntity {
+            @DisplayName("Given a request to a non existent entity")
+            class RequestToANonExistentEntity {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -105,7 +108,10 @@ public class RestResourceMappedRestEndpointsIT {
             }
 
             @Nested
-            class GivenARequestToANonExistentContentProperty {
+
+            @DisplayName("Given a request to a non existent content property")
+
+            class RequestToANonExistentContentProperty {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -122,9 +128,13 @@ public class RestResourceMappedRestEndpointsIT {
             }
 
             @Nested
-            class GivenThatIsHasNoContent {
+
+            @DisplayName("Given that is has no content")
+
+            class IsHasNoContent {
                 @Nested
-                class AGETToRepositoryIdContentProperty {
+                @DisplayName("GET to repository id content property")
+                class GetToRepositoryIdContentProperty {
                     @BeforeEach
                     void setUp() {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -141,7 +151,10 @@ public class RestResourceMappedRestEndpointsIT {
                 }
 
                 @Nested
-                class APUTToRepositoryIdContentProperty {
+
+                @DisplayName("PUT to repository id content property")
+
+                class PutToRepositoryIdContentProperty {
                     @BeforeEach
                     void setUp() {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -169,7 +182,10 @@ public class RestResourceMappedRestEndpointsIT {
                 }
 
                 @Nested
-                class APUTToStoreIdWithJsonContent {
+
+                @DisplayName("PUT to store ID with json content")
+
+                class PutToStoreIdWithJsonContent {
                     @BeforeEach
                     void setUp() {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -199,9 +215,13 @@ public class RestResourceMappedRestEndpointsIT {
             }
 
             @Nested
-            class GivenThatItHasContent {
+
+            @DisplayName("Given that it has content")
+
+            class ItHasContent {
                 @Nested
-                class AGETToRepositoryIdForTheEntityJson {
+                @DisplayName("GET to repository id for the entity json")
+                class GetToRepositoryIdForTheEntityJson {
                     @BeforeEach
                     void setUp() throws IOException {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -239,7 +259,10 @@ public class RestResourceMappedRestEndpointsIT {
                 }
 
                 @Nested
-                class AGETToRepositoryIdContentProperty {
+
+                @DisplayName("GET to repository id content property")
+
+                class GetToRepositoryIdContentProperty {
                     @BeforeEach
                     void setUp() throws IOException {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -274,7 +297,10 @@ public class RestResourceMappedRestEndpointsIT {
                 }
 
                 @Nested
-                class AGETToRepositoryIdContentPropertyWithAMimeTypeThatMatchesARenderer {
+
+                @DisplayName("GET to repository id content property with a MIME type that matches a renderer")
+
+                class GetToRepositoryIdContentPropertyWithAMimeTypeThatMatchesARenderer {
                     @BeforeEach
                     void setUp() throws IOException {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -307,7 +333,10 @@ public class RestResourceMappedRestEndpointsIT {
                 }
 
                 @Nested
-                class AGETToRepositoryIdContentPropertyWithMultipleMimeTypesTheLastOfWhichMatchesTheCo {
+
+                @DisplayName("GET to repository id content property with multiple MIME types the last of which matches the co")
+
+                class GetToRepositoryIdContentPropertyWithMultipleMimeTypesTheLastOfWhichMatchesTheCo {
                     @BeforeEach
                     void setUp() throws IOException {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -340,7 +369,10 @@ public class RestResourceMappedRestEndpointsIT {
                 }
 
                 @Nested
-                class APUTToRepositoryIdContentProperty {
+
+                @DisplayName("PUT to repository id content property")
+
+                class PutToRepositoryIdContentProperty {
                     @BeforeEach
                     void setUp() throws IOException {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -375,7 +407,10 @@ public class RestResourceMappedRestEndpointsIT {
                 }
 
                 @Nested
-                class ADELETEToRepositoryIdContentProperty {
+
+                @DisplayName("DELETE to repository id content property")
+
+                class DeleteToRepositoryIdContentProperty {
                     @BeforeEach
                     void setUp() throws IOException {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();

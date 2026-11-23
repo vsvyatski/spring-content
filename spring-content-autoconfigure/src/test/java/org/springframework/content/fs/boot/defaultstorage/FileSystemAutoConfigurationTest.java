@@ -7,6 +7,7 @@ import internal.org.springframework.content.solr.boot.autoconfigure.SolrExtensio
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -23,9 +24,10 @@ public class FileSystemAutoConfigurationTest {
     }
 
     @Nested
-    class FileSystemContentAutoConfigurationCases {
+   class FileSystemContentAutoConfigurationCases {
         @Nested
-        class GivenADefaultStorageTypeOfFs {
+        @DisplayName("Given a default storage type of fs")
+        class DefaultStorageTypeOfFs {
             @BeforeEach
             void setUp() {
                 contextRunner = new ApplicationContextRunner()
@@ -47,7 +49,10 @@ public class FileSystemAutoConfigurationTest {
         }
 
         @Nested
-        class GivenADefaultStorageTypeOtherThanFs {
+
+        @DisplayName("Given a default storage type other than fs")
+
+        class DefaultStorageTypeOtherThanFs {
             @BeforeEach
             void setUp() {
                 contextRunner = new ApplicationContextRunner()
@@ -68,7 +73,10 @@ public class FileSystemAutoConfigurationTest {
         }
 
         @Nested
-        class GivenNoDefaultStorageType {
+
+        @DisplayName("Given no default storage type")
+
+        class NoDefaultStorageType {
             @BeforeEach
             void setUp() {
                 contextRunner = new ApplicationContextRunner()

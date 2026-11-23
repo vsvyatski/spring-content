@@ -1,6 +1,7 @@
 package org.springframework.content.solr;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.content.commons.search.IndexService;
@@ -44,11 +45,12 @@ public class SolrIndexerStoreEventHandlerTest {
     }
 
     @Nested
-    class SolrIndexerStoreEventHandlerCases {
+   class SolrIndexerStoreEventHandlerCases {
         @Nested
         class OnAfterSetContent {
             @Nested
-            class GivenAContentEntity {
+            @DisplayName("Given a content entity")
+            class ContentEntity {
                 @BeforeEach
                 void setUp() throws IOException {
                     store = mock(ContentStore.class);
@@ -75,7 +77,10 @@ public class SolrIndexerStoreEventHandlerTest {
                 }
 
                 @Nested
-                class GivenTheIndexerThrowsAnException {
+
+                @DisplayName("Given the indexer throws an exception")
+
+                class IndexerThrowsAnException {
                     @BeforeEach
                     void setUp() throws IOException {
                         store = mock(ContentStore.class);
@@ -106,7 +111,10 @@ public class SolrIndexerStoreEventHandlerTest {
             }
 
             @Nested
-            class GivenAContentEntityWithANullContentId {
+
+            @DisplayName("Given a content entity with a null content ID")
+
+            class ContentEntityWithANullContentId {
                 @BeforeEach
                 void setUp() {
                     store = mock(ContentStore.class);
@@ -131,7 +139,10 @@ public class SolrIndexerStoreEventHandlerTest {
             }
 
             @Nested
-            class GivenABogusContentEntity {
+
+            @DisplayName("Given a bogus content entity")
+
+            class BogusContentEntity {
                 @BeforeEach
                 void setUp() {
                     store = mock(ContentStore.class);
@@ -159,7 +170,8 @@ public class SolrIndexerStoreEventHandlerTest {
         @Nested
         class OnBeforeUnsetContent {
             @Nested
-            class GivenAContentEntity {
+            @DisplayName("Given a content entity")
+            class ContentEntity {
                 @BeforeEach
                 void setUp() {
                     store = mock(ContentStore.class);
@@ -184,7 +196,10 @@ public class SolrIndexerStoreEventHandlerTest {
                 }
 
                 @Nested
-                class GivenAIOException {
+
+                @DisplayName("Given aio exception")
+
+                class IOException {
                     @BeforeEach
                     void setUp() {
                         store = mock(ContentStore.class);
@@ -213,7 +228,10 @@ public class SolrIndexerStoreEventHandlerTest {
             }
 
             @Nested
-            class GivenAContentEntityWithANullContentId {
+
+            @DisplayName("Given a content entity with a null content ID")
+
+            class ContentEntityWithANullContentId {
                 @BeforeEach
                 void setUp() {
                     store = mock(ContentStore.class);
@@ -238,7 +256,10 @@ public class SolrIndexerStoreEventHandlerTest {
             }
 
             @Nested
-            class GivenABogusContentEntity {
+
+            @DisplayName("Given a bogus content entity")
+
+            class BogusContentEntity {
                 @BeforeEach
                 void setUp() {
                     store = mock(ContentStore.class);

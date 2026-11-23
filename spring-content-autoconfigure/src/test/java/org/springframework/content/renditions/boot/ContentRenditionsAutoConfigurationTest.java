@@ -6,6 +6,7 @@ import internal.org.springframework.content.docx4j.WordToTextRenditionProvider;
 import internal.org.springframework.content.s3.boot.autoconfigure.S3ContentAutoConfiguration;
 import internal.org.springframework.content.solr.boot.autoconfigure.SolrAutoConfiguration;
 import internal.org.springframework.content.solr.boot.autoconfigure.SolrExtensionAutoConfiguration;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackage;
@@ -31,9 +32,10 @@ public class ContentRenditionsAutoConfigurationTest {
     }
 
     @Nested
-    class ContentRenditionsAutoConfiguration {
+   class ContentRenditionsAutoConfiguration {
         @Nested
-        class GivenADefaultConfiguration {
+        @DisplayName("Given a default configuration")
+        class DefaultConfiguration {
             @Test
             void shouldLoadTheAllRenderers() {
                 AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();

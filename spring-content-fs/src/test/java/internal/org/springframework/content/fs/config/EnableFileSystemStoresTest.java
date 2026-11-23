@@ -2,6 +2,7 @@ package internal.org.springframework.content.fs.config;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
@@ -73,9 +74,10 @@ public class EnableFileSystemStoresTest {
     }
 
     @Nested
-    class EnableFileSystemStoresCases {
+   class EnableFileSystemStoresCases {
         @Nested
-        class GivenAContextAndAConfigurationWithAFilesystemContentStoreBean {
+        @DisplayName("Given a context and a configuration with a filesystem content store bean")
+        class ContextAndAConfigurationWithAFilesystemContentStoreBean {
             @BeforeEach
             void setUp() {
                 context = new AnnotationConfigApplicationContext();
@@ -105,7 +107,10 @@ public class EnableFileSystemStoresTest {
         }
 
         @Nested
-        class GivenAContextWithAConfigurer {
+
+        @DisplayName("Given a context with a configurer")
+
+        class ContextWithAConfigurer {
             @BeforeEach
             void setUp() {
                 context = new AnnotationConfigApplicationContext();
@@ -126,7 +131,10 @@ public class EnableFileSystemStoresTest {
         }
 
         @Nested
-        class GivenAContextWithAnEmptyConfiguration {
+
+        @DisplayName("Given a context with an empty configuration")
+
+        class ContextWithAnEmptyConfiguration {
             @BeforeEach
             void setUp() {
                 context = new AnnotationConfigApplicationContext();

@@ -3,6 +3,7 @@ package it;
 import internal.org.springframework.content.commons.store.factory.StoreFactory;
 import internal.org.springframework.content.commons.store.service.StoresImpl;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.content.commons.store.Store;
@@ -52,7 +53,8 @@ public class StoresIT {
     @Nested
     class GetStoreCases {
         @Nested
-        class WhenThereAreTwoStoresThatTheFilterMatchesButNoStoreResolver {
+        @DisplayName("When there are two stores that the filter matches but no store resolver")
+        class ThereAreTwoStoresThatTheFilterMatchesButNoStoreResolver {
             @BeforeEach
             void setUp() {
                 TestStoreFactoryBean factory1 = new TestStoreFactoryBean(WrongStore.class);
@@ -78,7 +80,8 @@ public class StoresIT {
         }
 
         @Nested
-        class WhenThereAreTwoStoresThatTheFilterMatchesAndAStoreResolver {
+        @DisplayName("When there are two stores that the filter matches and a store resolver")
+        class ThereAreTwoStoresThatTheFilterMatchesAndAStoreResolver {
             @BeforeEach
             void setUp() {
                 TestStoreFactoryBean factory1 = new TestStoreFactoryBean(WrongStore.class);
@@ -117,7 +120,8 @@ public class StoresIT {
     @Nested
     class StoreExceptionTranslatorInterceptorCases {
         @Nested
-        class GivenThereIsNoStoreExceptionTranslatorRegistered {
+        @DisplayName("Given there is no store exception translator registered")
+        class ThereIsNoStoreExceptionTranslatorRegistered {
             @BeforeEach
             void setUp() {
                 // All TestContentStore methods throw an UnsupportedOperationException, this test relies on this
@@ -142,7 +146,10 @@ public class StoresIT {
         }
 
         @Nested
-        class GivenThereIsAStoreExceptionTranslatorRegistered {
+
+        @DisplayName("Given there is a store exception translator registered")
+
+        class ThereIsAStoreExceptionTranslatorRegistered {
             @BeforeEach
             void setUp() {
                 // All TestContentStore methods throw an UnsupportedOperationException, this test relies on this

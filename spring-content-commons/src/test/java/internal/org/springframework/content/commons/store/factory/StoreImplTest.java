@@ -28,7 +28,7 @@ public class StoreImplTest {
     private Path contentCopyPathRoot;
 
     @Nested
-    class StoreImplCases {
+   class StoreImplCases {
         @Nested
         class SetContentInputStream {
             @BeforeEach

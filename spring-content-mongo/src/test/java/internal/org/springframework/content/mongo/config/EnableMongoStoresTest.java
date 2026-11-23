@@ -5,6 +5,7 @@ import com.mongodb.client.MongoClients;
 import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.content.mongo.config.EnableMongoStores;
@@ -84,9 +85,10 @@ public class EnableMongoStoresTest {
     }
 
     @Nested
-    class EnableMongoStoresCases {
+   class EnableMongoStoresCases {
         @Nested
-        class GivenAnEnabledConfigurationWithAMongoContentStoreBean {
+        @DisplayName("Given an enabled configuration with a mongo content store bean")
+        class EnabledConfigurationWithAMongoContentStoreBean {
             @BeforeEach
             void setUp() {
                 context = new AnnotationConfigApplicationContext();
@@ -111,7 +113,10 @@ public class EnableMongoStoresTest {
         }
 
         @Nested
-        class GivenAContextWithACustomConverter {
+
+        @DisplayName("Given a context with a custom converter")
+
+        class ContextWithACustomConverter {
             @BeforeEach
             void setUp() {
                 context = new AnnotationConfigApplicationContext();
@@ -136,7 +141,10 @@ public class EnableMongoStoresTest {
         }
 
         @Nested
-        class GivenAnEnabledConfigurationWithNoMongoContentStoreBeans {
+
+        @DisplayName("Given an enabled configuration with no mongo content store beans")
+
+        class EnabledConfigurationWithNoMongoContentStoreBeans {
             @BeforeEach
             void setUp() {
                 context = new AnnotationConfigApplicationContext();

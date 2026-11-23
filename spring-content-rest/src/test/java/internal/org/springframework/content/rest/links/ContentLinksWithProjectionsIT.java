@@ -6,6 +6,7 @@ import com.theoryinpractise.halbuilder.standard.StandardRepresentationFactory;
 import internal.org.springframework.content.rest.scoped.projection.ProjectedContentEntityRepository;
 import internal.org.springframework.content.rest.scoped.projection.ProjectedContentEntityStore;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -122,11 +123,13 @@ public class ContentLinksWithProjectionsIT {
     }
 
     @Nested
-    class ContentLinksWithEntityProjectionCases {
+   class ContentLinksWithEntityProjectionCases {
         @Nested
-        class GivenContentIsAssociated {
+        @DisplayName("Given content is associated")
+        class ContentIsAssociated {
             @Nested
-            class AGETToApiRepositoryIdProjectionId {
+            @DisplayName("GET to api repository id projection id")
+            class GetToApiRepositoryIdProjectionId {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();

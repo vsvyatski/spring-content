@@ -1,6 +1,7 @@
 package org.springframework.content.commons.mappingcontext;
 
 import jakarta.persistence.*;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.content.commons.annotations.ContentId;
@@ -162,7 +163,7 @@ public class ClassWalkerTest {
     }
 
     @Nested
-    class ClassWalkerCases {
+   class ClassWalkerCases {
         @Test
         void shouldVisitAllFields() {
             ContentPropertyMappingContextVisitor visitor = new ContentPropertyMappingContextVisitor("/", ".");
@@ -222,7 +223,10 @@ public class ClassWalkerTest {
     }
 
     @Nested
-    class GivenAClassWithUncorrelatedAttributes {
+
+    @DisplayName("Given a class with uncorrelated attributes")
+
+    class ClassWithUncorrelatedAttributes {
         @Test
         void shouldReturnTwoContentProperties() {
             ContentPropertyMappingContextVisitor visitor = new ContentPropertyMappingContextVisitor("/", ".");
@@ -242,7 +246,10 @@ public class ClassWalkerTest {
     }
 
     @Nested
-    class GivenAClassWithCorrelatedAttributes {
+
+    @DisplayName("Given a class with correlated attributes")
+
+    class ClassWithCorrelatedAttributes {
         @Test
         void shouldReturnTwoContentProperties() {
             ContentPropertyMappingContextVisitor visitor = new ContentPropertyMappingContextVisitor("/", ".");
@@ -262,7 +269,10 @@ public class ClassWalkerTest {
     }
 
     @Nested
-    class GivenAClassWithAChildWithUncorrelatedAttributes {
+
+    @DisplayName("Given a class with a child with uncorrelated attributes")
+
+    class ClassWithAChildWithUncorrelatedAttributes {
         @Test
         void shouldReturnTwoContentProperties() {
             ContentPropertyMappingContextVisitor visitor = new ContentPropertyMappingContextVisitor("/", ".");
@@ -282,7 +292,10 @@ public class ClassWalkerTest {
     }
 
     @Nested
-    class GivenAClassWithRelationAttributes {
+
+    @DisplayName("Given a class with relation attributes")
+
+    class ClassWithRelationAttributes {
         @Test
         void shouldNotTraverseThem() {
             ContentPropertyMappingContextVisitor visitor = new ContentPropertyMappingContextVisitor("/", ".");
@@ -294,7 +307,10 @@ public class ClassWalkerTest {
     }
 
     @Nested
-    class GivenInheritedContentIdOnSuperclassOnly {
+
+    @DisplayName("Given inherited content ID on superclass only")
+
+    class InheritedContentIdOnSuperclassOnly {
         @Test
         void shouldCollapseToSingleContentProperty() {
             ContentPropertyMappingContextVisitor visitor = new ContentPropertyMappingContextVisitor("/", ".");
@@ -313,7 +329,10 @@ public class ClassWalkerTest {
     }
 
     @Nested
-    class GivenAClassWithContentPropertiesInItsSuperClass {
+
+    @DisplayName("Given a class with content properties in its superclass")
+
+    class ClassWithContentPropertiesInItsSuperClass {
         @Test
         void shouldVisitThem() {
             ContentPropertyMappingContextVisitor visitor = new ContentPropertyMappingContextVisitor("/", ".");
@@ -333,7 +352,10 @@ public class ClassWalkerTest {
     }
 
     @Nested
-    class GivenAClassWithMultipleChildContentPropertyObjects {
+
+    @DisplayName("Given a class with multiple child content property objects")
+
+    class ClassWithMultipleChildContentPropertyObjects {
         @Test
         void shouldReturnTwoContentProperties() {
             ContentPropertyMappingContextVisitor visitor = new ContentPropertyMappingContextVisitor("/", ".");
@@ -363,7 +385,10 @@ public class ClassWalkerTest {
     }
 
     @Nested
-    class GivenAClassWithAChildWithMultipleContentPropertyObjects {
+
+    @DisplayName("Given a class with a child with multiple content property objects")
+
+    class ClassWithAChildWithMultipleContentPropertyObjects {
         @Test
         void shouldReturnTwoContentProperties() {
             ContentPropertyMappingContextVisitor visitor = new ContentPropertyMappingContextVisitor("/", ".");
@@ -393,7 +418,10 @@ public class ClassWalkerTest {
     }
 
     @Nested
-    class GivenAClassWithAChildWithAChildWithMultipleContentPropertyObjects {
+
+    @DisplayName("Given a class with a child with a child with multiple content property objects")
+
+    class ClassWithAChildWithAChildWithMultipleContentPropertyObjects {
         @Test
         void shouldReturnTwoContentProperties() {
             ContentPropertyMappingContextVisitor visitor = new ContentPropertyMappingContextVisitor("/", ".");

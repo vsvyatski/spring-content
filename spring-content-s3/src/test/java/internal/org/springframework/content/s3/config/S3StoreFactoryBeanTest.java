@@ -1,6 +1,7 @@
 package internal.org.springframework.content.s3.config;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.content.commons.store.AssociativeStore;
@@ -30,11 +31,12 @@ public class S3StoreFactoryBeanTest {
     }
 
     @Nested
-    class S3StoreFactoryBeanCases {
+   class S3StoreFactoryBeanCases {
         @Nested
         class GetStore {
             @Nested
-            class GivenAStore {
+            @DisplayName("Given a store")
+            class Store {
                 @BeforeEach
                 void setUp() {
                     client = mock(S3Client.class);
@@ -60,7 +62,10 @@ public class S3StoreFactoryBeanTest {
             }
 
             @Nested
-            class GivenAnAssociativeStore {
+
+            @DisplayName("Given an associative store")
+
+            class AssociativeStore {
                 @BeforeEach
                 void setUp() {
                     client = mock(S3Client.class);

@@ -1,5 +1,6 @@
 package org.springframework.content.commons.store.factory.fragments;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -86,9 +87,13 @@ public class StoreFragmentTest {
     }
 
     @Nested
-    class GivenAStoreDefinitionCases {
+
+    @DisplayName("Given a store definition cases")
+
+    class StoreDefinitionCases {
         @Nested
-        class GivenTheApplicationContext {
+        @DisplayName("Given the application context")
+        class ApplicationContext {
             @Test
             void shouldSupportTheExtension() {
                 assertThat(context.getBean(TestContentStore.class)).isNotNull();

@@ -136,7 +136,7 @@ public class AbstractStoreFactoryBeanTest {
     }
 
     @Nested
-    class AbstractContentStoreFactoryBean {
+   class AbstractContentStoreFactoryBean {
         @Nested
         class GetDomainClass {
             @Test

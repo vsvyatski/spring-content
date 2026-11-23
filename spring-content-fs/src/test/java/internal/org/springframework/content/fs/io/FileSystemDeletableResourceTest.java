@@ -17,7 +17,7 @@ public class FileSystemDeletableResourceTest {
     private FileSystemResource delegate;
 
     @Nested
-    class FileSystemDeletableResourceCases {
+   class FileSystemDeletableResourceCases {
         @BeforeEach
         void setUp() {
             delegate = mock(FileSystemResource.class);

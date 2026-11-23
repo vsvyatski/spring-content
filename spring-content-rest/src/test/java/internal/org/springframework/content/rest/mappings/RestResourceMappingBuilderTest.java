@@ -1,6 +1,7 @@
 package internal.org.springframework.content.rest.mappings;
 
 import internal.org.springframework.content.rest.mappingcontext.RestResourceMappingBuilder;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.content.commons.annotations.ContentId;
@@ -62,7 +63,10 @@ public class RestResourceMappingBuilderTest {
     }
 
     @Nested
-    class GivenInheritedContentIdOnSuperclassOnly {
+
+    @DisplayName("Given inherited content ID on superclass only")
+
+    class InheritedContentIdOnSuperclassOnly {
         @Test
         void shouldMapRootContentInLooseMode() {
             RestResourceMappingBuilder visitor = new RestResourceMappingBuilder(RestResource::path);
@@ -74,7 +78,7 @@ public class RestResourceMappingBuilderTest {
     }
 
     @Nested
-    class RestResourceMappingBuilderCases {
+   class RestResourceMappingBuilderCases {
         @Test
         void shouldCreateAMapOfContentPropertyPathsToRequestMappingPaths() {
             RestResourceMappingBuilder visitor = new RestResourceMappingBuilder(RestResource::path);

@@ -9,6 +9,7 @@ import internal.org.springframework.content.solr.boot.autoconfigure.SolrExtensio
 import internal.org.springframework.versions.jpa.boot.autoconfigure.JpaVersionsAutoConfiguration;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -93,7 +94,7 @@ public class ContentJpaAutoConfigurationTest {
     }
 
     @Nested
-    class ContentJpaAutoConfiguration {
+   class ContentJpaAutoConfiguration {
         @BeforeEach
         void setUp() {
             initializer = mock(ContentJpaDatabaseInitializer.class);
@@ -111,7 +112,10 @@ public class ContentJpaAutoConfigurationTest {
         }
 
         @Nested
-        class WhenACustomBeanConfigurationIsUsed {
+
+        @DisplayName("When a custom bean configuration is used")
+
+        class CustomBeanConfigurationIsUsed {
             @BeforeEach
             void setUp() {
                 initializer = mock(ContentJpaDatabaseInitializer.class);
@@ -128,7 +132,10 @@ public class ContentJpaAutoConfigurationTest {
         }
 
         @Nested
-        class WhenAnExplicitEnableFileSystemStoresIsUsed {
+
+        @DisplayName("When an explicit enable file system stores is used")
+
+        class ExplicitEnableFileSystemStoresIsUsed {
             @BeforeEach
             void setUp() {
                 initializer = mock(ContentJpaDatabaseInitializer.class);

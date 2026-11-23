@@ -1,6 +1,7 @@
 package org.springframework.content.commons.store.factory.stores;
 
 import internal.org.springframework.content.commons.store.events.AnnotatedStoreEventInvoker;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -44,9 +45,13 @@ public class StoreTest {
     }
 
     @Nested
-    class GivenAStoreDefinition {
+
+    @DisplayName("Given a store definition")
+
+    class StoreDefinition {
         @Nested
-        class GivenTheApplicationContext {
+        @DisplayName("Given the application context")
+        class ApplicationContext {
             @Test
             void shouldHaveAStoreBean() {
                 assertThat(context.getBean(TestContentStore.class)).isNotNull();

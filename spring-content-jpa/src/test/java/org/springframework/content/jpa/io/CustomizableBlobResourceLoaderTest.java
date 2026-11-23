@@ -2,6 +2,7 @@ package org.springframework.content.jpa.io;
 
 import internal.org.springframework.content.jpa.io.GenericBlobResource;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.Resource;
@@ -25,7 +26,7 @@ public class CustomizableBlobResourceLoaderTest {
     private Object result;
 
     @Nested
-    class CustomizableBlobResourceLoaderCases {
+   class CustomizableBlobResourceLoaderCases {
         @Nested
         class GetDatabaseName {
             @BeforeEach
@@ -81,9 +82,12 @@ public class CustomizableBlobResourceLoaderTest {
         }
 
         @Nested
-        class GivenAResourceProvider {
+
+        @DisplayName("Given a resource provider")
+
+        class ResourceProvider {
             @Nested
-            class GetResource {
+           class GetResource {
                 private Resource expectedResource;
 
                 @BeforeEach

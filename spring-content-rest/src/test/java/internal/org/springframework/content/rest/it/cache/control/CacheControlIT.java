@@ -37,7 +37,7 @@ public class CacheControlIT {
     }
 
     @Nested
-    class CacheControlCases {
+   class CacheControlCases {
         @BeforeEach
         void setUp() {
             RestAssuredMockMvc.webAppContextSetup(webApplicationContext);

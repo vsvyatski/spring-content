@@ -5,6 +5,7 @@ import internal.org.springframework.content.jpa.io.MySQLBlobResource;
 import internal.org.springframework.content.jpa.io.SQLServerBlobResource;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.content.jpa.config.EnableJpaStores;
@@ -62,9 +63,10 @@ public class EnableJpaStoresTest {
     }
 
     @Nested
-    class EnableJpaStoresCases {
+   class EnableJpaStoresCases {
         @Nested
-        class GivenAContextAndAConfigurationWithAJpaContentStoreBean {
+        @DisplayName("Given a context and a configuration with a jpa content store bean")
+        class ContextAndAConfigurationWithAJpaContentStoreBean {
             @BeforeEach
             void setUp() {
                 context = new AnnotationConfigApplicationContext();
@@ -111,7 +113,10 @@ public class EnableJpaStoresTest {
         }
 
         @Nested
-        class GivenAContextWithAnEmptyConfiguration {
+
+        @DisplayName("Given a context with an empty configuration")
+
+        class ContextWithAnEmptyConfiguration {
             @BeforeEach
             void setUp() {
                 context = new AnnotationConfigApplicationContext();

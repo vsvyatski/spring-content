@@ -65,9 +65,9 @@ public class BeforeSetEventIT {
     }
 
     @Nested
-    class BeforeSetEventInputStreamAccessCases {
+   class BeforeSetEventInputStreamAccessCases {
         @Nested
-        @DisplayName("When the content input Stream is consumed by a BeforeSetEvent")
+        @DisplayName("When the content input stream is consumed by a beforesetevent")
         class ContentInputStreamIsConsumedByBeforeSetEvent {
             @Test
             void shouldStillSetTheContentInTheStore() throws IOException {

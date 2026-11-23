@@ -1,6 +1,7 @@
 package internal.org.springframework.content.fs.store;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
@@ -55,11 +56,11 @@ public class DefaultFileSystemStoresImplTest {
     private Exception e;
 
     @Nested
-    class DefaultFileSystemStoresImplBehaviour {
+   class DefaultFileSystemStoresImplBehaviour {
         @Nested
         class Store {
             @Nested
-            class GetResource {
+           class GetResource {
                 @BeforeEach
                 void setUp() {
                     loader = mock(FileSystemResourceLoader.class);
@@ -88,9 +89,10 @@ public class DefaultFileSystemStoresImplTest {
         @Nested
         class AssociativeStore {
             @Nested
-            class GetResource {
+           class GetResource {
                 @Nested
-                class WhenTheEntityIsNotAlreadyAssociatedWithAResource {
+                @DisplayName("When the entity is not already associated with a resource")
+                class EntityIsNotAlreadyAssociatedWithAResource {
                     @BeforeEach
                     void setUp() {
                         loader = mock(FileSystemResourceLoader.class);
@@ -111,7 +113,10 @@ public class DefaultFileSystemStoresImplTest {
                 }
 
                 @Nested
-                class WhenTheEntityIsAlreadyAssociatedWithAResource {
+
+                @DisplayName("When the entity is already associated with a resource")
+
+                class EntityIsAlreadyAssociatedWithAResource {
                     @BeforeEach
                     void setUp() {
                         loader = mock(FileSystemResourceLoader.class);
@@ -138,7 +143,10 @@ public class DefaultFileSystemStoresImplTest {
                 }
 
                 @Nested
-                class WhenThereIsAnEntityConverter {
+
+                @DisplayName("When there is an entity converter")
+
+                class ThereIsAnEntityConverter {
                     @BeforeEach
                     void setUp() {
                         loader = mock(FileSystemResourceLoader.class);
@@ -171,7 +179,10 @@ public class DefaultFileSystemStoresImplTest {
                 }
 
                 @Nested
-                class WhenTheEntityHasAStringArgConstructorIssue57 {
+
+                @DisplayName("When the entity has a string arg constructor issue57")
+
+                class EntityHasAStringArgConstructorIssue57 {
                     @BeforeEach
                     void setUp() {
                         loader = mock(FileSystemResourceLoader.class);
@@ -197,7 +208,7 @@ public class DefaultFileSystemStoresImplTest {
             }
 
             @Nested
-            class Associate {
+           class Associate {
                 @BeforeEach
                 void setUp() throws IOException {
                     loader = mock(FileSystemResourceLoader.class);
@@ -229,7 +240,7 @@ public class DefaultFileSystemStoresImplTest {
             }
 
             @Nested
-            class Unassociate {
+           class Unassociate {
                 @BeforeEach
                 void setUp() {
                     loader = mock(FileSystemResourceLoader.class);
@@ -253,13 +264,15 @@ public class DefaultFileSystemStoresImplTest {
         }
 
         @Nested
-        class ContentStore {
+        class ContentStoreScenario {
             @Nested
-            class SetContent {
+           class SetContent {
                 @Nested
-                class GivenAnEntityConverter {
+                @DisplayName("Given an entity converter")
+                class EntityConverter {
                     @Nested
-                    class WhenTheContentDoesntYetExist {
+                    @DisplayName("When the content doesnt yet exist")
+                    class ContentDoesntYetExist {
                         @BeforeEach
                         void setUp() throws IOException {
                             loader = mock(FileSystemResourceLoader.class);
@@ -320,7 +333,10 @@ public class DefaultFileSystemStoresImplTest {
                     }
 
                     @Nested
-                    class WhenTheContentAlreadyExists {
+
+                    @DisplayName("When the content already exists")
+
+                    class ContentAlreadyExists {
                         @BeforeEach
                         void setUp() throws IOException {
                             loader = mock(FileSystemResourceLoader.class);
@@ -368,9 +384,13 @@ public class DefaultFileSystemStoresImplTest {
                 }
 
                 @Nested
-                class GivenJustTheDefaultIDConverters {
+
+                @DisplayName("Given just the default id converters")
+
+                class JustTheDefaultIDConverters {
                     @Nested
-                    class WhenTheContentAlreadyExists {
+                    @DisplayName("When the content already exists")
+                    class ContentAlreadyExists {
                         @BeforeEach
                         void setUp() throws IOException {
                             loader = mock(FileSystemResourceLoader.class);
@@ -433,7 +453,10 @@ public class DefaultFileSystemStoresImplTest {
                     }
 
                     @Nested
-                    class WhenTheContentDoesNotAlreadyExist {
+
+                    @DisplayName("When the content does not already exist")
+
+                    class ContentDoesNotAlreadyExist {
                         @BeforeEach
                         void setUp() throws IOException {
                             loader = mock(FileSystemResourceLoader.class);
@@ -505,7 +528,10 @@ public class DefaultFileSystemStoresImplTest {
                     }
 
                     @Nested
-                    class WhenGettingTheResourceOutputStreamThrowsAnIOException {
+
+                    @DisplayName("When getting the resource output stream throws an io exception")
+
+                    class GettingTheResourceOutputStreamThrowsAnIOException {
                         @BeforeEach
                         void setUp() throws IOException {
                             loader = mock(FileSystemResourceLoader.class);
@@ -563,7 +589,7 @@ public class DefaultFileSystemStoresImplTest {
             }
 
             @Nested
-            class SetContentFromResource {
+           class SetContentFromResource {
                 @BeforeEach
                 void setUp() {
                     loader = mock(FileSystemResourceLoader.class);
@@ -589,7 +615,10 @@ public class DefaultFileSystemStoresImplTest {
                 }
 
                 @Nested
-                class WhenTheResourceThrowsAnIOException {
+
+                @DisplayName("When the resource throws an io exception")
+
+                class ResourceThrowsAnIOException {
                     @BeforeEach
                     void setUp() throws IOException {
                         loader = mock(FileSystemResourceLoader.class);
@@ -623,11 +652,13 @@ public class DefaultFileSystemStoresImplTest {
             }
 
             @Nested
-            class GetContent {
+           class GetContent {
                 @Nested
-                class GivenAnEntityConverter {
+                @DisplayName("Given an entity converter")
+                class EntityConverter {
                     @Nested
-                    class WhenTheResourceDoesNotExists {
+                    @DisplayName("When the resource does not exists")
+                    class ResourceDoesNotExists {
                         @BeforeEach
                         void setUp() throws IOException {
                             loader = mock(FileSystemResourceLoader.class);
@@ -677,7 +708,10 @@ public class DefaultFileSystemStoresImplTest {
                     }
 
                     @Nested
-                    class WhenTheResourceExists {
+
+                    @DisplayName("When the resource exists")
+
+                    class ResourceExists {
                         @BeforeEach
                         void setUp() throws IOException {
                             loader = mock(FileSystemResourceLoader.class);
@@ -728,9 +762,13 @@ public class DefaultFileSystemStoresImplTest {
                 }
 
                 @Nested
-                class GivenJustTheDefaultIDConverter {
+
+                @DisplayName("Given just the default id converter")
+
+                class JustTheDefaultIDConverter {
                     @Nested
-                    class WhenTheResourceDoesNotExists {
+                    @DisplayName("When the resource does not exists")
+                    class ResourceDoesNotExists {
                         @BeforeEach
                         void setUp() throws IOException {
                             loader = mock(FileSystemResourceLoader.class);
@@ -774,7 +812,10 @@ public class DefaultFileSystemStoresImplTest {
                     }
 
                     @Nested
-                    class WhenTheResourceExists {
+
+                    @DisplayName("When the resource exists")
+
+                    class ResourceExists {
                         @BeforeEach
                         void setUp() throws IOException {
                             loader = mock(FileSystemResourceLoader.class);
@@ -814,7 +855,10 @@ public class DefaultFileSystemStoresImplTest {
                         }
 
                         @Nested
-                        class WhenGettingTheResourceInputStreamThrowsAnIOException {
+
+                        @DisplayName("When getting the resource input stream throws an io exception")
+
+                        class GettingTheResourceInputStreamThrowsAnIOException {
                             @BeforeEach
                             void setUp() throws IOException {
                                 loader = mock(FileSystemResourceLoader.class);
@@ -858,7 +902,10 @@ public class DefaultFileSystemStoresImplTest {
                     }
 
                     @Nested
-                    class WhenTheResourceExistsButInTheOldLocation {
+
+                    @DisplayName("When the resource exists but in the old location")
+
+                    class ResourceExistsButInTheOldLocation {
                         @BeforeEach
                         void setUp() throws IOException {
                             loader = mock(FileSystemResourceLoader.class);
@@ -917,11 +964,13 @@ public class DefaultFileSystemStoresImplTest {
             }
 
             @Nested
-            class UnsetContent {
+           class UnsetContent {
                 @Nested
-                class GivenAnEntityConverter {
+                @DisplayName("Given an entity converter")
+                class EntityConverter {
                     @Nested
-                    class GivenTheResourceDoesNotExist {
+                    @DisplayName("Given the resource does not exist")
+                    class ResourceDoesNotExist {
                         @BeforeEach
                         void setUp() {
                             loader = mock(FileSystemResourceLoader.class);
@@ -958,7 +1007,10 @@ public class DefaultFileSystemStoresImplTest {
                     }
 
                     @Nested
-                    class GivenTheResourceExists {
+
+                    @DisplayName("Given the resource exists")
+
+                    class ResourceExists {
                         @BeforeEach
                         void setUp() throws IOException {
                             loader = mock(FileSystemResourceLoader.class);
@@ -1005,9 +1057,13 @@ public class DefaultFileSystemStoresImplTest {
                 }
 
                 @Nested
-                class GivenJustTheDefaultIDConverter {
+
+                @DisplayName("Given just the default id converter")
+
+                class JustTheDefaultIDConverter {
                     @Nested
-                    class WhenTheContentExistsInTheNewLocation {
+                    @DisplayName("When the content exists in the new location")
+                    class ContentExistsInTheNewLocation {
                         @BeforeEach
                         void setUp() throws IOException {
                             loader = mock(FileSystemResourceLoader.class);
@@ -1050,7 +1106,10 @@ public class DefaultFileSystemStoresImplTest {
                         }
 
                         @Nested
-                        class WhenThePropertyHasADedicatedContentIdField {
+
+                        @DisplayName("When the property has a dedicated content ID field")
+
+                        class PropertyHasADedicatedContentIdField {
                             @BeforeEach
                             void setUp() throws IOException {
                                 loader = mock(FileSystemResourceLoader.class);
@@ -1095,7 +1154,10 @@ public class DefaultFileSystemStoresImplTest {
                         }
 
                         @Nested
-                        class WhenThePropertySContentIdFieldAlsoIsTheJavaxPersistenceIdField {
+
+                        @DisplayName("When the property s content ID field also is the javax persistence id field")
+
+                        class PropertySContentIdFieldAlsoIsTheJavaxPersistenceIdField {
                             @BeforeEach
                             void setUp() throws IOException {
                                 loader = mock(FileSystemResourceLoader.class);
@@ -1143,7 +1205,10 @@ public class DefaultFileSystemStoresImplTest {
                         }
 
                         @Nested
-                        class WhenThePropertySContentIdFieldAlsoIsTheSpringIdField {
+
+                        @DisplayName("When the property s content ID field also is the spring id field")
+
+                        class PropertySContentIdFieldAlsoIsTheSpringIdField {
                             @BeforeEach
                             void setUp() throws IOException {
                                 loader = mock(FileSystemResourceLoader.class);
@@ -1192,7 +1257,10 @@ public class DefaultFileSystemStoresImplTest {
                     }
 
                     @Nested
-                    class WhenTheContentDoesntExist {
+
+                    @DisplayName("When the content doesnt exist")
+
+                    class ContentDoesntExist {
                         @BeforeEach
                         void setUp() {
                             loader = mock(FileSystemResourceLoader.class);

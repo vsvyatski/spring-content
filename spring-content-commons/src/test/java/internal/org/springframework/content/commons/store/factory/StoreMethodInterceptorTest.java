@@ -6,6 +6,7 @@ import org.aopalliance.intercept.MethodInvocation;
 import org.apache.commons.io.IOUtils;
 import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -145,11 +146,12 @@ public class StoreMethodInterceptorTest {
     }
 
     @Nested
-    class InvokeCases {
+   class InvokeCases {
         @Nested
         class GetContentCases {
             @Nested
-            class WhenGetContentIsInvokedSuccessfully {
+            @DisplayName("When GET content is invoked successfully")
+            class GetContentIsInvokedSuccessfully {
                 @BeforeEach
                 void setUp() throws IOException {
                     publisher = mock(ApplicationEventPublisher.class);
@@ -180,7 +182,10 @@ public class StoreMethodInterceptorTest {
             }
 
             @Nested
-            class WhenGetContentIsInvokedWithIllegalArguments {
+
+            @DisplayName("When GET content is invoked with illegal arguments")
+
+            class GetContentIsInvokedWithIllegalArguments {
                 @BeforeEach
                 void setUp() throws IOException {
                     publisher = mock(ApplicationEventPublisher.class);
@@ -206,7 +211,8 @@ public class StoreMethodInterceptorTest {
         @Nested
         class SetContentCases {
             @Nested
-            class WhenSetContentIsInvokedSuccessfully {
+            @DisplayName("When set content is invoked successfully")
+            class SetContentIsInvokedSuccessfully {
                 @BeforeEach
                 void setUp() {
                     publisher = mock(ApplicationEventPublisher.class);
@@ -246,7 +252,10 @@ public class StoreMethodInterceptorTest {
             }
 
             @Nested
-            class WhenTheBeforeSetContentEventConsumesTheEntireInputStream {
+
+            @DisplayName("When the before set content event consumes the entire input stream")
+
+            class BeforeSetContentEventConsumesTheEntireInputStream {
                 @BeforeEach
                 void setUp() {
                     publisher = mock(ApplicationEventPublisher.class);
@@ -290,7 +299,10 @@ public class StoreMethodInterceptorTest {
             }
 
             @Nested
-            class WhenTheBeforeSetContentEventConsumesPartialInputStream {
+
+            @DisplayName("When the before set content event consumes partial input stream")
+
+            class BeforeSetContentEventConsumesPartialInputStream {
                 @BeforeEach
                 void setUp() {
                     publisher = mock(ApplicationEventPublisher.class);
@@ -336,7 +348,10 @@ public class StoreMethodInterceptorTest {
             }
 
             @Nested
-            class WhenTheBeforeSetContentEventDoesNotConsumeAnyOfTheInputStream {
+
+            @DisplayName("When the before set content event does not consume any of the input stream")
+
+            class BeforeSetContentEventDoesNotConsumeAnyOfTheInputStream {
                 @BeforeEach
                 void setUp() {
                     publisher = mock(ApplicationEventPublisher.class);
@@ -377,7 +392,10 @@ public class StoreMethodInterceptorTest {
             }
 
             @Nested
-            class WhenTheBeforeSetContentEventReplacesTheInputStream {
+
+            @DisplayName("When the before set content event replaces the input stream")
+
+            class BeforeSetContentEventReplacesTheInputStream {
                 @BeforeEach
                 void setUp() {
                     publisher = mock(ApplicationEventPublisher.class);
@@ -422,7 +440,10 @@ public class StoreMethodInterceptorTest {
             }
 
             @Nested
-            class WhenSetContentIsInvokedWithIllegalArguments {
+
+            @DisplayName("When set content is invoked with illegal arguments")
+
+            class SetContentIsInvokedWithIllegalArguments {
                 @BeforeEach
                 void setUp() {
                     publisher = mock(ApplicationEventPublisher.class);
@@ -487,7 +508,8 @@ public class StoreMethodInterceptorTest {
         @Nested
         class UnsetContentCases {
             @Nested
-            class WhenUnsetContentIsInvoked {
+            @DisplayName("When unset content is invoked")
+            class UnsetContentIsInvoked {
                 @BeforeEach
                 void setUp() {
                     publisher = mock(ApplicationEventPublisher.class);
@@ -518,7 +540,10 @@ public class StoreMethodInterceptorTest {
             }
 
             @Nested
-            class WhenUnsetContentIsInvokedWithIllegalArguments {
+
+            @DisplayName("When unset content is invoked with illegal arguments")
+
+            class UnsetContentIsInvokedWithIllegalArguments {
                 @BeforeEach
                 void setUp() {
                     publisher = mock(ApplicationEventPublisher.class);
@@ -543,7 +568,8 @@ public class StoreMethodInterceptorTest {
         @Nested
         class GetResourceCases {
             @Nested
-            class WhenGetResourceIsInvoked {
+            @DisplayName("When GET resource is invoked")
+            class GetResourceIsInvoked {
                 @BeforeEach
                 void setUp() {
                     publisher = mock(ApplicationEventPublisher.class);
@@ -574,7 +600,10 @@ public class StoreMethodInterceptorTest {
             }
 
             @Nested
-            class WhenGetResourceEntityIsInvoked {
+
+            @DisplayName("When GET resource entity is invoked")
+
+            class GetResourceEntityIsInvoked {
                 @BeforeEach
                 void setUp() {
                     publisher = mock(ApplicationEventPublisher.class);
@@ -609,7 +638,8 @@ public class StoreMethodInterceptorTest {
         @Nested
         class AssociateCases {
             @Nested
-            class WhenAssociateIsInvoked {
+            @DisplayName("When associate is invoked")
+            class ssociateIsInvoked {
                 @BeforeEach
                 void setUp() {
                     publisher = mock(ApplicationEventPublisher.class);
@@ -635,7 +665,8 @@ public class StoreMethodInterceptorTest {
         @Nested
         class UnassociateCases {
             @Nested
-            class WhenUnassociateIsInvoked {
+            @DisplayName("When unassociate is invoked")
+            class UnassociateIsInvoked {
                 @BeforeEach
                 void setUp() {
                     publisher = mock(ApplicationEventPublisher.class);
@@ -661,7 +692,8 @@ public class StoreMethodInterceptorTest {
         @Nested
         class ToStringCases {
             @Nested
-            class WhenToStringIsInvoked {
+            @DisplayName("When to string is invoked")
+            class ToStringIsInvoked {
                 @BeforeEach
                 void setUp() {
                     publisher = mock(ApplicationEventPublisher.class);
@@ -682,7 +714,7 @@ public class StoreMethodInterceptorTest {
     }
 
     @Nested
-    class FindMethodCases {
+   class FindMethodCases {
         @Test
         void shouldResolveTheMethodWhenNotOverridden() {
             store = CommonsTestStores.mockContentStore();

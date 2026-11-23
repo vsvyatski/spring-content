@@ -1,6 +1,7 @@
 package internal.org.springframework.content.jpa.io;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.content.jpa.io.BlobResourceLoader;
@@ -32,11 +33,12 @@ public class DelegatingBlobResourceLoaderTest {
     private Resource resource;
 
     @Nested
-    class DelegatingBlobResourceLoaderCases {
+   class DelegatingBlobResourceLoaderCases {
         @Nested
         class GetResource {
             @Nested
-            class GivenACustomBlobResourceLoader {
+            @DisplayName("Given a custom blob resource loader")
+            class CustomBlobResourceLoader {
                 @BeforeEach
                 void setUp() throws SQLException {
                     ds = mock(DataSource.class);
@@ -63,7 +65,10 @@ public class DelegatingBlobResourceLoaderTest {
             }
 
             @Nested
-            class GivenADatasourceThatDoesntHaveAMatchingBlobResourceLoader {
+
+            @DisplayName("Given a datasource that doesnt have a matching blob resource loader")
+
+            class DatasourceThatDoesntHaveAMatchingBlobResourceLoader {
                 @BeforeEach
                 void setUp() throws SQLException {
                     ds = mock(DataSource.class);

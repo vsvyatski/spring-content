@@ -2,6 +2,7 @@ package internal.org.springframework.content.jpa.store;
 
 import internal.org.springframework.content.jpa.io.GenericBlobResource;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.content.commons.store.StoreAccessException;
@@ -43,13 +44,14 @@ public class DefaultJpaStoreImplTest {
     private Exception e;
 
     @Nested
-    class DefaultJpaStoreImplCases {
+   class DefaultJpaStoreImplCases {
         @Nested
         class Store {
             @Nested
-            class GetResource {
+           class GetResource {
                 @Nested
-                class GivenAnId {
+                @DisplayName("Given an id")
+                class Id {
                     @BeforeEach
                     void setUp() {
                         blobResourceLoader = mock(BlobResourceLoader.class);
@@ -69,9 +71,10 @@ public class DefaultJpaStoreImplTest {
         @Nested
         class AssociativeStore {
             @Nested
-            class GetResource {
+           class GetResource {
                 @Nested
-                class WhenTheEntityIsNotAssociatedWithAResource {
+                @DisplayName("When the entity is not associated with a resource")
+                class EntityIsNotAssociatedWithAResource {
                     @BeforeEach
                     void setUp() {
                         blobResourceLoader = mock(BlobResourceLoader.class);
@@ -88,7 +91,10 @@ public class DefaultJpaStoreImplTest {
                 }
 
                 @Nested
-                class WhenTheEntityIsAssociatedWithAResource {
+
+                @DisplayName("When the entity is associated with a resource")
+
+                class EntityIsAssociatedWithAResource {
                     @BeforeEach
                     void setUp() {
                         blobResourceLoader = mock(BlobResourceLoader.class);
@@ -107,7 +113,7 @@ public class DefaultJpaStoreImplTest {
             }
 
             @Nested
-            class Associate {
+           class Associate {
                 @BeforeEach
                 void setUp() throws IOException {
                     blobResourceLoader = mock(BlobResourceLoader.class);
@@ -131,7 +137,7 @@ public class DefaultJpaStoreImplTest {
             }
 
             @Nested
-            class Unassociate {
+           class Unassociate {
                 @BeforeEach
                 void setUp() {
                     blobResourceLoader = mock(BlobResourceLoader.class);
@@ -153,11 +159,12 @@ public class DefaultJpaStoreImplTest {
         }
 
         @Nested
-        class ContentStore {
+        class ContentStoreScenario {
             @Nested
-            class GetContent {
+           class GetContent {
                 @Nested
-                class GivenContent {
+                @DisplayName("Given content")
+                class Content {
                     @BeforeEach
                     void setUp() throws IOException {
                         blobResourceLoader = mock(BlobResourceLoader.class);
@@ -195,7 +202,10 @@ public class DefaultJpaStoreImplTest {
                 }
 
                 @Nested
-                class GivenFetchingTheInputStreamFails {
+
+                @DisplayName("Given fetching the input stream fails")
+
+                class FetchingTheInputStreamFails {
                     @BeforeEach
                     void setUp() throws IOException {
                         blobResourceLoader = mock(BlobResourceLoader.class);
@@ -228,7 +238,7 @@ public class DefaultJpaStoreImplTest {
             }
 
             @Nested
-            class SetContent {
+           class SetContent {
                 @BeforeEach
                 void setUp() throws IOException {
                     blobResourceLoader = mock(BlobResourceLoader.class);
@@ -271,7 +281,10 @@ public class DefaultJpaStoreImplTest {
                 }
 
                 @Nested
-                class WhenTheResourceOutputStreamThrowsAnIOException {
+
+                @DisplayName("When the resource output stream throws an io exception")
+
+                class ResourceOutputStreamThrowsAnIOException {
                     @BeforeEach
                     void setUp() throws IOException {
                         blobResourceLoader = mock(BlobResourceLoader.class);
@@ -309,7 +322,7 @@ public class DefaultJpaStoreImplTest {
             }
 
             @Nested
-            class SetContentFromResource {
+           class SetContentFromResource {
                 @BeforeEach
                 void setUp() {
                     entity = new SingleContentFields();
@@ -330,7 +343,10 @@ public class DefaultJpaStoreImplTest {
                 }
 
                 @Nested
-                class WhenTheResourceThrowsAnIOException {
+
+                @DisplayName("When the resource throws an io exception")
+
+                class ResourceThrowsAnIOException {
                     @BeforeEach
                     void setUp() throws IOException {
                         entity = new SingleContentFields();
@@ -357,7 +373,7 @@ public class DefaultJpaStoreImplTest {
             }
 
             @Nested
-            class UnsetContent {
+           class UnsetContent {
                 @BeforeEach
                 void setUp() {
                     blobResourceLoader = mock(BlobResourceLoader.class);
@@ -384,7 +400,7 @@ public class DefaultJpaStoreImplTest {
                 }
 
                 @Nested
-                class ResourceDeleteThrowsAnException {
+               class ResourceDeleteThrowsAnException {
                     @BeforeEach
                     void setUp() throws IOException {
                         blobResourceLoader = mock(BlobResourceLoader.class);
@@ -417,13 +433,14 @@ public class DefaultJpaStoreImplTest {
     }
 
     @Nested
-    class DefaultJpaStoreImplJakartaAnnotatedEntity {
+   class DefaultJpaStoreImplJakartaAnnotatedEntity {
         @Nested
         class Store {
             @Nested
-            class GetResource {
+           class GetResource {
                 @Nested
-                class GivenAnId {
+                @DisplayName("Given an id")
+                class Id {
                     @BeforeEach
                     void setUp() {
                         blobResourceLoader = mock(BlobResourceLoader.class);
@@ -443,7 +460,7 @@ public class DefaultJpaStoreImplTest {
         @Nested
         class AssociativeStore {
             @Nested
-            class UnassociateJakartaAnnotatedEntity {
+           class UnassociateJakartaAnnotatedEntity {
                 @BeforeEach
                 void setUp() {
                     blobResourceLoader = mock(BlobResourceLoader.class);
@@ -466,11 +483,11 @@ public class DefaultJpaStoreImplTest {
     }
 
     @Nested
-    class DefaultJpaStoreImplSpringDataAnnotatedEntity {
+   class DefaultJpaStoreImplSpringDataAnnotatedEntity {
         @Nested
         class AssociativeStore {
             @Nested
-            class UnassociateSpringAnnotatedEntity {
+           class UnassociateSpringAnnotatedEntity {
                 @BeforeEach
                 void setUp() {
                     blobResourceLoader = mock(BlobResourceLoader.class);

@@ -4,6 +4,7 @@ import internal.org.springframework.content.rest.support.StoreConfig;
 import internal.org.springframework.content.rest.support.TestStore;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -51,11 +52,13 @@ public class StoreRestEndpointsIT {
     private String request;
 
     @Nested
-    class StoreRestEndpoints {
+   class StoreRestEndpoints {
         @Nested
-        class GivenARootResourcePath {
+        @DisplayName("Given a root resource path")
+        class RootResourcePath {
             @Nested
-            class GivenAGETRequestToThatPath {
+            @DisplayName("Given aget request to that path")
+            class GetRequestToThatPath {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -71,7 +74,10 @@ public class StoreRestEndpointsIT {
             }
 
             @Nested
-            class GivenAPOSTToThatPathWithContent {
+
+            @DisplayName("Given apost to that path with content")
+
+            class PostToThatPathWithContent {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -97,7 +103,10 @@ public class StoreRestEndpointsIT {
             }
 
             @Nested
-            class GivenADELETERequestToThatPath {
+
+            @DisplayName("Given adelete request to that path")
+
+            class DeleteRequestToThatPath {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -114,7 +123,10 @@ public class StoreRestEndpointsIT {
         }
 
         @Nested
-        class GivenARootResource {
+
+        @DisplayName("Given a root resource")
+
+        class RootResource {
             @BeforeEach
             void setUp() throws IOException {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -169,7 +181,10 @@ public class StoreRestEndpointsIT {
             }
 
             @Nested
-            class APOSTToStorePathWithMultiPartFormData {
+
+            @DisplayName("POST to store path with multi part form data")
+
+            class PostToStorePathWithMultiPartFormData {
                 @BeforeEach
                 void setUp() throws IOException {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -203,7 +218,10 @@ public class StoreRestEndpointsIT {
         }
 
         @Nested
-        class GivenANestedResource {
+
+        @DisplayName("Given a nested resource")
+
+        class estedResource {
             @BeforeEach
             void setUp() throws IOException {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -258,7 +276,10 @@ public class StoreRestEndpointsIT {
             }
 
             @Nested
-            class GivenATypicalBrowserRequest {
+
+            @DisplayName("Given a typical browser request")
+
+            class TypicalBrowserRequest {
                 @BeforeEach
                 void setUp() throws IOException {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -287,7 +308,10 @@ public class StoreRestEndpointsIT {
             }
 
             @Nested
-            class APOSTToStorePathWithMultiPartFormData {
+
+            @DisplayName("POST to store path with multi part form data")
+
+            class PostToStorePathWithMultiPartFormData {
                 @BeforeEach
                 void setUp() throws IOException {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();

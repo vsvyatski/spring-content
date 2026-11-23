@@ -3,6 +3,7 @@ package it.store;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.content.commons.io.DeletableResource;
@@ -89,11 +90,11 @@ public class FileSystemStorePropertyPathAccessorsIT {
     }
 
     @Nested
-    class DefaultFileSystemStoreImplPropertyPathAccessors {
+   class DefaultFileSystemStoreImplPropertyPathAccessors {
         @Nested
         class Store {
             @Nested
-            class GetResource {
+           class GetResource {
                 @BeforeEach
                 void setUp() {
                     context = new AnnotationConfigApplicationContext();
@@ -125,7 +126,10 @@ public class FileSystemStorePropertyPathAccessorsIT {
                 }
 
                 @Nested
-                class GivenContentIsAddedToThatResource {
+
+                @DisplayName("Given content is added to that resource")
+
+                class ContentIsAddedToThatResource {
                     @BeforeEach
                     void setUp() throws IOException {
                         context = new AnnotationConfigApplicationContext();
@@ -165,7 +169,10 @@ public class FileSystemStorePropertyPathAccessorsIT {
                     }
 
                     @Nested
-                    class GivenThatResourceIsThenUpdated {
+
+                    @DisplayName("Given that resource is then updated")
+
+                    class ResourceIsThenUpdated {
                         @BeforeEach
                         void setUp() throws IOException {
                             context = new AnnotationConfigApplicationContext();
@@ -211,7 +218,10 @@ public class FileSystemStorePropertyPathAccessorsIT {
                     }
 
                     @Nested
-                    class GivenThatResourceIsThenDeleted {
+
+                    @DisplayName("Given that resource is then deleted")
+
+                    class ResourceIsThenDeleted {
                         @BeforeEach
                         void setUp() throws IOException {
                             context = new AnnotationConfigApplicationContext();
@@ -256,7 +266,8 @@ public class FileSystemStorePropertyPathAccessorsIT {
         @Nested
         class AssociativeStore {
             @Nested
-            class GivenANewEntity {
+            @DisplayName("Given a new entity")
+            class NewEntity {
                 @BeforeEach
                 void setUp() {
                     context = new AnnotationConfigApplicationContext();
@@ -284,9 +295,13 @@ public class FileSystemStorePropertyPathAccessorsIT {
                 }
 
                 @Nested
-                class GivenAResource {
+
+                @DisplayName("Given a resource")
+
+                class AssociatedResource {
                     @Nested
-                    class WhenTheResourceIsAssociated {
+                    @DisplayName("When the resource is associated")
+                    class ResourceIsAssociated {
                         @BeforeEach
                         void setUp() {
                             context = new AnnotationConfigApplicationContext();
@@ -317,7 +332,10 @@ public class FileSystemStorePropertyPathAccessorsIT {
                         }
 
                         @Nested
-                        class WhenTheResourceIsUnassociated {
+
+                        @DisplayName("When the resource is unassociated")
+
+                        class ResourceIsUnassociated {
                             @BeforeEach
                             void setUp() {
                                 context = new AnnotationConfigApplicationContext();
@@ -351,7 +369,10 @@ public class FileSystemStorePropertyPathAccessorsIT {
                         }
 
                         @Nested
-                        class WhenAInvalidPropertyPathIsUsedToAssociateAResource {
+
+                        @DisplayName("When a invalid property path is used to associate a resource")
+
+                        class InvalidPropertyPathIsUsedToAssociateAResource {
                             @BeforeEach
                             void setUp() {
                                 context = new AnnotationConfigApplicationContext();
@@ -388,7 +409,10 @@ public class FileSystemStorePropertyPathAccessorsIT {
                         }
 
                         @Nested
-                        class WhenAInvalidPropertyPathIsUsedToLoadAResource {
+
+                        @DisplayName("When a invalid property path is used to load a resource")
+
+                        class InvalidPropertyPathIsUsedToLoadAResource {
                             @BeforeEach
                             void setUp() {
                                 context = new AnnotationConfigApplicationContext();
@@ -425,7 +449,10 @@ public class FileSystemStorePropertyPathAccessorsIT {
                         }
 
                         @Nested
-                        class WhenAInvalidPropertyPathIsUsedToUnassociateAResource {
+
+                        @DisplayName("When a invalid property path is used to unassociate a resource")
+
+                        class InvalidPropertyPathIsUsedToUnassociateAResource {
                             @BeforeEach
                             void setUp() {
                                 context = new AnnotationConfigApplicationContext();
@@ -507,7 +534,10 @@ public class FileSystemStorePropertyPathAccessorsIT {
             }
 
             @Nested
-            class WhenContentIsUpdated {
+
+            @DisplayName("When content is updated")
+
+            class ContentIsUpdated {
                 @BeforeEach
                 void setUp() {
                     context = new AnnotationConfigApplicationContext();
@@ -545,7 +575,10 @@ public class FileSystemStorePropertyPathAccessorsIT {
             }
 
             @Nested
-            class WhenContentIsUpdatedWithShorterContent {
+
+            @DisplayName("When content is updated with shorter content")
+
+            class ContentIsUpdatedWithShorterContent {
                 @BeforeEach
                 void setUp() {
                     context = new AnnotationConfigApplicationContext();
@@ -583,7 +616,10 @@ public class FileSystemStorePropertyPathAccessorsIT {
             }
 
             @Nested
-            class WhenContentIsDeleted {
+
+            @DisplayName("When content is deleted")
+
+            class ContentIsDeleted {
                 @BeforeEach
                 void setUp() {
                     context = new AnnotationConfigApplicationContext();
@@ -623,7 +659,10 @@ public class FileSystemStorePropertyPathAccessorsIT {
             }
 
             @Nested
-            class WhenAnInvalidPropertyPathIsUsedToSetContent {
+
+            @DisplayName("When an invalid property path is used to set content")
+
+            class InvalidPropertyPathIsUsedToSetContent {
                 @BeforeEach
                 void setUp() {
                     context = new AnnotationConfigApplicationContext();
@@ -658,7 +697,10 @@ public class FileSystemStorePropertyPathAccessorsIT {
             }
 
             @Nested
-            class WhenAnInvalidPropertyPathIsUsedToGetContent {
+
+            @DisplayName("When an invalid property path is used to GET content")
+
+            class InvalidPropertyPathIsUsedToGetContent {
                 @BeforeEach
                 void setUp() {
                     context = new AnnotationConfigApplicationContext();
@@ -693,7 +735,10 @@ public class FileSystemStorePropertyPathAccessorsIT {
             }
 
             @Nested
-            class WhenAnInvalidPropertyPathIsUsedToUnsetContent {
+
+            @DisplayName("When an invalid property path is used to unset content")
+
+            class InvalidPropertyPathIsUsedToUnsetContent {
                 @BeforeEach
                 void setUp() {
                     context = new AnnotationConfigApplicationContext();

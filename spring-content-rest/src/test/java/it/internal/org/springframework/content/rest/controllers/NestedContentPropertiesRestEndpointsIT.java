@@ -7,6 +7,7 @@ import internal.org.springframework.content.rest.support.StoreConfig;
 import it.internal.org.springframework.content.rest.controllers.support.LastModifiedDateTests;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -65,11 +66,13 @@ public class NestedContentPropertiesRestEndpointsIT {
     private MockMvc mvc;
 
     @Nested
-    class NestedContentPropertiesRESTEndpoints {
+   class NestedContentPropertiesRESTEndpoints {
         @Nested
-        class GivenAnEntityWithASimpleContentProperty {
+        @DisplayName("Given an entity with a simple content property")
+        class EntityWithASimpleContentProperty {
             @Nested
-            class GivenARequestToANonExistentEntity {
+            @DisplayName("Given a request to a non existent entity")
+            class RequestToANonExistentEntity {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -86,7 +89,10 @@ public class NestedContentPropertiesRestEndpointsIT {
             }
 
             @Nested
-            class GivenARequestToANonExistentContentProperty {
+
+            @DisplayName("Given a request to a non existent content property")
+
+            class RequestToANonExistentContentProperty {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -103,9 +109,13 @@ public class NestedContentPropertiesRestEndpointsIT {
             }
 
             @Nested
-            class GivenThatIsHasNoContent {
+
+            @DisplayName("Given that is has no content")
+
+            class IsHasNoContent {
                 @Nested
-                class AGETToRepositoryIdContentProperty {
+                @DisplayName("GET to repository id content property")
+                class GetToRepositoryIdContentProperty {
                     @BeforeEach
                     void setUp() {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -122,7 +132,10 @@ public class NestedContentPropertiesRestEndpointsIT {
                 }
 
                 @Nested
-                class APUTToRepositoryIdPropertyContentProperty {
+
+                @DisplayName("PUT to repository id property content property")
+
+                class PutToRepositoryIdPropertyContentProperty {
                     @BeforeEach
                     void setUp() {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -165,7 +178,10 @@ public class NestedContentPropertiesRestEndpointsIT {
                 }
 
                 @Nested
-                class APUTToStoreIdPropertyContentPropertyWithJsonContent {
+
+                @DisplayName("PUT to store ID property content property with json content")
+
+                class PutToStoreIdPropertyContentPropertyWithJsonContent {
                     @BeforeEach
                     void setUp() {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -195,9 +211,13 @@ public class NestedContentPropertiesRestEndpointsIT {
             }
 
             @Nested
-            class GivenThatItHasContent {
+
+            @DisplayName("Given that it has content")
+
+            class ItHasContent {
                 @Nested
-                class AGETToRepositoryIdContentProperty {
+                @DisplayName("GET to repository id content property")
+                class GetToRepositoryIdContentProperty {
                     @BeforeEach
                     void setUp() throws IOException {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -232,7 +252,10 @@ public class NestedContentPropertiesRestEndpointsIT {
                 }
 
                 @Nested
-                class AGETToRepositoryIdContentPropertyWithAMimeTypeThatMatchesARenderer {
+
+                @DisplayName("GET to repository id content property with a MIME type that matches a renderer")
+
+                class GetToRepositoryIdContentPropertyWithAMimeTypeThatMatchesARenderer {
                     @BeforeEach
                     void setUp() throws IOException {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -266,7 +289,10 @@ public class NestedContentPropertiesRestEndpointsIT {
                 }
 
                 @Nested
-                class AGETToRepositoryIdContentPropertyWithMultipleMimeTypesTheLastOfWhichMatchesTheCo {
+
+                @DisplayName("GET to repository id content property with multiple MIME types the last of which matches the co")
+
+                class GetToRepositoryIdContentPropertyWithMultipleMimeTypesTheLastOfWhichMatchesTheCo {
                     @BeforeEach
                     void setUp() throws IOException {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -301,7 +327,10 @@ public class NestedContentPropertiesRestEndpointsIT {
                 }
 
                 @Nested
-                class APUTToRepositoryIdContentProperty {
+
+                @DisplayName("PUT to repository id content property")
+
+                class PutToRepositoryIdContentProperty {
                     @BeforeEach
                     void setUp() throws IOException {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -337,7 +366,10 @@ public class NestedContentPropertiesRestEndpointsIT {
                 }
 
                 @Nested
-                class ADELETEToRepositoryIdContentProperty {
+
+                @DisplayName("DELETE to repository id content property")
+
+                class DeleteToRepositoryIdContentProperty {
                     @BeforeEach
                     void setUp() throws IOException {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -372,7 +404,10 @@ public class NestedContentPropertiesRestEndpointsIT {
         }
 
         @Nested
-        class GivenAPOSTToTheEntityEndpointWithAMultipartFormRequest {
+
+        @DisplayName("Given apost to the entity endpoint with a multipart form request")
+
+        class PostToTheEntityEndpointWithAMultipartFormRequest {
             @BeforeEach
             void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();

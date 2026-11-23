@@ -4,6 +4,7 @@ import internal.org.springframework.content.rest.boot.autoconfigure.ContentRestA
 import internal.org.springframework.content.rest.boot.autoconfigure.ContentRestAutoConfiguration.ContentRestProperties.ShortcutRequestMappings;
 import internal.org.springframework.content.rest.boot.autoconfigure.SpringBootContentRestConfigurer;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.content.rest.config.RestConfiguration;
@@ -25,11 +26,12 @@ public class SpringBootContentRestConfigurerTest {
     private RestConfiguration.Exclusions exclusions;
 
     @Nested
-    class SpringBootContentRestConfigurerCases {
+   class SpringBootContentRestConfigurerCases {
         @Nested
         class Configure {
             @Nested
-            class GivenABaseUriProperty {
+            @DisplayName("Given a base uri property")
+            class BaseUriProperty {
                 @BeforeEach
                 void setUp() {
                     properties = new ContentRestProperties();
@@ -50,7 +52,10 @@ public class SpringBootContentRestConfigurerTest {
             }
 
             @Nested
-            class GivenAFullyQualifiedLinksPropertySetting {
+
+            @DisplayName("Given a fully qualified links property setting")
+
+            class FullyQualifiedLinksPropertySetting {
                 @BeforeEach
                 void setUp() {
                     properties = new ContentRestProperties();
@@ -71,7 +76,10 @@ public class SpringBootContentRestConfigurerTest {
             }
 
             @Nested
-            class GivenDisabledShortcutRequestMappings {
+
+            @DisplayName("Given disabled shortcut request mappings")
+
+            class DisabledShortcutRequestMappings {
                 @BeforeEach
                 void setUp() {
                     properties = new ContentRestProperties();
@@ -94,7 +102,10 @@ public class SpringBootContentRestConfigurerTest {
             }
 
             @Nested
-            class GivenExcludedShortcutRequestMappings {
+
+            @DisplayName("Given excluded shortcut request mappings")
+
+            class ExcludedShortcutRequestMappings {
                 @BeforeEach
                 void setUp() {
                     properties = new ContentRestProperties();
@@ -119,7 +130,10 @@ public class SpringBootContentRestConfigurerTest {
             }
 
             @Nested
-            class GivenEmptyExcludedShortcutRequestMapping {
+
+            @DisplayName("Given empty excluded shortcut request mapping")
+
+            class EmptyExcludedShortcutRequestMapping {
                 @BeforeEach
                 void setUp() {
                     properties = new ContentRestProperties();
@@ -142,7 +156,10 @@ public class SpringBootContentRestConfigurerTest {
             }
 
             @Nested
-            class GivenEmptyExcludedShortcutGETRequestMapping {
+
+            @DisplayName("Given empty excluded shortcut GET request mapping")
+
+            class EmptyExcludedShortcutGETRequestMapping {
                 @BeforeEach
                 void setUp() {
                     properties = new ContentRestProperties();
@@ -165,7 +182,10 @@ public class SpringBootContentRestConfigurerTest {
             }
 
             @Nested
-            class GivenInvalidExcludedShortcutRequestMapping {
+
+            @DisplayName("Given invalid excluded shortcut request mapping")
+
+            class InvalidExcludedShortcutRequestMapping {
                 @BeforeEach
                 void setUp() {
                     properties = new ContentRestProperties();
@@ -188,7 +208,10 @@ public class SpringBootContentRestConfigurerTest {
             }
 
             @Nested
-            class GivenANullBaseUriProperty {
+
+            @DisplayName("Given a null base uri property")
+
+            class ullBaseUriProperty {
                 @BeforeEach
                 void setUp() {
                     properties = new ContentRestProperties();
@@ -207,7 +230,10 @@ public class SpringBootContentRestConfigurerTest {
             }
 
             @Nested
-            class GivenANullProperties {
+
+            @DisplayName("Given a null properties")
+
+            class ullProperties {
                 @BeforeEach
                 void setUp() {
                     properties = new ContentRestProperties();

@@ -8,6 +8,7 @@ import internal.org.springframework.content.solr.boot.autoconfigure.SolrExtensio
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -60,9 +61,10 @@ public class ContentS3AutoConfigurationTest {
     }
 
     @Nested
-    class S3ContentAutoConfigurationCases {
+   class S3ContentAutoConfigurationCases {
         @Nested
-        class GivenAConfigurationWithBeans {
+        @DisplayName("Given a configuration with beans")
+        class ConfigurationWithBeans {
             @BeforeEach
             void setUp() {
                 contextRunner = new ApplicationContextRunner()
@@ -79,7 +81,10 @@ public class ContentS3AutoConfigurationTest {
         }
 
         @Nested
-        class GivenAConfigurationWithoutAnyBeans {
+
+        @DisplayName("Given a configuration without any beans")
+
+        class ConfigurationWithoutAnyBeans {
             @BeforeEach
             void setUp() {
                 contextRunner = new ApplicationContextRunner()
@@ -96,7 +101,10 @@ public class ContentS3AutoConfigurationTest {
         }
 
         @Nested
-        class GivenAConfigurationWithAnExplicitEnableS3StoresAnnotation {
+
+        @DisplayName("Given a configuration with an explicit enable s3stores annotation")
+
+        class ConfigurationWithAnExplicitEnableS3StoresAnnotation {
             @BeforeEach
             void setUp() {
                 contextRunner = new ApplicationContextRunner()
@@ -113,7 +121,10 @@ public class ContentS3AutoConfigurationTest {
         }
 
         @Nested
-        class GivenAnEnvironmentSpecifyingS3Properties {
+
+        @DisplayName("Given an environment specifying s3properties")
+
+        class EnvironmentSpecifyingS3Properties {
             @BeforeEach
             void setUp() {
                 contextRunner = new ApplicationContextRunner()

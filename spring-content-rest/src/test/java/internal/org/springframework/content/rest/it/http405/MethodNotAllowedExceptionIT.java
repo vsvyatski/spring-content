@@ -4,6 +4,7 @@ import internal.org.springframework.content.rest.it.SecurityConfiguration;
 import internal.org.springframework.content.rest.scoped.http405.*;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -114,7 +115,10 @@ public class MethodNotAllowedExceptionIT {
     }
 
     @Nested
-    class WhenGetContentMethodIsNotExportedCases {
+
+    @DisplayName("When GET content method is not exported cases")
+
+    class GetContentMethodIsNotExportedCases {
         @BeforeEach
         void setUp() {
             RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
@@ -136,7 +140,10 @@ public class MethodNotAllowedExceptionIT {
     }
 
     @Nested
-    class WhenSetContentMethodsAreNotExportedCases {
+
+    @DisplayName("When set content methods are not exported cases")
+
+    class SetContentMethodsAreNotExportedCases {
         @BeforeEach
         void setUp() {
             RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
@@ -158,7 +165,10 @@ public class MethodNotAllowedExceptionIT {
     }
 
     @Nested
-    class WhenUnsetContentMethodAreNotExportedCases {
+
+    @DisplayName("When unset content method are not exported cases")
+
+    class UnsetContentMethodAreNotExportedCases {
         @BeforeEach
         void setUp() {
             RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
@@ -180,7 +190,10 @@ public class MethodNotAllowedExceptionIT {
     }
 
     @Nested
-    class WhenAContentPropertyIsNotExportedCases {
+
+    @DisplayName("When a content property is not exported cases")
+
+    class ContentPropertyIsNotExportedCases {
         @BeforeEach
         void setUp() {
             RestAssuredMockMvc.webAppContextSetup(webApplicationContext);

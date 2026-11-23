@@ -18,7 +18,7 @@ public class ReflectionServiceTest {
     }
 
     @Nested
-    class ReflectionServiceCases {
+   class ReflectionServiceCases {
         @Nested
         class InvokeMethod {
             @BeforeEach

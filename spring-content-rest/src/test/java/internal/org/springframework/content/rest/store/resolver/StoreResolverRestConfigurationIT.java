@@ -7,6 +7,7 @@ import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -41,9 +42,10 @@ public class StoreResolverRestConfigurationIT {
     private SingleContentJpaLongIdMimeEntity tEntity;
 
     @Nested
-    class JpaRest {
+   class JpaRest {
         @Nested
-        class GivenThatClaimHasExistingContent {
+        @DisplayName("Given that claim has existing content")
+        class ClaimHasExistingContent {
             @BeforeEach
             void setUp() {
                 RestAssuredMockMvc.webAppContextSetup(webApplicationContext);

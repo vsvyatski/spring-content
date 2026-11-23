@@ -2,6 +2,7 @@ package internal.org.springframework.content.jpa.io;
 
 import com.github.f4b6a3.uuid.UuidCreator;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -84,11 +85,13 @@ public class PostgresBlobResourceIT {
     }
 
     @Nested
-    class PostgresBlobResourceCases {
+   class PostgresBlobResourceCases {
         @Nested
-        class GivenThereIsContent {
+        @DisplayName("Given there is content")
+        class ThereIsContent {
             @Nested
-            class WhenTheContentIsDeleted {
+            @DisplayName("When the content is deleted")
+            class ContentIsDeleted {
                 @BeforeEach
                 void setUp() throws IOException, SQLException {
                     String entityId = UuidCreator.getTimeOrdered().toString();

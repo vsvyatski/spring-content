@@ -1,6 +1,7 @@
 package org.springframework.content.commons.utils;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -11,9 +12,10 @@ public class PlacementServiceImplTest {
     private PlacementServiceImpl placer;
 
     @Nested
-    class PlacementServiceImplCases {
+   class PlacementServiceImplCases {
         @Nested
-        class GivenAPlacementService {
+        @DisplayName("Given a placement service")
+        class PlacementService {
             @BeforeEach
             void setUp() {
                 placer = new PlacementServiceImpl();

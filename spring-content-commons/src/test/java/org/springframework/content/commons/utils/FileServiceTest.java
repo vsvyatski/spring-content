@@ -3,6 +3,7 @@ package org.springframework.content.commons.utils;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -38,9 +39,10 @@ public class FileServiceTest {
     }
 
     @Nested
-    class Mkdirs {
+   class Mkdirs {
         @Nested
-        class WhenPassedInAFileThatExists {
+        @DisplayName("When passed in a file that exists")
+        class PassedInAFileThatExists {
             @BeforeEach
             void setUp() throws IOException {
                 parent = Files.createTempDirectory("commons-").toFile();
@@ -65,7 +67,10 @@ public class FileServiceTest {
         }
 
         @Nested
-        class WhenPassedInAFileThatDoesNotExist {
+
+        @DisplayName("When passed in a file that does not exist")
+
+        class PassedInAFileThatDoesNotExist {
             @BeforeEach
             void setUp() throws IOException {
                 parent = Files.createTempDirectory("commons-").toFile();
@@ -94,7 +99,10 @@ public class FileServiceTest {
         }
 
         @Nested
-        class WhenPassedInADirectoryThatExists {
+
+        @DisplayName("When passed in a directory that exists")
+
+        class PassedInADirectoryThatExists {
             @BeforeEach
             void setUp() throws IOException {
                 parent = Files.createTempDirectory("commons-").toFile();
@@ -122,7 +130,10 @@ public class FileServiceTest {
         }
 
         @Nested
-        class WhenPassedInADirectoryThatDoesNotExist {
+
+        @DisplayName("When passed in a directory that does not exist")
+
+        class PassedInADirectoryThatDoesNotExist {
             @BeforeEach
             void setUp() throws IOException {
                 parent = Files.createTempDirectory("commons-").toFile();
@@ -147,7 +158,10 @@ public class FileServiceTest {
         }
 
         @Nested
-        class WhenPassedNull {
+
+        @DisplayName("When passed null")
+
+        class PassedNull {
             @BeforeEach
             void setUp() throws IOException {
                 parent = Files.createTempDirectory("commons-").toFile();
@@ -165,7 +179,7 @@ public class FileServiceTest {
     }
 
     @Nested
-    class Rmdirs {
+   class Rmdirs {
         @BeforeEach
         void setUp() {
             fileService = new FileServiceImpl();

@@ -9,6 +9,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.http.HttpStatus;
 import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -141,11 +142,12 @@ public class EncryptionIT {
     }
 
     @Nested
-    class ClientSideEncryptionWithS3StorageCases {
+   class ClientSideEncryptionWithS3StorageCases {
         @Nested
-        class GivenContent {
+        @DisplayName("Given content")
+        class Content {
             @Nested
-            class Tests {
+           class Tests {
                 @BeforeEach
                 void setUp() {
                     RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
@@ -236,7 +238,10 @@ public class EncryptionIT {
             }
 
             @Nested
-            class WhenTheKeyringIsRotated {
+
+            @DisplayName("When the keyring is rotated")
+
+            class KeyringIsRotated {
                 @BeforeEach
                 void setUp() {
                     RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
@@ -287,7 +292,10 @@ public class EncryptionIT {
             }
 
             @Nested
-            class WhenTheContentIsUnset {
+
+            @DisplayName("When the content is unset")
+
+            class ContentIsUnset {
                 @BeforeEach
                 void setUp() {
                     RestAssuredMockMvc.webAppContextSetup(webApplicationContext);

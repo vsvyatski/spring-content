@@ -23,8 +23,8 @@ public class ContentLinksIT {
     class NoLinkRel {
         @Nested
         @NestedTestConfiguration(NestedTestConfiguration.EnclosingConfiguration.INHERIT)
-        @DisplayName("given a store and an entity with a top-level uncorrelated content property")
-        class GivenAStoreAndAnEntityWithATopLevelUncorrelatedContentPropertyContentLinkTests extends ContentLinkTests {
+        @DisplayName("Given a store and an entity with a top-level uncorrelated content property")
+        class StoreAndAnEntityWithATopLevelUncorrelatedContentPropertyContentLinkTests extends ContentLinkTests {
             @Autowired
             private WebApplicationContext context;
 
@@ -50,8 +50,8 @@ public class ContentLinksIT {
 
         @Nested
         @NestedTestConfiguration(NestedTestConfiguration.EnclosingConfiguration.INHERIT)
-        @DisplayName("given a store and an entity with top-level correlated content properties")
-        class GivenAStoreAndAnEntityWithTopLevelCorrelatedContentPropertiesContentLinkTests extends ContentLinkTests {
+        @DisplayName("Given a store and an entity with top-level correlated content properties")
+        class StoreAndAnEntityWithTopLevelCorrelatedContentPropertiesContentLinkTests extends ContentLinkTests {
             @Autowired
             private WebApplicationContext context;
 
@@ -77,8 +77,8 @@ public class ContentLinksIT {
 
         @Nested
         @NestedTestConfiguration(NestedTestConfiguration.EnclosingConfiguration.INHERIT)
-        @DisplayName("given a store and an entity with a nested content property")
-        class GivenAStoreSpecifyingALinkrelAndAnEntityANestedContentPropertyContentLinkTests extends ContentLinkTests {
+        @DisplayName("Given a store and an entity with a nested content property")
+        class StoreSpecifyingALinkrelAndAnEntityANestedContentPropertyContentLinkTests extends ContentLinkTests {
             @Autowired
             private WebApplicationContext context;
 
@@ -105,8 +105,8 @@ public class ContentLinksIT {
 
         @Nested
         @NestedTestConfiguration(NestedTestConfiguration.EnclosingConfiguration.INHERIT)
-        @DisplayName("given a store and an entity with nested content properties")
-        class GivenStoreSpecifyingLinkRelAndEntityWithNestedContentPropertiesContentLinkTest extends ContentLinkTests {
+        @DisplayName("Given a store and an entity with nested content properties")
+        class StoreSpecifyingLinkRelAndEntityWithNestedContentPropertiesContentLinkTest extends ContentLinkTests {
             @Autowired
             private WebApplicationContext context;
 

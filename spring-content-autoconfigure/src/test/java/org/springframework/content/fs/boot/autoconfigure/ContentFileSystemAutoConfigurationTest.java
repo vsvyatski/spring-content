@@ -7,6 +7,7 @@ import internal.org.springframework.content.solr.boot.autoconfigure.SolrExtensio
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledOnOs;
@@ -47,9 +48,10 @@ public class ContentFileSystemAutoConfigurationTest {
     }
 
     @Nested
-    class FileSystemContentAutoConfigurationCases {
+   class FileSystemContentAutoConfigurationCases {
         @Nested
-        class GivenADefaultConfiguration {
+        @DisplayName("Given a default configuration")
+        class DefaultConfiguration {
             @BeforeEach
             void setUp() {
                 contextRunner = new ApplicationContextRunner()
@@ -63,7 +65,10 @@ public class ContentFileSystemAutoConfigurationTest {
         }
 
         @Nested
-        class GivenAnEnvironmentSpecifyingAFilesystemRootUsingSpringPrefix {
+
+        @DisplayName("Given an environment specifying a filesystem root using spring prefix")
+
+        class EnvironmentSpecifyingAFilesystemRootUsingSpringPrefix {
             @BeforeEach
             void setUp() {
                 contextRunner = new ApplicationContextRunner()
@@ -86,7 +91,10 @@ public class ContentFileSystemAutoConfigurationTest {
         }
 
         @Nested
-        class GivenAConfigurationThatContributesALoaderBean {
+
+        @DisplayName("Given a configuration that contributes a loader bean")
+
+        class ConfigurationThatContributesALoaderBean {
             @BeforeEach
             void setUp() {
                 contextRunner = new ApplicationContextRunner()
@@ -113,7 +121,10 @@ public class ContentFileSystemAutoConfigurationTest {
         }
 
         @Nested
-        class GivenAConfigurationWithExplicitEnableFileSystemStoresAnnotation {
+
+        @DisplayName("Given a configuration with explicit enable file system stores annotation")
+
+        class ConfigurationWithExplicitEnableFileSystemStoresAnnotation {
             @BeforeEach
             void setUp() {
                 contextRunner = new ApplicationContextRunner()

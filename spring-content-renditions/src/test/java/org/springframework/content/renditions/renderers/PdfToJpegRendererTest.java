@@ -4,6 +4,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.content.commons.renditions.RenditionProvider;
@@ -30,7 +31,7 @@ public class PdfToJpegRendererTest {
     private Exception e;
 
     @Nested
-    class WordToJpegRenderer {
+   class WordToJpegRenderer {
         @Nested
         class Consumes {
             @BeforeEach
@@ -62,9 +63,11 @@ public class PdfToJpegRendererTest {
         @Nested
         class Convert {
             @Nested
-            class GivenAnInputStreamAndAMimetype {
+            @DisplayName("Given an input stream and a mimetype")
+            class InputStreamAndAMimetype {
                 @Nested
-                class WhenThePdfHasMoreThanOnePage {
+                @DisplayName("When the pdf has more than one page")
+                class PdfHasMoreThanOnePage {
                     @BeforeEach
                     void setUp() throws IOException {
                         pdf = mock(PDFService.class);
@@ -96,7 +99,10 @@ public class PdfToJpegRendererTest {
                     }
 
                     @Nested
-                    class WhenThePdfDocumentFailsToReturnAThumbnail {
+
+                    @DisplayName("When the pdf document fails to return a thumbnail")
+
+                    class PdfDocumentFailsToReturnAThumbnail {
                         @BeforeEach
                         void setUp() throws IOException {
                             pdf = mock(PDFService.class);
@@ -133,7 +139,10 @@ public class PdfToJpegRendererTest {
                 }
 
                 @Nested
-                class WhenTheInputStreamIsNotAValidPdfFile {
+
+                @DisplayName("When the input stream is not a valid pdf file")
+
+                class InputStreamIsNotAValidPdfFile {
                     @BeforeEach
                     void setUp() throws IOException {
                         pdf = mock(PDFService.class);
@@ -163,7 +172,10 @@ public class PdfToJpegRendererTest {
             }
 
             @Nested
-            class GivenANullInputStream {
+
+            @DisplayName("Given a null input stream")
+
+            class ullInputStream {
                 @BeforeEach
                 void setUp() {
                     pdf = mock(PDFService.class);

@@ -67,6 +67,7 @@ public class AssociativeStoreIT {
     @Nested
 
     @DisplayName("Given a new entity")
+
     class NewEntity {
         @ParameterizedTest(name = "{0}")
         @MethodSource("internal.org.springframework.content.jpa.StoreIT#databaseConfigs")
@@ -78,7 +79,9 @@ public class AssociativeStoreIT {
         }
 
         @Nested
+
         @DisplayName("Given a resource")
+
         class AssociatedResource {
             @Nested
             @DisplayName("When the resource is associated")
@@ -96,7 +99,9 @@ public class AssociativeStoreIT {
                 }
 
                 @Nested
+
                 @DisplayName("When the resource has content")
+
                 class ResourceHasContent {
                     @ParameterizedTest(name = "{0}")
                     @MethodSource("internal.org.springframework.content.jpa.StoreIT#databaseConfigs")
@@ -122,7 +127,9 @@ public class AssociativeStoreIT {
                 }
 
                 @Nested
+
                 @DisplayName("When the resource is unassociated")
+
                 class ResourceIsUnassociated {
                     @ParameterizedTest(name = "{0}")
                     @MethodSource("internal.org.springframework.content.jpa.StoreIT#databaseConfigs")
@@ -141,7 +148,9 @@ public class AssociativeStoreIT {
             }
 
             @Nested
+
             @DisplayName("When an invalid property path is used to associate a resource")
+
             class InvalidPropertyPathIsUsedToAssociateAResource {
                 @ParameterizedTest(name = "{0}")
                 @MethodSource("internal.org.springframework.content.jpa.StoreIT#databaseConfigs")
@@ -159,7 +168,9 @@ public class AssociativeStoreIT {
             }
 
             @Nested
+
             @DisplayName("When an invalid property path is used to load a resource")
+
             class InvalidPropertyPathIsUsedToLoadAResource {
                 @ParameterizedTest(name = "{0}")
                 @MethodSource("internal.org.springframework.content.jpa.StoreIT#databaseConfigs")
@@ -177,7 +188,9 @@ public class AssociativeStoreIT {
             }
 
             @Nested
+
             @DisplayName("When an invalid property path is used to unassociate a resource")
+
             class InvalidPropertyPathIsUsedToUnassociateAResource {
                 @ParameterizedTest(name = "{0}")
                 @MethodSource("internal.org.springframework.content.jpa.StoreIT#databaseConfigs")

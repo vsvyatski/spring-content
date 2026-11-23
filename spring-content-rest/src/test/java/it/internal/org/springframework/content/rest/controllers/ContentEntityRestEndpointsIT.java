@@ -98,13 +98,13 @@ public class ContentEntityRestEndpointsIT {
     private JsonIgnoredContentEntity testEntity9;
 
     @Nested
-    class ContentEntityRESTEndpoints {
+   class ContentEntityRESTEndpoints {
         @Nested
-        class GivenAnEntityWithASingleUncorrelatedContentProperties {
+        class EntityWithASingleUncorrelatedContentProperties {
             @Nested
-            class GivenTheRepositoryAndStorageAreExportedToTheSameURI {
+           class RepositoryAndStorageAreExportedToTheSameURI {
                 @Nested
-                class ADELETEToStoreIdSoftDeleteCustomHandler {
+               class DeleteToStoreIdSoftDeleteCustomHandler {
                     @BeforeEach
                     void setUp() {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -123,9 +123,9 @@ public class ContentEntityRestEndpointsIT {
             }
 
             @Nested
-            class GivenTheRepositoryAndStorageAreExportedToDifferentURIs {
+           class RepositoryAndStorageAreExportedToDifferentURIs {
                 @Nested
-                class AnOPTIONSRequestToTheRepositoryFromAKnownHost {
+               class OptionsRequestToTheRepositoryFromAKnownHost {
                     @BeforeEach
                     void setUp() {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -145,8 +145,10 @@ public class ContentEntityRestEndpointsIT {
             }
 
             @Nested
-            @DisplayName("given an entity with @Version")
-            class GivenAnEntityWithVersionVersion extends VersionTests {
+
+            @DisplayName("Given an entity with @version")
+
+            class EntityWithVersion extends VersionTests {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -167,8 +169,10 @@ public class ContentEntityRestEndpointsIT {
             }
 
             @Nested
-            @DisplayName("given an entity with @LastModifiedDate")
-            class GivenAnEntityWithLastModifiedDateLastModifiedDate extends LastModifiedDateTests {
+
+            @DisplayName("Given an entity with @lastmodifieddate")
+
+            class EntityWithLastModifiedDate extends LastModifiedDateTests {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -187,7 +191,7 @@ public class ContentEntityRestEndpointsIT {
             }
 
             @Nested
-            class GivenAnEntityWithASharedIdAndContentIdField {
+           class EntityWithASharedIdAndContentIdField {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -206,7 +210,7 @@ public class ContentEntityRestEndpointsIT {
         }
 
         @Nested
-        class GivenAMultipartFormPOSTToAnEntityWithASingleUncorrelatedContentProperty {
+        class MultipartFormPOSTToAnEntityWithASingleUncorrelatedContentProperty {
             @BeforeEach
             void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -260,9 +264,9 @@ public class ContentEntityRestEndpointsIT {
         }
 
         @Nested
-        class GivenAMultipartFormPOSTToAnEntityWithANonDefaultInitializedVersionPropertyIssue2 {
+        class MultipartFormPOSTToAnEntityWithANonDefaultInitializedVersionPropertyIssue2 {
             @Nested
-            class WithContent {
+           class WithContent {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -308,7 +312,7 @@ public class ContentEntityRestEndpointsIT {
             }
 
             @Nested
-            class WithoutContent {
+           class WithoutContent {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -341,7 +345,7 @@ public class ContentEntityRestEndpointsIT {
         }
 
         @Nested
-        class GivenAnEntityWithASingleCorrelatedContentProperty {
+        class EntityWithASingleCorrelatedContentProperty {
             @BeforeEach
             void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -379,7 +383,7 @@ public class ContentEntityRestEndpointsIT {
         }
 
         @Nested
-        class GivenAMultipartFormPOSTToAnEntityWithASingleCorrelatedContentProperty {
+        class MultipartFormPOSTToAnEntityWithASingleCorrelatedContentProperty {
             @BeforeEach
             void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -422,7 +426,7 @@ public class ContentEntityRestEndpointsIT {
         }
 
         @Nested
-        class GivenAMultipartFormPOSTThatDoesntIncludeTheContentProperty {
+        class MultipartFormPOSTThatDoesntIncludeTheContentProperty {
             @BeforeEach
             void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -462,7 +466,7 @@ public class ContentEntityRestEndpointsIT {
         }
 
         @Nested
-        class GivenAMultipartFormPOSTAndAnEventListener {
+        class MultipartFormPOSTAndAnEventListener {
             @BeforeEach
             void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -488,7 +492,7 @@ public class ContentEntityRestEndpointsIT {
         }
 
         @Nested
-        class GivenAMultipartFormPOSTButWithTheWrongContentPropertyName {
+        class MultipartFormPOSTButWithTheWrongContentPropertyName {
             @BeforeEach
             void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -519,7 +523,7 @@ public class ContentEntityRestEndpointsIT {
         }
 
         @Nested
-        class GivenAMultipartFormPOSTToAnEntityWithAMappedContentProperty {
+        class MultipartFormPOSTToAnEntityWithAMappedContentProperty {
             @BeforeEach
             void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();

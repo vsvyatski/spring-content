@@ -2,6 +2,7 @@ package org.springframework.content.fs.boot.autoconfigure;
 
 import internal.org.springframework.content.fs.boot.autoconfigure.FileSystemContentAutoConfiguration;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledOnOs;
@@ -15,9 +16,10 @@ public class FileSystemPropertiesTest {
     private FileSystemContentAutoConfiguration.FileSystemProperties props;
 
     @Nested
-    class FileSystemPropertiesCases {
+   class FileSystemPropertiesCases {
         @Nested
-        class GivenAFilesystemPropertiesWithNoRootSet {
+        @DisplayName("Given a filesystem properties with no root set")
+        class FilesystemPropertiesWithNoRootSet {
             @BeforeEach
             void setUp() {
                 props = new FileSystemContentAutoConfiguration.FileSystemProperties();
@@ -30,7 +32,10 @@ public class FileSystemPropertiesTest {
         }
 
         @Nested
-        class GivenAFilesystemPropertiesWithRootSet {
+
+        @DisplayName("Given a filesystem properties with root set")
+
+        class FilesystemPropertiesWithRootSet {
             @BeforeEach
             void setUp() {
                 props = new FileSystemContentAutoConfiguration.FileSystemProperties();

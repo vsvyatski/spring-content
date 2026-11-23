@@ -10,6 +10,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -355,11 +356,12 @@ public class ContentSearchRestControllerIT {
     }
 
     @Nested
-    class ContentSearchRestControllerCases {
+   class ContentSearchRestControllerCases {
         @Nested
         class SearchEndpointCases {
             @Nested
-            class GivenAnEntityHasNoContentAssociations {
+            @DisplayName("Given an entity has no content associations")
+            class EntityHasNoContentAssociations {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -387,7 +389,10 @@ public class ContentSearchRestControllerIT {
             }
 
             @Nested
-            class GivenAStoreThatIsNotSearchable {
+
+            @DisplayName("Given a store that is not searchable")
+
+            class StoreThatIsNotSearchable {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -415,7 +420,10 @@ public class ContentSearchRestControllerIT {
             }
 
             @Nested
-            class GivenTheSearchMethodIsInvalid {
+
+            @DisplayName("Given the search method is invalid")
+
+            class SearchMethodIsInvalid {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -440,7 +448,10 @@ public class ContentSearchRestControllerIT {
             }
 
             @Nested
-            class GivenNoKeywordsAreSpecified {
+
+            @DisplayName("Given no keywords are specified")
+
+            class NoKeywordsAreSpecified {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -464,7 +475,10 @@ public class ContentSearchRestControllerIT {
             }
 
             @Nested
-            class GivenPagedResultsAreRequested {
+
+            @DisplayName("Given paged results are requested")
+
+            class PagedResultsAreRequested {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -493,9 +507,13 @@ public class ContentSearchRestControllerIT {
             }
 
             @Nested
-            class GivenAnEntityWithAnOverloadedIdField {
+
+            @DisplayName("Given an entity with an overloaded id field")
+
+            class EntityWithAnOverloadedIdField {
                 @Nested
-                class GivenNoResultsAreFound {
+                @DisplayName("Given no results are found")
+                class NoResultsAreFound {
                     @BeforeEach
                     void setUp() {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -530,7 +548,10 @@ public class ContentSearchRestControllerIT {
                 }
 
                 @Nested
-                class GivenResultsAreFound {
+
+                @DisplayName("Given results are found")
+
+                class ResultsAreFound {
                     @BeforeEach
                     void setUp() {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -593,7 +614,10 @@ public class ContentSearchRestControllerIT {
                 }
 
                 @Nested
-                class GivenResultsContainOrphanedFulltextDocuments {
+
+                @DisplayName("Given results contain orphaned fulltext documents")
+
+                class ResultsContainOrphanedFulltextDocuments {
                     @BeforeEach
                     void setUp() {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -646,9 +670,13 @@ public class ContentSearchRestControllerIT {
             }
 
             @Nested
-            class GivenAnEntityWithSeparateIdContentIdFields {
+
+            @DisplayName("Given an entity with separate id content ID fields")
+
+            class EntityWithSeparateIdContentIdFields {
                 @Nested
-                class GivenNoResultsAreFound {
+                @DisplayName("Given no results are found")
+                class NoResultsAreFound {
                     @BeforeEach
                     void setUp() {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -683,7 +711,10 @@ public class ContentSearchRestControllerIT {
                 }
 
                 @Nested
-                class GivenResultsAreFoundWithEntityIDs {
+
+                @DisplayName("Given results are found with entity i ds")
+
+                class ResultsAreFoundWithEntityIDs {
                     @BeforeEach
                     void setUp() {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -746,7 +777,10 @@ public class ContentSearchRestControllerIT {
                 }
 
                 @Nested
-                class GivenResultsContainOrphanedFulltextDocuments {
+
+                @DisplayName("Given results contain orphaned fulltext documents")
+
+                class ResultsContainOrphanedFulltextDocuments {
                     @BeforeEach
                     void setUp() {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -799,7 +833,10 @@ public class ContentSearchRestControllerIT {
             }
 
             @Nested
-            class GivenResultsAreFoundReturningACustomResultType {
+
+            @DisplayName("Given results are found returning a custom result type")
+
+            class ResultsAreFoundReturningACustomResultType {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -857,7 +894,10 @@ public class ContentSearchRestControllerIT {
             }
 
             @Nested
-            class GivenPagedResultsAreFoundReturningACustomResultType {
+
+            @DisplayName("Given paged results are found returning a custom result type")
+
+            class PagedResultsAreFoundReturningACustomResultType {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -905,7 +945,10 @@ public class ContentSearchRestControllerIT {
             }
 
             @Nested
-            class GivenARepositoryWithNoEntityLookupQueryMethod {
+
+            @DisplayName("Given a repository with no entity lookup query method")
+
+            class RepositoryWithNoEntityLookupQueryMethod {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();

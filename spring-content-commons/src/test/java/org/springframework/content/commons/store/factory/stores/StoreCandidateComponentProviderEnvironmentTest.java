@@ -1,5 +1,6 @@
 package org.springframework.content.commons.store.factory.stores;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -49,7 +50,10 @@ public class StoreCandidateComponentProviderEnvironmentTest {
     }
 
     @Nested
-    class GivenTwoStoresWithProfiles {
+
+    @DisplayName("Given two stores with profiles")
+
+    class TwoStoresWithProfiles {
         @Test
         void shouldHaveAStoreBean() {
             assertThat(store).isNotNull();

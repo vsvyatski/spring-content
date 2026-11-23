@@ -7,6 +7,7 @@ import internal.org.springframework.content.elasticsearch.IndexManager;
 import internal.org.springframework.content.elasticsearch.boot.autoconfigure.ElasticsearchAutoConfiguration;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -50,7 +51,10 @@ public class ElasticsearchAutoConfigurationTest {
     }
 
     @Nested
-    class GivenAContextWithoutAElasticsearchClientConfigured {
+
+    @DisplayName("Given a context without a elasticsearch client configured")
+
+    class ContextWithoutAElasticsearchClientConfigured {
         @Test
         void shouldCreateAClient() {
             final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
@@ -69,7 +73,10 @@ public class ElasticsearchAutoConfigurationTest {
     }
 
     @Nested
-    class GivenAContextWithAElasticsearchClientConfigured {
+
+    @DisplayName("Given a context with a elasticsearch client configured")
+
+    class ContextWithAElasticsearchClientConfigured {
         @Test
         void shouldUseThatClient() {
             final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
@@ -82,7 +89,10 @@ public class ElasticsearchAutoConfigurationTest {
     }
 
     @Nested
-    class GivenAContextWithAutoIndexingDisabled {
+
+    @DisplayName("Given a context with auto indexing disabled")
+
+    class ContextWithAutoIndexingDisabled {
         @BeforeEach
         void setUp() {
             System.setProperty("spring.content.elasticsearch.autoindex", "false");
@@ -105,7 +115,10 @@ public class ElasticsearchAutoConfigurationTest {
     }
 
     @Nested
-    class GivenAContextWithAutoIndexingConfigured {
+
+    @DisplayName("Given a context with auto indexing configured")
+
+    class ContextWithAutoIndexingConfigured {
         @BeforeEach
         void setUp() {
             System.setProperty("spring.content.elasticsearch.autoindex", "true");
@@ -128,7 +141,10 @@ public class ElasticsearchAutoConfigurationTest {
     }
 
     @Nested
-    class GivenAContextThatAlreadyEnablesElasticSearchFulltextIndexing {
+
+    @DisplayName("Given a context that already enables elastic search fulltext indexing")
+
+    class ContextThatAlreadyEnablesElasticSearchFulltextIndexing {
         @Test
         void shouldLoadTheContextAndNotThrowABeanDefinitionOverrideException() {
             final ApplicationContextRunner contextRunner = new ApplicationContextRunner()

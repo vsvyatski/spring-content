@@ -8,6 +8,7 @@ import internal.org.springframework.versions.jpa.boot.autoconfigure.JpaVersionsA
 import internal.org.springframework.versions.jpa.boot.autoconfigure.JpaVersionsDatabaseInitializer;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -67,9 +68,10 @@ public class JpaVersionsAutoConfigurationTest {
     }
 
     @Nested
-    class JpaVersionsAutoConfigurationCases {
+   class JpaVersionsAutoConfigurationCases {
         @Nested
-        class GivenAnApplicationContextThatReliesOnAutoConfiguration {
+        @DisplayName("Given an application context that relies on auto configuration")
+        class ApplicationContextThatReliesOnAutoConfiguration {
             @BeforeEach
             void setUp() {
                 contextRunner = new ApplicationContextRunner()
@@ -83,7 +85,10 @@ public class JpaVersionsAutoConfigurationTest {
         }
 
         @Nested
-        class GivenAnApplicationContextWithAEnableJpaRepositoriesAnnotation {
+
+        @DisplayName("Given an application context with a enable jpa repositories annotation")
+
+        class ApplicationContextWithAEnableJpaRepositoriesAnnotation {
             @BeforeEach
             void setUp() {
                 contextRunner = new ApplicationContextRunner()

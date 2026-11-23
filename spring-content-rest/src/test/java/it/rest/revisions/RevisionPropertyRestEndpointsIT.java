@@ -5,6 +5,7 @@ import internal.org.springframework.content.rest.scoped.revision.RevisionPropert
 import internal.org.springframework.content.rest.scoped.revision.RevisionPropertyEntityStore;
 import internal.org.springframework.content.rest.support.config.JpaInfrastructureConfig;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -82,11 +83,13 @@ public class RevisionPropertyRestEndpointsIT {
     }
 
     @Nested
-    class RevisionPropertyRESTEndpoints {
+   class RevisionPropertyRESTEndpoints {
         @Nested
-        class GivenAnEntityWithRevisions {
+        @DisplayName("Given an entity with revisions")
+        class EntityWithRevisions {
             @Nested
-            class AGETToRepositoryIdRevisions1Content {
+            @DisplayName("GET to repository id revisions1content")
+            class GetToRepositoryIdRevisions1Content {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -109,7 +112,10 @@ public class RevisionPropertyRestEndpointsIT {
             }
 
             @Nested
-            class AGETToRepositoryIdRevisionsLatestContent {
+
+            @DisplayName("GET to repository id revisions latest content")
+
+            class GetToRepositoryIdRevisionsLatestContent {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();

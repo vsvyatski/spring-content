@@ -9,6 +9,7 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocumentList;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -60,7 +61,7 @@ public class SolrIT {
     }
 
     @Nested
-    class Index {
+   class Index {
         @BeforeEach
         void setUp() {
             configureSolrAuth();
@@ -100,7 +101,10 @@ public class SolrIT {
         }
 
         @Nested
-        class WhenTheContentIsSearched {
+
+        @DisplayName("When the content is searched")
+
+        class ContentIsSearched {
             @BeforeEach
             void setUp() {
                 configureSolrAuth();
@@ -132,7 +136,10 @@ public class SolrIT {
         }
 
         @Nested
-        class GivenThatDocumentsContentIsUpdated {
+
+        @DisplayName("Given that documents content is updated")
+
+        class DocumentsContentIsUpdated {
             @BeforeEach
             void setUp() {
                 configureSolrAuth();
@@ -176,7 +183,10 @@ public class SolrIT {
         }
 
         @Nested
-        class GivenThatDocumentIsDeleted {
+
+        @DisplayName("Given that document is deleted")
+
+        class DocumentIsDeleted {
             @BeforeEach
             void setUp() {
                 configureSolrAuth();
@@ -219,7 +229,7 @@ public class SolrIT {
     }
 
     @Nested
-    class Paging {
+   class Paging {
         @Nested
         class PagesOfResults {
             @BeforeEach
@@ -288,7 +298,7 @@ public class SolrIT {
     }
 
     @Nested
-    class CustomAttributes {
+   class CustomAttributes {
         @BeforeEach
         void setUp() {
             configureSolrAuth();
@@ -335,7 +345,7 @@ public class SolrIT {
     }
 
     @Nested
-    class CustomReturnTypes {
+   class CustomReturnTypes {
         @BeforeEach
         void setUp() {
             configureSolrAuth();

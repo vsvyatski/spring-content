@@ -5,6 +5,7 @@ import co.elastic.clients.elasticsearch._types.ElasticsearchException;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.content.commons.search.IndexService;
@@ -43,7 +44,7 @@ public class ElasticsearchIT {
     }
 
     @Nested
-    class GlobalIndexingStrategyCases {
+   class GlobalIndexingStrategyCases {
 
         @BeforeEach
         void setUp() throws Exception {
@@ -240,7 +241,7 @@ public class ElasticsearchIT {
     }
 
     @Nested
-    class PagingCases {
+   class PagingCases {
         @BeforeEach
         void setUp() {
             context = new AnnotationConfigApplicationContext();
@@ -306,9 +307,10 @@ public class ElasticsearchIT {
     }
 
     @Nested
-    class CustomAttributesCases {
+   class CustomAttributesCases {
         @Nested
-        class GivenAContextConfiguredToSyncAttributesAndProvideAFilterQuery {
+        @DisplayName("Given a context configured to sync attributes and provide a filter query")
+        class ContextConfiguredToSyncAttributesAndProvideAFilterQuery {
             @BeforeEach
             void setUp() {
                 context = new AnnotationConfigApplicationContext();
@@ -352,7 +354,7 @@ public class ElasticsearchIT {
     }
 
     @Nested
-    class CustomReturnTypesCases {
+   class CustomReturnTypesCases {
         @BeforeEach
         void setUp() {
             context = new AnnotationConfigApplicationContext();
