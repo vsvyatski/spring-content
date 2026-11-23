@@ -190,7 +190,7 @@ public class SolrIndexerStoreEventHandlerTest {
                 }
 
                 @Nested
-                @DisplayName("Given aio exception")
+                @DisplayName("Given an I/O exception")
                 class IOException {
                     @BeforeEach
                     void setUp() {

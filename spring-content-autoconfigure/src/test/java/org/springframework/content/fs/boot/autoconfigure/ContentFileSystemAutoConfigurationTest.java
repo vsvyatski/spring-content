@@ -61,7 +61,7 @@ public class ContentFileSystemAutoConfigurationTest {
         }
 
         @Nested
-        @DisplayName("Given an environment specifying a filesystem root using spring prefix")
+        @DisplayName("Given an environment specifying a filesystem root using Spring prefix")
         class EnvironmentSpecifyingFilesystemRootUsingSpringPrefix {
             @BeforeEach
             void setUp() {

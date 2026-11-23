@@ -83,7 +83,7 @@ public class StoreUtilsTest {
                 }
 
                 @Nested
-                @DisplayName("When store beans cant be matched against signature types but registrar matches defaults")
+                @DisplayName("When store beans can't be matched against signature types but registrar matches defaults")
                 class StoreBeansCantBeMatchedAgainstSignatureTypesButRegistrarMatchesDefaults {
                     @BeforeEach
                     void setUp() {

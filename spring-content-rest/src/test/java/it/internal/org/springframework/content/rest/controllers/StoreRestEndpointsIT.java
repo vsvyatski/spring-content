@@ -175,7 +175,7 @@ public class StoreRestEndpointsIT {
             }
 
             @Nested
-            @DisplayName("POST to store path with multi part form data")
+            @DisplayName("POST to store path with multipart form data")
             class PostToStorePathWithMultiPartFormData {
                 @BeforeEach
                 void setUp() throws IOException {
@@ -296,7 +296,7 @@ public class StoreRestEndpointsIT {
             }
 
             @Nested
-            @DisplayName("POST to store path with multi part form data")
+            @DisplayName("POST to store path with multipart form data")
             class PostToStorePathWithMultiPartFormData {
                 @BeforeEach
                 void setUp() throws IOException {

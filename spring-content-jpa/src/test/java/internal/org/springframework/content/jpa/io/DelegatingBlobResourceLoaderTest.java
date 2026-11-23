@@ -65,7 +65,7 @@ public class DelegatingBlobResourceLoaderTest {
             }
 
             @Nested
-            @DisplayName("Given a datasource that doesnt have a matching blob resource loader")
+            @DisplayName("Given a datasource that doesn't have a matching blob resource loader")
             class DatasourceThatDoesntHaveMatchingBlobResourceLoader {
                 @BeforeEach
                 void setUp() throws SQLException {

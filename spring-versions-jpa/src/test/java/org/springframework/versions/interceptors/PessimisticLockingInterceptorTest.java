@@ -161,7 +161,7 @@ public class PessimisticLockingInterceptorTest {
                     }
 
                     @Nested
-                    @DisplayName("When the entity doesnt have an id")
+                    @DisplayName("When the entity doesn't have an ID")
                     class EntityDoesntHaveID {
                         @BeforeEach
                         void setUp() throws Throwable {

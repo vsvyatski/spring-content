@@ -35,13 +35,13 @@ public class FsTypeSupportTest {
     Object id;
 
     @Nested
-    @DisplayName("Java.util.uuid")
+    @DisplayName("java.util.UUID")
     class JavaUtilUuid {
         @Nested
         @DisplayName("Given a content entity")
         class ContentEntity {
             @Nested
-            @DisplayName("Given the application sets the id")
+            @DisplayName("Given the application sets the ID")
             class ApplicationSetsId {
                 @BeforeEach
                 void setUp() {
@@ -97,13 +97,13 @@ public class FsTypeSupportTest {
     }
 
     @Nested
-    @DisplayName("Java.net.uri")
+    @DisplayName("java.net.URI")
     class JavaNetUri {
         @Nested
         @DisplayName("Given a content entity")
         class ContentEntity {
             @Nested
-            @DisplayName("Given the application sets the id")
+            @DisplayName("Given the application sets the ID")
             class ApplicationSetsId {
                 @BeforeEach
                 void setUp() throws URISyntaxException {
@@ -132,13 +132,13 @@ public class FsTypeSupportTest {
     }
 
     @Nested
-    @DisplayName("Java.lang.long")
+    @DisplayName("java.lang.Long")
     class JavaLangLong {
         @Nested
         @DisplayName("Given a content entity")
         class ContentEntity {
             @Nested
-            @DisplayName("Given the application sets the id")
+            @DisplayName("Given the application sets the ID")
             class ApplicationSetsId {
                 @BeforeEach
                 void setUp() {
@@ -167,13 +167,13 @@ public class FsTypeSupportTest {
     }
 
     @Nested
-    @DisplayName("Java.math.biginteger")
+    @DisplayName("java.math.BigInteger")
     class JavaMathBigInteger {
         @Nested
         @DisplayName("Given a content entity")
         class ContentEntity {
             @Nested
-            @DisplayName("Given the application sets the id")
+            @DisplayName("Given the application sets the ID")
             class ApplicationSetsId {
                 @BeforeEach
                 void setUp() {

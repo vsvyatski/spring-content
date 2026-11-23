@@ -50,7 +50,7 @@ public class DefaultJpaStoreImplTest {
             @Nested
             class GetResource {
                 @Nested
-                @DisplayName("Given an id")
+                @DisplayName("Given an ID")
                 class Id {
                     @BeforeEach
                     void setUp() {
@@ -277,7 +277,7 @@ public class DefaultJpaStoreImplTest {
                 }
 
                 @Nested
-                @DisplayName("When the resource output stream throws an io exception")
+                @DisplayName("When the resource output stream throws an I/O exception")
                 class ResourceOutputStreamThrowsIOException {
                     @BeforeEach
                     void setUp() throws IOException {
@@ -337,7 +337,7 @@ public class DefaultJpaStoreImplTest {
                 }
 
                 @Nested
-                @DisplayName("When the resource throws an io exception")
+                @DisplayName("When the resource throws an I/O exception")
                 class ResourceThrowsIOException {
                     @BeforeEach
                     void setUp() throws IOException {
@@ -431,7 +431,7 @@ public class DefaultJpaStoreImplTest {
             @Nested
             class GetResource {
                 @Nested
-                @DisplayName("Given an id")
+                @DisplayName("Given an ID")
                 class Id {
                     @BeforeEach
                     void setUp() {

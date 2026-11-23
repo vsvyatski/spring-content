@@ -167,7 +167,7 @@ public class DefaultS3StoreImplTest {
                 }
 
                 @Nested
-                @DisplayName("Given the store sid is a custom id type")
+                @DisplayName("Given the store ID is a custom ID type")
                 class StoreSIDIsCustomIDType {
                     @Nested
                     @DisplayName("Given a default bucket is set")
@@ -176,7 +176,7 @@ public class DefaultS3StoreImplTest {
                         @DisplayName("Given the resolver is created with the static constructor function")
                         class ResolverIsCreatedWithStaticConstructorFunction {
                             @Nested
-                            @DisplayName("Given an id")
+                            @DisplayName("Given an ID")
                             class ID {
                                 @BeforeEach
                                 void setUp() {
@@ -233,7 +233,7 @@ public class DefaultS3StoreImplTest {
                         @DisplayName("Given a resolver that does not validate")
                         class ResolverThatDoesNotValidate {
                             @Nested
-                            @DisplayName("When called with an id that doesnt specify a bucket either")
+                            @DisplayName("When called with an ID that doesn't specify a bucket either")
                             class CalledWithIDThatDoesntSpecifyBucketEither {
                                 @BeforeEach
                                 void setUp() {
@@ -323,7 +323,7 @@ public class DefaultS3StoreImplTest {
                     @DisplayName("Given a default bucket")
                     class DefaultBucket {
                         @Nested
-                        @DisplayName("When called with an entity that doesnt have a bucket value")
+                        @DisplayName("When called with an entity that doesn't have a bucket value")
                         class CalledWithEntityThatDoesntHaveBucketValue {
                             @BeforeEach
                             void setUp() {
@@ -568,7 +568,7 @@ public class DefaultS3StoreImplTest {
                     @DisplayName("Given a default bucket")
                     class DefaultBucket {
                         @Nested
-                        @DisplayName("When called with entity that doesnt have bucket value")
+                        @DisplayName("When called with an entity that doesn't have a bucket value")
                         class CalledWithEntityThatDoesntHaveBucketValue {
                             @BeforeEach
                             void setUp() {
@@ -937,7 +937,7 @@ public class DefaultS3StoreImplTest {
                             }
 
                             @Nested
-                            @DisplayName("When the resource output stream throws an io exception")
+                            @DisplayName("When the resource output stream throws an I/O exception")
                             class ResourceOutputStreamThrowsIOException {
                                 @BeforeEach
                                 void setUp() throws IOException {
@@ -1137,7 +1137,7 @@ public class DefaultS3StoreImplTest {
                 }
 
                 @Nested
-                @DisplayName("When the resource throws an io exception")
+                @DisplayName("When the resource throws an I/O exception")
                 class ResourceThrowsIOException {
                     @BeforeEach
                     void setUp() throws IOException {
@@ -1235,7 +1235,7 @@ public class DefaultS3StoreImplTest {
                                 }
 
                                 @Nested
-                                @DisplayName("When the resource input stream throws an io exception")
+                                @DisplayName("When the resource input stream throws an I/O exception")
                                 class ResourceInputStreamThrowsIOException {
                                     @BeforeEach
                                     void setUp() throws IOException {
@@ -1283,7 +1283,7 @@ public class DefaultS3StoreImplTest {
                             }
 
                             @Nested
-                            @DisplayName("And the resource doesnt exist")
+                            @DisplayName("And the resource doesn't exist")
                             class ResourceDoesntExist {
                                 @BeforeEach
                                 void setUp() throws IOException {
@@ -1480,7 +1480,7 @@ public class DefaultS3StoreImplTest {
                                 }
 
                                 @Nested
-                                @DisplayName("When the property s content ID field also is the jakarta persistence id field")
+                                @DisplayName("When the property's content ID field also is the Jakarta Persistence ID field")
                                 class PropertySContentIdFieldAlsoIsJakartaPersistenceIdField {
                                     @BeforeEach
                                     void setUp() {
@@ -1527,7 +1527,7 @@ public class DefaultS3StoreImplTest {
                                 }
 
                                 @Nested
-                                @DisplayName("When the property s content ID field also is the spring id field")
+                                @DisplayName("When the property's content ID field also is the Spring ID field")
                                 class PropertySContentIdFieldAlsoIsSpringIdField {
                                     @BeforeEach
                                     void setUp() {
@@ -1575,7 +1575,7 @@ public class DefaultS3StoreImplTest {
                             }
 
                             @Nested
-                            @DisplayName("And the content doesnt exist")
+                            @DisplayName("And the content doesn't exist")
                             class ContentDoesntExist {
                                 @BeforeEach
                                 void setUp() {

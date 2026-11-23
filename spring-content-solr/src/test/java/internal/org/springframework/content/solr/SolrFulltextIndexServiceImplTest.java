@@ -62,7 +62,7 @@ public class SolrFulltextIndexServiceImplTest {
         }
 
         @Nested
-        @DisplayName("When Solr throws an IO exception")
+        @DisplayName("When Solr throws an I/O exception")
         class SolrThrowsIOException {
             @Test
             void shouldThrowStoreAccessException() throws Exception {
@@ -118,7 +118,7 @@ public class SolrFulltextIndexServiceImplTest {
         }
 
         @Nested
-        @DisplayName("When Solr throws an IO exception")
+        @DisplayName("When Solr throws an I/O exception")
         class SolrThrowsIOException {
             @Test
             void shouldThrowStoreAccessException() throws Exception {

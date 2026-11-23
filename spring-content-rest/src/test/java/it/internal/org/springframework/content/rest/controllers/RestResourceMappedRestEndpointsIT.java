@@ -90,7 +90,7 @@ public class RestResourceMappedRestEndpointsIT {
         @DisplayName("Given an entity with a simple content property")
         class EntityWithSimpleContentProperty {
             @Nested
-            @DisplayName("Given a request to a non existent entity")
+            @DisplayName("Given a request to a non-existent entity")
             class RequestToNonExistentEntity {
                 @BeforeEach
                 void setUp() {
@@ -108,7 +108,7 @@ public class RestResourceMappedRestEndpointsIT {
             }
 
             @Nested
-            @DisplayName("Given a request to a non existent content property")
+            @DisplayName("Given a request to a non-existent content property")
             class RequestToNonExistentContentProperty {
                 @BeforeEach
                 void setUp() {

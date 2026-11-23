@@ -159,7 +159,7 @@ public class DefaultMongoStoreImplTest {
             }
 
             @Nested
-            @DisplayName("When the resource throws an io exception")
+            @DisplayName("When the resource throws an I/O exception")
             class ResourceThrowsIOException {
                 @BeforeEach
                 void brokenResource() throws IOException {
@@ -201,7 +201,7 @@ public class DefaultMongoStoreImplTest {
                 }
 
                 @Nested
-                @DisplayName("When the resource input stream throws an io exception")
+                @DisplayName("When the resource input stream throws an I/O exception")
                 class ResourceInputStreamThrowsIOException {
                     @BeforeEach
                     void brokenStream() throws IOException {

@@ -78,7 +78,7 @@ public class GridFSResourceTest {
             }
 
             @Nested
-            @DisplayName("Given the file doesnt exist")
+            @DisplayName("Given the file doesn't exist")
             class FileDoesntExist {
                 @Test
                 void shouldReturnZero() throws Exception {
@@ -120,7 +120,7 @@ public class GridFSResourceTest {
             }
 
             @Nested
-            @DisplayName("Given the file doesnt exist")
+            @DisplayName("Given the file doesn't exist")
             class FileDoesntExist {
                 @Test
                 void shouldReturnNull() {
@@ -149,7 +149,7 @@ public class GridFSResourceTest {
             }
 
             @Nested
-            @DisplayName("Given the file doesnt exist")
+            @DisplayName("Given the file doesn't exist")
             class FileDoesntExist {
                 @Test
                 void shouldReturnFalse() {
@@ -178,7 +178,7 @@ public class GridFSResourceTest {
             }
 
             @Nested
-            @DisplayName("Given the file doesnt exist")
+            @DisplayName("Given the file doesn't exist")
             class FileDoesntExist {
                 @Test
                 void shouldReturnNull() throws Exception {
@@ -212,7 +212,7 @@ public class GridFSResourceTest {
             }
 
             @Nested
-            @DisplayName("Given the file doesnt exist")
+            @DisplayName("Given the file doesn't exist")
             class FileDoesntExist {
                 @Test
                 void shouldReturnMinusOne() throws Exception {
@@ -266,7 +266,7 @@ public class GridFSResourceTest {
             }
 
             @Nested
-            @DisplayName("Given the file doesnt exist")
+            @DisplayName("Given the file doesn't exist")
             class FileDoesntExist {
                 @Test
                 void shouldNotDelete() {

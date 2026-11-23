@@ -265,7 +265,7 @@ public class DefaultFileSystemStoresImplTest {
                 @DisplayName("Given an entity converter")
                 class EntityConverter {
                     @Nested
-                    @DisplayName("When the content doesnt yet exist")
+                    @DisplayName("When the content doesn't yet exist")
                     class ContentDoesntYetExist {
                         @BeforeEach
                         void setUp() throws IOException {
@@ -516,7 +516,7 @@ public class DefaultFileSystemStoresImplTest {
                     }
 
                     @Nested
-                    @DisplayName("When getting the resource output stream throws an io exception")
+                    @DisplayName("When getting the resource output stream throws an I/O exception")
                     class GettingResourceOutputStreamThrowsIOException {
                         @BeforeEach
                         void setUp() throws IOException {
@@ -601,7 +601,7 @@ public class DefaultFileSystemStoresImplTest {
                 }
 
                 @Nested
-                @DisplayName("When the resource throws an io exception")
+                @DisplayName("When the resource throws an I/O exception")
                 class ResourceThrowsIOException {
                     @BeforeEach
                     void setUp() throws IOException {
@@ -833,7 +833,7 @@ public class DefaultFileSystemStoresImplTest {
                         }
 
                         @Nested
-                        @DisplayName("When getting the resource input stream throws an io exception")
+                        @DisplayName("When getting the resource input stream throws an I/O exception")
                         class GettingResourceInputStreamThrowsIOException {
                             @BeforeEach
                             void setUp() throws IOException {
@@ -1122,7 +1122,7 @@ public class DefaultFileSystemStoresImplTest {
                         }
 
                         @Nested
-                        @DisplayName("When the property s content ID field also is the javax persistence id field")
+                        @DisplayName("When the property's content ID field also is the javax.persistence ID field")
                         class PropertySContentIdFieldAlsoIsJavaxPersistenceIdField {
                             @BeforeEach
                             void setUp() throws IOException {
@@ -1171,7 +1171,7 @@ public class DefaultFileSystemStoresImplTest {
                         }
 
                         @Nested
-                        @DisplayName("When the property s content ID field also is the spring id field")
+                        @DisplayName("When the property's content ID field also is the Spring ID field")
                         class PropertySContentIdFieldAlsoIsSpringIdField {
                             @BeforeEach
                             void setUp() throws IOException {
@@ -1221,7 +1221,7 @@ public class DefaultFileSystemStoresImplTest {
                     }
 
                     @Nested
-                    @DisplayName("When the content doesnt exist")
+                    @DisplayName("When the content doesn't exist")
                     class ContentDoesntExist {
                         @BeforeEach
                         void setUp() {
