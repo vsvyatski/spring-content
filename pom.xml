@@ -188,7 +188,7 @@
         <artifactId>versions-maven-plugin</artifactId>
         <version>2.24.0</version>
         <configuration>
-          <allowSnapshots>true</allowSnapshots>
+          <allowSnapshots>false</allowSnapshots>
         </configuration>
       </plugin>
     </plugins>
