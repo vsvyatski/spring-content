@@ -26,9 +26,7 @@ public class SpringBootContentRestConfigurerTest {
     private RestConfiguration.Exclusions exclusions;
 
     @Nested
-    class SpringBootContentRestConfigurerCases {
-        @Nested
-        class Configure {
+    class Configure {
             @Nested
             @DisplayName("Given a base URI property")
             class BaseUriProperty {
@@ -235,6 +233,5 @@ public class SpringBootContentRestConfigurerTest {
                     verify(restConfig, never()).setFullyQualifiedLinks(anyBoolean());
                 }
             }
-        }
     }
 }

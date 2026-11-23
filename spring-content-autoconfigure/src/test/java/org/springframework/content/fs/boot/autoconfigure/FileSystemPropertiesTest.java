@@ -16,42 +16,39 @@ public class FileSystemPropertiesTest {
     private FileSystemContentAutoConfiguration.FileSystemProperties props;
 
     @Nested
-    class FileSystemPropertiesCases {
-        @Nested
-        @DisplayName("Given file system properties with no root set")
-        class FilesystemPropertiesWithNoRootSet {
-            @BeforeEach
-            void setUp() {
-                props = new FileSystemContentAutoConfiguration.FileSystemProperties();
-            }
-
-            @Test
-            void shouldReturnJavaIOTmpDirBasedDefault() {
-                assertThat(props.getFileSystemRoot()).startsWith(System.getProperty("java.io.tmpdir"));
-            }
+    @DisplayName("Given file system properties with no root set")
+    class FilesystemPropertiesWithNoRootSet {
+        @BeforeEach
+        void setUp() {
+            props = new FileSystemContentAutoConfiguration.FileSystemProperties();
         }
 
-        @Nested
-        @DisplayName("Given file system properties with root set")
-        class FilesystemPropertiesWithRootSet {
-            @BeforeEach
-            void setUp() {
-                props = new FileSystemContentAutoConfiguration.FileSystemProperties();
-            }
+        @Test
+        void shouldReturnJavaIOTmpDirBasedDefault() {
+            assertThat(props.getFileSystemRoot()).startsWith(System.getProperty("java.io.tmpdir"));
+        }
+    }
 
-            @Test
-            @EnabledOnOs(OS.WINDOWS)
-            void shouldReturnConfiguredRootOnWindows() {
-                props.setFileSystemRoot("C:\\some\\random\\path");
-                assertThat(props.getFileSystemRoot()).isEqualTo("C:\\some\\random\\path");
-            }
+    @Nested
+    @DisplayName("Given file system properties with root set")
+    class FilesystemPropertiesWithRootSet {
+        @BeforeEach
+        void setUp() {
+            props = new FileSystemContentAutoConfiguration.FileSystemProperties();
+        }
 
-            @Test
-            @DisabledOnOs(OS.WINDOWS)
-            void shouldReturnConfiguredRoot() {
-                props.setFileSystemRoot("/some/random/path");
-                assertThat(props.getFileSystemRoot()).isEqualTo("/some/random/path");
-            }
+        @Test
+        @EnabledOnOs(OS.WINDOWS)
+        void shouldReturnConfiguredRootOnWindows() {
+            props.setFileSystemRoot("C:\\some\\random\\path");
+            assertThat(props.getFileSystemRoot()).isEqualTo("C:\\some\\random\\path");
+        }
+
+        @Test
+        @DisabledOnOs(OS.WINDOWS)
+        void shouldReturnConfiguredRoot() {
+            props.setFileSystemRoot("/some/random/path");
+            assertThat(props.getFileSystemRoot()).isEqualTo("/some/random/path");
         }
     }
 }

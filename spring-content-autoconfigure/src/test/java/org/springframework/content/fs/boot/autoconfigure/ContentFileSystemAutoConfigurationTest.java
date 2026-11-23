@@ -44,90 +44,87 @@ public class ContentFileSystemAutoConfigurationTest {
     }
 
     @Nested
-    class FileSystemContentAutoConfigurationCases {
-        @Nested
-        @DisplayName("Given a default configuration")
-        class DefaultConfiguration {
-            @BeforeEach
-            void setUp() {
-                contextRunner = new ApplicationContextRunner()
-                    .withConfiguration(AutoConfigurations.of(FileSystemContentAutoConfiguration.class));
-            }
-
-            @Test
-            void shouldLoadContext() {
-                contextRunner.withUserConfiguration(TestConfig.class).run((context) -> Assertions.assertThat(context).hasSingleBean(TestEntityContentStore.class));
-            }
+    @DisplayName("Given a default configuration")
+    class DefaultConfiguration {
+        @BeforeEach
+        void setUp() {
+            contextRunner = new ApplicationContextRunner()
+                .withConfiguration(AutoConfigurations.of(FileSystemContentAutoConfiguration.class));
         }
 
-        @Nested
-        @DisplayName("Given an environment specifying a filesystem root using Spring prefix")
-        class EnvironmentSpecifyingFilesystemRootUsingSpringPrefix {
-            @BeforeEach
-            void setUp() {
-                contextRunner = new ApplicationContextRunner()
-                    .withConfiguration(AutoConfigurations.of(FileSystemContentAutoConfiguration.class));
-                System.setProperty("spring.content.fs.filesystem-root", "${java.io.tmpdir}/UPPERCASE/NOTATION/");
-            }
+        @Test
+        void shouldLoadContext() {
+            contextRunner.withUserConfiguration(TestConfig.class).run((context) -> Assertions.assertThat(context).hasSingleBean(TestEntityContentStore.class));
+        }
+    }
 
-            @AfterEach
-            void tearDown() {
-                System.clearProperty("spring.content.fs.filesystem-root");
-            }
-
-            @Test
-            void shouldHaveFilesystemPropertiesBeanWithCorrectRootSet() {
-                contextRunner.withUserConfiguration(TestConfig.class).run((context) -> {
-                    Assertions.assertThat(context).hasSingleBean(FileSystemContentAutoConfiguration.FileSystemProperties.class);
-                    Assertions.assertThat(context).getBean(FileSystemContentAutoConfiguration.FileSystemProperties.class).extracting("fileSystemRoot").matches((val) -> val.toString().endsWith("/UPPERCASE/NOTATION/"));
-                });
-            }
+    @Nested
+    @DisplayName("Given an environment specifying a filesystem root using Spring prefix")
+    class EnvironmentSpecifyingFilesystemRootUsingSpringPrefix {
+        @BeforeEach
+        void setUp() {
+            contextRunner = new ApplicationContextRunner()
+                .withConfiguration(AutoConfigurations.of(FileSystemContentAutoConfiguration.class));
+            System.setProperty("spring.content.fs.filesystem-root", "${java.io.tmpdir}/UPPERCASE/NOTATION/");
         }
 
-        @Nested
-        @DisplayName("Given a configuration that contributes a loader bean")
-        class ConfigurationThatContributesLoaderBean {
-            @BeforeEach
-            void setUp() {
-                contextRunner = new ApplicationContextRunner()
-                    .withConfiguration(AutoConfigurations.of(FileSystemContentAutoConfiguration.class));
-            }
-
-            @Test
-            @DisabledOnOs(OS.WINDOWS)
-            void shouldHaveThatLoaderBeanInContext() {
-                contextRunner.withUserConfiguration(ConfigWithLoaderBean.class).run((context) -> {
-                    Assertions.assertThat(context).hasSingleBean(FileSystemResourceLoader.class);
-                    Assertions.assertThat(context).getBean(FileSystemResourceLoader.class).extracting("root").matches((val) -> val.toString().contains("/some/random/path"));
-                });
-            }
-
-            @Test
-            @EnabledOnOs(OS.WINDOWS)
-            void shouldHaveThatLoaderBeanInContextOnWindows() {
-                contextRunner.withUserConfiguration(ConfigWithLoaderBean.class).run((context) -> {
-                    Assertions.assertThat(context).hasSingleBean(FileSystemResourceLoader.class);
-                    Assertions.assertThat(context).getBean(FileSystemResourceLoader.class).extracting("root").matches((val) -> val.toString().matches("(?s).*([A-Za-z]:)?\\\\some\\\\random\\\\path.*"));
-                });
-            }
+        @AfterEach
+        void tearDown() {
+            System.clearProperty("spring.content.fs.filesystem-root");
         }
 
-        @Nested
-        @DisplayName("Given a configuration with explicit @EnableFileSystemStores")
-        class ConfigurationWithExplicitEnableFileSystemStoresAnnotation {
-            @BeforeEach
-            void setUp() {
-                contextRunner = new ApplicationContextRunner()
-                    .withConfiguration(AutoConfigurations.of(FileSystemContentAutoConfiguration.class));
-            }
+        @Test
+        void shouldHaveFilesystemPropertiesBeanWithCorrectRootSet() {
+            contextRunner.withUserConfiguration(TestConfig.class).run((context) -> {
+                Assertions.assertThat(context).hasSingleBean(FileSystemContentAutoConfiguration.FileSystemProperties.class);
+                Assertions.assertThat(context).getBean(FileSystemContentAutoConfiguration.FileSystemProperties.class).extracting("fileSystemRoot").matches((val) -> val.toString().endsWith("/UPPERCASE/NOTATION/"));
+            });
+        }
+    }
 
-            @Test
-            void shouldLoadContext() {
-                contextRunner.withUserConfiguration(ConfigWithExplicitEnableFileSystemStores.class).run((context) -> {
-                    Assertions.assertThat(context).hasSingleBean(TestEntityContentStore.class);
-                    Assertions.assertThat(context).hasSingleBean(FileSystemResourceLoader.class);
-                });
-            }
+    @Nested
+    @DisplayName("Given a configuration that contributes a loader bean")
+    class ConfigurationThatContributesLoaderBean {
+        @BeforeEach
+        void setUp() {
+            contextRunner = new ApplicationContextRunner()
+                .withConfiguration(AutoConfigurations.of(FileSystemContentAutoConfiguration.class));
+        }
+
+        @Test
+        @DisabledOnOs(OS.WINDOWS)
+        void shouldHaveThatLoaderBeanInContext() {
+            contextRunner.withUserConfiguration(ConfigWithLoaderBean.class).run((context) -> {
+                Assertions.assertThat(context).hasSingleBean(FileSystemResourceLoader.class);
+                Assertions.assertThat(context).getBean(FileSystemResourceLoader.class).extracting("root").matches((val) -> val.toString().contains("/some/random/path"));
+            });
+        }
+
+        @Test
+        @EnabledOnOs(OS.WINDOWS)
+        void shouldHaveThatLoaderBeanInContextOnWindows() {
+            contextRunner.withUserConfiguration(ConfigWithLoaderBean.class).run((context) -> {
+                Assertions.assertThat(context).hasSingleBean(FileSystemResourceLoader.class);
+                Assertions.assertThat(context).getBean(FileSystemResourceLoader.class).extracting("root").matches((val) -> val.toString().matches("(?s).*([A-Za-z]:)?\\\\some\\\\random\\\\path.*"));
+            });
+        }
+    }
+
+    @Nested
+    @DisplayName("Given a configuration with explicit @EnableFileSystemStores")
+    class ConfigurationWithExplicitEnableFileSystemStoresAnnotation {
+        @BeforeEach
+        void setUp() {
+            contextRunner = new ApplicationContextRunner()
+                .withConfiguration(AutoConfigurations.of(FileSystemContentAutoConfiguration.class));
+        }
+
+        @Test
+        void shouldLoadContext() {
+            contextRunner.withUserConfiguration(ConfigWithExplicitEnableFileSystemStores.class).run((context) -> {
+                Assertions.assertThat(context).hasSingleBean(TestEntityContentStore.class);
+                Assertions.assertThat(context).hasSingleBean(FileSystemResourceLoader.class);
+            });
         }
     }
 }

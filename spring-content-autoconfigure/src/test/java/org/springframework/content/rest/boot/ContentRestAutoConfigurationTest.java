@@ -38,62 +38,59 @@ public class ContentRestAutoConfigurationTest {
     }
 
     @Nested
-    class ContentRestAutoConfigurationCases {
-        @Nested
-        @DisplayName("Given a default configuration")
-        class DefaultConfiguration {
-            @Test
-            void shouldLoadContext() {
-                AnnotationConfigServletWebApplicationContext context = new AnnotationConfigServletWebApplicationContext();
-                context.setServletContext(new MockServletContext());
-                context.register(TestConfig.class, HypermediaConfig.class);
-                context.refresh();
+    @DisplayName("Given a default configuration")
+    class DefaultConfiguration {
+        @Test
+        void shouldLoadContext() {
+            AnnotationConfigServletWebApplicationContext context = new AnnotationConfigServletWebApplicationContext();
+            context.setServletContext(new MockServletContext());
+            context.register(TestConfig.class, HypermediaConfig.class);
+            context.refresh();
 
-                assertThat(context.getBean("contentHandlerMapping")).isNotNull();
-                assertThat(context.getBean("contentLinksProcessor")).isNotNull();
+            assertThat(context.getBean("contentHandlerMapping")).isNotNull();
+            assertThat(context.getBean("contentLinksProcessor")).isNotNull();
 
-                context.close();
-            }
+            context.close();
+        }
+    }
+
+    @Nested
+    @DisplayName("Given an environment specifying REST properties")
+    class EnvironmentSpecifyingRestProperties {
+        @BeforeEach
+        void setUp() {
+            System.setProperty("spring.content.rest.base-uri", "/contentApi");
+            System.setProperty("spring.content.rest.fully-qualified-links", "false");
+            System.setProperty("spring.content.rest.shortcut-request-mappings.disabled", "true");
+            System.setProperty("spring.content.rest.shortcut-request-mappings.excludes", "GET=a/b,c/d:PUT=*/*");
+            System.setProperty("spring.content.rest.overwrite-existing-content", "false");
         }
 
-        @Nested
-        @DisplayName("Given an environment specifying REST properties")
-        class EnvironmentSpecifyingRestProperties {
-            @BeforeEach
-            void setUp() {
-                System.setProperty("spring.content.rest.base-uri", "/contentApi");
-                System.setProperty("spring.content.rest.fully-qualified-links", "false");
-                System.setProperty("spring.content.rest.shortcut-request-mappings.disabled", "true");
-                System.setProperty("spring.content.rest.shortcut-request-mappings.excludes", "GET=a/b,c/d:PUT=*/*");
-                System.setProperty("spring.content.rest.overwrite-existing-content", "false");
-            }
+        @AfterEach
+        void tearDown() {
+            System.clearProperty("spring.content.rest.base-uri");
+            System.clearProperty("spring.content.rest.fully-qualified-links");
+            System.clearProperty("spring.content.rest.shortcut-request-mappings.disabled");
+            System.clearProperty("spring.content.rest.shortcut-request-mappings.excludes");
+            System.clearProperty("spring.content.rest.overwrite-existing-content");
+        }
 
-            @AfterEach
-            void tearDown() {
-                System.clearProperty("spring.content.rest.base-uri");
-                System.clearProperty("spring.content.rest.fully-qualified-links");
-                System.clearProperty("spring.content.rest.shortcut-request-mappings.disabled");
-                System.clearProperty("spring.content.rest.shortcut-request-mappings.excludes");
-                System.clearProperty("spring.content.rest.overwrite-existing-content");
-            }
+        @Test
+        void shouldHaveFilesystemPropertiesBeanWithCorrectPropertiesSet() {
+            AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
+            context.register(TestConfig.class);
+            context.setServletContext(new MockServletContext());
+            context.refresh();
 
-            @Test
-            void shouldHaveFilesystemPropertiesBeanWithCorrectPropertiesSet() {
-                AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
-                context.register(TestConfig.class);
-                context.setServletContext(new MockServletContext());
-                context.refresh();
+            assertThat(context.getBean(ContentRestAutoConfiguration.ContentRestProperties.class).getBaseUri()).isEqualTo(URI.create("/contentApi"));
+            assertThat(context.getBean(ContentRestAutoConfiguration.ContentRestProperties.class).fullyQualifiedLinks()).isFalse();
+            assertThat(context.getBean(ContentRestAutoConfiguration.ContentRestProperties.class).shortcutRequestMappings().disabled()).isTrue();
+            assertThat(context.getBean(ContentRestAutoConfiguration.ContentRestProperties.class).shortcutRequestMappings().excludes()).isEqualTo("GET=a/b,c/d:PUT=*/*");
+            assertThat(context.getBean(ContentRestAutoConfiguration.ContentRestProperties.class).getOverwriteExistingContent()).isFalse();
 
-                assertThat(context.getBean(ContentRestAutoConfiguration.ContentRestProperties.class).getBaseUri()).isEqualTo(URI.create("/contentApi"));
-                assertThat(context.getBean(ContentRestAutoConfiguration.ContentRestProperties.class).fullyQualifiedLinks()).isFalse();
-                assertThat(context.getBean(ContentRestAutoConfiguration.ContentRestProperties.class).shortcutRequestMappings().disabled()).isTrue();
-                assertThat(context.getBean(ContentRestAutoConfiguration.ContentRestProperties.class).shortcutRequestMappings().excludes()).isEqualTo("GET=a/b,c/d:PUT=*/*");
-                assertThat(context.getBean(ContentRestAutoConfiguration.ContentRestProperties.class).getOverwriteExistingContent()).isFalse();
+            assertThat(context.getBean(SpringBootContentRestConfigurer.class)).isNotNull();
 
-                assertThat(context.getBean(SpringBootContentRestConfigurer.class)).isNotNull();
-
-                context.close();
-            }
+            context.close();
         }
     }
 }

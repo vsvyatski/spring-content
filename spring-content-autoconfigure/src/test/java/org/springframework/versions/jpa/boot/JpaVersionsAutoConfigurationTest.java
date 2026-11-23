@@ -68,38 +68,35 @@ public class JpaVersionsAutoConfigurationTest {
     }
 
     @Nested
-    class JpaVersionsAutoConfigurationCases {
-        @Nested
-        @DisplayName("Given an application context that relies on auto configuration")
-        class ApplicationContextThatReliesOnAutoConfiguration {
-            @BeforeEach
-            void setUp() {
-                contextRunner = new ApplicationContextRunner()
-                    .withConfiguration(AutoConfigurations.of(JpaVersionsAutoConfiguration.class));
-            }
-
-            @Test
-            void shouldIncludeRepositoryBean() {
-                contextRunner.withUserConfiguration(StarterConfig.class).run((context) -> Assertions.assertThat(context).hasSingleBean(JpaVersionsDatabaseInitializer.class));
-            }
+    @DisplayName("Given an application context that relies on auto configuration")
+    class ApplicationContextThatReliesOnAutoConfiguration {
+        @BeforeEach
+        void setUp() {
+            contextRunner = new ApplicationContextRunner()
+                .withConfiguration(AutoConfigurations.of(JpaVersionsAutoConfiguration.class));
         }
 
-        @Nested
-        @DisplayName("Given an application context with the @EnableJpaRepositories annotation")
-        class ApplicationContextWithEnableJpaRepositoriesAnnotation {
-            @BeforeEach
-            void setUp() {
-                contextRunner = new ApplicationContextRunner()
-                    .withConfiguration(AutoConfigurations.of(JpaVersionsAutoConfiguration.class));
-            }
+        @Test
+        void shouldIncludeRepositoryBean() {
+            contextRunner.withUserConfiguration(StarterConfig.class).run((context) -> Assertions.assertThat(context).hasSingleBean(JpaVersionsDatabaseInitializer.class));
+        }
+    }
 
-            @Test
-            void shouldIncludeRepositoryBean() {
-                contextRunner.withUserConfiguration(StarterWithAnnotationConfig.class).run(
-                    (context) ->
-                        Assertions.assertThat(context).hasSingleBean(VersioningJpaLongIdRepository.class)
-                );
-            }
+    @Nested
+    @DisplayName("Given an application context with the @EnableJpaRepositories annotation")
+    class ApplicationContextWithEnableJpaRepositoriesAnnotation {
+        @BeforeEach
+        void setUp() {
+            contextRunner = new ApplicationContextRunner()
+                .withConfiguration(AutoConfigurations.of(JpaVersionsAutoConfiguration.class));
+        }
+
+        @Test
+        void shouldIncludeRepositoryBean() {
+            contextRunner.withUserConfiguration(StarterWithAnnotationConfig.class).run(
+                (context) ->
+                    Assertions.assertThat(context).hasSingleBean(VersioningJpaLongIdRepository.class)
+            );
         }
     }
 }
