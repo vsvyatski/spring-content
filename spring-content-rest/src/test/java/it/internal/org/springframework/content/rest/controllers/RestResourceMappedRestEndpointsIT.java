@@ -127,7 +127,7 @@ public class RestResourceMappedRestEndpointsIT {
 
             @Nested
             @DisplayName("Given that it has no content")
-            class IsHasNoContent {
+            class HasNoContent {
                 @Nested
                 @DisplayName("GET to {repository ID}/package/content")
                 class GetToRepositoryIdContentProperty {
@@ -177,7 +177,7 @@ public class RestResourceMappedRestEndpointsIT {
 
                 @Nested
                 @DisplayName("PUT to {repository ID}/package/content with JSON content")
-                class PutToStoreIdWithJsonContent {
+                class PutToRepositoryIdPackageContentWithJsonContent {
                     @BeforeEach
                     void setUp() {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -208,10 +208,10 @@ public class RestResourceMappedRestEndpointsIT {
 
             @Nested
             @DisplayName("Given that it has content")
-            class ItHasContent {
+            class HasContent {
                 @Nested
                 @DisplayName("GET to {repository ID} accepting HAL JSON")
-                class GetToRepositoryIdForEntityJson {
+                class GetToRepositoryIdAcceptingHalJson {
                     @BeforeEach
                     void setUp() throws IOException {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();

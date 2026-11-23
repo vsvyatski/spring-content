@@ -61,7 +61,7 @@ public class EntityTests {
     }
 
     @Nested
-    @DisplayName("GET to store ID accepting HAL JSON")
+    @DisplayName("GET to {store ID} accepting HAL JSON")
     class GetToStoreIdAcceptingHalJson {
         @Test
         void shouldReturnEntity() throws Exception {
@@ -82,7 +82,7 @@ public class EntityTests {
     }
 
     @Nested
-    @DisplayName("PUT to store ID with a JSON body")
+    @DisplayName("PUT to {store ID} with a JSON body")
     class PutToStoreIdWithJsonBody {
         @Test
         void shouldSetEntitiesDataAndReturn200() throws Exception {
@@ -101,7 +101,7 @@ public class EntityTests {
     }
 
     @Nested
-    @DisplayName("PATCH to store ID with a JSON body")
+    @DisplayName("PATCH to {store ID} with a JSON body")
     class PatchToStoreIdWithJsonBody {
         @Test
         void shouldPatchEntityDataAndReturn200() throws Exception {
@@ -120,7 +120,7 @@ public class EntityTests {
     }
 
     @Nested
-    @DisplayName("HEAD to store ID with a JSON body")
+    @DisplayName("HEAD to {store ID} with a JSON body")
     class HeadToStoreIdWithJsonBody {
         @Test
         void shouldReturn200() throws Exception {

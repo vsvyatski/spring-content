@@ -123,7 +123,7 @@ public class ContentLinksWithProjectionsIT {
     }
 
     @Nested
-    class ContentLinksWithEntityProjectionCases {
+    class ContentLinksWithEntityProjection {
         @Nested
         @DisplayName("Given content is associated")
         class ContentIsAssociated {

@@ -73,7 +73,7 @@ public class ContentTests {
     }
 
     @Nested
-    @DisplayName("GET to store ID accepting")
+    @DisplayName("GET to {store ID} accepting")
     class GetToStoreIdAccepting {
         @Test
         void shouldReturn404() throws Exception {
@@ -82,7 +82,7 @@ public class ContentTests {
     }
 
     @Nested
-    @DisplayName("GET to store ID accepting a content MIME type")
+    @DisplayName("GET to {store ID} accepting a content MIME type")
     class GetToStoreIdAcceptingContentMimeType {
         @Test
         void shouldReturn404() throws Exception {
@@ -91,7 +91,7 @@ public class ContentTests {
     }
 
     @Nested
-    @DisplayName("PUT to store ID with content body")
+    @DisplayName("PUT to {store ID} with content body")
     class PutToStoreIdWithContentBody {
         @Test
         void shouldSetContentAndReturn201() throws Exception {
@@ -109,7 +109,7 @@ public class ContentTests {
     }
 
     @Nested
-    @DisplayName("DELETE to store ID with MIME type")
+    @DisplayName("DELETE to {store ID} with MIME type")
     class DeleteToStoreIdWithMimeType {
         @Test
         void shouldReturn404() throws Exception {
@@ -118,7 +118,7 @@ public class ContentTests {
     }
 
     @Nested
-    @DisplayName("POST to store ID with multipart form data request")
+    @DisplayName("POST to {store ID} with multipart form data request")
     class PostToStoreIdWithMultipartFormData {
         @Test
         void shouldSetContentAndReturn200() throws Exception {
@@ -143,7 +143,7 @@ public class ContentTests {
     @DisplayName("Given the entity has text/plain content")
     class EntityHasTextPlainContent {
         @Nested
-        @DisplayName("GET to store ID")
+        @DisplayName("GET to {store ID}")
         class GetToStoreId {
             @BeforeEach
             void setUp() {
@@ -172,7 +172,7 @@ public class ContentTests {
         }
 
         @Nested
-        @DisplayName("GET to store ID with no Accept header")
+        @DisplayName("GET to {store ID} with no Accept header")
         class GetToStoreIdWithNoAcceptHeader {
             @BeforeEach
             void setUp() {
@@ -198,7 +198,7 @@ public class ContentTests {
         }
 
         @Nested
-        @DisplayName("GET to store ID with a MIME type that matches a renderer")
+        @DisplayName("GET to {store ID} with a MIME type that matches a renderer")
         class GetToStoreIdWithMimeTypeMatchingRenderer {
             @BeforeEach
             void setUp() {
@@ -225,7 +225,7 @@ public class ContentTests {
         }
 
         @Nested
-        @DisplayName("GET to store ID with a MIME type that matches a renderer and the original content type")
+        @DisplayName("GET to {store ID} with a MIME type that matches a renderer and the original content type")
         class GetToStoreIdWithRendererMimeTypeAndOriginalContentType {
             @BeforeEach
             void setUp() {
@@ -257,7 +257,7 @@ public class ContentTests {
         }
 
         @Nested
-        @DisplayName("GET to store ID with multiple MIME types, last matches content")
+        @DisplayName("GET to {store ID} with multiple MIME types, last matches content")
         class GetToStoreIdWithMultipleMimeTypesLastMatchesContent {
             @BeforeEach
             void setUp() {
@@ -283,7 +283,7 @@ public class ContentTests {
         }
 
         @Nested
-        @DisplayName("GET to store ID with multiple MIME types, middle matches content")
+        @DisplayName("GET to {store ID} with multiple MIME types, middle matches content")
         class GetToStoreIdWithMultipleMimeTypesMiddleMatchesContent {
             @BeforeEach
             void setUp() {
@@ -309,7 +309,7 @@ public class ContentTests {
         }
 
         @Nested
-        @DisplayName("GET to store ID with accept-all MIME type")
+        @DisplayName("GET to {store ID} with accept-all MIME type")
         class GetToStoreIdWithAcceptAllMimeType {
             @BeforeEach
             void setUp() {
@@ -335,7 +335,7 @@ public class ContentTests {
         }
 
         @Nested
-        @DisplayName("GET to store ID with MIME type specifying charset")
+        @DisplayName("GET to {store ID} with MIME type specifying charset")
         class GetToStoreIdWithMimeTypeSpecifyingCharset {
             @BeforeEach
             void setUp() {
@@ -361,7 +361,7 @@ public class ContentTests {
         }
 
         @Nested
-        @DisplayName("GET to store ID when original MIME type has charset")
+        @DisplayName("GET to {store ID} when original MIME type has charset")
         class GetToStoreIdWhenOriginalMimeTypeHasCharset {
             @BeforeEach
             void setUp() {
@@ -390,7 +390,7 @@ public class ContentTests {
         }
 
         @Nested
-        @DisplayName("GET to store ID with MIME type that does not match renderer or original content")
+        @DisplayName("GET to {store ID} with MIME type that does not match renderer or original content")
         class GetToStoreIdWithMimeTypeNoMatch {
             @BeforeEach
             void setUp() {
@@ -411,7 +411,7 @@ public class ContentTests {
         }
 
         @Nested
-        @DisplayName("GET to store ID with Range header")
+        @DisplayName("GET to {store ID} with Range header")
         class GetToStoreIdWithRangeHeader {
             @BeforeEach
             void setUp() {
@@ -438,7 +438,7 @@ public class ContentTests {
         }
 
         @Nested
-        @DisplayName("PUT to store ID")
+        @DisplayName("PUT to {store ID}")
         class PutToStoreId {
             @BeforeEach
             void setUp() {
@@ -463,7 +463,7 @@ public class ContentTests {
         }
 
         @Nested
-        @DisplayName("POST to store ID with multipart request")
+        @DisplayName("POST to {store ID} with multipart request")
         class PostToStoreIdWithMultipartRequest {
             @BeforeEach
             void setUp() {
@@ -496,7 +496,7 @@ public class ContentTests {
         }
 
         @Nested
-        @DisplayName("POST to store ID with missing content type")
+        @DisplayName("POST to {store ID} with missing content type")
         class PostToStoreIdWithMissingContentType {
             @BeforeEach
             void setUp() {
@@ -518,7 +518,7 @@ public class ContentTests {
         }
 
         @Nested
-        @DisplayName("PUT to store ID with multipart request")
+        @DisplayName("PUT to {store ID} with multipart request")
         class PutToStoreIdWithMultipartRequest {
             @BeforeEach
             void setUp() {
@@ -551,7 +551,7 @@ public class ContentTests {
         }
 
         @Nested
-        @DisplayName("DELETE to store ID with MIME type")
+        @DisplayName("DELETE to {store ID} with MIME type")
         class DeleteToStoreIdWithMimeType {
             @BeforeEach
             void setUp() {

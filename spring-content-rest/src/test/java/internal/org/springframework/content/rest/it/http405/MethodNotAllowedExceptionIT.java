@@ -116,7 +116,7 @@ public class MethodNotAllowedExceptionIT {
 
     @Nested
     @DisplayName("When content-getting methods are not exported")
-    class GetContentMethodIsNotExportedCases {
+    class ContentGettingMethodsAreNotExported {
         @BeforeEach
         void setUp() {
             RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
@@ -139,7 +139,7 @@ public class MethodNotAllowedExceptionIT {
 
     @Nested
     @DisplayName("When content-setting methods are not exported")
-    class SetContentMethodsAreNotExportedCases {
+    class ContentSettingMethodsAreNotExported {
         @BeforeEach
         void setUp() {
             RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
@@ -162,7 +162,7 @@ public class MethodNotAllowedExceptionIT {
 
     @Nested
     @DisplayName("When content-unsetting methods are not exported")
-    class UnsetContentMethodAreNotExportedCases {
+    class ContentUnsettingMethodsAreNotExported {
         @BeforeEach
         void setUp() {
             RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
@@ -185,7 +185,7 @@ public class MethodNotAllowedExceptionIT {
 
     @Nested
     @DisplayName("When a content property is not exported")
-    class ContentPropertyIsNotExportedCases {
+    class ContentPropertyIsNotExported {
         @BeforeEach
         void setUp() {
             RestAssuredMockMvc.webAppContextSetup(webApplicationContext);

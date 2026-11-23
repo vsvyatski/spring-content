@@ -108,7 +108,7 @@ public class NestedContentPropertiesRestEndpointsIT {
 
             @Nested
             @DisplayName("Given that it has no content")
-            class IsHasNoContent {
+            class HasNoContent {
                 @Nested
                 @DisplayName("GET to {repository ID}/child")
                 class GetToRepositoryIdContentProperty {
@@ -129,7 +129,7 @@ public class NestedContentPropertiesRestEndpointsIT {
 
                 @Nested
                 @DisplayName("PUT to {repository ID}/child/content")
-                class PutToRepositoryIdPropertyContentProperty {
+                class PutToRepositoryIdChildContent {
                     @BeforeEach
                     void setUp() {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -173,7 +173,7 @@ public class NestedContentPropertiesRestEndpointsIT {
 
                 @Nested
                 @DisplayName("PUT to {repository ID}/child/content with JSON content")
-                class PutToStoreIdPropertyContentPropertyWithJsonContent {
+                class PutToRepositoryIdChildContentWithJsonContent {
                     @BeforeEach
                     void setUp() {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -204,7 +204,7 @@ public class NestedContentPropertiesRestEndpointsIT {
 
             @Nested
             @DisplayName("Given that it has content")
-            class ItHasContent {
+            class HasContent {
                 @Nested
                 @DisplayName("GET to {repository ID}/child/content")
                 class GetToRepositoryIdContentProperty {

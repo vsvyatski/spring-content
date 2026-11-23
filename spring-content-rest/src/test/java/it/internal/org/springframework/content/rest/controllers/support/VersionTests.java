@@ -98,7 +98,7 @@ public class VersionTests {
     }
 
     @Nested
-    @DisplayName("GET request to store ID")
+    @DisplayName("GET request to {store ID}")
     class GetRequestToStoreId {
         @Test
         void shouldReturnEtagHeader() throws Exception {
@@ -115,7 +115,7 @@ public class VersionTests {
     }
 
     @Nested
-    @DisplayName("GET request to store ID with a matching If-None-Match header")
+    @DisplayName("GET request to {store ID} with a matching If-None-Match header")
     class GetRequestToStoreIdWithMatchingIfNoneMatchHeader {
         @Test
         void shouldRespondWith304NotModified() throws Exception {
@@ -127,7 +127,7 @@ public class VersionTests {
     }
 
     @Nested
-    @DisplayName("GET request to store ID with a non-matching If-None-Match header")
+    @DisplayName("GET request to {store ID} with a non-matching If-None-Match header")
     class GetRequestToStoreIdWithNonMatchingIfNoneMatchHeader {
         @Test
         void shouldRespondWithContent() throws Exception {
@@ -145,7 +145,7 @@ public class VersionTests {
     }
 
     @Nested
-    @DisplayName("PUT to store ID with a matching If-Match header")
+    @DisplayName("PUT to {store ID} with a matching If-Match header")
     class PutToStoreIdWithMatchingIfMatchHeader {
         @Test
         void shouldUpdateContent() throws Exception {
@@ -176,7 +176,7 @@ public class VersionTests {
     }
 
     @Nested
-    @DisplayName("DELETE to store ID with a matching If-Match header")
+    @DisplayName("DELETE to {store ID} with a matching If-Match header")
     class DeleteToStoreIdWithMatchingIfMatchHeader {
         @Test
         void shouldDeleteContentAttributesAndReturn204() throws Exception {
@@ -196,7 +196,7 @@ public class VersionTests {
     }
 
     @Nested
-    @DisplayName("PUT to store ID with a non-matching If-Match header")
+    @DisplayName("PUT to {store ID} with a non-matching If-Match header")
     class PutToStoreIdWithNonMatchingIfMatchHeader {
         @Test
         void shouldRespondWith412PreconditionFailed() throws Exception {
@@ -209,7 +209,7 @@ public class VersionTests {
     }
 
     @Nested
-    @DisplayName("PUT to store ID with a matching If-None-Match header")
+    @DisplayName("PUT to {store ID} with a matching If-None-Match header")
     class PutToStoreIdWithMatchingIfNoneMatchHeader {
         @Test
         void shouldRespondWith412PreconditionFailed() throws Exception {
@@ -222,7 +222,7 @@ public class VersionTests {
     }
 
     @Nested
-    @DisplayName("PUT to store ID with a non-matching If-None-Match header")
+    @DisplayName("PUT to {store ID} with a non-matching If-None-Match header")
     class PutToStoreIdWithNonMatchingIfNoneMatchHeader {
         @Test
         void shouldRespondWith200OKAndSetContent() throws Exception {
@@ -235,7 +235,7 @@ public class VersionTests {
     }
 
     @Nested
-    @DisplayName("PUT to store ID with matching If-Match and If-None-Match headers")
+    @DisplayName("PUT to {store ID} with matching If-Match and If-None-Match headers")
     class PutToStoreIdWithMatchingIfMatchAndIfNoneMatchHeaders {
         @Test
         void shouldRespondWith412PreconditionFailed() throws Exception {
@@ -249,7 +249,7 @@ public class VersionTests {
     }
 
     @Nested
-    @DisplayName("POST to store ID with a non-matching If-Match header")
+    @DisplayName("POST to {store ID} with a non-matching If-Match header")
     class PostToStoreIdWithNonMatchingIfMatchHeader {
         @Test
         void shouldRespondWith412PreconditionFailed() throws Exception {
@@ -263,7 +263,7 @@ public class VersionTests {
     }
 
     @Nested
-    @DisplayName("DELETE to store ID with a non-matching If-Match header")
+    @DisplayName("DELETE to {store ID} with a non-matching If-Match header")
     class DeleteToStoreIdWithNonMatchingIfMatchHeader {
         @Test
         void shouldRespondWith412PreconditionFailed() throws Exception {

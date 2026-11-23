@@ -50,7 +50,7 @@ public class ContentLinksResourceProcessorIT {
 
     @Nested
     @DisplayName("Given the Spring Content base URI property is set to /contentApi")
-    class SpringContentBaseUriPropertyIsSetToContentApiCases {
+    class SpringContentBaseUriPropertyIsSetToContentApi {
         @Nested
         @DisplayName("Given an entity with a single content ID property")
         class EntityWithSingleContentIdProperty {

@@ -94,7 +94,7 @@ public abstract class LastModifiedDateTests {
     }
 
     @Nested
-    @DisplayName("GET request to store ID with no headers")
+    @DisplayName("GET request to {store ID} with no headers")
     class GetRequestToStoreIdWithNoHeaders {
         @Test
         void shouldReturnContentWithLastModifiedHeader() throws Exception {
@@ -111,7 +111,7 @@ public abstract class LastModifiedDateTests {
     }
 
     @Nested
-    @DisplayName("GET request to store ID with If-Modified-Since before the entity modified date")
+    @DisplayName("GET request to {store ID} with If-Modified-Since before the entity modified date")
     class GetRequestToStoreIdWithIfModifiedSinceBeforeEntityModifiedDate {
         @Test
         void shouldRespondWith200AndContent() throws Exception {
@@ -136,7 +136,7 @@ public abstract class LastModifiedDateTests {
     }
 
     @Nested
-    @DisplayName("GET request to store ID with If-Modified-Since same as entity modified date")
+    @DisplayName("GET request to {store ID} with If-Modified-Since same as entity modified date")
     class GetRequestToStoreIdWithIfModifiedSinceSameAsEntityModifiedDate {
         @Test
         void shouldRespondWith304NotModified() throws Exception {
@@ -149,7 +149,7 @@ public abstract class LastModifiedDateTests {
     }
 
     @Nested
-    @DisplayName("GET request to store ID with If-Unmodified-Since before entity modified date")
+    @DisplayName("GET request to {store ID} with If-Unmodified-Since before entity modified date")
     class GetRequestToStoreIdWithIfUnmodifiedSinceBeforeEntityModifiedDate {
         @Test
         void shouldRespondWith412PreconditionFailed() throws Exception {
@@ -162,7 +162,7 @@ public abstract class LastModifiedDateTests {
     }
 
     @Nested
-    @DisplayName("GET request to store ID with If-Unmodified-Since same as entity modified date")
+    @DisplayName("GET request to {store ID} with If-Unmodified-Since same as entity modified date")
     class GetRequestToStoreIdWithIfUnmodifiedSinceSameAsEntityModifiedDate {
         @Test
         void shouldRespondWith200AndContent() throws Exception {
@@ -175,7 +175,7 @@ public abstract class LastModifiedDateTests {
     }
 
     @Nested
-    @DisplayName("PUT to store ID with If-Unmodified-Since before entity modified date")
+    @DisplayName("PUT to {store ID} with If-Unmodified-Since before entity modified date")
     class PutToStoreIdWithIfUnmodifiedSinceBeforeEntityModifiedDate {
         @Test
         void shouldRespondWith412PreconditionFailed() throws Exception {
@@ -188,7 +188,7 @@ public abstract class LastModifiedDateTests {
     }
 
     @Nested
-    @DisplayName("PUT to store ID with If-Unmodified-Since same as entity modified date")
+    @DisplayName("PUT to {store ID} with If-Unmodified-Since same as entity modified date")
     class PutToStoreIdWithIfUnmodifiedSinceSameAsEntityModifiedDate {
         @Test
         void shouldUpdateContent() throws Exception {
@@ -201,7 +201,7 @@ public abstract class LastModifiedDateTests {
     }
 
     @Nested
-    @DisplayName("PUT to store ID with matching If-Unmodified-Since and If-None-Match headers")
+    @DisplayName("PUT to {store ID} with matching If-Unmodified-Since and If-None-Match headers")
     class PutToStoreIdWithMatchingIfUnmodifiedSinceAndIfNoneMatchHeaders {
         @Test
         void shouldRespondWith412PreconditionFailed() throws Exception {
@@ -217,7 +217,7 @@ public abstract class LastModifiedDateTests {
     }
 
     @Nested
-    @DisplayName("DELETE to store ID with If-Unmodified-Since before entity modified date")
+    @DisplayName("DELETE to {store ID} with If-Unmodified-Since before entity modified date")
     class DeleteToStoreIdWithIfUnmodifiedSinceBeforeEntityModifiedDate {
         @Test
         void shouldRespondWith412PreconditionFailed() throws Exception {
@@ -228,7 +228,7 @@ public abstract class LastModifiedDateTests {
     }
 
     @Nested
-    @DisplayName("DELETE to store ID with If-Unmodified-Since same as entity modified date")
+    @DisplayName("DELETE to {store ID} with If-Unmodified-Since same as entity modified date")
     class DeleteToStoreIdWithIfUnmodifiedSinceSameAsEntityModifiedDate {
         @Test
         void shouldUpdateContent() throws Exception {
