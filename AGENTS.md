@@ -143,6 +143,15 @@ Change version for the whole reactor with:
 ./mvnw versions:set -DnewVersion=...
 ```
 
+Check dependency, property, and plugin updates with the wrapper (Maven 3.9.x), not system `mvn` 3.6.x — especially
+`versions:display-plugin-updates`, which expects a declared minimum Maven version from `maven-enforcer-plugin`:
+
+```text
+./mvnw versions:display-dependency-updates
+./mvnw versions:display-property-updates
+./mvnw -N versions:display-plugin-updates
+```
+
 ### Tests
 
 - Framework: JUnit Jupiter, AssertJ, Mockito, Testcontainers where needed
