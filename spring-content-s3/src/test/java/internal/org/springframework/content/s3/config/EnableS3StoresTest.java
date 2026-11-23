@@ -2,11 +2,7 @@ package internal.org.springframework.content.s3.config;
 
 import internal.org.springframework.content.s3.io.S3StoreResource;
 import internal.org.springframework.content.s3.it.LocalStack;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.content.s3.config.EnableS3Stores;

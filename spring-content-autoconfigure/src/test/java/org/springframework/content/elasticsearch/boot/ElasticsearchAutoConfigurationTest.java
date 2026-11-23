@@ -5,11 +5,7 @@ import internal.org.springframework.content.elasticsearch.ElasticsearchIndexServ
 import internal.org.springframework.content.elasticsearch.ElasticsearchIndexer;
 import internal.org.springframework.content.elasticsearch.IndexManager;
 import internal.org.springframework.content.elasticsearch.boot.autoconfigure.ElasticsearchAutoConfiguration;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.content.elasticsearch.EnableElasticsearchFulltextIndexing;

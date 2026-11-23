@@ -147,20 +147,20 @@ Change version for the whole reactor with:
 - Framework: JUnit Jupiter, AssertJ, Mockito, Testcontainers where needed
 - `@Test`, `@BeforeEach`, `@AfterEach`, `@Nested` from `org.junit.jupiter.api`
 - Naming: `*Test.java` = unit (always); `*IT.java` = integration (`-P tests` only)
-- `@Nested` classes use PascalCase identifiers without articles (`a`, `an`, `the`) or BDD prefixes
-  (`Given`, `When`, `Then`) in the type name. Use `@DisplayName` when the old Ginkgo phrase should still
+- `@Nested` classes use PascalCase identifiers without articles (`a`, `an`, `the`) or BDD prefixes (`Given`, `When`,
+  `Then`) in the type name. Use `@DisplayName` when the old Ginkgo phrase should still
   appear in test reports (for example `class GetToStoreIdAccepting` with `@DisplayName("GET to store ID
   accepting")`). HTTP scenario nests name the verb first (`Get`, `Put`, `Post`, `Delete`, `Head`,
   `Options`). Setup nests describe state (`ApplicationSetsId`, `EntityHasTextPlainContent`). Test methods
   may stay `should…` unless you are aligning a file to another style deliberately.
 - In `@DisplayName`, comments, and other human-readable test prose, use **sentence case** (like the REST
   `controllers/support` fixtures), not title case on every word: `Given a class with uncorrelated attributes`,
-  not `Given a Class With Uncorrelated Attributes`. Capitalize HTTP verbs (`GET`, `PUT`), header names
-  (`If-Match`), and the usual **MIME type** / **store ID** spellings; keep articles and prepositions lowercase.
+  not `Given a Class With Uncorrelated Attributes`. Capitalize HTTP verbs (`GET`, `PUT`), header names (`If-Match`), and
+  the usual **MIME type** / **store ID** spellings; keep articles and prepositions lowercase.
   Place `@Nested`, `@DisplayName`, and the nested `class` on consecutive lines with no blank line between them.
 - In prose use **MIME type**, **mime type**, or **mime-type** (two words or hyphenated — never one word
-  `mimetype`). In Java identifiers use **`MimeType`** / **`mimeType`** (not `Mimetype`). Write **ID** in prose
-  (not `id` in phrases like "store ID"), unless a framework literal requires another spelling (for example a
+  `mimetype`). In Java identifiers use **`MimeType`** / **`mimeType`** (not `Mimetype`). Write **ID** in prose (not `id`
+  in phrases like "store ID"), unless a framework literal requires another spelling (for example a
   fixed header or property name).
 - Follow existing IT style: inner entity/store/repo types, `@Enable*Stores` + `@EnableJpaRepositories` test configs,
   assert streams with Commons IO + AssertJ

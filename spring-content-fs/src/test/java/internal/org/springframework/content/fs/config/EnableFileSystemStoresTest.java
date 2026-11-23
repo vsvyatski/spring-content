@@ -1,10 +1,6 @@
 package internal.org.springframework.content.fs.config;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.content.fs.config.EnableFileSystemStores;
 import org.springframework.content.fs.config.FileSystemStoreConfigurer;
