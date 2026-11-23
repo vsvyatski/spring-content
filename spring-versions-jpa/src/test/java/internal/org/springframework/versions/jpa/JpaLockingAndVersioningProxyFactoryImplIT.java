@@ -70,7 +70,7 @@ public class JpaLockingAndVersioningProxyFactoryImplIT {
     }
 
     @Nested
-   class JpaLockingAndVersioningProxyFactoryImplCases {
+    class JpaLockingAndVersioningProxyFactoryImplCases {
         @Nested
         @DisplayName("Given a context with a repository and a store")
         class ContextWithRepositoryAndStore {
@@ -109,9 +109,7 @@ public class JpaLockingAndVersioningProxyFactoryImplIT {
                 }
 
                 @Nested
-
                 @DisplayName("Given an existing txn advise")
-
                 class ExistingTxnAdvise {
                     @BeforeEach
                     void setUp() {

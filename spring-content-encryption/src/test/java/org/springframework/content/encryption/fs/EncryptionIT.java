@@ -87,7 +87,7 @@ public class EncryptionIT {
     }
 
     @Nested
-   class ClientSideEncryptionWithFsStorageCases {
+    class ClientSideEncryptionWithFsStorageCases {
         @Nested
         @DisplayName("Given content")
         class Content {
@@ -151,9 +151,7 @@ public class EncryptionIT {
             }
 
             @Nested
-
             @DisplayName("When the content is unset")
-
             class ContentIsUnset {
                 @BeforeEach
                 void setUp() {

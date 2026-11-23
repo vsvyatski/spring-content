@@ -12,7 +12,7 @@ public class PlacementServiceImplTest {
     private PlacementServiceImpl placer;
 
     @Nested
-   class PlacementServiceImplCases {
+    class PlacementServiceImplCases {
         @Nested
         @DisplayName("Given a placement service")
         class PlacementService {

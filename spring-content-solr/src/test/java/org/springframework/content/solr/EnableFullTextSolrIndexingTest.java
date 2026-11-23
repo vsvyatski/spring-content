@@ -54,7 +54,7 @@ public class EnableFullTextSolrIndexingTest {
     }
 
     @Nested
-   class EnableFullTextSolrIndexingCases {
+    class EnableFullTextSolrIndexingCases {
         @Test
         void shouldHaveASolrPropertiesBean() {
             assertThat(context.getBean(SolrProperties.class)).isNotNull();

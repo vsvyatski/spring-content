@@ -74,7 +74,7 @@ public class EnableFileSystemStoresTest {
     }
 
     @Nested
-   class EnableFileSystemStoresCases {
+    class EnableFileSystemStoresCases {
         @Nested
         @DisplayName("Given a context and a configuration with a filesystem content store bean")
         class ContextAndConfigurationWithFilesystemContentStoreBean {
@@ -107,9 +107,7 @@ public class EnableFileSystemStoresTest {
         }
 
         @Nested
-
         @DisplayName("Given a context with a configurer")
-
         class ContextWithConfigurer {
             @BeforeEach
             void setUp() {
@@ -131,9 +129,7 @@ public class EnableFileSystemStoresTest {
         }
 
         @Nested
-
         @DisplayName("Given a context with an empty configuration")
-
         class ContextWithEmptyConfiguration {
             @BeforeEach
             void setUp() {

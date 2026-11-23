@@ -51,9 +51,7 @@ public class ElasticsearchAutoConfigurationTest {
     }
 
     @Nested
-
     @DisplayName("Given a context without a elasticsearch client configured")
-
     class ContextWithoutElasticsearchClientConfigured {
         @Test
         void shouldCreateAClient() {
@@ -73,9 +71,7 @@ public class ElasticsearchAutoConfigurationTest {
     }
 
     @Nested
-
     @DisplayName("Given a context with a elasticsearch client configured")
-
     class ContextWithElasticsearchClientConfigured {
         @Test
         void shouldUseThatClient() {
@@ -89,9 +85,7 @@ public class ElasticsearchAutoConfigurationTest {
     }
 
     @Nested
-
     @DisplayName("Given a context with auto indexing disabled")
-
     class ContextWithAutoIndexingDisabled {
         @BeforeEach
         void setUp() {
@@ -115,9 +109,7 @@ public class ElasticsearchAutoConfigurationTest {
     }
 
     @Nested
-
     @DisplayName("Given a context with auto indexing configured")
-
     class ContextWithAutoIndexingConfigured {
         @BeforeEach
         void setUp() {
@@ -141,9 +133,7 @@ public class ElasticsearchAutoConfigurationTest {
     }
 
     @Nested
-
     @DisplayName("Given a context that already has @EnableElasticsearchFulltextIndexing")
-
     class ContextThatAlreadyEnablesElasticSearchFulltextIndexing {
         @Test
         void shouldLoadTheContextAndNotThrowABeanDefinitionOverrideException() {

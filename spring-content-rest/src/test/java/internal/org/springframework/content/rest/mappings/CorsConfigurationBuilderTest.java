@@ -87,7 +87,7 @@ public class CorsConfigurationBuilderTest {
     }
 
     @Nested
-   class CorsConfigurationBuilderCases {
+    class CorsConfigurationBuilderCases {
         @Nested
         class Build {
             @Nested
@@ -112,9 +112,7 @@ public class CorsConfigurationBuilderTest {
             }
 
             @Nested
-
             @DisplayName("Given an origins value")
-
             class OriginsValue {
                 @BeforeEach
                 void setUp() {
@@ -135,9 +133,7 @@ public class CorsConfigurationBuilderTest {
             }
 
             @Nested
-
             @DisplayName("Given an empty origins value")
-
             class EmptyOriginsValue {
                 @BeforeEach
                 void setUp() {
@@ -158,9 +154,7 @@ public class CorsConfigurationBuilderTest {
             }
 
             @Nested
-
             @DisplayName("Given an allowed methods value")
-
             class AllowedMethodsValue {
                 @BeforeEach
                 void setUp() {
@@ -181,9 +175,7 @@ public class CorsConfigurationBuilderTest {
             }
 
             @Nested
-
             @DisplayName("Given an empty allowed methods value")
-
             class EmptyAllowedMethodsValue {
                 @BeforeEach
                 void setUp() {
@@ -204,9 +196,7 @@ public class CorsConfigurationBuilderTest {
             }
 
             @Nested
-
             @DisplayName("Given an allowed headers value")
-
             class AllowedHeadersValue {
                 @BeforeEach
                 void setUp() {
@@ -227,9 +217,7 @@ public class CorsConfigurationBuilderTest {
             }
 
             @Nested
-
             @DisplayName("Given an empty allowed headers value")
-
             class EmptyAllowedHeadersValue {
                 @BeforeEach
                 void setUp() {
@@ -250,9 +238,7 @@ public class CorsConfigurationBuilderTest {
             }
 
             @Nested
-
             @DisplayName("Given an exposed headers value")
-
             class ExposedHeadersValue {
                 @BeforeEach
                 void setUp() {
@@ -273,9 +259,7 @@ public class CorsConfigurationBuilderTest {
             }
 
             @Nested
-
             @DisplayName("Given an empty exposed headers value")
-
             class EmptyExposedHeadersValue {
                 @BeforeEach
                 void setUp() {
@@ -296,9 +280,7 @@ public class CorsConfigurationBuilderTest {
             }
 
             @Nested
-
             @DisplayName("Given an allow credentials value of true")
-
             class AllowCredentialsValueOfTrue {
                 @BeforeEach
                 void setUp() {
@@ -319,9 +301,7 @@ public class CorsConfigurationBuilderTest {
             }
 
             @Nested
-
             @DisplayName("Given an allow credentials value of false")
-
             class AllowCredentialsValueOfFalse {
                 @BeforeEach
                 void setUp() {
@@ -342,9 +322,7 @@ public class CorsConfigurationBuilderTest {
             }
 
             @Nested
-
             @DisplayName("Given an allow credentials value of something else")
-
             class AllowCredentialsValueOfSomethingElse {
                 @BeforeEach
                 void setUp() {
@@ -365,9 +343,7 @@ public class CorsConfigurationBuilderTest {
             }
 
             @Nested
-
             @DisplayName("Given an allow credentials value of")
-
             class AllowCredentialsValueOf {
                 @BeforeEach
                 void setUp() {
@@ -388,9 +364,7 @@ public class CorsConfigurationBuilderTest {
             }
 
             @Nested
-
             @DisplayName("Given a positive max age specification")
-
             class PositiveMaxAgeSpecification {
                 @BeforeEach
                 void setUp() {
@@ -411,9 +385,7 @@ public class CorsConfigurationBuilderTest {
             }
 
             @Nested
-
             @DisplayName("Given an zero max age specification")
-
             class ZeroMaxAgeSpecification {
                 @BeforeEach
                 void setUp() {
@@ -434,9 +406,7 @@ public class CorsConfigurationBuilderTest {
             }
 
             @Nested
-
             @DisplayName("Given an negative max age specification")
-
             class NegativeMaxAgeSpecification {
                 @BeforeEach
                 void setUp() {

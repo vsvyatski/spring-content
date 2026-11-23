@@ -44,7 +44,7 @@ public class DefaultJpaStoreImplTest {
     private Exception e;
 
     @Nested
-   class DefaultJpaStoreImplCases {
+    class DefaultJpaStoreImplCases {
         @Nested
         class Store {
             @Nested
@@ -91,9 +91,7 @@ public class DefaultJpaStoreImplTest {
                 }
 
                 @Nested
-
                 @DisplayName("When the entity is associated with a resource")
-
                 class EntityIsAssociatedWithResource {
                     @BeforeEach
                     void setUp() {
@@ -202,9 +200,7 @@ public class DefaultJpaStoreImplTest {
                 }
 
                 @Nested
-
                 @DisplayName("Given fetching the input stream fails")
-
                 class FetchingInputStreamFails {
                     @BeforeEach
                     void setUp() throws IOException {
@@ -281,9 +277,7 @@ public class DefaultJpaStoreImplTest {
                 }
 
                 @Nested
-
                 @DisplayName("When the resource output stream throws an io exception")
-
                 class ResourceOutputStreamThrowsIOException {
                     @BeforeEach
                     void setUp() throws IOException {
@@ -343,9 +337,7 @@ public class DefaultJpaStoreImplTest {
                 }
 
                 @Nested
-
                 @DisplayName("When the resource throws an io exception")
-
                 class ResourceThrowsIOException {
                     @BeforeEach
                     void setUp() throws IOException {
@@ -400,7 +392,7 @@ public class DefaultJpaStoreImplTest {
                 }
 
                 @Nested
-               class ResourceDeleteThrowsException {
+                class ResourceDeleteThrowsException {
                     @BeforeEach
                     void setUp() throws IOException {
                         blobResourceLoader = mock(BlobResourceLoader.class);
@@ -433,7 +425,7 @@ public class DefaultJpaStoreImplTest {
     }
 
     @Nested
-   class DefaultJpaStoreImplJakartaAnnotatedEntity {
+    class DefaultJpaStoreImplJakartaAnnotatedEntity {
         @Nested
         class Store {
             @Nested
@@ -483,7 +475,7 @@ public class DefaultJpaStoreImplTest {
     }
 
     @Nested
-   class DefaultJpaStoreImplSpringDataAnnotatedEntity {
+    class DefaultJpaStoreImplSpringDataAnnotatedEntity {
         @Nested
         class AssociativeStore {
             @Nested

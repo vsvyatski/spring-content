@@ -37,7 +37,7 @@ public class JpaVersionsDatabaseInitializerTest {
     }
 
     @Nested
-   class JpaVersionsDatabaseInitializerCases {
+    class JpaVersionsDatabaseInitializerCases {
         @Nested
         @DisplayName("When initialization is enabled")
         class InitializationIsEnabled {
@@ -56,9 +56,7 @@ public class JpaVersionsDatabaseInitializerTest {
         }
 
         @Nested
-
         @DisplayName("When initialization is disabled")
-
         class InitializationIsDisabled {
             @BeforeEach
             void setUp() {

@@ -146,7 +146,7 @@ public class StoreMethodInterceptorTest {
     }
 
     @Nested
-   class InvokeCases {
+    class InvokeCases {
         @Nested
         class GetContentCases {
             @Nested
@@ -182,9 +182,7 @@ public class StoreMethodInterceptorTest {
             }
 
             @Nested
-
             @DisplayName("When GET content is invoked with illegal arguments")
-
             class GetContentIsInvokedWithIllegalArguments {
                 @BeforeEach
                 void setUp() throws IOException {
@@ -252,9 +250,7 @@ public class StoreMethodInterceptorTest {
             }
 
             @Nested
-
             @DisplayName("When the before set content event consumes the entire input stream")
-
             class BeforeSetContentEventConsumesEntireInputStream {
                 @BeforeEach
                 void setUp() {
@@ -299,9 +295,7 @@ public class StoreMethodInterceptorTest {
             }
 
             @Nested
-
             @DisplayName("When the before set content event consumes partial input stream")
-
             class BeforeSetContentEventConsumesPartialInputStream {
                 @BeforeEach
                 void setUp() {
@@ -348,9 +342,7 @@ public class StoreMethodInterceptorTest {
             }
 
             @Nested
-
             @DisplayName("When the before set content event does not consume any of the input stream")
-
             class BeforeSetContentEventDoesNotConsumeAnyOfInputStream {
                 @BeforeEach
                 void setUp() {
@@ -392,9 +384,7 @@ public class StoreMethodInterceptorTest {
             }
 
             @Nested
-
             @DisplayName("When the before set content event replaces the input stream")
-
             class BeforeSetContentEventReplacesInputStream {
                 @BeforeEach
                 void setUp() {
@@ -440,9 +430,7 @@ public class StoreMethodInterceptorTest {
             }
 
             @Nested
-
             @DisplayName("When set content is invoked with illegal arguments")
-
             class SetContentIsInvokedWithIllegalArguments {
                 @BeforeEach
                 void setUp() {
@@ -540,9 +528,7 @@ public class StoreMethodInterceptorTest {
             }
 
             @Nested
-
             @DisplayName("When unset content is invoked with illegal arguments")
-
             class UnsetContentIsInvokedWithIllegalArguments {
                 @BeforeEach
                 void setUp() {
@@ -600,9 +586,7 @@ public class StoreMethodInterceptorTest {
             }
 
             @Nested
-
             @DisplayName("When GET resource entity is invoked")
-
             class GetResourceEntityIsInvoked {
                 @BeforeEach
                 void setUp() {
@@ -714,7 +698,7 @@ public class StoreMethodInterceptorTest {
     }
 
     @Nested
-   class FindMethodCases {
+    class FindMethodCases {
         @Test
         void shouldResolveTheMethodWhenNotOverridden() {
             store = CommonsTestStores.mockContentStore();

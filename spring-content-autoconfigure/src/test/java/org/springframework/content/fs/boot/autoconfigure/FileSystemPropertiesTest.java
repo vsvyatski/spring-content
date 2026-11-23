@@ -16,7 +16,7 @@ public class FileSystemPropertiesTest {
     private FileSystemContentAutoConfiguration.FileSystemProperties props;
 
     @Nested
-   class FileSystemPropertiesCases {
+    class FileSystemPropertiesCases {
         @Nested
         @DisplayName("Given a filesystem properties with no root set")
         class FilesystemPropertiesWithNoRootSet {
@@ -32,9 +32,7 @@ public class FileSystemPropertiesTest {
         }
 
         @Nested
-
         @DisplayName("Given a filesystem properties with root set")
-
         class FilesystemPropertiesWithRootSet {
             @BeforeEach
             void setUp() {

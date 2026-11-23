@@ -53,7 +53,7 @@ public class StoresImplTest {
     }
 
     @Nested
-   class StoresImplCases {
+    class StoresImplCases {
         @Nested
         @DisplayName("Given no factories")
         class NoFactories {
@@ -74,9 +74,7 @@ public class StoresImplTest {
         }
 
         @Nested
-
         @DisplayName("Given a content store factory")
-
         class ContentStoreFactory {
             @BeforeEach
             void setUp() {
@@ -116,9 +114,7 @@ public class StoresImplTest {
         }
 
         @Nested
-
         @DisplayName("Given a store factory")
-
         class RegisteredStoreFactory {
             @BeforeEach
             void setUp() {
@@ -159,9 +155,7 @@ public class StoresImplTest {
         }
 
         @Nested
-
         @DisplayName("Given an associative store factory")
-
         class AssociativeStoreFactory {
             @BeforeEach
             void setUp() {
@@ -202,9 +196,7 @@ public class StoresImplTest {
         }
 
         @Nested
-
         @DisplayName("Given multiple stores")
-
         class MultipleStores {
             @BeforeEach
             void setUp() {
@@ -257,9 +249,7 @@ public class StoresImplTest {
         }
 
         @Nested
-
         @DisplayName("Given multiple stores for the same entity")
-
         class MultipleStoresForSameEntity {
             @BeforeEach
             void setUp() {

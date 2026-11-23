@@ -48,7 +48,7 @@ public class ContentFileSystemAutoConfigurationTest {
     }
 
     @Nested
-   class FileSystemContentAutoConfigurationCases {
+    class FileSystemContentAutoConfigurationCases {
         @Nested
         @DisplayName("Given a default configuration")
         class DefaultConfiguration {
@@ -65,9 +65,7 @@ public class ContentFileSystemAutoConfigurationTest {
         }
 
         @Nested
-
         @DisplayName("Given an environment specifying a filesystem root using spring prefix")
-
         class EnvironmentSpecifyingFilesystemRootUsingSpringPrefix {
             @BeforeEach
             void setUp() {
@@ -91,9 +89,7 @@ public class ContentFileSystemAutoConfigurationTest {
         }
 
         @Nested
-
         @DisplayName("Given a configuration that contributes a loader bean")
-
         class ConfigurationThatContributesLoaderBean {
             @BeforeEach
             void setUp() {
@@ -121,9 +117,7 @@ public class ContentFileSystemAutoConfigurationTest {
         }
 
         @Nested
-
         @DisplayName("Given a configuration with explicit @EnableFileSystemStores")
-
         class ConfigurationWithExplicitEnableFileSystemStoresAnnotation {
             @BeforeEach
             void setUp() {

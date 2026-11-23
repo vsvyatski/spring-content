@@ -43,7 +43,7 @@ public class StoreUtilsTest {
     }
 
     @Nested
-   class GetStoreCandidates {
+    class GetStoreCandidates {
         @Nested
         @DisplayName("When multiple storage beans are found")
         class MultipleStorageBeansAreFound {
@@ -83,9 +83,7 @@ public class StoreUtilsTest {
                 }
 
                 @Nested
-
                 @DisplayName("When store beans cant be matched against signature types but registrar matches defaults")
-
                 class StoreBeansCantBeMatchedAgainstSignatureTypesButRegistrarMatchesDefaults {
                     @BeforeEach
                     void setUp() {
@@ -125,9 +123,7 @@ public class StoreUtilsTest {
                 }
 
                 @Nested
-
                 @DisplayName("When store beans cannot be matched against signature types and the registrar ID does not match")
-
                 class StoreBeansCantBeMatchedAgainstSignatureTypesAndRegistrarDoesntMatch {
                     @BeforeEach
                     void setUp() {
@@ -169,9 +165,7 @@ public class StoreUtilsTest {
             }
 
             @Nested
-
             @DisplayName("When multi mode is false")
-
             class MultiModeIsFalse {
                 @BeforeEach
                 void setUp() {

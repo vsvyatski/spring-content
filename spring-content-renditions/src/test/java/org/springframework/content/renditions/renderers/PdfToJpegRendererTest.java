@@ -31,7 +31,7 @@ public class PdfToJpegRendererTest {
     private Exception e;
 
     @Nested
-   class WordToJpegRenderer {
+    class WordToJpegRenderer {
         @Nested
         class Consumes {
             @BeforeEach
@@ -99,9 +99,7 @@ public class PdfToJpegRendererTest {
                     }
 
                     @Nested
-
                     @DisplayName("When the pdf document fails to return a thumbnail")
-
                     class PdfDocumentFailsToReturnThumbnail {
                         @BeforeEach
                         void setUp() throws IOException {
@@ -139,9 +137,7 @@ public class PdfToJpegRendererTest {
                 }
 
                 @Nested
-
                 @DisplayName("When the input stream is not a valid pdf file")
-
                 class InputStreamIsNotValidPdfFile {
                     @BeforeEach
                     void setUp() throws IOException {
@@ -172,9 +168,7 @@ public class PdfToJpegRendererTest {
             }
 
             @Nested
-
             @DisplayName("Given a null input stream")
-
             class ullInputStream {
                 @BeforeEach
                 void setUp() {

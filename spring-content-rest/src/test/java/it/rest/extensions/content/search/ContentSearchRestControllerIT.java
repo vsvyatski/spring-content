@@ -356,7 +356,7 @@ public class ContentSearchRestControllerIT {
     }
 
     @Nested
-   class ContentSearchRestControllerCases {
+    class ContentSearchRestControllerCases {
         @Nested
         class SearchEndpointCases {
             @Nested
@@ -389,9 +389,7 @@ public class ContentSearchRestControllerIT {
             }
 
             @Nested
-
             @DisplayName("Given a store that is not searchable")
-
             class StoreThatIsNotSearchable {
                 @BeforeEach
                 void setUp() {
@@ -420,9 +418,7 @@ public class ContentSearchRestControllerIT {
             }
 
             @Nested
-
             @DisplayName("Given the search method is invalid")
-
             class SearchMethodIsInvalid {
                 @BeforeEach
                 void setUp() {
@@ -448,9 +444,7 @@ public class ContentSearchRestControllerIT {
             }
 
             @Nested
-
             @DisplayName("Given no keywords are specified")
-
             class NoKeywordsAreSpecified {
                 @BeforeEach
                 void setUp() {
@@ -475,9 +469,7 @@ public class ContentSearchRestControllerIT {
             }
 
             @Nested
-
             @DisplayName("Given paged results are requested")
-
             class PagedResultsAreRequested {
                 @BeforeEach
                 void setUp() {
@@ -507,9 +499,7 @@ public class ContentSearchRestControllerIT {
             }
 
             @Nested
-
             @DisplayName("Given an entity with an overloaded id field")
-
             class EntityWithOverloadedIdField {
                 @Nested
                 @DisplayName("Given no results are found")
@@ -548,9 +538,7 @@ public class ContentSearchRestControllerIT {
                 }
 
                 @Nested
-
                 @DisplayName("Given results are found")
-
                 class ResultsAreFound {
                     @BeforeEach
                     void setUp() {
@@ -614,9 +602,7 @@ public class ContentSearchRestControllerIT {
                 }
 
                 @Nested
-
                 @DisplayName("Given results contain orphaned fulltext documents")
-
                 class ResultsContainOrphanedFulltextDocuments {
                     @BeforeEach
                     void setUp() {
@@ -670,9 +656,7 @@ public class ContentSearchRestControllerIT {
             }
 
             @Nested
-
             @DisplayName("Given an entity with separate id content ID fields")
-
             class EntityWithSeparateIdContentIdFields {
                 @Nested
                 @DisplayName("Given no results are found")
@@ -711,9 +695,7 @@ public class ContentSearchRestControllerIT {
                 }
 
                 @Nested
-
                 @DisplayName("Given results are found with entity i ds")
-
                 class ResultsAreFoundWithEntityIDs {
                     @BeforeEach
                     void setUp() {
@@ -777,9 +759,7 @@ public class ContentSearchRestControllerIT {
                 }
 
                 @Nested
-
                 @DisplayName("Given results contain orphaned fulltext documents")
-
                 class ResultsContainOrphanedFulltextDocuments {
                     @BeforeEach
                     void setUp() {
@@ -833,9 +813,7 @@ public class ContentSearchRestControllerIT {
             }
 
             @Nested
-
             @DisplayName("Given results are found returning a custom result type")
-
             class ResultsAreFoundReturningCustomResultType {
                 @BeforeEach
                 void setUp() {
@@ -894,9 +872,7 @@ public class ContentSearchRestControllerIT {
             }
 
             @Nested
-
             @DisplayName("Given paged results are found returning a custom result type")
-
             class PagedResultsAreFoundReturningCustomResultType {
                 @BeforeEach
                 void setUp() {
@@ -945,9 +921,7 @@ public class ContentSearchRestControllerIT {
             }
 
             @Nested
-
             @DisplayName("Given a repository with no entity lookup query method")
-
             class RepositoryWithNoEntityLookupQueryMethod {
                 @BeforeEach
                 void setUp() {

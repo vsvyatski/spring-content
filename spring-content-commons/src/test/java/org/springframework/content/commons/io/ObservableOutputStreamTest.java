@@ -25,7 +25,7 @@ public class ObservableOutputStreamTest {
     private Throwable exception;
 
     @Nested
-   class ObservableOutputStreamCases {
+    class ObservableOutputStreamCases {
         @Nested
         @DisplayName("When the output stream has listeners")
         class OutputStreamHasListeners {
@@ -47,9 +47,7 @@ public class ObservableOutputStreamTest {
         }
 
         @Nested
-
         @DisplayName("When the output stream is written to")
-
         class OutputStreamIsWrittenTo {
             @BeforeEach
             void setUp() throws IOException {
@@ -71,9 +69,7 @@ public class ObservableOutputStreamTest {
         }
 
         @Nested
-
         @DisplayName("When the output stream is closed")
-
         class OutputStreamIsClosed {
             @BeforeEach
             void setUp() throws IOException {
@@ -98,9 +94,7 @@ public class ObservableOutputStreamTest {
         }
 
         @Nested
-
         @DisplayName("When the output stream is closed and throws an exception")
-
         class OutputStreamIsClosedAndThrowsException {
             @BeforeEach
             void setUp() throws IOException {

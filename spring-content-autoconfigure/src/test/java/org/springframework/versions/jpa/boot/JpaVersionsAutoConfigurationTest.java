@@ -68,7 +68,7 @@ public class JpaVersionsAutoConfigurationTest {
     }
 
     @Nested
-   class JpaVersionsAutoConfigurationCases {
+    class JpaVersionsAutoConfigurationCases {
         @Nested
         @DisplayName("Given an application context that relies on auto configuration")
         class ApplicationContextThatReliesOnAutoConfiguration {

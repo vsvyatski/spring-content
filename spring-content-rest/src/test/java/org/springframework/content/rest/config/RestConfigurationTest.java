@@ -47,7 +47,7 @@ public class RestConfigurationTest {
     }
 
     @Nested
-   class RestConfigurationCases {
+    class RestConfigurationCases {
         @Nested
         @DisplayName("Given a context with a content rest configuration")
         class ContextWithContentRestConfiguration {

@@ -87,7 +87,7 @@ public class ShortcutExclusionsIT {
     }
 
     @Nested
-   class ExcludedShortcutLinkTests {
+    class ExcludedShortcutLinkTests {
         @Nested
         @DisplayName("When all content property shortcut ge ts are excluded and a non JSON request is made")
         class AllContentPropertyShortcutGETsAreExcludedAndNonJsonRequestIsMade {

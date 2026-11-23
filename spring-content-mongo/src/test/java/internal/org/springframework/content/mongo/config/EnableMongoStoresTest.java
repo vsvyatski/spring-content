@@ -85,7 +85,7 @@ public class EnableMongoStoresTest {
     }
 
     @Nested
-   class EnableMongoStoresCases {
+    class EnableMongoStoresCases {
         @Nested
         @DisplayName("Given an enabled configuration with a mongo content store bean")
         class EnabledConfigurationWithMongoContentStoreBean {
@@ -113,9 +113,7 @@ public class EnableMongoStoresTest {
         }
 
         @Nested
-
         @DisplayName("Given a context with a custom converter")
-
         class ContextWithCustomConverter {
             @BeforeEach
             void setUp() {
@@ -141,9 +139,7 @@ public class EnableMongoStoresTest {
         }
 
         @Nested
-
         @DisplayName("Given an enabled configuration with no mongo content store beans")
-
         class EnabledConfigurationWithNoMongoContentStoreBeans {
             @BeforeEach
             void setUp() {

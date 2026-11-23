@@ -35,9 +35,7 @@ public class FsTypeSupportTest {
     Object id;
 
     @Nested
-
     @DisplayName("Java.util.uuid")
-
     class JavaUtilUuid {
         @Nested
         @DisplayName("Given a content entity")
@@ -70,9 +68,7 @@ public class FsTypeSupportTest {
             }
 
             @Nested
-
             @DisplayName("Given spring content generates the id")
-
             class StoreGeneratesId {
                 @BeforeEach
                 void setUp() {
@@ -101,9 +97,7 @@ public class FsTypeSupportTest {
     }
 
     @Nested
-
     @DisplayName("Java.net.uri")
-
     class JavaNetUri {
         @Nested
         @DisplayName("Given a content entity")
@@ -138,9 +132,7 @@ public class FsTypeSupportTest {
     }
 
     @Nested
-
     @DisplayName("Java.lang.long")
-
     class JavaLangLong {
         @Nested
         @DisplayName("Given a content entity")
@@ -175,9 +167,7 @@ public class FsTypeSupportTest {
     }
 
     @Nested
-
     @DisplayName("Java.math.biginteger")
-
     class JavaMathBigInteger {
         @Nested
         @DisplayName("Given a content entity")

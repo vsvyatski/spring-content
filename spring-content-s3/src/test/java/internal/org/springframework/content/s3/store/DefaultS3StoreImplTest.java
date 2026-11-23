@@ -119,7 +119,7 @@ public class DefaultS3StoreImplTest {
     }
 
     @Nested
-   class DefaultS3StoreImplCases {
+    class DefaultS3StoreImplCases {
         @Nested
         class Store {
             @Nested
@@ -167,9 +167,7 @@ public class DefaultS3StoreImplTest {
                 }
 
                 @Nested
-
                 @DisplayName("Given the store sid is a custom id type")
-
                 class StoreSIDIsCustomIDType {
                     @Nested
                     @DisplayName("Given a default bucket is set")
@@ -229,9 +227,7 @@ public class DefaultS3StoreImplTest {
                     }
 
                     @Nested
-
                     @DisplayName("Given a default bucket is not set")
-
                     class DefaultBucketIsNotSet {
                         @Nested
                         @DisplayName("Given a resolver that does not validate")
@@ -277,9 +273,7 @@ public class DefaultS3StoreImplTest {
                 }
 
                 @Nested
-
                 @DisplayName("Given a multi tenant configuration")
-
                 class MultiTenantConfiguration {
                     @BeforeEach
                     void setUp() {
@@ -377,9 +371,7 @@ public class DefaultS3StoreImplTest {
                         }
 
                         @Nested
-
                         @DisplayName("When called with an entity that has an bucket value")
-
                         class CalledWithEntityThatHasBucketValue {
                             @BeforeEach
                             void setUp() {
@@ -426,9 +418,7 @@ public class DefaultS3StoreImplTest {
                         }
 
                         @Nested
-
                         @DisplayName("When called with an entity that has no associated resource")
-
                         class CalledWithEntityThatHasNoAssociatedResource {
                             @BeforeEach
                             void setUp() {
@@ -465,9 +455,7 @@ public class DefaultS3StoreImplTest {
                 }
 
                 @Nested
-
                 @DisplayName("Given a custom id resolver")
-
                 class CustomIdResolver {
                     @Nested
                     @DisplayName("Given a default bucket")
@@ -523,9 +511,7 @@ public class DefaultS3StoreImplTest {
                 }
 
                 @Nested
-
                 @DisplayName("Given a custom id resolver that cannot resolve the bucket")
-
                 class CustomIdResolverThatCannotResolveBucket {
                     @Nested
                     @DisplayName("Given the default bucket is not set")
@@ -630,9 +616,7 @@ public class DefaultS3StoreImplTest {
                         }
 
                         @Nested
-
                         @DisplayName("When called with an entity that has an bucket value")
-
                         class CalledWithEntityThatHasBucketValue {
                             @BeforeEach
                             void setUp() {
@@ -679,9 +663,7 @@ public class DefaultS3StoreImplTest {
                         }
 
                         @Nested
-
                         @DisplayName("When called with an entity that has no associated resource")
-
                         class CalledWithEntityThatHasNoAssociatedResource {
                             @BeforeEach
                             void setUp() {
@@ -718,9 +700,7 @@ public class DefaultS3StoreImplTest {
                 }
 
                 @Nested
-
                 @DisplayName("Given a custom id resolver")
-
                 class CustomIdResolver {
                     @Nested
                     @DisplayName("Given a default bucket")
@@ -783,9 +763,7 @@ public class DefaultS3StoreImplTest {
                 }
 
                 @Nested
-
                 @DisplayName("Given a custom id resolver that cannot resolve the bucket")
-
                 class CustomIdResolverThatCannotResolveBucket {
                     @Nested
                     @DisplayName("Given the default bucket is not set")
@@ -959,9 +937,7 @@ public class DefaultS3StoreImplTest {
                             }
 
                             @Nested
-
                             @DisplayName("When the resource output stream throws an io exception")
-
                             class ResourceOutputStreamThrowsIOException {
                                 @BeforeEach
                                 void setUp() throws IOException {
@@ -1014,9 +990,7 @@ public class DefaultS3StoreImplTest {
                         }
 
                         @Nested
-
                         @DisplayName("When the content does not already exist")
-
                         class ContentDoesNotAlreadyExist {
                             @BeforeEach
                             void setUp() throws IOException {
@@ -1081,9 +1055,7 @@ public class DefaultS3StoreImplTest {
                         }
 
                         @Nested
-
                         @DisplayName("When s3throws an s3exception")
-
                         class S3ThrowsS3Exception {
                             @BeforeEach
                             void setUp() throws IOException {
@@ -1165,9 +1137,7 @@ public class DefaultS3StoreImplTest {
                 }
 
                 @Nested
-
                 @DisplayName("When the resource throws an io exception")
-
                 class ResourceThrowsIOException {
                     @BeforeEach
                     void setUp() throws IOException {
@@ -1265,9 +1235,7 @@ public class DefaultS3StoreImplTest {
                                 }
 
                                 @Nested
-
                                 @DisplayName("When the resource input stream throws an io exception")
-
                                 class ResourceInputStreamThrowsIOException {
                                     @BeforeEach
                                     void setUp() throws IOException {
@@ -1315,9 +1283,7 @@ public class DefaultS3StoreImplTest {
                             }
 
                             @Nested
-
                             @DisplayName("And the resource doesnt exist")
-
                             class ResourceDoesntExist {
                                 @BeforeEach
                                 void setUp() throws IOException {
@@ -1369,7 +1335,7 @@ public class DefaultS3StoreImplTest {
                             }
 
                             @Nested
-                           class WithNullContentId {
+                            class WithNullContentId {
                                 @BeforeEach
                                 void setUp() throws IOException {
                                     resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
@@ -1470,9 +1436,7 @@ public class DefaultS3StoreImplTest {
                                 }
 
                                 @Nested
-
                                 @DisplayName("When the property has a dedicated content ID field")
-
                                 class PropertyHasDedicatedContentIdField {
                                     @BeforeEach
                                     void setUp() {
@@ -1516,9 +1480,7 @@ public class DefaultS3StoreImplTest {
                                 }
 
                                 @Nested
-
                                 @DisplayName("When the property s content ID field also is the jakarta persistence id field")
-
                                 class PropertySContentIdFieldAlsoIsJakartaPersistenceIdField {
                                     @BeforeEach
                                     void setUp() {
@@ -1565,9 +1527,7 @@ public class DefaultS3StoreImplTest {
                                 }
 
                                 @Nested
-
                                 @DisplayName("When the property s content ID field also is the spring id field")
-
                                 class PropertySContentIdFieldAlsoIsSpringIdField {
                                     @BeforeEach
                                     void setUp() {
@@ -1615,9 +1575,7 @@ public class DefaultS3StoreImplTest {
                             }
 
                             @Nested
-
                             @DisplayName("And the content doesnt exist")
-
                             class ContentDoesntExist {
                                 @BeforeEach
                                 void setUp() {

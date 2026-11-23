@@ -163,7 +163,7 @@ public class ClassWalkerTest {
     }
 
     @Nested
-   class ClassWalkerCases {
+    class ClassWalkerCases {
         @Test
         void shouldVisitAllFields() {
             ContentPropertyMappingContextVisitor visitor = new ContentPropertyMappingContextVisitor("/", ".");
@@ -223,9 +223,7 @@ public class ClassWalkerTest {
     }
 
     @Nested
-
     @DisplayName("Given a class with uncorrelated attributes")
-
     class ClassWithUncorrelatedAttributes {
         @Test
         void shouldReturnTwoContentProperties() {
@@ -246,9 +244,7 @@ public class ClassWalkerTest {
     }
 
     @Nested
-
     @DisplayName("Given a class with correlated attributes")
-
     class ClassWithCorrelatedAttributes {
         @Test
         void shouldReturnTwoContentProperties() {
@@ -269,9 +265,7 @@ public class ClassWalkerTest {
     }
 
     @Nested
-
     @DisplayName("Given a class with a child with uncorrelated attributes")
-
     class ClassWithChildWithUncorrelatedAttributes {
         @Test
         void shouldReturnTwoContentProperties() {
@@ -292,9 +286,7 @@ public class ClassWalkerTest {
     }
 
     @Nested
-
     @DisplayName("Given a class with relation attributes")
-
     class ClassWithRelationAttributes {
         @Test
         void shouldNotTraverseThem() {
@@ -307,9 +299,7 @@ public class ClassWalkerTest {
     }
 
     @Nested
-
     @DisplayName("Given inherited content ID on superclass only")
-
     class InheritedContentIdOnSuperclassOnly {
         @Test
         void shouldCollapseToSingleContentProperty() {
@@ -329,9 +319,7 @@ public class ClassWalkerTest {
     }
 
     @Nested
-
     @DisplayName("Given a class with content properties in its superclass")
-
     class ClassWithContentPropertiesInItsSuperClass {
         @Test
         void shouldVisitThem() {
@@ -352,9 +340,7 @@ public class ClassWalkerTest {
     }
 
     @Nested
-
     @DisplayName("Given a class with multiple child content property objects")
-
     class ClassWithMultipleChildContentPropertyObjects {
         @Test
         void shouldReturnTwoContentProperties() {
@@ -385,9 +371,7 @@ public class ClassWalkerTest {
     }
 
     @Nested
-
     @DisplayName("Given a class with a child with multiple content property objects")
-
     class ClassWithChildWithMultipleContentPropertyObjects {
         @Test
         void shouldReturnTwoContentProperties() {
@@ -418,9 +402,7 @@ public class ClassWalkerTest {
     }
 
     @Nested
-
     @DisplayName("Given a class with a child with a child with multiple content property objects")
-
     class ClassWithChildWithChildWithMultipleContentPropertyObjects {
         @Test
         void shouldReturnTwoContentProperties() {

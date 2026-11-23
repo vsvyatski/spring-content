@@ -32,7 +32,7 @@ public class ContentRenditionsAutoConfigurationTest {
     }
 
     @Nested
-   class ContentRenditionsAutoConfiguration {
+    class ContentRenditionsAutoConfiguration {
         @Nested
         @DisplayName("Given a default configuration")
         class DefaultConfiguration {

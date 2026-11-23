@@ -68,7 +68,7 @@ public class NestedContentPropertyRestEndpointsIT {
     private MockMvc mvc;
 
     @Nested
-   class NestedContentPropertyRESTEndpoints {
+    class NestedContentPropertyRESTEndpoints {
         @Nested
         @DisplayName("Given an entity with a simple content property")
         class EntityWithSimpleContentProperty {
@@ -91,9 +91,7 @@ public class NestedContentPropertyRestEndpointsIT {
             }
 
             @Nested
-
             @DisplayName("Given apost to the entity endpoint with a multipart form request")
-
             class PostToEntityEndpointWithMultipartFormRequest {
                 @BeforeEach
                 void setUp() {
@@ -129,9 +127,7 @@ public class NestedContentPropertyRestEndpointsIT {
             }
 
             @Nested
-
             @DisplayName("Given a request to a non existent content property")
-
             class RequestToNonExistentContentProperty {
                 @BeforeEach
                 void setUp() {
@@ -149,9 +145,7 @@ public class NestedContentPropertyRestEndpointsIT {
             }
 
             @Nested
-
             @DisplayName("Given that is has no content")
-
             class IsHasNoContent {
                 @Nested
                 @DisplayName("GET to repository id content property")
@@ -172,9 +166,7 @@ public class NestedContentPropertyRestEndpointsIT {
                 }
 
                 @Nested
-
                 @DisplayName("PUT to repository id content property")
-
                 class PutToRepositoryIdContentProperty {
                     @BeforeEach
                     void setUp() {
@@ -203,9 +195,7 @@ public class NestedContentPropertyRestEndpointsIT {
                 }
 
                 @Nested
-
                 @DisplayName("PUT to store ID with json content")
-
                 class PutToStoreIdWithJsonContent {
                     @BeforeEach
                     void setUp() {
@@ -236,9 +226,7 @@ public class NestedContentPropertyRestEndpointsIT {
             }
 
             @Nested
-
             @DisplayName("Given that it has content")
-
             class ItHasContent {
                 @Nested
                 @DisplayName("GET to repository id content property")
@@ -277,9 +265,7 @@ public class NestedContentPropertyRestEndpointsIT {
                 }
 
                 @Nested
-
                 @DisplayName("GET to repository id content property with a MIME type that matches a renderer")
-
                 class GetToRepositoryIdContentPropertyWithMimeTypeThatMatchesRenderer {
                     @BeforeEach
                     void setUp() throws IOException {
@@ -314,9 +300,7 @@ public class NestedContentPropertyRestEndpointsIT {
                 }
 
                 @Nested
-
                 @DisplayName("GET to repository ID content property with multiple MIME types the last of which matches content")
-
                 class GetToRepositoryIdWhenLastAcceptedMimeTypeMatches {
                     @BeforeEach
                     void setUp() throws IOException {
@@ -352,9 +336,7 @@ public class NestedContentPropertyRestEndpointsIT {
                 }
 
                 @Nested
-
                 @DisplayName("PUT to repository id content property")
-
                 class PutToRepositoryIdContentProperty {
                     @BeforeEach
                     void setUp() throws IOException {
@@ -391,9 +373,7 @@ public class NestedContentPropertyRestEndpointsIT {
                 }
 
                 @Nested
-
                 @DisplayName("DELETE to repository id content property")
-
                 class DeleteToRepositoryIdContentProperty {
                     @BeforeEach
                     void setUp() throws IOException {

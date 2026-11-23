@@ -45,9 +45,7 @@ public class StoreTest {
     }
 
     @Nested
-
     @DisplayName("Given a store definition")
-
     class StoreDefinition {
         @Nested
         @DisplayName("Given the application context")

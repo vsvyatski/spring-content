@@ -42,7 +42,7 @@ public class StoreResolverRestConfigurationIT {
     private SingleContentJpaLongIdMimeEntity tEntity;
 
     @Nested
-   class JpaRest {
+    class JpaRest {
         @Nested
         @DisplayName("Given that claim has existing content")
         class ClaimHasExistingContent {

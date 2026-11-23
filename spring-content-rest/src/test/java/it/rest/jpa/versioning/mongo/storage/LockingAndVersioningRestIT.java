@@ -208,7 +208,7 @@ public class LockingAndVersioningRestIT {
     }
 
     @Nested
-   class SpringContentRESTVersioningWithMongoStorage {
+    class SpringContentRESTVersioningWithMongoStorage {
         @Nested
         @DisplayName("Given a versionable entity with content")
         class VersionableEntityWithContent {

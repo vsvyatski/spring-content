@@ -76,7 +76,7 @@ public class ContextPathIT {
     }
 
     @Nested
-   class ContextPathContentTests {
+    class ContextPathContentTests {
         @Nested
         @DisplayName("Given an entity is the subject of a repository and storage")
         class EntityIsSubjectOfRepositoryAndStorage {

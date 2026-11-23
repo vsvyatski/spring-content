@@ -52,7 +52,7 @@ public class StoreRestEndpointsIT {
     private String request;
 
     @Nested
-   class StoreRestEndpoints {
+    class StoreRestEndpoints {
         @Nested
         @DisplayName("Given a root resource path")
         class RootResourcePath {
@@ -74,9 +74,7 @@ public class StoreRestEndpointsIT {
             }
 
             @Nested
-
             @DisplayName("Given apost to that path with content")
-
             class PostToThatPathWithContent {
                 @BeforeEach
                 void setUp() {
@@ -103,9 +101,7 @@ public class StoreRestEndpointsIT {
             }
 
             @Nested
-
             @DisplayName("Given adelete request to that path")
-
             class DeleteRequestToThatPath {
                 @BeforeEach
                 void setUp() {
@@ -123,9 +119,7 @@ public class StoreRestEndpointsIT {
         }
 
         @Nested
-
         @DisplayName("Given a root resource")
-
         class RootResource {
             @BeforeEach
             void setUp() throws IOException {
@@ -181,9 +175,7 @@ public class StoreRestEndpointsIT {
             }
 
             @Nested
-
             @DisplayName("POST to store path with multi part form data")
-
             class PostToStorePathWithMultiPartFormData {
                 @BeforeEach
                 void setUp() throws IOException {
@@ -218,9 +210,7 @@ public class StoreRestEndpointsIT {
         }
 
         @Nested
-
         @DisplayName("Given a nested resource")
-
         class estedResource {
             @BeforeEach
             void setUp() throws IOException {
@@ -276,9 +266,7 @@ public class StoreRestEndpointsIT {
             }
 
             @Nested
-
             @DisplayName("Given a typical browser request")
-
             class TypicalBrowserRequest {
                 @BeforeEach
                 void setUp() throws IOException {
@@ -308,9 +296,7 @@ public class StoreRestEndpointsIT {
             }
 
             @Nested
-
             @DisplayName("POST to store path with multi part form data")
-
             class PostToStorePathWithMultiPartFormData {
                 @BeforeEach
                 void setUp() throws IOException {

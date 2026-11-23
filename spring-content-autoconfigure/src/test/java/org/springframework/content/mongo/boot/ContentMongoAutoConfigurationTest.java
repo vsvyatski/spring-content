@@ -62,7 +62,7 @@ public class ContentMongoAutoConfigurationTest {
     }
 
     @Nested
-   class ContentMongoAutoConfiguration {
+    class ContentMongoAutoConfiguration {
         @BeforeEach
         void setUp() {
             contextRunner = new ApplicationContextRunner()

@@ -87,9 +87,7 @@ public class StoreFragmentTest {
     }
 
     @Nested
-
     @DisplayName("Given a store definition cases")
-
     class StoreDefinitionCases {
         @Nested
         @DisplayName("Given the application context")

@@ -20,7 +20,7 @@ public class ObservableInputStreamTest {
     private InputStreamObserver observer;
 
     @Nested
-   class ObservableInputStreamCases {
+    class ObservableInputStreamCases {
         @Nested
         @DisplayName("When an input stream is observed")
         class InputStreamIsObserved {
@@ -42,9 +42,7 @@ public class ObservableInputStreamTest {
             }
 
             @Nested
-
             @DisplayName("When the input stream is read")
-
             class InputStreamIsRead {
                 @BeforeEach
                 void setUp() {
@@ -62,9 +60,7 @@ public class ObservableInputStreamTest {
             }
 
             @Nested
-
             @DisplayName("When the input stream is closed")
-
             class InputStreamIsClosed {
                 @BeforeEach
                 void setUp() throws IOException {

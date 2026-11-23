@@ -55,7 +55,7 @@ public class TextPlainToJpegRendererTest {
     }
 
     @Nested
-   class TextPlainToJpegRendererCases {
+    class TextPlainToJpegRendererCases {
         @Nested
         class Consumes {
             @BeforeEach
@@ -112,9 +112,7 @@ public class TextPlainToJpegRendererTest {
                 }
 
                 @Nested
-
                 @DisplayName("Given a multi line input")
-
                 class MultiLineInput {
                     @BeforeEach
                     void setUp() {
@@ -137,9 +135,7 @@ public class TextPlainToJpegRendererTest {
                 }
 
                 @Nested
-
                 @DisplayName("Given a long line and wrapping")
-
                 class LongLineAndWrapping {
                     @BeforeEach
                     void setUp() {
@@ -164,9 +160,7 @@ public class TextPlainToJpegRendererTest {
                 }
 
                 @Nested
-
                 @DisplayName("Given a long line and no wrapping")
-
                 class LongLineAndNoWrapping {
                     @BeforeEach
                     void setUp() {
@@ -190,9 +184,7 @@ public class TextPlainToJpegRendererTest {
                 }
 
                 @Nested
-
                 @DisplayName("Given a line file will overflow the image size")
-
                 class LineFileWillOverflowImageSize {
                     @BeforeEach
                     void setUp() {
@@ -217,9 +209,7 @@ public class TextPlainToJpegRendererTest {
             }
 
             @Nested
-
             @DisplayName("When the input stream is not a valid word file")
-
             class InputStreamIsNotValidWordFile {
                 @BeforeEach
                 void setUp() {
@@ -241,9 +231,7 @@ public class TextPlainToJpegRendererTest {
             }
 
             @Nested
-
             @DisplayName("Given a null input stream")
-
             class ullInputStream {
                 @BeforeEach
                 void setUp() {

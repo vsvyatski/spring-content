@@ -40,7 +40,7 @@ public class FullyQualifiedLinksIT {
     private WebApplicationContext context;
 
     @Nested
-   class ContextPathContentTests {
+    class ContextPathContentTests {
         @Nested
         @DisplayName("Given an entity is the subject of a repository and storage")
         class EntityIsSubjectOfRepositoryAndStorageContent extends ContentTests {

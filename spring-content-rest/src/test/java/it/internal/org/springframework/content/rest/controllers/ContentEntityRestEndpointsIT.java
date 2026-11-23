@@ -98,13 +98,13 @@ public class ContentEntityRestEndpointsIT {
     private JsonIgnoredContentEntity testEntity9;
 
     @Nested
-   class ContentEntityRESTEndpoints {
+    class ContentEntityRESTEndpoints {
         @Nested
         class EntityWithSingleUncorrelatedContentProperties {
             @Nested
             class RepositoryAndStorageAreExportedToSameURI {
                 @Nested
-               class DeleteToStoreIdSoftDeleteCustomHandler {
+                class DeleteToStoreIdSoftDeleteCustomHandler {
                     @BeforeEach
                     void setUp() {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -125,7 +125,7 @@ public class ContentEntityRestEndpointsIT {
             @Nested
             class RepositoryAndStorageAreExportedToDifferentURIs {
                 @Nested
-               class OptionsRequestToRepositoryFromKnownHost {
+                class OptionsRequestToRepositoryFromKnownHost {
                     @BeforeEach
                     void setUp() {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -145,9 +145,7 @@ public class ContentEntityRestEndpointsIT {
             }
 
             @Nested
-
             @DisplayName("Given an entity with @Version")
-
             class EntityWithVersion extends VersionTests {
                 @BeforeEach
                 void setUp() {
@@ -169,9 +167,7 @@ public class ContentEntityRestEndpointsIT {
             }
 
             @Nested
-
             @DisplayName("Given an entity with @LastModifiedDate")
-
             class EntityWithLastModifiedDate extends LastModifiedDateTests {
                 @BeforeEach
                 void setUp() {

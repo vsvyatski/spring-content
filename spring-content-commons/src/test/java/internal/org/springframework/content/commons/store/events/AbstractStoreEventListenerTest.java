@@ -346,7 +346,7 @@ public class AbstractStoreEventListenerTest {
     }
 
     @Nested
-   class OnApplicationEvent {
+    class OnApplicationEvent {
 
         @BeforeEach
         void setUp() {

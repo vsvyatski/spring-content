@@ -40,7 +40,7 @@ public class HypermediaConfigurationTest {
     }
 
     @Nested
-   class HypermediaConfigurationCases {
+    class HypermediaConfigurationCases {
         @Nested
         @DisplayName("Given a context with a content rest configuration")
         class ContextWithContentRestConfiguration {

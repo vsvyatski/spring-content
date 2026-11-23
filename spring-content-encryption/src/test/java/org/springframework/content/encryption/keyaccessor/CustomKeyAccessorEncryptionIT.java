@@ -150,7 +150,7 @@ public class CustomKeyAccessorEncryptionIT {
     }
 
     @Nested
-   class ClientSideEncryptionWithCustomKeyStorageCases {
+    class ClientSideEncryptionWithCustomKeyStorageCases {
         @Nested
         @DisplayName("Given content")
         class Content {
@@ -201,9 +201,7 @@ public class CustomKeyAccessorEncryptionIT {
             }
 
             @Nested
-
             @DisplayName("When the content is unset")
-
             class ContentIsUnset {
                 @BeforeEach
                 void setUp() {

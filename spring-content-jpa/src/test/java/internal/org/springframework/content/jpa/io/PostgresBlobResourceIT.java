@@ -85,7 +85,7 @@ public class PostgresBlobResourceIT {
     }
 
     @Nested
-   class PostgresBlobResourceCases {
+    class PostgresBlobResourceCases {
         @Nested
         @DisplayName("Given there is content")
         class Content {

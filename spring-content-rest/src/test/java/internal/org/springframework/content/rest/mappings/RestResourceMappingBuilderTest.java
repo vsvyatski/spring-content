@@ -63,9 +63,7 @@ public class RestResourceMappingBuilderTest {
     }
 
     @Nested
-
     @DisplayName("Given inherited content ID on superclass only")
-
     class InheritedContentIdOnSuperclassOnly {
         @Test
         void shouldMapRootContentInLooseMode() {
@@ -78,7 +76,7 @@ public class RestResourceMappingBuilderTest {
     }
 
     @Nested
-   class RestResourceMappingBuilderCases {
+    class RestResourceMappingBuilderCases {
         @Test
         void shouldCreateAMapOfContentPropertyPathsToRequestMappingPaths() {
             RestResourceMappingBuilder visitor = new RestResourceMappingBuilder(RestResource::path);

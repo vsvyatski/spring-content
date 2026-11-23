@@ -38,7 +38,7 @@ public class GridFSResourceTest {
     }
 
     @Nested
-   class Resource {
+    class Resource {
 
         @Test
         void isOpenShouldReturnTrue() {
@@ -63,9 +63,7 @@ public class GridFSResourceTest {
             }
 
             @Nested
-
             @DisplayName("Given the file exists")
-
             class FileExists {
                 @BeforeEach
                 void fileExists() {
@@ -80,9 +78,7 @@ public class GridFSResourceTest {
             }
 
             @Nested
-
             @DisplayName("Given the file doesnt exist")
-
             class FileDoesntExist {
                 @Test
                 void shouldReturnZero() throws Exception {
@@ -109,9 +105,7 @@ public class GridFSResourceTest {
             }
 
             @Nested
-
             @DisplayName("Given the file exists")
-
             class FileExists {
                 @BeforeEach
                 void fileExists() {
@@ -126,9 +120,7 @@ public class GridFSResourceTest {
             }
 
             @Nested
-
             @DisplayName("Given the file doesnt exist")
-
             class FileDoesntExist {
                 @Test
                 void shouldReturnNull() {
@@ -157,9 +149,7 @@ public class GridFSResourceTest {
             }
 
             @Nested
-
             @DisplayName("Given the file doesnt exist")
-
             class FileDoesntExist {
                 @Test
                 void shouldReturnFalse() {
@@ -188,9 +178,7 @@ public class GridFSResourceTest {
             }
 
             @Nested
-
             @DisplayName("Given the file doesnt exist")
-
             class FileDoesntExist {
                 @Test
                 void shouldReturnNull() throws Exception {
@@ -208,9 +196,7 @@ public class GridFSResourceTest {
             }
 
             @Nested
-
             @DisplayName("Given the file exists")
-
             class FileExists {
                 @BeforeEach
                 void fileExists() {
@@ -226,9 +212,7 @@ public class GridFSResourceTest {
             }
 
             @Nested
-
             @DisplayName("Given the file doesnt exist")
-
             class FileDoesntExist {
                 @Test
                 void shouldReturnMinusOne() throws Exception {
@@ -241,7 +225,7 @@ public class GridFSResourceTest {
     }
 
     @Nested
-   class WritableResource {
+    class WritableResource {
         @Test
         void isWritableShouldReturnTrue() {
             assertThat(r.isWritable()).isTrue();
@@ -262,7 +246,7 @@ public class GridFSResourceTest {
     }
 
     @Nested
-   class DeletableResource {
+    class DeletableResource {
         @Nested
         class Delete {
             @Nested
@@ -282,9 +266,7 @@ public class GridFSResourceTest {
             }
 
             @Nested
-
             @DisplayName("Given the file doesnt exist")
-
             class FileDoesntExist {
                 @Test
                 void shouldNotDelete() {

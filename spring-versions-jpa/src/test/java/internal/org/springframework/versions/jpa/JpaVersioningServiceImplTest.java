@@ -17,7 +17,7 @@ public class JpaVersioningServiceImplTest {
     private VersioningUnitFields successor;
 
     @Nested
-   class JpaVersioningServiceImplCases {
+    class JpaVersioningServiceImplCases {
         @Nested
         class EstablishAncestralRoot {
             @BeforeEach

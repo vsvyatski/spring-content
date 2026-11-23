@@ -32,7 +32,7 @@ public abstract class AbstractRestIT {
     private AuditedNestedContentEntity existingClaim;
 
     @Nested
-   class JpaRest {
+    class JpaRest {
         @Nested
         class SpringContentREST {
             @Nested
@@ -91,9 +91,7 @@ public abstract class AbstractRestIT {
                 }
 
                 @Nested
-
                 @DisplayName("Given that claim has existing content")
-
                 class ClaimHasExistingContent {
                     @BeforeEach
                     void setUp() {

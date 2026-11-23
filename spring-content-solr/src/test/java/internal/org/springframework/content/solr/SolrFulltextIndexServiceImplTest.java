@@ -33,7 +33,7 @@ public class SolrFulltextIndexServiceImplTest {
     private SolrProperties props;
 
     @Nested
-   class IndexCases {
+    class IndexCases {
         @Nested
         @DisplayName("When solr throws solr server exception")
         class SolrThrowsSolrServerException {
@@ -62,9 +62,7 @@ public class SolrFulltextIndexServiceImplTest {
         }
 
         @Nested
-
         @DisplayName("When solr throws io exception")
-
         class SolrThrowsIOException {
             @Test
             void shouldThrowStoreAccessException() throws Exception {
@@ -92,7 +90,7 @@ public class SolrFulltextIndexServiceImplTest {
     }
 
     @Nested
-   class UnindexCases {
+    class UnindexCases {
         @Nested
         @DisplayName("When solr throws solr server exception")
         class SolrThrowsSolrServerException {
@@ -120,9 +118,7 @@ public class SolrFulltextIndexServiceImplTest {
         }
 
         @Nested
-
         @DisplayName("When solr throws io exception")
-
         class SolrThrowsIOException {
             @Test
             void shouldThrowStoreAccessException() throws Exception {

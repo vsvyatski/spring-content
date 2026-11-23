@@ -58,7 +58,7 @@ public class EnableGCPStorageTest {
     }
 
     @Nested
-   class EnableGCPStorageCases {
+    class EnableGCPStorageCases {
         @Nested
         @DisplayName("Given a context and a configuration with an gcs content store")
         class ContextAndConfigurationWithGCSContentStore {
@@ -86,9 +86,7 @@ public class EnableGCPStorageTest {
         }
 
         @Nested
-
         @DisplayName("Given a context with a configurer")
-
         class ContextWithConfigurer {
             @BeforeEach
             void setUp() {
@@ -110,9 +108,7 @@ public class EnableGCPStorageTest {
         }
 
         @Nested
-
         @DisplayName("Given a context with an empty configuration")
-
         class ContextWithEmptyConfiguration {
             @BeforeEach
             void setUp() {

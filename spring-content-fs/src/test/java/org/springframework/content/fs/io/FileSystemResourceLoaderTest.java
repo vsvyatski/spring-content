@@ -24,7 +24,7 @@ public class FileSystemResourceLoaderTest {
     private File file;
 
     @Nested
-   class FileSystemResourceLoaderCases {
+    class FileSystemResourceLoaderCases {
         @Nested
         class GetResource {
             @Nested
@@ -48,9 +48,7 @@ public class FileSystemResourceLoaderTest {
             }
 
             @Nested
-
             @DisplayName("Given malformed path without a trailing slash")
-
             class MalformedPathWithoutTrailingSlash {
                 @Test
                 @DisabledOnOs(OS.WINDOWS)
@@ -72,7 +70,7 @@ public class FileSystemResourceLoaderTest {
     }
 
     @Nested
-   class DeletableResourceCases {
+    class DeletableResourceCases {
         @Nested
         class Delete {
             @Nested

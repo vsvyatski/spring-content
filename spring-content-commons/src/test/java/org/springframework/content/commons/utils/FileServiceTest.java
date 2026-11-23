@@ -39,7 +39,7 @@ public class FileServiceTest {
     }
 
     @Nested
-   class Mkdirs {
+    class Mkdirs {
         @Nested
         @DisplayName("When passed in a file that exists")
         class PassedInFileThatExists {
@@ -67,9 +67,7 @@ public class FileServiceTest {
         }
 
         @Nested
-
         @DisplayName("When passed in a file that does not exist")
-
         class PassedInFileThatDoesNotExist {
             @BeforeEach
             void setUp() throws IOException {
@@ -99,9 +97,7 @@ public class FileServiceTest {
         }
 
         @Nested
-
         @DisplayName("When passed in a directory that exists")
-
         class PassedInDirectoryThatExists {
             @BeforeEach
             void setUp() throws IOException {
@@ -130,9 +126,7 @@ public class FileServiceTest {
         }
 
         @Nested
-
         @DisplayName("When passed in a directory that does not exist")
-
         class PassedInDirectoryThatDoesNotExist {
             @BeforeEach
             void setUp() throws IOException {
@@ -158,9 +152,7 @@ public class FileServiceTest {
         }
 
         @Nested
-
         @DisplayName("When passed null")
-
         class PassedNull {
             @BeforeEach
             void setUp() throws IOException {
@@ -179,7 +171,7 @@ public class FileServiceTest {
     }
 
     @Nested
-   class Rmdirs {
+    class Rmdirs {
         @BeforeEach
         void setUp() {
             fileService = new FileServiceImpl();

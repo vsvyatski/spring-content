@@ -31,7 +31,7 @@ public class WordToJpegRendererTest {
     private Exception e;
 
     @Nested
-   class WordToJpegRendererCases {
+    class WordToJpegRendererCases {
         @Nested
         class Consumes {
             @BeforeEach
@@ -90,9 +90,7 @@ public class WordToJpegRendererTest {
                 }
 
                 @Nested
-
                 @DisplayName("When the input stream is not a valid word file")
-
                 class InputStreamIsNotValidWordFile {
                     @BeforeEach
                     void setUp() throws IOException {
@@ -125,9 +123,7 @@ public class WordToJpegRendererTest {
                 }
 
                 @Nested
-
                 @DisplayName("When the word document fails to return properties")
-
                 class WordDocumentFailsToReturnProperties {
                     @BeforeEach
                     void setUp() throws IOException {
@@ -161,9 +157,7 @@ public class WordToJpegRendererTest {
                 }
 
                 @Nested
-
                 @DisplayName("When the word document fails to return a thumbnail")
-
                 class WordDocumentFailsToReturnThumbnail {
                     @BeforeEach
                     void setUp() throws IOException {
@@ -199,9 +193,7 @@ public class WordToJpegRendererTest {
             }
 
             @Nested
-
             @DisplayName("Given a null input stream")
-
             class ullInputStream {
                 @BeforeEach
                 void setUp() {

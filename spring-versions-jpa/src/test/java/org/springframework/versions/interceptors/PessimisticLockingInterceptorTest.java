@@ -49,7 +49,7 @@ public class PessimisticLockingInterceptorTest {
     }
 
     @Nested
-   class PessimisticLockingInterceptorCases {
+    class PessimisticLockingInterceptorCases {
         @Nested
         class Invoke {
             @Nested
@@ -90,9 +90,7 @@ public class PessimisticLockingInterceptorTest {
                     }
 
                     @Nested
-
                     @DisplayName("When the principal is the lock owner")
-
                     class PrincipalIsLockOwner {
                         private Authentication principal;
 
@@ -129,9 +127,7 @@ public class PessimisticLockingInterceptorTest {
                     }
 
                     @Nested
-
                     @DisplayName("When the principal is not the lock owner")
-
                     class PrincipalIsNotLockOwner {
                         @BeforeEach
                         void setUp() throws Throwable {
@@ -165,9 +161,7 @@ public class PessimisticLockingInterceptorTest {
                     }
 
                     @Nested
-
                     @DisplayName("When the entity doesnt have an id")
-
                     class EntityDoesntHaveID {
                         @BeforeEach
                         void setUp() throws Throwable {

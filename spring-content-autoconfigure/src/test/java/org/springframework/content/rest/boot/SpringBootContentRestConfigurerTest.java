@@ -26,7 +26,7 @@ public class SpringBootContentRestConfigurerTest {
     private RestConfiguration.Exclusions exclusions;
 
     @Nested
-   class SpringBootContentRestConfigurerCases {
+    class SpringBootContentRestConfigurerCases {
         @Nested
         class Configure {
             @Nested
@@ -52,9 +52,7 @@ public class SpringBootContentRestConfigurerTest {
             }
 
             @Nested
-
             @DisplayName("Given a fully qualified links property setting")
-
             class FullyQualifiedLinksPropertySetting {
                 @BeforeEach
                 void setUp() {
@@ -76,9 +74,7 @@ public class SpringBootContentRestConfigurerTest {
             }
 
             @Nested
-
             @DisplayName("Given disabled shortcut request mappings")
-
             class DisabledShortcutRequestMappings {
                 @BeforeEach
                 void setUp() {
@@ -102,9 +98,7 @@ public class SpringBootContentRestConfigurerTest {
             }
 
             @Nested
-
             @DisplayName("Given excluded shortcut request mappings")
-
             class ExcludedShortcutRequestMappings {
                 @BeforeEach
                 void setUp() {
@@ -130,9 +124,7 @@ public class SpringBootContentRestConfigurerTest {
             }
 
             @Nested
-
             @DisplayName("Given empty excluded shortcut request mapping")
-
             class EmptyExcludedShortcutRequestMapping {
                 @BeforeEach
                 void setUp() {
@@ -156,9 +148,7 @@ public class SpringBootContentRestConfigurerTest {
             }
 
             @Nested
-
             @DisplayName("Given empty excluded shortcut GET request mapping")
-
             class EmptyExcludedShortcutGETRequestMapping {
                 @BeforeEach
                 void setUp() {
@@ -182,9 +172,7 @@ public class SpringBootContentRestConfigurerTest {
             }
 
             @Nested
-
             @DisplayName("Given invalid excluded shortcut request mapping")
-
             class InvalidExcludedShortcutRequestMapping {
                 @BeforeEach
                 void setUp() {
@@ -208,9 +196,7 @@ public class SpringBootContentRestConfigurerTest {
             }
 
             @Nested
-
             @DisplayName("Given a null base uri property")
-
             class ullBaseUriProperty {
                 @BeforeEach
                 void setUp() {
@@ -230,9 +216,7 @@ public class SpringBootContentRestConfigurerTest {
             }
 
             @Nested
-
             @DisplayName("Given a null properties")
-
             class ullProperties {
                 @BeforeEach
                 void setUp() {

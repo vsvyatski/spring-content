@@ -68,7 +68,7 @@ public class BeanUtilsTest {
     }
 
     @Nested
-   class BeanUtilsCases {
+    class BeanUtilsCases {
         @Nested
         class SetFieldWithAnnotation {
             @ParameterizedTest

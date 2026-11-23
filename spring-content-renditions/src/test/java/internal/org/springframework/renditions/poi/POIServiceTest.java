@@ -23,7 +23,7 @@ public class POIServiceTest {
     private InputStream stream;
 
     @Nested
-   class POIServiceCases {
+    class POIServiceCases {
         @Nested
         class XwpfDocument {
             @Nested
@@ -43,9 +43,7 @@ public class POIServiceTest {
             }
 
             @Nested
-
             @DisplayName("Given null input stream")
-
             class NullInputStream {
                 @BeforeEach
                 void setUp() {
@@ -60,9 +58,7 @@ public class POIServiceTest {
             }
 
             @Nested
-
             @DisplayName("Given invalid input stream")
-
             class InvalidInputStream {
                 @BeforeEach
                 void setUp() {

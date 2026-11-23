@@ -119,13 +119,13 @@ public class S3StoreIT {
     }
 
     @Nested
-   class S3StorageCases {
+    class S3StorageCases {
         @Nested
         class StoreCases {
             @Nested
             class GetResource {
                 @Nested
-               class Tests {
+                class Tests {
                     @BeforeEach
                     void setUp() throws InterruptedException {
                         ensureTestBucket();
@@ -157,12 +157,10 @@ public class S3StoreIT {
                 }
 
                 @Nested
-
                 @DisplayName("Given content is added to that resource")
-
                 class ContentIsAddedToThatResource {
                     @Nested
-                   class Tests {
+                    class Tests {
                         @BeforeEach
                         void setUp() throws IOException, InterruptedException {
                             ensureTestBucket();
@@ -195,9 +193,7 @@ public class S3StoreIT {
                     }
 
                     @Nested
-
                     @DisplayName("Given that resource is then updated")
-
                     class ResourceIsThenUpdated {
                         @BeforeEach
                         void setUp() throws IOException, InterruptedException {
@@ -238,9 +234,7 @@ public class S3StoreIT {
                     }
 
                     @Nested
-
                     @DisplayName("Given a byte range is requested")
-
                     class ByteRangeIsRequested {
                         @BeforeEach
                         void setUp() throws IOException, InterruptedException {
@@ -278,9 +272,7 @@ public class S3StoreIT {
                     }
 
                     @Nested
-
                     @DisplayName("Given that resource is then deleted")
-
                     class ResourceIsThenDeleted {
                         @BeforeEach
                         void setUp() throws IOException, InterruptedException {
@@ -323,7 +315,7 @@ public class S3StoreIT {
             @DisplayName("Given a new entity")
             class NewEntity {
                 @Nested
-               class Tests {
+                class Tests {
                     @BeforeEach
                     void setUp() throws InterruptedException {
                         ensureTestBucket();
@@ -342,15 +334,13 @@ public class S3StoreIT {
                 }
 
                 @Nested
-
                 @DisplayName("Given a resource")
-
                 class AssociatedResource {
                     @Nested
                     @DisplayName("When the resource is associated")
                     class ResourceIsAssociated {
                         @Nested
-                       class Tests {
+                        class Tests {
                             @BeforeEach
                             void setUp() throws InterruptedException {
                                 ensureTestBucket();
@@ -374,9 +364,7 @@ public class S3StoreIT {
                         }
 
                         @Nested
-
                         @DisplayName("When the resource is unassociated")
-
                         class ResourceIsUnassociated {
                             @BeforeEach
                             void setUp() throws InterruptedException {
@@ -404,9 +392,7 @@ public class S3StoreIT {
                         }
 
                         @Nested
-
                         @DisplayName("When a invalid property path is used to associate a resource")
-
                         class InvalidPropertyPathIsUsedToAssociateResource {
                             @BeforeEach
                             void setUp() throws InterruptedException {
@@ -435,9 +421,7 @@ public class S3StoreIT {
                         }
 
                         @Nested
-
                         @DisplayName("When a invalid property path is used to load a resource")
-
                         class InvalidPropertyPathIsUsedToLoadResource {
                             @BeforeEach
                             void setUp() throws InterruptedException {
@@ -466,9 +450,7 @@ public class S3StoreIT {
                         }
 
                         @Nested
-
                         @DisplayName("When a invalid property path is used to unassociate a resource")
-
                         class InvalidPropertyPathIsUsedToUnassociateResource {
                             @BeforeEach
                             void setUp() throws InterruptedException {
@@ -558,9 +540,7 @@ public class S3StoreIT {
             }
 
             @Nested
-
             @DisplayName("When content is updated")
-
             class ContentIsUpdated {
                 @BeforeEach
                 void setUp() throws InterruptedException {
@@ -596,9 +576,7 @@ public class S3StoreIT {
             }
 
             @Nested
-
             @DisplayName("When content is updated with shorter content")
-
             class ContentIsUpdatedWithShorterContent {
                 @BeforeEach
                 void setUp() throws InterruptedException {
@@ -634,9 +612,7 @@ public class S3StoreIT {
             }
 
             @Nested
-
             @DisplayName("When content is updated and not overwritten")
-
             class ContentIsUpdatedAndNotOverwritten {
                 @BeforeEach
                 void setUp() throws InterruptedException {
@@ -671,9 +647,7 @@ public class S3StoreIT {
             }
 
             @Nested
-
             @DisplayName("When content is unset")
-
             class ContentIsUnset {
                 @BeforeEach
                 void setUp() throws InterruptedException {
@@ -721,9 +695,7 @@ public class S3StoreIT {
             }
 
             @Nested
-
             @DisplayName("When content is unset but kept")
-
             class ContentIsUnsetButKept {
                 @BeforeEach
                 void setUp() throws InterruptedException {
@@ -760,9 +732,7 @@ public class S3StoreIT {
             }
 
             @Nested
-
             @DisplayName("When an invalid property path is used to set content")
-
             class InvalidPropertyPathIsUsedToSetContent {
                 @BeforeEach
                 void setUp() throws InterruptedException {
@@ -791,9 +761,7 @@ public class S3StoreIT {
             }
 
             @Nested
-
             @DisplayName("When an invalid property path is used to GET content")
-
             class InvalidPropertyPathIsUsedToGetContent {
                 @BeforeEach
                 void setUp() throws InterruptedException {
@@ -822,9 +790,7 @@ public class S3StoreIT {
             }
 
             @Nested
-
             @DisplayName("When an invalid property path is used to unset content")
-
             class InvalidPropertyPathIsUsedToUnsetContent {
                 @BeforeEach
                 void setUp() throws InterruptedException {
@@ -853,9 +819,7 @@ public class S3StoreIT {
             }
 
             @Nested
-
             @DisplayName("When content is deleted and the content ID field is shared with entity id")
-
             class ContentIsDeletedAndContentIdFieldIsSharedWithEntityId {
                 @BeforeEach
                 void setUp() throws InterruptedException {

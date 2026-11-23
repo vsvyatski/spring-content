@@ -45,7 +45,7 @@ public class SolrIndexerStoreEventHandlerTest {
     }
 
     @Nested
-   class SolrIndexerStoreEventHandlerCases {
+    class SolrIndexerStoreEventHandlerCases {
         @Nested
         class OnAfterSetContent {
             @Nested
@@ -77,9 +77,7 @@ public class SolrIndexerStoreEventHandlerTest {
                 }
 
                 @Nested
-
                 @DisplayName("Given the indexer throws an exception")
-
                 class IndexerThrowsException {
                     @BeforeEach
                     void setUp() throws IOException {
@@ -111,9 +109,7 @@ public class SolrIndexerStoreEventHandlerTest {
             }
 
             @Nested
-
             @DisplayName("Given a content entity with a null content ID")
-
             class ContentEntityWithNullContentId {
                 @BeforeEach
                 void setUp() {
@@ -139,9 +135,7 @@ public class SolrIndexerStoreEventHandlerTest {
             }
 
             @Nested
-
             @DisplayName("Given a bogus content entity")
-
             class BogusContentEntity {
                 @BeforeEach
                 void setUp() {
@@ -196,9 +190,7 @@ public class SolrIndexerStoreEventHandlerTest {
                 }
 
                 @Nested
-
                 @DisplayName("Given aio exception")
-
                 class IOException {
                     @BeforeEach
                     void setUp() {
@@ -228,9 +220,7 @@ public class SolrIndexerStoreEventHandlerTest {
             }
 
             @Nested
-
             @DisplayName("Given a content entity with a null content ID")
-
             class ContentEntityWithNullContentId {
                 @BeforeEach
                 void setUp() {
@@ -256,9 +246,7 @@ public class SolrIndexerStoreEventHandlerTest {
             }
 
             @Nested
-
             @DisplayName("Given a bogus content entity")
-
             class BogusContentEntity {
                 @BeforeEach
                 void setUp() {

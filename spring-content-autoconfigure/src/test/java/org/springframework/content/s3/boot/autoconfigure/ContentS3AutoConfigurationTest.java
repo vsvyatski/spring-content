@@ -61,7 +61,7 @@ public class ContentS3AutoConfigurationTest {
     }
 
     @Nested
-   class S3ContentAutoConfigurationCases {
+    class S3ContentAutoConfigurationCases {
         @Nested
         @DisplayName("Given a configuration with beans")
         class ConfigurationWithBeans {
@@ -81,9 +81,7 @@ public class ContentS3AutoConfigurationTest {
         }
 
         @Nested
-
         @DisplayName("Given a configuration without any beans")
-
         class ConfigurationWithoutAnyBeans {
             @BeforeEach
             void setUp() {
@@ -101,9 +99,7 @@ public class ContentS3AutoConfigurationTest {
         }
 
         @Nested
-
         @DisplayName("Given a configuration with explicit @EnableS3Stores")
-
         class ConfigurationWithExplicitEnableS3StoresAnnotation {
             @BeforeEach
             void setUp() {
@@ -121,9 +117,7 @@ public class ContentS3AutoConfigurationTest {
         }
 
         @Nested
-
         @DisplayName("Given an environment specifying s3properties")
-
         class EnvironmentSpecifyingS3Properties {
             @BeforeEach
             void setUp() {

@@ -61,7 +61,7 @@ public class SolrIT {
     }
 
     @Nested
-   class Index {
+    class Index {
         @BeforeEach
         void setUp() {
             configureSolrAuth();
@@ -101,9 +101,7 @@ public class SolrIT {
         }
 
         @Nested
-
         @DisplayName("When the content is searched")
-
         class ContentIsSearched {
             @BeforeEach
             void setUp() {
@@ -136,9 +134,7 @@ public class SolrIT {
         }
 
         @Nested
-
         @DisplayName("Given that documents content is updated")
-
         class DocumentsContentIsUpdated {
             @BeforeEach
             void setUp() {
@@ -183,9 +179,7 @@ public class SolrIT {
         }
 
         @Nested
-
         @DisplayName("Given that document is deleted")
-
         class DocumentIsDeleted {
             @BeforeEach
             void setUp() {
@@ -229,7 +223,7 @@ public class SolrIT {
     }
 
     @Nested
-   class Paging {
+    class Paging {
         @Nested
         class PagesOfResults {
             @BeforeEach
@@ -298,7 +292,7 @@ public class SolrIT {
     }
 
     @Nested
-   class CustomAttributes {
+    class CustomAttributes {
         @BeforeEach
         void setUp() {
             configureSolrAuth();
@@ -345,7 +339,7 @@ public class SolrIT {
     }
 
     @Nested
-   class CustomReturnTypes {
+    class CustomReturnTypes {
         @BeforeEach
         void setUp() {
             configureSolrAuth();

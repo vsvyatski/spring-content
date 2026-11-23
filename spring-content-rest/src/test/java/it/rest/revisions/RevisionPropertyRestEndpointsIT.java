@@ -83,7 +83,7 @@ public class RevisionPropertyRestEndpointsIT {
     }
 
     @Nested
-   class RevisionPropertyRESTEndpoints {
+    class RevisionPropertyRESTEndpoints {
         @Nested
         @DisplayName("Given an entity with revisions")
         class EntityWithRevisions {
@@ -112,9 +112,7 @@ public class RevisionPropertyRestEndpointsIT {
             }
 
             @Nested
-
             @DisplayName("GET to repository id revisions latest content")
-
             class GetToRepositoryIdRevisionsLatestContent {
                 @BeforeEach
                 void setUp() {

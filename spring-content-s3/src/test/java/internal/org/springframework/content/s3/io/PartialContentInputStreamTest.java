@@ -25,7 +25,7 @@ public class PartialContentInputStreamTest {
     private InputStream inputStream;
 
     @Nested
-   class PartialContentInputStreamCases {
+    class PartialContentInputStreamCases {
         @Nested
         class WithRangeFromStart {
             @BeforeEach

@@ -50,9 +50,7 @@ public class StoreCandidateComponentProviderEnvironmentTest {
     }
 
     @Nested
-
     @DisplayName("Given two stores with profiles")
-
     class TwoStoresWithProfiles {
         @Test
         void shouldHaveAStoreBean() {

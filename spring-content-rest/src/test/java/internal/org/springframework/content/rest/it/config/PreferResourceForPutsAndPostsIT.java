@@ -117,7 +117,7 @@ public class PreferResourceForPutsAndPostsIT {
     }
 
     @Nested
-   class PreferResourceForPutsAndPosts {
+    class PreferResourceForPutsAndPosts {
         @BeforeEach
         void setUp() {
             RestAssuredMockMvc.webAppContextSetup(webApplicationContext);

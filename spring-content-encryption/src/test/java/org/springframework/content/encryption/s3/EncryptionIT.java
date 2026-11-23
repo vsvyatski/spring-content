@@ -142,7 +142,7 @@ public class EncryptionIT {
     }
 
     @Nested
-   class ClientSideEncryptionWithS3StorageCases {
+    class ClientSideEncryptionWithS3StorageCases {
         @Nested
         @DisplayName("Given content")
         class Content {
@@ -238,9 +238,7 @@ public class EncryptionIT {
             }
 
             @Nested
-
             @DisplayName("When the keyring is rotated")
-
             class KeyringIsRotated {
                 @BeforeEach
                 void setUp() {
@@ -292,9 +290,7 @@ public class EncryptionIT {
             }
 
             @Nested
-
             @DisplayName("When the content is unset")
-
             class ContentIsUnset {
                 @BeforeEach
                 void setUp() {

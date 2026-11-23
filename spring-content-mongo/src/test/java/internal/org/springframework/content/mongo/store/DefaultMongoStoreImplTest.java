@@ -37,7 +37,7 @@ public class DefaultMongoStoreImplTest {
     private Exception e;
 
     @Nested
-   class AssociativeStore {
+    class AssociativeStore {
         @BeforeEach
         void setUp() {
             placer = mock(PlacementService.class);
@@ -47,9 +47,7 @@ public class DefaultMongoStoreImplTest {
         }
 
         @Nested
-
         @DisplayName("When the entity has a string-arg constructor")
-
         class EntityHasStringArgConstructor {
             @BeforeEach
             void entity() {
@@ -72,9 +70,7 @@ public class DefaultMongoStoreImplTest {
             }
 
             @Nested
-
             @DisplayName("When the entity has a shared id content ID field")
-
             class EntityHasSharedIdContentIdField {
                 @BeforeEach
                 void sharedId() {
@@ -92,7 +88,7 @@ public class DefaultMongoStoreImplTest {
     }
 
     @Nested
-   class ContentStoreScenario {
+    class ContentStoreScenario {
         @BeforeEach
         void setUp() {
             placer = mock(PlacementService.class);
@@ -110,9 +106,7 @@ public class DefaultMongoStoreImplTest {
             }
 
             @Nested
-
             @DisplayName("When the content already exists")
-
             class ContentAlreadyExists {
                 @BeforeEach
                 void existing() throws Exception {
@@ -124,9 +118,7 @@ public class DefaultMongoStoreImplTest {
                 }
 
                 @Nested
-
                 @DisplayName("When the gridfs store throws an exception")
-
                 class GridfsStoreThrowsException {
                     @BeforeEach
                     void storeFails() {
@@ -167,9 +159,7 @@ public class DefaultMongoStoreImplTest {
             }
 
             @Nested
-
             @DisplayName("When the resource throws an io exception")
-
             class ResourceThrowsIOException {
                 @BeforeEach
                 void brokenResource() throws IOException {
@@ -203,9 +193,7 @@ public class DefaultMongoStoreImplTest {
             }
 
             @Nested
-
             @DisplayName("When the resource exists")
-
             class ResourceExists {
                 @BeforeEach
                 void exists() {
@@ -213,9 +201,7 @@ public class DefaultMongoStoreImplTest {
                 }
 
                 @Nested
-
                 @DisplayName("When the resource input stream throws an io exception")
-
                 class ResourceInputStreamThrowsIOException {
                     @BeforeEach
                     void brokenStream() throws IOException {
@@ -248,9 +234,7 @@ public class DefaultMongoStoreImplTest {
             }
 
             @Nested
-
             @DisplayName("When gridfs deletion throws an exception")
-
             class GridfsDeletionThrowsException {
                 @BeforeEach
                 void deleteFails() {

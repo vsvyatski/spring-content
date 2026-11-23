@@ -53,9 +53,7 @@ public class ContentLinksResourceProcessorIT {
     private PersistentEntityResource resource;
 
     @Nested
-
     @DisplayName("Given the spring content base uri property is set to content api cases")
-
     class SpringContentBaseUriPropertyIsSetToContentApiCases {
         @Nested
         @DisplayName("Given an entity with a single content ID property")
@@ -86,9 +84,7 @@ public class ContentLinksResourceProcessorIT {
             }
 
             @Nested
-
             @DisplayName("When fully qualified links are disabled and shortcut links are enabled")
-
             class FullyQualifiedLinksAreDisabledAndShortcutLinksAreEnabled {
                 @BeforeEach
                 void setUp() {
@@ -123,9 +119,7 @@ public class ContentLinksResourceProcessorIT {
             }
 
             @Nested
-
             @DisplayName("When fully qualified links are disabled and shortcut links are disabled")
-
             class FullyQualifiedLinksAreDisabledAndShortcutLinksAreDisabled {
                 @BeforeEach
                 void setUp() {
@@ -162,9 +156,7 @@ public class ContentLinksResourceProcessorIT {
         }
 
         @Nested
-
         @DisplayName("Given an entity with multiple content ID properties")
-
         class EntityWithMultipleContentIdProperties {
             @BeforeEach
             void setUp() {
@@ -193,9 +185,7 @@ public class ContentLinksResourceProcessorIT {
         }
 
         @Nested
-
         @DisplayName("Given an entity with an embedded object containing content ID properties")
-
         class EntityWithEmbeddedObjectContainingContentIdProperties {
             @BeforeEach
             void setUp() {
@@ -224,9 +214,7 @@ public class ContentLinksResourceProcessorIT {
         }
 
         @Nested
-
         @DisplayName("Given an entity with embedded object with REST resource customizations")
-
         class EntityWithEmbeddedObjectWithRestResourceCustomizations {
             @BeforeEach
             void setUp() {
@@ -252,9 +240,7 @@ public class ContentLinksResourceProcessorIT {
         }
 
         @Nested
-
         @DisplayName("Given the embedded object in an entity containing content ID properties")
-
         class EmbeddedObjectInEntityContainingContentIdProperties {
             @BeforeEach
             void setUp() {

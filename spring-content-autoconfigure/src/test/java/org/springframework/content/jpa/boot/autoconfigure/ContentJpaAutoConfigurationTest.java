@@ -94,7 +94,7 @@ public class ContentJpaAutoConfigurationTest {
     }
 
     @Nested
-   class ContentJpaAutoConfiguration {
+    class ContentJpaAutoConfiguration {
         @BeforeEach
         void setUp() {
             initializer = mock(ContentJpaDatabaseInitializer.class);
@@ -112,9 +112,7 @@ public class ContentJpaAutoConfigurationTest {
         }
 
         @Nested
-
         @DisplayName("When a custom bean configuration is used")
-
         class CustomBeanConfigurationIsUsed {
             @BeforeEach
             void setUp() {
@@ -132,9 +130,7 @@ public class ContentJpaAutoConfigurationTest {
         }
 
         @Nested
-
         @DisplayName("When explicit @EnableJpaStores is used")
-
         class ExplicitEnableFileSystemStoresIsUsed {
             @BeforeEach
             void setUp() {

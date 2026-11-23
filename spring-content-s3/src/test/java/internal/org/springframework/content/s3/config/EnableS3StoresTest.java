@@ -94,7 +94,7 @@ public class EnableS3StoresTest {
     }
 
     @Nested
-   class EnableS3StoresCases {
+    class EnableS3StoresCases {
         @Nested
         @DisplayName("Given a context and a configuration with an s3content store bean")
         class ContextAndConfigurationWithS3ContentStoreBean {
@@ -122,9 +122,7 @@ public class EnableS3StoresTest {
         }
 
         @Nested
-
         @DisplayName("Given a context with a configurer")
-
         class ContextWithConfigurer {
             @BeforeEach
             void setUp() {
@@ -146,9 +144,7 @@ public class EnableS3StoresTest {
         }
 
         @Nested
-
         @DisplayName("Given a context with an empty configuration")
-
         class ContextWithEmptyConfiguration {
             @BeforeEach
             void setUp() {
@@ -169,9 +165,7 @@ public class EnableS3StoresTest {
         }
 
         @Nested
-
         @DisplayName("Given a context with a multi tenant configuration")
-
         class ContextWithMultiTenantConfiguration {
             @BeforeEach
             void setUp() {

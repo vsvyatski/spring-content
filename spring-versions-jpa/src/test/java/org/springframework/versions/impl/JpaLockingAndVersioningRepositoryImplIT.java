@@ -143,9 +143,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
     }
 
     @Nested
-
     @DisplayName("Given a locking and versioning repository and a security context")
-
     class LockingAndVersioningRepositoryAndSecurityContext {
         @Nested
         @DisplayName("Given two entities with two versions each")
@@ -183,9 +181,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                 }
 
                 @Nested
-
                 @DisplayName("Given the entity is new")
-
                 class EntityIsNew {
                     @BeforeEach
                     void setUp() {
@@ -213,9 +209,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                 }
 
                 @Nested
-
                 @DisplayName("Given the entity exists")
-
                 class EntityExists {
                     @Nested
                     @DisplayName("When the object is not locked")
@@ -254,9 +248,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     }
 
                     @Nested
-
                     @DisplayName("When the lock is already taken")
-
                     class LockIsAlreadyTaken {
                         @BeforeEach
                         void setUp() {
@@ -291,9 +283,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     }
 
                     @Nested
-
                     @DisplayName("When the lock is already held")
-
                     class LockIsAlreadyHeld {
                         @BeforeEach
                         void setUp() {
@@ -328,9 +318,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     }
 
                     @Nested
-
                     @DisplayName("When the principal is not authenticated")
-
                     class PrincipalIsNotAuthenticated {
                         @BeforeEach
                         void setUp() {
@@ -396,9 +384,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                 }
 
                 @Nested
-
                 @DisplayName("Given the entity is new")
-
                 class EntityIsNew {
                     @BeforeEach
                     void setUp() {
@@ -426,9 +412,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                 }
 
                 @Nested
-
                 @DisplayName("Given the entity exists")
-
                 class EntityExists {
                     @Nested
                     @DisplayName("Given the principal is the lock owner")
@@ -470,9 +454,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     }
 
                     @Nested
-
                     @DisplayName("Given the principal is not the lock owner")
-
                     class PrincipalIsNotLockOwner {
                         @BeforeEach
                         void setUp() {
@@ -507,9 +489,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     }
 
                     @Nested
-
                     @DisplayName("Given the principal is not authenticated")
-
                     class PrincipalIsNotAuthenticated {
                         @BeforeEach
                         void setUp() {
@@ -583,9 +563,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     }
 
                     @Nested
-
                     @DisplayName("Given the entity exists")
-
                     class EntityExists {
                         @Nested
                         @DisplayName("Given the principal is the lock owner")
@@ -623,9 +601,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         }
 
                         @Nested
-
                         @DisplayName("Given the principal is not the lock owner")
-
                         class PrincipalIsNotLockOwner {
                             @BeforeEach
                             void setUp() {
@@ -660,9 +636,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         }
 
                         @Nested
-
                         @DisplayName("Given there is no lock owner")
-
                         class NoLockOwner {
                             @BeforeEach
                             void setUp() {
@@ -697,9 +671,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                 }
 
                 @Nested
-
                 @DisplayName("Given an unauthenticated principal")
-
                 class UnauthenticatedPrincipal {
                     @Nested
                     @DisplayName("Given the entity is new")
@@ -737,9 +709,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     }
 
                     @Nested
-
                     @DisplayName("Given the entity exists")
-
                     class EntityExists {
                         @Nested
                         @DisplayName("Given there is no lock owner")
@@ -777,9 +747,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                 }
 
                 @Nested
-
                 @DisplayName("Given there is no principal")
-
                 class NoPrincipal {
                     @Nested
                     @DisplayName("Given the entity is new")
@@ -922,9 +890,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                 }
 
                 @Nested
-
                 @DisplayName("When the entity exists")
-
                 class EntityExists {
                     @Nested
                     @DisplayName("Given the principal is the lock owner")
@@ -968,9 +934,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     }
 
                     @Nested
-
                     @DisplayName("Given the principal is not the lock owner")
-
                     class PrincipalIsNotLockOwner {
                         @BeforeEach
                         void setUp() {
@@ -1004,9 +968,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     }
 
                     @Nested
-
                     @DisplayName("Given the principal is unauthenticated")
-
                     class PrincipalIsUnauthenticated {
                         @BeforeEach
                         void setUp() {
@@ -1039,9 +1001,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     }
 
                     @Nested
-
                     @DisplayName("Given the entity is not the current version")
-
                     class EntityIsNotCurrentVersion {
                         @BeforeEach
                         void setUp() {
@@ -1162,9 +1122,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                 }
 
                 @Nested
-
                 @DisplayName("Given an unauthenticated principal")
-
                 class UnauthenticatedPrincipal {
                     @BeforeEach
                     void setUp() {
@@ -1193,9 +1151,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                 }
 
                 @Nested
-
                 @DisplayName("Given a principal")
-
                 class Principal {
                     @Nested
                     @DisplayName("Given the entity is not in a version tree")
@@ -1234,9 +1190,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         }
 
                         @Nested
-
                         @DisplayName("Given the principal is not the lock owner")
-
                         class PrincipalIsNotLockOwner {
                             @BeforeEach
                             void setUp() {
@@ -1270,9 +1224,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         }
 
                         @Nested
-
                         @DisplayName("Given there is no lock")
-
                         class NoLock {
                             @BeforeEach
                             void setUp() {
@@ -1305,9 +1257,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     }
 
                     @Nested
-
                     @DisplayName("Given the entity is not the HEAD")
-
                     class EntityIsNotHead {
                         @BeforeEach
                         void setUp() {
@@ -1465,9 +1415,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                 }
 
                 @Nested
-
                 @DisplayName("Given an unauthenticated principal")
-
                 class UnauthenticatedPrincipal {
                     @BeforeEach
                     void setUp() {
@@ -1497,9 +1445,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                 }
 
                 @Nested
-
                 @DisplayName("Given a principal")
-
                 class Principal {
                     @Nested
                     @DisplayName("Given the entity is not in a version tree")
@@ -1541,9 +1487,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         }
 
                         @Nested
-
                         @DisplayName("Given the principal is not the lock owner")
-
                         class PrincipalIsNotLockOwner {
                             @BeforeEach
                             void setUp() {
@@ -1577,9 +1521,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         }
 
                         @Nested
-
                         @DisplayName("Given there is no lock")
-
                         class NoLock {
                             @BeforeEach
                             void setUp() {
@@ -1614,9 +1556,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     }
 
                     @Nested
-
                     @DisplayName("Given the entity is not the HEAD")
-
                     class EntityIsNotHead {
                         @BeforeEach
                         void setUp() {
@@ -1649,9 +1589,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
             }
 
             @Nested
-
             @DisplayName("Given findAllVersions with descending sort")
-
             class FindAllVersionsWithDescendingSort {
                 @BeforeEach
                 void setUp() {

@@ -176,7 +176,7 @@ public class EmbeddedIdTest {
     }
 
     @Nested
-   class EmbeddedIdCases {
+    class EmbeddedIdCases {
         @BeforeEach
         void setUp() {
             mvc = MockMvcBuilders.webAppContextSetup(context).build();

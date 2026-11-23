@@ -31,7 +31,7 @@ public class S3StoreFactoryBeanTest {
     }
 
     @Nested
-   class S3StoreFactoryBeanCases {
+    class S3StoreFactoryBeanCases {
         @Nested
         class GetStore {
             @Nested
@@ -62,9 +62,7 @@ public class S3StoreFactoryBeanTest {
             }
 
             @Nested
-
             @DisplayName("Given an associative store")
-
             class AssociativeStore {
                 @BeforeEach
                 void setUp() {

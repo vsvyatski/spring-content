@@ -24,7 +24,7 @@ public class FileSystemAutoConfigurationTest {
     }
 
     @Nested
-   class FileSystemContentAutoConfigurationCases {
+    class FileSystemContentAutoConfigurationCases {
         @Nested
         @DisplayName("Given a default storage type of fs")
         class DefaultStorageTypeOfFs {
@@ -49,9 +49,7 @@ public class FileSystemAutoConfigurationTest {
         }
 
         @Nested
-
         @DisplayName("Given a default storage type other than fs")
-
         class DefaultStorageTypeOtherThanFs {
             @BeforeEach
             void setUp() {
@@ -73,9 +71,7 @@ public class FileSystemAutoConfigurationTest {
         }
 
         @Nested
-
         @DisplayName("Given no default storage type")
-
         class NoDefaultStorageType {
             @BeforeEach
             void setUp() {

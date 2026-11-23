@@ -25,7 +25,7 @@ public class S3AutoConfigurationTest {
     }
 
     @Nested
-   class S3AutoConfigurationWithDefaultStorage {
+    class S3AutoConfigurationWithDefaultStorage {
         @Nested
         @DisplayName("Given a default storage type of s3")
         class DefaultStorageTypeOfS3 {
@@ -50,9 +50,7 @@ public class S3AutoConfigurationTest {
         }
 
         @Nested
-
         @DisplayName("Given a default storage type other than s3")
-
         class DefaultStorageTypeOtherThanS3 {
             @BeforeEach
             void setUp() {
@@ -74,9 +72,7 @@ public class S3AutoConfigurationTest {
         }
 
         @Nested
-
         @DisplayName("Given no default storage type")
-
         class NoDefaultStorageType {
             @BeforeEach
             void setUp() {

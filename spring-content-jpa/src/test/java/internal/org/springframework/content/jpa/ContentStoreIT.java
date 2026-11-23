@@ -160,9 +160,7 @@ public class ContentStoreIT {
     }
 
     @Nested
-
     @DisplayName("Given an entity with content")
-
     class EntityWithContent {
         @ParameterizedTest(name = "{0}")
         @MethodSource("internal.org.springframework.content.jpa.StoreIT#databaseConfigs")
@@ -213,9 +211,7 @@ public class ContentStoreIT {
         }
 
         @Nested
-
         @DisplayName("When content is updated")
-
         class ContentIsUpdated {
             @ParameterizedTest(name = "{0}")
             @MethodSource("internal.org.springframework.content.jpa.StoreIT#databaseConfigs")
@@ -252,9 +248,7 @@ public class ContentStoreIT {
         }
 
         @Nested
-
         @DisplayName("When content is updated with shorter content")
-
         class ContentIsUpdatedWithShorterContent {
             @ParameterizedTest(name = "{0}")
             @MethodSource("internal.org.springframework.content.jpa.StoreIT#databaseConfigs")
@@ -291,9 +285,7 @@ public class ContentStoreIT {
         }
 
         @Nested
-
         @DisplayName("When content is updated and not overwritten")
-
         class ContentIsUpdatedAndNotOverwritten {
             @ParameterizedTest(name = "{0}")
             @MethodSource("internal.org.springframework.content.jpa.StoreIT#databaseConfigs")
@@ -320,9 +312,7 @@ public class ContentStoreIT {
         }
 
         @Nested
-
         @DisplayName("When content is deleted")
-
         class ContentIsDeleted {
             @ParameterizedTest(name = "{0}")
             @MethodSource("internal.org.springframework.content.jpa.StoreIT#databaseConfigs")
@@ -369,9 +359,7 @@ public class ContentStoreIT {
         }
 
         @Nested
-
         @DisplayName("When content is deleted with keep disposition")
-
         class ContentIsDeletedWithKeepDisposition {
             @ParameterizedTest(name = "{0}")
             @MethodSource("internal.org.springframework.content.jpa.StoreIT#databaseConfigs")

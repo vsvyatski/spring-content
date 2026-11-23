@@ -143,7 +143,7 @@ public class LockingAndVersioningRestIT {
     }
 
     @Nested
-   class SpringContentRESTVersioning {
+    class SpringContentRESTVersioning {
         @Nested
         @DisplayName("Given a versionable entity with content")
         class VersionableEntityWithContent {

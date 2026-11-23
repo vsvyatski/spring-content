@@ -56,7 +56,7 @@ public class DefaultFileSystemStoresImplTest {
     private Exception e;
 
     @Nested
-   class DefaultFileSystemStoresImplBehaviour {
+    class DefaultFileSystemStoresImplBehaviour {
         @Nested
         class Store {
             @Nested
@@ -113,9 +113,7 @@ public class DefaultFileSystemStoresImplTest {
                 }
 
                 @Nested
-
                 @DisplayName("When the entity is already associated with a resource")
-
                 class EntityIsAlreadyAssociatedWithResource {
                     @BeforeEach
                     void setUp() {
@@ -143,9 +141,7 @@ public class DefaultFileSystemStoresImplTest {
                 }
 
                 @Nested
-
                 @DisplayName("When there is an entity converter")
-
                 class EntityConverter {
                     @BeforeEach
                     void setUp() {
@@ -179,9 +175,7 @@ public class DefaultFileSystemStoresImplTest {
                 }
 
                 @Nested
-
                 @DisplayName("When the entity has a string-arg constructor")
-
                 class EntityHasStringArgConstructor {
                     @BeforeEach
                     void setUp() {
@@ -333,9 +327,7 @@ public class DefaultFileSystemStoresImplTest {
                     }
 
                     @Nested
-
                     @DisplayName("When the content already exists")
-
                     class ContentAlreadyExists {
                         @BeforeEach
                         void setUp() throws IOException {
@@ -384,9 +376,7 @@ public class DefaultFileSystemStoresImplTest {
                 }
 
                 @Nested
-
                 @DisplayName("Given just the default id converters")
-
                 class JustDefaultIDConverters {
                     @Nested
                     @DisplayName("When the content already exists")
@@ -453,9 +443,7 @@ public class DefaultFileSystemStoresImplTest {
                     }
 
                     @Nested
-
                     @DisplayName("When the content does not already exist")
-
                     class ContentDoesNotAlreadyExist {
                         @BeforeEach
                         void setUp() throws IOException {
@@ -528,9 +516,7 @@ public class DefaultFileSystemStoresImplTest {
                     }
 
                     @Nested
-
                     @DisplayName("When getting the resource output stream throws an io exception")
-
                     class GettingResourceOutputStreamThrowsIOException {
                         @BeforeEach
                         void setUp() throws IOException {
@@ -615,9 +601,7 @@ public class DefaultFileSystemStoresImplTest {
                 }
 
                 @Nested
-
                 @DisplayName("When the resource throws an io exception")
-
                 class ResourceThrowsIOException {
                     @BeforeEach
                     void setUp() throws IOException {
@@ -708,9 +692,7 @@ public class DefaultFileSystemStoresImplTest {
                     }
 
                     @Nested
-
                     @DisplayName("When the resource exists")
-
                     class ResourceExists {
                         @BeforeEach
                         void setUp() throws IOException {
@@ -762,9 +744,7 @@ public class DefaultFileSystemStoresImplTest {
                 }
 
                 @Nested
-
                 @DisplayName("Given just the default id converter")
-
                 class JustDefaultIDConverter {
                     @Nested
                     @DisplayName("When the resource does not exists")
@@ -812,9 +792,7 @@ public class DefaultFileSystemStoresImplTest {
                     }
 
                     @Nested
-
                     @DisplayName("When the resource exists")
-
                     class ResourceExists {
                         @BeforeEach
                         void setUp() throws IOException {
@@ -855,9 +833,7 @@ public class DefaultFileSystemStoresImplTest {
                         }
 
                         @Nested
-
                         @DisplayName("When getting the resource input stream throws an io exception")
-
                         class GettingResourceInputStreamThrowsIOException {
                             @BeforeEach
                             void setUp() throws IOException {
@@ -902,9 +878,7 @@ public class DefaultFileSystemStoresImplTest {
                     }
 
                     @Nested
-
                     @DisplayName("When the resource exists but in the old location")
-
                     class ResourceExistsButInOldLocation {
                         @BeforeEach
                         void setUp() throws IOException {
@@ -1007,9 +981,7 @@ public class DefaultFileSystemStoresImplTest {
                     }
 
                     @Nested
-
                     @DisplayName("Given the resource exists")
-
                     class ResourceExists {
                         @BeforeEach
                         void setUp() throws IOException {
@@ -1057,9 +1029,7 @@ public class DefaultFileSystemStoresImplTest {
                 }
 
                 @Nested
-
                 @DisplayName("Given just the default id converter")
-
                 class JustDefaultIDConverter {
                     @Nested
                     @DisplayName("When the content exists in the new location")
@@ -1106,9 +1076,7 @@ public class DefaultFileSystemStoresImplTest {
                         }
 
                         @Nested
-
                         @DisplayName("When the property has a dedicated content ID field")
-
                         class PropertyHasDedicatedContentIdField {
                             @BeforeEach
                             void setUp() throws IOException {
@@ -1154,9 +1122,7 @@ public class DefaultFileSystemStoresImplTest {
                         }
 
                         @Nested
-
                         @DisplayName("When the property s content ID field also is the javax persistence id field")
-
                         class PropertySContentIdFieldAlsoIsJavaxPersistenceIdField {
                             @BeforeEach
                             void setUp() throws IOException {
@@ -1205,9 +1171,7 @@ public class DefaultFileSystemStoresImplTest {
                         }
 
                         @Nested
-
                         @DisplayName("When the property s content ID field also is the spring id field")
-
                         class PropertySContentIdFieldAlsoIsSpringIdField {
                             @BeforeEach
                             void setUp() throws IOException {
@@ -1257,9 +1221,7 @@ public class DefaultFileSystemStoresImplTest {
                     }
 
                     @Nested
-
                     @DisplayName("When the content doesnt exist")
-
                     class ContentDoesntExist {
                         @BeforeEach
                         void setUp() {

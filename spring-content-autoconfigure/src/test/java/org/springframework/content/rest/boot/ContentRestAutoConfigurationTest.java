@@ -42,7 +42,7 @@ public class ContentRestAutoConfigurationTest {
     }
 
     @Nested
-   class ContentRestAutoConfigurationCases {
+    class ContentRestAutoConfigurationCases {
         @Nested
         @DisplayName("Given a default configuration")
         class DefaultConfiguration {
@@ -61,9 +61,7 @@ public class ContentRestAutoConfigurationTest {
         }
 
         @Nested
-
         @DisplayName("Given an environment specifying rest properties")
-
         class EnvironmentSpecifyingRestProperties {
             @BeforeEach
             void setUp() {

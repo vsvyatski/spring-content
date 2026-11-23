@@ -45,7 +45,7 @@ public class TransactionIT {
     }
 
     @Nested
-   class TransactionTest {
+    class TransactionTest {
         @ParameterizedTest(name = "{0}")
         @MethodSource("internal.org.springframework.content.jpa.StoreIT#databaseConfigs")
         void shouldNotCommitChangesToContent(Class<?> configClass) {

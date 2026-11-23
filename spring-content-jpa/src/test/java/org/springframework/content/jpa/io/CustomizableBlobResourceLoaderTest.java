@@ -26,7 +26,7 @@ public class CustomizableBlobResourceLoaderTest {
     private Object result;
 
     @Nested
-   class CustomizableBlobResourceLoaderCases {
+    class CustomizableBlobResourceLoaderCases {
         @Nested
         class GetDatabaseName {
             @BeforeEach
@@ -82,9 +82,7 @@ public class CustomizableBlobResourceLoaderTest {
         }
 
         @Nested
-
         @DisplayName("Given a resource provider")
-
         class ResourceProvider {
             @Nested
             class GetResource {

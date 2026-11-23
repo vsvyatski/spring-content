@@ -36,7 +36,7 @@ public class JpaLockingServiceImplTest {
     private Exception e;
 
     @Nested
-   class JpaLockingServiceImplCases {
+    class JpaLockingServiceImplCases {
         @Nested
         class Lock {
             @Nested
@@ -69,9 +69,7 @@ public class JpaLockingServiceImplTest {
             }
 
             @Nested
-
             @DisplayName("Given inserting the lock record fails")
-
             class InsertingLockRecordFails {
                 @BeforeEach
                 void setUp() {
@@ -164,9 +162,7 @@ public class JpaLockingServiceImplTest {
             }
 
             @Nested
-
             @DisplayName("Given the database fails")
-
             class DatabaseFails {
                 @BeforeEach
                 void setUp() {
@@ -194,9 +190,7 @@ public class JpaLockingServiceImplTest {
             }
 
             @Nested
-
             @DisplayName("Given the principal is the lock owner")
-
             class PrincipalIsLockOwner {
                 @BeforeEach
                 void setUp() {
@@ -226,9 +220,7 @@ public class JpaLockingServiceImplTest {
             }
 
             @Nested
-
             @DisplayName("Given the principal is not the lock owner")
-
             class PrincipalIsNotLockOwner {
                 @BeforeEach
                 void setUp() {
@@ -287,9 +279,7 @@ public class JpaLockingServiceImplTest {
             }
 
             @Nested
-
             @DisplayName("Given there is no lock record")
-
             class NoLockRecord {
                 @BeforeEach
                 void setUp() {
@@ -315,9 +305,7 @@ public class JpaLockingServiceImplTest {
             }
 
             @Nested
-
             @DisplayName("Given there is a lock record")
-
             class LockRecord {
                 @BeforeEach
                 void setUp() {
@@ -344,9 +332,7 @@ public class JpaLockingServiceImplTest {
             }
 
             @Nested
-
             @DisplayName("Given there are multiple lock records")
-
             class MultipleLockRecords {
                 @BeforeEach
                 void setUp() {

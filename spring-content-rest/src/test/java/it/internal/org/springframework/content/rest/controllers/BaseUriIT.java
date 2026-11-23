@@ -63,7 +63,7 @@ public class BaseUriIT {
     private OneToOneLinkedContentEntity testEntity4;
 
     @Nested
-   class BaseUriContentTests {
+    class BaseUriContentTests {
         @Nested
         @DisplayName("Given an entity is the subject of a repository and storage")
         class EntityIsSubjectOfRepositoryAndStorage {
@@ -85,9 +85,7 @@ public class BaseUriIT {
             }
 
             @Nested
-
             @DisplayName("Given the repository and storage are exported to the same uri")
-
             class RepositoryAndStorageAreExportedToSameURIContent extends ContentTests {
                 @BeforeEach
                 void setUp() {
@@ -104,9 +102,7 @@ public class BaseUriIT {
             }
 
             @Nested
-
             @DisplayName("Given the repository and storage are exported to different uris")
-
             class RepositoryAndStorageAreExportedToDifferentURIsContent extends ContentTests {
                 @BeforeEach
                 void setUp() {
@@ -121,9 +117,7 @@ public class BaseUriIT {
             }
 
             @Nested
-
             @DisplayName("Given the repository and storage are exported to different uris")
-
             class RepositoryAndStorageAreExportedToDifferentURIsCors extends CorsTests {
                 @BeforeEach
                 void setUp() {
@@ -135,9 +129,7 @@ public class BaseUriIT {
             }
 
             @Nested
-
             @DisplayName("Given an entity with @Version")
-
             class EntityWithVersion extends VersionTests {
                 @BeforeEach
                 void setUp() {
@@ -159,9 +151,7 @@ public class BaseUriIT {
             }
 
             @Nested
-
             @DisplayName("Given an entity with @LastModifiedDate")
-
             class EntityWithLastModifiedDate extends LastModifiedDateTests {
                 @BeforeEach
                 void setUp() {

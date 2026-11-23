@@ -44,7 +44,7 @@ public class ElasticsearchIT {
     }
 
     @Nested
-   class GlobalIndexingStrategyCases {
+    class GlobalIndexingStrategyCases {
 
         @BeforeEach
         void setUp() throws Exception {
@@ -241,7 +241,7 @@ public class ElasticsearchIT {
     }
 
     @Nested
-   class PagingCases {
+    class PagingCases {
         @BeforeEach
         void setUp() {
             context = new AnnotationConfigApplicationContext();
@@ -307,7 +307,7 @@ public class ElasticsearchIT {
     }
 
     @Nested
-   class CustomAttributesCases {
+    class CustomAttributesCases {
         @Nested
         @DisplayName("Given a context configured to sync attributes and provide a filter query")
         class ContextConfiguredToSyncAttributesAndProvideFilterQuery {
@@ -354,7 +354,7 @@ public class ElasticsearchIT {
     }
 
     @Nested
-   class CustomReturnTypesCases {
+    class CustomReturnTypesCases {
         @BeforeEach
         void setUp() {
             context = new AnnotationConfigApplicationContext();

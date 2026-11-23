@@ -15,7 +15,7 @@ public class FileRemoverTest {
     private File file;
 
     @Nested
-   class FileRemoverCases {
+    class FileRemoverCases {
         @Nested
         @DisplayName("When a file input stream observer s closed is called")
         class FileInputStreamObserverSClosedIsCalled {
