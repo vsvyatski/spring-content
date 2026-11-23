@@ -6,9 +6,7 @@ import com.theoryinpractise.halbuilder.standard.StandardRepresentationFactory;
 import internal.org.springframework.content.rest.support.config.JpaInfrastructureConfig;
 import internal.org.springframework.data.rest.extensions.contentsearch.DefaultEntityLookupStrategy;
 import internal.org.springframework.data.rest.extensions.contentsearch.QueryMethodsEntityLookupStrategy;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.MappedSuperclass;
+import it.rest.extensions.content.search.support.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -16,26 +14,18 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.AdditionalAnswers;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.content.commons.annotations.ContentId;
-import org.springframework.content.commons.fulltext.Attribute;
-import org.springframework.content.commons.fulltext.Highlight;
 import org.springframework.content.commons.search.Searchable;
 import org.springframework.content.commons.utils.ReflectionService;
 import org.springframework.content.fs.config.EnableFileSystemStores;
 import org.springframework.content.fs.io.FileSystemResourceLoader;
-import org.springframework.content.fs.store.FileSystemContentStore;
-import org.springframework.content.rest.FulltextEntityLookupQuery;
 import org.springframework.content.rest.config.RestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.core.RepositoryInformation;
-import org.springframework.data.repository.query.Param;
-import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.extensions.contentsearch.ContentSearchRestController;
 import org.springframework.data.rest.extensions.contentsearch.ContentSearchRestController.InternalResult;
 import org.springframework.data.rest.webmvc.RootResourceInformation;
@@ -77,93 +67,36 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 public class ContentSearchRestControllerIT {
 
-    /*
-     * ponytail: nested repo/entity/store types below (*Cases* flattening — step 2 — is done here).
-     * Step 3 — purpose-named types under it.rest.extensions.content.search.support, shared base for separate-id
-     * entities, paths aligned with REST collection names (see AGENTS.md).
-     */
     // mocks/spys
     private static ReflectionService reflectionService;
     private static DefaultEntityLookupStrategy defaultLookupStrategy;
     private static QueryMethodsEntityLookupStrategy queryMethodsLookupStrategy;
     private final RepresentationFactory representationFactory = new StandardRepresentationFactory();
     @Autowired
-    private TestEntityWithSharedIdsRepository repository;
+    private SearchSharedContentIdEntityRepository repository;
     @Autowired
-    private TestEntityWithSeparateIdsRepository entityWithSeparateRepository;
+    private SearchSeparateContentIdEntityRepository entityWithSeparateRepository;
     @Autowired
-    private RepositoryWithNoLookupStrategy repoWithNoLookupStrategy;
+    private NoLookupStrategySearchEntityRepository repoWithNoLookupStrategy;
     @Autowired
     private WebApplicationContext context;
     private MockMvc mvc;
-    private TestEntityWithSharedId entity2;
+    private SearchSharedContentIdEntity entity2;
     private List<String> sharedIds;
-    private TestEntityWithSeparateId entity3;
+    private SearchSeparateContentIdEntity entity3;
     private List<String> contentIds;
     private List<InternalResult> internalResults;
 
-    @SuppressWarnings("unused") // classpath / store component scan
-    public interface TestEntityNoContentCrudRepository extends CrudRepository<TestEntityNoContent, String> {
-    }
-
-    @SuppressWarnings("unused") // classpath / store component scan
-    public interface TestEntityNotSearchableRepository extends CrudRepository<TestEntityNotSearchable, String> {
-    }
-
-    @SuppressWarnings("unused") // classpath / store component scan
-    public interface TestEntityNotSearchableStore extends FileSystemContentStore<TestEntityNotSearchable, String> {
-    }
-
-    public interface TestEntityWithSharedIdsRepository extends CrudRepository<TestEntityWithSharedId, String> {
-    }
-
-    @SuppressWarnings("unused") // classpath / store component scan
-    public interface TestEntityWithSharedIdsSearchableStore extends FileSystemContentStore<TestEntityWithSharedId, String>, Searchable<String> {
-    }
-
-    public interface TestEntityWithSeparateIdsRepository
-        extends CrudRepository<TestEntityWithSeparateId, String> {
-
-        @Query("select e from testEntitySeparateId e")
-        @SuppressWarnings("unused")
-        List<TestEntityWithSeparateId> randomQueryMethod();
-
-        @FulltextEntityLookupQuery
-        @SuppressWarnings("unused")
-        List<TestEntityWithSeparateId> findAllByContentIdIn(@Param("contentIds") List<String> contentIds);
-    }
-
-    @SuppressWarnings("unused") // classpath / store component scan
-    public interface TestEntityWithSeparateIdsSearchableStore
-        extends FileSystemContentStore<TestEntityWithSeparateId, String>, Searchable<String> {
-    }
-
-    @RepositoryRestResource(path = "repoWithNoLookupStrategy")
-    public interface RepositoryWithNoLookupStrategy
-        extends CrudRepository<NoLookupStrategySearchEntity, String> {
-    }
-
-    @SuppressWarnings("unused") // classpath / store component scan
-    public interface NoLookupStrategySearchEntitySearchableStore
-        extends FileSystemContentStore<NoLookupStrategySearchEntity, String>, Searchable<String> {
-    }
-
-    @RepositoryRestResource(path = "repoWithCustomSearchReturnType")
-    @SuppressWarnings("unused") // classpath / store component scan
-    public interface RepositoryWithCustomSearchReturnType
-        extends CrudRepository<CustomSearchReturnTypeEntity, String> {
-    }
-
-    @SuppressWarnings("unused") // classpath / store component scan
-    public interface CustomSearchReturnTypeEntitySearchableStore
-        extends FileSystemContentStore<CustomSearchReturnTypeEntity, String>, Searchable<CustomResult> {
-    }
-
     @Configuration
-    @EnableJpaRepositories(basePackages = "it.rest.extensions.content.search",
-        considerNestedRepositories = true)
+    @EnableJpaRepositories(basePackages = {
+        "it.rest.extensions.content.search",
+        "it.rest.extensions.content.search.support"
+    })
     @EnableTransactionManagement
-    @EnableFileSystemStores(basePackages = "it.rest.extensions.content.search")
+    @EnableFileSystemStores(basePackages = {
+        "it.rest.extensions.content.search",
+        "it.rest.extensions.content.search.support"
+    })
     public static class TestConfig extends JpaInfrastructureConfig {
 
         @Bean
@@ -184,179 +117,9 @@ public class ContentSearchRestControllerIT {
         @Override
         protected String[] packagesToScan() {
             return new String[]{
-                "it.rest.extensions.content.search"
+                "it.rest.extensions.content.search",
+                "it.rest.extensions.content.search.support"
             };
-        }
-    }
-
-    @MappedSuperclass
-    public static class AbstractTestEntity {
-        @Id
-        @ContentId
-        private String id = UUID.randomUUID().toString();
-
-        public String getId() {
-            return id;
-        }
-
-        public void setId(String id) {
-            this.id = id;
-        }
-
-        public String getContentId() {
-            return id;
-        }
-
-        public void setContentId(String id) {
-            this.id = id;
-        }
-    }
-
-    @Entity(name = "testEntityNoContent")
-    public static class TestEntityNoContent extends AbstractTestEntity {
-    }
-
-    @Entity(name = "testEntityNotSearchable")
-    public static class TestEntityNotSearchable extends AbstractTestEntity {
-    }
-
-    @Entity(name = "testEntitySharedId")
-    public static class TestEntityWithSharedId extends AbstractTestEntity {
-    }
-
-    @Entity(name = "testEntitySeparateId")
-    public static class TestEntityWithSeparateId {
-        @Id
-        private String id = UUID.randomUUID().toString();
-        @ContentId
-        private String contentId = UUID.randomUUID().toString();
-
-        public String getId() {
-            return id;
-        }
-
-        public void setId(String id) {
-            this.id = id;
-        }
-
-        public String getContentId() {
-            return contentId;
-        }
-
-        public void setContentId(String id) {
-            this.contentId = id;
-        }
-    }
-
-    @Entity
-    public static class NoLookupStrategySearchEntity {
-        @Id
-        private String id = UUID.randomUUID().toString();
-        @ContentId
-        private String contentId = UUID.randomUUID().toString();
-
-        public NoLookupStrategySearchEntity() {
-        }
-
-        public String getId() {
-            return id;
-        }
-
-        public void setId(String id) {
-            this.id = id;
-        }
-
-        public String getContentId() {
-            return contentId;
-        }
-
-        public void setContentId(String contentId) {
-            this.contentId = contentId;
-        }
-    }
-
-    @Entity
-    public static class CustomSearchReturnTypeEntity {
-        @Id
-        private String id = UUID.randomUUID().toString();
-        @ContentId
-        private String contentId = UUID.randomUUID().toString();
-
-        public CustomSearchReturnTypeEntity() {
-        }
-
-        public String getId() {
-            return id;
-        }
-
-        public void setId(String id) {
-            this.id = id;
-        }
-
-        public String getContentId() {
-            return contentId;
-        }
-
-        public void setContentId(String contentId) {
-            this.contentId = contentId;
-        }
-    }
-
-    public static class CustomResult {
-
-        @ContentId
-        private String contentId;
-
-        @Highlight
-        private String highlight;
-
-        @Attribute(name = "foo")
-        private String foo;
-
-        @Attribute(name = "bar")
-        private String bar;
-
-        public CustomResult(String contentId, String highlight, String foo, String bar) {
-            this.contentId = contentId;
-            this.highlight = highlight;
-            this.foo = foo;
-            this.bar = bar;
-        }
-
-        public String getContentId() {
-            return contentId;
-        }
-
-        public void setContentId(String contentId) {
-            this.contentId = contentId;
-        }
-
-        @SuppressWarnings("unused")
-        public String getHighlight() {
-            return highlight;
-        }
-
-        @SuppressWarnings("unused")
-        public void setHighlight(String highlight) {
-            this.highlight = highlight;
-        }
-
-        public String getFoo() {
-            return foo;
-        }
-
-        public void setFoo(String foo) {
-            this.foo = foo;
-        }
-
-        @SuppressWarnings("unused")
-        public String getBar() {
-            return bar;
-        }
-
-        @SuppressWarnings("unused")
-        public void setBar(String bar) {
-            this.bar = bar;
         }
     }
 
@@ -380,7 +143,7 @@ public class ContentSearchRestControllerIT {
         @Test
         void shouldThrowException() throws Exception {
             MvcResult result = mvc.perform(get(
-                    "/testEntityNoContents/searchContent?queryString=one")
+                    "/searchNoContentEntities/searchContent?queryString=one")
                     .accept("application/hal+json"))
                 .andExpect(status().isNotFound()).andReturn();
 
@@ -409,7 +172,7 @@ public class ContentSearchRestControllerIT {
         @Test
         void shouldThrowResourceNotFoundException() throws Exception {
             MvcResult result = mvc.perform(get(
-                    "/testEntityNotSearchables/searchContent?queryString=one")
+                    "/searchNotSearchableEntities/searchContent?queryString=one")
                     .accept("application/hal+json"))
                 .andExpect(status().isNotFound()).andReturn();
 
@@ -438,7 +201,7 @@ public class ContentSearchRestControllerIT {
         @Test
         void shouldReturnResourceNotFoundException() throws Exception {
             mvc.perform(get(
-                    "/testEntityWithSharedIds/searchContent/invalidSearchMethod?keyword=one")
+                    "/searchSharedContentIdEntities/searchContent/invalidSearchMethod?keyword=one")
                     .accept("application/hal+json"))
                 .andExpect(status().isNotFound()).andReturn();
         }
@@ -463,7 +226,7 @@ public class ContentSearchRestControllerIT {
 
         @Test
         void shouldReturnBadRequestException() throws Exception {
-            mvc.perform(get("/testEntityWithSharedIds/searchContent")
+            mvc.perform(get("/searchSharedContentIdEntities/searchContent")
                     .accept("application/hal+json"))
                 .andExpect(status().isBadRequest());
         }
@@ -488,7 +251,7 @@ public class ContentSearchRestControllerIT {
 
         @Test
         void shouldInvokeSearchWithPageRequest() throws Exception {
-            mvc.perform(get("/testEntityWithSeparateIds/searchContent?queryString=else&page=1&size=1")
+            mvc.perform(get("/searchSeparateContentIdEntities/searchContent?queryString=else&page=1&size=1")
                     .accept("application/hal+json"))
                 .andExpect(status().isOk()).andReturn();
 
@@ -526,7 +289,7 @@ public class ContentSearchRestControllerIT {
             @Test
             void shouldReturnEmptyResponseEntity() throws Exception {
                 MvcResult result = mvc.perform(get(
-                        "/testEntityWithSharedIds/searchContent?queryString=one")
+                        "/searchSharedContentIdEntities/searchContent?queryString=one")
                         .accept("application/hal+json"))
                     .andExpect(status().isOk()).andReturn();
 
@@ -554,10 +317,10 @@ public class ContentSearchRestControllerIT {
                 queryMethodsLookupStrategy = spy(new QueryMethodsEntityLookupStrategy());
                 controller.setQueryMethodsEntityLookupStrategy(queryMethodsLookupStrategy);
 
-                TestEntityWithSharedId entity = new TestEntityWithSharedId();
+                SearchSharedContentIdEntity entity = new SearchSharedContentIdEntity();
                 repository.save(entity);
 
-                entity2 = new TestEntityWithSharedId();
+                entity2 = new SearchSharedContentIdEntity();
                 repository.save(entity2);
 
                 internalResults = new ArrayList<>();
@@ -575,7 +338,7 @@ public class ContentSearchRestControllerIT {
             @Test
             void shouldReturnResponseEntityWithEntity() throws Exception {
                 MvcResult result = mvc.perform(get(
-                        "/testEntityWithSharedIds/searchContent?queryString=two")
+                        "/searchSharedContentIdEntities/searchContent?queryString=two")
                         .accept("application/hal+json"))
                     .andExpect(status().isOk()).andReturn();
 
@@ -589,12 +352,12 @@ public class ContentSearchRestControllerIT {
                         new StringReader(result.getResponse()
                             .getContentAsString()));
                 assertThat(halResponse
-                    .getResourcesByRel("testEntityWithSharedIds").size()).isEqualTo(2);
+                    .getResourcesByRel("searchSharedContentIdEntities").size()).isEqualTo(2);
                 String id1 = halResponse
-                    .getResourcesByRel("testEntityWithSharedIds").get(0)
+                    .getResourcesByRel("searchSharedContentIdEntities").get(0)
                     .getValue("contentId").toString();
                 String id2 = halResponse
-                    .getResourcesByRel("testEntityWithSharedIds").get(1)
+                    .getResourcesByRel("searchSharedContentIdEntities").get(1)
                     .getValue("contentId").toString();
                 assertThat(sharedIds).contains(id1);
                 assertThat(sharedIds).contains(id2);
@@ -618,7 +381,7 @@ public class ContentSearchRestControllerIT {
                 queryMethodsLookupStrategy = spy(new QueryMethodsEntityLookupStrategy());
                 controller.setQueryMethodsEntityLookupStrategy(queryMethodsLookupStrategy);
 
-                entity2 = new TestEntityWithSharedId();
+                entity2 = new SearchSharedContentIdEntity();
                 repository.save(entity2);
 
                 String orphanedContentId = UUID.randomUUID().toString();
@@ -638,7 +401,7 @@ public class ContentSearchRestControllerIT {
             @Test
             void shouldFilterOutInvalidIDs() throws Exception {
                 MvcResult result = mvc.perform(get(
-                        "/testEntityWithSharedIds/searchContent?queryString=else")
+                        "/searchSharedContentIdEntities/searchContent?queryString=else")
                         .accept("application/hal+json"))
                     .andExpect(status().isOk()).andReturn();
 
@@ -647,9 +410,9 @@ public class ContentSearchRestControllerIT {
                         new StringReader(result.getResponse()
                             .getContentAsString()));
                 assertThat(halResponse
-                    .getResourcesByRel("testEntityWithSharedIds").size()).isEqualTo(1);
+                    .getResourcesByRel("searchSharedContentIdEntities").size()).isEqualTo(1);
                 String id1 = halResponse
-                    .getResourcesByRel("testEntityWithSharedIds").get(0)
+                    .getResourcesByRel("searchSharedContentIdEntities").get(0)
                     .getValue("contentId").toString();
                 assertThat(contentIds).contains(id1);
             }
@@ -683,7 +446,7 @@ public class ContentSearchRestControllerIT {
             @Test
             void shouldReturnEmptyResponseEntity() throws Exception {
                 MvcResult result = mvc.perform(get(
-                        "/testEntityWithSeparateIds/searchContent?queryString=something")
+                        "/searchSeparateContentIdEntities/searchContent?queryString=something")
                         .accept("application/hal+json"))
                     .andExpect(status().isOk()).andReturn();
 
@@ -696,7 +459,7 @@ public class ContentSearchRestControllerIT {
         }
 
         @Nested
-        @DisplayName("Given results are found with entity i ds")
+        @DisplayName("Given results are found with entity IDs")
         class ResultsAreFoundWithEntityIDs {
             @BeforeEach
             void setUp() {
@@ -711,10 +474,10 @@ public class ContentSearchRestControllerIT {
                 queryMethodsLookupStrategy = spy(new QueryMethodsEntityLookupStrategy());
                 controller.setQueryMethodsEntityLookupStrategy(queryMethodsLookupStrategy);
 
-                entity3 = new TestEntityWithSeparateId();
+                entity3 = new SearchSeparateContentIdEntity();
                 entityWithSeparateRepository.save(entity3);
 
-                TestEntityWithSeparateId entity4 = new TestEntityWithSeparateId();
+                SearchSeparateContentIdEntity entity4 = new SearchSeparateContentIdEntity();
                 entityWithSeparateRepository.save(entity4);
 
                 internalResults = new ArrayList<>();
@@ -732,7 +495,7 @@ public class ContentSearchRestControllerIT {
             @Test
             void shouldReturnResponseEntityWithEntity() throws Exception {
                 MvcResult result = mvc.perform(get(
-                        "/testEntityWithSeparateIds/searchContent?queryString=else")
+                        "/searchSeparateContentIdEntities/searchContent?queryString=else")
                         .accept("application/hal+json"))
                     .andExpect(status().isOk()).andReturn();
 
@@ -746,12 +509,12 @@ public class ContentSearchRestControllerIT {
                         new StringReader(result.getResponse()
                             .getContentAsString()));
                 assertThat(halResponse
-                    .getResourcesByRel("testEntityWithSeparateIds").size()).isEqualTo(2);
+                    .getResourcesByRel("searchSeparateContentIdEntities").size()).isEqualTo(2);
                 String id1 = halResponse
-                    .getResourcesByRel("testEntityWithSeparateIds").get(0)
+                    .getResourcesByRel("searchSeparateContentIdEntities").get(0)
                     .getValue("contentId").toString();
                 String id2 = halResponse
-                    .getResourcesByRel("testEntityWithSeparateIds").get(1)
+                    .getResourcesByRel("searchSeparateContentIdEntities").get(1)
                     .getValue("contentId").toString();
                 assertThat(contentIds).contains(id1);
                 assertThat(contentIds).contains(id2);
@@ -775,7 +538,7 @@ public class ContentSearchRestControllerIT {
                 queryMethodsLookupStrategy = spy(new QueryMethodsEntityLookupStrategy());
                 controller.setQueryMethodsEntityLookupStrategy(queryMethodsLookupStrategy);
 
-                entity3 = new TestEntityWithSeparateId();
+                entity3 = new SearchSeparateContentIdEntity();
                 entityWithSeparateRepository.save(entity3);
 
                 String orphanedContentId = UUID.randomUUID().toString();
@@ -795,7 +558,7 @@ public class ContentSearchRestControllerIT {
             @Test
             void shouldFilterOutInvalidIDs() throws Exception {
                 MvcResult result = mvc.perform(get(
-                        "/testEntityWithSeparateIds/searchContent?queryString=else")
+                        "/searchSeparateContentIdEntities/searchContent?queryString=else")
                         .accept("application/hal+json"))
                     .andExpect(status().isOk()).andReturn();
 
@@ -804,9 +567,9 @@ public class ContentSearchRestControllerIT {
                         new StringReader(result.getResponse()
                             .getContentAsString()));
                 assertThat(halResponse
-                    .getResourcesByRel("testEntityWithSeparateIds").size()).isEqualTo(1);
+                    .getResourcesByRel("searchSeparateContentIdEntities").size()).isEqualTo(1);
                 String id1 = halResponse
-                    .getResourcesByRel("testEntityWithSeparateIds").get(0)
+                    .getResourcesByRel("searchSeparateContentIdEntities").get(0)
                     .getValue("contentId").toString();
                 assertThat(contentIds).contains(id1);
             }
@@ -841,7 +604,7 @@ public class ContentSearchRestControllerIT {
         @Test
         void shouldReturnResponseEntityWithEntity() throws Exception {
             MvcResult result = mvc.perform(get(
-                    "/repoWithCustomSearchReturnType/searchContent?queryString=else")
+                    "/customSearchReturnTypeEntities/searchContent?queryString=else")
                     .accept("application/hal+json"))
                 .andExpect(status().isOk()).andReturn();
 
@@ -899,7 +662,7 @@ public class ContentSearchRestControllerIT {
         @Test
         void shouldReturnResponseEntityWithEntity() throws Exception {
             MvcResult result = mvc.perform(get(
-                    "/repoWithCustomSearchReturnType/searchContent?queryString=else&page=1&size=1")
+                    "/customSearchReturnTypeEntities/searchContent?queryString=else&page=1&size=1")
                     .accept("application/hal+json"))
                 .andExpect(status().isOk()).andReturn();
 
@@ -957,7 +720,7 @@ public class ContentSearchRestControllerIT {
         @Test
         void shouldReturnResponseWithEntity() throws Exception {
             MvcResult result = mvc.perform(get(
-                    "/repoWithNoLookupStrategy/searchContent?queryString=else")
+                    "/noLookupStrategySearchEntities/searchContent?queryString=else")
                     .accept("application/hal+json"))
                 .andExpect(status().isOk()).andReturn();
 
@@ -1005,12 +768,12 @@ public class ContentSearchRestControllerIT {
         void shouldBatchQueriesAppropriately() {
             List<String> ids = new ArrayList<>();
             for (int i = 0; i < 500; i++) {
-                TestEntityWithSeparateId entity = new TestEntityWithSeparateId();
+                SearchSeparateContentIdEntity entity = new SearchSeparateContentIdEntity();
                 entity = entityWithSeparateRepository.save(entity);
                 ids.add(entity.getId());
             }
 
-            List<TestEntityWithSeparateId> entities = new ArrayList<>();
+            List<SearchSeparateContentIdEntity> entities = new ArrayList<>();
 
             CrudRepository<?, ?> repoSpy = mock(CrudRepository.class, AdditionalAnswers.delegatesTo(entityWithSeparateRepository));
 

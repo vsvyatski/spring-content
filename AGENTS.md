@@ -179,10 +179,9 @@ Change version for the whole reactor with:
   example `jsonMappedContentEntities`).
 - Store backend ITs group scenarios under nested `Store`, `AssociativeStore`, and `ContentStore` (not `*Cases`). Drop
   empty `*StorageCases` / `Default*ImplCases` shells; do not hoist nests that own `@BeforeEach` onto the outer IT class.
-- **Deferred (search IT, step 3 after *Cases* flatten):** `ContentSearchRestControllerIT` still nests entities, repos,
-  and stores in the IT class. After step 2 (`*Cases` removal) in that file, extract purpose-named fixtures to
-  `it.rest.extensions.content.search.support` and dedupe the three separate-id entity copies; see the `ponytail:` note
-  on that IT.
+- Search REST IT fixtures live in `it.rest.extensions.content.search.support` (`SeparateContentIdFields` shared by
+  separate content ID entities). `@RepositoryRestResource(path = …)` uses collection paths aligned with fixture type
+  names (for example `searchSharedContentIdEntities`).
 
 When changing a store implementation, run that module’s `*Test` and, if behavior or IO/SQL is involved, the matching
 `*IT`.
