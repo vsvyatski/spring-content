@@ -54,7 +54,7 @@ public class AesCtrEncryptionEngineTest {
     }
 
     @Nested
-    class AESCTREncryptionCases {
+    class AesCtrEncryptionCases {
         @Nested
         class Tests {
             @Test
