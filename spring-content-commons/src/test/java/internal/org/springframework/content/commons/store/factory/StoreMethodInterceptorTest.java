@@ -455,7 +455,7 @@ public class StoreMethodInterceptorTest {
     }
 
     @Nested
-    @DisplayName("setContent from Resource")
+    @DisplayName("setContent from resource")
     class SetContentFromResource {
         @BeforeEach
         void setUp() {
@@ -703,8 +703,8 @@ public class StoreMethodInterceptorTest {
     }
 
     @Nested
-    @DisplayName("findMethod")
-    class FindMethod {
+    @DisplayName("getMethod")
+    class GetMethod {
         @Test
         void shouldResolveMethodWhenNotOverridden() {
             store = CommonsTestStores.mockContentStore();
