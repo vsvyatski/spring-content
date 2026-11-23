@@ -2,6 +2,7 @@ package internal.org.springframework.renditions.poi;
 
 import org.apache.poi.openxml4j.exceptions.NotOfficeXmlFileException;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.content.test.support.TestSupportData;
@@ -26,7 +27,8 @@ public class POIServiceTest {
         @Nested
         class XwpfDocument {
             @Nested
-            class GivenAnInputStream {
+            @DisplayName("Given an input stream")
+            class InputStream {
                 @BeforeEach
                 void setUp() {
                     poi = new POIServiceImpl();
@@ -35,27 +37,29 @@ public class POIServiceTest {
                 }
 
                 @Test
-                void shouldReturnAnInstanceOfAnXPWFDocument() throws IOException {
+                void shouldReturnInstanceOfXPWFDocument() throws IOException {
                     assertThat(poi.xwpfDocument(stream)).isNotNull();
                 }
             }
 
             @Nested
-            class GivenNullInputStream {
+            @DisplayName("Given null input stream")
+            class NullInputStream {
                 @BeforeEach
                 void setUp() {
                     poi = new POIServiceImpl();
                 }
 
                 @Test
-                void shouldThrowAnException() {
+                void shouldThrowException() {
                     assertThatThrownBy(() -> poi.xwpfDocument(stream))
                         .isInstanceOf(IllegalArgumentException.class);
                 }
             }
 
             @Nested
-            class GivenInvalidInputStream {
+            @DisplayName("Given invalid input stream")
+            class InvalidInputStream {
                 @BeforeEach
                 void setUp() {
                     poi = new POIServiceImpl();
@@ -65,7 +69,7 @@ public class POIServiceTest {
                 }
 
                 @Test
-                void shouldThrowAnException() {
+                void shouldThrowException() {
                     assertThatThrownBy(() -> poi.xwpfDocument(stream))
                         .isInstanceOf(NotOfficeXmlFileException.class);
                 }

@@ -23,8 +23,8 @@ public class ContentLinksIT {
     class NoLinkRel {
         @Nested
         @NestedTestConfiguration(NestedTestConfiguration.EnclosingConfiguration.INHERIT)
-        @DisplayName("given a store and an entity with a top-level uncorrelated content property")
-        class GivenAStoreAndAnEntityWithATopLevelUncorrelatedContentPropertyContentLinkTests extends ContentLinkTests {
+        @DisplayName("Given a store and an entity with a top-level uncorrelated content property")
+        class StoreAndEntityWithTopLevelUncorrelatedContentPropertyContentLinkTests extends ContentLinkTests {
             @Autowired
             private WebApplicationContext context;
 
@@ -43,15 +43,15 @@ public class ContentLinksIT {
             }
 
             @Test
-            void shouldProvideAResponseWithAContentLink() throws Exception {
+            void shouldProvideResponseWithContentLink() throws Exception {
                 assertContentLinkInHalResponse();
             }
         }
 
         @Nested
         @NestedTestConfiguration(NestedTestConfiguration.EnclosingConfiguration.INHERIT)
-        @DisplayName("given a store and an entity with top-level correlated content properties")
-        class GivenAStoreAndAnEntityWithTopLevelCorrelatedContentPropertiesContentLinkTests extends ContentLinkTests {
+        @DisplayName("Given a store and an entity with top-level correlated content properties")
+        class StoreAndEntityWithTopLevelCorrelatedContentPropertiesContentLinkTests extends ContentLinkTests {
             @Autowired
             private WebApplicationContext context;
 
@@ -70,15 +70,15 @@ public class ContentLinksIT {
             }
 
             @Test
-            void shouldProvideAResponseWithAContentLink() throws Exception {
+            void shouldProvideResponseWithContentLink() throws Exception {
                 assertContentLinkInHalResponse();
             }
         }
 
         @Nested
         @NestedTestConfiguration(NestedTestConfiguration.EnclosingConfiguration.INHERIT)
-        @DisplayName("given a store and an entity with a nested content property")
-        class GivenAStoreSpecifyingALinkrelAndAnEntityANestedContentPropertyContentLinkTests extends ContentLinkTests {
+        @DisplayName("Given a store and an entity with a nested content property")
+        class StoreSpecifyingLinkRelAndEntityWithNestedContentPropertyContentLinkTests extends ContentLinkTests {
             @Autowired
             private WebApplicationContext context;
 
@@ -98,15 +98,15 @@ public class ContentLinksIT {
             }
 
             @Test
-            void shouldProvideAResponseWithAContentLink() throws Exception {
+            void shouldProvideResponseWithContentLink() throws Exception {
                 assertContentLinkInHalResponse();
             }
         }
 
         @Nested
         @NestedTestConfiguration(NestedTestConfiguration.EnclosingConfiguration.INHERIT)
-        @DisplayName("given a store and an entity with nested content properties")
-        class GivenStoreSpecifyingLinkRelAndEntityWithNestedContentPropertiesContentLinkTest extends ContentLinkTests {
+        @DisplayName("Given a store and an entity with nested content properties")
+        class StoreSpecifyingLinkRelAndEntityWithNestedContentPropertiesContentLinkTests extends ContentLinkTests {
             @Autowired
             private WebApplicationContext context;
 
@@ -129,7 +129,7 @@ public class ContentLinksIT {
             }
 
             @Test
-            void shouldProvideAResponseWithAContentLink() throws Exception {
+            void shouldProvideResponseWithContentLink() throws Exception {
                 assertContentLinkInHalResponse();
             }
         }

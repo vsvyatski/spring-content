@@ -7,6 +7,7 @@ import internal.org.springframework.content.rest.support.StoreConfig;
 import it.internal.org.springframework.content.rest.controllers.support.LastModifiedDateTests;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -69,9 +70,11 @@ public class NestedContentPropertyRestEndpointsIT {
     @Nested
     class NestedContentPropertyRESTEndpoints {
         @Nested
-        class GivenAnEntityWithASimpleContentProperty {
+        @DisplayName("Given an entity with a simple content property")
+        class EntityWithSimpleContentProperty {
             @Nested
-            class GivenARequestToANonExistentEntity {
+            @DisplayName("Given a request to a non-existent entity")
+            class NonExistentEntity {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -88,7 +91,8 @@ public class NestedContentPropertyRestEndpointsIT {
             }
 
             @Nested
-            class GivenAPOSTToTheEntityEndpointWithAMultipartFormRequest {
+            @DisplayName("Given a POST to the entity endpoint with a multipart form request")
+            class PostEntityEndpointWithMultipartFormRequest {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -97,7 +101,7 @@ public class NestedContentPropertyRestEndpointsIT {
                 }
 
                 @Test
-                void shouldCreateANewEntityAndItsContentAndRespondWithA201Created() throws Exception {
+                void shouldCreateNewEntityAndItsContentAndRespondWith201Created() throws Exception {
                     // assert content does not exist
                     String newContent = "This is some new content";
 
@@ -123,7 +127,8 @@ public class NestedContentPropertyRestEndpointsIT {
             }
 
             @Nested
-            class GivenARequestToANonExistentContentProperty {
+            @DisplayName("Given a request to a non-existent content property")
+            class NonExistentContentProperty {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -140,9 +145,11 @@ public class NestedContentPropertyRestEndpointsIT {
             }
 
             @Nested
-            class GivenThatIsHasNoContent {
+            @DisplayName("Given that it has no content")
+            class HasNoContent {
                 @Nested
-                class AGETToRepositoryIdContentProperty {
+                @DisplayName("GET to {repository ID}/child")
+                class GetContentProperty {
                     @BeforeEach
                     void setUp() {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -159,7 +166,8 @@ public class NestedContentPropertyRestEndpointsIT {
                 }
 
                 @Nested
-                class APUTToRepositoryIdContentProperty {
+                @DisplayName("PUT to {repository ID}/child")
+                class PutContentProperty {
                     @BeforeEach
                     void setUp() {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -168,7 +176,7 @@ public class NestedContentPropertyRestEndpointsIT {
                     }
 
                     @Test
-                    void shouldCreateTheContent() throws Exception {
+                    void shouldCreateContent() throws Exception {
                         mvc.perform(
                                 put("/embeddedChildContentEntities/" + testEntity8.getId() + "/child")
                                     .content("Hello New Spring Content World!")
@@ -187,7 +195,8 @@ public class NestedContentPropertyRestEndpointsIT {
                 }
 
                 @Nested
-                class APUTToStoreIdWithJsonContent {
+                @DisplayName("PUT to {repository ID}/child with JSON content")
+                class PutChildWithJsonContent {
                     @BeforeEach
                     void setUp() {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -196,7 +205,7 @@ public class NestedContentPropertyRestEndpointsIT {
                     }
 
                     @Test
-                    void shouldSetTheContentAndReturn201() throws Exception {
+                    void shouldSetContentAndReturn201() throws Exception {
                         String content = "{\"content\":\"Hello New Spring Content World!\"}";
                         mvc.perform(
                                 put("/embeddedChildContentEntities/" + testEntity8.getId() + "/child")
@@ -217,9 +226,11 @@ public class NestedContentPropertyRestEndpointsIT {
             }
 
             @Nested
-            class GivenThatItHasContent {
+            @DisplayName("Given that it has content")
+            class HasContent {
                 @Nested
-                class AGETToRepositoryIdContentProperty {
+                @DisplayName("GET to {repository ID}/child")
+                class GetContentProperty {
                     @BeforeEach
                     void setUp() throws IOException {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -238,7 +249,7 @@ public class NestedContentPropertyRestEndpointsIT {
                     }
 
                     @Test
-                    void shouldReturnTheContent() throws Exception {
+                    void shouldReturnContent() throws Exception {
                         MockHttpServletResponse response = mvc
                             .perform(get("/embeddedChildContentEntities/" + testEntity8.getId() + "/child")
                                 .accept("text/plain"))
@@ -254,7 +265,8 @@ public class NestedContentPropertyRestEndpointsIT {
                 }
 
                 @Nested
-                class AGETToRepositoryIdContentPropertyWithAMimeTypeThatMatchesARenderer {
+                @DisplayName("GET to {repository ID}/child with a MIME type that matches a renderer")
+                class GetContentPropertyWithMimeTypeThatMatchesRenderer {
                     @BeforeEach
                     void setUp() throws IOException {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -273,7 +285,7 @@ public class NestedContentPropertyRestEndpointsIT {
                     }
 
                     @Test
-                    void shouldReturnTheRenditionAnd200() throws Exception {
+                    void shouldReturnRenditionAnd200() throws Exception {
                         MockHttpServletResponse response = mvc
                             .perform(get(
                                 "/embeddedChildContentEntities/" + testEntity8.getId()
@@ -288,7 +300,8 @@ public class NestedContentPropertyRestEndpointsIT {
                 }
 
                 @Nested
-                class AGETToRepositoryIdContentPropertyWithMultipleMimeTypesTheLastOfWhichMatchesTheCo {
+                @DisplayName("GET to {repository ID}/child with multiple MIME types the last of which matches content")
+                class GetWhenLastAcceptedMimeTypeMatches {
                     @BeforeEach
                     void setUp() throws IOException {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -307,7 +320,7 @@ public class NestedContentPropertyRestEndpointsIT {
                     }
 
                     @Test
-                    void shouldReturnTheOriginalContentAnd200() throws Exception {
+                    void shouldReturnOriginalContentAnd200() throws Exception {
                         MockHttpServletResponse response = mvc
                             .perform(get("/embeddedChildContentEntities/"
                                 + testEntity8.getId()
@@ -323,7 +336,8 @@ public class NestedContentPropertyRestEndpointsIT {
                 }
 
                 @Nested
-                class APUTToRepositoryIdContentProperty {
+                @DisplayName("PUT to {repository ID}/child")
+                class PutContentProperty {
                     @BeforeEach
                     void setUp() throws IOException {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -342,7 +356,7 @@ public class NestedContentPropertyRestEndpointsIT {
                     }
 
                     @Test
-                    void shouldCreateTheContent() throws Exception {
+                    void shouldCreateContent() throws Exception {
                         mvc.perform(
                                 put("/embeddedChildContentEntities/" + testEntity8.getId() + "/child")
                                     .content("Hello New Spring Content World!")
@@ -359,7 +373,8 @@ public class NestedContentPropertyRestEndpointsIT {
                 }
 
                 @Nested
-                class ADELETEToRepositoryIdContentProperty {
+                @DisplayName("DELETE to {repository ID}/child")
+                class DeleteContentProperty {
                     @BeforeEach
                     void setUp() throws IOException {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -378,7 +393,7 @@ public class NestedContentPropertyRestEndpointsIT {
                     }
 
                     @Test
-                    void shouldDeleteTheContent() throws Exception {
+                    void shouldDeleteContent() throws Exception {
                         mvc.perform(delete(
                                 "/embeddedChildContentEntities/" + testEntity8.getId() + "/child"))
                             .andExpect(status().isNoContent());

@@ -2,10 +2,7 @@ package internal.org.springframework.content.gcs.config;
 
 import com.google.cloud.storage.Storage;
 import internal.org.springframework.content.gcs.it.GCSStorageContainer;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.content.gcs.config.EnableGCPStorage;
 import org.springframework.content.gcs.config.GCPStorageConfigurer;
 import org.springframework.content.test.support.TestSupportPackages;
@@ -59,7 +56,8 @@ public class EnableGCPStorageTest {
     @Nested
     class EnableGCPStorageCases {
         @Nested
-        class GivenAContextAndAConfigurationWithAnGCSContentStore {
+        @DisplayName("Given a context and a configuration with a GCS content store")
+        class ContextAndConfigurationWithGCSContentStore {
             @BeforeEach
             void setUp() {
                 context = new AnnotationConfigApplicationContext();
@@ -73,18 +71,19 @@ public class EnableGCPStorageTest {
             }
 
             @Test
-            void shouldHaveAContentStoreBean() {
+            void shouldHaveContentStoreBean() {
                 assertThat(context.getBean(SingleContentGcsStore.class)).isNotNull();
             }
 
             @Test
-            void shouldHaveAnPlacementService() {
+            void shouldHavePlacementService() {
                 assertThat(context.getBean("gcpStoragePlacementService")).isNotNull();
             }
         }
 
         @Nested
-        class GivenAContextWithAConfigurer {
+        @DisplayName("Given a context with a configurer")
+        class ContextWithConfigurer {
             @BeforeEach
             void setUp() {
                 context = new AnnotationConfigApplicationContext();
@@ -99,13 +98,14 @@ public class EnableGCPStorageTest {
             }
 
             @Test
-            void shouldCallThatConfigurerToHelpSetupTheStore() {
+            void shouldCallThatConfigurerToHelpSetupStore() {
                 verify(configurer).configureGCPStorageConverters(any());
             }
         }
 
         @Nested
-        class GivenAContextWithAnEmptyConfiguration {
+        @DisplayName("Given a context with an empty configuration")
+        class ContextWithEmptyConfiguration {
             @BeforeEach
             void setUp() {
                 context = new AnnotationConfigApplicationContext();

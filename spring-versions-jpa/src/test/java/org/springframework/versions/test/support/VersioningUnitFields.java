@@ -8,7 +8,6 @@ import org.springframework.versions.*;
  *
  * @author Vladimir Svyatski
  */
-@SuppressWarnings("unused")
 public class VersioningUnitFields {
 
     @Id
@@ -36,6 +35,7 @@ public class VersioningUnitFields {
         return ancestorId;
     }
 
+    @SuppressWarnings("unused") // BeanWrapper write method for @AncestorId
     public void setAncestorId(Long ancestorId) {
         this.ancestorId = ancestorId;
     }
@@ -44,6 +44,7 @@ public class VersioningUnitFields {
         return ancestorRootId;
     }
 
+    @SuppressWarnings("unused") // BeanWrapper write method for @AncestorRootId
     public void setAncestorRootId(Long ancestorRootId) {
         this.ancestorRootId = ancestorRootId;
     }
@@ -52,6 +53,7 @@ public class VersioningUnitFields {
         return successorId;
     }
 
+    @SuppressWarnings("unused") // BeanWrapper write method for @SuccessorId
     public void setSuccessorId(Long successorId) {
         this.successorId = successorId;
     }
@@ -60,6 +62,7 @@ public class VersioningUnitFields {
         return versionNo;
     }
 
+    @SuppressWarnings("unused") // BeanWrapper write method for @VersionNumber
     public void setVersionNo(String versionNo) {
         this.versionNo = versionNo;
     }
@@ -68,6 +71,7 @@ public class VersioningUnitFields {
         return versionLabel;
     }
 
+    @SuppressWarnings("unused") // BeanWrapper write method for @VersionLabel
     public void setVersionLabel(String versionLabel) {
         this.versionLabel = versionLabel;
     }

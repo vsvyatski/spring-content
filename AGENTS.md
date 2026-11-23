@@ -117,7 +117,8 @@ Storage type selection uses `spring.content.storage.type.default` (FS is the def
 
 ## Build and test
 
-JDK 17. Maven 3.6.3+ if not using the wrapper.
+JDK 17. Maven 3.6.3+ if not using the wrapper. On Windows with another JDK on `PATH`, source
+`scripts/wsl-java17-env.sh` in AlmaLinux WSL before `./mvnw`.
 
 ```text
 ./mvnw clean install                    # default: unit tests only (*Test.java)
@@ -147,6 +148,21 @@ Change version for the whole reactor with:
 - Framework: JUnit Jupiter, AssertJ, Mockito, Testcontainers where needed
 - `@Test`, `@BeforeEach`, `@AfterEach`, `@Nested` from `org.junit.jupiter.api`
 - Naming: `*Test.java` = unit (always); `*IT.java` = integration (`-P tests` only)
+- `@Nested` classes use PascalCase identifiers without articles (`a`, `an`, `the`) or BDD prefixes (`Given`, `When`,
+  `Then`) in the type name. Use `@DisplayName` when the old Ginkgo phrase should still
+  appear in test reports (for example `class GetWithAcceptWildcard` with `@DisplayName("GET to {store ID} with
+  Accept */*")`). HTTP scenario nests name the verb first (`Get`, `Put`, `Post`, `Delete`, `Head`,
+  `Options`). Setup nests describe state (`ApplicationSetsId`, `EntityHasTextPlainContent`). Test methods
+  may stay `should…` unless you are aligning a file to another style deliberately.
+- In `@DisplayName`, comments, and other human-readable test prose, use **sentence case** (like the REST
+  `controllers/support` fixtures), not title case on every word: `Given a class with uncorrelated attributes`,
+  not `Given a Class With Uncorrelated Attributes`. Capitalize HTTP verbs (`GET`, `PUT`), header names (`If-Match`), and
+  the usual **MIME type** / **store ID** spellings; keep articles and prepositions lowercase.
+  Place `@Nested`, `@DisplayName`, and the nested `class` on consecutive lines with no blank line between them.
+- In prose use **MIME type**, **mime type**, or **mime-type** (two words or hyphenated — never one word
+  `mimetype`). In Java identifiers use **`MimeType`** / **`mimeType`** (not `Mimetype`). Write **ID** in prose (not `id`
+  in phrases like "store ID"), unless a framework literal requires another spelling (for example a
+  fixed header or property name).
 - Follow existing IT style: inner entity/store/repo types, `@Enable*Stores` + `@EnableJpaRepositories` test configs,
   assert streams with Commons IO + AssertJ
 - Test entities: provide a public no-arg constructor; add parameterized constructors only when a test calls
@@ -162,6 +178,11 @@ Change version for the whole reactor with:
   `internal.org.springframework.content.rest.support` with purpose names (e.g. `JsonMappedContentEntity`);
   `@RepositoryRestResource(path = …)` uses purpose-driven collection paths aligned with fixture type names (for
   example `jsonMappedContentEntities`).
+- Store backend ITs group scenarios under nested `Store`, `AssociativeStore`, and `ContentStore` (not `*Cases`). Drop
+  empty `*StorageCases` / `Default*ImplCases` shells; do not hoist nests that own `@BeforeEach` onto the outer IT class.
+- Search REST IT fixtures live in `it.rest.extensions.content.search.support` (`SeparateContentIdFields` shared by
+  separate content ID entities). `@RepositoryRestResource(path = …)` uses collection paths aligned with fixture type
+  names (for example `searchSharedContentIdEntities`).
 
 When changing a store implementation, run that module’s `*Test` and, if behavior or IO/SQL is involved, the matching
 `*IT`.

@@ -2,6 +2,7 @@ package org.springframework.content.fs.io;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledOnOs;
@@ -27,7 +28,8 @@ public class FileSystemResourceLoaderTest {
         @Nested
         class GetResource {
             @Nested
-            class GivenWellFormedPathHasATrailingSlash {
+            @DisplayName("Given well formed path has a trailing slash")
+            class WellFormedPathHasTrailingSlash {
                 @Test
                 @DisabledOnOs(OS.WINDOWS)
                 void succeeds() throws IOException {
@@ -46,7 +48,8 @@ public class FileSystemResourceLoaderTest {
             }
 
             @Nested
-            class GivenMalformedPathWithoutATrailingSlash {
+            @DisplayName("Given malformed path without a trailing slash")
+            class MalformedPathWithoutTrailingSlash {
                 @Test
                 @DisabledOnOs(OS.WINDOWS)
                 void succeeds() throws IOException {
@@ -71,7 +74,8 @@ public class FileSystemResourceLoaderTest {
         @Nested
         class Delete {
             @Nested
-            class GivenAFileResourceThatExists {
+            @DisplayName("Given a file resource that exists")
+            class FileResourceThatExists {
                 @BeforeEach
                 void setUp() throws IOException {
                     File parent = Files.createTempDirectory("fs-").toFile();
@@ -87,7 +91,7 @@ public class FileSystemResourceLoaderTest {
                 }
 
                 @Test
-                void shouldDeleteTheUnderlyingFile() {
+                void shouldDeleteUnderlyingFile() {
                     assertThat(file.exists()).isFalse();
                 }
             }

@@ -13,7 +13,6 @@ import java.util.UUID;
 /**
  * @author Vladimir Svyatski
  */
-@SuppressWarnings("unused") // classpath / store component scan
 public interface UnexportedStoreMethodsEntityStore extends FileSystemContentStore<UnexportedStoreMethodsEntity, UUID> {
 
     @RestResource(exported = false)
@@ -22,20 +21,21 @@ public interface UnexportedStoreMethodsEntityStore extends FileSystemContentStor
 
     @RestResource(exported = false)
     @Override
-    UnexportedStoreMethodsEntity setContent(UnexportedStoreMethodsEntity property, PropertyPath path, InputStream content);
+    UnexportedStoreMethodsEntity setContent(UnexportedStoreMethodsEntity property,
+                                            PropertyPath path, InputStream content);
 
     @RestResource(exported = false)
     @Override
-    UnexportedStoreMethodsEntity setContent(UnexportedStoreMethodsEntity property, PropertyPath path, InputStream content,
-                                            SetContentParams params);
+    UnexportedStoreMethodsEntity setContent(UnexportedStoreMethodsEntity property,
+                                            PropertyPath path, InputStream content, SetContentParams params);
 
     @RestResource(exported = false)
     @Override
-    UnexportedStoreMethodsEntity setContent(UnexportedStoreMethodsEntity property, PropertyPath path,
-                                            Resource resourceContent);
+    UnexportedStoreMethodsEntity setContent(UnexportedStoreMethodsEntity property,
+                                            PropertyPath path, Resource resourceContent);
 
     @RestResource(exported = false)
     @Override
-    UnexportedStoreMethodsEntity unsetContent(UnexportedStoreMethodsEntity property, PropertyPath path,
-                                              UnsetContentParams params);
+    UnexportedStoreMethodsEntity unsetContent(UnexportedStoreMethodsEntity property,
+                                              PropertyPath path, UnsetContentParams params);
 }

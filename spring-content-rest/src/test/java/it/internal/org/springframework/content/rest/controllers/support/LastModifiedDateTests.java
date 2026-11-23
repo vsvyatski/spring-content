@@ -3,6 +3,7 @@ package it.internal.org.springframework.content.rest.controllers.support;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -93,9 +94,10 @@ public abstract class LastModifiedDateTests {
     }
 
     @Nested
-    class AGETRequestToStoreIdWithNoHeaders {
+    @DisplayName("GET request to {store ID} with no headers")
+    class GetWithNoHeaders {
         @Test
-        void shouldReturnTheContentWithTheLastModifiedHeader() throws Exception {
+        void shouldReturnContentWithLastModifiedHeader() throws Exception {
             MockHttpServletResponse response = mvc
                 .perform(get(url)
                     .accept("text/plain"))
@@ -109,9 +111,10 @@ public abstract class LastModifiedDateTests {
     }
 
     @Nested
-    class AGETRequestToStoreIdWithAnIfModifiedSinceDateBeforeTheEntitySModifiedDate {
+    @DisplayName("GET request to {store ID} with If-Modified-Since before the entity modified date")
+    class GetWithIfModifiedSinceBeforeEntityModifiedDate {
         @Test
-        void shouldRespondWith200AndTheContent() throws Exception {
+        void shouldRespondWith200AndContent() throws Exception {
             SimpleDateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
             format.setTimeZone(TimeZone.getTimeZone("GMT"));
             Calendar cal = Calendar.getInstance();
@@ -133,7 +136,8 @@ public abstract class LastModifiedDateTests {
     }
 
     @Nested
-    class AGETRequestToStoreIdWithAnIfModifiedSinceDateTheSameAsTheEntitySModifiedDate {
+    @DisplayName("GET request to {store ID} with If-Modified-Since same as entity modified date")
+    class GetWithIfModifiedSinceSameAsEntityModifiedDate {
         @Test
         void shouldRespondWith304NotModified() throws Exception {
             mvc.perform(get(url)
@@ -145,7 +149,8 @@ public abstract class LastModifiedDateTests {
     }
 
     @Nested
-    class AGETRequestToStoreIdWithAnIfUnmodifiedSinceDateBeforeTheEntitySModifiedDate {
+    @DisplayName("GET request to {store ID} with If-Unmodified-Since before entity modified date")
+    class GetWithIfUnmodifiedSinceBeforeEntityModifiedDate {
         @Test
         void shouldRespondWith412PreconditionFailed() throws Exception {
             mvc.perform(get(url)
@@ -157,9 +162,10 @@ public abstract class LastModifiedDateTests {
     }
 
     @Nested
-    class AGETRequestToStoreIdWithAnIfUnmodifiedSinceDateTheSameAsTheEntitySModifiedDate {
+    @DisplayName("GET request to {store ID} with If-Unmodified-Since same as entity modified date")
+    class GetWithIfUnmodifiedSinceSameAsEntityModifiedDate {
         @Test
-        void shouldRespondWith200AndTheContent() throws Exception {
+        void shouldRespondWith200AndContent() throws Exception {
             mvc.perform(get(url)
                     .accept("text/plain")
                     .header("if-unmodified-since", isWithinASecond(lastModifiedDate)))
@@ -169,7 +175,8 @@ public abstract class LastModifiedDateTests {
     }
 
     @Nested
-    class APUTToStoreIdWithAnIfUnmodifiedSinceDateBeforeTheEntitySModifiedDate {
+    @DisplayName("PUT to {store ID} with If-Unmodified-Since before entity modified date")
+    class PutWithIfUnmodifiedSinceBeforeEntityModifiedDate {
         @Test
         void shouldRespondWith412PreconditionFailed() throws Exception {
             mvc.perform(put(url)
@@ -181,9 +188,10 @@ public abstract class LastModifiedDateTests {
     }
 
     @Nested
-    class APUTToStoreIdWithAnIfUnmodifiedSinceDateTheSameAsTheEntitySModifiedDate {
+    @DisplayName("PUT to {store ID} with If-Unmodified-Since same as entity modified date")
+    class PutWithIfUnmodifiedSinceSameAsEntityModifiedDate {
         @Test
-        void shouldUpdateTheContent() throws Exception {
+        void shouldUpdateContent() throws Exception {
             mvc.perform(put(url)
                     .content("Hello Modified Spring Content World!")
                     .contentType("text/plain")
@@ -193,9 +201,10 @@ public abstract class LastModifiedDateTests {
     }
 
     @Nested
-    class APUTToStoreIdWithAMatchingIfUnmodifiedSinceHeaderAndAMatchingIfNoneMatchHeader {
+    @DisplayName("PUT to {store ID} with matching If-Unmodified-Since and If-None-Match headers")
+    class PutWithMatchingIfUnmodifiedSinceAndIfNoneMatchHeaders {
         @Test
-        void shouldRespondWithA412PreconditionFailed() throws Exception {
+        void shouldRespondWith412PreconditionFailed() throws Exception {
             if (etag != null) {
                 mvc.perform(put(url)
                         .content("Hello Modified Spring Content World!")
@@ -208,7 +217,8 @@ public abstract class LastModifiedDateTests {
     }
 
     @Nested
-    class ADELETEToStoreIdWithAnIfUnmodifiedSinceDateBeforeTheEntitySModifiedDate {
+    @DisplayName("DELETE to {store ID} with If-Unmodified-Since before entity modified date")
+    class DeleteWithIfUnmodifiedSinceBeforeEntityModifiedDate {
         @Test
         void shouldRespondWith412PreconditionFailed() throws Exception {
             mvc.perform(delete(url)
@@ -218,9 +228,10 @@ public abstract class LastModifiedDateTests {
     }
 
     @Nested
-    class ADELETEToStoreIdWithAnIfUnmodifiedSinceDateTheSameAsTheEntitySModifiedDate {
+    @DisplayName("DELETE to {store ID} with If-Unmodified-Since same as entity modified date")
+    class DeleteWithIfUnmodifiedSinceSameAsEntityModifiedDate {
         @Test
-        void shouldUpdateTheContent() throws Exception {
+        void shouldUpdateContent() throws Exception {
             mvc.perform(delete(url)
                     .header("if-unmodified-since", toHeaderDateFormat(lastModifiedDate)))
                 .andExpect(status().isNoContent());

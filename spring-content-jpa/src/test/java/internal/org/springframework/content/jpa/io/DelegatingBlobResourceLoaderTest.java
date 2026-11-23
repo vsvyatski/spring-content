@@ -1,6 +1,7 @@
 package internal.org.springframework.content.jpa.io;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.content.jpa.io.BlobResourceLoader;
@@ -36,7 +37,8 @@ public class DelegatingBlobResourceLoaderTest {
         @Nested
         class GetResource {
             @Nested
-            class GivenACustomBlobResourceLoader {
+            @DisplayName("Given a custom blob resource loader")
+            class CustomBlobResourceLoader {
                 @BeforeEach
                 void setUp() throws SQLException {
                     ds = mock(DataSource.class);
@@ -57,13 +59,14 @@ public class DelegatingBlobResourceLoaderTest {
                 }
 
                 @Test
-                void shouldReturnAPostgresBlobResource() {
+                void shouldReturnPostgresBlobResource() {
                     verify(customLoader).getResource(any());
                 }
             }
 
             @Nested
-            class GivenADatasourceThatDoesntHaveAMatchingBlobResourceLoader {
+            @DisplayName("Given a data source that doesn't have a matching blob resource loader")
+            class DatasourceThatDoesntHaveMatchingBlobResourceLoader {
                 @BeforeEach
                 void setUp() throws SQLException {
                     ds = mock(DataSource.class);
@@ -83,7 +86,7 @@ public class DelegatingBlobResourceLoaderTest {
                 }
 
                 @Test
-                void shouldReturnAGenericBlobResource() {
+                void shouldReturnGenericBlobResource() {
                     assertThat(resource).isInstanceOf(GenericBlobResource.class);
                 }
             }

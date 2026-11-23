@@ -3,6 +3,7 @@ package internal.org.springframework.content.rest.utils;
 import internal.org.springframework.content.commons.store.service.StoreInfoImpl;
 import internal.org.springframework.content.rest.support.UuidSingleContentEntity;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.content.commons.store.ContentStore;
@@ -46,7 +47,8 @@ public class StoreUtilsTest {
     @Nested
     class StorePath {
         @Nested
-        class GivenAContentStoreWithNoAnnotation {
+        @DisplayName("Given a content store without @StoreRestResource")
+        class ContentStoreWithNoAnnotation {
             @BeforeEach
             void setUp() {
                 ContentStore storeImpl = mock(TestContentStore.class);
@@ -56,13 +58,14 @@ public class StoreUtilsTest {
             }
 
             @Test
-            void shouldReturnReturnTestEntities() {
+            void shouldReturnTestEntities() {
                 assertThat(storePath).isEqualTo("uuidSingleContentEntities");
             }
         }
 
         @Nested
-        class GivenAContentStoreWithAStoreRestResourceAnnotation {
+        @DisplayName("Given a content store with @StoreRestResource")
+        class ContentStoreWithStoreRestResourceAnnotation {
             @BeforeEach
             void setUp() {
                 ContentStore storeImpl = mock(ContentStoreWithAnnotation.class);
@@ -73,13 +76,14 @@ public class StoreUtilsTest {
             }
 
             @Test
-            void shouldReturnReturnTheSpecifiedPath() {
+            void shouldReturnSpecifiedPath() {
                 assertThat(storePath).isEqualTo("uuidSingleContentEntities");
             }
         }
 
         @Nested
-        class GivenAContentStoreWithAStoreRestResourceAnnotationThatSpecifiesAPath {
+        @DisplayName("Given a content store with @StoreRestResource that specifies a path")
+        class ContentStoreWithStoreRestResourceAnnotationThatSpecifiesPath {
             @BeforeEach
             void setUp() {
                 ContentStore storeImpl = mock(ContentStoreWithAnotherPath.class);
@@ -89,13 +93,14 @@ public class StoreUtilsTest {
             }
 
             @Test
-            void shouldReturnReturnTheSpecifiedPath() {
+            void shouldReturnSpecifiedPath() {
                 assertThat(storePath).isEqualTo("some-other-path");
             }
         }
 
         @Nested
-        class GivenAStoreWithNoAnnotations {
+        @DisplayName("Given a store without @StoreRestResource")
+        class StoreWithNoAnnotations {
             @BeforeEach
             void setUp() {
                 Store storeImpl = mock(TestStore.class);
@@ -111,7 +116,8 @@ public class StoreUtilsTest {
         }
 
         @Nested
-        class GivenAStoreWithAStoreRestResourceAnnotation {
+        @DisplayName("Given a store with @StoreRestResource")
+        class StoreWithStoreRestResourceAnnotation {
             @BeforeEach
             void setUp() {
                 Store storeImpl = mock(TestStoreWithAnnotation.class);
@@ -127,7 +133,8 @@ public class StoreUtilsTest {
         }
 
         @Nested
-        class GivenAStoreWithAStoreRestResourceAnnotationWithAPathOfFoo {
+        @DisplayName("Given a store with @StoreRestResource with a path of foo")
+        class StoreWithStoreRestResourceAnnotationWithPathOfFoo {
             @BeforeEach
             void setUp() {
                 Store storeImpl = mock(TestStoreWithPath.class);

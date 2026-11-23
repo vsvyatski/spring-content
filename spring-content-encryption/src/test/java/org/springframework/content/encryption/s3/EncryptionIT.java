@@ -9,6 +9,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.http.HttpStatus;
 import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -141,207 +142,207 @@ public class EncryptionIT {
     }
 
     @Nested
-    class ClientSideEncryptionWithS3StorageCases {
+    @DisplayName("Given content")
+    class Content {
         @Nested
-        class GivenContent {
-            @Nested
-            class Tests {
-                @BeforeEach
-                void setUp() {
-                    RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
+        class Tests {
+            @BeforeEach
+            void setUp() {
+                RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
 
-                    synchronized (mutex) {
-                        HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                            .bucket("test-bucket")
-                            .build();
-
-                        try {
-                            client.headBucket(headBucketRequest);
-                        } catch (NoSuchBucketException e) {
-
-                            CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                .bucket("test-bucket")
-                                .build();
-                            client.createBucket(bucketRequest);
-                        }
-
-                        vaultTemplate.opsForTransit().createKey("my-key");
-                    }
-
-                    f = repo.save(new FsFile());
-
-                    given()
-                        .contentType("text/plain")
-                        .body("Hello Client-side encryption World!")
-                        .when()
-                        .post("/files/" + f.getId() + "/content")
-                        .then()
-                        .statusCode(HttpStatus.SC_CREATED);
-                }
-
-                @Test
-                void shouldBeStoredEncrypted() throws IOException {
-                    Optional<FsFile> fetched = repo.findById(f.getId());
-                    assertThat(fetched.isPresent()).isTrue();
-                    f = fetched.get();
-
-                    GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+                synchronized (mutex) {
+                    HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
                         .bucket("test-bucket")
-                        .key(f.getContentId().toString())
                         .build();
 
-                    ResponseInputStream<GetObjectResponse> resp = client.getObject(getObjectRequest);
-                    String contents = IOUtils.toString(resp, Charset.defaultCharset());
-                    assertThat(contents).isNotEqualTo("Hello Client-side encryption World!");
+                    try {
+                        client.headBucket(headBucketRequest);
+                    } catch (NoSuchBucketException e) {
+
+                        CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
+                            .bucket("test-bucket")
+                            .build();
+                        client.createBucket(bucketRequest);
+                    }
+
+                    vaultTemplate.opsForTransit().createKey("my-key");
                 }
 
-                @Test
-                void shouldBeRetrievedDecrypted() {
-                    MockMvcResponse response =
-                        given()
-                            .header("accept", "text/plain")
-                            .get("/files/" + f.getId() + "/content")
-                            .then()
-                            .statusCode(HttpStatus.SC_OK)
-                            .extract().response();
-                    assertThat(response.getContentType()).startsWith("text/plain");
-                    assertThat(response.asString()).isEqualTo("Hello Client-side encryption World!");
-                }
+                f = repo.save(new FsFile());
 
-                @Test
-                void shouldHandleByteRangeRequests() {
-                    MockMvcResponse r =
-                        given()
-                            .header("accept", "text/plain")
-                            .header("range", "bytes=14-27")
-                            .get("/files/" + f.getId() + "/content")
-                            .then()
-                            .statusCode(HttpStatus.SC_PARTIAL_CONTENT)
-                            .extract().response();
-                    assertThat(r.getContentType()).startsWith("text/plain");
+                given()
+                    .contentType("text/plain")
+                    .body("Hello Client-side encryption World!")
+                    .when()
+                    .post("/files/" + f.getId() + "/content")
+                    .then()
+                    .statusCode(HttpStatus.SC_CREATED);
+            }
 
-                    assertThat(r.asString()).isEqualTo("ide encryption");
+            @Test
+            void shouldBeStoredEncrypted() throws IOException {
+                Optional<FsFile> fetched = repo.findById(f.getId());
+                assertThat(fetched.isPresent()).isTrue();
+                f = fetched.get();
 
-                    r = given()
+                GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+                    .bucket("test-bucket")
+                    .key(f.getContentId().toString())
+                    .build();
+
+                ResponseInputStream<GetObjectResponse> resp = client.getObject(getObjectRequest);
+                String contents = IOUtils.toString(resp, Charset.defaultCharset());
+                assertThat(contents).isNotEqualTo("Hello Client-side encryption World!");
+            }
+
+            @Test
+            void shouldBeRetrievedDecrypted() {
+                MockMvcResponse response =
+                    given()
                         .header("accept", "text/plain")
-                        .header("range", "bytes=19-27")
+                        .get("/files/" + f.getId() + "/content")
+                        .then()
+                        .statusCode(HttpStatus.SC_OK)
+                        .extract().response();
+                assertThat(response.getContentType()).startsWith("text/plain");
+                assertThat(response.asString()).isEqualTo("Hello Client-side encryption World!");
+            }
+
+            @Test
+            void shouldHandleByteRangeRequests() {
+                MockMvcResponse r =
+                    given()
+                        .header("accept", "text/plain")
+                        .header("range", "bytes=14-27")
                         .get("/files/" + f.getId() + "/content")
                         .then()
                         .statusCode(HttpStatus.SC_PARTIAL_CONTENT)
                         .extract().response();
-                    assertThat(r.getContentType()).startsWith("text/plain");
+                assertThat(r.getContentType()).startsWith("text/plain");
 
-                    assertThat(r.asString()).isEqualTo("encryption");
-                }
+                assertThat(r.asString()).isEqualTo("ide encryption");
+
+                r = given()
+                    .header("accept", "text/plain")
+                    .header("range", "bytes=19-27")
+                    .get("/files/" + f.getId() + "/content")
+                    .then()
+                    .statusCode(HttpStatus.SC_PARTIAL_CONTENT)
+                    .extract().response();
+                assertThat(r.getContentType()).startsWith("text/plain");
+
+                assertThat(r.asString()).isEqualTo("encryption");
             }
+        }
 
-            @Nested
-            class WhenTheKeyringIsRotated {
-                @BeforeEach
-                void setUp() {
-                    RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
+        @Nested
+        @DisplayName("When the keyring is rotated")
+        class KeyringIsRotated {
+            @BeforeEach
+            void setUp() {
+                RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
 
-                    synchronized (mutex) {
-                        HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                            .bucket("test-bucket")
-                            .build();
-
-                        try {
-                            client.headBucket(headBucketRequest);
-                        } catch (NoSuchBucketException e) {
-
-                            CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                .bucket("test-bucket")
-                                .build();
-                            client.createBucket(bucketRequest);
-                        }
-
-                        vaultTemplate.opsForTransit().createKey("my-key");
-                    }
-
-                    f = repo.save(new FsFile());
-
-                    given()
-                        .contentType("text/plain")
-                        .body("Hello Client-side encryption World!")
-                        .when()
-                        .post("/files/" + f.getId() + "/content")
-                        .then()
-                        .statusCode(HttpStatus.SC_CREATED);
-
-                    vaultTemplate.opsForTransit().rotate("my-key");
-                }
-
-                @Test
-                void shouldStillRetrieveContentDecrypted() {
-                    MockMvcResponse response =
-                        given()
-                            .header("accept", "text/plain")
-                            .get("/files/" + f.getId() + "/content")
-                            .then()
-                            .statusCode(HttpStatus.SC_OK)
-                            .extract().response();
-                    assertThat(response.getContentType()).startsWith("text/plain");
-                    assertThat(response.asString()).isEqualTo("Hello Client-side encryption World!");
-                }
-            }
-
-            @Nested
-            class WhenTheContentIsUnset {
-                @BeforeEach
-                void setUp() {
-                    RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
-
-                    synchronized (mutex) {
-                        HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                            .bucket("test-bucket")
-                            .build();
-
-                        try {
-                            client.headBucket(headBucketRequest);
-                        } catch (NoSuchBucketException e) {
-
-                            CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
-                                .bucket("test-bucket")
-                                .build();
-                            client.createBucket(bucketRequest);
-                        }
-
-                        vaultTemplate.opsForTransit().createKey("my-key");
-                    }
-
-                    f = repo.save(new FsFile());
-
-                    given()
-                        .contentType("text/plain")
-                        .body("Hello Client-side encryption World!")
-                        .when()
-                        .post("/files/" + f.getId() + "/content")
-                        .then()
-                        .statusCode(HttpStatus.SC_CREATED);
-                }
-
-                @Test
-                void itShouldRemoveTheContentAndClearTheContentKey() {
-                    f = repo.findById(f.getId()).orElseThrow();
-                    String contentId = f.getContentId().toString();
-
-                    given()
-                        .delete("/files/" + f.getId() + "/content")
-                        .then()
-                        .statusCode(HttpStatus.SC_NO_CONTENT);
-
-                    f = repo.findById(f.getId()).orElseThrow();
-                    assertThat(f.getContentKey()).isNull();
-
-                    HeadObjectRequest getObjectRequest = HeadObjectRequest.builder()
+                synchronized (mutex) {
+                    HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
                         .bucket("test-bucket")
-                        .key(contentId)
                         .build();
 
-                    assertThatThrownBy(() -> client.headObject(getObjectRequest))
-                        .isInstanceOf(NoSuchKeyException.class);
+                    try {
+                        client.headBucket(headBucketRequest);
+                    } catch (NoSuchBucketException e) {
+
+                        CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
+                            .bucket("test-bucket")
+                            .build();
+                        client.createBucket(bucketRequest);
+                    }
+
+                    vaultTemplate.opsForTransit().createKey("my-key");
                 }
+
+                f = repo.save(new FsFile());
+
+                given()
+                    .contentType("text/plain")
+                    .body("Hello Client-side encryption World!")
+                    .when()
+                    .post("/files/" + f.getId() + "/content")
+                    .then()
+                    .statusCode(HttpStatus.SC_CREATED);
+
+                vaultTemplate.opsForTransit().rotate("my-key");
+            }
+
+            @Test
+            void shouldStillRetrieveContentDecrypted() {
+                MockMvcResponse response =
+                    given()
+                        .header("accept", "text/plain")
+                        .get("/files/" + f.getId() + "/content")
+                        .then()
+                        .statusCode(HttpStatus.SC_OK)
+                        .extract().response();
+                assertThat(response.getContentType()).startsWith("text/plain");
+                assertThat(response.asString()).isEqualTo("Hello Client-side encryption World!");
+            }
+        }
+
+        @Nested
+        @DisplayName("When the content is unset")
+        class ContentIsUnset {
+            @BeforeEach
+            void setUp() {
+                RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
+
+                synchronized (mutex) {
+                    HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
+                        .bucket("test-bucket")
+                        .build();
+
+                    try {
+                        client.headBucket(headBucketRequest);
+                    } catch (NoSuchBucketException e) {
+
+                        CreateBucketRequest bucketRequest = CreateBucketRequest.builder()
+                            .bucket("test-bucket")
+                            .build();
+                        client.createBucket(bucketRequest);
+                    }
+
+                    vaultTemplate.opsForTransit().createKey("my-key");
+                }
+
+                f = repo.save(new FsFile());
+
+                given()
+                    .contentType("text/plain")
+                    .body("Hello Client-side encryption World!")
+                    .when()
+                    .post("/files/" + f.getId() + "/content")
+                    .then()
+                    .statusCode(HttpStatus.SC_CREATED);
+            }
+
+            @Test
+            void itShouldRemoveTheContentAndClearTheContentKey() {
+                f = repo.findById(f.getId()).orElseThrow();
+                String contentId = f.getContentId().toString();
+
+                given()
+                    .delete("/files/" + f.getId() + "/content")
+                    .then()
+                    .statusCode(HttpStatus.SC_NO_CONTENT);
+
+                f = repo.findById(f.getId()).orElseThrow();
+                assertThat(f.getContentKey()).isNull();
+
+                HeadObjectRequest getObjectRequest = HeadObjectRequest.builder()
+                    .bucket("test-bucket")
+                    .key(contentId)
+                    .build();
+
+                assertThatThrownBy(() -> client.headObject(getObjectRequest))
+                    .isInstanceOf(NoSuchKeyException.class);
             }
         }
     }

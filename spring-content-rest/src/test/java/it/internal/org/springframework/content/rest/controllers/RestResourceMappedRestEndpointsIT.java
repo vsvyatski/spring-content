@@ -9,6 +9,7 @@ import internal.org.springframework.content.rest.support.StoreConfig;
 import it.internal.org.springframework.content.rest.controllers.support.LastModifiedDateTests;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -86,9 +87,11 @@ public class RestResourceMappedRestEndpointsIT {
     @Nested
     class RestResourceMappedRESTEndpoints {
         @Nested
-        class GivenAnEntityWithASimpleContentProperty {
+        @DisplayName("Given an entity with a simple content property")
+        class EntityWithSimpleContentProperty {
             @Nested
-            class GivenARequestToANonExistentEntity {
+            @DisplayName("Given a request to a non-existent entity")
+            class NonExistentEntity {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -105,7 +108,8 @@ public class RestResourceMappedRestEndpointsIT {
             }
 
             @Nested
-            class GivenARequestToANonExistentContentProperty {
+            @DisplayName("Given a request to a non-existent content property")
+            class NonExistentContentProperty {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -122,9 +126,11 @@ public class RestResourceMappedRestEndpointsIT {
             }
 
             @Nested
-            class GivenThatIsHasNoContent {
+            @DisplayName("Given that it has no content")
+            class HasNoContent {
                 @Nested
-                class AGETToRepositoryIdContentProperty {
+                @DisplayName("GET to {repository ID}/package/content")
+                class GetContentProperty {
                     @BeforeEach
                     void setUp() {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -141,7 +147,8 @@ public class RestResourceMappedRestEndpointsIT {
                 }
 
                 @Nested
-                class APUTToRepositoryIdContentProperty {
+                @DisplayName("PUT to {repository ID}/package/content")
+                class PutContentProperty {
                     @BeforeEach
                     void setUp() {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -150,7 +157,7 @@ public class RestResourceMappedRestEndpointsIT {
                     }
 
                     @Test
-                    void shouldCreateTheContent() throws Exception {
+                    void shouldCreateContent() throws Exception {
                         mvc.perform(
                                 put("/restResourcePackageEntities/" + testEntity11.getId() + "/package/content")
                                     .content("Hello New Spring Content World!")
@@ -169,7 +176,8 @@ public class RestResourceMappedRestEndpointsIT {
                 }
 
                 @Nested
-                class APUTToStoreIdWithJsonContent {
+                @DisplayName("PUT to {repository ID}/package/content with JSON content")
+                class PutPackageContentWithJsonContent {
                     @BeforeEach
                     void setUp() {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -178,7 +186,7 @@ public class RestResourceMappedRestEndpointsIT {
                     }
 
                     @Test
-                    void shouldSetTheContentAndReturn201() throws Exception {
+                    void shouldSetContentAndReturn201() throws Exception {
                         String content = "{\"content\":\"Hello New Spring Content World!\"}";
                         mvc.perform(
                                 put("/restResourcePackageEntities/" + testEntity11.getId() + "/package/content")
@@ -199,9 +207,11 @@ public class RestResourceMappedRestEndpointsIT {
             }
 
             @Nested
-            class GivenThatItHasContent {
+            @DisplayName("Given that it has content")
+            class HasContent {
                 @Nested
-                class AGETToRepositoryIdForTheEntityJson {
+                @DisplayName("GET to {repository ID} accepting HAL JSON")
+                class GetAcceptingHalJson {
                     @BeforeEach
                     void setUp() throws IOException {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -220,7 +230,7 @@ public class RestResourceMappedRestEndpointsIT {
                     }
 
                     @Test
-                    void shouldReturnTheMappedContentLinks() throws Exception {
+                    void shouldReturnMappedContentLinks() throws Exception {
                         MockHttpServletResponse res = mvc.perform(
                                 get("/restResourcePackageEntities/" + testEntity11.getId())
                                     .accept("application/hal+json"))
@@ -239,7 +249,8 @@ public class RestResourceMappedRestEndpointsIT {
                 }
 
                 @Nested
-                class AGETToRepositoryIdContentProperty {
+                @DisplayName("GET to {repository ID}/package/content")
+                class GetContentProperty {
                     @BeforeEach
                     void setUp() throws IOException {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -258,7 +269,7 @@ public class RestResourceMappedRestEndpointsIT {
                     }
 
                     @Test
-                    void shouldReturnTheContent() throws Exception {
+                    void shouldReturnContent() throws Exception {
                         MockHttpServletResponse response = mvc
                             .perform(get("/restResourcePackageEntities/" + testEntity11.getId() + "/package/content")
                                 .accept("text/plain"))
@@ -274,7 +285,8 @@ public class RestResourceMappedRestEndpointsIT {
                 }
 
                 @Nested
-                class AGETToRepositoryIdContentPropertyWithAMimeTypeThatMatchesARenderer {
+                @DisplayName("GET to {repository ID}/package/content with a MIME type that matches a renderer")
+                class GetContentPropertyWithMimeTypeThatMatchesRenderer {
                     @BeforeEach
                     void setUp() throws IOException {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -293,7 +305,7 @@ public class RestResourceMappedRestEndpointsIT {
                     }
 
                     @Test
-                    void shouldReturnTheRenditionAnd200() throws Exception {
+                    void shouldReturnRenditionAnd200() throws Exception {
                         MockHttpServletResponse response = mvc
                             .perform(get(
                                 "/restResourcePackageEntities/" + testEntity11.getId() + "/package/content")
@@ -307,7 +319,8 @@ public class RestResourceMappedRestEndpointsIT {
                 }
 
                 @Nested
-                class AGETToRepositoryIdContentPropertyWithMultipleMimeTypesTheLastOfWhichMatchesTheCo {
+                @DisplayName("GET to {repository ID}/package/content with multiple MIME types the last of which matches content")
+                class GetWhenLastAcceptedMimeTypeMatches {
                     @BeforeEach
                     void setUp() throws IOException {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -326,7 +339,7 @@ public class RestResourceMappedRestEndpointsIT {
                     }
 
                     @Test
-                    void shouldReturnTheOriginalContentAnd200() throws Exception {
+                    void shouldReturnOriginalContentAnd200() throws Exception {
                         MockHttpServletResponse response = mvc
                             .perform(get("/restResourcePackageEntities/" + testEntity11.getId() + "/package/content").accept(
                                 "text/xml",
@@ -340,7 +353,8 @@ public class RestResourceMappedRestEndpointsIT {
                 }
 
                 @Nested
-                class APUTToRepositoryIdContentProperty {
+                @DisplayName("PUT to {repository ID}/package/content")
+                class PutContentProperty {
                     @BeforeEach
                     void setUp() throws IOException {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -359,7 +373,7 @@ public class RestResourceMappedRestEndpointsIT {
                     }
 
                     @Test
-                    void shouldCreateTheContent() throws Exception {
+                    void shouldCreateContent() throws Exception {
                         mvc.perform(
                                 put("/restResourcePackageEntities/" + testEntity11.getId() + "/package/content")
                                     .content("Hello New Spring Content World!")
@@ -375,7 +389,8 @@ public class RestResourceMappedRestEndpointsIT {
                 }
 
                 @Nested
-                class ADELETEToRepositoryIdContentProperty {
+                @DisplayName("DELETE to {repository ID}/package/content")
+                class DeleteContentProperty {
                     @BeforeEach
                     void setUp() throws IOException {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -394,7 +409,7 @@ public class RestResourceMappedRestEndpointsIT {
                     }
 
                     @Test
-                    void shouldDeleteTheContent() throws Exception {
+                    void shouldDeleteContent() throws Exception {
                         mvc.perform(delete(
                                 "/restResourcePackageEntities/" + testEntity11.getId() + "/package/content"))
                             .andExpect(status().isNoContent());

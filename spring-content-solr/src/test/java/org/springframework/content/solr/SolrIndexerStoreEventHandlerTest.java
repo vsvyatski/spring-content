@@ -1,6 +1,7 @@
 package org.springframework.content.solr;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.content.commons.search.IndexService;
@@ -48,7 +49,8 @@ public class SolrIndexerStoreEventHandlerTest {
         @Nested
         class OnAfterSetContent {
             @Nested
-            class GivenAContentEntity {
+            @DisplayName("Given a content entity")
+            class ContentEntity {
                 @BeforeEach
                 void setUp() throws IOException {
                     store = mock(ContentStore.class);
@@ -69,13 +71,14 @@ public class SolrIndexerStoreEventHandlerTest {
                 }
 
                 @Test
-                void shouldUseTheIndexerToIndexTheContent() {
+                void shouldUseIndexerToIndexContent() {
                     assertThat(e).isNull();
                     verify(indexer).index(eq(contentEntity), eq(content));
                 }
 
                 @Nested
-                class GivenTheIndexerThrowsAnException {
+                @DisplayName("Given the indexer throws an exception")
+                class IndexerThrowsException {
                     @BeforeEach
                     void setUp() throws IOException {
                         store = mock(ContentStore.class);
@@ -106,7 +109,8 @@ public class SolrIndexerStoreEventHandlerTest {
             }
 
             @Nested
-            class GivenAContentEntityWithANullContentId {
+            @DisplayName("Given a content entity with a null content ID")
+            class ContentEntityWithNullContentId {
                 @BeforeEach
                 void setUp() {
                     store = mock(ContentStore.class);
@@ -131,7 +135,8 @@ public class SolrIndexerStoreEventHandlerTest {
             }
 
             @Nested
-            class GivenABogusContentEntity {
+            @DisplayName("Given a bogus content entity")
+            class BogusContentEntity {
                 @BeforeEach
                 void setUp() {
                     store = mock(ContentStore.class);
@@ -159,7 +164,8 @@ public class SolrIndexerStoreEventHandlerTest {
         @Nested
         class OnBeforeUnsetContent {
             @Nested
-            class GivenAContentEntity {
+            @DisplayName("Given a content entity")
+            class ContentEntity {
                 @BeforeEach
                 void setUp() {
                     store = mock(ContentStore.class);
@@ -178,13 +184,14 @@ public class SolrIndexerStoreEventHandlerTest {
                 }
 
                 @Test
-                void shouldUseTheIndexerToUnindexTheContent() {
+                void shouldUseIndexerToUnindexContent() {
                     assertThat(e).isNull();
                     verify(indexer).unindex(eq(contentEntity));
                 }
 
                 @Nested
-                class GivenAIOException {
+                @DisplayName("Given an I/O exception")
+                class IOException {
                     @BeforeEach
                     void setUp() {
                         store = mock(ContentStore.class);
@@ -206,14 +213,15 @@ public class SolrIndexerStoreEventHandlerTest {
                     }
 
                     @Test
-                    void shouldThrowAContextAccessException() {
+                    void shouldThrowContextAccessException() {
                         assertThat(e).isEqualTo(sae);
                     }
                 }
             }
 
             @Nested
-            class GivenAContentEntityWithANullContentId {
+            @DisplayName("Given a content entity with a null content ID")
+            class ContentEntityWithNullContentId {
                 @BeforeEach
                 void setUp() {
                     store = mock(ContentStore.class);
@@ -238,7 +246,8 @@ public class SolrIndexerStoreEventHandlerTest {
             }
 
             @Nested
-            class GivenABogusContentEntity {
+            @DisplayName("Given a bogus content entity")
+            class BogusContentEntity {
                 @BeforeEach
                 void setUp() {
                     store = mock(ContentStore.class);

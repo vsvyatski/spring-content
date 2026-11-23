@@ -5,6 +5,7 @@ import internal.org.springframework.content.s3.io.S3StoreResource;
 import internal.org.springframework.content.s3.io.SimpleStorageProtocolResolver;
 import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.content.commons.config.ContentPropertyInfo;
@@ -124,7 +125,8 @@ public class DefaultS3StoreImplTest {
             @Nested
             class GetResource {
                 @Nested
-                class GivenTheStoreSIDIsAnS3ObjectIdType {
+                @DisplayName("Given the store ID is an S3 object ID type")
+                class StoreSIDIsS3ObjectIdType {
                     @BeforeEach
                     void setUp() {
                         resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
@@ -156,7 +158,7 @@ public class DefaultS3StoreImplTest {
                     }
 
                     @Test
-                    void shouldReturnTheResource() {
+                    void shouldReturnResource() {
                         assertThat(e).isNull();
                         assertThat(r).isInstanceOf(S3StoreResource.class);
                         assertThat(((S3StoreResource) r).getClient()).isEqualTo(client);
@@ -165,13 +167,17 @@ public class DefaultS3StoreImplTest {
                 }
 
                 @Nested
-                class GivenTheStoreSIDIsACustomIDType {
+                @DisplayName("Given the store ID is a custom ID type")
+                class StoreSIDIsCustomIDType {
                     @Nested
-                    class GivenADefaultBucketIsSet {
+                    @DisplayName("Given a default bucket is set")
+                    class DefaultBucketIsSet {
                         @Nested
-                        class GivenTheResolverIsCreatedWithTheStaticConstructorFunction {
+                        @DisplayName("Given the resolver is created with the static constructor function")
+                        class ResolverIsCreatedWithStaticConstructorFunction {
                             @Nested
-                            class GivenAnID {
+                            @DisplayName("Given an ID")
+                            class ID {
                                 @BeforeEach
                                 void setUp() {
                                     resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
@@ -210,7 +216,7 @@ public class DefaultS3StoreImplTest {
                                 }
 
                                 @Test
-                                void shouldFetchTheResource() {
+                                void shouldFetchResource() {
                                     assertThat(e).isNull();
                                     assertThat(r).isInstanceOf(S3StoreResource.class);
                                     assertThat(((S3StoreResource) r).getClient()).isEqualTo(client);
@@ -221,11 +227,14 @@ public class DefaultS3StoreImplTest {
                     }
 
                     @Nested
-                    class GivenADefaultBucketIsNotSet {
+                    @DisplayName("Given a default bucket is not set")
+                    class DefaultBucketIsNotSet {
                         @Nested
-                        class GivenAResolverThatDoesNotValidate {
+                        @DisplayName("Given a resolver that does not validate")
+                        class ResolverThatDoesNotValidate {
                             @Nested
-                            class WhenCalledWithAnIDThatDoesntSpecifyABucketEither {
+                            @DisplayName("When called with an ID that doesn't specify a bucket either")
+                            class CalledWithIDThatDoesntSpecifyBucketEither {
                                 @BeforeEach
                                 void setUp() {
                                     resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
@@ -255,7 +264,7 @@ public class DefaultS3StoreImplTest {
                                 }
 
                                 @Test
-                                void shouldThrowAnError() {
+                                void shouldThrowError() {
                                     assertThat(e).isInstanceOf(ConversionFailedException.class);
                                 }
                             }
@@ -264,7 +273,8 @@ public class DefaultS3StoreImplTest {
                 }
 
                 @Nested
-                class GivenAMultiTenantConfiguration {
+                @DisplayName("Given a multi tenant configuration")
+                class MultiTenantConfiguration {
                     @BeforeEach
                     void setUp() {
                         resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
@@ -292,7 +302,7 @@ public class DefaultS3StoreImplTest {
                     }
 
                     @Test
-                    void shouldFetchTheResourceUsingTheCorrectClient() {
+                    void shouldFetchResourceUsingCorrectClient() {
                         assertThat(e).isNull();
                         assertThat(r).isInstanceOf(S3StoreResource.class);
                         assertThat(((S3StoreResource) r).getClient()).isEqualTo(client2);
@@ -307,11 +317,14 @@ public class DefaultS3StoreImplTest {
             @Nested
             class GetResource {
                 @Nested
-                class GivenTheDefaultAssociativeStoreIdResolver {
+                @DisplayName("Given the default associative store ID resolver")
+                class DefaultAssociativeStoreIdResolver {
                     @Nested
-                    class GivenADefaultBucket {
+                    @DisplayName("Given a default bucket")
+                    class DefaultBucket {
                         @Nested
-                        class WhenCalledWithAnEntityThatDoesntHaveAnBucketValue {
+                        @DisplayName("When called with an entity that doesn't have a bucket value")
+                        class CalledWithEntityThatDoesntHaveBucketValue {
                             @BeforeEach
                             void setUp() {
                                 resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
@@ -349,7 +362,7 @@ public class DefaultS3StoreImplTest {
                             }
 
                             @Test
-                            void shouldFetchTheResource() {
+                            void shouldFetchResource() {
                                 assertThat(e).isNull();
                                 assertThat(r).isInstanceOf(S3StoreResource.class);
                                 assertThat(((S3StoreResource) r).getClient()).isEqualTo(client);
@@ -358,7 +371,8 @@ public class DefaultS3StoreImplTest {
                         }
 
                         @Nested
-                        class WhenCalledWithAnEntityThatHasAnBucketValue {
+                        @DisplayName("When called with an entity that has a bucket value")
+                        class CalledWithEntityThatHasBucketValue {
                             @BeforeEach
                             void setUp() {
                                 resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
@@ -395,7 +409,7 @@ public class DefaultS3StoreImplTest {
                             }
 
                             @Test
-                            void shouldFetchTheCorrectResource() {
+                            void shouldFetchCorrectResource() {
                                 assertThat(e).isNull();
                                 assertThat(r).isInstanceOf(S3StoreResource.class);
                                 assertThat(((S3StoreResource) r).getClient()).isEqualTo(client);
@@ -404,7 +418,8 @@ public class DefaultS3StoreImplTest {
                         }
 
                         @Nested
-                        class WhenCalledWithAnEntityThatHasNoAssociatedResource {
+                        @DisplayName("When called with an entity that has no associated resource")
+                        class CalledWithEntityThatHasNoAssociatedResource {
                             @BeforeEach
                             void setUp() {
                                 resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
@@ -440,11 +455,14 @@ public class DefaultS3StoreImplTest {
                 }
 
                 @Nested
-                class GivenACustomIdResolver {
+                @DisplayName("Given a custom ID resolver")
+                class CustomIdResolver {
                     @Nested
-                    class GivenADefaultBucket {
+                    @DisplayName("Given a default bucket")
+                    class DefaultBucket {
                         @Nested
-                        class WhenCalledWithAnEntity {
+                        @DisplayName("When called with an entity")
+                        class CalledWithEntity {
                             @BeforeEach
                             void setUp() {
                                 resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
@@ -482,7 +500,7 @@ public class DefaultS3StoreImplTest {
                             }
 
                             @Test
-                            void shouldFetchTheResource() {
+                            void shouldFetchResource() {
                                 assertThat(e).isNull();
                                 assertThat(r).isInstanceOf(S3StoreResource.class);
                                 assertThat(((S3StoreResource) r).getClient()).isEqualTo(client);
@@ -493,11 +511,14 @@ public class DefaultS3StoreImplTest {
                 }
 
                 @Nested
-                class GivenACustomIdResolverThatCannotResolveTheBucket {
+                @DisplayName("Given a custom ID resolver that cannot resolve the bucket")
+                class CustomIdResolverThatCannotResolveBucket {
                     @Nested
-                    class GivenTheDefaultBucketIsNotSet {
+                    @DisplayName("Given the default bucket is not set")
+                    class DefaultBucketIsNotSet {
                         @Nested
-                        class WhenCalledWithAnEntity {
+                        @DisplayName("When called with an entity")
+                        class CalledWithEntity {
                             @BeforeEach
                             void setUp() {
                                 resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
@@ -530,7 +551,7 @@ public class DefaultS3StoreImplTest {
                             }
 
                             @Test
-                            void shouldThrowAnException() {
+                            void shouldThrowException() {
                                 assertThat(e).isInstanceOf(ConversionFailedException.class);
                             }
                         }
@@ -541,11 +562,14 @@ public class DefaultS3StoreImplTest {
             @Nested
             class GetResourceWithPropertyPath {
                 @Nested
-                class GivenTheDefaultAssociativeStoreIdResolver {
+                @DisplayName("Given the default associative store ID resolver")
+                class DefaultAssociativeStoreIdResolver {
                     @Nested
-                    class GivenADefaultBucket {
+                    @DisplayName("Given a default bucket")
+                    class DefaultBucket {
                         @Nested
-                        class WhenCalledWithEntityThatDoesntHaveBucketValue {
+                        @DisplayName("When called with an entity that doesn't have a bucket value")
+                        class CalledWithEntityThatDoesntHaveBucketValue {
                             @BeforeEach
                             void setUp() {
                                 resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
@@ -583,7 +607,7 @@ public class DefaultS3StoreImplTest {
                             }
 
                             @Test
-                            void shouldFetchTheResource() {
+                            void shouldFetchResource() {
                                 assertThat(e).isNull();
                                 assertThat(r).isInstanceOf(S3StoreResource.class);
                                 assertThat(((S3StoreResource) r).getClient()).isEqualTo(client);
@@ -592,7 +616,8 @@ public class DefaultS3StoreImplTest {
                         }
 
                         @Nested
-                        class WhenCalledWithAnEntityThatHasAnBucketValue {
+                        @DisplayName("When called with an entity that has a bucket value")
+                        class CalledWithEntityThatHasBucketValue {
                             @BeforeEach
                             void setUp() {
                                 resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
@@ -629,7 +654,7 @@ public class DefaultS3StoreImplTest {
                             }
 
                             @Test
-                            void shouldFetchTheCorrectResource() {
+                            void shouldFetchCorrectResource() {
                                 assertThat(e).isNull();
                                 assertThat(r).isInstanceOf(S3StoreResource.class);
                                 assertThat(((S3StoreResource) r).getClient()).isEqualTo(client);
@@ -638,7 +663,8 @@ public class DefaultS3StoreImplTest {
                         }
 
                         @Nested
-                        class WhenCalledWithAnEntityThatHasNoAssociatedResource {
+                        @DisplayName("When called with an entity that has no associated resource")
+                        class CalledWithEntityThatHasNoAssociatedResource {
                             @BeforeEach
                             void setUp() {
                                 resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
@@ -674,11 +700,14 @@ public class DefaultS3StoreImplTest {
                 }
 
                 @Nested
-                class GivenACustomIdResolver {
+                @DisplayName("Given a custom ID resolver")
+                class CustomIdResolver {
                     @Nested
-                    class GivenADefaultBucket {
+                    @DisplayName("Given a default bucket")
+                    class DefaultBucket {
                         @Nested
-                        class WhenCalledWithAnEntity {
+                        @DisplayName("When called with an entity")
+                        class CalledWithEntity {
                             @BeforeEach
                             void setUp() {
                                 resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
@@ -723,7 +752,7 @@ public class DefaultS3StoreImplTest {
                             }
 
                             @Test
-                            void shouldFetchTheResource() {
+                            void shouldFetchResource() {
                                 assertThat(e).isNull();
                                 assertThat(r).isInstanceOf(S3StoreResource.class);
                                 assertThat(((S3StoreResource) r).getClient()).isEqualTo(client);
@@ -734,11 +763,14 @@ public class DefaultS3StoreImplTest {
                 }
 
                 @Nested
-                class GivenACustomIdResolverThatCannotResolveTheBucket {
+                @DisplayName("Given a custom ID resolver that cannot resolve the bucket")
+                class CustomIdResolverThatCannotResolveBucket {
                     @Nested
-                    class GivenTheDefaultBucketIsNotSet {
+                    @DisplayName("Given the default bucket is not set")
+                    class DefaultBucketIsNotSet {
                         @Nested
-                        class WhenCalledWithAnEntity {
+                        @DisplayName("When called with an entity")
+                        class CalledWithEntity {
                             @BeforeEach
                             void setUp() {
                                 resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
@@ -770,7 +802,7 @@ public class DefaultS3StoreImplTest {
                             }
 
                             @Test
-                            void shouldThrowAnException() {
+                            void shouldThrowException() {
                                 assertThat(e).isInstanceOf(ConversionFailedException.class);
                             }
                         }
@@ -800,7 +832,7 @@ public class DefaultS3StoreImplTest {
                 }
 
                 @Test
-                void shouldSetTheEntitySContentIDAttribute() {
+                void shouldSetEntityContentIdAttribute() {
                     assertThat(entity.getContentId()).isEqualTo(SAMPLE_CONTENT_ID);
                 }
             }
@@ -828,22 +860,25 @@ public class DefaultS3StoreImplTest {
                 }
 
                 @Test
-                void shouldResetTheEntitySContentIDAttribute() {
+                void shouldResetEntityContentIdAttribute() {
                     assertThat(entity.getContentId()).isNull();
                 }
             }
         }
 
         @Nested
-        class ContentStore {
+        class ContentStoreScenario {
             @Nested
             class SetContent {
                 @Nested
-                class GivenTheDefaultAssociativeStoreIdResolver {
+                @DisplayName("Given the default associative store ID resolver")
+                class DefaultAssociativeStoreIdResolver {
                     @Nested
-                    class GivenADefaultBucketIsSet {
+                    @DisplayName("Given a default bucket is set")
+                    class DefaultBucketIsSet {
                         @Nested
-                        class WhenTheContentAlreadyExists {
+                        @DisplayName("When the content already exists")
+                        class ContentAlreadyExists {
                             @BeforeEach
                             void setUp() throws IOException {
                                 resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
@@ -885,24 +920,25 @@ public class DefaultS3StoreImplTest {
                             }
 
                             @Test
-                            void shouldFetchTheResource() {
+                            void shouldFetchResource() {
                                 verify(loader).getResource(eq("s3://default-defaultBucket/" + SAMPLE_CONTENT_ID));
                             }
 
                             @Test
-                            void shouldChangeTheContentLength() {
+                            void shouldChangeContentLength() {
                                 assertThat(entity.getContentLen()).isEqualTo(20L);
                             }
 
                             @Test
-                            void shouldWriteToTheResourcesOutputStream() throws IOException {
+                            void shouldWriteToResourcesOutputStream() throws IOException {
                                 verify(resource).getOutputStream();
                                 verify(output, times(1)).write(any(byte[].class),
                                     eq(0), eq(20));
                             }
 
                             @Nested
-                            class WhenTheResourceOutputStreamThrowsAnIOException {
+                            @DisplayName("When the resource output stream throws an I/O exception")
+                            class ResourceOutputStreamThrowsIOException {
                                 @BeforeEach
                                 void setUp() throws IOException {
                                     resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
@@ -946,7 +982,7 @@ public class DefaultS3StoreImplTest {
                                 }
 
                                 @Test
-                                void shouldThrowAStoreAccessException() {
+                                void shouldThrowStoreAccessException() {
                                     assertThat(e).isInstanceOf(StoreAccessException.class);
                                     assertThat(e.getCause().getMessage()).isEqualTo("set-ioexception");
                                 }
@@ -954,7 +990,8 @@ public class DefaultS3StoreImplTest {
                         }
 
                         @Nested
-                        class WhenTheContentDoesNotAlreadyExist {
+                        @DisplayName("When the content does not already exist")
+                        class ContentDoesNotAlreadyExist {
                             @BeforeEach
                             void setUp() throws IOException {
                                 resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
@@ -1000,17 +1037,17 @@ public class DefaultS3StoreImplTest {
                             }
 
                             @Test
-                            void shouldMakeANewUUID() {
+                            void shouldMakeNewUUID() {
                                 assertThat(entity.getContentId()).isNotNull();
                             }
 
                             @Test
-                            void shouldCreateANewResource() {
+                            void shouldCreateNewResource() {
                                 verify(loader).getResource(matches("^s3://.*[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"));
                             }
 
                             @Test
-                            void shouldWriteToTheResourcesOutputStream() throws IOException {
+                            void shouldWriteToResourcesOutputStream() throws IOException {
                                 verify(resource).getOutputStream();
                                 verify(output, times(1)).write(any(byte[].class),
                                     eq(0), eq(20));
@@ -1018,7 +1055,8 @@ public class DefaultS3StoreImplTest {
                         }
 
                         @Nested
-                        class WhenS3ThrowsAnS3Exception {
+                        @DisplayName("When S3 throws an S3 exception")
+                        class S3ThrowsS3Exception {
                             @BeforeEach
                             void setUp() throws IOException {
                                 resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
@@ -1099,7 +1137,8 @@ public class DefaultS3StoreImplTest {
                 }
 
                 @Nested
-                class WhenTheResourceThrowsAnIOException {
+                @DisplayName("When the resource throws an I/O exception")
+                class ResourceThrowsIOException {
                     @BeforeEach
                     void setUp() throws IOException {
                         resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
@@ -1129,7 +1168,7 @@ public class DefaultS3StoreImplTest {
                     }
 
                     @Test
-                    void shouldThrowAStoreAccessException() {
+                    void shouldThrowStoreAccessException() {
                         assertThat(e).isInstanceOf(StoreAccessException.class);
                         assertThat(e.getCause().getMessage()).contains("setContent badness");
                     }
@@ -1139,13 +1178,17 @@ public class DefaultS3StoreImplTest {
             @Nested
             class GetContent {
                 @Nested
-                class GivenTheDefaultAssociativeStoreIdResolver {
+                @DisplayName("Given the default associative store ID resolver")
+                class DefaultAssociativeStoreIdResolver {
                     @Nested
-                    class GivenADefaultBucketIsSet {
+                    @DisplayName("Given a default bucket is set")
+                    class DefaultBucketIsSet {
                         @Nested
-                        class WhenCalledWithAnEntity {
+                        @DisplayName("When called with an entity")
+                        class CalledWithEntity {
                             @Nested
-                            class AndTheResourceAlreadyExists {
+                            @DisplayName("And the resource already exists")
+                            class ResourceAlreadyExists {
                                 @BeforeEach
                                 void setUp() throws IOException {
                                     resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
@@ -1182,7 +1225,7 @@ public class DefaultS3StoreImplTest {
                                 }
 
                                 @Test
-                                void shouldFetchTheResource() {
+                                void shouldFetchResource() {
                                     verify(loader).getResource(eq("s3://default-defaultBucket/" + SAMPLE_CONTENT_ID));
                                 }
 
@@ -1192,7 +1235,8 @@ public class DefaultS3StoreImplTest {
                                 }
 
                                 @Nested
-                                class WhenTheResourceInputStreamThrowsAnIOException {
+                                @DisplayName("When the resource input stream throws an I/O exception")
+                                class ResourceInputStreamThrowsIOException {
                                     @BeforeEach
                                     void setUp() throws IOException {
                                         resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
@@ -1231,7 +1275,7 @@ public class DefaultS3StoreImplTest {
                                     }
 
                                     @Test
-                                    void shouldThrowAStoreAccessException() {
+                                    void shouldThrowStoreAccessException() {
                                         assertThat(e).isInstanceOf(StoreAccessException.class);
                                         assertThat(e.getCause().getMessage()).isEqualTo("get-ioexception");
                                     }
@@ -1239,7 +1283,8 @@ public class DefaultS3StoreImplTest {
                             }
 
                             @Nested
-                            class AndTheResourceDoesntExist {
+                            @DisplayName("And the resource doesn't exist")
+                            class ResourceDoesntExist {
                                 @BeforeEach
                                 void setUp() throws IOException {
                                     resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
@@ -1279,18 +1324,18 @@ public class DefaultS3StoreImplTest {
                                 }
 
                                 @Test
-                                void shouldFetchTheResource() {
+                                void shouldFetchResource() {
                                     verify(loader).getResource(eq("s3://default-defaultBucket/" + SAMPLE_CONTENT_ID));
                                 }
 
                                 @Test
-                                void shouldNotFindTheContent() {
+                                void shouldNotFindContent() {
                                     assertThat(result).isNull();
                                 }
                             }
 
                             @Nested
-                            class WithAnNullContentId {
+                            class WithNullContentId {
                                 @BeforeEach
                                 void setUp() throws IOException {
                                     resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
@@ -1340,13 +1385,17 @@ public class DefaultS3StoreImplTest {
             @Nested
             class UnsetContent {
                 @Nested
-                class GivenTheDefaultAssociativeStoreIdResolver {
+                @DisplayName("Given the default associative store ID resolver")
+                class DefaultAssociativeStoreIdResolver {
                     @Nested
-                    class GivenADefaultBucketIsSet {
+                    @DisplayName("Given a default bucket is set")
+                    class DefaultBucketIsSet {
                         @Nested
-                        class WhenCalledWithAnEntity {
+                        @DisplayName("When called with an entity")
+                        class CalledWithEntity {
                             @Nested
-                            class AndTheContentExists {
+                            @DisplayName("And the content exists")
+                            class ContentExists {
                                 @BeforeEach
                                 void setUp() {
                                     resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
@@ -1382,12 +1431,13 @@ public class DefaultS3StoreImplTest {
                                 }
 
                                 @Test
-                                void shouldFetchTheResource() {
+                                void shouldFetchResource() {
                                     verify(loader).getResource(eq("s3://default-defaultBucket/" + SAMPLE_CONTENT_ID));
                                 }
 
                                 @Nested
-                                class WhenThePropertyHasADedicatedContentIdField {
+                                @DisplayName("When the property has a dedicated content ID field")
+                                class PropertyHasDedicatedContentIdField {
                                     @BeforeEach
                                     void setUp() {
                                         resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
@@ -1423,14 +1473,15 @@ public class DefaultS3StoreImplTest {
                                     }
 
                                     @Test
-                                    void shouldResetTheMetadata() {
+                                    void shouldResetMetadata() {
                                         assertThat(entity.getContentId()).isNull();
                                         assertThat(entity.getContentLen()).isNull();
                                     }
                                 }
 
                                 @Nested
-                                class WhenThePropertySContentIdFieldAlsoIsTheJakartaPersistenceIdField {
+                                @DisplayName("When the property's content ID field also is the Jakarta Persistence ID field")
+                                class PropertySContentIdFieldAlsoIsJakartaPersistenceIdField {
                                     @BeforeEach
                                     void setUp() {
                                         resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
@@ -1469,14 +1520,15 @@ public class DefaultS3StoreImplTest {
                                     }
 
                                     @Test
-                                    void shouldNotResetTheContentIdMetadata() {
+                                    void shouldNotResetContentIdMetadata() {
                                         assertThat(entity.getContentId()).isEqualTo(SAMPLE_CONTENT_ID);
                                         assertThat(entity.getContentLen()).isNull();
                                     }
                                 }
 
                                 @Nested
-                                class WhenThePropertySContentIdFieldAlsoIsTheSpringIdField {
+                                @DisplayName("When the property's content ID field also is the Spring ID field")
+                                class PropertySContentIdFieldAlsoIsSpringIdField {
                                     @BeforeEach
                                     void setUp() {
                                         resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
@@ -1515,7 +1567,7 @@ public class DefaultS3StoreImplTest {
                                     }
 
                                     @Test
-                                    void shouldNotResetTheContentIdMetadata() {
+                                    void shouldNotResetContentIdMetadata() {
                                         assertThat(entity.getContentId()).isEqualTo(SAMPLE_CONTENT_ID);
                                         assertThat(entity.getContentLen()).isNull();
                                     }
@@ -1523,7 +1575,8 @@ public class DefaultS3StoreImplTest {
                             }
 
                             @Nested
-                            class AndTheContentDoesntExist {
+                            @DisplayName("And the content doesn't exist")
+                            class ContentDoesntExist {
                                 @BeforeEach
                                 void setUp() {
                                     resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
@@ -1560,12 +1613,12 @@ public class DefaultS3StoreImplTest {
                                 }
 
                                 @Test
-                                void shouldFetchTheResource() {
+                                void shouldFetchResource() {
                                     verify(loader).getResource(eq("s3://default-defaultBucket/" + SAMPLE_CONTENT_ID));
                                 }
 
                                 @Test
-                                void shouldUnsetTheContent() {
+                                void shouldUnsetContent() {
                                     verify(client, never()).deleteObject(any(DeleteObjectRequest.class));
                                     assertThat(entity.getContentId()).isNull();
                                     assertThat(entity.getContentLen()).isNull();

@@ -1,6 +1,7 @@
 package internal.org.springframework.content.mongo.store;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.content.commons.store.StoreAccessException;
@@ -46,7 +47,8 @@ public class DefaultMongoStoreImplTest {
         }
 
         @Nested
-        class WhenTheEntityHasAStringArgConstructorIssue57 {
+        @DisplayName("When the entity has a string-arg constructor")
+        class EntityHasStringArgConstructor {
             @BeforeEach
             void entity() {
                 mongoContentRepoImpl = new DefaultMongoStoreImpl<>(gridFsTemplate, null, placer);
@@ -54,7 +56,7 @@ public class DefaultMongoStoreImplTest {
             }
 
             @Test
-            void shouldNotCallThePlacementServiceByDefault() {
+            void shouldNotCallPlacementServiceByDefault() {
                 verify(placer, never()).convert(property, String.class);
             }
         }
@@ -68,7 +70,8 @@ public class DefaultMongoStoreImplTest {
             }
 
             @Nested
-            class WhenTheEntityHasASharedIdContentIdField {
+            @DisplayName("When the entity has a shared ID content ID field")
+            class EntityHasSharedIdContentIdField {
                 @BeforeEach
                 void sharedId() {
                     property = new SharedIdJakartaMongoDocument();
@@ -77,7 +80,7 @@ public class DefaultMongoStoreImplTest {
                 }
 
                 @Test
-                void shouldNotResetTheContentIdBecauseItIsAlsoTheId() {
+                void shouldNotResetContentIdBecauseItIsAlsoId() {
                     assertThat(property.getContentId()).isEqualTo(SAMPLE_SHORT_CONTENT_ID);
                 }
             }
@@ -85,7 +88,7 @@ public class DefaultMongoStoreImplTest {
     }
 
     @Nested
-    class ContentStore {
+    class ContentStoreScenario {
         @BeforeEach
         void setUp() {
             placer = mock(PlacementService.class);
@@ -103,7 +106,8 @@ public class DefaultMongoStoreImplTest {
             }
 
             @Nested
-            class WhenTheContentAlreadyExists {
+            @DisplayName("When the content already exists")
+            class ContentAlreadyExists {
                 @BeforeEach
                 void existing() throws Exception {
                     property.setContentId(SAMPLE_CONTENT_ID);
@@ -114,7 +118,8 @@ public class DefaultMongoStoreImplTest {
                 }
 
                 @Nested
-                class WhenTheGridfsStoreThrowsAnException {
+                @DisplayName("When the GridFS store throws an exception")
+                class GridfsStoreThrowsException {
                     @BeforeEach
                     void storeFails() {
                         when(gridFsTemplate.store(any(), anyString())).thenThrow(new RuntimeException("set-exception"));
@@ -126,7 +131,7 @@ public class DefaultMongoStoreImplTest {
                     }
 
                     @Test
-                    void shouldThrowAStoreAccessException() {
+                    void shouldThrowStoreAccessException() {
                         assertThat(e).isInstanceOf(StoreAccessException.class);
                         assertThat(e.getCause().getMessage()).isEqualTo("set-exception");
                     }
@@ -154,7 +159,8 @@ public class DefaultMongoStoreImplTest {
             }
 
             @Nested
-            class WhenTheResourceThrowsAnIOException {
+            @DisplayName("When the resource throws an I/O exception")
+            class ResourceThrowsIOException {
                 @BeforeEach
                 void brokenResource() throws IOException {
                     inputResource = mock(Resource.class);
@@ -167,7 +173,7 @@ public class DefaultMongoStoreImplTest {
                 }
 
                 @Test
-                void shouldThrowAStoreAccessException() {
+                void shouldThrowStoreAccessException() {
                     assertThat(e).isInstanceOf(StoreAccessException.class);
                     assertThat(e.getCause()).hasMessageContaining("setContent badness");
                 }
@@ -187,14 +193,16 @@ public class DefaultMongoStoreImplTest {
             }
 
             @Nested
-            class WhenTheResourceExists {
+            @DisplayName("When the resource exists")
+            class ResourceExists {
                 @BeforeEach
                 void exists() {
                     when(resource.exists()).thenReturn(true);
                 }
 
                 @Nested
-                class WhenTheResourceInputStreamThrowsAnIOException {
+                @DisplayName("When the resource input stream throws an I/O exception")
+                class ResourceInputStreamThrowsIOException {
                     @BeforeEach
                     void brokenStream() throws IOException {
                         when(resource.getInputStream()).thenThrow(new IOException("get-ioexception"));
@@ -206,7 +214,7 @@ public class DefaultMongoStoreImplTest {
                     }
 
                     @Test
-                    void shouldThrowAStoreAccessException() {
+                    void shouldThrowStoreAccessException() {
                         assertThat(e).isInstanceOf(StoreAccessException.class);
                         assertThat(e.getCause().getMessage()).isEqualTo("get-ioexception");
                     }
@@ -226,7 +234,8 @@ public class DefaultMongoStoreImplTest {
             }
 
             @Nested
-            class WhenGridfsDeletionThrowsAnException {
+            @DisplayName("When GridFS deletion throws an exception")
+            class GridfsDeletionThrowsException {
                 @BeforeEach
                 void deleteFails() {
                     doThrow(new RuntimeException("unset-exception")).when(gridFsTemplate).delete(any());
@@ -238,7 +247,7 @@ public class DefaultMongoStoreImplTest {
                 }
 
                 @Test
-                void shouldThrowAStoreAccessException() {
+                void shouldThrowStoreAccessException() {
                     assertThat(e).isInstanceOf(StoreAccessException.class);
                     assertThat(e.getCause().getMessage()).isEqualTo("unset-exception");
                 }

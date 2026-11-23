@@ -2,10 +2,7 @@ package internal.org.springframework.content.s3.config;
 
 import internal.org.springframework.content.s3.io.S3StoreResource;
 import internal.org.springframework.content.s3.it.LocalStack;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.content.s3.config.EnableS3Stores;
@@ -95,7 +92,8 @@ public class EnableS3StoresTest {
     @Nested
     class EnableS3StoresCases {
         @Nested
-        class GivenAContextAndAConfigurationWithAnS3ContentStoreBean {
+        @DisplayName("Given a context and a configuration with an S3 content store bean")
+        class ContextAndConfigurationWithS3ContentStoreBean {
             @BeforeEach
             void setUp() {
                 context = new AnnotationConfigApplicationContext();
@@ -109,18 +107,19 @@ public class EnableS3StoresTest {
             }
 
             @Test
-            void shouldHaveAContentStoreBean() {
+            void shouldHaveContentStoreBean() {
                 assertThat(context.getBean(SingleContentS3Store.class)).isNotNull();
             }
 
             @Test
-            void shouldHaveAnPlacementService() {
+            void shouldHavePlacementService() {
                 assertThat(context.getBean("s3StorePlacementService")).isNotNull();
             }
         }
 
         @Nested
-        class GivenAContextWithAConfigurer {
+        @DisplayName("Given a context with a configurer")
+        class ContextWithConfigurer {
             @BeforeEach
             void setUp() {
                 context = new AnnotationConfigApplicationContext();
@@ -135,13 +134,14 @@ public class EnableS3StoresTest {
             }
 
             @Test
-            void shouldCallThatConfigurerToHelpSetupTheStore() {
+            void shouldCallThatConfigurerToHelpSetupStore() {
                 verify(configurer).configureS3StoreConverters(any(ConverterRegistry.class));
             }
         }
 
         @Nested
-        class GivenAContextWithAnEmptyConfiguration {
+        @DisplayName("Given a context with an empty configuration")
+        class ContextWithEmptyConfiguration {
             @BeforeEach
             void setUp() {
                 context = new AnnotationConfigApplicationContext();
@@ -161,7 +161,8 @@ public class EnableS3StoresTest {
         }
 
         @Nested
-        class GivenAContextWithAMultiTenantConfiguration {
+        @DisplayName("Given a context with a multi tenant configuration")
+        class ContextWithMultiTenantConfiguration {
             @BeforeEach
             void setUp() {
                 context = new AnnotationConfigApplicationContext();
@@ -176,7 +177,7 @@ public class EnableS3StoresTest {
             }
 
             @Test
-            void shouldUseTheCorrectClient() {
+            void shouldUseCorrectClient() {
                 SingleContentS3Store repo = context.getBean(SingleContentS3Store.class);
                 SingleContentFields entity = new SingleContentFields();
                 entity.setContentId("12345");

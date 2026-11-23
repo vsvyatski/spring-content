@@ -1,6 +1,7 @@
 package internal.org.springframework.content.commons.utils;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -44,9 +45,11 @@ public class StoreUtilsTest {
     @Nested
     class GetStoreCandidates {
         @Nested
-        class WhenMultipleStorageBeansAreFound {
+        @DisplayName("When multiple storage beans are found")
+        class MultipleStorageBeansAreFound {
             @Nested
-            class WhenMultipleStorageModulesAreFoundOnTheClasspath {
+            @DisplayName("When multiple storage modules are found on the classpath")
+            class MultipleStorageModulesAreFoundOnClasspath {
                 @BeforeEach
                 void setUp() {
                     env = mock(Environment.class);
@@ -73,14 +76,15 @@ public class StoreUtilsTest {
                 }
 
                 @Test
-                void shouldReturnTheStoreMatchingTheIdentifyingType() {
+                void shouldReturnStoreMatchingIdentifyingType() {
                     Set<GenericBeanDefinition> beans = StoreUtils.getStoreCandidates(scanner, env, loader, basePackages, multiStoreMode, identifyingTypes, registrarId);
                     assertThat(beans).contains(def1);
                     assertThat(beans).doesNotContain(def2);
                 }
 
                 @Nested
-                class WhenStoreBeansCantBeMatchedAgainstSignatureTypesButRegistrarMatchesDefaults {
+                @DisplayName("When store beans can't be matched against signature types but registrar matches defaults")
+                class StoreBeansCantBeMatchedAgainstSignatureTypesButRegistrarMatchesDefaults {
                     @BeforeEach
                     void setUp() {
                         env = mock(Environment.class);
@@ -119,7 +123,8 @@ public class StoreUtilsTest {
                 }
 
                 @Nested
-                class WhenTheStoreBeansCantBeMatchedAgainstSignatureTypesAndTheRegistrarDoesntMatchThe {
+                @DisplayName("When store beans cannot be matched against signature types and the registrar ID does not match")
+                class StoreBeansCantBeMatchedAgainstSignatureTypesAndRegistrarDoesntMatch {
                     @BeforeEach
                     void setUp() {
                         env = mock(Environment.class);
@@ -160,7 +165,8 @@ public class StoreUtilsTest {
             }
 
             @Nested
-            class WhenMultiModeIsFalse {
+            @DisplayName("When multi mode is false")
+            class MultiModeIsFalse {
                 @BeforeEach
                 void setUp() {
                     env = mock(Environment.class);

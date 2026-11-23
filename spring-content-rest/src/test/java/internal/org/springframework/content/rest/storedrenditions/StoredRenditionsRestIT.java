@@ -6,6 +6,7 @@ import internal.org.springframework.content.rest.support.DualContentRenditionEnt
 import internal.org.springframework.content.rest.support.StoreConfig;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -153,9 +154,11 @@ public class StoredRenditionsRestIT {
     @Nested
     class StoredRenditions {
         @Nested
-        class GivenAnEntityWithAContentProperty {
+        @DisplayName("Given an entity with a content property")
+        class EntityWithContentProperty {
             @Nested
-            class APUTToRepositoryIdContentProperty {
+            @DisplayName("PUT to {repository ID}/content")
+            class PutContentProperty {
                 @BeforeEach
                 void setUp() throws Exception {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -166,7 +169,7 @@ public class StoredRenditionsRestIT {
                 }
 
                 @Test
-                void shouldStoreTheRendition() throws IOException {
+                void shouldStoreRendition() throws IOException {
                     testEntity5 = repo.findById(testEntity5.getId()).orElseThrow();
                     Resource r = store.getResource(testEntity5, PropertyPath.from("content"));
                     try (InputStream actual = r.getInputStream()) {
@@ -180,7 +183,8 @@ public class StoredRenditionsRestIT {
                 }
 
                 @Nested
-                class AGETToRepositoryIdContentProperty {
+                @DisplayName("GET to {repository ID}/content")
+                class GetContentProperty {
                     @BeforeEach
                     void setUp() throws Exception {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -191,7 +195,7 @@ public class StoredRenditionsRestIT {
                     }
 
                     @Test
-                    void shouldGetTheStoredRendition() throws Exception {
+                    void shouldGetStoredRendition() throws Exception {
                         mvc.perform(
                                 get("/dualContentRenditionEntities/" + testEntity5.getId() + "/content")
                                     .accept("text/html"))
@@ -202,7 +206,8 @@ public class StoredRenditionsRestIT {
                 }
 
                 @Nested
-                class AGETToRepositoryIdRenditionProperty {
+                @DisplayName("GET to {repository ID}/rendition")
+                class GetRenditionProperty {
                     @BeforeEach
                     void setUp() throws Exception {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -213,7 +218,7 @@ public class StoredRenditionsRestIT {
                     }
 
                     @Test
-                    void shouldReturnA405() throws Exception {
+                    void shouldReturn405() throws Exception {
                         mvc.perform(
                                 get("/dualContentRenditionEntities/" + testEntity5.getId() + "/rendition")
                                     .accept("text/html"))
@@ -222,7 +227,8 @@ public class StoredRenditionsRestIT {
                 }
 
                 @Nested
-                class ADELETEToRepositoryIdContentProperty {
+                @DisplayName("DELETE to {repository ID}/content")
+                class DeleteContentProperty {
                     @BeforeEach
                     void setUp() throws Exception {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -233,7 +239,7 @@ public class StoredRenditionsRestIT {
                     }
 
                     @Test
-                    void shouldAlsoDeleteTheRendition() throws Exception {
+                    void shouldAlsoDeleteRendition() throws Exception {
                         Long id = testEntity5.getId();
 
                         mvc.perform(delete("/dualContentRenditionEntities/" + testEntity5.getId() + "/content")).andExpect(status().isNoContent());

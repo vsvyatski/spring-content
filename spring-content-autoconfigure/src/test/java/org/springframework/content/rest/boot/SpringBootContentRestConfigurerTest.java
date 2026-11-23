@@ -4,6 +4,7 @@ import internal.org.springframework.content.rest.boot.autoconfigure.ContentRestA
 import internal.org.springframework.content.rest.boot.autoconfigure.ContentRestAutoConfiguration.ContentRestProperties.ShortcutRequestMappings;
 import internal.org.springframework.content.rest.boot.autoconfigure.SpringBootContentRestConfigurer;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.content.rest.config.RestConfiguration;
@@ -25,11 +26,10 @@ public class SpringBootContentRestConfigurerTest {
     private RestConfiguration.Exclusions exclusions;
 
     @Nested
-    class SpringBootContentRestConfigurerCases {
-        @Nested
-        class Configure {
+    class Configure {
             @Nested
-            class GivenABaseUriProperty {
+            @DisplayName("Given a base URI property")
+            class BaseUriProperty {
                 @BeforeEach
                 void setUp() {
                     properties = new ContentRestProperties();
@@ -44,13 +44,14 @@ public class SpringBootContentRestConfigurerTest {
                 }
 
                 @Test
-                void shouldSetThePropertyOnTheRestConfiguration() {
+                void shouldSetPropertyOnRestConfiguration() {
                     verify(restConfig).setBaseUri(eq(properties.getBaseUri()));
                 }
             }
 
             @Nested
-            class GivenAFullyQualifiedLinksPropertySetting {
+            @DisplayName("Given a fully qualified links property setting")
+            class FullyQualifiedLinksPropertySetting {
                 @BeforeEach
                 void setUp() {
                     properties = new ContentRestProperties();
@@ -65,13 +66,14 @@ public class SpringBootContentRestConfigurerTest {
                 }
 
                 @Test
-                void shouldSetThePropertyOnTheRestConfiguration() {
+                void shouldSetPropertyOnRestConfiguration() {
                     verify(restConfig).setFullyQualifiedLinks(eq(true));
                 }
             }
 
             @Nested
-            class GivenDisabledShortcutRequestMappings {
+            @DisplayName("Given disabled shortcut request mappings")
+            class DisabledShortcutRequestMappings {
                 @BeforeEach
                 void setUp() {
                     properties = new ContentRestProperties();
@@ -88,13 +90,14 @@ public class SpringBootContentRestConfigurerTest {
                 }
 
                 @Test
-                void shouldDisableTheShortcutLinks() {
+                void shouldDisableShortcutLinks() {
                     verify(restConfig).setShortcutLinks(false);
                 }
             }
 
             @Nested
-            class GivenExcludedShortcutRequestMappings {
+            @DisplayName("Given excluded shortcut request mappings")
+            class ExcludedShortcutRequestMappings {
                 @BeforeEach
                 void setUp() {
                     properties = new ContentRestProperties();
@@ -111,7 +114,7 @@ public class SpringBootContentRestConfigurerTest {
                 }
 
                 @Test
-                void shouldSetTheExclusionsPropertyOnTheRestConfiguration() {
+                void shouldSetExclusionsPropertyOnRestConfiguration() {
                     verify(exclusions).exclude("GET", MediaType.parseMediaType("a/b"));
                     verify(exclusions).exclude("GET", MediaType.parseMediaType("c/d"));
                     verify(exclusions).exclude("PUT", MediaType.parseMediaType("*/*"));
@@ -119,7 +122,8 @@ public class SpringBootContentRestConfigurerTest {
             }
 
             @Nested
-            class GivenEmptyExcludedShortcutRequestMapping {
+            @DisplayName("Given empty excluded shortcut request mapping")
+            class EmptyExcludedShortcutRequestMapping {
                 @BeforeEach
                 void setUp() {
                     properties = new ContentRestProperties();
@@ -136,13 +140,14 @@ public class SpringBootContentRestConfigurerTest {
                 }
 
                 @Test
-                void shouldNotSetTheExclusionsPropertyOnTheRestConfiguration() {
+                void shouldNotSetExclusionsPropertyOnRestConfiguration() {
                     verify(exclusions, never()).exclude(any(), any());
                 }
             }
 
             @Nested
-            class GivenEmptyExcludedShortcutGETRequestMapping {
+            @DisplayName("Given empty excluded shortcut GET request mapping")
+            class EmptyExcludedShortcutGETRequestMapping {
                 @BeforeEach
                 void setUp() {
                     properties = new ContentRestProperties();
@@ -159,13 +164,14 @@ public class SpringBootContentRestConfigurerTest {
                 }
 
                 @Test
-                void shouldNotSetTheExclusionsPropertyOnTheRestConfiguration() {
+                void shouldNotSetExclusionsPropertyOnRestConfiguration() {
                     verify(exclusions, never()).exclude(any(), any());
                 }
             }
 
             @Nested
-            class GivenInvalidExcludedShortcutRequestMapping {
+            @DisplayName("Given invalid excluded shortcut request mapping")
+            class InvalidExcludedShortcutRequestMapping {
                 @BeforeEach
                 void setUp() {
                     properties = new ContentRestProperties();
@@ -182,13 +188,14 @@ public class SpringBootContentRestConfigurerTest {
                 }
 
                 @Test
-                void shouldNotSetTheExclusionsPropertyOnTheRestConfiguration() {
+                void shouldNotSetExclusionsPropertyOnRestConfiguration() {
                     verify(exclusions, never()).exclude(any(), any());
                 }
             }
 
             @Nested
-            class GivenANullBaseUriProperty {
+            @DisplayName("Given a null base URI property")
+            class NullBaseUriProperty {
                 @BeforeEach
                 void setUp() {
                     properties = new ContentRestProperties();
@@ -201,13 +208,14 @@ public class SpringBootContentRestConfigurerTest {
                 }
 
                 @Test
-                void shouldNotSetThePropertyOnTheRestConfiguration() {
+                void shouldNotSetPropertyOnRestConfiguration() {
                     verify(restConfig, never()).setBaseUri(any());
                 }
             }
 
             @Nested
-            class GivenANullProperties {
+            @DisplayName("Given null REST properties")
+            class NullRestProperties {
                 @BeforeEach
                 void setUp() {
                     properties = new ContentRestProperties();
@@ -220,11 +228,10 @@ public class SpringBootContentRestConfigurerTest {
                 }
 
                 @Test
-                void shouldNotSetThePropertyOnTheRestConfiguration() {
+                void shouldNotSetPropertyOnRestConfiguration() {
                     verify(restConfig, never()).setBaseUri(any());
                     verify(restConfig, never()).setFullyQualifiedLinks(anyBoolean());
                 }
             }
-        }
     }
 }

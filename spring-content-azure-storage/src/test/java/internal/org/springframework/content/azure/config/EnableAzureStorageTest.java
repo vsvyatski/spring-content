@@ -3,10 +3,7 @@ package internal.org.springframework.content.azure.config;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.BlobServiceClientBuilder;
 import internal.org.springframework.content.azure.it.Azurite;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.content.azure.config.AzureStorageConfigurer;
 import org.springframework.content.azure.config.EnableAzureStorage;
 import org.springframework.content.test.support.TestSupportPackages;
@@ -70,7 +67,8 @@ public class EnableAzureStorageTest {
     @Nested
     class EnableAzureStorageCases {
         @Nested
-        class GivenAContextAndAConfigurationWithAnAzureContentStore {
+        @DisplayName("Given a context and a configuration with an Azure content store")
+        class ContextAndConfigurationWithAzureContentStore {
             @BeforeEach
             void setUp() {
                 context = new AnnotationConfigApplicationContext();
@@ -84,18 +82,19 @@ public class EnableAzureStorageTest {
             }
 
             @Test
-            void shouldHaveAContentStoreBean() {
+            void shouldHaveContentStoreBean() {
                 assertThat(context.getBean(SingleContentAzureStore.class)).isNotNull();
             }
 
             @Test
-            void shouldHaveAnPlacementService() {
+            void shouldHavePlacementService() {
                 assertThat(context.getBean("azureStoragePlacementService")).isNotNull();
             }
         }
 
         @Nested
-        class GivenAContextWithAConfigurer {
+        @DisplayName("Given a context with a configurer")
+        class ContextWithConfigurer {
             @BeforeEach
             void setUp() {
                 context = new AnnotationConfigApplicationContext();
@@ -110,13 +109,14 @@ public class EnableAzureStorageTest {
             }
 
             @Test
-            void shouldCallThatConfigurerToHelpSetupTheStore() {
+            void shouldCallThatConfigurerToHelpSetupStore() {
                 verify(configurer).configureAzureStorageConverters(any());
             }
         }
 
         @Nested
-        class GivenAContextWithAnEmptyConfiguration {
+        @DisplayName("Given a context with an empty configuration")
+        class ContextWithEmptyConfiguration {
             @BeforeEach
             void setUp() {
                 context = new AnnotationConfigApplicationContext();

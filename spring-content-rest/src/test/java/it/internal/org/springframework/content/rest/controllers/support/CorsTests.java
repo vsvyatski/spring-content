@@ -1,5 +1,6 @@
 package it.internal.org.springframework.content.rest.controllers.support;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.MockMvc;
@@ -30,9 +31,10 @@ public class CorsTests {
     }
 
     @Nested
-    class AnOPTIONSRequestFromAKnownHost {
+    @DisplayName("An OPTIONS request from a known host")
+    class OptionsFromKnownHost {
         @Test
-        void shouldReturnTheRelevantCORSHeadersAndOK() throws Exception {
+        void shouldReturnRelevantCORSHeadersAndOK() throws Exception {
             mvc.perform(options(url)
                     .header("Access-Control-Request-Method", "DELETE")
                     .header("Origin", "http://www.someurl.com"))
@@ -42,7 +44,8 @@ public class CorsTests {
     }
 
     @Nested
-    class AnOPTIONSRequestFromAnUnknownHost {
+    @DisplayName("An OPTIONS request from an unknown host")
+    class OptionsFromUnknownHost {
         @Test
         void shouldBeForbidden() throws Exception {
             mvc.perform(options(url)

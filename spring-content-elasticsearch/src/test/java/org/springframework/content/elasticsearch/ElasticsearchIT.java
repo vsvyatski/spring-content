@@ -3,10 +3,7 @@ package org.springframework.content.elasticsearch;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.ElasticsearchException;
 import org.apache.commons.io.IOUtils;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.content.commons.search.IndexService;
 import org.springframework.content.test.support.fulltext.*;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -43,7 +40,7 @@ public class ElasticsearchIT {
     }
 
     @Nested
-    class GlobalIndexingStrategyCases {
+    class GlobalIndexingStrategyScenarios {
 
         @BeforeEach
         void setUp() throws Exception {
@@ -92,7 +89,7 @@ public class ElasticsearchIT {
         }
 
         @Test
-        void shouldIndexTheDocuments() throws Exception {
+        void shouldIndexDocuments() throws Exception {
             doc1 = new FulltextJpaUuidDocumentEntity();
             doc1.setTitle("doc 1");
             doc1.setAuthor("author@email.com");
@@ -113,7 +110,7 @@ public class ElasticsearchIT {
         }
 
         @Test
-        void shouldBePossibleToCloseTheIndex() throws Exception {
+        void shouldBePossibleToCloseIndex() throws Exception {
             doc1 = new FulltextJpaUuidDocumentEntity();
             doc1.setTitle("doc 1");
             doc1.setAuthor("author@email.com");
@@ -142,7 +139,7 @@ public class ElasticsearchIT {
         }
 
         @Test
-        void shouldReturnTheMatches() {
+        void shouldReturnMatches() {
             doc1 = new FulltextJpaUuidDocumentEntity();
             doc1.setTitle("doc 1");
             doc1.setAuthor("author@email.com");
@@ -180,7 +177,7 @@ public class ElasticsearchIT {
         }
 
         @Test
-        void shouldIndexTheDocumentsUsingATextExtractingRenderer() {
+        void shouldIndexDocumentsUsingTextExtractingRenderer() {
             doc1 = new FulltextJpaUuidDocumentEntity();
             doc1.setTitle("doc 1");
             doc1.setAuthor("author@email.com");
@@ -207,7 +204,7 @@ public class ElasticsearchIT {
         }
 
         @Test
-        void shouldDeleteTheRecordOfTheContentFromTheIndex() throws Exception {
+        void shouldDeleteRecordOfContentFromIndex() throws Exception {
             doc1 = new FulltextJpaUuidDocumentEntity();
             doc1.setTitle("doc 1");
             doc1.setAuthor("author@email.com");
@@ -240,7 +237,7 @@ public class ElasticsearchIT {
     }
 
     @Nested
-    class PagingCases {
+    class Paging {
         @BeforeEach
         void setUp() {
             context = new AnnotationConfigApplicationContext();
@@ -306,53 +303,51 @@ public class ElasticsearchIT {
     }
 
     @Nested
-    class CustomAttributesCases {
-        @Nested
-        class GivenAContextConfiguredToSyncAttributesAndProvideAFilterQuery {
-            @BeforeEach
-            void setUp() {
-                context = new AnnotationConfigApplicationContext();
-                context.register(EntityIndexingStrategy.class);
-                context.register(CustomAttributesConfig.class);
-                context.refresh();
+    @DisplayName("Given a context configured to sync attributes and provide a filter query")
+    class ContextConfiguredToSyncAttributesAndProvideFilterQuery {
+        @BeforeEach
+        void setUp() {
+            context = new AnnotationConfigApplicationContext();
+            context.register(EntityIndexingStrategy.class);
+            context.register(CustomAttributesConfig.class);
+            context.refresh();
 
-                repo = context.getBean(FulltextJpaUuidDocumentRepository.class);
-                store = context.getBean(FulltextJpaUuidDocumentStore.class);
-                client = context.getBean(ElasticsearchClient.class);
+            repo = context.getBean(FulltextJpaUuidDocumentRepository.class);
+            store = context.getBean(FulltextJpaUuidDocumentStore.class);
+            client = context.getBean(ElasticsearchClient.class);
 
-                doc1 = new FulltextJpaUuidDocumentEntity();
-                doc1.setTitle("doc 1");
-                doc1.setAuthor("Buck Rogers");
-                doc1 = store.setContent(doc1, this.getClass().getResourceAsStream("/one.docx"));
-                repo.save(doc1);
+            doc1 = new FulltextJpaUuidDocumentEntity();
+            doc1.setTitle("doc 1");
+            doc1.setAuthor("Buck Rogers");
+            doc1 = store.setContent(doc1, this.getClass().getResourceAsStream("/one.docx"));
+            repo.save(doc1);
 
-                doc2 = new FulltextJpaUuidDocumentEntity();
-                doc2.setTitle("doc 2");
-                doc2.setAuthor("Wilma Deering");
-                doc2 = store.setContent(doc2, this.getClass().getResourceAsStream("/one.docx"));
-                repo.save(doc2);
+            doc2 = new FulltextJpaUuidDocumentEntity();
+            doc2.setTitle("doc 2");
+            doc2.setAuthor("Wilma Deering");
+            doc2 = store.setContent(doc2, this.getClass().getResourceAsStream("/one.docx"));
+            repo.save(doc2);
+        }
+
+        @AfterEach
+        void tearDown() throws IOException {
+            assertThat(context).isNotNull();
+
+            if (client != null) {
+                client.indices().delete(d -> d.index("_all"));
             }
+        }
 
-            @AfterEach
-            void tearDown() throws IOException {
-                assertThat(context).isNotNull();
-
-                if (client != null) {
-                    client.indices().delete(d -> d.index("_all"));
-                }
-            }
-
-            @Test
-            void shouldReturnTheSpecifiedAttributes() {
-                org.awaitility.Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> assertThat(store.search("one", PageRequest.of(0, 10)))
-                    .contains(doc1.getContentId())
-                    .doesNotContain(doc2.getContentId()));
-            }
+        @Test
+        void shouldReturnSpecifiedAttributes() {
+            org.awaitility.Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> assertThat(store.search("one", PageRequest.of(0, 10)))
+                .contains(doc1.getContentId())
+                .doesNotContain(doc2.getContentId()));
         }
     }
 
     @Nested
-    class CustomReturnTypesCases {
+    class CustomReturnTypes {
         @BeforeEach
         void setUp() {
             context = new AnnotationConfigApplicationContext();
@@ -381,7 +376,7 @@ public class ElasticsearchIT {
         }
 
         @Test
-        void shouldReturnResultsUsingTheCustomReturnType() {
+        void shouldReturnResultsUsingCustomReturnType() {
             org.awaitility.Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
                 var result = searchableStore.search("one");
                 assertThat(result).isNotNull();

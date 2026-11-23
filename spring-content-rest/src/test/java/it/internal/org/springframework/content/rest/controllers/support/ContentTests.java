@@ -3,6 +3,7 @@ package it.internal.org.springframework.content.rest.controllers.support;
 import internal.org.springframework.content.rest.support.ContentEntity;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.content.commons.store.ContentStore;
@@ -72,35 +73,30 @@ public class ContentTests {
     }
 
     @Nested
-    class AGETToStoreIdAccepting {
+    @DisplayName("GET to {store ID} with Accept */*")
+    class GetWithAcceptWildcard {
         @Test
         void shouldReturn404() throws Exception {
-            mvc.perform(get(url)
-                    .accept("*/*"))
-                .andExpect(status().isNotFound());
+            mvc.perform(get(url).accept("*/*")).andExpect(status().isNotFound());
         }
     }
 
     @Nested
-    class AGETToStoreIdAcceptingAContentMimeType {
+    @DisplayName("GET to {store ID} accepting a content MIME type")
+    class GetAcceptingContentMimeType {
         @Test
         void shouldReturn404() throws Exception {
-            mvc.perform(get(url)
-                    .accept("text/plain"))
-                .andExpect(status().isNotFound());
+            mvc.perform(get(url).accept("text/plain")).andExpect(status().isNotFound());
         }
     }
 
     @Nested
-    class APUTToStoreIdWithAContentBody {
+    @DisplayName("PUT to {store ID} with content body")
+    class PutWithContentBody {
         @Test
-        void shouldSetTheContentAndReturn201() throws Exception {
+        void shouldSetContentAndReturn201() throws Exception {
             String content = "Hello New Spring Content World!";
-            mvc.perform(
-                    put(url)
-                        .contextPath(contextPath)
-                        .content(content)
-                        .contentType("text/plain"))
+            mvc.perform(put(url).contextPath(contextPath).content(content).contentType("text/plain"))
                 .andExpect(status().isCreated());
 
             Optional<ContentEntity> fetched = repository.findById(entity.getId());
@@ -113,19 +109,19 @@ public class ContentTests {
     }
 
     @Nested
-    class ADELETEToStoreIdWithAMimeType {
+    @DisplayName("DELETE to {store ID} with MIME type")
+    class DeleteWithMimeType {
         @Test
         void shouldReturn404() throws Exception {
-            mvc.perform(delete(url)
-                .contextPath(contextPath)
-                .accept("text/plain")).andExpect(status().isNotFound());
+            mvc.perform(delete(url).contextPath(contextPath).accept("text/plain")).andExpect(status().isNotFound());
         }
     }
 
     @Nested
-    class APOSTToStoreIdWithAMultiPartFormDataRequest {
+    @DisplayName("POST to {store ID} with multipart form data request")
+    class PostWithMultipartFormData {
         @Test
-        void shouldSetTheContentAndReturn200() throws Exception {
+        void shouldSetContentAndReturn200() throws Exception {
             String content = "This is Spring Content!";
 
             mvc.perform(multipart(url)
@@ -144,9 +140,11 @@ public class ContentTests {
     }
 
     @Nested
-    class GivenTheEntityHasTextPlainContent {
+    @DisplayName("Given the entity has text/plain content")
+    class EntityHasTextPlainContent {
         @Nested
-        class AGETToStoreId {
+        @DisplayName("GET to {store ID}")
+        class Get {
             @BeforeEach
             void setUp() {
                 String content = "Hello Spring Content World!";
@@ -157,7 +155,7 @@ public class ContentTests {
             }
 
             @Test
-            void shouldReturnTheOriginalContentFilenameAnd200() throws Exception {
+            void shouldReturnOriginalContentFilenameAnd200() throws Exception {
                 assertThat(Charset.defaultCharset()).isEqualTo(StandardCharsets.UTF_8);
 
                 MockHttpServletResponse response = mvc
@@ -174,7 +172,8 @@ public class ContentTests {
         }
 
         @Nested
-        class AGETToStoreIdWithNoAcceptHeader {
+        @DisplayName("GET to {store ID} with no Accept header")
+        class GetWithNoAcceptHeader {
             @BeforeEach
             void setUp() {
                 String content = "Hello Spring Content World!";
@@ -185,7 +184,7 @@ public class ContentTests {
             }
 
             @Test
-            void shouldReturnTheOriginalContent() throws Exception {
+            void shouldReturnOriginalContent() throws Exception {
                 MockHttpServletResponse response = mvc.perform(
                         get(url)
                             .contextPath(contextPath)
@@ -199,7 +198,8 @@ public class ContentTests {
         }
 
         @Nested
-        class AGETToStoreIdWithAMimeTypeThatMatchesARenderer {
+        @DisplayName("GET to {store ID} with a MIME type that matches a renderer")
+        class GetWithMimeTypeMatchingRenderer {
             @BeforeEach
             void setUp() {
                 String content = "Hello Spring Content World!";
@@ -210,7 +210,7 @@ public class ContentTests {
             }
 
             @Test
-            void shouldReturnTheRenditionAnd200() throws Exception {
+            void shouldReturnRenditionAnd200() throws Exception {
                 MockHttpServletResponse response = mvc
                     .perform(get(url)
                         .contextPath(contextPath)
@@ -225,7 +225,8 @@ public class ContentTests {
         }
 
         @Nested
-        class AGETToStoreIdWithAMimeTypeThatMatchesARendererAndTheOriginalContentType {
+        @DisplayName("GET to {store ID} with a MIME type that matches a renderer and the original content type")
+        class GetWithRendererMimeTypeAndOriginalContentType {
             @BeforeEach
             void setUp() {
                 String content = "Hello Spring Content World!";
@@ -241,7 +242,7 @@ public class ContentTests {
             }
 
             @Test
-            void shouldReturnTheRenditionAnd200() throws Exception {
+            void shouldReturnRenditionAnd200() throws Exception {
                 MockHttpServletResponse response = mvc
                     .perform(get(url)
                         .contextPath(contextPath)
@@ -256,7 +257,8 @@ public class ContentTests {
         }
 
         @Nested
-        class AGETToStoreIdWithMultipleMimeTypesTheLastOfWhichMatchesTheContent {
+        @DisplayName("GET to {store ID} with multiple MIME types, last matches content")
+        class GetWithMultipleMimeTypesLastMatchesContent {
             @BeforeEach
             void setUp() {
                 String content = "Hello Spring Content World!";
@@ -267,7 +269,7 @@ public class ContentTests {
             }
 
             @Test
-            void shouldReturnTheOriginalContentAnd200() throws Exception {
+            void shouldReturnOriginalContentAnd200() throws Exception {
                 MockHttpServletResponse response = mvc.perform(get(url)
                         .contextPath(contextPath)
                         .accept("text/xml", "text/plain"))
@@ -281,7 +283,8 @@ public class ContentTests {
         }
 
         @Nested
-        class AGETToStoreIdWithMultipleMimeTypesTheMiddleOfWhichMatchesTheContent {
+        @DisplayName("GET to {store ID} with multiple MIME types, middle matches content")
+        class GetWithMultipleMimeTypesMiddleMatchesContent {
             @BeforeEach
             void setUp() {
                 String content = "Hello Spring Content World!";
@@ -292,7 +295,7 @@ public class ContentTests {
             }
 
             @Test
-            void shouldReturnTheOriginalContentAnd200() throws Exception {
+            void shouldReturnOriginalContentAnd200() throws Exception {
                 MockHttpServletResponse response = mvc.perform(get(url)
                         .contextPath(contextPath)
                         .accept("text/xml", "text/html", "*/*"))
@@ -306,7 +309,8 @@ public class ContentTests {
         }
 
         @Nested
-        class AGETToStoreIdWithJustAnAcceptAllMimeType {
+        @DisplayName("GET to {store ID} with accept-all MIME type")
+        class GetWithAcceptAllMimeType {
             @BeforeEach
             void setUp() {
                 String content = "Hello Spring Content World!";
@@ -317,7 +321,7 @@ public class ContentTests {
             }
 
             @Test
-            void shouldReturnTheOriginalContentAnd200() throws Exception {
+            void shouldReturnOriginalContentAnd200() throws Exception {
                 MockHttpServletResponse response = mvc.perform(get(url)
                         .contextPath(contextPath)
                         .accept("*/*"))
@@ -331,7 +335,8 @@ public class ContentTests {
         }
 
         @Nested
-        class AGETToStoreIdWithAMimeTypeSpecifyingCharset {
+        @DisplayName("GET to {store ID} with MIME type specifying charset")
+        class GetWithMimeTypeSpecifyingCharset {
             @BeforeEach
             void setUp() {
                 String content = "Hello Spring Content World!";
@@ -342,7 +347,7 @@ public class ContentTests {
             }
 
             @Test
-            void shouldReturnTheOriginalContentAnd200() throws Exception {
+            void shouldReturnOriginalContentAnd200() throws Exception {
                 MockHttpServletResponse response = mvc.perform(get(url)
                         .contextPath(contextPath)
                         .accept("text/html;charset=ISO-8859-1"))
@@ -356,7 +361,8 @@ public class ContentTests {
         }
 
         @Nested
-        class AGETToStoreIdWhenTheOriginalMimeTypeHasACharset {
+        @DisplayName("GET to {store ID} when original MIME type has charset")
+        class GetWhenOriginalMimeTypeHasCharset {
             @BeforeEach
             void setUp() {
                 String content = "Hello Spring Content World!";
@@ -370,7 +376,7 @@ public class ContentTests {
             }
 
             @Test
-            void shouldReturnTheOriginalContentAnd200() throws Exception {
+            void shouldReturnOriginalContentAnd200() throws Exception {
                 MockHttpServletResponse response = mvc.perform(get(url)
                         .contextPath(contextPath)
                         .accept("text/plain"))
@@ -384,7 +390,8 @@ public class ContentTests {
         }
 
         @Nested
-        class AGETToStoreIdWithAMimeTypeThatDoesNotMatchARendererOrTheOriginalContent {
+        @DisplayName("GET to {store ID} with MIME type that does not match renderer or original content")
+        class GetWithMimeTypeNoMatch {
             @BeforeEach
             void setUp() {
                 String content = "Hello Spring Content World!";
@@ -395,7 +402,7 @@ public class ContentTests {
             }
 
             @Test
-            void shouldReturnTheOriginalContentAnd200() throws Exception {
+            void shouldReturnOriginalContentAnd200() throws Exception {
                 mvc.perform(get(url)
                         .contextPath(contextPath)
                         .accept("text/css"))
@@ -404,7 +411,8 @@ public class ContentTests {
         }
 
         @Nested
-        class AGETToStoreIdWithARangeHeader {
+        @DisplayName("GET to {store ID} with Range header")
+        class GetWithRangeHeader {
             @BeforeEach
             void setUp() {
                 String content = "Hello Spring Content World!";
@@ -415,7 +423,7 @@ public class ContentTests {
             }
 
             @Test
-            void shouldReturnTheContentRangeAnd206() throws Exception {
+            void shouldReturnContentRangeAnd206() throws Exception {
                 MockHttpServletResponse response = mvc
                     .perform(get(url)
                         .contextPath(contextPath)
@@ -430,7 +438,8 @@ public class ContentTests {
         }
 
         @Nested
-        class APUTToStoreId {
+        @DisplayName("PUT to {store ID}")
+        class Put {
             @BeforeEach
             void setUp() {
                 String content = "Hello Spring Content World!";
@@ -441,7 +450,7 @@ public class ContentTests {
             }
 
             @Test
-            void shouldOverwriteTheContentAndReturn200() throws Exception {
+            void shouldOverwriteContentAndReturn200() throws Exception {
                 mvc.perform(put(url)
                         .contextPath(contextPath)
                         .content("Hello Modified Spring Content World!")
@@ -454,7 +463,8 @@ public class ContentTests {
         }
 
         @Nested
-        class APOSTToStoreIdWithAMultiPartRequest {
+        @DisplayName("POST to {store ID} with multipart request")
+        class PostWithMultipartRequest {
             @BeforeEach
             void setUp() {
                 String content = "Hello Spring Content World!";
@@ -465,7 +475,7 @@ public class ContentTests {
             }
 
             @Test
-            void shouldOverwriteTheContentAndReturn200() throws Exception {
+            void shouldOverwriteContentAndReturn200() throws Exception {
                 String content = "This is Modified Spring Content!";
 
                 mvc.perform(multipart(url)
@@ -486,7 +496,8 @@ public class ContentTests {
         }
 
         @Nested
-        class APOSTToStoreIdWithAMissingContentType {
+        @DisplayName("POST to {store ID} with missing content type")
+        class PostWithMissingContentType {
             @BeforeEach
             void setUp() {
                 String content = "Hello Spring Content World!";
@@ -507,7 +518,8 @@ public class ContentTests {
         }
 
         @Nested
-        class APUTToStoreIdWithAMultiPartRequest {
+        @DisplayName("PUT to {store ID} with multipart request")
+        class PutWithMultipartRequest {
             @BeforeEach
             void setUp() {
                 String content = "Hello Spring Content World!";
@@ -518,7 +530,7 @@ public class ContentTests {
             }
 
             @Test
-            void shouldOverwriteTheContentAndReturn200() throws Exception {
+            void shouldOverwriteContentAndReturn200() throws Exception {
                 String content = "This is Modified Spring Content!";
 
                 mvc.perform(multipart(HttpMethod.PUT, url)
@@ -539,7 +551,8 @@ public class ContentTests {
         }
 
         @Nested
-        class ADELETEToStoreIdWithTheMimetype {
+        @DisplayName("DELETE to {store ID} with MIME type")
+        class DeleteWithMimeType {
             @BeforeEach
             void setUp() {
                 String content = "Hello Spring Content World!";
@@ -550,7 +563,7 @@ public class ContentTests {
             }
 
             @Test
-            void shouldDeleteTheContentAttributesAndReturnA200Response() throws Exception {
+            void shouldDeleteContentAttributesAndReturn204() throws Exception {
                 mvc.perform(delete(url)
                         .contentType("text/plain")
                         .contextPath(contextPath)

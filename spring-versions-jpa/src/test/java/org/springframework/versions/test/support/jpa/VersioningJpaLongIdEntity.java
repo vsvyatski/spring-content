@@ -12,7 +12,7 @@ import org.springframework.versions.*;
  * @author Vladimir Svyatski
  */
 @Entity
-@SuppressWarnings("unused")
+@SuppressWarnings("unused") // accessors, copy ctor used by BeanWrapper, JPA, and cloning
 public class VersioningJpaLongIdEntity {
 
     @Id
@@ -34,6 +34,21 @@ public class VersioningJpaLongIdEntity {
     private String versionLabel;
 
     public VersioningJpaLongIdEntity() {
+    }
+
+    /**
+     * Reflective entry point for {@link internal.org.springframework.versions.jpa.JpaCloningServiceImpl}.
+     * {@code xid} is intentionally not copied so the successor row gets a new key on {@code persist}.
+     */
+    @SuppressWarnings("CopyConstructorMissesField")
+    public VersioningJpaLongIdEntity(VersioningJpaLongIdEntity entity) {
+        this.version = entity.version;
+        this.xAncestorId = entity.xAncestorId;
+        this.xAncestorRootId = entity.xAncestorRootId;
+        this.xSuccessorId = entity.xSuccessorId;
+        this.xLockOwner = entity.xLockOwner;
+        this.versionNo = entity.versionNo;
+        this.versionLabel = entity.versionLabel;
     }
 
     public Long getXid() {

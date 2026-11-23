@@ -1,6 +1,7 @@
 package org.springframework.content.rest.config;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.content.fs.config.EnableFileSystemStores;
@@ -41,7 +42,8 @@ public class HypermediaConfigurationTest {
     @Nested
     class HypermediaConfigurationCases {
         @Nested
-        class GivenAContextWithAContentRestConfiguration {
+        @DisplayName("Given a context with a content rest configuration")
+        class ContextWithContentRestConfiguration {
             @BeforeEach
             void setUp() {
                 context = new AnnotationConfigWebApplicationContext();
@@ -54,7 +56,7 @@ public class HypermediaConfigurationTest {
             }
 
             @Test
-            void shouldHaveAContentLinksProcessorBean() {
+            void shouldHaveContentLinksProcessorBean() {
                 assertThat(context.getBean("contentLinksProcessor")).isNotNull();
             }
         }

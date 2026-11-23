@@ -1,6 +1,7 @@
 package internal.org.springframework.content.fs.store;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
@@ -78,7 +79,7 @@ public class DefaultFileSystemStoresImplTest {
                 }
 
                 @Test
-                void shouldUseThePlacerServiceToGetAResourcePath() {
+                void shouldUsePlacerServiceToGetResourcePath() {
                     verify(placer).convert(eq(SAMPLE_CONTENT_ID), eq(String.class));
                     verify(loader).getResource(eq(SAMPLE_CONTENT_ID));
                 }
@@ -90,7 +91,8 @@ public class DefaultFileSystemStoresImplTest {
             @Nested
             class GetResource {
                 @Nested
-                class WhenTheEntityIsNotAlreadyAssociatedWithAResource {
+                @DisplayName("When the entity is not already associated with a resource")
+                class EntityIsNotAlreadyAssociatedWithResource {
                     @BeforeEach
                     void setUp() {
                         loader = mock(FileSystemResourceLoader.class);
@@ -105,13 +107,14 @@ public class DefaultFileSystemStoresImplTest {
                     }
 
                     @Test
-                    void shouldNotReturnAResource() {
+                    void shouldNotReturnResource() {
                         assertThat(resource).isNull();
                     }
                 }
 
                 @Nested
-                class WhenTheEntityIsAlreadyAssociatedWithAResource {
+                @DisplayName("When the entity is already associated with a resource")
+                class EntityIsAlreadyAssociatedWithResource {
                     @BeforeEach
                     void setUp() {
                         loader = mock(FileSystemResourceLoader.class);
@@ -131,14 +134,15 @@ public class DefaultFileSystemStoresImplTest {
                     }
 
                     @Test
-                    void shouldUseThePlacerServiceToGetAResourcePath() {
+                    void shouldUsePlacerServiceToGetResourcePath() {
                         verify(placer).convert(eq(SAMPLE_CONTENT_ID), eq(String.class));
                         verify(loader).getResource(eq(SAMPLE_FS_RESOURCE_PATH));
                     }
                 }
 
                 @Nested
-                class WhenThereIsAnEntityConverter {
+                @DisplayName("When there is an entity converter")
+                class EntityConverter {
                     @BeforeEach
                     void setUp() {
                         loader = mock(FileSystemResourceLoader.class);
@@ -160,18 +164,19 @@ public class DefaultFileSystemStoresImplTest {
                     }
 
                     @Test
-                    void shouldNotNeedToConvertTheId() {
+                    void shouldNotNeedToConvertId() {
                         verify(placer, never()).convert(not(eq(entity)), eq(String.class));
                     }
 
                     @Test
-                    void shouldReturnTheResource() {
+                    void shouldReturnResource() {
                         assertThat(resource).isEqualTo(deletableResource);
                     }
                 }
 
                 @Nested
-                class WhenTheEntityHasAStringArgConstructorIssue57 {
+                @DisplayName("When the entity has a string-arg constructor")
+                class EntityHasStringArgConstructor {
                     @BeforeEach
                     void setUp() {
                         loader = mock(FileSystemResourceLoader.class);
@@ -190,7 +195,7 @@ public class DefaultFileSystemStoresImplTest {
                     }
 
                     @Test
-                    void shouldNotCallThePlacementServiceTryingToConvertTheEntityToAString() {
+                    void shouldNotCallPlacementServiceTryingToConvertEntityToString() {
                         verify(placer, never()).convert(eq(entity), eq(String.class));
                     }
                 }
@@ -223,7 +228,7 @@ public class DefaultFileSystemStoresImplTest {
                 }
 
                 @Test
-                void shouldSetTheEntitySContentIDAttribute() {
+                void shouldSetEntityContentIdAttribute() {
                     assertThat(entity.getContentId()).isEqualTo(SAMPLE_CONTENT_ID);
                 }
             }
@@ -246,20 +251,22 @@ public class DefaultFileSystemStoresImplTest {
                 }
 
                 @Test
-                void shouldResetTheEntitySContentIDAttribute() {
+                void shouldResetEntityContentIdAttribute() {
                     assertThat(entity.getContentId()).isNull();
                 }
             }
         }
 
         @Nested
-        class ContentStore {
+        class ContentStoreScenario {
             @Nested
             class SetContent {
                 @Nested
-                class GivenAnEntityConverter {
+                @DisplayName("Given an entity converter")
+                class EntityConverter {
                     @Nested
-                    class WhenTheContentDoesntYetExist {
+                    @DisplayName("When the content doesn't yet exist")
+                    class ContentDoesntYetExist {
                         @BeforeEach
                         void setUp() throws IOException {
                             loader = mock(FileSystemResourceLoader.class);
@@ -302,17 +309,17 @@ public class DefaultFileSystemStoresImplTest {
                         }
 
                         @Test
-                        void shouldMakeANewUUID() {
+                        void shouldMakeNewUUID() {
                             assertThat(entity.getContentId()).isNotNull();
                         }
 
                         @Test
-                        void shouldCreateANewResource() {
+                        void shouldCreateNewResource() {
                             verify(loader).getResource(eq(SAMPLE_CONTENT_ID));
                         }
 
                         @Test
-                        void shouldWriteToTheResourceSOutputStream() throws IOException {
+                        void shouldWriteToResourceOutputStream() throws IOException {
                             verify(writeableResource).getOutputStream();
                             verify(output, times(1)).write(ArgumentMatchers.any(), eq(0),
                                 eq(20));
@@ -320,7 +327,8 @@ public class DefaultFileSystemStoresImplTest {
                     }
 
                     @Nested
-                    class WhenTheContentAlreadyExists {
+                    @DisplayName("When the content already exists")
+                    class ContentAlreadyExists {
                         @BeforeEach
                         void setUp() throws IOException {
                             loader = mock(FileSystemResourceLoader.class);
@@ -354,23 +362,25 @@ public class DefaultFileSystemStoresImplTest {
                         }
 
                         @Test
-                        void shouldWriteToTheResourceSOutputStream() throws IOException {
+                        void shouldWriteToResourceOutputStream() throws IOException {
                             verify(output, times(1)).write(ArgumentMatchers.any(), eq(0),
                                 eq(20));
                             verify(output).close();
                         }
 
                         @Test
-                        void shouldChangeTheContentLength() {
+                        void shouldChangeContentLength() {
                             assertThat(entity.getContentLen()).isEqualTo(20L);
                         }
                     }
                 }
 
                 @Nested
-                class GivenJustTheDefaultIDConverters {
+                @DisplayName("Given just the default ID converters")
+                class JustDefaultIDConverters {
                     @Nested
-                    class WhenTheContentAlreadyExists {
+                    @DisplayName("When the content already exists")
+                    class ContentAlreadyExists {
                         @BeforeEach
                         void setUp() throws IOException {
                             loader = mock(FileSystemResourceLoader.class);
@@ -414,18 +424,18 @@ public class DefaultFileSystemStoresImplTest {
                         }
 
                         @Test
-                        void shouldUseThePlacerServiceToGetAResourcePath() {
+                        void shouldUsePlacerServiceToGetResourcePath() {
                             verify(placer, atLeastOnce()).convert(any(), eq(String.class));
                             verify(loader).getResource(eq(SAMPLE_CONTENT_ID));
                         }
 
                         @Test
-                        void shouldChangeTheContentLength() {
+                        void shouldChangeContentLength() {
                             assertThat(entity.getContentLen()).isEqualTo(20L);
                         }
 
                         @Test
-                        void shouldWriteToTheResourceSOutputStream() throws IOException {
+                        void shouldWriteToResourceOutputStream() throws IOException {
                             verify(writeableResource).getOutputStream();
                             verify(output, times(1)).write(ArgumentMatchers.any(), eq(0),
                                 eq(20));
@@ -433,7 +443,8 @@ public class DefaultFileSystemStoresImplTest {
                     }
 
                     @Nested
-                    class WhenTheContentDoesNotAlreadyExist {
+                    @DisplayName("When the content does not already exist")
+                    class ContentDoesNotAlreadyExist {
                         @BeforeEach
                         void setUp() throws IOException {
                             loader = mock(FileSystemResourceLoader.class);
@@ -487,17 +498,17 @@ public class DefaultFileSystemStoresImplTest {
                         }
 
                         @Test
-                        void shouldMakeANewUUID() {
+                        void shouldMakeNewUUID() {
                             assertThat(entity.getContentId()).isNotNull();
                         }
 
                         @Test
-                        void shouldCreateANewResource() {
+                        void shouldCreateNewResource() {
                             verify(loader).getResource(eq(SAMPLE_CONTENT_ID));
                         }
 
                         @Test
-                        void shouldWriteToTheResourceSOutputStream() throws IOException {
+                        void shouldWriteToResourceOutputStream() throws IOException {
                             verify(writeableResource).getOutputStream();
                             verify(output, times(1)).write(ArgumentMatchers.any(), eq(0),
                                 eq(20));
@@ -505,7 +516,8 @@ public class DefaultFileSystemStoresImplTest {
                     }
 
                     @Nested
-                    class WhenGettingTheResourceOutputStreamThrowsAnIOException {
+                    @DisplayName("When getting the resource output stream throws an I/O exception")
+                    class GettingResourceOutputStreamThrowsIOException {
                         @BeforeEach
                         void setUp() throws IOException {
                             loader = mock(FileSystemResourceLoader.class);
@@ -554,7 +566,7 @@ public class DefaultFileSystemStoresImplTest {
                         }
 
                         @Test
-                        void shouldReturnAStoreAccessExceptionWrappingTheIOException() {
+                        void shouldReturnStoreAccessExceptionWrappingIOException() {
                             assertThat(e).isInstanceOf(StoreAccessException.class);
                             assertThat(e.getCause()).isInstanceOf(IOException.class);
                         }
@@ -589,7 +601,8 @@ public class DefaultFileSystemStoresImplTest {
                 }
 
                 @Nested
-                class WhenTheResourceThrowsAnIOException {
+                @DisplayName("When the resource throws an I/O exception")
+                class ResourceThrowsIOException {
                     @BeforeEach
                     void setUp() throws IOException {
                         loader = mock(FileSystemResourceLoader.class);
@@ -615,7 +628,7 @@ public class DefaultFileSystemStoresImplTest {
                     }
 
                     @Test
-                    void shouldThrowAStoreAccessException() {
+                    void shouldThrowStoreAccessException() {
                         assertThat(e).isInstanceOf(StoreAccessException.class);
                         assertThat(e.getCause().getMessage()).contains("setContent badness");
                     }
@@ -625,9 +638,11 @@ public class DefaultFileSystemStoresImplTest {
             @Nested
             class GetContent {
                 @Nested
-                class GivenAnEntityConverter {
+                @DisplayName("Given an entity converter")
+                class EntityConverter {
                     @Nested
-                    class WhenTheResourceDoesNotExists {
+                    @DisplayName("When the resource does not exists")
+                    class ResourceDoesNotExists {
                         @BeforeEach
                         void setUp() throws IOException {
                             loader = mock(FileSystemResourceLoader.class);
@@ -671,13 +686,14 @@ public class DefaultFileSystemStoresImplTest {
                         }
 
                         @Test
-                        void shouldNotReturnTheContent() {
+                        void shouldNotReturnContent() {
                             assertThat(result).isNull();
                         }
                     }
 
                     @Nested
-                    class WhenTheResourceExists {
+                    @DisplayName("When the resource exists")
+                    class ResourceExists {
                         @BeforeEach
                         void setUp() throws IOException {
                             loader = mock(FileSystemResourceLoader.class);
@@ -728,9 +744,11 @@ public class DefaultFileSystemStoresImplTest {
                 }
 
                 @Nested
-                class GivenJustTheDefaultIDConverter {
+                @DisplayName("Given just the default ID converter")
+                class JustDefaultIDConverter {
                     @Nested
-                    class WhenTheResourceDoesNotExists {
+                    @DisplayName("When the resource does not exists")
+                    class ResourceDoesNotExists {
                         @BeforeEach
                         void setUp() throws IOException {
                             loader = mock(FileSystemResourceLoader.class);
@@ -768,13 +786,14 @@ public class DefaultFileSystemStoresImplTest {
                         }
 
                         @Test
-                        void shouldNotFindTheContent() {
+                        void shouldNotFindContent() {
                             assertThat(result).isNull();
                         }
                     }
 
                     @Nested
-                    class WhenTheResourceExists {
+                    @DisplayName("When the resource exists")
+                    class ResourceExists {
                         @BeforeEach
                         void setUp() throws IOException {
                             loader = mock(FileSystemResourceLoader.class);
@@ -814,7 +833,8 @@ public class DefaultFileSystemStoresImplTest {
                         }
 
                         @Nested
-                        class WhenGettingTheResourceInputStreamThrowsAnIOException {
+                        @DisplayName("When getting the resource input stream throws an I/O exception")
+                        class GettingResourceInputStreamThrowsIOException {
                             @BeforeEach
                             void setUp() throws IOException {
                                 loader = mock(FileSystemResourceLoader.class);
@@ -850,7 +870,7 @@ public class DefaultFileSystemStoresImplTest {
                             }
 
                             @Test
-                            void shouldReturnAStoreAccessExceptionWrappingTheIOException() {
+                            void shouldReturnStoreAccessExceptionWrappingIOException() {
                                 assertThat(e).isInstanceOf(StoreAccessException.class);
                                 assertThat(e.getCause().getMessage()).isEqualTo("test-ioexception");
                             }
@@ -858,7 +878,8 @@ public class DefaultFileSystemStoresImplTest {
                     }
 
                     @Nested
-                    class WhenTheResourceExistsButInTheOldLocation {
+                    @DisplayName("When the resource exists but in the old location")
+                    class ResourceExistsButInOldLocation {
                         @BeforeEach
                         void setUp() throws IOException {
                             loader = mock(FileSystemResourceLoader.class);
@@ -901,7 +922,7 @@ public class DefaultFileSystemStoresImplTest {
                         }
 
                         @Test
-                        void shouldCheckTheNewLocationAndThenTheOld() {
+                        void shouldCheckNewLocationAndThenOld() {
                             InOrder inOrder = Mockito.inOrder(loader);
 
                             inOrder.verify(loader).getResource(eq(SAMPLE_CONTENT_ID));
@@ -919,9 +940,11 @@ public class DefaultFileSystemStoresImplTest {
             @Nested
             class UnsetContent {
                 @Nested
-                class GivenAnEntityConverter {
+                @DisplayName("Given an entity converter")
+                class EntityConverter {
                     @Nested
-                    class GivenTheResourceDoesNotExist {
+                    @DisplayName("Given the resource does not exist")
+                    class ResourceDoesNotExist {
                         @BeforeEach
                         void setUp() {
                             loader = mock(FileSystemResourceLoader.class);
@@ -952,13 +975,14 @@ public class DefaultFileSystemStoresImplTest {
                         }
 
                         @Test
-                        void shouldNotDeleteTheResource() throws IOException {
+                        void shouldNotDeleteResource() throws IOException {
                             verify(nonExistentResource, never()).delete();
                         }
                     }
 
                     @Nested
-                    class GivenTheResourceExists {
+                    @DisplayName("Given the resource exists")
+                    class ResourceExists {
                         @BeforeEach
                         void setUp() throws IOException {
                             loader = mock(FileSystemResourceLoader.class);
@@ -998,16 +1022,18 @@ public class DefaultFileSystemStoresImplTest {
                         }
 
                         @Test
-                        void shouldDeleteTheResource() throws IOException {
+                        void shouldDeleteResource() throws IOException {
                             verify(deletableResource, times(1)).delete();
                         }
                     }
                 }
 
                 @Nested
-                class GivenJustTheDefaultIDConverter {
+                @DisplayName("Given just the default ID converter")
+                class JustDefaultIDConverter {
                     @Nested
-                    class WhenTheContentExistsInTheNewLocation {
+                    @DisplayName("When the content exists in the new location")
+                    class ContentExistsInNewLocation {
                         @BeforeEach
                         void setUp() throws IOException {
                             loader = mock(FileSystemResourceLoader.class);
@@ -1045,12 +1071,13 @@ public class DefaultFileSystemStoresImplTest {
                         }
 
                         @Test
-                        void shouldDeleteTheResource() throws IOException {
+                        void shouldDeleteResource() throws IOException {
                             verify(deletableResource, times(1)).delete();
                         }
 
                         @Nested
-                        class WhenThePropertyHasADedicatedContentIdField {
+                        @DisplayName("When the property has a dedicated content ID field")
+                        class PropertyHasDedicatedContentIdField {
                             @BeforeEach
                             void setUp() throws IOException {
                                 loader = mock(FileSystemResourceLoader.class);
@@ -1088,14 +1115,15 @@ public class DefaultFileSystemStoresImplTest {
                             }
 
                             @Test
-                            void shouldResetTheMetadata() {
+                            void shouldResetMetadata() {
                                 assertThat(entity.getContentId()).isNull();
                                 assertThat(entity.getContentLen()).isNull();
                             }
                         }
 
                         @Nested
-                        class WhenThePropertySContentIdFieldAlsoIsTheJavaxPersistenceIdField {
+                        @DisplayName("When the property's content ID field also is the javax.persistence ID field")
+                        class PropertySContentIdFieldAlsoIsJavaxPersistenceIdField {
                             @BeforeEach
                             void setUp() throws IOException {
                                 loader = mock(FileSystemResourceLoader.class);
@@ -1136,14 +1164,15 @@ public class DefaultFileSystemStoresImplTest {
                             }
 
                             @Test
-                            void shouldNotResetTheContentIdMetadata() {
+                            void shouldNotResetContentIdMetadata() {
                                 assertThat(entity.getContentId()).isEqualTo(SAMPLE_CONTENT_ID);
                                 assertThat(entity.getContentLen()).isNull();
                             }
                         }
 
                         @Nested
-                        class WhenThePropertySContentIdFieldAlsoIsTheSpringIdField {
+                        @DisplayName("When the property's content ID field also is the Spring ID field")
+                        class PropertySContentIdFieldAlsoIsSpringIdField {
                             @BeforeEach
                             void setUp() throws IOException {
                                 loader = mock(FileSystemResourceLoader.class);
@@ -1184,7 +1213,7 @@ public class DefaultFileSystemStoresImplTest {
                             }
 
                             @Test
-                            void shouldNotResetTheContentIdMetadata() {
+                            void shouldNotResetContentIdMetadata() {
                                 assertThat(entity.getContentId()).isEqualTo(SAMPLE_CONTENT_ID);
                                 assertThat(entity.getContentLen()).isNull();
                             }
@@ -1192,7 +1221,8 @@ public class DefaultFileSystemStoresImplTest {
                     }
 
                     @Nested
-                    class WhenTheContentDoesntExist {
+                    @DisplayName("When the content doesn't exist")
+                    class ContentDoesntExist {
                         @BeforeEach
                         void setUp() {
                             loader = mock(FileSystemResourceLoader.class);
@@ -1221,7 +1251,7 @@ public class DefaultFileSystemStoresImplTest {
                         }
 
                         @Test
-                        void shouldUnsetTheContent() throws IOException {
+                        void shouldUnsetContent() throws IOException {
                             verify(nonExistentResource, never()).delete();
                             assertThat(entity.getContentId()).isNull();
                             assertThat(entity.getContentLen()).isNull();

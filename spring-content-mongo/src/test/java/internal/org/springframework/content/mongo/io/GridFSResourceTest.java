@@ -3,6 +3,7 @@ package internal.org.springframework.content.mongo.io;
 import com.mongodb.client.gridfs.model.GridFSFile;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.content.test.support.NullableAssertions;
@@ -62,21 +63,23 @@ public class GridFSResourceTest {
             }
 
             @Nested
-            class GivenTheFileExists {
+            @DisplayName("Given the file exists")
+            class FileExists {
                 @BeforeEach
                 void fileExists() {
                     when(gridfs.findOne(any())).thenReturn(file);
                 }
 
                 @Test
-                void shouldReturnTheFilesLength() throws Exception {
+                void shouldReturnFilesLength() throws Exception {
                     r.contentLength();
                     verify(file).getLength();
                 }
             }
 
             @Nested
-            class GivenTheFileDoesntExist {
+            @DisplayName("Given the file doesn't exist")
+            class FileDoesntExist {
                 @Test
                 void shouldReturnZero() throws Exception {
                     rc = r.contentLength();
@@ -89,7 +92,7 @@ public class GridFSResourceTest {
         @Nested
         class GetFilename {
             @Test
-            void shouldReturnTheLocation() {
+            void shouldReturnLocation() {
                 assertThat(r.getFilename()).isEqualTo("some-location");
             }
         }
@@ -102,21 +105,23 @@ public class GridFSResourceTest {
             }
 
             @Nested
-            class GivenTheFileExists {
+            @DisplayName("Given the file exists")
+            class FileExists {
                 @BeforeEach
                 void fileExists() {
                     when(gridfs.findOne(any())).thenReturn(file);
                 }
 
                 @Test
-                void shouldReturnTheFilesId() {
+                void shouldReturnFilesId() {
                     r.getId();
                     verify(file).getId();
                 }
             }
 
             @Nested
-            class GivenTheFileDoesntExist {
+            @DisplayName("Given the file doesn't exist")
+            class FileDoesntExist {
                 @Test
                 void shouldReturnNull() {
                     rc = r.getId();
@@ -129,7 +134,8 @@ public class GridFSResourceTest {
         @Nested
         class Exists {
             @Nested
-            class GivenTheFileExists {
+            @DisplayName("Given the file exists")
+            class FileExists {
                 @BeforeEach
                 void fileExists() {
                     file = mock(GridFSFile.class);
@@ -143,7 +149,8 @@ public class GridFSResourceTest {
             }
 
             @Nested
-            class GivenTheFileDoesntExist {
+            @DisplayName("Given the file doesn't exist")
+            class FileDoesntExist {
                 @Test
                 void shouldReturnFalse() {
                     assertThat(r.exists()).isFalse();
@@ -154,7 +161,8 @@ public class GridFSResourceTest {
         @Nested
         class GetInputStream {
             @Nested
-            class GivenTheFileExists {
+            @DisplayName("Given the file exists")
+            class FileExists {
                 @BeforeEach
                 void fileExists() {
                     file = mock(GridFSFile.class);
@@ -163,14 +171,15 @@ public class GridFSResourceTest {
                 }
 
                 @Test
-                void shouldReturnTheFilesInputStream() throws Exception {
+                void shouldReturnFilesInputStream() throws Exception {
                     r.getInputStream();
                     verify(gridfs).getResource(location);
                 }
             }
 
             @Nested
-            class GivenTheFileDoesntExist {
+            @DisplayName("Given the file doesn't exist")
+            class FileDoesntExist {
                 @Test
                 void shouldReturnNull() throws Exception {
                     NullableAssertions.assertNull(r.getInputStream());
@@ -187,7 +196,8 @@ public class GridFSResourceTest {
             }
 
             @Nested
-            class GivenTheFileExists {
+            @DisplayName("Given the file exists")
+            class FileExists {
                 @BeforeEach
                 void fileExists() {
                     when(gridfs.findOne(any())).thenReturn(file);
@@ -195,14 +205,15 @@ public class GridFSResourceTest {
                 }
 
                 @Test
-                void shouldReturnTheFilesUploadDate() throws Exception {
+                void shouldReturnFilesUploadDate() throws Exception {
                     r.lastModified();
                     verify(file).getUploadDate();
                 }
             }
 
             @Nested
-            class GivenTheFileDoesntExist {
+            @DisplayName("Given the file doesn't exist")
+            class FileDoesntExist {
                 @Test
                 void shouldReturnMinusOne() throws Exception {
                     rc = r.lastModified();
@@ -223,7 +234,7 @@ public class GridFSResourceTest {
         @Nested
         class GetOutputStream {
             @Test
-            void shouldStoreTheContentAndDeleteExistingContent() throws Exception {
+            void shouldStoreContentAndDeleteExistingContent() throws Exception {
                 OutputStream out = r.getOutputStream();
                 out.write(new byte[]{32}, 0, 1);
                 IOUtils.closeQuietly(out);
@@ -239,7 +250,8 @@ public class GridFSResourceTest {
         @Nested
         class Delete {
             @Nested
-            class GivenTheFileExists {
+            @DisplayName("Given the file exists")
+            class FileExists {
                 @BeforeEach
                 void fileExists() {
                     file = mock(GridFSFile.class);
@@ -247,14 +259,15 @@ public class GridFSResourceTest {
                 }
 
                 @Test
-                void shouldDeleteTheFile() {
+                void shouldDeleteFile() {
                     r.delete();
                     verify(gridfs).delete(any());
                 }
             }
 
             @Nested
-            class GivenTheFileDoesntExist {
+            @DisplayName("Given the file doesn't exist")
+            class FileDoesntExist {
                 @Test
                 void shouldNotDelete() {
                     r.delete();

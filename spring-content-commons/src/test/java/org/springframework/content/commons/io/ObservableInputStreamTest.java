@@ -1,6 +1,7 @@
 package org.springframework.content.commons.io;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -21,9 +22,11 @@ public class ObservableInputStreamTest {
     @Nested
     class ObservableInputStreamCases {
         @Nested
-        class WhenAnInputStreamIsObserved {
+        @DisplayName("When an input stream is observed")
+        class InputStreamIsObserved {
             @Nested
-            class WhenTheInputStreamHasListeners {
+            @DisplayName("When the input stream has listeners")
+            class InputStreamHasListeners {
                 @BeforeEach
                 void setUp() {
                     fis = mock(FileInputStream.class);
@@ -39,7 +42,8 @@ public class ObservableInputStreamTest {
             }
 
             @Nested
-            class WhenTheInputStreamIsRead {
+            @DisplayName("When the input stream is read")
+            class InputStreamIsRead {
                 @BeforeEach
                 void setUp() {
                     fis = mock(FileInputStream.class);
@@ -49,14 +53,15 @@ public class ObservableInputStreamTest {
                 }
 
                 @Test
-                void shouldDelegateToTheUnderlyingInputStream() throws IOException {
+                void shouldDelegateToUnderlyingInputStream() throws IOException {
                     assertThat(ois.read()).isZero();
                     verify(fis).read();
                 }
             }
 
             @Nested
-            class WhenTheInputStreamIsClosed {
+            @DisplayName("When the input stream is closed")
+            class InputStreamIsClosed {
                 @BeforeEach
                 void setUp() throws IOException {
                     fis = mock(FileInputStream.class);

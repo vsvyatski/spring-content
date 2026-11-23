@@ -7,6 +7,7 @@ import internal.org.springframework.content.rest.support.AuditedNestedContentEnt
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +36,8 @@ public abstract class AbstractRestIT {
         @Nested
         class SpringContentREST {
             @Nested
-            class GivenAClaim {
+            @DisplayName("Given a claim")
+            class Claim {
                 @BeforeEach
                 void setUp() {
                     RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
@@ -89,7 +91,8 @@ public abstract class AbstractRestIT {
                 }
 
                 @Nested
-                class GivenThatClaimHasExistingContent {
+                @DisplayName("Given that claim has existing content")
+                class ClaimHasExistingContent {
                     @BeforeEach
                     void setUp() {
                         RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
@@ -117,7 +120,7 @@ public abstract class AbstractRestIT {
                     }
 
                     @Test
-                    void shouldReturnTheContentWith200OK() {
+                    void shouldReturnContentWith200OK() {
                         var response2 = given()
                             .header("accept", "text/plain")
                             .get("/files/" + existingClaim.getId() + "/child")

@@ -1,6 +1,7 @@
 package internal.org.springframework.content.commons.store.events;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -206,7 +207,8 @@ public class AnnotatedStoreEventInvokerTest {
     @Nested
     class PostProcessAfterInitialization {
         @Nested
-        class WhenInitializedWithAStoreEventHandlerBean {
+        @DisplayName("When initialized with a store event handler bean")
+        class InitializedWithStoreEventHandlerBean {
             @BeforeEach
             void setUp() {
                 reflectionService = mock(ReflectionService.class);
@@ -231,7 +233,8 @@ public class AnnotatedStoreEventInvokerTest {
             }
 
             @Nested
-            class WhenInitializedWithAnotherEventHandlerOfHighestPriority {
+            @DisplayName("When initialized with another event handler of highest priority")
+            class InitializedWithAnotherEventHandlerOfHighestPriority {
                 private final HighestPriorityCustomEventHandler priorityHandler = new HighestPriorityCustomEventHandler();
 
                 @BeforeEach
@@ -243,7 +246,7 @@ public class AnnotatedStoreEventInvokerTest {
                 }
 
                 @Test
-                void shouldOrderTheHandlersByPriority() {
+                void shouldOrderHandlersByPriority() {
                     assertThat(invoker.getHandlers().get(BeforeGetResourceEvent.class).size()).isEqualTo(3);
                     assertThat(invoker.getHandlers().get(BeforeGetResourceEvent.class).get(0).handler).isEqualTo(priorityHandler);
                 }
@@ -277,9 +280,10 @@ public class AnnotatedStoreEventInvokerTest {
         }
 
         @Nested
-        class GivenAnEventHandlerAndAnUnknownEvent {
+        @DisplayName("Given an event handler and an unknown event")
+        class EventHandlerAndUnknownEvent {
             @Test
-            void shouldNotCallAnEventHandler() {
+            void shouldNotCallEventHandler() {
                 reflectionService = mock(ReflectionService.class);
                 invoker = new AnnotatedStoreEventInvoker(reflectionService);
 

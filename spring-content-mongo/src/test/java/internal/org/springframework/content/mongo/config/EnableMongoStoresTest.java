@@ -3,10 +3,7 @@ package internal.org.springframework.content.mongo.config;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import org.jspecify.annotations.NonNull;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.content.mongo.config.EnableMongoStores;
 import org.springframework.content.mongo.config.MongoStoreConverter;
 import org.springframework.content.test.support.TestSupportPackages;
@@ -86,7 +83,8 @@ public class EnableMongoStoresTest {
     @Nested
     class EnableMongoStoresCases {
         @Nested
-        class GivenAnEnabledConfigurationWithAMongoContentStoreBean {
+        @DisplayName("Given an enabled configuration with a Mongo content store bean")
+        class EnabledConfigurationWithMongoContentStoreBean {
             @BeforeEach
             void setUp() {
                 context = new AnnotationConfigApplicationContext();
@@ -100,18 +98,19 @@ public class EnableMongoStoresTest {
             }
 
             @Test
-            void shouldHaveAMongoContentStoreBean() {
+            void shouldHaveMongoContentStoreBean() {
                 assertThat(context.getBean(SingleContentMongoStore.class)).isNotNull();
             }
 
             @Test
-            void shouldHaveAMongoStoreConverter() {
+            void shouldHaveMongoStoreConverter() {
                 assertThat(context.getBean("mongoStorePlacementService")).isNotNull();
             }
         }
 
         @Nested
-        class GivenAContextWithACustomConverter {
+        @DisplayName("Given a context with a custom converter")
+        class ContextWithCustomConverter {
             @BeforeEach
             void setUp() {
                 context = new AnnotationConfigApplicationContext();
@@ -136,7 +135,8 @@ public class EnableMongoStoresTest {
         }
 
         @Nested
-        class GivenAnEnabledConfigurationWithNoMongoContentStoreBeans {
+        @DisplayName("Given an enabled configuration with no Mongo content store beans")
+        class EnabledConfigurationWithNoMongoContentStoreBeans {
             @BeforeEach
             void setUp() {
                 context = new AnnotationConfigApplicationContext();
@@ -150,7 +150,7 @@ public class EnableMongoStoresTest {
             }
 
             @Test
-            void shouldLoadTheContextButHaveNoMongoRepositoryBeans() {
+            void shouldLoadContextButHaveNoMongoRepositoryBeans() {
                 assertThat(context.getBeanNamesForType(SingleContentMongoStore.class)).isEmpty();
             }
         }

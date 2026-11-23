@@ -1,6 +1,7 @@
 package org.springframework.content.renditions.renderers;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.content.commons.renditions.RenditionProvider;
@@ -76,7 +77,7 @@ public class TextPlainToJpegRendererTest {
             }
 
             @Test
-            void shouldReturnJpegMimetype() {
+            void shouldReturnJpegMimeType() {
                 assertThat(renderer.produces()).contains("image/jpg");
                 assertThat(renderer.produces()).contains("image/jpeg");
             }
@@ -85,9 +86,11 @@ public class TextPlainToJpegRendererTest {
         @Nested
         class Convert {
             @Nested
-            class GivenAPlainTextInput {
+            @DisplayName("Given a plain text input")
+            class PlainTextInput {
                 @Nested
-                class GivenASingleLineInput {
+                @DisplayName("Given a single line input")
+                class SingleLineInput {
                     @BeforeEach
                     void setUp() {
                         input = new ByteArrayInputStream(
@@ -103,13 +106,14 @@ public class TextPlainToJpegRendererTest {
                     }
 
                     @Test
-                    void shouldProduceTheCorrectImage() throws Exception {
+                    void shouldProduceCorrectImage() throws Exception {
                         assertJpegMatchesGoldenPng(result, "/textplaintorenderer/single-line.png");
                     }
                 }
 
                 @Nested
-                class GivenAMultiLineInput {
+                @DisplayName("Given a multi line input")
+                class MultiLineInput {
                     @BeforeEach
                     void setUp() {
                         input = new ByteArrayInputStream(
@@ -125,13 +129,14 @@ public class TextPlainToJpegRendererTest {
                     }
 
                     @Test
-                    void shouldProduceTheCorrectImage() throws Exception {
+                    void shouldProduceCorrectImage() throws Exception {
                         assertJpegMatchesGoldenPng(result, "/textplaintorenderer/multi-line.png");
                     }
                 }
 
                 @Nested
-                class GivenALongLineAndWrapping {
+                @DisplayName("Given a long line and wrapping")
+                class LongLineAndWrapping {
                     @BeforeEach
                     void setUp() {
                         wrapText = true;
@@ -149,13 +154,14 @@ public class TextPlainToJpegRendererTest {
                     }
 
                     @Test
-                    void shouldProduceTheCorrectImage() throws Exception {
+                    void shouldProduceCorrectImage() throws Exception {
                         assertJpegMatchesGoldenPng(result, "/textplaintorenderer/wrapped-line.png");
                     }
                 }
 
                 @Nested
-                class GivenALongLineAndNoWrapping {
+                @DisplayName("Given a long line and no wrapping")
+                class LongLineAndNoWrapping {
                     @BeforeEach
                     void setUp() {
                         input = new ByteArrayInputStream(
@@ -172,13 +178,14 @@ public class TextPlainToJpegRendererTest {
                     }
 
                     @Test
-                    void shouldProduceTheCorrectImage() throws Exception {
+                    void shouldProduceCorrectImage() throws Exception {
                         assertJpegMatchesGoldenPng(result, "/textplaintorenderer/overflowed-line.png");
                     }
                 }
 
                 @Nested
-                class GivenALineFileWillOverflowTheImageSize {
+                @DisplayName("Given a line file will overflow the image size")
+                class LineFileWillOverflowImageSize {
                     @BeforeEach
                     void setUp() {
                         input = new ByteArrayInputStream(
@@ -195,14 +202,15 @@ public class TextPlainToJpegRendererTest {
                     }
 
                     @Test
-                    void shouldProduceTheCorrectImage() throws Exception {
+                    void shouldProduceCorrectImage() throws Exception {
                         assertJpegMatchesGoldenPng(result, "/textplaintorenderer/overflowed-image.png");
                     }
                 }
             }
 
             @Nested
-            class WhenTheInputStreamIsNotAValidWordFile {
+            @DisplayName("When the input stream is not a valid Word file")
+            class InputStreamIsNotValidWordFile {
                 @BeforeEach
                 void setUp() {
                     input = this.getClass().getResourceAsStream("/sample-docx.docx");
@@ -223,7 +231,8 @@ public class TextPlainToJpegRendererTest {
             }
 
             @Nested
-            class GivenANullInputStream {
+            @DisplayName("Given a null input stream")
+            class NullInputStream {
                 @BeforeEach
                 void setUp() {
                     renderer = new TextplainToJpegRenderer(wrapText);
@@ -236,7 +245,7 @@ public class TextPlainToJpegRendererTest {
                 }
 
                 @Test
-                void shouldReturnAnError() {
+                void shouldReturnError() {
                     assertThat(e).isNotNull();
                 }
             }

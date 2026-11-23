@@ -9,6 +9,7 @@ import internal.org.springframework.content.solr.boot.autoconfigure.SolrExtensio
 import internal.org.springframework.versions.jpa.boot.autoconfigure.JpaVersionsAutoConfiguration;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -16,17 +17,15 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.content.jpa.config.EnableJpaStores;
 import org.springframework.content.jpa.store.JpaContentStore;
+import org.springframework.content.test.support.EmbeddedJpa;
 import org.springframework.content.test.support.jpa.SingleContentJpaLongIdEntity;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
-import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.Database;
-import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
@@ -47,29 +46,17 @@ public class ContentJpaAutoConfigurationTest {
     public static class JpaTestConfig {
         @Bean
         public DataSource dataSource() {
-            EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
-            return builder.setType(EmbeddedDatabaseType.HSQL).build();
+            return EmbeddedJpa.embeddedDataSource(EmbeddedDatabaseType.HSQL);
         }
 
         @Bean
         public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-            HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-            vendorAdapter.setDatabase(Database.HSQL);
-            vendorAdapter.setGenerateDdl(true);
-
-            LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
-            factory.setJpaVendorAdapter(vendorAdapter);
-            factory.setPackagesToScan(getClass().getPackage().getName());
-            factory.setDataSource(dataSource());
-
-            return factory;
+            return EmbeddedJpa.entityManagerFactory(dataSource(), Database.HSQL, getClass().getPackage().getName());
         }
 
         @Bean
         public PlatformTransactionManager transactionManager() {
-            JpaTransactionManager txManager = new JpaTransactionManager();
-            txManager.setEntityManagerFactory(entityManagerFactory().getObject());
-            return txManager;
+            return EmbeddedJpa.transactionManager(entityManagerFactory().getObject());
         }
     }
 
@@ -116,7 +103,7 @@ public class ContentJpaAutoConfigurationTest {
         }
 
         @Test
-        void shouldHaveAContentStore() {
+        void shouldHaveContentStore() {
             contextRunner.withUserConfiguration(TestConfig.class).run((context) -> {
                 Assertions.assertThat(context).hasSingleBean(TestEntityContentStore.class);
                 Assertions.assertThat(context).hasSingleBean(ContentJpaDatabaseInitializer.class);
@@ -125,7 +112,8 @@ public class ContentJpaAutoConfigurationTest {
         }
 
         @Nested
-        class WhenACustomBeanConfigurationIsUsed {
+        @DisplayName("When a custom bean configuration is used")
+        class CustomBeanConfigurationIsUsed {
             @BeforeEach
             void setUp() {
                 initializer = mock(ContentJpaDatabaseInitializer.class);
@@ -133,7 +121,7 @@ public class ContentJpaAutoConfigurationTest {
             }
 
             @Test
-            void shouldUseTheSuppliedCustomBean() {
+            void shouldUseSuppliedCustomBean() {
                 contextRunner.withUserConfiguration(CustomBeanConfig.class).run((context) -> {
                     Assertions.assertThat(context).getBean(ContentJpaDatabaseInitializer.class).isEqualTo(initializer);
                     Assertions.assertThat(context).getBean("copyBufferSize").isEqualTo(16192);
@@ -142,7 +130,8 @@ public class ContentJpaAutoConfigurationTest {
         }
 
         @Nested
-        class WhenAnExplicitEnableFileSystemStoresIsUsed {
+        @DisplayName("When explicit @EnableJpaStores is used")
+        class ExplicitEnableFileSystemStoresIsUsed {
             @BeforeEach
             void setUp() {
                 initializer = mock(ContentJpaDatabaseInitializer.class);
@@ -151,7 +140,7 @@ public class ContentJpaAutoConfigurationTest {
             }
 
             @Test
-            void shouldLoadTheContext() {
+            void shouldLoadContext() {
                 contextRunner.withUserConfiguration(ConfigWithExplicitEnableJpaStores.class).run((context) -> {
                     Assertions.assertThat(context).hasSingleBean(TestEntityContentStore.class);
                     Assertions.assertThat(context).hasSingleBean(ContentJpaProperties.class);

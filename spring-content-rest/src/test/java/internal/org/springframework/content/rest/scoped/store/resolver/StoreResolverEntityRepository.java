@@ -1,0 +1,12 @@
+package internal.org.springframework.content.rest.scoped.store.resolver;
+
+import org.springframework.content.test.support.jpa.fixture.SingleContentJpaLongIdMimeEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+
+/**
+ * @author Vladimir Svyatski
+ */
+@RepositoryRestResource(path = "storeResolverEntities")
+public interface StoreResolverEntityRepository extends JpaRepository<SingleContentJpaLongIdMimeEntity, Long> {
+}

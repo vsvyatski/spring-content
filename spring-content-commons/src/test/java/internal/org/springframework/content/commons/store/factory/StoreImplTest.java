@@ -52,7 +52,7 @@ public class StoreImplTest {
             }
 
             @Test
-            void shouldDeleteTheContentCopyFile() {
+            void shouldDeleteContentCopyFile() {
                 assertThat(Arrays.asList(Objects.requireNonNull(contentCopyPathRoot.toFile().listFiles())))
                     .filteredOn(f -> f.getName().endsWith(".tmp"))
                     .isEmpty();

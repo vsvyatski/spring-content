@@ -6,10 +6,7 @@ import internal.org.springframework.content.s3.boot.autoconfigure.S3ContentAutoC
 import internal.org.springframework.content.solr.boot.autoconfigure.SolrAutoConfiguration;
 import internal.org.springframework.content.solr.boot.autoconfigure.SolrExtensionAutoConfiguration;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -60,83 +57,84 @@ public class ContentS3AutoConfigurationTest {
     }
 
     @Nested
-    class S3ContentAutoConfigurationCases {
-        @Nested
-        class GivenAConfigurationWithBeans {
-            @BeforeEach
-            void setUp() {
-                contextRunner = new ApplicationContextRunner()
-                    .withConfiguration(AutoConfigurations.of(S3ContentAutoConfiguration.class));
-            }
-
-            @Test
-            void shouldLoadTheContext() {
-                contextRunner.withUserConfiguration(TestConfig.class).run((context) -> {
-                    Assertions.assertThat(context).hasSingleBean(TestEntityContentStore.class);
-                    Assertions.assertThat(context).hasSingleBean(S3Client.class);
-                });
-            }
+    @DisplayName("Given a configuration with beans")
+    class ConfigurationWithBeans {
+        @BeforeEach
+        void setUp() {
+            contextRunner = new ApplicationContextRunner()
+                .withConfiguration(AutoConfigurations.of(S3ContentAutoConfiguration.class));
         }
 
-        @Nested
-        class GivenAConfigurationWithoutAnyBeans {
-            @BeforeEach
-            void setUp() {
-                contextRunner = new ApplicationContextRunner()
-                    .withConfiguration(AutoConfigurations.of(S3ContentAutoConfiguration.class));
-            }
+        @Test
+        void shouldLoadContext() {
+            contextRunner.withUserConfiguration(TestConfig.class).run((context) -> {
+                Assertions.assertThat(context).hasSingleBean(TestEntityContentStore.class);
+                Assertions.assertThat(context).hasSingleBean(S3Client.class);
+            });
+        }
+    }
 
-            @Test
-            void shouldLoadTheContext() {
-                contextRunner.withUserConfiguration(TestConfigWithoutBeans.class).run((context) -> {
-                    Assertions.assertThat(context).hasSingleBean(TestEntityContentStore.class);
-                    Assertions.assertThat(context).hasSingleBean(S3Client.class);
-                });
-            }
+    @Nested
+    @DisplayName("Given a configuration without any beans")
+    class ConfigurationWithoutAnyBeans {
+        @BeforeEach
+        void setUp() {
+            contextRunner = new ApplicationContextRunner()
+                .withConfiguration(AutoConfigurations.of(S3ContentAutoConfiguration.class));
         }
 
-        @Nested
-        class GivenAConfigurationWithAnExplicitEnableS3StoresAnnotation {
-            @BeforeEach
-            void setUp() {
-                contextRunner = new ApplicationContextRunner()
-                    .withConfiguration(AutoConfigurations.of(S3ContentAutoConfiguration.class));
-            }
+        @Test
+        void shouldLoadContext() {
+            contextRunner.withUserConfiguration(TestConfigWithoutBeans.class).run((context) -> {
+                Assertions.assertThat(context).hasSingleBean(TestEntityContentStore.class);
+                Assertions.assertThat(context).hasSingleBean(S3Client.class);
+            });
+        }
+    }
 
-            @Test
-            void shouldLoadTheContext() {
-                contextRunner.withUserConfiguration(TestConfigWithExplicitEnableS3Stores.class).run((context) -> {
-                    Assertions.assertThat(context).hasSingleBean(TestEntityContentStore.class);
-                    Assertions.assertThat(context).hasSingleBean(S3Client.class);
-                });
-            }
+    @Nested
+    @DisplayName("Given a configuration with explicit @EnableS3Stores")
+    class ConfigurationWithExplicitEnableS3StoresAnnotation {
+        @BeforeEach
+        void setUp() {
+            contextRunner = new ApplicationContextRunner()
+                .withConfiguration(AutoConfigurations.of(S3ContentAutoConfiguration.class));
         }
 
-        @Nested
-        class GivenAnEnvironmentSpecifyingS3Properties {
-            @BeforeEach
-            void setUp() {
-                contextRunner = new ApplicationContextRunner()
-                    .withConfiguration(AutoConfigurations.of(S3ContentAutoConfiguration.class));
+        @Test
+        void shouldLoadContext() {
+            contextRunner.withUserConfiguration(TestConfigWithExplicitEnableS3Stores.class).run((context) -> {
+                Assertions.assertThat(context).hasSingleBean(TestEntityContentStore.class);
+                Assertions.assertThat(context).hasSingleBean(S3Client.class);
+            });
+        }
+    }
 
-                System.setProperty("spring.content.s3.endpoint", "http://some-endpoint");
-                System.setProperty("spring.content.s3.accessKey", "foo");
-                System.setProperty("spring.content.s3.secretKey", "bar");
-                System.setProperty("spring.content.s3.pathStyleAccess", "true");
-            }
+    @Nested
+    @DisplayName("Given an environment specifying S3 properties")
+    class EnvironmentSpecifyingS3Properties {
+        @BeforeEach
+        void setUp() {
+            contextRunner = new ApplicationContextRunner()
+                .withConfiguration(AutoConfigurations.of(S3ContentAutoConfiguration.class));
 
-            @AfterEach
-            void tearDown() {
-                System.clearProperty("spring.content.s3.endpoint");
-                System.clearProperty("spring.content.s3.accessKey");
-                System.clearProperty("spring.content.s3.secretKey");
-                System.clearProperty("spring.content.s3.pathStyleAccess");
-            }
+            System.setProperty("spring.content.s3.endpoint", "http://some-endpoint");
+            System.setProperty("spring.content.s3.accessKey", "foo");
+            System.setProperty("spring.content.s3.secretKey", "bar");
+            System.setProperty("spring.content.s3.pathStyleAccess", "true");
+        }
 
-            @Test
-            void shouldHaveAFilesystemPropertiesBeanWithTheCorrectRootSet() {
-                contextRunner.withUserConfiguration(TestConfigWithProperties.class).run((context) -> Assertions.assertThat(context).hasSingleBean(S3Client.class));
-            }
+        @AfterEach
+        void tearDown() {
+            System.clearProperty("spring.content.s3.endpoint");
+            System.clearProperty("spring.content.s3.accessKey");
+            System.clearProperty("spring.content.s3.secretKey");
+            System.clearProperty("spring.content.s3.pathStyleAccess");
+        }
+
+        @Test
+        void shouldHaveFilesystemPropertiesBeanWithCorrectRootSet() {
+            contextRunner.withUserConfiguration(TestConfigWithProperties.class).run((context) -> Assertions.assertThat(context).hasSingleBean(S3Client.class));
         }
     }
 }

@@ -4,6 +4,7 @@ import internal.org.springframework.content.rest.support.StoreConfig;
 import internal.org.springframework.content.rest.support.TestStore;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -53,9 +54,11 @@ public class StoreRestEndpointsIT {
     @Nested
     class StoreRestEndpoints {
         @Nested
-        class GivenARootResourcePath {
+        @DisplayName("Given a root resource path")
+        class RootResourcePath {
             @Nested
-            class GivenAGETRequestToThatPath {
+            @DisplayName("Given a GET request to that path")
+            class GetThatPath {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -71,7 +74,8 @@ public class StoreRestEndpointsIT {
             }
 
             @Nested
-            class GivenAPOSTToThatPathWithContent {
+            @DisplayName("Given a POST to that path with content")
+            class PostThatPathWithContent {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -81,7 +85,7 @@ public class StoreRestEndpointsIT {
                 }
 
                 @Test
-                void shouldSetTheContentAndReturn201() throws Exception {
+                void shouldSetContentAndReturn201() throws Exception {
                     String content = "New multi-part content";
 
                     mvc.perform(multipart(request).file(new MockMultipartFile("file",
@@ -97,7 +101,8 @@ public class StoreRestEndpointsIT {
             }
 
             @Nested
-            class GivenADELETERequestToThatPath {
+            @DisplayName("Given a DELETE request to that path")
+            class DeleteThatPath {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -107,14 +112,15 @@ public class StoreRestEndpointsIT {
                 }
 
                 @Test
-                void shouldReturnA404() throws Exception {
+                void shouldReturn404() throws Exception {
                     mvc.perform(delete(request)).andExpect(status().isNotFound());
                 }
             }
         }
 
         @Nested
-        class GivenARootResource {
+        @DisplayName("Given a root resource")
+        class RootResource {
             @BeforeEach
             void setUp() throws IOException {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -130,7 +136,7 @@ public class StoreRestEndpointsIT {
             }
 
             @Test
-            void shouldReturnTheResourceSContent() throws Exception {
+            void shouldReturnResourceContent() throws Exception {
                 MockHttpServletResponse response = mvc.perform(get(request))
                     .andExpect(status().isOk()).andReturn().getResponse();
 
@@ -139,7 +145,7 @@ public class StoreRestEndpointsIT {
             }
 
             @Test
-            void shouldReturnAByteRangeWhenRequested() throws Exception {
+            void shouldReturnByteRangeWhenRequested() throws Exception {
                 MockHttpServletResponse response = mvc
                     .perform(get(request).header("range", "bytes=9-12"))
                     .andExpect(status().isPartialContent()).andReturn()
@@ -150,7 +156,7 @@ public class StoreRestEndpointsIT {
             }
 
             @Test
-            void shouldOverwriteTheResourceSContent() throws Exception {
+            void shouldOverwriteResourceContent() throws Exception {
                 mvc.perform(put(request).content("New Existing content")
                     .contentType("text/plain")).andExpect(status().isOk());
 
@@ -161,7 +167,7 @@ public class StoreRestEndpointsIT {
             }
 
             @Test
-            void shouldDeleteTheResource() throws Exception {
+            void shouldDeleteResource() throws Exception {
                 mvc.perform(delete(request)).andExpect(status().isNoContent());
 
                 Resource r = store.getResource(path);
@@ -169,7 +175,8 @@ public class StoreRestEndpointsIT {
             }
 
             @Nested
-            class APOSTToStorePathWithMultiPartFormData {
+            @DisplayName("POST to store path with multipart form data")
+            class PostStorePathWithMultiPartFormData {
                 @BeforeEach
                 void setUp() throws IOException {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -185,7 +192,7 @@ public class StoreRestEndpointsIT {
                 }
 
                 @Test
-                void shouldOverwriteTheContentAndReturn200() throws Exception {
+                void shouldOverwriteContentAndReturn200() throws Exception {
                     String content = "New multi-part content";
 
                     mvc.perform(multipart(request).file(new MockMultipartFile("file",
@@ -203,7 +210,8 @@ public class StoreRestEndpointsIT {
         }
 
         @Nested
-        class GivenANestedResource {
+        @DisplayName("Given a nested resource")
+        class NestedResource {
             @BeforeEach
             void setUp() throws IOException {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -219,7 +227,7 @@ public class StoreRestEndpointsIT {
             }
 
             @Test
-            void shouldReturnTheResourceSContent() throws Exception {
+            void shouldReturnResourceContent() throws Exception {
                 MockHttpServletResponse response = mvc.perform(get(request))
                     .andExpect(status().isOk()).andReturn().getResponse();
 
@@ -228,7 +236,7 @@ public class StoreRestEndpointsIT {
             }
 
             @Test
-            void shouldReturnAByteRangeWhenRequested() throws Exception {
+            void shouldReturnByteRangeWhenRequested() throws Exception {
                 MockHttpServletResponse response = mvc
                     .perform(get(request).header("range", "bytes=9-12"))
                     .andExpect(status().isPartialContent()).andReturn()
@@ -239,7 +247,7 @@ public class StoreRestEndpointsIT {
             }
 
             @Test
-            void shouldOverwriteTheResourceSContent() throws Exception {
+            void shouldOverwriteResourceContent() throws Exception {
                 mvc.perform(put(request).content("New Existing content")
                     .contentType("text/plain")).andExpect(status().isOk());
 
@@ -250,7 +258,7 @@ public class StoreRestEndpointsIT {
             }
 
             @Test
-            void shouldDeleteTheResource() throws Exception {
+            void shouldDeleteResource() throws Exception {
                 mvc.perform(delete(request)).andExpect(status().isNoContent());
 
                 Resource r = store.getResource(path);
@@ -258,7 +266,8 @@ public class StoreRestEndpointsIT {
             }
 
             @Nested
-            class GivenATypicalBrowserRequest {
+            @DisplayName("Given a typical browser request")
+            class TypicalBrowserRequest {
                 @BeforeEach
                 void setUp() throws IOException {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -274,7 +283,7 @@ public class StoreRestEndpointsIT {
                 }
 
                 @Test
-                void shouldReturnTheResourceSContent() throws Exception {
+                void shouldReturnResourceContent() throws Exception {
                     MockHttpServletResponse response = mvc
                         .perform(get(request).accept("text/html",
                             "application/xhtml+xml", "application/xml;q=0.9",
@@ -287,7 +296,8 @@ public class StoreRestEndpointsIT {
             }
 
             @Nested
-            class APOSTToStorePathWithMultiPartFormData {
+            @DisplayName("POST to store path with multipart form data")
+            class PostStorePathWithMultiPartFormData {
                 @BeforeEach
                 void setUp() throws IOException {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -303,7 +313,7 @@ public class StoreRestEndpointsIT {
                 }
 
                 @Test
-                void shouldOverwriteTheContentAndReturn200() throws Exception {
+                void shouldOverwriteContentAndReturn200() throws Exception {
                     String content = "New multi-part content";
 
                     mvc.perform(multipart(request).file(new MockMultipartFile("file",

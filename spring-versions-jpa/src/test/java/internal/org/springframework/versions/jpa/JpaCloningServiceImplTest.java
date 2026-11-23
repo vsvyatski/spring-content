@@ -1,6 +1,7 @@
 package internal.org.springframework.versions.jpa;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.versions.LockingAndVersioningException;
@@ -51,7 +52,8 @@ public class JpaCloningServiceImplTest {
         @Nested
         class Clone {
             @Nested
-            class GivenAnEntityWithACopyConstructor {
+            @DisplayName("Given an entity with a copy constructor")
+            class EntityWithCopyConstructor {
                 @BeforeEach
                 void setUp() {
                     entity = new TestEntity();
@@ -66,14 +68,15 @@ public class JpaCloningServiceImplTest {
                 }
 
                 @Test
-                void shouldCloneTheEntity() {
+                void shouldCloneEntity() {
                     assertThat(result).isNotNull();
                     assertThat(result).isNotEqualTo(entity);
                 }
             }
 
             @Nested
-            class GivenAnEntityWithACopyConstructor2 {
+            @DisplayName("Given an entity with a copy constructor2")
+            class EntityWithCopyConstructor2 {
                 @BeforeEach
                 void setUp() {
                     entity = new NoCopyConstructorTestEntity();
@@ -88,14 +91,15 @@ public class JpaCloningServiceImplTest {
                 }
 
                 @Test
-                void shouldCloneTheEntity() {
+                void shouldCloneEntity() {
                     assertThat(e).isInstanceOf(LockingAndVersioningException.class);
                     assertThat(e.getMessage()).contains("no copy constructor");
                 }
             }
 
             @Nested
-            class GivenAnEntityWithAFailingCopyConstructor {
+            @DisplayName("Given an entity with a failing copy constructor")
+            class EntityWithFailingCopyConstructor {
                 @BeforeEach
                 void setUp() {
                     entity = new FailingCopyConstructorTestEntity();
@@ -110,7 +114,7 @@ public class JpaCloningServiceImplTest {
                 }
 
                 @Test
-                void shouldCloneTheEntity() {
+                void shouldCloneEntity() {
                     assertThat(e).isInstanceOf(LockingAndVersioningException.class);
                     assertThat(e.getMessage()).contains("copy constructor failed");
                 }

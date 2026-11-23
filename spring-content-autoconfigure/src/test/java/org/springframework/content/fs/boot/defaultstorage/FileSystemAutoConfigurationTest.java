@@ -5,10 +5,7 @@ import internal.org.springframework.content.s3.boot.autoconfigure.S3ContentAutoC
 import internal.org.springframework.content.solr.boot.autoconfigure.SolrAutoConfiguration;
 import internal.org.springframework.content.solr.boot.autoconfigure.SolrExtensionAutoConfiguration;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -23,63 +20,63 @@ public class FileSystemAutoConfigurationTest {
     }
 
     @Nested
-    class FileSystemContentAutoConfigurationCases {
-        @Nested
-        class GivenADefaultStorageTypeOfFs {
-            @BeforeEach
-            void setUp() {
-                contextRunner = new ApplicationContextRunner()
-                    .withConfiguration(AutoConfigurations.of(FileSystemContentAutoConfiguration.class));
-                System.setProperty("spring.content.storage.type.default", "fs");
-            }
-
-            @AfterEach
-            void tearDown() {
-                System.clearProperty("spring.content.storage.type.default");
-            }
-
-            @Test
-            void shouldCreateAnFileSystemResourceLoaderBean() {
-                contextRunner
-                    .withUserConfiguration(TestConfig.class).run((context) ->
-                        Assertions.assertThat(context).hasSingleBean(FileSystemResourceLoader.class));
-            }
+    @DisplayName("Given a default storage type of FS")
+    class DefaultStorageTypeOfFs {
+        @BeforeEach
+        void setUp() {
+            contextRunner = new ApplicationContextRunner()
+                .withConfiguration(AutoConfigurations.of(FileSystemContentAutoConfiguration.class));
+            System.setProperty("spring.content.storage.type.default", "fs");
         }
 
-        @Nested
-        class GivenADefaultStorageTypeOtherThanFs {
-            @BeforeEach
-            void setUp() {
-                contextRunner = new ApplicationContextRunner()
-                    .withConfiguration(AutoConfigurations.of(FileSystemContentAutoConfiguration.class));
-                System.setProperty("spring.content.storage.type.default", "s3");
-            }
-
-            @AfterEach
-            void tearDown() {
-                System.clearProperty("spring.content.storage.type.default");
-            }
-
-            @Test
-            void shouldNotCreateAnFileSystemResourceLoaderBean() {
-                contextRunner.withUserConfiguration(TestConfig.class).run((context) ->
-                    Assertions.assertThat(context).doesNotHaveBean(FileSystemResourceLoader.class));
-            }
+        @AfterEach
+        void tearDown() {
+            System.clearProperty("spring.content.storage.type.default");
         }
 
-        @Nested
-        class GivenNoDefaultStorageType {
-            @BeforeEach
-            void setUp() {
-                contextRunner = new ApplicationContextRunner()
-                    .withConfiguration(AutoConfigurations.of(FileSystemContentAutoConfiguration.class));
-            }
+        @Test
+        void shouldCreateFileSystemResourceLoaderBean() {
+            contextRunner
+                .withUserConfiguration(TestConfig.class).run((context) ->
+                    Assertions.assertThat(context).hasSingleBean(FileSystemResourceLoader.class));
+        }
+    }
 
-            @Test
-            void shouldCreateAnFileSystemResourceLoaderBean() {
-                contextRunner.withUserConfiguration(TestConfig.class)
-                    .run((context) -> Assertions.assertThat(context).hasSingleBean(FileSystemResourceLoader.class));
-            }
+    @Nested
+    @DisplayName("Given a default storage type other than FS")
+    class DefaultStorageTypeOtherThanFs {
+        @BeforeEach
+        void setUp() {
+            contextRunner = new ApplicationContextRunner()
+                .withConfiguration(AutoConfigurations.of(FileSystemContentAutoConfiguration.class));
+            System.setProperty("spring.content.storage.type.default", "s3");
+        }
+
+        @AfterEach
+        void tearDown() {
+            System.clearProperty("spring.content.storage.type.default");
+        }
+
+        @Test
+        void shouldNotCreateFileSystemResourceLoaderBean() {
+            contextRunner.withUserConfiguration(TestConfig.class).run((context) ->
+                Assertions.assertThat(context).doesNotHaveBean(FileSystemResourceLoader.class));
+        }
+    }
+
+    @Nested
+    @DisplayName("Given no default storage type")
+    class NoDefaultStorageType {
+        @BeforeEach
+        void setUp() {
+            contextRunner = new ApplicationContextRunner()
+                .withConfiguration(AutoConfigurations.of(FileSystemContentAutoConfiguration.class));
+        }
+
+        @Test
+        void shouldCreateFileSystemResourceLoaderBean() {
+            contextRunner.withUserConfiguration(TestConfig.class)
+                .run((context) -> Assertions.assertThat(context).hasSingleBean(FileSystemResourceLoader.class));
         }
     }
 }

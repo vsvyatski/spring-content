@@ -1,6 +1,7 @@
 package internal.org.springframework.content.rest.mappings;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.content.commons.store.Store;
@@ -90,7 +91,8 @@ public class CorsConfigurationBuilderTest {
         @Nested
         class Build {
             @Nested
-            class GivenNoCrossOriginAnnotation {
+            @DisplayName("Given no @CrossOrigin annotation")
+            class NoCrossOriginAnnotation {
                 @BeforeEach
                 void setUp() {
                     storeInterface = StoreWithNoCrossOrigin.class;
@@ -104,13 +106,14 @@ public class CorsConfigurationBuilderTest {
                 }
 
                 @Test
-                void shouldNotACorsConfiguration() {
+                void shouldNotCorsConfiguration() {
                     assertThat(config).isNull();
                 }
             }
 
             @Nested
-            class GivenAnOriginsValue {
+            @DisplayName("Given an origins value")
+            class OriginsValue {
                 @BeforeEach
                 void setUp() {
                     storeInterface = StoreWithOrigins.class;
@@ -124,13 +127,14 @@ public class CorsConfigurationBuilderTest {
                 }
 
                 @Test
-                void shouldCreateACorsConfigurationWithThoseOrigins() {
+                void shouldCreateCorsConfigurationWithThoseOrigins() {
                     assertThat(config.getAllowedOrigins()).contains("http://domain1.com", "http://domain2.com");
                 }
             }
 
             @Nested
-            class GivenAnEmptyOriginsValue {
+            @DisplayName("Given an empty origins value")
+            class EmptyOriginsValue {
                 @BeforeEach
                 void setUp() {
                     storeInterface = StoreWithEmptyOrigins.class;
@@ -144,13 +148,14 @@ public class CorsConfigurationBuilderTest {
                 }
 
                 @Test
-                void shouldSetTheDefaultOrigin() {
+                void shouldSetDefaultOrigin() {
                     assertThat(config.getAllowedOrigins()).contains("*");
                 }
             }
 
             @Nested
-            class GivenAnAllowedMethodsValue {
+            @DisplayName("Given an allowed methods value")
+            class AllowedMethodsValue {
                 @BeforeEach
                 void setUp() {
                     storeInterface = StoreWithAllowedMethods.class;
@@ -164,13 +169,14 @@ public class CorsConfigurationBuilderTest {
                 }
 
                 @Test
-                void shouldCreateACorsConfigurationWithThoseAllowedMethods() {
+                void shouldCreateCorsConfigurationWithThoseAllowedMethods() {
                     assertThat(config.getAllowedMethods()).contains("GET", "PUT", "POST", "DELETE");
                 }
             }
 
             @Nested
-            class GivenAnEmptyAllowedMethodsValue {
+            @DisplayName("Given an empty allowed methods value")
+            class EmptyAllowedMethodsValue {
                 @BeforeEach
                 void setUp() {
                     storeInterface = StoreWithEmptyAllowedMethods.class;
@@ -184,13 +190,14 @@ public class CorsConfigurationBuilderTest {
                 }
 
                 @Test
-                void shouldSetTheDefaultAllowedMethods() {
+                void shouldSetDefaultAllowedMethods() {
                     assertThat(config.getAllowedMethods()).contains("GET", "POST", "HEAD");
                 }
             }
 
             @Nested
-            class GivenAnAllowedHeadersValue {
+            @DisplayName("Given an allowed headers value")
+            class AllowedHeadersValue {
                 @BeforeEach
                 void setUp() {
                     storeInterface = StoreWithAllowedHeaders.class;
@@ -204,13 +211,14 @@ public class CorsConfigurationBuilderTest {
                 }
 
                 @Test
-                void shouldCreateACorsConfigurationWithThoseAllowedHeaders() {
+                void shouldCreateCorsConfigurationWithThoseAllowedHeaders() {
                     assertThat(config.getAllowedHeaders()).contains("header1", "header2");
                 }
             }
 
             @Nested
-            class GivenAnEmptyAllowedHeadersValue {
+            @DisplayName("Given an empty allowed headers value")
+            class EmptyAllowedHeadersValue {
                 @BeforeEach
                 void setUp() {
                     storeInterface = StoreWithEmptyAllowedHeaders.class;
@@ -224,13 +232,14 @@ public class CorsConfigurationBuilderTest {
                 }
 
                 @Test
-                void shouldSetTheDefaultAllowedHeaders() {
+                void shouldSetDefaultAllowedHeaders() {
                     assertThat(config.getAllowedHeaders()).contains("*");
                 }
             }
 
             @Nested
-            class GivenAnExposedHeadersValue {
+            @DisplayName("Given an exposed headers value")
+            class ExposedHeadersValue {
                 @BeforeEach
                 void setUp() {
                     storeInterface = StoreWithExposedHeaders.class;
@@ -244,13 +253,14 @@ public class CorsConfigurationBuilderTest {
                 }
 
                 @Test
-                void shouldCreateACorsConfigurationWithThoseExposedHeaders() {
+                void shouldCreateCorsConfigurationWithThoseExposedHeaders() {
                     assertThat(config.getExposedHeaders()).contains("exposed1", "exposed2");
                 }
             }
 
             @Nested
-            class GivenAnEmptyExposedHeadersValue {
+            @DisplayName("Given an empty exposed headers value")
+            class EmptyExposedHeadersValue {
                 @BeforeEach
                 void setUp() {
                     storeInterface = StoreWithEmptyExposedHeaders.class;
@@ -264,13 +274,14 @@ public class CorsConfigurationBuilderTest {
                 }
 
                 @Test
-                void shouldCreateACorsConfigurationWithANullExposedHeaders() {
+                void shouldCreateCorsConfigurationWithNullExposedHeaders() {
                     assertThat(config.getExposedHeaders()).isNull();
                 }
             }
 
             @Nested
-            class GivenAnAllowCredentialsValueOfTrue {
+            @DisplayName("Given an allow credentials value of true")
+            class AllowCredentialsValueOfTrue {
                 @BeforeEach
                 void setUp() {
                     storeInterface = StoreWithAllowCredentials.class;
@@ -284,13 +295,14 @@ public class CorsConfigurationBuilderTest {
                 }
 
                 @Test
-                void shouldCreateACorsConfigurationWithThatValue() {
+                void shouldCreateCorsConfigurationWithThatValue() {
                     assertThat(config.getAllowCredentials()).isTrue();
                 }
             }
 
             @Nested
-            class GivenAnAllowCredentialsValueOfFalse {
+            @DisplayName("Given an allow credentials value of false")
+            class AllowCredentialsValueOfFalse {
                 @BeforeEach
                 void setUp() {
                     storeInterface = StoreWithDisallowCredentials.class;
@@ -304,13 +316,14 @@ public class CorsConfigurationBuilderTest {
                 }
 
                 @Test
-                void shouldCreateACorsConfigurationWithThatValue() {
+                void shouldCreateCorsConfigurationWithThatValue() {
                     assertThat(config.getAllowCredentials()).isFalse();
                 }
             }
 
             @Nested
-            class GivenAnAllowCredentialsValueOfSomethingElse {
+            @DisplayName("Given an allow credentials value of something else")
+            class AllowCredentialsValueOfSomethingElse {
                 @BeforeEach
                 void setUp() {
                     storeInterface = StoreWithMisconfiguredAllowCredentials.class;
@@ -324,13 +337,14 @@ public class CorsConfigurationBuilderTest {
                 }
 
                 @Test
-                void shouldCreateACorsConfigurationWithThatValue() {
+                void shouldCreateCorsConfigurationWithThatValue() {
                     assertThat(e).isNotNull();
                 }
             }
 
             @Nested
-            class GivenAnAllowCredentialsValueOf {
+            @DisplayName("Given an allow credentials value of")
+            class AllowCredentialsValueOf {
                 @BeforeEach
                 void setUp() {
                     storeInterface = StoreWithEmptyAllowCredentials.class;
@@ -344,13 +358,14 @@ public class CorsConfigurationBuilderTest {
                 }
 
                 @Test
-                void shouldCreateACorsConfigurationWithTheDefaultAllowCredentialsValue() {
+                void shouldCreateCorsConfigurationWithDefaultAllowCredentialsValue() {
                     assertThat(config.getAllowCredentials()).isNull();
                 }
             }
 
             @Nested
-            class GivenAPositiveMaxAgeSpecification {
+            @DisplayName("Given a positive max age specification")
+            class PositiveMaxAgeSpecification {
                 @BeforeEach
                 void setUp() {
                     storeInterface = StoreWithMaxAge.class;
@@ -364,13 +379,14 @@ public class CorsConfigurationBuilderTest {
                 }
 
                 @Test
-                void shouldCreateACorsConfigurationWithThatMaxAge() {
+                void shouldCreateCorsConfigurationWithThatMaxAge() {
                     assertThat(config.getMaxAge()).isEqualTo(1000L);
                 }
             }
 
             @Nested
-            class GivenAnZeroMaxAgeSpecification {
+            @DisplayName("Given a zero max age specification")
+            class ZeroMaxAgeSpecification {
                 @BeforeEach
                 void setUp() {
                     storeInterface = StoreWithZeroMaxAge.class;
@@ -384,13 +400,14 @@ public class CorsConfigurationBuilderTest {
                 }
 
                 @Test
-                void shouldCreateACorsConfigurationWithThatMaxAge() {
+                void shouldCreateCorsConfigurationWithThatMaxAge() {
                     assertThat(config.getMaxAge()).isEqualTo(0L);
                 }
             }
 
             @Nested
-            class GivenAnNegativeMaxAgeSpecification {
+            @DisplayName("Given a negative max age specification")
+            class NegativeMaxAgeSpecification {
                 @BeforeEach
                 void setUp() {
                     storeInterface = StoreWithNegativeMaxAge.class;
@@ -404,7 +421,7 @@ public class CorsConfigurationBuilderTest {
                 }
 
                 @Test
-                void shouldCreateACorsConfigurationWithTheDefaultMaxAge() {
+                void shouldCreateCorsConfigurationWithDefaultMaxAge() {
                     assertThat(config.getMaxAge()).isEqualTo(1800L);
                 }
             }

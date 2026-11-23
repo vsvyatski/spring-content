@@ -7,7 +7,6 @@ import java.util.UUID;
 /**
  * @author Vladimir Svyatski
  */
-@SuppressWarnings("unused") // classpath / store component scan
 public interface UnexportedContentPropertyEntityStore
     extends FileSystemContentStore<UnexportedContentPropertyEntity, UUID> {
 }

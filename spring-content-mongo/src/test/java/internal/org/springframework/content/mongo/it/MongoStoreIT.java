@@ -3,10 +3,7 @@ package internal.org.springframework.content.mongo.it;
 import com.mongodb.client.MongoClient;
 import org.apache.commons.io.IOUtils;
 import org.jspecify.annotations.NonNull;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.content.commons.io.DeletableResource;
 import org.springframework.content.commons.property.PropertyPath;
 import org.springframework.content.commons.store.GetResourceParams;
@@ -86,15 +83,52 @@ public class MongoStoreIT {
     }
 
     @Nested
-    class DefaultMongoStoreImplCases {
+    class Store {
         @Nested
-        class StoreCases {
+        class GetResource {
             @Nested
-            class GetResource {
+            class Tests {
+                @BeforeEach
+                void setUp() {
+                    context = new AnnotationConfigApplicationContext();
+                    context.register(TestConfig.class);
+                    context.refresh();
+
+                    gridFsTemplate = context.getBean(GridFsTemplate.class);
+
+                    repo = context.getBean(DualContentMongoRepository.class);
+                    store = context.getBean(DualContentMongoStore.class);
+
+                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+
+                    genericResource = store.getResource(resourceLocation);
+                }
+
+                @AfterEach
+                void tearDown() throws IOException {
+                    ((DeletableResource) genericResource).delete();
+
+                    context.close();
+                }
+
+                @Test
+                void shouldGetResource() {
+                    assertThat(genericResource).isInstanceOf(Resource.class);
+                }
+
+                @Test
+                void shouldNotExist() {
+                    assertThat(genericResource.exists()).isFalse();
+                }
+            }
+
+            @Nested
+            @DisplayName("Given content is added to that resource")
+            class ContentIsAddedToThatResource {
                 @Nested
                 class Tests {
                     @BeforeEach
-                    void setUp() {
+                    void setUp() throws IOException {
                         context = new AnnotationConfigApplicationContext();
                         context.register(TestConfig.class);
                         context.refresh();
@@ -107,6 +141,12 @@ public class MongoStoreIT {
                         resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                         genericResource = store.getResource(resourceLocation);
+
+                        try (InputStream is = TestSupportData.sampleTextStream()) {
+                            try (OutputStream os = ((WritableResource) genericResource).getOutputStream()) {
+                                IOUtils.copy(is, os);
+                            }
+                        }
                     }
 
                     @AfterEach
@@ -117,165 +157,23 @@ public class MongoStoreIT {
                     }
 
                     @Test
-                    void shouldGetResource() {
-                        assertThat(genericResource).isInstanceOf(Resource.class);
-                    }
+                    void shouldStoreThatContent() throws IOException {
+                        assertThat(genericResource.exists()).isTrue();
 
-                    @Test
-                    void shouldNotExist() {
-                        assertThat(genericResource.exists()).isFalse();
+                        try (InputStream expected = TestSupportData.sampleTextStream()) {
+                            try (InputStream actual = genericResource.getInputStream()) {
+                                boolean matches = IOUtils.contentEquals(expected, actual);
+                                assertThat(matches).isTrue();
+                            }
+                        }
                     }
                 }
 
                 @Nested
-                class GivenContentIsAddedToThatResource {
-                    @Nested
-                    class Tests {
-                        @BeforeEach
-                        void setUp() throws IOException {
-                            context = new AnnotationConfigApplicationContext();
-                            context.register(TestConfig.class);
-                            context.refresh();
-
-                            gridFsTemplate = context.getBean(GridFsTemplate.class);
-
-                            repo = context.getBean(DualContentMongoRepository.class);
-                            store = context.getBean(DualContentMongoStore.class);
-
-                            resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
-
-                            genericResource = store.getResource(resourceLocation);
-
-                            try (InputStream is = TestSupportData.sampleTextStream()) {
-                                try (OutputStream os = ((WritableResource) genericResource).getOutputStream()) {
-                                    IOUtils.copy(is, os);
-                                }
-                            }
-                        }
-
-                        @AfterEach
-                        void tearDown() throws IOException {
-                            ((DeletableResource) genericResource).delete();
-
-                            context.close();
-                        }
-
-                        @Test
-                        void shouldStoreThatContent() throws IOException {
-                            assertThat(genericResource.exists()).isTrue();
-
-                            try (InputStream expected = TestSupportData.sampleTextStream()) {
-                                try (InputStream actual = genericResource.getInputStream()) {
-                                    boolean matches = IOUtils.contentEquals(expected, actual);
-                                    assertThat(matches).isTrue();
-                                }
-                            }
-                        }
-                    }
-
-                    @Nested
-                    class GivenThatResourceIsThenUpdated {
-                        @BeforeEach
-                        void setUp() throws IOException {
-                            context = new AnnotationConfigApplicationContext();
-                            context.register(TestConfig.class);
-                            context.refresh();
-
-                            gridFsTemplate = context.getBean(GridFsTemplate.class);
-
-                            repo = context.getBean(DualContentMongoRepository.class);
-                            store = context.getBean(DualContentMongoStore.class);
-
-                            resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
-
-                            genericResource = store.getResource(resourceLocation);
-
-                            try (InputStream is = TestSupportData.sampleTextStream()) {
-                                try (OutputStream os = ((WritableResource) genericResource).getOutputStream()) {
-                                    IOUtils.copy(is, os);
-                                }
-                            }
-
-                            try (InputStream is = TestSupportData.sampleUpdatedTextStream()) {
-                                try (OutputStream os = ((WritableResource) genericResource).getOutputStream()) {
-                                    IOUtils.copy(is, os);
-                                }
-                            }
-                        }
-
-                        @AfterEach
-                        void tearDown() throws IOException {
-                            ((DeletableResource) genericResource).delete();
-
-                            context.close();
-                        }
-
-                        @Test
-                        void shouldStoreThatUpdatedContent() throws IOException {
-                            assertThat(genericResource.exists()).isTrue();
-
-                            try (InputStream expected = TestSupportData.sampleUpdatedTextStream()) {
-                                try (InputStream actual = genericResource.getInputStream()) {
-                                    assertThat(IOUtils.contentEquals(expected, actual)).isTrue();
-                                }
-                            }
-                        }
-                    }
-
-                    @Nested
-                    class GivenThatResourceIsThenDeleted {
-                        @BeforeEach
-                        void setUp() throws IOException {
-                            context = new AnnotationConfigApplicationContext();
-                            context.register(TestConfig.class);
-                            context.refresh();
-
-                            gridFsTemplate = context.getBean(GridFsTemplate.class);
-
-                            repo = context.getBean(DualContentMongoRepository.class);
-                            store = context.getBean(DualContentMongoStore.class);
-
-                            resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
-
-                            genericResource = store.getResource(resourceLocation);
-
-                            try (InputStream is = TestSupportData.sampleTextStream()) {
-                                try (OutputStream os = ((WritableResource) genericResource).getOutputStream()) {
-                                    IOUtils.copy(is, os);
-                                }
-                            }
-
-                            try {
-                                ((DeletableResource) genericResource).delete();
-                            } catch (Exception e) {
-                                MongoStoreIT.this.e = e;
-                            }
-                        }
-
-                        @AfterEach
-                        void tearDown() throws IOException {
-                            ((DeletableResource) genericResource).delete();
-
-                            context.close();
-                        }
-
-                        @Test
-                        void shouldNotExist() {
-                            assertThat(e).isNull();
-                        }
-                    }
-                }
-            }
-        }
-
-        @Nested
-        class AssociativeStoreCases {
-            @Nested
-            class GivenANewEntity {
-                @Nested
-                class Tests {
+                @DisplayName("Given that resource is then updated")
+                class ResourceIsThenUpdated {
                     @BeforeEach
-                    void setUp() {
+                    void setUp() throws IOException {
                         context = new AnnotationConfigApplicationContext();
                         context.register(TestConfig.class);
                         context.refresh();
@@ -287,270 +185,92 @@ public class MongoStoreIT {
 
                         resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
-                        entity = new DualContentMongoDocument();
-                        entity = repo.save(entity);
+                        genericResource = store.getResource(resourceLocation);
+
+                        try (InputStream is = TestSupportData.sampleTextStream()) {
+                            try (OutputStream os = ((WritableResource) genericResource).getOutputStream()) {
+                                IOUtils.copy(is, os);
+                            }
+                        }
+
+                        try (InputStream is = TestSupportData.sampleUpdatedTextStream()) {
+                            try (OutputStream os = ((WritableResource) genericResource).getOutputStream()) {
+                                IOUtils.copy(is, os);
+                            }
+                        }
                     }
 
                     @AfterEach
-                    void tearDown() {
+                    void tearDown() throws IOException {
+                        ((DeletableResource) genericResource).delete();
+
                         context.close();
                     }
 
                     @Test
-                    void shouldNotHaveAnAssociatedResource() {
-                        assertThat(entity.getContentId()).isNull();
-                        NullableAssertions.assertNull(store.getResource(entity));
+                    void shouldStoreThatUpdatedContent() throws IOException {
+                        assertThat(genericResource.exists()).isTrue();
+
+                        try (InputStream expected = TestSupportData.sampleUpdatedTextStream()) {
+                            try (InputStream actual = genericResource.getInputStream()) {
+                                assertThat(IOUtils.contentEquals(expected, actual)).isTrue();
+                            }
+                        }
                     }
                 }
 
                 @Nested
-                class GivenAResource {
-                    @Nested
-                    class WhenTheResourceIsAssociated {
-                        @Nested
-                        class Tests {
-                            @BeforeEach
-                            void setUp() {
-                                context = new AnnotationConfigApplicationContext();
-                                context.register(TestConfig.class);
-                                context.refresh();
+                @DisplayName("Given that resource is then deleted")
+                class ResourceIsThenDeleted {
+                    @BeforeEach
+                    void setUp() throws IOException {
+                        context = new AnnotationConfigApplicationContext();
+                        context.register(TestConfig.class);
+                        context.refresh();
 
-                                gridFsTemplate = context.getBean(GridFsTemplate.class);
+                        gridFsTemplate = context.getBean(GridFsTemplate.class);
 
-                                repo = context.getBean(DualContentMongoRepository.class);
-                                store = context.getBean(DualContentMongoStore.class);
+                        repo = context.getBean(DualContentMongoRepository.class);
+                        store = context.getBean(DualContentMongoStore.class);
 
-                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
-                                entity = new DualContentMongoDocument();
-                                entity = repo.save(entity);
+                        genericResource = store.getResource(resourceLocation);
 
-                                genericResource = store.getResource(resourceLocation);
-
-                                store.associate(entity, resourceLocation);
-                                store.associate(entity, PropertyPath.from("rendition"), resourceLocation);
-                            }
-
-                            @AfterEach
-                            void tearDown() {
-                                context.close();
-                            }
-
-                            @Test
-                            void shouldBeRecordedAsSuchOnTheEntitySContentId() {
-                                assertThat(entity.getContentId()).isEqualTo(resourceLocation);
-                                assertThat(entity.getRenditionId()).isEqualTo(resourceLocation);
+                        try (InputStream is = TestSupportData.sampleTextStream()) {
+                            try (OutputStream os = ((WritableResource) genericResource).getOutputStream()) {
+                                IOUtils.copy(is, os);
                             }
                         }
 
-                        @Nested
-                        class WhenTheResourceHasContent {
-                            @BeforeEach
-                            void setUp() throws IOException {
-                                context = new AnnotationConfigApplicationContext();
-                                context.register(TestConfig.class);
-                                context.refresh();
-
-                                gridFsTemplate = context.getBean(GridFsTemplate.class);
-
-                                repo = context.getBean(DualContentMongoRepository.class);
-                                store = context.getBean(DualContentMongoStore.class);
-
-                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
-
-                                entity = new DualContentMongoDocument();
-                                entity = repo.save(entity);
-
-                                genericResource = store.getResource(resourceLocation);
-
-                                store.associate(entity, resourceLocation);
-                                store.associate(entity, PropertyPath.from("rendition"), resourceLocation);
-
-                                try (OutputStream os = ((WritableResource) genericResource).getOutputStream()) {
-                                    os.write("Hello Client-side World!".getBytes());
-                                }
-                            }
-
-                            @AfterEach
-                            void tearDown() {
-                                context.close();
-                            }
-
-                            @Test
-                            void shouldNotHonorByteRanges() throws IOException {
-                                // relies on REST-layer to serve byte range
-                                Resource r = store.getResource(entity, PropertyPath.from("content"), new GetResourceParams("5-10"));
-                                try (InputStream is = r.getInputStream()) {
-                                    assertThat(IOUtils.toString(is, StandardCharsets.UTF_8)).isEqualTo("Hello Client-side World!");
-                                }
-                            }
+                        try {
+                            ((DeletableResource) genericResource).delete();
+                        } catch (Exception e) {
+                            MongoStoreIT.this.e = e;
                         }
+                    }
 
-                        @Nested
-                        class WhenTheResourceIsUnassociated {
-                            @BeforeEach
-                            void setUp() {
-                                context = new AnnotationConfigApplicationContext();
-                                context.register(TestConfig.class);
-                                context.refresh();
+                    @AfterEach
+                    void tearDown() throws IOException {
+                        ((DeletableResource) genericResource).delete();
 
-                                gridFsTemplate = context.getBean(GridFsTemplate.class);
+                        context.close();
+                    }
 
-                                repo = context.getBean(DualContentMongoRepository.class);
-                                store = context.getBean(DualContentMongoStore.class);
-
-                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
-
-                                entity = new DualContentMongoDocument();
-                                entity = repo.save(entity);
-
-                                genericResource = store.getResource(resourceLocation);
-
-                                store.associate(entity, resourceLocation);
-                                store.associate(entity, PropertyPath.from("rendition"), resourceLocation);
-
-                                store.unassociate(entity);
-                                store.unassociate(entity, PropertyPath.from("rendition"));
-                            }
-
-                            @AfterEach
-                            void tearDown() {
-                                context.close();
-                            }
-
-                            @Test
-                            void shouldResetTheEntitySContentId() {
-                                assertThat(entity.getContentId()).isNull();
-                                assertThat(entity.getRenditionId()).isNull();
-                            }
-                        }
-
-                        @Nested
-                        class WhenAInvalidPropertyPathIsUsedToAssociateAResource {
-                            @BeforeEach
-                            void setUp() {
-                                context = new AnnotationConfigApplicationContext();
-                                context.register(TestConfig.class);
-                                context.refresh();
-
-                                gridFsTemplate = context.getBean(GridFsTemplate.class);
-
-                                repo = context.getBean(DualContentMongoRepository.class);
-                                store = context.getBean(DualContentMongoStore.class);
-
-                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
-
-                                entity = new DualContentMongoDocument();
-                                entity = repo.save(entity);
-
-                                genericResource = store.getResource(resourceLocation);
-
-                                store.associate(entity, resourceLocation);
-                                store.associate(entity, PropertyPath.from("rendition"), resourceLocation);
-                            }
-
-                            @AfterEach
-                            void tearDown() {
-                                context.close();
-                            }
-
-                            @Test
-                            void shouldThrowAnError() {
-                                try {
-                                    store.associate(entity, PropertyPath.from("does.not.exist"), resourceLocation);
-                                } catch (Exception sae) {
-                                    MongoStoreIT.this.e = sae;
-                                }
-                                assertThat(e).isInstanceOf(StoreAccessException.class);
-                            }
-                        }
-
-                        @Nested
-                        class WhenAInvalidPropertyPathIsUsedToLoadAResource {
-                            @BeforeEach
-                            void setUp() {
-                                context = new AnnotationConfigApplicationContext();
-                                context.register(TestConfig.class);
-                                context.refresh();
-
-                                gridFsTemplate = context.getBean(GridFsTemplate.class);
-
-                                repo = context.getBean(DualContentMongoRepository.class);
-                                store = context.getBean(DualContentMongoStore.class);
-
-                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
-
-                                entity = new DualContentMongoDocument();
-                                entity = repo.save(entity);
-
-                                genericResource = store.getResource(resourceLocation);
-
-                                store.associate(entity, resourceLocation);
-                                store.associate(entity, PropertyPath.from("rendition"), resourceLocation);
-                            }
-
-                            @AfterEach
-                            void tearDown() {
-                                context.close();
-                            }
-
-                            @Test
-                            void shouldThrowAnError() {
-                                try {
-                                    store.getResource(entity, PropertyPath.from("does.not.exist"));
-                                } catch (Exception sae) {
-                                    MongoStoreIT.this.e = sae;
-                                }
-                                assertThat(e).isInstanceOf(StoreAccessException.class);
-                            }
-                        }
-
-                        @Nested
-                        class WhenAInvalidPropertyPathIsUsedToUnassociateAResource {
-                            @BeforeEach
-                            void setUp() {
-                                context = new AnnotationConfigApplicationContext();
-                                context.register(TestConfig.class);
-                                context.refresh();
-
-                                gridFsTemplate = context.getBean(GridFsTemplate.class);
-
-                                repo = context.getBean(DualContentMongoRepository.class);
-                                store = context.getBean(DualContentMongoStore.class);
-
-                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
-
-                                entity = new DualContentMongoDocument();
-                                entity = repo.save(entity);
-
-                                genericResource = store.getResource(resourceLocation);
-
-                                store.associate(entity, resourceLocation);
-                                store.associate(entity, PropertyPath.from("rendition"), resourceLocation);
-                            }
-
-                            @AfterEach
-                            void tearDown() {
-                                context.close();
-                            }
-
-                            @Test
-                            void shouldThrowAnError() {
-                                try {
-                                    store.unassociate(entity, PropertyPath.from("does.not.exist"));
-                                } catch (Exception sae) {
-                                    MongoStoreIT.this.e = sae;
-                                }
-                                assertThat(e).isInstanceOf(StoreAccessException.class);
-                            }
-                        }
+                    @Test
+                    void shouldNotExist() {
+                        assertThat(e).isNull();
                     }
                 }
             }
         }
+    }
 
+    @Nested
+    class AssociativeStore {
         @Nested
-        class ContentStoreCases {
+        @DisplayName("Given a new entity")
+        class NewEntity {
             @Nested
             class Tests {
                 @BeforeEach
@@ -568,9 +288,6 @@ public class MongoStoreIT {
 
                     entity = new DualContentMongoDocument();
                     entity = repo.save(entity);
-
-                    store.setContent(entity, TestSupportData.sampleTextStream());
-                    store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleTextStream());
                 }
 
                 @AfterEach
@@ -579,484 +296,782 @@ public class MongoStoreIT {
                 }
 
                 @Test
-                void shouldBeAbleToStoreNewContent() {
-                    // content
-                    try (InputStream content = store.getContent(entity)) {
-                        assertThat(IOUtils.contentEquals(TestSupportData.sampleTextStream(), content)).isTrue();
-                    } catch (IOException ignored) {
-                    }
-
-                    //rendition
-                    try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
-                        assertThat(IOUtils.contentEquals(TestSupportData.sampleTextStream(), content)).isTrue();
-                    } catch (IOException ignored) {
-                    }
-                }
-
-                @Test
-                void shouldHaveContentMetadata() {
-                    // content
-                    String contentId = entity.getContentId();
-                    assertThat(contentId).isNotNull();
-                    assertThat(contentId.trim().length()).isGreaterThan(0);
-                    assertThat(entity.getContentLen()).isEqualTo(27L);
-
-                    //rendition
-                    String renditionId = entity.getRenditionId();
-                    assertThat(renditionId).isNotNull();
-                    assertThat(renditionId.trim().length()).isGreaterThan(0);
-                    assertThat(entity.getRenditionLen()).isEqualTo(27L);
-                }
-            }
-
-            @Nested
-            class WhenContentIsUpdated {
-                @BeforeEach
-                void setUp() {
-                    context = new AnnotationConfigApplicationContext();
-                    context.register(TestConfig.class);
-                    context.refresh();
-
-                    gridFsTemplate = context.getBean(GridFsTemplate.class);
-
-                    repo = context.getBean(DualContentMongoRepository.class);
-                    store = context.getBean(DualContentMongoStore.class);
-
-                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
-
-                    entity = new DualContentMongoDocument();
-                    entity = repo.save(entity);
-
-                    store.setContent(entity, TestSupportData.sampleTextStream());
-                    store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleTextStream());
-
-                    store.setContent(entity, TestSupportData.sampleUpdatedTextStream());
-                    store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleUpdatedTextStream());
-                    entity = repo.save(entity);
-                }
-
-                @AfterEach
-                void tearDown() {
-                    context.close();
-                }
-
-                @Test
-                void shouldHaveTheUpdatedContent() throws IOException {
-                    //content
-                    try (InputStream content = store.getContent(entity)) {
-                        boolean matches = IOUtils.contentEquals(TestSupportData.sampleUpdatedTextStream(), content);
-                        assertThat(matches).isTrue();
-                    }
-
-                    //rendition
-                    try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
-                        boolean matches = IOUtils.contentEquals(TestSupportData.sampleUpdatedTextStream(), content);
-                        assertThat(matches).isTrue();
-                    }
-                }
-            }
-
-            @Nested
-            class WhenContentIsUpdatedWithShorterContent {
-                @BeforeEach
-                void setUp() {
-                    context = new AnnotationConfigApplicationContext();
-                    context.register(TestConfig.class);
-                    context.refresh();
-
-                    gridFsTemplate = context.getBean(GridFsTemplate.class);
-
-                    repo = context.getBean(DualContentMongoRepository.class);
-                    store = context.getBean(DualContentMongoStore.class);
-
-                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
-
-                    entity = new DualContentMongoDocument();
-                    entity = repo.save(entity);
-
-                    store.setContent(entity, TestSupportData.sampleTextStream());
-                    store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleTextStream());
-
-                    store.setContent(entity, TestSupportData.samplePartialUpdateStream());
-                    store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.samplePartialUpdateStream());
-                    entity = repo.save(entity);
-                }
-
-                @AfterEach
-                void tearDown() {
-                    context.close();
-                }
-
-                @Test
-                void shouldStoreOnlyTheNewContent() throws IOException {
-                    //content
-                    try (InputStream content = store.getContent(entity)) {
-                        boolean matches = IOUtils.contentEquals(TestSupportData.samplePartialUpdateStream(), content);
-                        assertThat(matches).isTrue();
-                    }
-
-                    //rendition
-                    try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
-                        boolean matches = IOUtils.contentEquals(TestSupportData.samplePartialUpdateStream(), content);
-                        assertThat(matches).isTrue();
-                    }
-                }
-            }
-
-            @Nested
-            class WhenContentIsUpdatedAndNotOverwritten {
-                @BeforeEach
-                void setUp() {
-                    context = new AnnotationConfigApplicationContext();
-                    context.register(TestConfig.class);
-                    context.refresh();
-
-                    gridFsTemplate = context.getBean(GridFsTemplate.class);
-
-                    repo = context.getBean(DualContentMongoRepository.class);
-                    store = context.getBean(DualContentMongoStore.class);
-
-                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
-
-                    entity = new DualContentMongoDocument();
-                    entity = repo.save(entity);
-
-                    store.setContent(entity, TestSupportData.sampleTextStream());
-                    store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleTextStream());
-                }
-
-                @AfterEach
-                void tearDown() {
-                    context.close();
-                }
-
-                @Test
-                void shouldHaveTheUpdatedContent() throws IOException {
-                    String contentId = entity.getContentId();
-                    assertThat(contentId).isNotNull();
-                    assertThat(gridFsTemplate.getResource(contentId).exists()).isTrue();
-
-                    store.setContent(entity, PropertyPath.from("content"), TestSupportData.sampleUpdatedTextStream(), new SetContentParams(-1, true, SetContentParams.ContentDisposition.CreateNew));
-                    entity = repo.save(entity);
-
-                    try (InputStream content = store.getContent(entity)) {
-                        boolean matches = IOUtils.contentEquals(TestSupportData.sampleUpdatedTextStream(), content);
-                        assertThat(matches).isTrue();
-                    }
-
-                    assertThat(gridFsTemplate.getResource(contentId).exists()).isTrue();
-
-                    assertThat(entity.getContentId()).isNotEqualTo(contentId);
-
-                    String newContentId = entity.getContentId();
-                    assertThat(newContentId).isNotNull();
-                    assertThat(gridFsTemplate.getResource(newContentId).exists()).isTrue();
-                }
-            }
-
-            @Nested
-            class WhenContentIsUnset {
-                @BeforeEach
-                void setUp() {
-                    context = new AnnotationConfigApplicationContext();
-                    context.register(TestConfig.class);
-                    context.refresh();
-
-                    gridFsTemplate = context.getBean(GridFsTemplate.class);
-
-                    repo = context.getBean(DualContentMongoRepository.class);
-                    store = context.getBean(DualContentMongoStore.class);
-
-                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
-
-                    entity = new DualContentMongoDocument();
-                    entity = repo.save(entity);
-
-                    store.setContent(entity, TestSupportData.sampleTextStream());
-                    store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleTextStream());
-
-                    String storedContentId = entity.getContentId();
-                    assertThat(storedContentId).isNotNull();
-                    resourceLocation = storedContentId;
-                    entity = store.unsetContent(entity);
-                    entity = store.unsetContent(entity, PropertyPath.from("rendition"));
-                    entity = repo.save(entity);
-                }
-
-                @AfterEach
-                void tearDown() {
-                    context.close();
-                }
-
-                @Test
-                void shouldHaveNoContent() throws IOException {
-                    //content
-                    try (InputStream content = store.getContent(entity)) {
-                        NullableAssertions.assertNull(content);
-                    }
-
+                void shouldNotHaveAssociatedResource() {
                     assertThat(entity.getContentId()).isNull();
-                    assertThat(entity.getContentLen()).isNull();
+                    NullableAssertions.assertNull(store.getResource(entity));
+                }
+            }
 
-                    assertThat(gridFsTemplate.getResource(resourceLocation).exists()).isFalse();
+            @Nested
+            @DisplayName("Given a resource")
+            class AssociatedResource {
+                @Nested
+                @DisplayName("When the resource is associated")
+                class ResourceIsAssociated {
+                    @Nested
+                    class Tests {
+                        @BeforeEach
+                        void setUp() {
+                            context = new AnnotationConfigApplicationContext();
+                            context.register(TestConfig.class);
+                            context.refresh();
 
-                    //rendition
-                    try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
-                        NullableAssertions.assertNull(content);
+                            gridFsTemplate = context.getBean(GridFsTemplate.class);
+
+                            repo = context.getBean(DualContentMongoRepository.class);
+                            store = context.getBean(DualContentMongoStore.class);
+
+                            resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+
+                            entity = new DualContentMongoDocument();
+                            entity = repo.save(entity);
+
+                            genericResource = store.getResource(resourceLocation);
+
+                            store.associate(entity, resourceLocation);
+                            store.associate(entity, PropertyPath.from("rendition"), resourceLocation);
+                        }
+
+                        @AfterEach
+                        void tearDown() {
+                            context.close();
+                        }
+
+                        @Test
+                        void shouldBeRecordedAsSuchOnEntityContentId() {
+                            assertThat(entity.getContentId()).isEqualTo(resourceLocation);
+                            assertThat(entity.getRenditionId()).isEqualTo(resourceLocation);
+                        }
                     }
 
-                    assertThat(entity.getRenditionId()).isNull();
-                    assertThat(entity.getRenditionLen()).isNull();
-                }
-            }
+                    @Nested
+                    @DisplayName("When the resource has content")
+                    class ResourceHasContent {
+                        @BeforeEach
+                        void setUp() throws IOException {
+                            context = new AnnotationConfigApplicationContext();
+                            context.register(TestConfig.class);
+                            context.refresh();
 
-            @Nested
-            class WhenContentIsUnsetButKept {
-                @BeforeEach
-                void setUp() {
-                    context = new AnnotationConfigApplicationContext();
-                    context.register(TestConfig.class);
-                    context.refresh();
+                            gridFsTemplate = context.getBean(GridFsTemplate.class);
 
-                    gridFsTemplate = context.getBean(GridFsTemplate.class);
+                            repo = context.getBean(DualContentMongoRepository.class);
+                            store = context.getBean(DualContentMongoStore.class);
 
-                    repo = context.getBean(DualContentMongoRepository.class);
-                    store = context.getBean(DualContentMongoStore.class);
+                            resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
-                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                            entity = new DualContentMongoDocument();
+                            entity = repo.save(entity);
 
-                    entity = new DualContentMongoDocument();
-                    entity = repo.save(entity);
+                            genericResource = store.getResource(resourceLocation);
 
-                    store.setContent(entity, TestSupportData.sampleTextStream());
-                    store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleTextStream());
+                            store.associate(entity, resourceLocation);
+                            store.associate(entity, PropertyPath.from("rendition"), resourceLocation);
 
-                    String storedContentId = entity.getContentId();
-                    assertThat(storedContentId).isNotNull();
-                    resourceLocation = storedContentId;
-                    entity = store.unsetContent(entity, PropertyPath.from("content"), new UnsetContentParams(UnsetContentParams.Disposition.Keep));
-                    entity = repo.save(entity);
-                }
+                            try (OutputStream os = ((WritableResource) genericResource).getOutputStream()) {
+                                os.write("Hello Client-side World!".getBytes());
+                            }
+                        }
 
-                @AfterEach
-                void tearDown() {
-                    context.close();
-                }
+                        @AfterEach
+                        void tearDown() {
+                            context.close();
+                        }
 
-                @Test
-                void shouldHaveNoContent() throws IOException {
-                    //content
-                    try (InputStream content = store.getContent(entity)) {
-                        NullableAssertions.assertNull(content);
+                        @Test
+                        void shouldNotHonorByteRanges() throws IOException {
+                            // relies on REST-layer to serve byte range
+                            Resource r = store.getResource(entity, PropertyPath.from("content"), new GetResourceParams("5-10"));
+                            try (InputStream is = r.getInputStream()) {
+                                assertThat(IOUtils.toString(is, StandardCharsets.UTF_8)).isEqualTo("Hello Client-side World!");
+                            }
+                        }
                     }
 
-                    assertThat(entity.getContentId()).isNull();
-                    assertThat(entity.getContentLen()).isNull();
+                    @Nested
+                    @DisplayName("When the resource is unassociated")
+                    class ResourceIsUnassociated {
+                        @BeforeEach
+                        void setUp() {
+                            context = new AnnotationConfigApplicationContext();
+                            context.register(TestConfig.class);
+                            context.refresh();
 
-                    assertThat(gridFsTemplate.getResource(resourceLocation).exists()).isTrue();
-                }
-            }
+                            gridFsTemplate = context.getBean(GridFsTemplate.class);
 
-            @Nested
-            class WhenAnInvalidPropertyPathIsUsedToSetContent {
-                @BeforeEach
-                void setUp() {
-                    context = new AnnotationConfigApplicationContext();
-                    context.register(TestConfig.class);
-                    context.refresh();
+                            repo = context.getBean(DualContentMongoRepository.class);
+                            store = context.getBean(DualContentMongoStore.class);
 
-                    gridFsTemplate = context.getBean(GridFsTemplate.class);
+                            resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
-                    repo = context.getBean(DualContentMongoRepository.class);
-                    store = context.getBean(DualContentMongoStore.class);
+                            entity = new DualContentMongoDocument();
+                            entity = repo.save(entity);
 
-                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                            genericResource = store.getResource(resourceLocation);
 
-                    entity = new DualContentMongoDocument();
-                    entity = repo.save(entity);
+                            store.associate(entity, resourceLocation);
+                            store.associate(entity, PropertyPath.from("rendition"), resourceLocation);
 
-                    store.setContent(entity, TestSupportData.sampleTextStream());
-                    store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleTextStream());
-                }
+                            store.unassociate(entity);
+                            store.unassociate(entity, PropertyPath.from("rendition"));
+                        }
 
-                @AfterEach
-                void tearDown() {
-                    context.close();
-                }
+                        @AfterEach
+                        void tearDown() {
+                            context.close();
+                        }
 
-                @Test
-                void shouldThrowAnError() {
-                    try {
-                        store.setContent(entity, PropertyPath.from("does.not.exist"), new ByteArrayInputStream("foo".getBytes()));
-                    } catch (Exception sae) {
-                        MongoStoreIT.this.e = sae;
+                        @Test
+                        void shouldResetEntityContentId() {
+                            assertThat(entity.getContentId()).isNull();
+                            assertThat(entity.getRenditionId()).isNull();
+                        }
                     }
-                    assertThat(e).isInstanceOf(StoreAccessException.class);
-                }
-            }
 
-            @Nested
-            class WhenAnInvalidPropertyPathIsUsedToGetContent {
-                @BeforeEach
-                void setUp() {
-                    context = new AnnotationConfigApplicationContext();
-                    context.register(TestConfig.class);
-                    context.refresh();
+                    @Nested
+                    @DisplayName("When an invalid property path is used to associate a resource")
+                    class InvalidPropertyPathIsUsedToAssociateResource {
+                        @BeforeEach
+                        void setUp() {
+                            context = new AnnotationConfigApplicationContext();
+                            context.register(TestConfig.class);
+                            context.refresh();
 
-                    gridFsTemplate = context.getBean(GridFsTemplate.class);
+                            gridFsTemplate = context.getBean(GridFsTemplate.class);
 
-                    repo = context.getBean(DualContentMongoRepository.class);
-                    store = context.getBean(DualContentMongoStore.class);
+                            repo = context.getBean(DualContentMongoRepository.class);
+                            store = context.getBean(DualContentMongoStore.class);
 
-                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                            resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
-                    entity = new DualContentMongoDocument();
-                    entity = repo.save(entity);
+                            entity = new DualContentMongoDocument();
+                            entity = repo.save(entity);
 
-                    store.setContent(entity, TestSupportData.sampleTextStream());
-                    store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleTextStream());
-                }
+                            genericResource = store.getResource(resourceLocation);
 
-                @AfterEach
-                void tearDown() {
-                    context.close();
-                }
+                            store.associate(entity, resourceLocation);
+                            store.associate(entity, PropertyPath.from("rendition"), resourceLocation);
+                        }
 
-                @Test
-                void shouldThrowAnError() {
-                    try {
-                        store.getContent(entity, PropertyPath.from("does.not.exist"));
-                    } catch (Exception sae) {
-                        MongoStoreIT.this.e = sae;
+                        @AfterEach
+                        void tearDown() {
+                            context.close();
+                        }
+
+                        @Test
+                        void shouldThrowError() {
+                            try {
+                                store.associate(entity, PropertyPath.from("does.not.exist"), resourceLocation);
+                            } catch (Exception sae) {
+                                MongoStoreIT.this.e = sae;
+                            }
+                            assertThat(e).isInstanceOf(StoreAccessException.class);
+                        }
                     }
-                    assertThat(e).isInstanceOf(StoreAccessException.class);
-                }
-            }
 
-            @Nested
-            class WhenAnInvalidPropertyPathIsUsedToUnsetContent {
-                @BeforeEach
-                void setUp() {
-                    context = new AnnotationConfigApplicationContext();
-                    context.register(TestConfig.class);
-                    context.refresh();
+                    @Nested
+                    @DisplayName("When an invalid property path is used to load a resource")
+                    class InvalidPropertyPathIsUsedToLoadResource {
+                        @BeforeEach
+                        void setUp() {
+                            context = new AnnotationConfigApplicationContext();
+                            context.register(TestConfig.class);
+                            context.refresh();
 
-                    gridFsTemplate = context.getBean(GridFsTemplate.class);
+                            gridFsTemplate = context.getBean(GridFsTemplate.class);
 
-                    repo = context.getBean(DualContentMongoRepository.class);
-                    store = context.getBean(DualContentMongoStore.class);
+                            repo = context.getBean(DualContentMongoRepository.class);
+                            store = context.getBean(DualContentMongoStore.class);
 
-                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                            resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
-                    entity = new DualContentMongoDocument();
-                    entity = repo.save(entity);
+                            entity = new DualContentMongoDocument();
+                            entity = repo.save(entity);
 
-                    store.setContent(entity, TestSupportData.sampleTextStream());
-                    store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleTextStream());
-                }
+                            genericResource = store.getResource(resourceLocation);
 
-                @AfterEach
-                void tearDown() {
-                    context.close();
-                }
+                            store.associate(entity, resourceLocation);
+                            store.associate(entity, PropertyPath.from("rendition"), resourceLocation);
+                        }
 
-                @Test
-                void shouldThrowAnError() {
-                    try {
-                        store.unsetContent(entity, PropertyPath.from("does.not.exist"));
-                    } catch (Exception sae) {
-                        MongoStoreIT.this.e = sae;
+                        @AfterEach
+                        void tearDown() {
+                            context.close();
+                        }
+
+                        @Test
+                        void shouldThrowError() {
+                            try {
+                                store.getResource(entity, PropertyPath.from("does.not.exist"));
+                            } catch (Exception sae) {
+                                MongoStoreIT.this.e = sae;
+                            }
+                            assertThat(e).isInstanceOf(StoreAccessException.class);
+                        }
                     }
-                    assertThat(e).isInstanceOf(StoreAccessException.class);
+
+                    @Nested
+                    @DisplayName("When an invalid property path is used to unassociate a resource")
+                    class InvalidPropertyPathIsUsedToUnassociateResource {
+                        @BeforeEach
+                        void setUp() {
+                            context = new AnnotationConfigApplicationContext();
+                            context.register(TestConfig.class);
+                            context.refresh();
+
+                            gridFsTemplate = context.getBean(GridFsTemplate.class);
+
+                            repo = context.getBean(DualContentMongoRepository.class);
+                            store = context.getBean(DualContentMongoStore.class);
+
+                            resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+
+                            entity = new DualContentMongoDocument();
+                            entity = repo.save(entity);
+
+                            genericResource = store.getResource(resourceLocation);
+
+                            store.associate(entity, resourceLocation);
+                            store.associate(entity, PropertyPath.from("rendition"), resourceLocation);
+                        }
+
+                        @AfterEach
+                        void tearDown() {
+                            context.close();
+                        }
+
+                        @Test
+                        void shouldThrowError() {
+                            try {
+                                store.unassociate(entity, PropertyPath.from("does.not.exist"));
+                            } catch (Exception sae) {
+                                MongoStoreIT.this.e = sae;
+                            }
+                            assertThat(e).isInstanceOf(StoreAccessException.class);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @Nested
+    class ContentStore {
+        @Nested
+        class Tests {
+            @BeforeEach
+            void setUp() {
+                context = new AnnotationConfigApplicationContext();
+                context.register(TestConfig.class);
+                context.refresh();
+
+                gridFsTemplate = context.getBean(GridFsTemplate.class);
+
+                repo = context.getBean(DualContentMongoRepository.class);
+                store = context.getBean(DualContentMongoStore.class);
+
+                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+
+                entity = new DualContentMongoDocument();
+                entity = repo.save(entity);
+
+                store.setContent(entity, TestSupportData.sampleTextStream());
+                store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleTextStream());
+            }
+
+            @AfterEach
+            void tearDown() {
+                context.close();
+            }
+
+            @Test
+            void shouldBeAbleToStoreNewContent() {
+                // content
+                try (InputStream content = store.getContent(entity)) {
+                    assertThat(IOUtils.contentEquals(TestSupportData.sampleTextStream(), content)).isTrue();
+                } catch (IOException ignored) {
+                }
+
+                //rendition
+                try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
+                    assertThat(IOUtils.contentEquals(TestSupportData.sampleTextStream(), content)).isTrue();
+                } catch (IOException ignored) {
                 }
             }
 
-            @Nested
-            class WhenContentIsDeletedAndTheIdFieldIsSharedWithJakartaId {
-                @BeforeEach
-                void setUp() {
-                    context = new AnnotationConfigApplicationContext();
-                    context.register(TestConfig.class);
-                    context.refresh();
+            @Test
+            void shouldHaveContentMetadata() {
+                // content
+                String contentId = entity.getContentId();
+                assertThat(contentId).isNotNull();
+                assertThat(contentId.trim().length()).isGreaterThan(0);
+                assertThat(entity.getContentLen()).isEqualTo(27L);
 
-                    gridFsTemplate = context.getBean(GridFsTemplate.class);
+                //rendition
+                String renditionId = entity.getRenditionId();
+                assertThat(renditionId).isNotNull();
+                assertThat(renditionId.trim().length()).isGreaterThan(0);
+                assertThat(entity.getRenditionLen()).isEqualTo(27L);
+            }
+        }
 
-                    repo = context.getBean(DualContentMongoRepository.class);
-                    store = context.getBean(DualContentMongoStore.class);
+        @Nested
+        @DisplayName("When content is updated")
+        class ContentIsUpdated {
+            @BeforeEach
+            void setUp() {
+                context = new AnnotationConfigApplicationContext();
+                context.register(TestConfig.class);
+                context.refresh();
 
-                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                gridFsTemplate = context.getBean(GridFsTemplate.class);
 
-                    entity = new DualContentMongoDocument();
-                    entity = repo.save(entity);
+                repo = context.getBean(DualContentMongoRepository.class);
+                store = context.getBean(DualContentMongoStore.class);
 
-                    store.setContent(entity, TestSupportData.sampleTextStream());
-                    store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleTextStream());
-                }
+                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
-                @AfterEach
-                void tearDown() {
-                    context.close();
-                }
+                entity = new DualContentMongoDocument();
+                entity = repo.save(entity);
 
-                @Test
-                void shouldNotResetTheIdField() {
-                    SharedIdJakartaMongoRepository sharedIdRepository = context.getBean(SharedIdJakartaMongoRepository.class);
-                    SharedIdJakartaMongoStore sharedIdStore = context.getBean(SharedIdJakartaMongoStore.class);
+                store.setContent(entity, TestSupportData.sampleTextStream());
+                store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleTextStream());
 
-                    SharedIdJakartaMongoDocument sharedIdContentIdEntity = sharedIdRepository.save(new SharedIdJakartaMongoDocument());
-
-                    sharedIdContentIdEntity = sharedIdStore.setContent(sharedIdContentIdEntity, TestSupportData.sampleTextStream());
-                    sharedIdContentIdEntity = sharedIdRepository.save(sharedIdContentIdEntity);
-                    String id = sharedIdContentIdEntity.getContentId();
-                    assertThat(id).isNotNull();
-                    sharedIdContentIdEntity = sharedIdStore.unsetContent(sharedIdContentIdEntity);
-                    assertThat(sharedIdContentIdEntity.getContentId()).isEqualTo(id);
-                    assertThat(sharedIdContentIdEntity.getContentLen()).isNull();
-                }
+                store.setContent(entity, TestSupportData.sampleUpdatedTextStream());
+                store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleUpdatedTextStream());
+                entity = repo.save(entity);
             }
 
-            @Nested
-            class WhenContentIsDeletedAndTheIdFieldIsSharedWithSpringId {
-                @BeforeEach
-                void setUp() {
-                    context = new AnnotationConfigApplicationContext();
-                    context.register(TestConfig.class);
-                    context.refresh();
+            @AfterEach
+            void tearDown() {
+                context.close();
+            }
 
-                    gridFsTemplate = context.getBean(GridFsTemplate.class);
-
-                    repo = context.getBean(DualContentMongoRepository.class);
-                    store = context.getBean(DualContentMongoStore.class);
-
-                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
-
-                    entity = new DualContentMongoDocument();
-                    entity = repo.save(entity);
-
-                    store.setContent(entity, TestSupportData.sampleTextStream());
-                    store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleTextStream());
+            @Test
+            void shouldHaveUpdatedContent() throws IOException {
+                //content
+                try (InputStream content = store.getContent(entity)) {
+                    boolean matches = IOUtils.contentEquals(TestSupportData.sampleUpdatedTextStream(), content);
+                    assertThat(matches).isTrue();
                 }
 
-                @AfterEach
-                void tearDown() {
-                    context.close();
+                //rendition
+                try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
+                    boolean matches = IOUtils.contentEquals(TestSupportData.sampleUpdatedTextStream(), content);
+                    assertThat(matches).isTrue();
+                }
+            }
+        }
+
+        @Nested
+        @DisplayName("When content is updated with shorter content")
+        class ContentIsUpdatedWithShorterContent {
+            @BeforeEach
+            void setUp() {
+                context = new AnnotationConfigApplicationContext();
+                context.register(TestConfig.class);
+                context.refresh();
+
+                gridFsTemplate = context.getBean(GridFsTemplate.class);
+
+                repo = context.getBean(DualContentMongoRepository.class);
+                store = context.getBean(DualContentMongoStore.class);
+
+                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+
+                entity = new DualContentMongoDocument();
+                entity = repo.save(entity);
+
+                store.setContent(entity, TestSupportData.sampleTextStream());
+                store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleTextStream());
+
+                store.setContent(entity, TestSupportData.samplePartialUpdateStream());
+                store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.samplePartialUpdateStream());
+                entity = repo.save(entity);
+            }
+
+            @AfterEach
+            void tearDown() {
+                context.close();
+            }
+
+            @Test
+            void shouldStoreOnlyNewContent() throws IOException {
+                //content
+                try (InputStream content = store.getContent(entity)) {
+                    boolean matches = IOUtils.contentEquals(TestSupportData.samplePartialUpdateStream(), content);
+                    assertThat(matches).isTrue();
                 }
 
-                @Test
-                void shouldNotResetTheIdField() {
-                    SharedIdSpringMongoRepository SharedIdSpringMongoRepository = context.getBean(SharedIdSpringMongoRepository.class);
-                    SharedIdSpringMongoStore SharedIdSpringMongoStore = context.getBean(SharedIdSpringMongoStore.class);
-
-                    SharedIdSpringMongoDocument SharedIdSpringMongoDocument = SharedIdSpringMongoRepository.save(new SharedIdSpringMongoDocument());
-
-                    SharedIdSpringMongoDocument = SharedIdSpringMongoStore.setContent(SharedIdSpringMongoDocument, TestSupportData.sampleTextStream());
-                    SharedIdSpringMongoDocument = SharedIdSpringMongoRepository.save(SharedIdSpringMongoDocument);
-                    String id = SharedIdSpringMongoDocument.getContentId();
-                    assertThat(id).isNotNull();
-                    SharedIdSpringMongoDocument = SharedIdSpringMongoStore.unsetContent(SharedIdSpringMongoDocument);
-                    assertThat(SharedIdSpringMongoDocument.getContentId()).isEqualTo(id);
-                    assertThat(SharedIdSpringMongoDocument.getContentLen()).isNull();
+                //rendition
+                try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
+                    boolean matches = IOUtils.contentEquals(TestSupportData.samplePartialUpdateStream(), content);
+                    assertThat(matches).isTrue();
                 }
+            }
+        }
+
+        @Nested
+        @DisplayName("When content is updated and not overwritten")
+        class ContentIsUpdatedAndNotOverwritten {
+            @BeforeEach
+            void setUp() {
+                context = new AnnotationConfigApplicationContext();
+                context.register(TestConfig.class);
+                context.refresh();
+
+                gridFsTemplate = context.getBean(GridFsTemplate.class);
+
+                repo = context.getBean(DualContentMongoRepository.class);
+                store = context.getBean(DualContentMongoStore.class);
+
+                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+
+                entity = new DualContentMongoDocument();
+                entity = repo.save(entity);
+
+                store.setContent(entity, TestSupportData.sampleTextStream());
+                store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleTextStream());
+            }
+
+            @AfterEach
+            void tearDown() {
+                context.close();
+            }
+
+            @Test
+            void shouldHaveUpdatedContent() throws IOException {
+                String contentId = entity.getContentId();
+                assertThat(contentId).isNotNull();
+                assertThat(gridFsTemplate.getResource(contentId).exists()).isTrue();
+
+                store.setContent(entity, PropertyPath.from("content"), TestSupportData.sampleUpdatedTextStream(), new SetContentParams(-1, true, SetContentParams.ContentDisposition.CreateNew));
+                entity = repo.save(entity);
+
+                try (InputStream content = store.getContent(entity)) {
+                    boolean matches = IOUtils.contentEquals(TestSupportData.sampleUpdatedTextStream(), content);
+                    assertThat(matches).isTrue();
+                }
+
+                assertThat(gridFsTemplate.getResource(contentId).exists()).isTrue();
+
+                assertThat(entity.getContentId()).isNotEqualTo(contentId);
+
+                String newContentId = entity.getContentId();
+                assertThat(newContentId).isNotNull();
+                assertThat(gridFsTemplate.getResource(newContentId).exists()).isTrue();
+            }
+        }
+
+        @Nested
+        @DisplayName("When content is unset")
+        class ContentIsUnset {
+            @BeforeEach
+            void setUp() {
+                context = new AnnotationConfigApplicationContext();
+                context.register(TestConfig.class);
+                context.refresh();
+
+                gridFsTemplate = context.getBean(GridFsTemplate.class);
+
+                repo = context.getBean(DualContentMongoRepository.class);
+                store = context.getBean(DualContentMongoStore.class);
+
+                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+
+                entity = new DualContentMongoDocument();
+                entity = repo.save(entity);
+
+                store.setContent(entity, TestSupportData.sampleTextStream());
+                store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleTextStream());
+
+                String storedContentId = entity.getContentId();
+                assertThat(storedContentId).isNotNull();
+                resourceLocation = storedContentId;
+                entity = store.unsetContent(entity);
+                entity = store.unsetContent(entity, PropertyPath.from("rendition"));
+                entity = repo.save(entity);
+            }
+
+            @AfterEach
+            void tearDown() {
+                context.close();
+            }
+
+            @Test
+            void shouldHaveNoContent() throws IOException {
+                //content
+                try (InputStream content = store.getContent(entity)) {
+                    NullableAssertions.assertNull(content);
+                }
+
+                assertThat(entity.getContentId()).isNull();
+                assertThat(entity.getContentLen()).isNull();
+
+                assertThat(gridFsTemplate.getResource(resourceLocation).exists()).isFalse();
+
+                //rendition
+                try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
+                    NullableAssertions.assertNull(content);
+                }
+
+                assertThat(entity.getRenditionId()).isNull();
+                assertThat(entity.getRenditionLen()).isNull();
+            }
+        }
+
+        @Nested
+        @DisplayName("When content is unset but kept")
+        class ContentIsUnsetButKept {
+            @BeforeEach
+            void setUp() {
+                context = new AnnotationConfigApplicationContext();
+                context.register(TestConfig.class);
+                context.refresh();
+
+                gridFsTemplate = context.getBean(GridFsTemplate.class);
+
+                repo = context.getBean(DualContentMongoRepository.class);
+                store = context.getBean(DualContentMongoStore.class);
+
+                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+
+                entity = new DualContentMongoDocument();
+                entity = repo.save(entity);
+
+                store.setContent(entity, TestSupportData.sampleTextStream());
+                store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleTextStream());
+
+                String storedContentId = entity.getContentId();
+                assertThat(storedContentId).isNotNull();
+                resourceLocation = storedContentId;
+                entity = store.unsetContent(entity, PropertyPath.from("content"), new UnsetContentParams(UnsetContentParams.Disposition.Keep));
+                entity = repo.save(entity);
+            }
+
+            @AfterEach
+            void tearDown() {
+                context.close();
+            }
+
+            @Test
+            void shouldHaveNoContent() throws IOException {
+                //content
+                try (InputStream content = store.getContent(entity)) {
+                    NullableAssertions.assertNull(content);
+                }
+
+                assertThat(entity.getContentId()).isNull();
+                assertThat(entity.getContentLen()).isNull();
+
+                assertThat(gridFsTemplate.getResource(resourceLocation).exists()).isTrue();
+            }
+        }
+
+        @Nested
+        @DisplayName("When an invalid property path is used to set content")
+        class InvalidPropertyPathIsUsedToSetContent {
+            @BeforeEach
+            void setUp() {
+                context = new AnnotationConfigApplicationContext();
+                context.register(TestConfig.class);
+                context.refresh();
+
+                gridFsTemplate = context.getBean(GridFsTemplate.class);
+
+                repo = context.getBean(DualContentMongoRepository.class);
+                store = context.getBean(DualContentMongoStore.class);
+
+                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+
+                entity = new DualContentMongoDocument();
+                entity = repo.save(entity);
+
+                store.setContent(entity, TestSupportData.sampleTextStream());
+                store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleTextStream());
+            }
+
+            @AfterEach
+            void tearDown() {
+                context.close();
+            }
+
+            @Test
+            void shouldThrowError() {
+                try {
+                    store.setContent(entity, PropertyPath.from("does.not.exist"), new ByteArrayInputStream("foo".getBytes()));
+                } catch (Exception sae) {
+                    MongoStoreIT.this.e = sae;
+                }
+                assertThat(e).isInstanceOf(StoreAccessException.class);
+            }
+        }
+
+        @Nested
+        @DisplayName("When an invalid property path is used to get content")
+        class InvalidPropertyPathIsUsedToGetContent {
+            @BeforeEach
+            void setUp() {
+                context = new AnnotationConfigApplicationContext();
+                context.register(TestConfig.class);
+                context.refresh();
+
+                gridFsTemplate = context.getBean(GridFsTemplate.class);
+
+                repo = context.getBean(DualContentMongoRepository.class);
+                store = context.getBean(DualContentMongoStore.class);
+
+                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+
+                entity = new DualContentMongoDocument();
+                entity = repo.save(entity);
+
+                store.setContent(entity, TestSupportData.sampleTextStream());
+                store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleTextStream());
+            }
+
+            @AfterEach
+            void tearDown() {
+                context.close();
+            }
+
+            @Test
+            void shouldThrowError() {
+                try {
+                    store.getContent(entity, PropertyPath.from("does.not.exist"));
+                } catch (Exception sae) {
+                    MongoStoreIT.this.e = sae;
+                }
+                assertThat(e).isInstanceOf(StoreAccessException.class);
+            }
+        }
+
+        @Nested
+        @DisplayName("When an invalid property path is used to unset content")
+        class InvalidPropertyPathIsUsedToUnsetContent {
+            @BeforeEach
+            void setUp() {
+                context = new AnnotationConfigApplicationContext();
+                context.register(TestConfig.class);
+                context.refresh();
+
+                gridFsTemplate = context.getBean(GridFsTemplate.class);
+
+                repo = context.getBean(DualContentMongoRepository.class);
+                store = context.getBean(DualContentMongoStore.class);
+
+                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+
+                entity = new DualContentMongoDocument();
+                entity = repo.save(entity);
+
+                store.setContent(entity, TestSupportData.sampleTextStream());
+                store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleTextStream());
+            }
+
+            @AfterEach
+            void tearDown() {
+                context.close();
+            }
+
+            @Test
+            void shouldThrowError() {
+                try {
+                    store.unsetContent(entity, PropertyPath.from("does.not.exist"));
+                } catch (Exception sae) {
+                    MongoStoreIT.this.e = sae;
+                }
+                assertThat(e).isInstanceOf(StoreAccessException.class);
+            }
+        }
+
+        @Nested
+        @DisplayName("When content is deleted and the ID field is shared with Jakarta ID")
+        class ContentIsDeletedAndIdFieldIsSharedWithJakartaId {
+            @BeforeEach
+            void setUp() {
+                context = new AnnotationConfigApplicationContext();
+                context.register(TestConfig.class);
+                context.refresh();
+
+                gridFsTemplate = context.getBean(GridFsTemplate.class);
+
+                repo = context.getBean(DualContentMongoRepository.class);
+                store = context.getBean(DualContentMongoStore.class);
+
+                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+
+                entity = new DualContentMongoDocument();
+                entity = repo.save(entity);
+
+                store.setContent(entity, TestSupportData.sampleTextStream());
+                store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleTextStream());
+            }
+
+            @AfterEach
+            void tearDown() {
+                context.close();
+            }
+
+            @Test
+            void shouldNotResetIdField() {
+                SharedIdJakartaMongoRepository sharedIdRepository = context.getBean(SharedIdJakartaMongoRepository.class);
+                SharedIdJakartaMongoStore sharedIdStore = context.getBean(SharedIdJakartaMongoStore.class);
+
+                SharedIdJakartaMongoDocument sharedIdContentIdEntity = sharedIdRepository.save(new SharedIdJakartaMongoDocument());
+
+                sharedIdContentIdEntity = sharedIdStore.setContent(sharedIdContentIdEntity, TestSupportData.sampleTextStream());
+                sharedIdContentIdEntity = sharedIdRepository.save(sharedIdContentIdEntity);
+                String id = sharedIdContentIdEntity.getContentId();
+                assertThat(id).isNotNull();
+                sharedIdContentIdEntity = sharedIdStore.unsetContent(sharedIdContentIdEntity);
+                assertThat(sharedIdContentIdEntity.getContentId()).isEqualTo(id);
+                assertThat(sharedIdContentIdEntity.getContentLen()).isNull();
+            }
+        }
+
+        @Nested
+        @DisplayName("When content is deleted and the ID field is shared with Spring ID")
+        class ContentIsDeletedAndIdFieldIsSharedWithSpringId {
+            @BeforeEach
+            void setUp() {
+                context = new AnnotationConfigApplicationContext();
+                context.register(TestConfig.class);
+                context.refresh();
+
+                gridFsTemplate = context.getBean(GridFsTemplate.class);
+
+                repo = context.getBean(DualContentMongoRepository.class);
+                store = context.getBean(DualContentMongoStore.class);
+
+                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+
+                entity = new DualContentMongoDocument();
+                entity = repo.save(entity);
+
+                store.setContent(entity, TestSupportData.sampleTextStream());
+                store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleTextStream());
+            }
+
+            @AfterEach
+            void tearDown() {
+                context.close();
+            }
+
+            @Test
+            void shouldNotResetIdField() {
+                SharedIdSpringMongoRepository SharedIdSpringMongoRepository = context.getBean(SharedIdSpringMongoRepository.class);
+                SharedIdSpringMongoStore SharedIdSpringMongoStore = context.getBean(SharedIdSpringMongoStore.class);
+
+                SharedIdSpringMongoDocument SharedIdSpringMongoDocument = SharedIdSpringMongoRepository.save(new SharedIdSpringMongoDocument());
+
+                SharedIdSpringMongoDocument = SharedIdSpringMongoStore.setContent(SharedIdSpringMongoDocument, TestSupportData.sampleTextStream());
+                SharedIdSpringMongoDocument = SharedIdSpringMongoRepository.save(SharedIdSpringMongoDocument);
+                String id = SharedIdSpringMongoDocument.getContentId();
+                assertThat(id).isNotNull();
+                SharedIdSpringMongoDocument = SharedIdSpringMongoStore.unsetContent(SharedIdSpringMongoDocument);
+                assertThat(SharedIdSpringMongoDocument.getContentId()).isEqualTo(id);
+                assertThat(SharedIdSpringMongoDocument.getContentLen()).isNull();
             }
         }
     }

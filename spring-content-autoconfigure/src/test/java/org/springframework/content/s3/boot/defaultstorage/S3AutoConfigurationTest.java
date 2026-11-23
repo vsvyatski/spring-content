@@ -3,10 +3,7 @@ package org.springframework.content.s3.boot.defaultstorage;
 import internal.org.springframework.content.elasticsearch.boot.autoconfigure.ElasticsearchAutoConfiguration;
 import internal.org.springframework.content.s3.boot.autoconfigure.S3ContentAutoConfiguration;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -26,7 +23,8 @@ public class S3AutoConfigurationTest {
     @Nested
     class S3AutoConfigurationWithDefaultStorage {
         @Nested
-        class GivenADefaultStorageTypeOfS3 {
+        @DisplayName("Given a default storage type of S3")
+        class DefaultStorageTypeOfS3 {
             @BeforeEach
             void setUp() {
                 contextRunner = new ApplicationContextRunner()
@@ -41,14 +39,15 @@ public class S3AutoConfigurationTest {
             }
 
             @Test
-            void shouldCreateAnS3ClientBean() {
+            void shouldCreateS3ClientBean() {
                 contextRunner.withUserConfiguration(TestConfigWithoutBeans.class)
                     .run((context) -> Assertions.assertThat(context).hasSingleBean(S3Client.class));
             }
         }
 
         @Nested
-        class GivenADefaultStorageTypeOtherThanS3 {
+        @DisplayName("Given a default storage type other than S3")
+        class DefaultStorageTypeOtherThanS3 {
             @BeforeEach
             void setUp() {
                 contextRunner = new ApplicationContextRunner()
@@ -63,13 +62,14 @@ public class S3AutoConfigurationTest {
             }
 
             @Test
-            void shouldNotCreateAnS3ClientBean() {
+            void shouldNotCreateS3ClientBean() {
                 contextRunner.withUserConfiguration(TestConfigWithoutBeans.class).run((context) -> Assertions.assertThat(context).doesNotHaveBean(S3Client.class));
             }
         }
 
         @Nested
-        class GivenNoDefaultStorageType {
+        @DisplayName("Given no default storage type")
+        class NoDefaultStorageType {
             @BeforeEach
             void setUp() {
                 contextRunner = new ApplicationContextRunner()
@@ -77,7 +77,7 @@ public class S3AutoConfigurationTest {
             }
 
             @Test
-            void shouldCreateAnS3ClientBean() {
+            void shouldCreateS3ClientBean() {
                 contextRunner.withUserConfiguration(TestConfigWithoutBeans.class)
                     .run((context) -> Assertions.assertThat(context).hasSingleBean(S3Client.class));
             }

@@ -4,6 +4,7 @@ import internal.org.springframework.content.elasticsearch.boot.autoconfigure.Ela
 import internal.org.springframework.content.solr.boot.autoconfigure.SolrAutoConfiguration;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,7 +25,8 @@ public class SolrAutoConfigurationTest {
     @Nested
     class Solr {
         @Nested
-        class GivenAnApplicationContextWithASolrClientBeanAndSolrAutoConfiguration {
+        @DisplayName("Given an application context with a Solr client bean and Solr auto configuration")
+        class ApplicationContextWithSolrClientBeanAndSolrAutoConfiguration {
             @BeforeEach
             void setUp() {
                 contextRunner = new ApplicationContextRunner()
@@ -32,7 +34,7 @@ public class SolrAutoConfigurationTest {
             }
 
             @Test
-            void shouldIncludeTheAutoconfiguredAnnotatedEventHandlerBean() {
+            void shouldIncludeAutoconfiguredAnnotatedEventHandlerBean() {
                 contextRunner.withUserConfiguration(TestConfig.class)
                     .run((context) ->
                         Assertions.assertThat(context).getBean("solrFulltextEventListener")

@@ -7,6 +7,7 @@ import io.restassured.module.mockmvc.response.MockMvcResponse;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -86,99 +87,98 @@ public class EncryptionIT {
     }
 
     @Nested
-    class ClientSideEncryptionWithFsStorageCases {
+    @DisplayName("Given content")
+    class Content {
         @Nested
-        class GivenContent {
-            @Nested
-            class Tests {
-                @BeforeEach
-                void setUp() {
-                    RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
+        class Tests {
+            @BeforeEach
+            void setUp() {
+                RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
 
-                    f = repo.save(new FsFile());
+                f = repo.save(new FsFile());
 
-                    given()
-                        .contentType("text/plain")
-                        .body("Hello Client-side encryption World!")
-                        .when()
-                        .post("/files/" + f.getId() + "/content")
-                        .then()
-                        .statusCode(HttpStatus.SC_CREATED);
-                }
-
-                @Test
-                void shouldBeStoredEncrypted() throws IOException {
-                    Optional<FsFile> fetched = repo.findById(f.getId());
-                    assertThat(fetched.isPresent()).isTrue();
-                    f = fetched.get();
-
-                    String contents;
-                    try (InputStream in = new FileInputStream(new java.io.File(filesystemRoot, f.getContentId().toString()))) {
-                        contents = IOUtils.toString(in, StandardCharsets.UTF_8);
-                    }
-                    assertThat(contents).isNotEqualTo("Hello Client-side encryption World!");
-                }
-
-                @Test
-                void shouldBeRetrievedDecrypted() {
-                    MockMvcResponse response =
-                        given()
-                            .header("accept", "text/plain")
-                            .get("/files/" + f.getId() + "/content")
-                            .then()
-                            .statusCode(HttpStatus.SC_OK)
-                            .extract().response();
-                    assertThat(response.getContentType()).startsWith("text/plain");
-                    assertThat(response.asString()).isEqualTo("Hello Client-side encryption World!");
-                }
-
-                @Test
-                void shouldHandleByteRangeRequests() {
-                    MockMvcResponse r =
-                        given()
-                            .header("accept", "text/plain")
-                            .header("range", "bytes=16-27")
-                            .get("/files/" + f.getId() + "/content")
-                            .then()
-                            .statusCode(HttpStatus.SC_PARTIAL_CONTENT)
-                            .extract().response();
-                    assertThat(r.getContentType()).startsWith("text/plain");
-
-                    assertThat(r.asString()).isEqualTo("e encryption");
-                }
+                given()
+                    .contentType("text/plain")
+                    .body("Hello Client-side encryption World!")
+                    .when()
+                    .post("/files/" + f.getId() + "/content")
+                    .then()
+                    .statusCode(HttpStatus.SC_CREATED);
             }
 
-            @Nested
-            class WhenTheContentIsUnset {
-                @BeforeEach
-                void setUp() {
-                    RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
+            @Test
+            void shouldBeStoredEncrypted() throws IOException {
+                Optional<FsFile> fetched = repo.findById(f.getId());
+                assertThat(fetched.isPresent()).isTrue();
+                f = fetched.get();
 
-                    f = repo.save(new FsFile());
-
-                    given()
-                        .contentType("text/plain")
-                        .body("Hello Client-side encryption World!")
-                        .when()
-                        .post("/files/" + f.getId() + "/content")
-                        .then()
-                        .statusCode(HttpStatus.SC_CREATED);
+                String contents;
+                try (InputStream in = new FileInputStream(new java.io.File(filesystemRoot, f.getContentId().toString()))) {
+                    contents = IOUtils.toString(in, StandardCharsets.UTF_8);
                 }
+                assertThat(contents).isNotEqualTo("Hello Client-side encryption World!");
+            }
 
-                @Test
-                void itShouldRemoveTheContentAndClearTheContentKey() {
-                    f = repo.findById(f.getId()).orElseThrow();
-                    String contentId = f.getContentId().toString();
-
+            @Test
+            void shouldBeRetrievedDecrypted() {
+                MockMvcResponse response =
                     given()
-                        .delete("/files/" + f.getId() + "/content")
+                        .header("accept", "text/plain")
+                        .get("/files/" + f.getId() + "/content")
                         .then()
-                        .statusCode(HttpStatus.SC_NO_CONTENT);
+                        .statusCode(HttpStatus.SC_OK)
+                        .extract().response();
+                assertThat(response.getContentType()).startsWith("text/plain");
+                assertThat(response.asString()).isEqualTo("Hello Client-side encryption World!");
+            }
 
-                    f = repo.findById(f.getId()).orElseThrow();
-                    assertThat(f.getContentKey()).isNull();
-                    assertThat(new java.io.File(filesystemRoot, contentId).exists()).isFalse();
-                }
+            @Test
+            void shouldHandleByteRangeRequests() {
+                MockMvcResponse r =
+                    given()
+                        .header("accept", "text/plain")
+                        .header("range", "bytes=16-27")
+                        .get("/files/" + f.getId() + "/content")
+                        .then()
+                        .statusCode(HttpStatus.SC_PARTIAL_CONTENT)
+                        .extract().response();
+                assertThat(r.getContentType()).startsWith("text/plain");
+
+                assertThat(r.asString()).isEqualTo("e encryption");
+            }
+        }
+
+        @Nested
+        @DisplayName("When the content is unset")
+        class ContentIsUnset {
+            @BeforeEach
+            void setUp() {
+                RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
+
+                f = repo.save(new FsFile());
+
+                given()
+                    .contentType("text/plain")
+                    .body("Hello Client-side encryption World!")
+                    .when()
+                    .post("/files/" + f.getId() + "/content")
+                    .then()
+                    .statusCode(HttpStatus.SC_CREATED);
+            }
+
+            @Test
+            void itShouldRemoveTheContentAndClearTheContentKey() {
+                f = repo.findById(f.getId()).orElseThrow();
+                String contentId = f.getContentId().toString();
+
+                given()
+                    .delete("/files/" + f.getId() + "/content")
+                    .then()
+                    .statusCode(HttpStatus.SC_NO_CONTENT);
+
+                f = repo.findById(f.getId()).orElseThrow();
+                assertThat(f.getContentKey()).isNull();
+                assertThat(new java.io.File(filesystemRoot, contentId).exists()).isFalse();
             }
         }
     }

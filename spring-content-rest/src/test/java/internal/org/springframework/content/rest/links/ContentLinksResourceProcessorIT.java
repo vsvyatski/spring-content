@@ -1,10 +1,7 @@
 package internal.org.springframework.content.rest.links;
 
 import internal.org.springframework.content.rest.support.*;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.content.rest.config.HypermediaConfiguration;
@@ -52,9 +49,11 @@ public class ContentLinksResourceProcessorIT {
     private PersistentEntityResource resource;
 
     @Nested
-    class GivenTheSpringContentBaseUriPropertyIsSetToContentApiCases {
+    @DisplayName("Given the Spring Content base URI property is set to /contentApi")
+    class SpringContentBaseUriPropertyIsSetToContentApi {
         @Nested
-        class GivenAnEntityWithASingleContentIdProperty {
+        @DisplayName("Given an entity with a single content ID property")
+        class EntityWithSingleContentIdProperty {
             @Nested
             class Tests {
                 @BeforeEach
@@ -75,13 +74,14 @@ public class ContentLinksResourceProcessorIT {
                 }
 
                 @Test
-                void shouldAddAnEntityContentLinks() {
+                void shouldAddEntityContentLinks() {
                     assertThat(resource.getLinks("content")).extracting("href").contains("http://localhost/contentApi/oneToOneLinkedContentEntities/999/content");
                 }
             }
 
             @Nested
-            class WhenFullyQualifiedLinksAreDisabledAndShortcutLinksAreEnabled {
+            @DisplayName("When fully qualified links are disabled and shortcut links are enabled")
+            class FullyQualifiedLinksAreDisabledAndShortcutLinksAreEnabled {
                 @BeforeEach
                 void setUp() {
                     PersistentEntity<?, ?> persistentEntity = repositories.getPersistentEntity(OneToOneLinkedContentEntity.class);
@@ -115,7 +115,8 @@ public class ContentLinksResourceProcessorIT {
             }
 
             @Nested
-            class WhenFullyQualifiedLinksAreDisabledAndShortcutLinksAreDisabled {
+            @DisplayName("When fully qualified links are disabled and shortcut links are disabled")
+            class FullyQualifiedLinksAreDisabledAndShortcutLinksAreDisabled {
                 @BeforeEach
                 void setUp() {
                     PersistentEntity<?, ?> persistentEntity = repositories.getPersistentEntity(OneToOneLinkedContentEntity.class);
@@ -151,7 +152,8 @@ public class ContentLinksResourceProcessorIT {
         }
 
         @Nested
-        class GivenAnEntityWithMultipleContentIdProperties {
+        @DisplayName("Given an entity with multiple content ID properties")
+        class EntityWithMultipleContentIdProperties {
             @BeforeEach
             void setUp() {
                 PersistentEntity<?, ?> persistentEntity = repositories.getPersistentEntity(DualContentRenditionEntity.class);
@@ -179,7 +181,8 @@ public class ContentLinksResourceProcessorIT {
         }
 
         @Nested
-        class GivenAnEntityWithAnEmbeddedObjectContainingContentIdProperties {
+        @DisplayName("Given an entity with an embedded object containing content ID properties")
+        class EntityWithEmbeddedObjectContainingContentIdProperties {
             @BeforeEach
             void setUp() {
                 PersistentEntity<?, ?> persistentEntity = repositories.getPersistentEntity(AuditedNestedContentEntity.class);
@@ -207,7 +210,8 @@ public class ContentLinksResourceProcessorIT {
         }
 
         @Nested
-        class GivenAnEntityWithEmbeddedObjectWithRestResourceCustomizationsIssue1049 {
+        @DisplayName("Given an entity with embedded object with REST resource customizations")
+        class EntityWithEmbeddedObjectWithRestResourceCustomizations {
             @BeforeEach
             void setUp() {
                 PersistentEntity<?, ?> persistentEntity = persistentEntities.getRequiredPersistentEntity(RestResourcePackageEntity.class);
@@ -232,7 +236,8 @@ public class ContentLinksResourceProcessorIT {
         }
 
         @Nested
-        class GivenTheEmbeddedObjectInAnEntityContainingContentIdProperties {
+        @DisplayName("Given the embedded object in an entity containing content ID properties")
+        class EmbeddedObjectInEntityContainingContentIdProperties {
             @BeforeEach
             void setUp() {
                 PersistentEntity<?, ?> persistentEntity = persistentEntities.getRequiredPersistentEntity(AuditedNestedContentChild.class);
@@ -251,7 +256,7 @@ public class ContentLinksResourceProcessorIT {
             }
 
             @Test
-            void shouldNotTryToGenerateContentPropertyLinksForTheEmbeddedObject() {
+            void shouldNotTryToGenerateContentPropertyLinksForEmbeddedObject() {
                 assertThat(resource.getLinks().isEmpty()).isTrue();
             }
         }

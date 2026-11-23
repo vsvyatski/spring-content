@@ -24,13 +24,13 @@ public class ContentLinkRelIT {
 
     @Nested
     @NestedTestConfiguration(NestedTestConfiguration.EnclosingConfiguration.INHERIT)
-    class GivenAnExportingStoreSpecifyingALinkRelOfFoo {
+    class ExportingStoreSpecifyingLinkRelOfFoo {
         @Nested
         @NestedTestConfiguration(NestedTestConfiguration.EnclosingConfiguration.INHERIT)
         class LinkRel {
             @Nested
-            @DisplayName("given a store specifying a linkRel and an entity with a top-level uncorrelated content property")
-            class GivenAStoreSpecifyingALinkRelAndAnEntityWithATopLevelUncorrelatedContentProperty extends ContentLinkTests {
+            @DisplayName("Given a store with @StoreRestResource(linkRel = \"foo\") and an entity with a top-level uncorrelated content property")
+            class StoreSpecifyingLinkRelAndEntityWithTopLevelUncorrelatedContentPropertyContentLinkTests extends ContentLinkTests {
                 @Autowired
                 private WebApplicationContext context;
 
@@ -50,14 +50,14 @@ public class ContentLinkRelIT {
                 }
 
                 @Test
-                void shouldProvideAResponseWithAContentLink() throws Exception {
+                void shouldProvideResponseWithContentLink() throws Exception {
                     assertContentLinkInHalResponse();
                 }
             }
 
             @Nested
-            @DisplayName("given a store specifying a linkRel and an entity with top-level correlated content properties")
-            class GivenAStoreSpecifyingALinkRelAndAnEntityWithTopLevelCorrelatedContentPropertiesC extends ContentLinkTests {
+            @DisplayName("Given a store with @StoreRestResource(linkRel = \"foo\") and an entity with top-level correlated content properties")
+            class StoreSpecifyingLinkRelAndEntityWithTopLevelCorrelatedContentPropertiesContentLinkTests extends ContentLinkTests {
                 @Autowired
                 private WebApplicationContext context;
 
@@ -78,14 +78,14 @@ public class ContentLinkRelIT {
                 }
 
                 @Test
-                void shouldProvideAResponseWithAContentLink() throws Exception {
+                void shouldProvideResponseWithContentLink() throws Exception {
                     assertContentLinkInHalResponse();
                 }
             }
 
             @Nested
-            @DisplayName("given a store specifying a linkRel and an entity a nested content property")
-            class GivenAStoreSpecifyingALinkrelAndAnEntityANestedContentPropertyContentLinkTests extends ContentLinkTests {
+            @DisplayName("Given a store with @StoreRestResource(linkRel = \"foo\") and an entity with a nested content property")
+            class StoreSpecifyingLinkRelAndEntityWithNestedContentPropertyContentLinkTests extends ContentLinkTests {
                 @Autowired
                 private WebApplicationContext context;
 
@@ -106,14 +106,14 @@ public class ContentLinkRelIT {
                 }
 
                 @Test
-                void shouldProvideAResponseWithAContentLink() throws Exception {
+                void shouldProvideResponseWithContentLink() throws Exception {
                     assertContentLinkInHalResponse();
                 }
             }
 
             @Nested
-            @DisplayName("given a store specifying a linkRel and an entity with nested content properties")
-            class GivenStoreSpecifyingLinkRelAndEntityWithNestedContentPropertiesContentLink extends ContentLinkTests {
+            @DisplayName("Given a store with @StoreRestResource(linkRel = \"foo\") and an entity with nested content properties")
+            class StoreSpecifyingLinkRelAndEntityWithNestedContentPropertiesContentLinkTests extends ContentLinkTests {
                 @Autowired
                 private WebApplicationContext context;
 
@@ -139,7 +139,7 @@ public class ContentLinkRelIT {
                 }
 
                 @Test
-                void shouldProvideAResponseWithAContentLink() throws Exception {
+                void shouldProvideResponseWithContentLink() throws Exception {
                     assertContentLinkInHalResponse();
                 }
             }

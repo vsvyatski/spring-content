@@ -4,6 +4,7 @@ import internal.org.springframework.versions.AuthenticationFacade;
 import internal.org.springframework.versions.LockingService;
 import jakarta.persistence.Id;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.aop.ProxyMethodInvocation;
@@ -52,11 +53,14 @@ public class PessimisticLockingInterceptorTest {
         @Nested
         class Invoke {
             @Nested
-            class GivenAMethodInvocation {
+            @DisplayName("Given a method invocation")
+            class MethodInvocation {
                 @Nested
-                class GivenTheMethodIsSetContent {
+                @DisplayName("Given the method is set content")
+                class MethodIsSetContent {
                     @Nested
-                    class WhenThereIsNoLockOwner {
+                    @DisplayName("When there is no lock owner")
+                    class NoLockOwner {
                         @BeforeEach
                         void setUp() throws Throwable {
                             locker = mock(LockingService.class);
@@ -86,7 +90,8 @@ public class PessimisticLockingInterceptorTest {
                     }
 
                     @Nested
-                    class WhenThePrincipalIsTheLockOwner {
+                    @DisplayName("When the principal is the lock owner")
+                    class PrincipalIsLockOwner {
                         private Authentication principal;
 
                         @BeforeEach
@@ -122,7 +127,8 @@ public class PessimisticLockingInterceptorTest {
                     }
 
                     @Nested
-                    class WhenThePrincipalIsNotTheLockOwner {
+                    @DisplayName("When the principal is not the lock owner")
+                    class PrincipalIsNotLockOwner {
                         @BeforeEach
                         void setUp() throws Throwable {
                             locker = mock(LockingService.class);
@@ -155,7 +161,8 @@ public class PessimisticLockingInterceptorTest {
                     }
 
                     @Nested
-                    class WhenTheEntityDoesntHaveAnID {
+                    @DisplayName("When the entity doesn't have an ID")
+                    class EntityDoesntHaveID {
                         @BeforeEach
                         void setUp() throws Throwable {
                             locker = mock(LockingService.class);

@@ -31,17 +31,17 @@ public class JpaVersioningServiceImplTest {
             }
 
             @Test
-            void shouldSetTheAncestorIdToNull() {
+            void shouldSetAncestorIdToNull() {
                 assertThat(entity.getAncestorId()).isNull();
             }
 
             @Test
-            void shouldSetTheAncestorRootIdToItSOwnId() {
+            void shouldSetAncestorRootIdToItsOwnId() {
                 assertThat(entity.getAncestorRootId()).isEqualTo(entity.getId());
             }
 
             @Test
-            void shouldReturnTheEntity() {
+            void shouldReturnEntity() {
                 assertThat(result).isEqualTo(entity);
             }
         }
@@ -60,12 +60,12 @@ public class JpaVersioningServiceImplTest {
             }
 
             @Test
-            void shouldSetTheSuccessorIdToNull() {
+            void shouldSetSuccessorIdToNull() {
                 assertThat(entity.getSuccessorId()).isEqualTo(999L);
             }
 
             @Test
-            void shouldReturnTheEntity() {
+            void shouldReturnEntity() {
                 assertThat(result).isEqualTo(entity);
             }
         }
@@ -88,32 +88,32 @@ public class JpaVersioningServiceImplTest {
             }
 
             @Test
-            void shouldSetTheVersionNumber() {
+            void shouldSetVersionNumber() {
                 assertThat(successor.getVersionNo()).isEqualTo("1.1");
             }
 
             @Test
-            void shouldSetTheVersionLabel() {
+            void shouldSetVersionLabel() {
                 assertThat(successor.getVersionLabel()).isEqualTo("a new version");
             }
 
             @Test
-            void shouldSetTheSuccessorIdToNull() {
+            void shouldSetSuccessorIdToNull() {
                 assertThat(successor.getSuccessorId()).isNull();
             }
 
             @Test
-            void shouldSetTheAncestorRootId() {
+            void shouldSetAncestorRootId() {
                 assertThat(successor.getAncestorRootId()).isEqualTo(1234L);
             }
 
             @Test
-            void shouldSetTheAncestorId() {
+            void shouldSetAncestorId() {
                 assertThat(successor.getAncestorId()).isEqualTo(5678L);
             }
 
             @Test
-            void shouldReturnTheEntity() {
+            void shouldReturnEntity() {
                 assertThat(result).isEqualTo(successor);
             }
         }

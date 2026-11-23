@@ -7,10 +7,7 @@ import org.apache.solr.client.solrj.request.SolrQuery;
 import org.apache.solr.client.solrj.request.UpdateRequest;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocumentList;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.content.test.support.fulltext.*;
@@ -85,7 +82,7 @@ public class SolrIT {
         }
 
         @Test
-        void shouldIndexTheContentOfThatDocument() {
+        void shouldIndexContentOfThatDocument() {
             org.awaitility.Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
                 SolrQuery query = new SolrQuery();
                 query.setQuery("foo");
@@ -100,7 +97,8 @@ public class SolrIT {
         }
 
         @Nested
-        class WhenTheContentIsSearched {
+        @DisplayName("When the content is searched")
+        class ContentIsSearched {
             @BeforeEach
             void setUp() {
                 configureSolrAuth();
@@ -125,14 +123,15 @@ public class SolrIT {
             }
 
             @Test
-            void shouldReturnTheSearchedContent() {
+            void shouldReturnSearchedContent() {
                 Iterable<UUID> content = docContentStore.search("one");
                 assertThat(content).contains(doc.getContentId());
             }
         }
 
         @Nested
-        class GivenThatDocumentsContentIsUpdated {
+        @DisplayName("Given that documents content is updated")
+        class DocumentsContentIsUpdated {
             @BeforeEach
             void setUp() {
                 configureSolrAuth();
@@ -160,7 +159,7 @@ public class SolrIT {
             }
 
             @Test
-            void shouldIndexTheNewContent() {
+            void shouldIndexNewContent() {
                 org.awaitility.Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
                     SolrQuery query = new SolrQuery();
                     query.setQuery("bar");
@@ -176,7 +175,8 @@ public class SolrIT {
         }
 
         @Nested
-        class GivenThatDocumentIsDeleted {
+        @DisplayName("Given that document is deleted")
+        class DocumentIsDeleted {
             @BeforeEach
             void setUp() {
                 configureSolrAuth();
@@ -200,7 +200,7 @@ public class SolrIT {
             }
 
             @Test
-            void shouldDeleteTheRecordOfTheContentFromTheIndex() throws SolrServerException, IOException {
+            void shouldDeleteRecordOfContentFromIndex() throws SolrServerException, IOException {
                 SolrQuery query = new SolrQuery();
                 query.setQuery("one");
                 query.addFilterQuery(format(
@@ -322,7 +322,7 @@ public class SolrIT {
         }
 
         @Test
-        void shouldApplyTheProvidedAttributesAndFilterQuery() {
+        void shouldApplyProvidedAttributesAndFilterQuery() {
             Iterable<UUID> tmp = docContentStore.search("one");
             assertThat(tmp).isNotNull();
 
@@ -358,7 +358,7 @@ public class SolrIT {
         }
 
         @Test
-        void shouldReturnResultsUsingTheReturnType() {
+        void shouldReturnResultsUsingReturnType() {
             org.awaitility.Awaitility.await().untilAsserted(() -> {
                 var result = (store.search("one"));
                 Iterator<FulltextSearchResult> iterator = result.iterator();

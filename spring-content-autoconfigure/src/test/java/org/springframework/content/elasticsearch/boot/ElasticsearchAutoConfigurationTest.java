@@ -5,10 +5,7 @@ import internal.org.springframework.content.elasticsearch.ElasticsearchIndexServ
 import internal.org.springframework.content.elasticsearch.ElasticsearchIndexer;
 import internal.org.springframework.content.elasticsearch.IndexManager;
 import internal.org.springframework.content.elasticsearch.boot.autoconfigure.ElasticsearchAutoConfiguration;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.content.elasticsearch.EnableElasticsearchFulltextIndexing;
@@ -50,9 +47,10 @@ public class ElasticsearchAutoConfigurationTest {
     }
 
     @Nested
-    class GivenAContextWithoutAElasticsearchClientConfigured {
+    @DisplayName("Given a context without an Elasticsearch client configured")
+    class ContextWithoutElasticsearchClientConfigured {
         @Test
-        void shouldCreateAClient() {
+        void shouldCreateClient() {
             final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
                 .withConfiguration(AutoConfigurations.of(ElasticsearchAutoConfiguration.class));
 
@@ -69,7 +67,8 @@ public class ElasticsearchAutoConfigurationTest {
     }
 
     @Nested
-    class GivenAContextWithAElasticsearchClientConfigured {
+    @DisplayName("Given a context with an Elasticsearch client configured")
+    class ContextWithElasticsearchClientConfigured {
         @Test
         void shouldUseThatClient() {
             final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
@@ -82,7 +81,8 @@ public class ElasticsearchAutoConfigurationTest {
     }
 
     @Nested
-    class GivenAContextWithAutoIndexingDisabled {
+    @DisplayName("Given a context with auto indexing disabled")
+    class ContextWithAutoIndexingDisabled {
         @BeforeEach
         void setUp() {
             System.setProperty("spring.content.elasticsearch.autoindex", "false");
@@ -94,7 +94,7 @@ public class ElasticsearchAutoConfigurationTest {
         }
 
         @Test
-        void shouldNotConfigureTheIndexingEventHandler() {
+        void shouldNotConfigureIndexingEventHandler() {
             final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
                 .withConfiguration(AutoConfigurations.of(ElasticsearchAutoConfiguration.class));
 
@@ -105,7 +105,8 @@ public class ElasticsearchAutoConfigurationTest {
     }
 
     @Nested
-    class GivenAContextWithAutoIndexingConfigured {
+    @DisplayName("Given a context with auto indexing configured")
+    class ContextWithAutoIndexingConfigured {
         @BeforeEach
         void setUp() {
             System.setProperty("spring.content.elasticsearch.autoindex", "true");
@@ -117,7 +118,7 @@ public class ElasticsearchAutoConfigurationTest {
         }
 
         @Test
-        void shouldLoadTheContext() {
+        void shouldLoadContext() {
             final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
                 .withConfiguration(AutoConfigurations.of(ElasticsearchAutoConfiguration.class));
 
@@ -128,9 +129,10 @@ public class ElasticsearchAutoConfigurationTest {
     }
 
     @Nested
-    class GivenAContextThatAlreadyEnablesElasticSearchFulltextIndexing {
+    @DisplayName("Given a context that already has @EnableElasticsearchFulltextIndexing")
+    class ContextThatAlreadyEnablesElasticSearchFulltextIndexing {
         @Test
-        void shouldLoadTheContextAndNotThrowABeanDefinitionOverrideException() {
+        void shouldLoadContextAndNotThrowBeanDefinitionOverrideException() {
             final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
                 .withConfiguration(AutoConfigurations.of(ElasticsearchAutoConfiguration.class));
 

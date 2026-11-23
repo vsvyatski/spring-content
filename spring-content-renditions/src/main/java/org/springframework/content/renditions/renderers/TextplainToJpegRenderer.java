@@ -7,25 +7,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import javax.imageio.ImageIO;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.FontFormatException;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
+import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.font.LineBreakMeasurer;
 import java.awt.font.TextAttribute;
 import java.awt.font.TextLayout;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.io.*;
 import java.text.AttributedCharacterIterator;
 import java.text.AttributedString;
 import java.util.ArrayList;
@@ -56,8 +45,7 @@ public class TextplainToJpegRenderer implements RenditionProvider {
             Assert.notNull(in, () -> "Bundled font not found on classpath: " + FONT_RESOURCE);
             Font base = Font.createFont(Font.TRUETYPE_FONT, in);
             return base.deriveFont(Font.PLAIN, (float) fontSize);
-        }
-        catch (IOException | FontFormatException e) {
+        } catch (IOException | FontFormatException e) {
             throw new RenditionException("Error loading bundled font", e);
         }
     }

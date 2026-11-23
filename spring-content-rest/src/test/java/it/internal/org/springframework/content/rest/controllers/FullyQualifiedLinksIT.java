@@ -42,8 +42,8 @@ public class FullyQualifiedLinksIT {
     @Nested
     class ContextPathContentTests {
         @Nested
-        @DisplayName("given an entity is the subject of a repository and storage")
-        class GivenAnEntityIsTheSubjectOfARepositoryAndStorageContent extends ContentTests {
+        @DisplayName("Given an entity is the subject of a repository and storage")
+        class EntityIsSubjectOfRepositoryAndStorageContent extends ContentTests {
             @BeforeEach
             void setUp() {
                 MockMvc mvc = MockMvcBuilders.webAppContextSetup(context).build();

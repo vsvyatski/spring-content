@@ -1,10 +1,7 @@
 package internal.org.springframework.content.s3.it;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -118,20 +115,59 @@ public class S3StoreIT {
     }
 
     @Nested
-    class S3StorageCases {
+    class Store {
         @Nested
-        class StoreCases {
+        class GetResource {
             @Nested
-            class GetResource {
+            class Tests {
+                @BeforeEach
+                void setUp() throws InterruptedException {
+                    ensureTestBucket();
+
+                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+
+                    genericResource = store.getResource(resourceLocation);
+                }
+
+                @AfterEach
+                void tearDown() throws IOException {
+                    ((DeletableResource) genericResource).delete();
+                }
+
+                @Test
+                void shouldGetResource() {
+                    assertThat(genericResource).isInstanceOf(Resource.class);
+                }
+
+                @Test
+                void shouldNotExist() {
+                    assertThat(genericResource.exists()).isFalse();
+                }
+
+                @Test
+                void shouldBeRangeableResource() {
+                    assertThat(genericResource).isInstanceOf(RangeableResource.class);
+                }
+            }
+
+            @Nested
+            @DisplayName("Given content is added to that resource")
+            class ContentIsAddedToThatResource {
                 @Nested
                 class Tests {
                     @BeforeEach
-                    void setUp() throws InterruptedException {
+                    void setUp() throws IOException, InterruptedException {
                         ensureTestBucket();
 
                         resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                         genericResource = store.getResource(resourceLocation);
+
+                        try (InputStream is = TestSupportData.sampleTextStream()) {
+                            try (OutputStream os = ((WritableResource) genericResource).getOutputStream()) {
+                                IOUtils.copy(is, os);
+                            }
+                        }
                     }
 
                     @AfterEach
@@ -140,338 +176,138 @@ public class S3StoreIT {
                     }
 
                     @Test
-                    void shouldGetResource() {
-                        assertThat(genericResource).isInstanceOf(Resource.class);
-                    }
+                    void shouldStoreThatContent() throws IOException {
+                        assertThat(genericResource.exists()).isTrue();
 
-                    @Test
-                    void shouldNotExist() {
-                        assertThat(genericResource.exists()).isFalse();
-                    }
-
-                    @Test
-                    void shouldBeARangeableResource() {
-                        assertThat(genericResource).isInstanceOf(RangeableResource.class);
+                        try (InputStream expected = TestSupportData.sampleTextStream();
+                             InputStream actual = genericResource.getInputStream()) {
+                            assertThat(IOUtils.contentEquals(expected, actual)).isTrue();
+                        }
                     }
                 }
 
                 @Nested
-                class GivenContentIsAddedToThatResource {
-                    @Nested
-                    class Tests {
-                        @BeforeEach
-                        void setUp() throws IOException, InterruptedException {
-                            ensureTestBucket();
-
-                            resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
-
-                            genericResource = store.getResource(resourceLocation);
-
-                            try (InputStream is = TestSupportData.sampleTextStream()) {
-                                try (OutputStream os = ((WritableResource) genericResource).getOutputStream()) {
-                                    IOUtils.copy(is, os);
-                                }
-                            }
-                        }
-
-                        @AfterEach
-                        void tearDown() throws IOException {
-                            ((DeletableResource) genericResource).delete();
-                        }
-
-                        @Test
-                        void shouldStoreThatContent() throws IOException {
-                            assertThat(genericResource.exists()).isTrue();
-
-                            try (InputStream expected = TestSupportData.sampleTextStream();
-                                 InputStream actual = genericResource.getInputStream()) {
-                                assertThat(IOUtils.contentEquals(expected, actual)).isTrue();
-                            }
-                        }
-                    }
-
-                    @Nested
-                    class GivenThatResourceIsThenUpdated {
-                        @BeforeEach
-                        void setUp() throws IOException, InterruptedException {
-                            ensureTestBucket();
-
-                            resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
-
-                            genericResource = store.getResource(resourceLocation);
-
-                            try (InputStream is = TestSupportData.sampleTextStream()) {
-                                try (OutputStream os = ((WritableResource) genericResource).getOutputStream()) {
-                                    IOUtils.copy(is, os);
-                                }
-                            }
-
-                            try (InputStream is = TestSupportData.sampleUpdatedTextStream()) {
-                                try (OutputStream os = ((WritableResource) genericResource).getOutputStream()) {
-                                    IOUtils.copy(is, os);
-                                }
-                            }
-                        }
-
-                        @AfterEach
-                        void tearDown() throws IOException {
-                            ((DeletableResource) genericResource).delete();
-                        }
-
-                        @Test
-                        void shouldStoreThatUpdatedContent() throws IOException {
-                            assertThat(genericResource.exists()).isTrue();
-
-                            try (InputStream expected = TestSupportData.sampleUpdatedTextStream()) {
-                                try (InputStream actual = genericResource.getInputStream()) {
-                                    assertThat(IOUtils.contentEquals(expected, actual)).isTrue();
-                                }
-                            }
-                        }
-                    }
-
-                    @Nested
-                    class GivenAByteRangeIsRequested {
-                        @BeforeEach
-                        void setUp() throws IOException, InterruptedException {
-                            ensureTestBucket();
-
-                            resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
-
-                            genericResource = store.getResource(resourceLocation);
-
-                            try (InputStream is = TestSupportData.sampleTextStream()) {
-                                try (OutputStream os = ((WritableResource) genericResource).getOutputStream()) {
-                                    IOUtils.copy(is, os);
-                                }
-                            }
-                        }
-
-                        @AfterEach
-                        void tearDown() throws IOException {
-                            ((DeletableResource) genericResource).delete();
-                        }
-
-                        @Test
-                        void shouldReturnAPartialContentInputStreamAndThePartialContent() throws IOException {
-                            ((RangeableResource) genericResource).setRange("bytes=6-19");
-
-                            var expectedBytes = TestSupportData.sampleTextBytes();
-                            Arrays.fill(expectedBytes, 0, 6, (byte) 0); // First 5 bytes are absent
-                            Arrays.fill(expectedBytes, 20, expectedBytes.length, (byte) 0); // Bytes after position 19 are absent
-
-                            try (InputStream actual = genericResource.getInputStream()) {
-                                var actualBytes = actual.readAllBytes();
-                                assertThat(actualBytes).isEqualTo(expectedBytes);
-                            }
-                        }
-                    }
-
-                    @Nested
-                    class GivenThatResourceIsThenDeleted {
-                        @BeforeEach
-                        void setUp() throws IOException, InterruptedException {
-                            ensureTestBucket();
-
-                            resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
-
-                            genericResource = store.getResource(resourceLocation);
-
-                            try (InputStream is = TestSupportData.sampleTextStream()) {
-                                try (OutputStream os = ((WritableResource) genericResource).getOutputStream()) {
-                                    IOUtils.copy(is, os);
-                                }
-                            }
-
-                            try {
-                                ((DeletableResource) genericResource).delete();
-                            } catch (Exception e) {
-                                S3StoreIT.this.e = e;
-                            }
-                        }
-
-                        @AfterEach
-                        void tearDown() throws IOException {
-                            ((DeletableResource) genericResource).delete();
-                        }
-
-                        @Test
-                        void shouldNotExist() {
-                            assertThat(e).isNull();
-                        }
-                    }
-                }
-            }
-        }
-
-        @Nested
-        class AssociativeStoreCases {
-            @Nested
-            class GivenANewEntity {
-                @Nested
-                class Tests {
+                @DisplayName("Given that resource is then updated")
+                class ResourceIsThenUpdated {
                     @BeforeEach
-                    void setUp() throws InterruptedException {
+                    void setUp() throws IOException, InterruptedException {
                         ensureTestBucket();
 
                         resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
-                        entity = new DualContentJpaLongIdMimeEntity();
-                        entity = repo.save(entity);
+                        genericResource = store.getResource(resourceLocation);
+
+                        try (InputStream is = TestSupportData.sampleTextStream()) {
+                            try (OutputStream os = ((WritableResource) genericResource).getOutputStream()) {
+                                IOUtils.copy(is, os);
+                            }
+                        }
+
+                        try (InputStream is = TestSupportData.sampleUpdatedTextStream()) {
+                            try (OutputStream os = ((WritableResource) genericResource).getOutputStream()) {
+                                IOUtils.copy(is, os);
+                            }
+                        }
+                    }
+
+                    @AfterEach
+                    void tearDown() throws IOException {
+                        ((DeletableResource) genericResource).delete();
                     }
 
                     @Test
-                    void shouldNotHaveAnAssociatedResource() {
-                        assertThat(entity.getContentId()).isNull();
-                        assertThat(store.getResource(entity)).isNull();
+                    void shouldStoreThatUpdatedContent() throws IOException {
+                        assertThat(genericResource.exists()).isTrue();
+
+                        try (InputStream expected = TestSupportData.sampleUpdatedTextStream()) {
+                            try (InputStream actual = genericResource.getInputStream()) {
+                                assertThat(IOUtils.contentEquals(expected, actual)).isTrue();
+                            }
+                        }
                     }
                 }
 
                 @Nested
-                class GivenAResource {
-                    @Nested
-                    class WhenTheResourceIsAssociated {
-                        @Nested
-                        class Tests {
-                            @BeforeEach
-                            void setUp() throws InterruptedException {
-                                ensureTestBucket();
+                @DisplayName("Given a byte range is requested")
+                class ByteRangeIsRequested {
+                    @BeforeEach
+                    void setUp() throws IOException, InterruptedException {
+                        ensureTestBucket();
 
-                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
-                                entity = new DualContentJpaLongIdMimeEntity();
-                                entity = repo.save(entity);
+                        genericResource = store.getResource(resourceLocation);
 
-                                genericResource = store.getResource(resourceLocation);
-
-                                store.associate(entity, resourceLocation);
-                                store.associate(entity, PropertyPath.from("rendition"), resourceLocation);
+                        try (InputStream is = TestSupportData.sampleTextStream()) {
+                            try (OutputStream os = ((WritableResource) genericResource).getOutputStream()) {
+                                IOUtils.copy(is, os);
                             }
+                        }
+                    }
 
-                            @Test
-                            void shouldBeRecordedAsSuchOnTheEntitySContentId() {
-                                assertThat(entity.getContentId()).isEqualTo(resourceLocation);
-                                assertThat(entity.getRenditionId()).isEqualTo(resourceLocation);
+                    @AfterEach
+                    void tearDown() throws IOException {
+                        ((DeletableResource) genericResource).delete();
+                    }
+
+                    @Test
+                    void shouldReturnPartialContentInputStreamAndPartialContent() throws IOException {
+                        ((RangeableResource) genericResource).setRange("bytes=6-19");
+
+                        var expectedBytes = TestSupportData.sampleTextBytes();
+                        Arrays.fill(expectedBytes, 0, 6, (byte) 0); // First 5 bytes are absent
+                        Arrays.fill(expectedBytes, 20, expectedBytes.length, (byte) 0); // Bytes after position 19 are absent
+
+                        try (InputStream actual = genericResource.getInputStream()) {
+                            var actualBytes = actual.readAllBytes();
+                            assertThat(actualBytes).isEqualTo(expectedBytes);
+                        }
+                    }
+                }
+
+                @Nested
+                @DisplayName("Given that resource is then deleted")
+                class ResourceIsThenDeleted {
+                    @BeforeEach
+                    void setUp() throws IOException, InterruptedException {
+                        ensureTestBucket();
+
+                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+
+                        genericResource = store.getResource(resourceLocation);
+
+                        try (InputStream is = TestSupportData.sampleTextStream()) {
+                            try (OutputStream os = ((WritableResource) genericResource).getOutputStream()) {
+                                IOUtils.copy(is, os);
                             }
                         }
 
-                        @Nested
-                        class WhenTheResourceIsUnassociated {
-                            @BeforeEach
-                            void setUp() throws InterruptedException {
-                                ensureTestBucket();
-
-                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
-
-                                entity = new DualContentJpaLongIdMimeEntity();
-                                entity = repo.save(entity);
-
-                                genericResource = store.getResource(resourceLocation);
-
-                                store.associate(entity, resourceLocation);
-                                store.associate(entity, PropertyPath.from("rendition"), resourceLocation);
-
-                                store.unassociate(entity);
-                                store.unassociate(entity, PropertyPath.from("rendition"));
-                            }
-
-                            @Test
-                            void shouldResetTheEntitySContentId() {
-                                assertThat(entity.getContentId()).isNull();
-                                assertThat(entity.getRenditionId()).isNull();
-                            }
+                        try {
+                            ((DeletableResource) genericResource).delete();
+                        } catch (Exception e) {
+                            S3StoreIT.this.e = e;
                         }
+                    }
 
-                        @Nested
-                        class WhenAInvalidPropertyPathIsUsedToAssociateAResource {
-                            @BeforeEach
-                            void setUp() throws InterruptedException {
-                                ensureTestBucket();
+                    @AfterEach
+                    void tearDown() throws IOException {
+                        ((DeletableResource) genericResource).delete();
+                    }
 
-                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
-
-                                entity = new DualContentJpaLongIdMimeEntity();
-                                entity = repo.save(entity);
-
-                                genericResource = store.getResource(resourceLocation);
-
-                                store.associate(entity, resourceLocation);
-                                store.associate(entity, PropertyPath.from("rendition"), resourceLocation);
-                            }
-
-                            @Test
-                            void shouldThrowAnError() {
-                                try {
-                                    store.associate(entity, PropertyPath.from("does.not.exist"), resourceLocation);
-                                } catch (Exception sae) {
-                                    S3StoreIT.this.e = sae;
-                                }
-                                assertThat(e).isInstanceOf(StoreAccessException.class);
-                            }
-                        }
-
-                        @Nested
-                        class WhenAInvalidPropertyPathIsUsedToLoadAResource {
-                            @BeforeEach
-                            void setUp() throws InterruptedException {
-                                ensureTestBucket();
-
-                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
-
-                                entity = new DualContentJpaLongIdMimeEntity();
-                                entity = repo.save(entity);
-
-                                genericResource = store.getResource(resourceLocation);
-
-                                store.associate(entity, resourceLocation);
-                                store.associate(entity, PropertyPath.from("rendition"), resourceLocation);
-                            }
-
-                            @Test
-                            void shouldThrowAnError() {
-                                try {
-                                    store.getResource(entity, PropertyPath.from("does.not.exist"));
-                                } catch (Exception sae) {
-                                    S3StoreIT.this.e = sae;
-                                }
-                                assertThat(e).isInstanceOf(StoreAccessException.class);
-                            }
-                        }
-
-                        @Nested
-                        class WhenAInvalidPropertyPathIsUsedToUnassociateAResource {
-                            @BeforeEach
-                            void setUp() throws InterruptedException {
-                                ensureTestBucket();
-
-                                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
-
-                                entity = new DualContentJpaLongIdMimeEntity();
-                                entity = repo.save(entity);
-
-                                genericResource = store.getResource(resourceLocation);
-
-                                store.associate(entity, resourceLocation);
-                                store.associate(entity, PropertyPath.from("rendition"), resourceLocation);
-                            }
-
-                            @Test
-                            void shouldThrowAnError() {
-                                try {
-                                    store.unassociate(entity, PropertyPath.from("does.not.exist"));
-                                } catch (Exception sae) {
-                                    S3StoreIT.this.e = sae;
-                                }
-                                assertThat(e).isInstanceOf(StoreAccessException.class);
-                            }
-                        }
+                    @Test
+                    void shouldNotExist() {
+                        assertThat(e).isNull();
                     }
                 }
             }
         }
+    }
 
+    @Nested
+    class AssociativeStore {
         @Nested
-        class ContentStoreCases {
+        @DisplayName("Given a new entity")
+        class NewEntity {
             @Nested
             class Tests {
                 @BeforeEach
@@ -481,392 +317,571 @@ public class S3StoreIT {
                     resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new DualContentJpaLongIdMimeEntity();
-                    entity.setContentType("text/plain");
-                    entity.setRenditionType("text/html");
-                    entity = repo.save(entity);
-
-                    store.setContent(entity, TestSupportData.sampleTextStream());
-                    store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleHtmlRenditionStream());
-                }
-
-                @Test
-                void shouldBeAbleToStoreNewContent() throws IOException {
-                    // content
-                    try (InputStream content = store.getContent(entity)) {
-                        assertThat(IOUtils.contentEquals(TestSupportData.sampleTextStream(), content)).isTrue();
-                    }
-
-                    //rendition
-                    try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
-                        assertThat(IOUtils.contentEquals(TestSupportData.sampleHtmlRenditionStream(), content)).isTrue();
-                    }
-                }
-
-                @Test
-                void shouldHaveContentMetadata() {
-                    // content
-                    assertThat(entity.getContentId()).isNotNull();
-                    assertThat(entity.getContentId().trim().length()).isGreaterThan(0);
-                    assertThat(entity.getContentLen()).isEqualTo(Long.valueOf(27L));
-
-                    //rendition
-                    assertThat(entity.getRenditionId()).isNotNull();
-                    assertThat(entity.getRenditionId().trim().length()).isGreaterThan(0);
-                    assertThat(entity.getRenditionLen()).isEqualTo(40L);
-
-                    assertThat(entity.getContentType()).isEqualTo("text/plain");
-                    assertThat(entity.getRenditionType()).isEqualTo("text/html");
-
-                    HeadObjectResponse contentHead = client.headObject(
-                        HeadObjectRequest.builder().bucket(BUCKET).key(entity.getContentId()).build());
-                    assertThat(contentHead.contentType()).isEqualTo("text/plain");
-
-                    HeadObjectResponse renditionHead = client.headObject(
-                        HeadObjectRequest.builder().bucket(BUCKET).key(entity.getRenditionId()).build());
-                    assertThat(renditionHead.contentType()).isEqualTo("text/html");
-                }
-            }
-
-            @Nested
-            class WhenContentIsUpdated {
-                @BeforeEach
-                void setUp() throws InterruptedException {
-                    ensureTestBucket();
-
-                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
-
-                    entity = new DualContentJpaLongIdMimeEntity();
-                    entity.setContentType("text/plain");
-                    entity.setRenditionType("text/html");
-                    entity = repo.save(entity);
-
-                    store.setContent(entity, TestSupportData.sampleTextStream());
-                    store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleHtmlRenditionStream());
-
-                    store.setContent(entity, TestSupportData.sampleUpdatedTextStream());
-                    store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleUpdatedHtmlRenditionStream());
                     entity = repo.save(entity);
                 }
 
                 @Test
-                void shouldHaveTheUpdatedContent() throws IOException {
-                    //content
-                    try (InputStream content = store.getContent(entity)) {
-                        assertThat(IOUtils.contentEquals(TestSupportData.sampleUpdatedTextStream(), content)).isTrue();
-                    }
-
-                    //rendition
-                    try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
-                        assertThat(IOUtils.contentEquals(TestSupportData.sampleUpdatedHtmlRenditionStream(), content)).isTrue();
-                    }
-                }
-            }
-
-            @Nested
-            class WhenContentIsUpdatedWithShorterContent {
-                @BeforeEach
-                void setUp() throws InterruptedException {
-                    ensureTestBucket();
-
-                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
-
-                    entity = new DualContentJpaLongIdMimeEntity();
-                    entity.setContentType("text/plain");
-                    entity.setRenditionType("text/html");
-                    entity = repo.save(entity);
-
-                    store.setContent(entity, TestSupportData.sampleTextStream());
-                    store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleHtmlRenditionStream());
-
-                    store.setContent(entity, TestSupportData.samplePartialUpdateStream());
-                    store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.samplePartialUpdateHtmlRenditionStream());
-                    entity = repo.save(entity);
-                }
-
-                @Test
-                void shouldStoreOnlyTheNewContent() throws IOException {
-                    //content
-                    try (InputStream content = store.getContent(entity)) {
-                        assertThat(IOUtils.contentEquals(TestSupportData.samplePartialUpdateStream(), content)).isTrue();
-                    }
-
-                    //rendition
-                    try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
-                        assertThat(IOUtils.contentEquals(TestSupportData.samplePartialUpdateHtmlRenditionStream(), content)).isTrue();
-                    }
-                }
-            }
-
-            @Nested
-            class WhenContentIsUpdatedAndNotOverwritten {
-                @BeforeEach
-                void setUp() throws InterruptedException {
-                    ensureTestBucket();
-
-                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
-
-                    entity = new DualContentJpaLongIdMimeEntity();
-                    entity.setContentType("text/plain");
-                    entity.setRenditionType("text/html");
-                    entity = repo.save(entity);
-
-                    store.setContent(entity, TestSupportData.sampleTextStream());
-                    store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleHtmlRenditionStream());
-                }
-
-                @Test
-                void shouldHaveTheUpdatedContent() throws IOException {
-                    String contentId = entity.getContentId();
-                    client.headObject(HeadObjectRequest.builder().bucket(BUCKET).key(contentId).build());
-
-                    store.setContent(entity, PropertyPath.from("content"), TestSupportData.sampleUpdatedTextStream(), new SetContentParams(-1, true, SetContentParams.ContentDisposition.CreateNew));
-                    entity = repo.save(entity);
-
-                    try (InputStream content = store.getContent(entity)) {
-                        assertThat(IOUtils.contentEquals(TestSupportData.sampleUpdatedTextStream(), content)).isTrue();
-                    }
-
-                    assertThat(entity.getContentId()).isNotEqualTo(contentId);
-                    client.headObject(HeadObjectRequest.builder().bucket(BUCKET).key(entity.getContentId()).build());
-                }
-            }
-
-            @Nested
-            class WhenContentIsUnset {
-                @BeforeEach
-                void setUp() throws InterruptedException {
-                    ensureTestBucket();
-
-                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
-
-                    entity = new DualContentJpaLongIdMimeEntity();
-                    entity.setContentType("text/plain");
-                    entity.setRenditionType("text/html");
-                    entity = repo.save(entity);
-
-                    store.setContent(entity, TestSupportData.sampleTextStream());
-                    store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleHtmlRenditionStream());
-
-                    resourceLocation = entity.getContentId();
-                    assertThat(resourceLocation).isNotNull();
-                    entity = store.unsetContent(entity);
-                    entity = store.unsetContent(entity, PropertyPath.from("rendition"));
-                    entity = repo.save(entity);
-                }
-
-                @Test
-                void shouldHaveNoContent() throws IOException {
-                    //content
-                    try (InputStream content = store.getContent(entity)) {
-                        assertThat(content).isNull();
-                    }
-
+                void shouldNotHaveAssociatedResource() {
                     assertThat(entity.getContentId()).isNull();
-                    assertThat(entity.getContentLen()).isNull();
-
-                    assertThatThrownBy(() -> client.headObject(
-                        HeadObjectRequest.builder().bucket(BUCKET).key(resourceLocation).build()))
-                        .isInstanceOf(NoSuchKeyException.class);
-
-                    //rendition
-                    try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
-                        assertThat(content).isNull();
-                    }
-
-                    assertThat(entity.getRenditionId()).isNull();
-                    assertThat(entity.getRenditionLen()).isNull();
+                    assertThat(store.getResource(entity)).isNull();
                 }
             }
 
             @Nested
-            class WhenContentIsUnsetButKept {
-                @BeforeEach
-                void setUp() throws InterruptedException {
-                    ensureTestBucket();
-
-                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
-
-                    entity = new DualContentJpaLongIdMimeEntity();
-                    entity.setContentType("text/plain");
-                    entity.setRenditionType("text/html");
-                    entity = repo.save(entity);
-
-                    store.setContent(entity, TestSupportData.sampleTextStream());
-                    store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleHtmlRenditionStream());
-
-                    resourceLocation = entity.getContentId();
-                    assertThat(resourceLocation).isNotNull();
-                    entity = store.unsetContent(entity, PropertyPath.from("content"), new UnsetContentParams(UnsetContentParams.Disposition.Keep));
-                    entity = repo.save(entity);
-                }
-
-                @Test
-                void shouldHaveNoContent() throws IOException {
-                    //content
-                    try (InputStream content = store.getContent(entity)) {
-                        assertThat(content).isNull();
-                    }
-
-                    assertThat(entity.getContentId()).isNull();
-                    assertThat(entity.getContentLen()).isNull();
-
-                    client.headObject(HeadObjectRequest.builder().bucket(BUCKET).key(resourceLocation).build());
-                }
-            }
-
-            @Nested
-            class WhenAnInvalidPropertyPathIsUsedToSetContent {
-                @BeforeEach
-                void setUp() throws InterruptedException {
-                    ensureTestBucket();
-
-                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
-
-                    entity = new DualContentJpaLongIdMimeEntity();
-                    entity.setContentType("text/plain");
-                    entity.setRenditionType("text/html");
-                    entity = repo.save(entity);
-
-                    store.setContent(entity, TestSupportData.sampleTextStream());
-                    store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleHtmlRenditionStream());
-                }
-
-                @Test
-                void shouldThrowAnError() {
-                    try {
-                        store.setContent(entity, PropertyPath.from("does.not.exist"), new ByteArrayInputStream("foo".getBytes()));
-                    } catch (Exception sae) {
-                        S3StoreIT.this.e = sae;
-                    }
-                    assertThat(e).isInstanceOf(StoreAccessException.class);
-                }
-            }
-
-            @Nested
-            class WhenAnInvalidPropertyPathIsUsedToGetContent {
-                @BeforeEach
-                void setUp() throws InterruptedException {
-                    ensureTestBucket();
-
-                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
-
-                    entity = new DualContentJpaLongIdMimeEntity();
-                    entity.setContentType("text/plain");
-                    entity.setRenditionType("text/html");
-                    entity = repo.save(entity);
-
-                    store.setContent(entity, TestSupportData.sampleTextStream());
-                    store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleHtmlRenditionStream());
-                }
-
-                @Test
-                void shouldThrowAnError() {
-                    try {
-                        store.getContent(entity, PropertyPath.from("does.not.exist"));
-                    } catch (Exception sae) {
-                        S3StoreIT.this.e = sae;
-                    }
-                    assertThat(e).isInstanceOf(StoreAccessException.class);
-                }
-            }
-
-            @Nested
-            class WhenAnInvalidPropertyPathIsUsedToUnsetContent {
-                @BeforeEach
-                void setUp() throws InterruptedException {
-                    ensureTestBucket();
-
-                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
-
-                    entity = new DualContentJpaLongIdMimeEntity();
-                    entity.setContentType("text/plain");
-                    entity.setRenditionType("text/html");
-                    entity = repo.save(entity);
-
-                    store.setContent(entity, TestSupportData.sampleTextStream());
-                    store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleHtmlRenditionStream());
-                }
-
-                @Test
-                void shouldThrowAnError() {
-                    try {
-                        store.unsetContent(entity, PropertyPath.from("does.not.exist"));
-                    } catch (Exception sae) {
-                        S3StoreIT.this.e = sae;
-                    }
-                    assertThat(e).isInstanceOf(StoreAccessException.class);
-                }
-            }
-
-            @Nested
-            class WhenContentIsDeletedAndTheContentIdFieldIsSharedWithEntityId {
-                @BeforeEach
-                void setUp() throws InterruptedException {
-                    ensureTestBucket();
-
-                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
-
-                    entity = new DualContentJpaLongIdMimeEntity();
-                    entity.setContentType("text/plain");
-                    entity.setRenditionType("text/html");
-                    entity = repo.save(entity);
-
-                    store.setContent(entity, TestSupportData.sampleTextStream());
-                    store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleHtmlRenditionStream());
-                }
-
-                @Test
-                void shouldNotResetTheIdField() {
-                    SharedIdJakartaJpaEntity sharedIdContentIdEntity = sharedIdRepository.save(new SharedIdJakartaJpaEntity());
-
-                    sharedIdContentIdEntity = sharedIdStore.setContent(sharedIdContentIdEntity, TestSupportData.sampleTextStream());
-                    sharedIdContentIdEntity = sharedIdRepository.save(sharedIdContentIdEntity);
-                    String id = sharedIdContentIdEntity.getContentId();
-                    sharedIdContentIdEntity = sharedIdStore.unsetContent(sharedIdContentIdEntity);
-                    assertThat(sharedIdContentIdEntity.getContentId()).isEqualTo(id);
-                    assertThat(sharedIdContentIdEntity.getContentLen()).isNull();
-                }
-            }
-
-            @Nested
-            class EmbeddedContent {
+            @DisplayName("Given a resource")
+            class AssociatedResource {
                 @Nested
-                class GivenAEntityWithANullEmbeddedContentObject {
-                    @BeforeEach
-                    void setUp() throws InterruptedException {
-                        ensureTestBucket();
+                @DisplayName("When the resource is associated")
+                class ResourceIsAssociated {
+                    @Nested
+                    class Tests {
+                        @BeforeEach
+                        void setUp() throws InterruptedException {
+                            ensureTestBucket();
 
-                        resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+                            resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
-                        entity = new DualContentJpaLongIdMimeEntity();
-                        entity.setContentType("text/plain");
-                        entity.setRenditionType("text/html");
-                        entity = repo.save(entity);
+                            entity = new DualContentJpaLongIdMimeEntity();
+                            entity = repo.save(entity);
 
-                        store.setContent(entity, TestSupportData.sampleTextStream());
-                        store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleHtmlRenditionStream());
-                    }
+                            genericResource = store.getResource(resourceLocation);
 
-                    @Test
-                    void shouldReturnNullWhenContentIsFetched() throws IOException {
-                        EmbeddedContentJpaStringIdEntity embedded = embeddedRepo.save(new EmbeddedContentJpaStringIdEntity());
-                        assertThat(embeddedStore.getContent(embedded, PropertyPath.from("content"))).isNull();
-                    }
+                            store.associate(entity, resourceLocation);
+                            store.associate(entity, PropertyPath.from("rendition"), resourceLocation);
+                        }
 
-                    @Test
-                    void shouldBeSuccessfulWhenContentIsSet() throws IOException {
-                        EmbeddedContentJpaStringIdEntity embedded = embeddedRepo.save(new EmbeddedContentJpaStringIdEntity());
-                        embeddedStore.setContent(embedded, PropertyPath.from("content"), TestSupportData.sampleTextStream());
-                        try (InputStream is = embeddedStore.getContent(embedded, PropertyPath.from("content"))) {
-                            assertThat(IOUtils.contentEquals(is, TestSupportData.sampleTextStream())).isTrue();
+                        @Test
+                        void shouldBeRecordedAsSuchOnEntityContentId() {
+                            assertThat(entity.getContentId()).isEqualTo(resourceLocation);
+                            assertThat(entity.getRenditionId()).isEqualTo(resourceLocation);
                         }
                     }
 
-                    @Test
-                    void shouldReturnNullWhenContentIsUnset() {
-                        EmbeddedContentJpaStringIdEntity embedded = embeddedRepo.save(new EmbeddedContentJpaStringIdEntity());
-                        assertThat(embeddedStore.unsetContent(embedded, PropertyPath.from("content"))).isSameAs(embedded);
+                    @Nested
+                    @DisplayName("When the resource is unassociated")
+                    class ResourceIsUnassociated {
+                        @BeforeEach
+                        void setUp() throws InterruptedException {
+                            ensureTestBucket();
+
+                            resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+
+                            entity = new DualContentJpaLongIdMimeEntity();
+                            entity = repo.save(entity);
+
+                            genericResource = store.getResource(resourceLocation);
+
+                            store.associate(entity, resourceLocation);
+                            store.associate(entity, PropertyPath.from("rendition"), resourceLocation);
+
+                            store.unassociate(entity);
+                            store.unassociate(entity, PropertyPath.from("rendition"));
+                        }
+
+                        @Test
+                        void shouldResetEntityContentId() {
+                            assertThat(entity.getContentId()).isNull();
+                            assertThat(entity.getRenditionId()).isNull();
+                        }
                     }
+
+                    @Nested
+                    @DisplayName("When an invalid property path is used to associate a resource")
+                    class InvalidPropertyPathIsUsedToAssociateResource {
+                        @BeforeEach
+                        void setUp() throws InterruptedException {
+                            ensureTestBucket();
+
+                            resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+
+                            entity = new DualContentJpaLongIdMimeEntity();
+                            entity = repo.save(entity);
+
+                            genericResource = store.getResource(resourceLocation);
+
+                            store.associate(entity, resourceLocation);
+                            store.associate(entity, PropertyPath.from("rendition"), resourceLocation);
+                        }
+
+                        @Test
+                        void shouldThrowError() {
+                            try {
+                                store.associate(entity, PropertyPath.from("does.not.exist"), resourceLocation);
+                            } catch (Exception sae) {
+                                S3StoreIT.this.e = sae;
+                            }
+                            assertThat(e).isInstanceOf(StoreAccessException.class);
+                        }
+                    }
+
+                    @Nested
+                    @DisplayName("When an invalid property path is used to load a resource")
+                    class InvalidPropertyPathIsUsedToLoadResource {
+                        @BeforeEach
+                        void setUp() throws InterruptedException {
+                            ensureTestBucket();
+
+                            resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+
+                            entity = new DualContentJpaLongIdMimeEntity();
+                            entity = repo.save(entity);
+
+                            genericResource = store.getResource(resourceLocation);
+
+                            store.associate(entity, resourceLocation);
+                            store.associate(entity, PropertyPath.from("rendition"), resourceLocation);
+                        }
+
+                        @Test
+                        void shouldThrowError() {
+                            try {
+                                store.getResource(entity, PropertyPath.from("does.not.exist"));
+                            } catch (Exception sae) {
+                                S3StoreIT.this.e = sae;
+                            }
+                            assertThat(e).isInstanceOf(StoreAccessException.class);
+                        }
+                    }
+
+                    @Nested
+                    @DisplayName("When an invalid property path is used to unassociate a resource")
+                    class InvalidPropertyPathIsUsedToUnassociateResource {
+                        @BeforeEach
+                        void setUp() throws InterruptedException {
+                            ensureTestBucket();
+
+                            resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+
+                            entity = new DualContentJpaLongIdMimeEntity();
+                            entity = repo.save(entity);
+
+                            genericResource = store.getResource(resourceLocation);
+
+                            store.associate(entity, resourceLocation);
+                            store.associate(entity, PropertyPath.from("rendition"), resourceLocation);
+                        }
+
+                        @Test
+                        void shouldThrowError() {
+                            try {
+                                store.unassociate(entity, PropertyPath.from("does.not.exist"));
+                            } catch (Exception sae) {
+                                S3StoreIT.this.e = sae;
+                            }
+                            assertThat(e).isInstanceOf(StoreAccessException.class);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @Nested
+    class ContentStore {
+        @Nested
+        class Tests {
+            @BeforeEach
+            void setUp() throws InterruptedException {
+                ensureTestBucket();
+
+                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+
+                entity = new DualContentJpaLongIdMimeEntity();
+                entity.setContentType("text/plain");
+                entity.setRenditionType("text/html");
+                entity = repo.save(entity);
+
+                store.setContent(entity, TestSupportData.sampleTextStream());
+                store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleHtmlRenditionStream());
+            }
+
+            @Test
+            void shouldBeAbleToStoreNewContent() throws IOException {
+                // content
+                try (InputStream content = store.getContent(entity)) {
+                    assertThat(IOUtils.contentEquals(TestSupportData.sampleTextStream(), content)).isTrue();
+                }
+
+                //rendition
+                try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
+                    assertThat(IOUtils.contentEquals(TestSupportData.sampleHtmlRenditionStream(), content)).isTrue();
+                }
+            }
+
+            @Test
+            void shouldHaveContentMetadata() {
+                // content
+                assertThat(entity.getContentId()).isNotNull();
+                assertThat(entity.getContentId().trim().length()).isGreaterThan(0);
+                assertThat(entity.getContentLen()).isEqualTo(Long.valueOf(27L));
+
+                //rendition
+                assertThat(entity.getRenditionId()).isNotNull();
+                assertThat(entity.getRenditionId().trim().length()).isGreaterThan(0);
+                assertThat(entity.getRenditionLen()).isEqualTo(40L);
+
+                assertThat(entity.getContentType()).isEqualTo("text/plain");
+                assertThat(entity.getRenditionType()).isEqualTo("text/html");
+
+                HeadObjectResponse contentHead = client.headObject(
+                    HeadObjectRequest.builder().bucket(BUCKET).key(entity.getContentId()).build());
+                assertThat(contentHead.contentType()).isEqualTo("text/plain");
+
+                HeadObjectResponse renditionHead = client.headObject(
+                    HeadObjectRequest.builder().bucket(BUCKET).key(entity.getRenditionId()).build());
+                assertThat(renditionHead.contentType()).isEqualTo("text/html");
+            }
+        }
+
+        @Nested
+        @DisplayName("When content is updated")
+        class ContentIsUpdated {
+            @BeforeEach
+            void setUp() throws InterruptedException {
+                ensureTestBucket();
+
+                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+
+                entity = new DualContentJpaLongIdMimeEntity();
+                entity.setContentType("text/plain");
+                entity.setRenditionType("text/html");
+                entity = repo.save(entity);
+
+                store.setContent(entity, TestSupportData.sampleTextStream());
+                store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleHtmlRenditionStream());
+
+                store.setContent(entity, TestSupportData.sampleUpdatedTextStream());
+                store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleUpdatedHtmlRenditionStream());
+                entity = repo.save(entity);
+            }
+
+            @Test
+            void shouldHaveUpdatedContent() throws IOException {
+                //content
+                try (InputStream content = store.getContent(entity)) {
+                    assertThat(IOUtils.contentEquals(TestSupportData.sampleUpdatedTextStream(), content)).isTrue();
+                }
+
+                //rendition
+                try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
+                    assertThat(IOUtils.contentEquals(TestSupportData.sampleUpdatedHtmlRenditionStream(), content)).isTrue();
+                }
+            }
+        }
+
+        @Nested
+        @DisplayName("When content is updated with shorter content")
+        class ContentIsUpdatedWithShorterContent {
+            @BeforeEach
+            void setUp() throws InterruptedException {
+                ensureTestBucket();
+
+                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+
+                entity = new DualContentJpaLongIdMimeEntity();
+                entity.setContentType("text/plain");
+                entity.setRenditionType("text/html");
+                entity = repo.save(entity);
+
+                store.setContent(entity, TestSupportData.sampleTextStream());
+                store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleHtmlRenditionStream());
+
+                store.setContent(entity, TestSupportData.samplePartialUpdateStream());
+                store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.samplePartialUpdateHtmlRenditionStream());
+                entity = repo.save(entity);
+            }
+
+            @Test
+            void shouldStoreOnlyNewContent() throws IOException {
+                //content
+                try (InputStream content = store.getContent(entity)) {
+                    assertThat(IOUtils.contentEquals(TestSupportData.samplePartialUpdateStream(), content)).isTrue();
+                }
+
+                //rendition
+                try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
+                    assertThat(IOUtils.contentEquals(TestSupportData.samplePartialUpdateHtmlRenditionStream(), content)).isTrue();
+                }
+            }
+        }
+
+        @Nested
+        @DisplayName("When content is updated and not overwritten")
+        class ContentIsUpdatedAndNotOverwritten {
+            @BeforeEach
+            void setUp() throws InterruptedException {
+                ensureTestBucket();
+
+                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+
+                entity = new DualContentJpaLongIdMimeEntity();
+                entity.setContentType("text/plain");
+                entity.setRenditionType("text/html");
+                entity = repo.save(entity);
+
+                store.setContent(entity, TestSupportData.sampleTextStream());
+                store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleHtmlRenditionStream());
+            }
+
+            @Test
+            void shouldHaveUpdatedContent() throws IOException {
+                String contentId = entity.getContentId();
+                client.headObject(HeadObjectRequest.builder().bucket(BUCKET).key(contentId).build());
+
+                store.setContent(entity, PropertyPath.from("content"), TestSupportData.sampleUpdatedTextStream(), new SetContentParams(-1, true, SetContentParams.ContentDisposition.CreateNew));
+                entity = repo.save(entity);
+
+                try (InputStream content = store.getContent(entity)) {
+                    assertThat(IOUtils.contentEquals(TestSupportData.sampleUpdatedTextStream(), content)).isTrue();
+                }
+
+                assertThat(entity.getContentId()).isNotEqualTo(contentId);
+                client.headObject(HeadObjectRequest.builder().bucket(BUCKET).key(entity.getContentId()).build());
+            }
+        }
+
+        @Nested
+        @DisplayName("When content is unset")
+        class ContentIsUnset {
+            @BeforeEach
+            void setUp() throws InterruptedException {
+                ensureTestBucket();
+
+                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+
+                entity = new DualContentJpaLongIdMimeEntity();
+                entity.setContentType("text/plain");
+                entity.setRenditionType("text/html");
+                entity = repo.save(entity);
+
+                store.setContent(entity, TestSupportData.sampleTextStream());
+                store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleHtmlRenditionStream());
+
+                resourceLocation = entity.getContentId();
+                assertThat(resourceLocation).isNotNull();
+                entity = store.unsetContent(entity);
+                entity = store.unsetContent(entity, PropertyPath.from("rendition"));
+                entity = repo.save(entity);
+            }
+
+            @Test
+            void shouldHaveNoContent() throws IOException {
+                //content
+                try (InputStream content = store.getContent(entity)) {
+                    assertThat(content).isNull();
+                }
+
+                assertThat(entity.getContentId()).isNull();
+                assertThat(entity.getContentLen()).isNull();
+
+                assertThatThrownBy(() -> client.headObject(
+                    HeadObjectRequest.builder().bucket(BUCKET).key(resourceLocation).build()))
+                    .isInstanceOf(NoSuchKeyException.class);
+
+                //rendition
+                try (InputStream content = store.getContent(entity, PropertyPath.from("rendition"))) {
+                    assertThat(content).isNull();
+                }
+
+                assertThat(entity.getRenditionId()).isNull();
+                assertThat(entity.getRenditionLen()).isNull();
+            }
+        }
+
+        @Nested
+        @DisplayName("When content is unset but kept")
+        class ContentIsUnsetButKept {
+            @BeforeEach
+            void setUp() throws InterruptedException {
+                ensureTestBucket();
+
+                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+
+                entity = new DualContentJpaLongIdMimeEntity();
+                entity.setContentType("text/plain");
+                entity.setRenditionType("text/html");
+                entity = repo.save(entity);
+
+                store.setContent(entity, TestSupportData.sampleTextStream());
+                store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleHtmlRenditionStream());
+
+                resourceLocation = entity.getContentId();
+                assertThat(resourceLocation).isNotNull();
+                entity = store.unsetContent(entity, PropertyPath.from("content"), new UnsetContentParams(UnsetContentParams.Disposition.Keep));
+                entity = repo.save(entity);
+            }
+
+            @Test
+            void shouldHaveNoContent() throws IOException {
+                //content
+                try (InputStream content = store.getContent(entity)) {
+                    assertThat(content).isNull();
+                }
+
+                assertThat(entity.getContentId()).isNull();
+                assertThat(entity.getContentLen()).isNull();
+
+                client.headObject(HeadObjectRequest.builder().bucket(BUCKET).key(resourceLocation).build());
+            }
+        }
+
+        @Nested
+        @DisplayName("When an invalid property path is used to set content")
+        class InvalidPropertyPathIsUsedToSetContent {
+            @BeforeEach
+            void setUp() throws InterruptedException {
+                ensureTestBucket();
+
+                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+
+                entity = new DualContentJpaLongIdMimeEntity();
+                entity.setContentType("text/plain");
+                entity.setRenditionType("text/html");
+                entity = repo.save(entity);
+
+                store.setContent(entity, TestSupportData.sampleTextStream());
+                store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleHtmlRenditionStream());
+            }
+
+            @Test
+            void shouldThrowError() {
+                try {
+                    store.setContent(entity, PropertyPath.from("does.not.exist"), new ByteArrayInputStream("foo".getBytes()));
+                } catch (Exception sae) {
+                    S3StoreIT.this.e = sae;
+                }
+                assertThat(e).isInstanceOf(StoreAccessException.class);
+            }
+        }
+
+        @Nested
+        @DisplayName("When an invalid property path is used to get content")
+        class InvalidPropertyPathIsUsedToGetContent {
+            @BeforeEach
+            void setUp() throws InterruptedException {
+                ensureTestBucket();
+
+                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+
+                entity = new DualContentJpaLongIdMimeEntity();
+                entity.setContentType("text/plain");
+                entity.setRenditionType("text/html");
+                entity = repo.save(entity);
+
+                store.setContent(entity, TestSupportData.sampleTextStream());
+                store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleHtmlRenditionStream());
+            }
+
+            @Test
+            void shouldThrowError() {
+                try {
+                    store.getContent(entity, PropertyPath.from("does.not.exist"));
+                } catch (Exception sae) {
+                    S3StoreIT.this.e = sae;
+                }
+                assertThat(e).isInstanceOf(StoreAccessException.class);
+            }
+        }
+
+        @Nested
+        @DisplayName("When an invalid property path is used to unset content")
+        class InvalidPropertyPathIsUsedToUnsetContent {
+            @BeforeEach
+            void setUp() throws InterruptedException {
+                ensureTestBucket();
+
+                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+
+                entity = new DualContentJpaLongIdMimeEntity();
+                entity.setContentType("text/plain");
+                entity.setRenditionType("text/html");
+                entity = repo.save(entity);
+
+                store.setContent(entity, TestSupportData.sampleTextStream());
+                store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleHtmlRenditionStream());
+            }
+
+            @Test
+            void shouldThrowError() {
+                try {
+                    store.unsetContent(entity, PropertyPath.from("does.not.exist"));
+                } catch (Exception sae) {
+                    S3StoreIT.this.e = sae;
+                }
+                assertThat(e).isInstanceOf(StoreAccessException.class);
+            }
+        }
+
+        @Nested
+        @DisplayName("When content is deleted and the content ID field is shared with entity ID")
+        class ContentIsDeletedAndContentIdFieldIsSharedWithEntityId {
+            @BeforeEach
+            void setUp() throws InterruptedException {
+                ensureTestBucket();
+
+                resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+
+                entity = new DualContentJpaLongIdMimeEntity();
+                entity.setContentType("text/plain");
+                entity.setRenditionType("text/html");
+                entity = repo.save(entity);
+
+                store.setContent(entity, TestSupportData.sampleTextStream());
+                store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleHtmlRenditionStream());
+            }
+
+            @Test
+            void shouldNotResetIdField() {
+                SharedIdJakartaJpaEntity sharedIdContentIdEntity = sharedIdRepository.save(new SharedIdJakartaJpaEntity());
+
+                sharedIdContentIdEntity = sharedIdStore.setContent(sharedIdContentIdEntity, TestSupportData.sampleTextStream());
+                sharedIdContentIdEntity = sharedIdRepository.save(sharedIdContentIdEntity);
+                String id = sharedIdContentIdEntity.getContentId();
+                sharedIdContentIdEntity = sharedIdStore.unsetContent(sharedIdContentIdEntity);
+                assertThat(sharedIdContentIdEntity.getContentId()).isEqualTo(id);
+                assertThat(sharedIdContentIdEntity.getContentLen()).isNull();
+            }
+        }
+
+        @Nested
+        class EmbeddedContent {
+            @Nested
+            @DisplayName("Given an entity with a null embedded content object")
+            class EntityWithNullEmbeddedContentObject {
+                @BeforeEach
+                void setUp() throws InterruptedException {
+                    ensureTestBucket();
+
+                    resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
+
+                    entity = new DualContentJpaLongIdMimeEntity();
+                    entity.setContentType("text/plain");
+                    entity.setRenditionType("text/html");
+                    entity = repo.save(entity);
+
+                    store.setContent(entity, TestSupportData.sampleTextStream());
+                    store.setContent(entity, PropertyPath.from("rendition"), TestSupportData.sampleHtmlRenditionStream());
+                }
+
+                @Test
+                void shouldReturnNullWhenContentIsFetched() throws IOException {
+                    EmbeddedContentJpaStringIdEntity embedded = embeddedRepo.save(new EmbeddedContentJpaStringIdEntity());
+                    assertThat(embeddedStore.getContent(embedded, PropertyPath.from("content"))).isNull();
+                }
+
+                @Test
+                void shouldBeSuccessfulWhenContentIsSet() throws IOException {
+                    EmbeddedContentJpaStringIdEntity embedded = embeddedRepo.save(new EmbeddedContentJpaStringIdEntity());
+                    embeddedStore.setContent(embedded, PropertyPath.from("content"), TestSupportData.sampleTextStream());
+                    try (InputStream is = embeddedStore.getContent(embedded, PropertyPath.from("content"))) {
+                        assertThat(IOUtils.contentEquals(is, TestSupportData.sampleTextStream())).isTrue();
+                    }
+                }
+
+                @Test
+                void shouldReturnNullWhenContentIsUnset() {
+                    EmbeddedContentJpaStringIdEntity embedded = embeddedRepo.save(new EmbeddedContentJpaStringIdEntity());
+                    assertThat(embeddedStore.unsetContent(embedded, PropertyPath.from("content"))).isSameAs(embedded);
                 }
             }
         }

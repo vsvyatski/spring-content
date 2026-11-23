@@ -32,7 +32,7 @@ public class ReflectionServiceTest {
             }
 
             @Test
-            void shouldInvokeTheMethod() {
+            void shouldInvokeMethod() {
                 verify(service).helloWorld();
             }
         }

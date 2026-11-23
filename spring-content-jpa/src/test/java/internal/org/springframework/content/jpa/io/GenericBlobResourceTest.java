@@ -1,6 +1,7 @@
 package internal.org.springframework.content.jpa.io;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -38,7 +39,8 @@ public class GenericBlobResourceTest {
         @Nested
         class Exists {
             @Nested
-            class GivenTheResultsetThrowsSQLException {
+            @DisplayName("Given the resultset throws sql exception")
+            class ResultsetThrowsSQLException {
                 @BeforeEach
                 void setUp() throws SQLException {
                     ds = mock(DataSource.class);
@@ -68,7 +70,8 @@ public class GenericBlobResourceTest {
         @Nested
         class GetInputStream {
             @Nested
-            class GivenASQLExceptionIsThrown {
+            @DisplayName("Given asql exception is thrown")
+            class SQLExceptionIsThrown {
                 @BeforeEach
                 void setUp() throws IOException, SQLException {
                     ds = mock(DataSource.class);

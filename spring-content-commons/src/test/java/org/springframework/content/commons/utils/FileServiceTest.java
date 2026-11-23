@@ -1,10 +1,7 @@
 package org.springframework.content.commons.utils;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,7 +37,8 @@ public class FileServiceTest {
     @Nested
     class Mkdirs {
         @Nested
-        class WhenPassedInAFileThatExists {
+        @DisplayName("When passed in a file that exists")
+        class PassedInFileThatExists {
             @BeforeEach
             void setUp() throws IOException {
                 parent = Files.createTempDirectory("commons-").toFile();
@@ -58,14 +56,15 @@ public class FileServiceTest {
             }
 
             @Test
-            void shouldThrowAnIOException() {
+            void shouldThrowIOException() {
                 assertThat(ex).isNotNull();
                 assertThat(ex).isInstanceOf(IOException.class);
             }
         }
 
         @Nested
-        class WhenPassedInAFileThatDoesNotExist {
+        @DisplayName("When passed in a file that does not exist")
+        class PassedInFileThatDoesNotExist {
             @BeforeEach
             void setUp() throws IOException {
                 parent = Files.createTempDirectory("commons-").toFile();
@@ -82,19 +81,20 @@ public class FileServiceTest {
             }
 
             @Test
-            void shouldNotThrowAnException() {
+            void shouldNotThrowException() {
                 assertThat(ex).isNull();
             }
 
             @Test
-            void shouldCreateTheDirectory() {
+            void shouldCreateDirectory() {
                 assertThat(file.isDirectory()).isTrue();
                 assertThat(file.exists()).isTrue();
             }
         }
 
         @Nested
-        class WhenPassedInADirectoryThatExists {
+        @DisplayName("When passed in a directory that exists")
+        class PassedInDirectoryThatExists {
             @BeforeEach
             void setUp() throws IOException {
                 parent = Files.createTempDirectory("commons-").toFile();
@@ -122,7 +122,8 @@ public class FileServiceTest {
         }
 
         @Nested
-        class WhenPassedInADirectoryThatDoesNotExist {
+        @DisplayName("When passed in a directory that does not exist")
+        class PassedInDirectoryThatDoesNotExist {
             @BeforeEach
             void setUp() throws IOException {
                 parent = Files.createTempDirectory("commons-").toFile();
@@ -147,7 +148,8 @@ public class FileServiceTest {
         }
 
         @Nested
-        class WhenPassedNull {
+        @DisplayName("When passed null")
+        class PassedNull {
             @BeforeEach
             void setUp() throws IOException {
                 parent = Files.createTempDirectory("commons-").toFile();
@@ -157,7 +159,7 @@ public class FileServiceTest {
             }
 
             @Test
-            void shouldThrowAnIllegalArgumentException() {
+            void shouldThrowIllegalArgumentException() {
                 assertThat(ex).isNotNull();
                 assertThat(ex).isInstanceOf(IllegalArgumentException.class);
             }
@@ -208,7 +210,7 @@ public class FileServiceTest {
         }
 
         @Test
-        void shouldDoNothingWhenFromAndToAreTheSame() throws IOException {
+        void shouldDoNothingWhenFromAndToAreSame() throws IOException {
             Path p0 = Files.createTempDirectory(null);
 
             fileService.rmdirs(p0.toFile(), p0.toFile());

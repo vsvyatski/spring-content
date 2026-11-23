@@ -5,6 +5,7 @@ import com.theoryinpractise.halbuilder.api.ReadableRepresentation;
 import com.theoryinpractise.halbuilder.api.RepresentationFactory;
 import com.theoryinpractise.halbuilder.standard.StandardRepresentationFactory;
 import internal.org.springframework.content.rest.support.ContentEntity;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.repository.CrudRepository;
@@ -60,9 +61,10 @@ public class EntityTests {
     }
 
     @Nested
-    class AGETToStoreIdAcceptingHalJson {
+    @DisplayName("GET to {store ID} accepting HAL JSON")
+    class GetAcceptingHalJson {
         @Test
-        void shouldReturnTheEntity() throws Exception {
+        void shouldReturnEntity() throws Exception {
             MockHttpServletResponse response = mvc
                 .perform(get(url)
                     .accept("application/hal+json"))
@@ -80,7 +82,8 @@ public class EntityTests {
     }
 
     @Nested
-    class APUTToStoreIdWithAJsonBody {
+    @DisplayName("PUT to {store ID} with a JSON body")
+    class PutWithJsonBody {
         @Test
         void shouldSetEntitiesDataAndReturn200() throws Exception {
             entity.setTitle("Spring Content");
@@ -98,9 +101,10 @@ public class EntityTests {
     }
 
     @Nested
-    class APATCHToStoreIdWithAJsonBody {
+    @DisplayName("PATCH to {store ID} with a JSON body")
+    class PatchWithJsonBody {
         @Test
-        void shouldPatchTheEntityDataAndReturn200() throws Exception {
+        void shouldPatchEntityDataAndReturn200() throws Exception {
             mvc.perform(patch(url)
                     .content("{\"title\":\"Spring Content Modified\"}")
                     .contentType("application/hal+json"))
@@ -116,7 +120,8 @@ public class EntityTests {
     }
 
     @Nested
-    class AHEADToStoreIdWithAJsonBody {
+    @DisplayName("HEAD to {store ID} with a JSON body")
+    class HeadWithJsonBody {
         @Test
         void shouldReturn200() throws Exception {
             mvc.perform(head(url))

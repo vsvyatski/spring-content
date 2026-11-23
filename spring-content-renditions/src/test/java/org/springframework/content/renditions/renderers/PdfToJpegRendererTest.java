@@ -4,6 +4,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.content.commons.renditions.RenditionProvider;
@@ -30,7 +31,7 @@ public class PdfToJpegRendererTest {
     private Exception e;
 
     @Nested
-    class WordToJpegRenderer {
+    class PdfToJpegRendererCases {
         @Nested
         class Consumes {
             @BeforeEach
@@ -40,7 +41,7 @@ public class PdfToJpegRendererTest {
             }
 
             @Test
-            void shouldReturnWordMlMimetype() {
+            void shouldReturnPdfMimeType() {
                 assertThat(renderer.consumes()).isEqualTo("application/pdf");
             }
         }
@@ -54,7 +55,7 @@ public class PdfToJpegRendererTest {
             }
 
             @Test
-            void shouldReturnJpegMimetype() {
+            void shouldReturnJpegMimeType() {
                 assertThat(renderer.produces()).contains("image/jpg");
             }
         }
@@ -62,9 +63,11 @@ public class PdfToJpegRendererTest {
         @Nested
         class Convert {
             @Nested
-            class GivenAnInputStreamAndAMimetype {
+            @DisplayName("Given an input stream and a MIME type")
+            class InputStreamAndMimeType {
                 @Nested
-                class WhenThePdfHasMoreThanOnePage {
+                @DisplayName("When the PDF has more than one page")
+                class PdfHasMoreThanOnePage {
                     @BeforeEach
                     void setUp() throws IOException {
                         pdf = mock(PDFService.class);
@@ -86,17 +89,18 @@ public class PdfToJpegRendererTest {
                     }
 
                     @Test
-                    void shouldGetTheEmbeddedThumbnailFromTheXWPFDocumentSProperties() throws IOException {
+                    void shouldRenderFirstPageAtDpi() throws IOException {
                         verify(pdfRenderer).renderImageWithDPI(0, 300, ImageType.RGB);
                     }
 
                     @Test
-                    void shouldOutputTheRenderedImage() throws IOException {
+                    void shouldOutputRenderedImage() throws IOException {
                         verify(pdf).writeImage(any(), eq("jpeg"), isA(OutputStream.class));
                     }
 
                     @Nested
-                    class WhenThePdfDocumentFailsToReturnAThumbnail {
+                    @DisplayName("When the PDF document fails to return a thumbnail")
+                    class PdfDocumentFailsToReturnThumbnail {
                         @BeforeEach
                         void setUp() throws IOException {
                             pdf = mock(PDFService.class);
@@ -120,20 +124,21 @@ public class PdfToJpegRendererTest {
                         }
 
                         @Test
-                        void shouldThrowARenditionException() {
+                        void shouldThrowRenditionException() {
                             assertThat(e).isNotNull();
                             assertThat(e).isInstanceOf(RenditionException.class);
                         }
 
                         @Test
-                        void shouldCloseTheDocument() throws IOException {
+                        void shouldCloseDocument() throws IOException {
                             verify(doc).close();
                         }
                     }
                 }
 
                 @Nested
-                class WhenTheInputStreamIsNotAValidPdfFile {
+                @DisplayName("When the input stream is not a valid PDF file")
+                class InputStreamIsNotValidPdfFile {
                     @BeforeEach
                     void setUp() throws IOException {
                         pdf = mock(PDFService.class);
@@ -155,7 +160,7 @@ public class PdfToJpegRendererTest {
                     }
 
                     @Test
-                    void shouldThrowARenditionException() {
+                    void shouldThrowRenditionException() {
                         assertThat(e).isNotNull();
                         assertThat(e).isInstanceOf(RenditionException.class);
                     }
@@ -163,7 +168,8 @@ public class PdfToJpegRendererTest {
             }
 
             @Nested
-            class GivenANullInputStream {
+            @DisplayName("Given a null input stream")
+            class NullInputStream {
                 @BeforeEach
                 void setUp() {
                     pdf = mock(PDFService.class);
@@ -177,7 +183,7 @@ public class PdfToJpegRendererTest {
                 }
 
                 @Test
-                void shouldGetTheEmbeddedThumbnailFromTheXWPFDocumentSProperties() {
+                void shouldThrowWhenInputStreamIsNull() {
                     assertThat(e).isNotNull();
                 }
             }

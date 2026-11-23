@@ -1,6 +1,7 @@
 package it.events;
 
 import org.apache.commons.io.IOUtils;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -64,21 +65,19 @@ public class BeforeSetEventIT {
     }
 
     @Nested
-    class BeforeSetEventInputStreamAccessCases {
-        @Nested
-        class WhenTheContentInputStreamIsConsumedByABeforeSetEvent {
-            @Test
-            void shouldStillSetTheContentInTheStore() throws IOException {
-                SingleContentFields te = new SingleContentFields();
-                ByteArrayInputStream bais = new ByteArrayInputStream("Still here!".getBytes());
-                te = store.setContent(te, bais);
-                IOUtils.closeQuietly(bais);
-                try (InputStream foo = store.getContent(te)) {
-                    assertThat("Still here!").isEqualTo(IOUtils.toString(foo, Charset.defaultCharset()));
-                }
-
-                verify(ev, times(1)).handleBeforeSetContentEvent(any(BeforeSetContentEvent.class));
+    @DisplayName("When the content input stream is consumed by a beforesetevent")
+    class ContentInputStreamIsConsumedByBeforeSetEvent {
+        @Test
+        void shouldStillSetContentInStore() throws IOException {
+            SingleContentFields te = new SingleContentFields();
+            ByteArrayInputStream bais = new ByteArrayInputStream("Still here!".getBytes());
+            te = store.setContent(te, bais);
+            IOUtils.closeQuietly(bais);
+            try (InputStream foo = store.getContent(te)) {
+                assertThat("Still here!").isEqualTo(IOUtils.toString(foo, Charset.defaultCharset()));
             }
+
+            verify(ev, times(1)).handleBeforeSetContentEvent(any(BeforeSetContentEvent.class));
         }
     }
 }

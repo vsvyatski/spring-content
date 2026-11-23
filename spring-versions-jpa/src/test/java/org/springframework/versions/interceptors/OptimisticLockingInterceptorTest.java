@@ -4,6 +4,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.LockModeType;
 import jakarta.persistence.Version;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.aop.ProxyMethodInvocation;
@@ -32,7 +33,6 @@ public class OptimisticLockingInterceptorTest {
     private ProxyMethodInvocation mi;
     private Object entity;
 
-    @SuppressWarnings("unused")
     private static class TestEntity {
         @Version
         private Long version = 0L;
@@ -41,6 +41,7 @@ public class OptimisticLockingInterceptorTest {
             return version;
         }
 
+        @SuppressWarnings("unused") // BeanWrapper write method for @Version
         public void setVersion(Long version) {
             this.version = version;
         }
@@ -54,7 +55,8 @@ public class OptimisticLockingInterceptorTest {
         @Nested
         class Invoke {
             @Nested
-            class WhenTheMethodInvocationIsGetContent {
+            @DisplayName("When the method invocation is GET content")
+            class MethodInvocationIsGetContent {
                 @BeforeEach
                 void setUp() throws Throwable {
                     em = mock(EntityManager.class);
@@ -72,7 +74,7 @@ public class OptimisticLockingInterceptorTest {
                 }
 
                 @Test
-                void shouldLockTheEntityAndProceed() throws Throwable {
+                void shouldLockEntityAndProceed() throws Throwable {
                     verify(em).lock(entity, LockModeType.OPTIMISTIC);
                     verify(mi).setArguments(entity);
                     verify(mi).proceed();
@@ -80,7 +82,8 @@ public class OptimisticLockingInterceptorTest {
             }
 
             @Nested
-            class WhenTheMethodInvocationIsGetContentWithPropertyPath {
+            @DisplayName("When the method invocation is GET content with property path")
+            class MethodInvocationIsGetContentWithPropertyPath {
                 @BeforeEach
                 void setUp() throws Throwable {
                     em = mock(EntityManager.class);
@@ -98,7 +101,7 @@ public class OptimisticLockingInterceptorTest {
                 }
 
                 @Test
-                void shouldLockTheEntityAndProceed() throws Throwable {
+                void shouldLockEntityAndProceed() throws Throwable {
                     verify(em).lock(entity, LockModeType.OPTIMISTIC);
                     verify(mi).setArguments(entity, PropertyPath.from("foo"));
                     verify(mi).proceed();
@@ -106,7 +109,8 @@ public class OptimisticLockingInterceptorTest {
             }
 
             @Nested
-            class WhenTheMethodInvocationIsSetContent {
+            @DisplayName("When the method invocation is set content")
+            class MethodInvocationIsSetContent {
                 @Nested
                 class Tests {
                     @BeforeEach
@@ -127,7 +131,7 @@ public class OptimisticLockingInterceptorTest {
                     }
 
                     @Test
-                    void shouldLockTheEntityAndProceed() throws Throwable {
+                    void shouldLockEntityAndProceed() throws Throwable {
                         assertThat(result).isNotNull();
                         verify(em).lock(entity, LockModeType.OPTIMISTIC);
                         verify(mi).setArguments(eq(entity), any());
@@ -137,7 +141,8 @@ public class OptimisticLockingInterceptorTest {
                 }
 
                 @Nested
-                class WhenTheEntityIsNotVersioned {
+                @DisplayName("When the entity is not versioned")
+                class EntityIsNotVersioned {
                     @BeforeEach
                     void setUp() throws Throwable {
                         em = mock(EntityManager.class);
@@ -165,7 +170,8 @@ public class OptimisticLockingInterceptorTest {
             }
 
             @Nested
-            class WhenTheMethodInvocationIsSetContentWithPropertyPath {
+            @DisplayName("When the method invocation is set content with property path")
+            class MethodInvocationIsSetContentWithPropertyPath {
                 @Nested
                 class Tests {
                     @BeforeEach
@@ -186,7 +192,7 @@ public class OptimisticLockingInterceptorTest {
                     }
 
                     @Test
-                    void shouldLockTheEntityAndProceed() throws Throwable {
+                    void shouldLockEntityAndProceed() throws Throwable {
                         assertThat(result).isNotNull();
                         verify(em).lock(entity, LockModeType.OPTIMISTIC);
                         verify(mi).setArguments(eq(entity), eq(PropertyPath.from("foo")), any(ByteArrayInputStream.class));
@@ -196,7 +202,8 @@ public class OptimisticLockingInterceptorTest {
                 }
 
                 @Nested
-                class WhenTheEntityIsNotVersioned {
+                @DisplayName("When the entity is not versioned")
+                class EntityIsNotVersioned {
                     @BeforeEach
                     void setUp() throws Throwable {
                         em = mock(EntityManager.class);
@@ -224,7 +231,8 @@ public class OptimisticLockingInterceptorTest {
             }
 
             @Nested
-            class WhenTheMethodInvocationIsSetContentWithResource {
+            @DisplayName("When the method invocation is set content with resource")
+            class MethodInvocationIsSetContentWithResource {
                 @Nested
                 class Tests {
                     @BeforeEach
@@ -245,7 +253,7 @@ public class OptimisticLockingInterceptorTest {
                     }
 
                     @Test
-                    void shouldLockTheEntityAndProceed() throws Throwable {
+                    void shouldLockEntityAndProceed() throws Throwable {
                         assertThat(result).isNotNull();
                         verify(em).lock(entity, LockModeType.OPTIMISTIC);
                         verify(mi).setArguments(eq(entity), any());
@@ -255,7 +263,8 @@ public class OptimisticLockingInterceptorTest {
                 }
 
                 @Nested
-                class WhenTheEntityIsNotVersioned {
+                @DisplayName("When the entity is not versioned")
+                class EntityIsNotVersioned {
                     @BeforeEach
                     void setUp() throws Throwable {
                         em = mock(EntityManager.class);
@@ -283,7 +292,8 @@ public class OptimisticLockingInterceptorTest {
             }
 
             @Nested
-            class WhenTheMethodInvocationIsSetContentWithPropertyPathAndResource {
+            @DisplayName("When the method invocation is set content with property path and resource")
+            class MethodInvocationIsSetContentWithPropertyPathAndResource {
                 @Nested
                 class Tests {
                     @BeforeEach
@@ -304,7 +314,7 @@ public class OptimisticLockingInterceptorTest {
                     }
 
                     @Test
-                    void shouldLockTheEntityAndProceed() throws Throwable {
+                    void shouldLockEntityAndProceed() throws Throwable {
                         assertThat(result).isNotNull();
                         verify(em).lock(entity, LockModeType.OPTIMISTIC);
                         verify(mi).setArguments(eq(entity), eq(PropertyPath.from("foo")), any(FileSystemResource.class));
@@ -314,7 +324,8 @@ public class OptimisticLockingInterceptorTest {
                 }
 
                 @Nested
-                class WhenTheEntityIsNotVersioned {
+                @DisplayName("When the entity is not versioned")
+                class EntityIsNotVersioned {
                     @BeforeEach
                     void setUp() throws Throwable {
                         em = mock(EntityManager.class);
@@ -342,7 +353,8 @@ public class OptimisticLockingInterceptorTest {
             }
 
             @Nested
-            class WhenTheMethodInvocationIsUnsetContent {
+            @DisplayName("When the method invocation is unset content")
+            class MethodInvocationIsUnsetContent {
                 @Nested
                 class Tests {
                     @BeforeEach
@@ -363,7 +375,7 @@ public class OptimisticLockingInterceptorTest {
                     }
 
                     @Test
-                    void shouldLockTheEntityAndProceed() throws Throwable {
+                    void shouldLockEntityAndProceed() throws Throwable {
                         assertThat(result).isNotNull();
                         verify(em).lock(entity, LockModeType.OPTIMISTIC);
                         verify(mi).setArguments(eq(entity));
@@ -373,7 +385,8 @@ public class OptimisticLockingInterceptorTest {
                 }
 
                 @Nested
-                class WhenTheEntityIsNotVersioned {
+                @DisplayName("When the entity is not versioned")
+                class EntityIsNotVersioned {
                     @BeforeEach
                     void setUp() throws Throwable {
                         em = mock(EntityManager.class);
@@ -401,7 +414,8 @@ public class OptimisticLockingInterceptorTest {
             }
 
             @Nested
-            class WhenTheMethodInvocationIsUnsetContentWithPropertyPath {
+            @DisplayName("When the method invocation is unset content with property path")
+            class MethodInvocationIsUnsetContentWithPropertyPath {
                 @Nested
                 class Tests {
                     @BeforeEach
@@ -422,7 +436,7 @@ public class OptimisticLockingInterceptorTest {
                     }
 
                     @Test
-                    void shouldLockTheEntityAndProceed() throws Throwable {
+                    void shouldLockEntityAndProceed() throws Throwable {
                         assertThat(result).isNotNull();
                         verify(em).lock(entity, LockModeType.OPTIMISTIC);
                         verify(mi).setArguments(eq(entity), eq(PropertyPath.from("foo")));
@@ -432,7 +446,8 @@ public class OptimisticLockingInterceptorTest {
                 }
 
                 @Nested
-                class WhenTheEntityIsNotVersioned {
+                @DisplayName("When the entity is not versioned")
+                class EntityIsNotVersioned {
                     @BeforeEach
                     void setUp() throws Throwable {
                         em = mock(EntityManager.class);

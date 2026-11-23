@@ -1,6 +1,7 @@
 package org.springframework.content.rest.config;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.content.fs.config.EnableFileSystemStores;
@@ -26,7 +27,6 @@ public class RestConfigurationTest {
     private static ContentRestConfigurer configurer;
     private AnnotationConfigWebApplicationContext context;
 
-    @SuppressWarnings("unused") // classpath / store component scan
     public interface SingleContentMongoDocumentFsStore
         extends FileSystemContentStore<SingleContentMongoDocument, String> {
     }
@@ -49,7 +49,8 @@ public class RestConfigurationTest {
     @Nested
     class RestConfigurationCases {
         @Nested
-        class GivenAContextWithAContentRestConfiguration {
+        @DisplayName("Given a context with a content rest configuration")
+        class ContextWithContentRestConfiguration {
             @BeforeEach
             void setUp() {
                 configurer = mock(ContentRestConfigurer.class);
@@ -64,12 +65,12 @@ public class RestConfigurationTest {
             }
 
             @Test
-            void shouldHaveAContentHandlerMappingBean() {
+            void shouldHaveContentHandlerMappingBean() {
                 assertThat(context.getBean("contentHandlerMapping")).isNotNull();
             }
 
             @Test
-            void shouldHaveTheContentRestControllers() {
+            void shouldHaveContentRestControllers() {
                 assertThat(context.getBean("storeRestController")).isNotNull();
             }
 

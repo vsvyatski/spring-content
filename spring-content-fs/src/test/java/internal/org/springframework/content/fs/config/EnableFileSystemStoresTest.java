@@ -1,9 +1,6 @@
 package internal.org.springframework.content.fs.config;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.content.fs.config.EnableFileSystemStores;
 import org.springframework.content.fs.config.FileSystemStoreConfigurer;
@@ -75,7 +72,8 @@ public class EnableFileSystemStoresTest {
     @Nested
     class EnableFileSystemStoresCases {
         @Nested
-        class GivenAContextAndAConfigurationWithAFilesystemContentStoreBean {
+        @DisplayName("Given a context and a configuration with a filesystem content store bean")
+        class ContextAndConfigurationWithFilesystemContentStoreBean {
             @BeforeEach
             void setUp() {
                 context = new AnnotationConfigApplicationContext();
@@ -89,23 +87,24 @@ public class EnableFileSystemStoresTest {
             }
 
             @Test
-            void shouldHaveAContentStoreBean() {
+            void shouldHaveContentStoreBean() {
                 assertThat(context.getBean(SingleContentFsStore.class)).isNotNull();
             }
 
             @Test
-            void shouldHaveAFilesystemPlacementServiceBean() {
+            void shouldHaveFilesystemPlacementServiceBean() {
                 assertThat(context.getBean("filesystemStorePlacementService")).isNotNull();
             }
 
             @Test
-            void shouldHaveAFileSystemResourceLoaderBean() {
+            void shouldHaveFileSystemResourceLoaderBean() {
                 assertThat(context.getBean("fileSystemResourceLoader")).isNotNull();
             }
         }
 
         @Nested
-        class GivenAContextWithAConfigurer {
+        @DisplayName("Given a context with a configurer")
+        class ContextWithConfigurer {
             @BeforeEach
             void setUp() {
                 context = new AnnotationConfigApplicationContext();
@@ -120,13 +119,14 @@ public class EnableFileSystemStoresTest {
             }
 
             @Test
-            void shouldCallThatConfigurerToHelpCustomizeTheStore() {
+            void shouldCallThatConfigurerToHelpCustomizeStore() {
                 verify(configurer).configureFileSystemStoreConverters(any());
             }
         }
 
         @Nested
-        class GivenAContextWithAnEmptyConfiguration {
+        @DisplayName("Given a context with an empty configuration")
+        class ContextWithEmptyConfiguration {
             @BeforeEach
             void setUp() {
                 context = new AnnotationConfigApplicationContext();

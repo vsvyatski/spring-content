@@ -13,6 +13,7 @@ import org.springframework.content.commons.store.StoreAccessException;
 import org.springframework.content.commons.store.UnsetContentParams;
 import org.springframework.content.fs.config.EnableFileSystemStores;
 import org.springframework.content.fs.io.FileSystemResourceLoader;
+import org.springframework.content.test.support.EmbeddedJpa;
 import org.springframework.content.test.support.TestSupportData;
 import org.springframework.content.test.support.TestSupportPackages;
 import org.springframework.content.test.support.jpa.*;
@@ -23,18 +24,16 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.WritableResource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
-import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.Database;
-import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -100,36 +99,22 @@ public class FileSystemStoreIT {
 
         @Bean
         public DataSource dataSource() {
-            EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
-            return builder.setType(EmbeddedDatabaseType.HSQL).build();
+            return EmbeddedJpa.embeddedDataSource(EmbeddedDatabaseType.HSQL);
         }
 
         @Bean
         public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-
-            HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-            vendorAdapter.setDatabase(Database.HSQL);
-            vendorAdapter.setGenerateDdl(true);
-
-            LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
-            factory.setJpaVendorAdapter(vendorAdapter);
-            factory.setPackagesToScan(TestSupportPackages.JPA);
-            factory.setDataSource(dataSource());
-
-            return factory;
+            return EmbeddedJpa.entityManagerFactory(dataSource(), Database.HSQL, TestSupportPackages.JPA);
         }
 
         @Bean
         public PlatformTransactionManager transactionManager() {
-
-            JpaTransactionManager txManager = new JpaTransactionManager();
-            txManager.setEntityManagerFactory(entityManagerFactory().getObject());
-            return txManager;
+            return EmbeddedJpa.transactionManager(entityManagerFactory().getObject());
         }
     }
 
     @Nested
-    class StoreCases {
+    class Store {
 
         @BeforeEach
         void setUp() {
@@ -199,7 +184,7 @@ public class FileSystemStoreIT {
     }
 
     @Nested
-    class AssociativeStoreCases {
+    class AssociativeStore {
 
         @BeforeEach
         void setUp() {
@@ -207,13 +192,13 @@ public class FileSystemStoreIT {
         }
 
         @Test
-        void shouldNotHaveAnAssociatedResource() {
+        void shouldNotHaveAssociatedResource() {
             assertThat(entity.getContentId()).isNull();
             assertThat(store.getResource(entity)).isNull();
         }
 
         @Test
-        void shouldBeRecordedAsSuchOnTheEntitySContentId() {
+        void shouldBeRecordedAsSuchOnEntityContentId() {
             associateBoth();
             assertThat(entity.getContentId()).isEqualTo(resourceLocation);
             assertThat(entity.getRenditionId()).isEqualTo(resourceLocation);
@@ -233,7 +218,7 @@ public class FileSystemStoreIT {
         }
 
         @Test
-        void shouldResetTheEntitySContentId() {
+        void shouldResetEntityContentId() {
             associateBoth();
             store.unassociate(entity);
             store.unassociate(entity, PropertyPath.from("rendition"));
@@ -242,7 +227,7 @@ public class FileSystemStoreIT {
         }
 
         @Test
-        void shouldThrowWhenAssociatingAnInvalidPropertyPath() {
+        void shouldThrowWhenAssociatingInvalidPropertyPath() {
             associateBoth();
             try {
                 store.associate(entity, PropertyPath.from("does.not.exist"), resourceLocation);
@@ -253,7 +238,7 @@ public class FileSystemStoreIT {
         }
 
         @Test
-        void shouldThrowWhenLoadingAnInvalidPropertyPath() {
+        void shouldThrowWhenLoadingInvalidPropertyPath() {
             associateBoth();
             try {
                 store.getResource(entity, PropertyPath.from("does.not.exist"));
@@ -264,7 +249,7 @@ public class FileSystemStoreIT {
         }
 
         @Test
-        void shouldThrowWhenUnassociatingAnInvalidPropertyPath() {
+        void shouldThrowWhenUnassociatingInvalidPropertyPath() {
             associateBoth();
             try {
                 store.unassociate(entity, PropertyPath.from("does.not.exist"));
@@ -282,7 +267,7 @@ public class FileSystemStoreIT {
     }
 
     @Nested
-    class ContentStoreCases {
+    class ContentStore {
 
         @BeforeEach
         void setUp() {
@@ -316,11 +301,11 @@ public class FileSystemStoreIT {
         }
 
         @Test
-        void shouldHaveTheUpdatedContent() throws IOException {
+        void shouldHaveUpdatedContent() throws IOException {
             FileSystemResourceLoader loader = context.getBean(FileSystemResourceLoader.class);
-            String contentId = entity.getContentId();
+            String contentId = Objects.requireNonNull(entity.getContentId());
             assertThat(new File(loader.getRootResource().getPath(), contentId).exists()).isTrue();
-            String renditionId = entity.getRenditionId();
+            String renditionId = Objects.requireNonNull(entity.getRenditionId());
             assertThat(new File(loader.getRootResource().getPath(), renditionId).exists()).isTrue();
             entity = store.setContent(entity,
                 TestSupportData.sampleUpdatedTextStream());
@@ -340,12 +325,12 @@ public class FileSystemStoreIT {
             assertThat(entity.getContentId()).isEqualTo(contentId);
             assertThat(entity.getRenditionId()).isEqualTo(renditionId);
 
-            assertThat(new File(loader.getRootResource().getPath(), entity.getContentId()).exists()).isTrue();
-            assertThat(new File(loader.getRootResource().getPath(), entity.getRenditionId()).exists()).isTrue();
+            assertThat(new File(loader.getRootResource().getPath(), Objects.requireNonNull(entity.getContentId())).exists()).isTrue();
+            assertThat(new File(loader.getRootResource().getPath(), Objects.requireNonNull(entity.getRenditionId())).exists()).isTrue();
         }
 
         @Test
-        void shouldStoreOnlyTheNewContent() throws IOException {
+        void shouldStoreOnlyNewContent() throws IOException {
             entity = store.setContent(entity,
                 TestSupportData.samplePartialUpdateStream());
             entity = store.setContent(entity, PropertyPath.from("rendition"),
@@ -363,9 +348,9 @@ public class FileSystemStoreIT {
         }
 
         @Test
-        void shouldHaveTheUpdatedContentWhenNotOverwritten() throws IOException {
+        void shouldHaveUpdatedContentWhenNotOverwritten() throws IOException {
             FileSystemResourceLoader loader = context.getBean(FileSystemResourceLoader.class);
-            String contentId = entity.getContentId();
+            String contentId = Objects.requireNonNull(entity.getContentId());
             assertThat(new File(loader.getRootResource().getPath(), contentId).exists()).isTrue();
 
             entity = store.setContent(entity, PropertyPath.from("content"),
@@ -379,7 +364,7 @@ public class FileSystemStoreIT {
 
             assertThat(new File(loader.getRootResource().getPath(), contentId).exists()).isTrue();
             assertThat(entity.getContentId()).isNotEqualTo(contentId);
-            assertThat(new File(loader.getRootResource().getPath(), entity.getContentId()).exists()).isTrue();
+            assertThat(new File(loader.getRootResource().getPath(), Objects.requireNonNull(entity.getContentId())).exists()).isTrue();
         }
 
         @Test
@@ -425,7 +410,7 @@ public class FileSystemStoreIT {
         }
 
         @Test
-        void shouldThrowWhenSettingContentOnAnInvalidPropertyPath() {
+        void shouldThrowWhenSettingContentOnInvalidPropertyPath() {
             try {
                 store.setContent(entity, PropertyPath.from("does.not.exist"), new ByteArrayInputStream("foo".getBytes()));
             } catch (Exception sae) {
@@ -435,7 +420,7 @@ public class FileSystemStoreIT {
         }
 
         @Test
-        void shouldThrowWhenGettingContentOnAnInvalidPropertyPath() {
+        void shouldThrowWhenGettingContentOnInvalidPropertyPath() {
             try {
                 store.getContent(entity, PropertyPath.from("does.not.exist"));
             } catch (Exception sae) {
@@ -445,7 +430,7 @@ public class FileSystemStoreIT {
         }
 
         @Test
-        void shouldThrowWhenUnsettingContentOnAnInvalidPropertyPath() {
+        void shouldThrowWhenUnsettingContentOnInvalidPropertyPath() {
             try {
                 store.unsetContent(entity, PropertyPath.from("does.not.exist"));
             } catch (Exception sae) {
@@ -455,7 +440,7 @@ public class FileSystemStoreIT {
         }
 
         @Test
-        void shouldNotResetTheIdField() {
+        void shouldNotResetIdField() {
             SharedIdJakartaJpaRepository sharedIdRepository = context.getBean(SharedIdJakartaJpaRepository.class);
             SharedIdJakartaJpaStore sharedIdStore = context.getBean(SharedIdJakartaJpaStore.class);
 

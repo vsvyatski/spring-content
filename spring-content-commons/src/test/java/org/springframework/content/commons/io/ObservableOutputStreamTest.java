@@ -1,6 +1,7 @@
 package org.springframework.content.commons.io;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
@@ -26,7 +27,8 @@ public class ObservableOutputStreamTest {
     @Nested
     class ObservableOutputStreamCases {
         @Nested
-        class WhenTheOutputStreamHasListeners {
+        @DisplayName("When the output stream has listeners")
+        class OutputStreamHasListeners {
             @BeforeEach
             void setUp() {
                 os = mock(OutputStream.class);
@@ -45,7 +47,8 @@ public class ObservableOutputStreamTest {
         }
 
         @Nested
-        class WhenTheOutputStreamIsWrittenTo {
+        @DisplayName("When the output stream is written to")
+        class OutputStreamIsWrittenTo {
             @BeforeEach
             void setUp() throws IOException {
                 os = mock(OutputStream.class);
@@ -60,13 +63,14 @@ public class ObservableOutputStreamTest {
             }
 
             @Test
-            void shouldDelegateToTheUnderlyingInputStream() throws IOException {
+            void shouldDelegateToUnderlyingInputStream() throws IOException {
                 verify(os).write(32);
             }
         }
 
         @Nested
-        class WhenTheOutputStreamIsClosed {
+        @DisplayName("When the output stream is closed")
+        class OutputStreamIsClosed {
             @BeforeEach
             void setUp() throws IOException {
                 os = mock(OutputStream.class);
@@ -90,7 +94,8 @@ public class ObservableOutputStreamTest {
         }
 
         @Nested
-        class WhenTheOutputStreamIsClosedAndThrowsAnException {
+        @DisplayName("When the output stream is closed and throws an exception")
+        class OutputStreamIsClosedAndThrowsException {
             @BeforeEach
             void setUp() throws IOException {
                 os = mock(OutputStream.class);
@@ -107,7 +112,7 @@ public class ObservableOutputStreamTest {
             }
 
             @Test
-            void shouldCallListenersOnClosedEventHandlerAndThrowTheException() {
+            void shouldCallListenersOnClosedEventHandlerAndThrowException() {
                 verify(observer1).closed();
                 assertThat(exception).isNotNull();
             }

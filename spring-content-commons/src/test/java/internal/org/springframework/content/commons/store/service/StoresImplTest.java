@@ -2,6 +2,7 @@ package internal.org.springframework.content.commons.store.service;
 
 import internal.org.springframework.content.commons.store.factory.StoreFactory;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.content.commons.store.AssociativeStore;
@@ -54,7 +55,8 @@ public class StoresImplTest {
     @Nested
     class StoresImplCases {
         @Nested
-        class GivenNoFactories {
+        @DisplayName("Given no factories")
+        class NoFactories {
             @BeforeEach
             void setUp() {
                 context = mock(ApplicationContext.class);
@@ -72,7 +74,8 @@ public class StoresImplTest {
         }
 
         @Nested
-        class GivenAContentStoreFactory {
+        @DisplayName("Given a content store factory")
+        class ContentStoreFactory {
             @BeforeEach
             void setUp() {
                 context = mock(ApplicationContext.class);
@@ -111,7 +114,8 @@ public class StoresImplTest {
         }
 
         @Nested
-        class GivenAStoreFactory {
+        @DisplayName("Given a store factory")
+        class RegisteredStoreFactory {
             @BeforeEach
             void setUp() {
                 context = mock(ApplicationContext.class);
@@ -151,7 +155,8 @@ public class StoresImplTest {
         }
 
         @Nested
-        class GivenAnAssociativeStoreFactory {
+        @DisplayName("Given an associative store factory")
+        class AssociativeStoreFactory {
             @BeforeEach
             void setUp() {
                 context = mock(ApplicationContext.class);
@@ -191,7 +196,8 @@ public class StoresImplTest {
         }
 
         @Nested
-        class GivenMultipleStores {
+        @DisplayName("Given multiple stores")
+        class MultipleStores {
             @BeforeEach
             void setUp() {
                 context = mock(ApplicationContext.class);
@@ -220,13 +226,13 @@ public class StoresImplTest {
             }
 
             @Test
-            void shouldReturnStoresThatMatchTheFilter() {
+            void shouldReturnStoresThatMatchFilter() {
                 StoreInfo[] infos = storesImpl.getStores(AssociativeStore.class, Stores.MATCH_ALL);
                 assertThat(infos.length).isEqualTo(2);
             }
 
             @Test
-            void shouldNotReturnStoresThatDontMatchTheFilter() {
+            void shouldNotReturnStoresThatDontMatchFilter() {
                 StoreInfo[] infos = storesImpl.getStores(AssociativeStore.class, new StoreFilter() {
                     @Override
                     public String name() {
@@ -243,7 +249,8 @@ public class StoresImplTest {
         }
 
         @Nested
-        class GivenMultipleStoresForTheSameEntity {
+        @DisplayName("Given multiple stores for the same entity")
+        class MultipleStoresForSameEntity {
             @BeforeEach
             void setUp() {
                 context = mock(ApplicationContext.class);
@@ -272,7 +279,7 @@ public class StoresImplTest {
             }
 
             @Test
-            void shouldReturnStoresThatMatchTheFilter() {
+            void shouldReturnStoresThatMatchFilter() {
                 StoreInfo[] infos = storesImpl.getStores(ContentStore.class, Stores.MATCH_ALL);
                 assertThat(infos.length).isEqualTo(2);
             }

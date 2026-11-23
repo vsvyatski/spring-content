@@ -7,6 +7,7 @@ import internal.org.springframework.content.rest.support.JsonMappedContentEntity
 import internal.org.springframework.content.rest.support.JsonMappedContentEntityRepository;
 import internal.org.springframework.content.rest.support.config.JpaInfrastructureConfig;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -88,7 +89,8 @@ public class ShortcutExclusionsIT {
     @Nested
     class ExcludedShortcutLinkTests {
         @Nested
-        class WhenAllContentPropertyShortcutGETsAreExcludedAndANonJsonRequestIsMade {
+        @DisplayName("When GET shortcuts for all content properties are excluded and a non-JSON request is made")
+        class GetShortcutsForAllContentPropertiesAreExcludedAndNonJsonRequestIsMade {
             @BeforeEach
             void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -98,7 +100,7 @@ public class ShortcutExclusionsIT {
             }
 
             @Test
-            void shouldReturnTheEntity() throws Exception {
+            void shouldReturnEntity() throws Exception {
                 MockHttpServletResponse response = mvc
                     .perform(get("/jsonMappedContentEntities/" + testEntity.getId())
                         .accept("*/*"))

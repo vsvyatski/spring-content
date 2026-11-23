@@ -2,6 +2,7 @@ package org.springframework.content.jpa.io;
 
 import internal.org.springframework.content.jpa.io.GenericBlobResource;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.Resource;
@@ -60,7 +61,7 @@ public class CustomizableBlobResourceLoaderTest {
             }
 
             @Test
-            void shouldReturnAGenericBlobResource() {
+            void shouldReturnGenericBlobResource() {
                 assertThat(result).isInstanceOf(GenericBlobResource.class);
             }
         }
@@ -75,13 +76,14 @@ public class CustomizableBlobResourceLoaderTest {
             }
 
             @Test
-            void shouldReturnAClassLoader() {
+            void shouldReturnClassLoader() {
                 assertThat(result).isInstanceOf(ClassLoader.class);
             }
         }
 
         @Nested
-        class GivenAResourceProvider {
+        @DisplayName("Given a resource provider")
+        class ResourceProvider {
             @Nested
             class GetResource {
                 private Resource expectedResource;
@@ -101,7 +103,7 @@ public class CustomizableBlobResourceLoaderTest {
                 }
 
                 @Test
-                void shouldReturnTheResourceProvidersCustomResource() {
+                void shouldReturnResourceProvidersCustomResource() {
                     assertThat(result).isSameAs(expectedResource);
                 }
             }

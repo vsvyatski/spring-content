@@ -100,11 +100,12 @@ public class ContentEntityRestEndpointsIT {
     @Nested
     class ContentEntityRESTEndpoints {
         @Nested
-        class GivenAnEntityWithASingleUncorrelatedContentProperties {
+        class EntityWithSingleUncorrelatedContentProperties {
             @Nested
-            class GivenTheRepositoryAndStorageAreExportedToTheSameURI {
+            class RepositoryAndStorageAreExportedToSameURI {
                 @Nested
-                class ADELETEToStoreIdSoftDeleteCustomHandler {
+                @DisplayName("DELETE to /softDelete custom handler")
+                class DeleteCustomHandler {
                     @BeforeEach
                     void setUp() {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -123,9 +124,9 @@ public class ContentEntityRestEndpointsIT {
             }
 
             @Nested
-            class GivenTheRepositoryAndStorageAreExportedToDifferentURIs {
+            class RepositoryAndStorageAreExportedToDifferentURIs {
                 @Nested
-                class AnOPTIONSRequestToTheRepositoryFromAKnownHost {
+                class OptionsFromKnownHost {
                     @BeforeEach
                     void setUp() {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -134,7 +135,7 @@ public class ContentEntityRestEndpointsIT {
                     }
 
                     @Test
-                    void shouldReturnTheRelevantCORSHeadersAndOK() throws Exception {
+                    void shouldReturnRelevantCORSHeadersAndOK() throws Exception {
                         mvc.perform(options("/uuidSingleContentEntities/" + testEntity.getId())
                                 .header("Access-Control-Request-Method", "PUT")
                                 .header("Origin", "http://www.someurl.com"))
@@ -145,8 +146,8 @@ public class ContentEntityRestEndpointsIT {
             }
 
             @Nested
-            @DisplayName("given an entity with @Version")
-            class GivenAnEntityWithVersionVersion extends VersionTests {
+            @DisplayName("Given an entity with @Version")
+            class EntityWithVersion extends VersionTests {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -167,8 +168,8 @@ public class ContentEntityRestEndpointsIT {
             }
 
             @Nested
-            @DisplayName("given an entity with @LastModifiedDate")
-            class GivenAnEntityWithLastModifiedDateLastModifiedDate extends LastModifiedDateTests {
+            @DisplayName("Given an entity with @LastModifiedDate")
+            class EntityWithLastModifiedDate extends LastModifiedDateTests {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -187,7 +188,7 @@ public class ContentEntityRestEndpointsIT {
             }
 
             @Nested
-            class GivenAnEntityWithASharedIdAndContentIdField {
+            class EntityWithSharedIdAndContentIdField {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -206,14 +207,14 @@ public class ContentEntityRestEndpointsIT {
         }
 
         @Nested
-        class GivenAMultipartFormPOSTToAnEntityWithASingleUncorrelatedContentProperty {
+        class PostMultipartSingleUncorrelatedContentProperty {
             @BeforeEach
             void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
             }
 
             @Test
-            void shouldCreateANewEntityAndItsContentAndRespondWithA201Created() throws Exception {
+            void shouldCreateNewEntityAndItsContentAndRespondWith201Created() throws Exception {
                 // assert content does not exist
                 String newContent = "This is some new content";
 
@@ -260,7 +261,7 @@ public class ContentEntityRestEndpointsIT {
         }
 
         @Nested
-        class GivenAMultipartFormPOSTToAnEntityWithANonDefaultInitializedVersionPropertyIssue2 {
+        class PostMultipartNonDefaultInitializedVersionProperty {
             @Nested
             class WithContent {
                 @BeforeEach
@@ -269,7 +270,7 @@ public class ContentEntityRestEndpointsIT {
                 }
 
                 @Test
-                void shouldCreateANewEntityAndItsContentAndRespondWithA201Created() throws Exception {
+                void shouldCreateNewEntityAndItsContentAndRespondWith201Created() throws Exception {
                     String newContent = "This is some new content";
 
                     MockMultipartFile file = new MockMultipartFile("content", "filename.txt", "text/plain",
@@ -315,7 +316,7 @@ public class ContentEntityRestEndpointsIT {
                 }
 
                 @Test
-                void shouldCreateANewEntityAndRespondWithA201Created() throws Exception {
+                void shouldCreateNewEntityAndRespondWith201Created() throws Exception {
                     // POST the entity
                     MockHttpServletResponse response = mvc.perform(multipart("/oneToOneLinkedContentEntities")
                             .param("name", "foo")
@@ -341,7 +342,7 @@ public class ContentEntityRestEndpointsIT {
         }
 
         @Nested
-        class GivenAnEntityWithASingleCorrelatedContentProperty {
+        class EntityWithSingleCorrelatedContentProperty {
             @BeforeEach
             void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -379,14 +380,14 @@ public class ContentEntityRestEndpointsIT {
         }
 
         @Nested
-        class GivenAMultipartFormPOSTToAnEntityWithASingleCorrelatedContentProperty {
+        class PostMultipartSingleCorrelatedContentProperty {
             @BeforeEach
             void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
             }
 
             @Test
-            void shouldCreateANewEntityAndItsContentAndRespondWithA201Created() throws Exception {
+            void shouldCreateNewEntityAndItsContentAndRespondWith201Created() throws Exception {
                 // assert content does not exist
                 String newContent = "This is some new content";
 
@@ -422,14 +423,14 @@ public class ContentEntityRestEndpointsIT {
         }
 
         @Nested
-        class GivenAMultipartFormPOSTThatDoesntIncludeTheContentProperty {
+        class PostMultipartWithoutContentProperty {
             @BeforeEach
             void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
             }
 
             @Test
-            void shouldCreateANewEntityWithNoContentAndRespondWithA201Created() throws Exception {
+            void shouldCreateNewEntityWithNoContentAndRespondWith201Created() throws Exception {
                 var testEntity4Id = repo4.save(new OneToOneLinkedContentEntity()).getId();
 
                 // POST the entity
@@ -462,7 +463,7 @@ public class ContentEntityRestEndpointsIT {
         }
 
         @Nested
-        class GivenAMultipartFormPOSTAndAnEventListener {
+        class PostMultipartWithEventListener {
             @BeforeEach
             void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -471,7 +472,7 @@ public class ContentEntityRestEndpointsIT {
             }
 
             @Test
-            void shouldCreateANewEntityAndFireTheOnBeforeCreateOnAfterCreateEvents() throws Exception {
+            void shouldCreateNewEntityAndFireOnBeforeCreateOnAfterCreateEvents() throws Exception {
                 // POST the entity
                 mvc.perform(multipart("/jsonMappedContentEntities")
                         .param("name", "foo foo")
@@ -488,14 +489,14 @@ public class ContentEntityRestEndpointsIT {
         }
 
         @Nested
-        class GivenAMultipartFormPOSTButWithTheWrongContentPropertyName {
+        class PostMultipartWithWrongContentPropertyName {
             @BeforeEach
             void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
             }
 
             @Test
-            void shouldReturnAnErrorAndNotMakeTheEntity() {
+            void shouldReturnErrorAndNotMakeEntity() {
                 MockMultipartFile file = new MockMultipartFile("oopsDoesntExist", "filename.txt", "text/plain",
                     "foo".getBytes());
 
@@ -519,14 +520,14 @@ public class ContentEntityRestEndpointsIT {
         }
 
         @Nested
-        class GivenAMultipartFormPOSTToAnEntityWithAMappedContentProperty {
+        class PostMultipartMappedContentProperty {
             @BeforeEach
             void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
             }
 
             @Test
-            void shouldCreateANewEntityAndItsContentAndRespondWithA201Created() throws Exception {
+            void shouldCreateNewEntityAndItsContentAndRespondWith201Created() throws Exception {
                 // assert content does not exist
                 String newContent = "This is some new content";
 

@@ -82,11 +82,11 @@ public class ContextPathContentLinksIT {
 
     @Nested
     @NestedTestConfiguration(NestedTestConfiguration.EnclosingConfiguration.INHERIT)
-    class GivenTheSpringContentBaseUriPropertyIsSetToContentApi {
+    class SpringContentBaseUriPropertyIsSetToContentApi {
         @Nested
         @NestedTestConfiguration(NestedTestConfiguration.EnclosingConfiguration.INHERIT)
-        @DisplayName("given an Entity and a Store with a default store path")
-        class GivenAnEntityAndAStoreWithADefaultStorePathContentLinkTests extends ContentLinkTests {
+        @DisplayName("Given an entity and a store with a default store path")
+        class EntityAndStoreWithDefaultStorePathContentLinkTests extends ContentLinkTests {
             @BeforeEach
             void setUp() {
                 MockMvc mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -101,7 +101,7 @@ public class ContextPathContentLinksIT {
             }
 
             @Test
-            void shouldProvideAResponseWithAContentLink() throws Exception {
+            void shouldProvideResponseWithContentLink() throws Exception {
                 assertContentLinkInHalResponse();
             }
         }

@@ -5,6 +5,7 @@ import internal.org.springframework.content.rest.scoped.revision.RevisionPropert
 import internal.org.springframework.content.rest.scoped.revision.RevisionPropertyEntityStore;
 import internal.org.springframework.content.rest.support.config.JpaInfrastructureConfig;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -84,9 +85,11 @@ public class RevisionPropertyRestEndpointsIT {
     @Nested
     class RevisionPropertyRESTEndpoints {
         @Nested
-        class GivenAnEntityWithRevisions {
+        @DisplayName("Given an entity with revisions")
+        class EntityWithRevisions {
             @Nested
-            class AGETToRepositoryIdRevisions1Content {
+            @DisplayName("GET to {repository ID}/revisions/1/content")
+            class GetRevisions1Content {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -100,7 +103,7 @@ public class RevisionPropertyRestEndpointsIT {
                 }
 
                 @Test
-                void shouldReturnA404() throws Exception {
+                void shouldReturn404() throws Exception {
                     mvc.perform(
                             get("/revisionPropertyEntities/" + testEntity.getId() + "/revisions/1/content").
                                 accept("text/plain")).
@@ -109,7 +112,8 @@ public class RevisionPropertyRestEndpointsIT {
             }
 
             @Nested
-            class AGETToRepositoryIdRevisionsLatestContent {
+            @DisplayName("GET to {repository ID}/revisions/latest/content")
+            class GetRevisionsLatestContent {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -123,7 +127,7 @@ public class RevisionPropertyRestEndpointsIT {
                 }
 
                 @Test
-                void shouldReturnTheContent() throws Exception {
+                void shouldReturnContent() throws Exception {
                     Revisions<Integer, RevisionPropertyEntity> revisions = repository.findRevisions(testEntity.getId());
                     Integer revisionId = revisions.getLatestRevision().getRequiredRevisionNumber();
 

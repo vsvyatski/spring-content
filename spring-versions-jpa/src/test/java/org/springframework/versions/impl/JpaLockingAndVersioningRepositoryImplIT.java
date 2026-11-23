@@ -3,11 +3,13 @@ package org.springframework.versions.impl;
 import internal.org.springframework.versions.LockingService;
 import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.content.test.support.EmbeddedJpa;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,14 +19,10 @@ import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.jdbc.datasource.init.DataSourceInitializer;
-import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
-import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.Database;
-import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
@@ -76,7 +74,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
     }
 
     @Configuration
-    @EnableJpaRepositories(basePackages = VersioningTestPackages.JPA)
+    @EnableJpaRepositories(basePackages = VersioningTestPackages.REPOSITORIES)
     @Import({H2Config.class, JpaLockingAndVersioningConfig.class})
     public static class TestConfig {
     }
@@ -92,44 +90,22 @@ public class JpaLockingAndVersioningRepositoryImplIT {
 
         @Bean
         public DataSource dataSource() {
-            EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
-            return builder.setType(EmbeddedDatabaseType.H2).build();
+            return EmbeddedJpa.embeddedDataSource(EmbeddedDatabaseType.H2);
         }
 
         @Bean
         public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-            HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-            vendorAdapter.setDatabase(Database.H2);
-            vendorAdapter.setGenerateDdl(true);
-
-            LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
-            factory.setJpaVendorAdapter(vendorAdapter);
-            factory.setPackagesToScan(VersioningTestPackages.JPA);
-            factory.setDataSource(dataSource());
-
-            return factory;
+            return EmbeddedJpa.entityManagerFactory(dataSource(), Database.H2, VersioningTestPackages.JPA);
         }
 
         @Bean
         public PlatformTransactionManager transactionManager() {
-            JpaTransactionManager txManager = new JpaTransactionManager();
-            txManager.setEntityManagerFactory(entityManagerFactory().getObject());
-            return txManager;
+            return EmbeddedJpa.transactionManager(entityManagerFactory().getObject());
         }
 
         @Bean
         public DataSourceInitializer datasourceInitializer() {
-            ResourceDatabasePopulator databasePopulator = new ResourceDatabasePopulator();
-
-            databasePopulator.addScript(dropVersionSchema);
-            databasePopulator.addScript(createVersionSchema);
-            databasePopulator.setIgnoreFailedDrops(true);
-
-            DataSourceInitializer initializer = new DataSourceInitializer();
-            initializer.setDataSource(dataSource());
-            initializer.setDatabasePopulator(databasePopulator);
-
-            return initializer;
+            return EmbeddedJpa.schemaInitializer(dataSource(), dropVersionSchema, createVersionSchema);
         }
     }
 
@@ -167,13 +143,16 @@ public class JpaLockingAndVersioningRepositoryImplIT {
     }
 
     @Nested
-    class GivenALockingAndVersioningRepositoryAndASecurityContext {
+    @DisplayName("Given a locking and versioning repository and a security context")
+    class LockingAndVersioningRepositoryAndSecurityContext {
         @Nested
-        class GivenTwoEntitiesWithTwoVersionsEach {
+        @DisplayName("Given two entities with two versions each")
+        class TwoEntitiesWithTwoVersionsEach {
             @Nested
             class Lock {
                 @Nested
-                class GivenANullPrincipal {
+                @DisplayName("Given a null principal")
+                class NullPrincipal {
                     @BeforeEach
                     void setUp() {
                         repo = context.getBean(VersioningJpaLongIdRepository.class);
@@ -196,13 +175,14 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     }
 
                     @Test
-                    void shouldThrowASecurityException() {
+                    void shouldThrowSecurityException() {
                         assertThat(e).isInstanceOf(SecurityException.class);
                     }
                 }
 
                 @Nested
-                class GivenTheEntityIsNew {
+                @DisplayName("Given the entity is new")
+                class EntityIsNew {
                     @BeforeEach
                     void setUp() {
                         repo = context.getBean(VersioningJpaLongIdRepository.class);
@@ -229,9 +209,11 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                 }
 
                 @Nested
-                class GivenTheEntityExists {
+                @DisplayName("Given the entity exists")
+                class EntityExists {
                     @Nested
-                    class WhenTheObjectIsNotLocked {
+                    @DisplayName("When the object is not locked")
+                    class ObjectIsNotLocked {
                         @BeforeEach
                         void setUp() {
                             repo = context.getBean(VersioningJpaLongIdRepository.class);
@@ -254,19 +236,20 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         }
 
                         @Test
-                        void shouldUpdateTheEntitySLockOwnerField() {
+                        void shouldUpdateEntityLockOwnerField() {
                             assertThat(e1.getXLockOwner()).isEqualTo("some-principal");
                         }
 
                         @Test
-                        void shouldSaveTheEntity() {
+                        void shouldSaveEntity() {
                             assertThat(e).isNull();
                             assertThat(result.getXid()).isEqualTo(e1.getXid());
                         }
                     }
 
                     @Nested
-                    class WhenTheLockIsAlreadyTaken {
+                    @DisplayName("When the lock is already taken")
+                    class LockIsAlreadyTaken {
                         @BeforeEach
                         void setUp() {
                             repo = context.getBean(VersioningJpaLongIdRepository.class);
@@ -300,7 +283,8 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     }
 
                     @Nested
-                    class WhenTheLockIsAlreadyHeld {
+                    @DisplayName("When the lock is already held")
+                    class LockIsAlreadyHeld {
                         @BeforeEach
                         void setUp() {
                             repo = context.getBean(VersioningJpaLongIdRepository.class);
@@ -334,7 +318,8 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     }
 
                     @Nested
-                    class WhenThePrincipalIsNotAuthenticated {
+                    @DisplayName("When the principal is not authenticated")
+                    class PrincipalIsNotAuthenticated {
                         @BeforeEach
                         void setUp() {
                             repo = context.getBean(VersioningJpaLongIdRepository.class);
@@ -359,7 +344,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         }
 
                         @Test
-                        void shouldReturnSecurityException() {
+                        void shouldThrowSecurityException() {
                             assertThat(e).isInstanceOf(SecurityException.class);
                         }
                     }
@@ -369,7 +354,8 @@ public class JpaLockingAndVersioningRepositoryImplIT {
             @Nested
             class Unlock {
                 @Nested
-                class GivenANullPrincipal {
+                @DisplayName("Given a null principal")
+                class NullPrincipal {
                     @BeforeEach
                     void setUp() {
                         repo = context.getBean(VersioningJpaLongIdRepository.class);
@@ -392,13 +378,14 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     }
 
                     @Test
-                    void shouldThrowASecurityException() {
+                    void shouldThrowSecurityException() {
                         assertThat(e).isInstanceOf(SecurityException.class);
                     }
                 }
 
                 @Nested
-                class GivenTheEntityIsNew {
+                @DisplayName("Given the entity is new")
+                class EntityIsNew {
                     @BeforeEach
                     void setUp() {
                         repo = context.getBean(VersioningJpaLongIdRepository.class);
@@ -425,9 +412,11 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                 }
 
                 @Nested
-                class GivenTheEntityExists {
+                @DisplayName("Given the entity exists")
+                class EntityExists {
                     @Nested
-                    class GivenThePrincipalIsTheLockOwner {
+                    @DisplayName("Given the principal is the lock owner")
+                    class PrincipalIsLockOwner {
                         @BeforeEach
                         void setUp() {
                             repo = context.getBean(VersioningJpaLongIdRepository.class);
@@ -453,19 +442,20 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         }
 
                         @Test
-                        void shouldNullTheLockOwnerFieldAndSave() {
+                        void shouldNullLockOwnerFieldAndSave() {
                             assertThat(result.getXLockOwner()).isNull();
                         }
 
                         @Test
-                        void shouldUnlockTheEntityAndReturnIt() {
+                        void shouldUnlockEntityAndReturnIt() {
                             assertThat(e).isNull();
                             assertThat(result.getXid()).isEqualTo(e1.getXid());
                         }
                     }
 
                     @Nested
-                    class GivenThePrincipalIsNotTheLockOwner {
+                    @DisplayName("Given the principal is not the lock owner")
+                    class PrincipalIsNotLockOwner {
                         @BeforeEach
                         void setUp() {
                             repo = context.getBean(VersioningJpaLongIdRepository.class);
@@ -492,14 +482,15 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         }
 
                         @Test
-                        void shouldASecurityException() {
+                        void shouldThrowSecurityException() {
                             assertThat(e).isInstanceOf(LockOwnerException.class);
                             assertThat(e.getMessage()).contains("not lock owner");
                         }
                     }
 
                     @Nested
-                    class GivenThePrincipalIsNotAuthenticated {
+                    @DisplayName("Given the principal is not authenticated")
+                    class PrincipalIsNotAuthenticated {
                         @BeforeEach
                         void setUp() {
                             repo = context.getBean(VersioningJpaLongIdRepository.class);
@@ -524,7 +515,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         }
 
                         @Test
-                        void shouldASecurityException() {
+                        void shouldThrowSecurityException() {
                             assertThat(e).isInstanceOf(SecurityException.class);
                         }
                     }
@@ -534,11 +525,14 @@ public class JpaLockingAndVersioningRepositoryImplIT {
             @Nested
             class Save {
                 @Nested
-                class GivenAnAuthenticatedPrincipal {
+                @DisplayName("Given an authenticated principal")
+                class AuthenticatedPrincipal {
                     @Nested
-                    class GivenTheEntityIsNew {
+                    @DisplayName("Given the entity is new")
+                    class EntityIsNew {
                         @Nested
-                        class GivenThereIsNoLockOwner {
+                        @DisplayName("Given there is no lock owner")
+                        class NoLockOwner {
                             @BeforeEach
                             void setUp() {
                                 repo = context.getBean(VersioningJpaLongIdRepository.class);
@@ -561,7 +555,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                             }
 
                             @Test
-                            void shouldMergeAndReturnTheEntity() {
+                            void shouldMergeAndReturnEntity() {
                                 assertThat(e).isNull();
                                 assertThat(result.getXid()).isEqualTo(e3.getXid());
                             }
@@ -569,9 +563,11 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     }
 
                     @Nested
-                    class GivenTheEntityExists {
+                    @DisplayName("Given the entity exists")
+                    class EntityExists {
                         @Nested
-                        class GivenThePrincipalIsTheLockOwner {
+                        @DisplayName("Given the principal is the lock owner")
+                        class PrincipalIsLockOwner {
                             @BeforeEach
                             void setUp() {
                                 repo = context.getBean(VersioningJpaLongIdRepository.class);
@@ -598,14 +594,15 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                             }
 
                             @Test
-                            void shouldReturnTheEntity() {
+                            void shouldReturnEntity() {
                                 assertThat(e).isNull();
                                 assertThat(result.getXid()).isEqualTo(e3.getXid());
                             }
                         }
 
                         @Nested
-                        class GivenThePrincipalIsNotTheLockOwner {
+                        @DisplayName("Given the principal is not the lock owner")
+                        class PrincipalIsNotLockOwner {
                             @BeforeEach
                             void setUp() {
                                 repo = context.getBean(VersioningJpaLongIdRepository.class);
@@ -633,13 +630,14 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                             }
 
                             @Test
-                            void shouldThrowALockOwnerException() {
+                            void shouldThrowLockOwnerException() {
                                 assertThat(e).isInstanceOf(LockOwnerException.class);
                             }
                         }
 
                         @Nested
-                        class GivenThereIsNoLockOwner {
+                        @DisplayName("Given there is no lock owner")
+                        class NoLockOwner {
                             @BeforeEach
                             void setUp() {
                                 repo = context.getBean(VersioningJpaLongIdRepository.class);
@@ -664,7 +662,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                             }
 
                             @Test
-                            void shouldMergeAndReturnTheEntity() {
+                            void shouldMergeAndReturnEntity() {
                                 assertThat(e).isNull();
                                 assertThat(result.getXid()).isEqualTo(e3.getXid());
                             }
@@ -673,11 +671,14 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                 }
 
                 @Nested
-                class GivenAnUnauthenticatedPrincipal {
+                @DisplayName("Given an unauthenticated principal")
+                class UnauthenticatedPrincipal {
                     @Nested
-                    class GivenTheEntityIsNew {
+                    @DisplayName("Given the entity is new")
+                    class EntityIsNew {
                         @Nested
-                        class GivenThereIsNoLockOwner {
+                        @DisplayName("Given there is no lock owner")
+                        class NoLockOwner {
                             @BeforeEach
                             void setUp() {
                                 repo = context.getBean(VersioningJpaLongIdRepository.class);
@@ -700,7 +701,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                             }
 
                             @Test
-                            void shouldMergeAndReturnTheEntity() {
+                            void shouldMergeAndReturnEntity() {
                                 assertThat(e).isNull();
                                 assertThat(result.getXid()).isEqualTo(e3.getXid());
                             }
@@ -708,9 +709,11 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     }
 
                     @Nested
-                    class GivenTheEntityExists {
+                    @DisplayName("Given the entity exists")
+                    class EntityExists {
                         @Nested
-                        class GivenThereIsNoLockOwner {
+                        @DisplayName("Given there is no lock owner")
+                        class NoLockOwner {
                             @BeforeEach
                             void setUp() {
                                 repo = context.getBean(VersioningJpaLongIdRepository.class);
@@ -735,7 +738,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                             }
 
                             @Test
-                            void shouldMergeAndReturnTheEntity() {
+                            void shouldMergeAndReturnEntity() {
                                 assertThat(e).isNull();
                                 assertThat(result.getXid()).isEqualTo(e3.getXid());
                             }
@@ -744,11 +747,14 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                 }
 
                 @Nested
-                class GivenThereIsNoPrincipal {
+                @DisplayName("Given there is no principal")
+                class NoPrincipal {
                     @Nested
-                    class GivenTheEntityIsNew {
+                    @DisplayName("Given the entity is new")
+                    class EntityIsNew {
                         @Nested
-                        class GivenThereIsNoLockOwner {
+                        @DisplayName("Given there is no lock owner")
+                        class NoLockOwner {
                             @BeforeEach
                             void setUp() {
                                 repo = context.getBean(VersioningJpaLongIdRepository.class);
@@ -804,14 +810,14 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                 }
 
                 @Test
-                void shouldReturnTheVersionSeries() {
+                void shouldReturnVersionSeries() {
                     List<VersioningJpaLongIdEntity> results = repo.findAllVersions(e1, Sort.by(Order.desc("id")));
                     assertThat(results.size()).isEqualTo(2);
                     assertThat(results).extracting("xid").contains(e1.getXid(), e1v11.getXid());
                 }
 
                 @Test
-                void shouldReturnTheOrderedVersionSeries() {
+                void shouldReturnOrderedVersionSeries() {
                     List<VersioningJpaLongIdEntity> results = repo.findAllVersions(e1, Sort.by(Order.desc("id")));
                     assertThat(results.size()).isEqualTo(2);
                     assertThat(results).extracting("xid").containsExactly(e1v11.getXid(), e1.getXid());
@@ -847,7 +853,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                 }
 
                 @Test
-                void shouldReturnOnlyTheLatestVersionOfTheEntities() {
+                void shouldReturnOnlyLatestVersionOfEntities() {
                     List<VersioningJpaLongIdEntity> results = repo.findAllVersionsLatest(VersioningJpaLongIdEntity.class);
                     assertThat(results).extracting("xid").contains(e1v11.getXid(), e2v2.getXid()).doesNotContain(e3wc.getXid());
                 }
@@ -856,7 +862,8 @@ public class JpaLockingAndVersioningRepositoryImplIT {
             @Nested
             class WorkingCopy {
                 @Nested
-                class WhenTheEntityIsNew {
+                @DisplayName("When the entity is new")
+                class EntityIsNew {
                     @BeforeEach
                     void setUp() {
                         repo = context.getBean(VersioningJpaLongIdRepository.class);
@@ -883,11 +890,14 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                 }
 
                 @Nested
-                class WhenTheEntityExists {
+                @DisplayName("When the entity exists")
+                class EntityExists {
                     @Nested
-                    class GivenThePrincipalIsTheLockOwner {
+                    @DisplayName("Given the principal is the lock owner")
+                    class PrincipalIsLockOwner {
                         @Nested
-                        class WhenTheEntityIsNotYetPartOfAVersionTree {
+                        @DisplayName("When the entity is not yet part of a version tree")
+                        class EntityIsNotYetPartOfVersionTree {
                             @BeforeEach
                             void setUp() {
                                 repo = context.getBean(VersioningJpaLongIdRepository.class);
@@ -913,7 +923,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                             }
 
                             @Test
-                            void shouldCreateThePwcWithANewId() {
+                            void shouldCreatePwcWithNewId() {
                                 assertThat(result.getXid()).isNotNull();
                                 assertThat(result.getVersionLabel()).isEqualTo("~~PWC~~");
                                 assertThat(result.getXAncestorId()).isEqualTo(e1.getXid());
@@ -924,7 +934,8 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     }
 
                     @Nested
-                    class GivenThePrincipalIsNotTheLockOwner {
+                    @DisplayName("Given the principal is not the lock owner")
+                    class PrincipalIsNotLockOwner {
                         @BeforeEach
                         void setUp() {
                             repo = context.getBean(VersioningJpaLongIdRepository.class);
@@ -951,13 +962,14 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         }
 
                         @Test
-                        void shouldCreateThePwcWithANewId() {
+                        void shouldCreatePwcWithNewId() {
                             assertThat(e).isInstanceOf(LockOwnerException.class);
                         }
                     }
 
                     @Nested
-                    class GivenThePrincipalIsUnauthenticated {
+                    @DisplayName("Given the principal is unauthenticated")
+                    class PrincipalIsUnauthenticated {
                         @BeforeEach
                         void setUp() {
                             repo = context.getBean(VersioningJpaLongIdRepository.class);
@@ -982,14 +994,15 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         }
 
                         @Test
-                        void shouldThrowASecurityException() {
+                        void shouldThrowSecurityException() {
                             assertThat(e).isInstanceOf(SecurityException.class);
                             assertThat(e.getMessage()).contains("no principal");
                         }
                     }
 
                     @Nested
-                    class GivenTheEntityIsNotTheCurrentVersion {
+                    @DisplayName("Given the entity is not the current version")
+                    class EntityIsNotCurrentVersion {
                         @BeforeEach
                         void setUp() {
                             repo = context.getBean(VersioningJpaLongIdRepository.class);
@@ -1016,7 +1029,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         }
 
                         @Test
-                        void shouldThrowAnException() {
+                        void shouldThrowException() {
                             assertThat(e).isInstanceOf(LockingAndVersioningException.class);
                             assertThat(e.getMessage()).contains("not head");
                         }
@@ -1080,7 +1093,8 @@ public class JpaLockingAndVersioningRepositoryImplIT {
             @Nested
             class Delete {
                 @Nested
-                class GivenNoPrincipal {
+                @DisplayName("Given no principal")
+                class NoPrincipal {
                     @BeforeEach
                     void setUp() {
                         repo = context.getBean(VersioningJpaLongIdRepository.class);
@@ -1102,13 +1116,14 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     }
 
                     @Test
-                    void shouldThrowASecurityException() {
+                    void shouldThrowSecurityException() {
                         assertThat(e).isInstanceOf(SecurityException.class);
                     }
                 }
 
                 @Nested
-                class GivenAnUnauthenticatedPrincipal {
+                @DisplayName("Given an unauthenticated principal")
+                class UnauthenticatedPrincipal {
                     @BeforeEach
                     void setUp() {
                         repo = context.getBean(VersioningJpaLongIdRepository.class);
@@ -1130,17 +1145,20 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     }
 
                     @Test
-                    void shouldThrowASecurityException() {
+                    void shouldThrowSecurityException() {
                         assertThat(e).isInstanceOf(SecurityException.class);
                     }
                 }
 
                 @Nested
-                class GivenAPrincipal {
+                @DisplayName("Given a principal")
+                class Principal {
                     @Nested
-                    class GivenTheEntityIsNotInAVersionTree {
+                    @DisplayName("Given the entity is not in a version tree")
+                    class EntityIsNotInVersionTree {
                         @Nested
-                        class GivenThePrincipalIsTheLockOwner {
+                        @DisplayName("Given the principal is the lock owner")
+                        class PrincipalIsLockOwner {
                             @BeforeEach
                             void setUp() {
                                 repo = context.getBean(VersioningJpaLongIdRepository.class);
@@ -1172,7 +1190,8 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         }
 
                         @Nested
-                        class GivenThePrincipalIsNotTheLockOwner {
+                        @DisplayName("Given the principal is not the lock owner")
+                        class PrincipalIsNotLockOwner {
                             @BeforeEach
                             void setUp() {
                                 repo = context.getBean(VersioningJpaLongIdRepository.class);
@@ -1198,14 +1217,15 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                             }
 
                             @Test
-                            void shouldFailToDeleteTheEntity() {
+                            void shouldFailToDeleteEntity() {
                                 assertThat(e).isInstanceOf(LockOwnerException.class);
                                 assertThat(e.getMessage()).contains("not lock owner");
                             }
                         }
 
                         @Nested
-                        class GivenThereIsNoLock {
+                        @DisplayName("Given there is no lock")
+                        class NoLock {
                             @BeforeEach
                             void setUp() {
                                 repo = context.getBean(VersioningJpaLongIdRepository.class);
@@ -1237,7 +1257,8 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     }
 
                     @Nested
-                    class GivenTheEntityIsNotTheHead {
+                    @DisplayName("Given the entity is not the HEAD")
+                    class EntityIsNotHead {
                         @BeforeEach
                         void setUp() {
                             repo = context.getBean(VersioningJpaLongIdRepository.class);
@@ -1270,7 +1291,8 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     }
 
                     @Nested
-                    class GivenTheEntityIsTheHeadOfAVersionSeriesOf3VersionsAndTheAncestorIsNotAncestralRo {
+                    @DisplayName("Given the entity is the head of a version series of 3 versions and the ancestor is not ancestral root")
+                    class EntityIsHeadOfVersionSeriesOf3VersionsAndAncestorIsNotAncestralRoot {
                         @BeforeEach
                         void setUp() {
                             repo = context.getBean(VersioningJpaLongIdRepository.class);
@@ -1297,29 +1319,30 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         }
 
                         @Test
-                        void shouldDeleteTheEntity() {
+                        void shouldDeleteEntity() {
                             assertThat(repo.findById(e1v12.getXid())).isEqualTo(Optional.empty());
                         }
 
                         @Test
-                        void shouldReInstateTheAncestorAsTheHead() {
+                        void shouldReInstateAncestorAsHead() {
                             e1v11 = repo.findById(e1v11.getXid()).orElseThrow();
                             assertThat(e1v11.getXSuccessorId()).isNull();
                         }
 
                         @Test
-                        void shouldRemoveTheLock() {
+                        void shouldRemoveLock() {
                             assertThat(lockingService.lockOwner(e1v12.getXid())).isNull();
                         }
 
                         @Test
-                        void shouldReInstateTheLockOnTheNewHead() {
+                        void shouldReInstateLockOnNewHead() {
                             assertThat(lockingService.lockOwner(e1v11.getXid())).isNotNull();
                         }
                     }
 
                     @Nested
-                    class GivenTheEntityIsTheHeadOfAVersionTreeOf2VersionsAncestorIsAncestralRoot {
+                    @DisplayName("Given the entity is the head of a version tree of 2 versions and the ancestor is ancestral root")
+                    class EntityIsHeadOfVersionTreeOf2VersionsAndAncestorIsAncestralRoot {
                         @BeforeEach
                         void setUp() {
                             repo = context.getBean(VersioningJpaLongIdRepository.class);
@@ -1345,13 +1368,13 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         }
 
                         @Test
-                        void shouldDeleteTheEntity() {
+                        void shouldDeleteEntity() {
                             assertThat(e).isNull();
                             assertThat(repo.findById(e1v11.getXid())).isEqualTo(Optional.empty());
                         }
 
                         @Test
-                        void shouldReInstateTheAncestorAsTheHead() {
+                        void shouldReInstateAncestorAsHead() {
                             e1 = repo.findById(e1.getXid()).orElseThrow();
                             assertThat(e1.getXSuccessorId()).isNull();
                         }
@@ -1362,7 +1385,8 @@ public class JpaLockingAndVersioningRepositoryImplIT {
             @Nested
             class DeleteAllVersions {
                 @Nested
-                class GivenNoPrincipal {
+                @DisplayName("Given no principal")
+                class NoPrincipal {
                     @BeforeEach
                     void setUp() {
                         repo = context.getBean(VersioningJpaLongIdRepository.class);
@@ -1384,14 +1408,15 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     }
 
                     @Test
-                    void shouldThrowASecurityException() {
+                    void shouldThrowSecurityException() {
                         assertThatThrownBy(() -> repo.deleteAllVersions(e1v11))
                             .isInstanceOf(SecurityException.class);
                     }
                 }
 
                 @Nested
-                class GivenAnUnauthenticatedPrincipal {
+                @DisplayName("Given an unauthenticated principal")
+                class UnauthenticatedPrincipal {
                     @BeforeEach
                     void setUp() {
                         repo = context.getBean(VersioningJpaLongIdRepository.class);
@@ -1413,18 +1438,21 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     }
 
                     @Test
-                    void shouldThrowASecurityException() {
+                    void shouldThrowSecurityException() {
                         assertThatThrownBy(() -> repo.deleteAllVersions(e1v11))
                             .isInstanceOf(SecurityException.class);
                     }
                 }
 
                 @Nested
-                class GivenAPrincipal {
+                @DisplayName("Given a principal")
+                class Principal {
                     @Nested
-                    class GivenTheEntityIsNotInAVersionTree {
+                    @DisplayName("Given the entity is not in a version tree")
+                    class EntityIsNotInVersionTree {
                         @Nested
-                        class GivenThePrincipalIsTheLockOwner {
+                        @DisplayName("Given the principal is the lock owner")
+                        class PrincipalIsLockOwner {
                             @BeforeEach
                             void setUp() {
                                 repo = context.getBean(VersioningJpaLongIdRepository.class);
@@ -1459,7 +1487,8 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         }
 
                         @Nested
-                        class GivenThePrincipalIsNotTheLockOwner {
+                        @DisplayName("Given the principal is not the lock owner")
+                        class PrincipalIsNotLockOwner {
                             @BeforeEach
                             void setUp() {
                                 repo = context.getBean(VersioningJpaLongIdRepository.class);
@@ -1484,7 +1513,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                             }
 
                             @Test
-                            void shouldFailToDeleteTheEntity() {
+                            void shouldFailToDeleteEntity() {
                                 assertThatThrownBy(() -> repo.deleteAllVersions(e1v11))
                                     .isInstanceOf(LockOwnerException.class)
                                     .hasMessageContaining("not lock owner");
@@ -1492,7 +1521,8 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         }
 
                         @Nested
-                        class GivenThereIsNoLock {
+                        @DisplayName("Given there is no lock")
+                        class NoLock {
                             @BeforeEach
                             void setUp() {
                                 repo = context.getBean(VersioningJpaLongIdRepository.class);
@@ -1526,7 +1556,8 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     }
 
                     @Nested
-                    class GivenTheEntityIsNotTheHead {
+                    @DisplayName("Given the entity is not the HEAD")
+                    class EntityIsNotHead {
                         @BeforeEach
                         void setUp() {
                             repo = context.getBean(VersioningJpaLongIdRepository.class);
@@ -1558,7 +1589,8 @@ public class JpaLockingAndVersioningRepositoryImplIT {
             }
 
             @Nested
-            class Issue2039 {
+            @DisplayName("Given findAllVersions with descending sort")
+            class FindAllVersionsWithDescendingSort {
                 @BeforeEach
                 void setUp() {
                     repo = context.getBean(VersioningJpaLongIdRepository.class);
@@ -1577,13 +1609,13 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                 }
 
                 @Test
-                void shouldReturnTheProvidedEntity() {
+                void shouldReturnProvidedEntity() {
                     List<VersioningJpaLongIdEntity> results = repo.findAllVersions(e1, Sort.by(Order.desc("id")));
                     assertThat(results.size()).isEqualTo(1);
                 }
 
                 @Test
-                void shouldDeleteJustTheProvidedEntity() {
+                void shouldDeleteJustProvidedEntity() {
                     repo.deleteAllVersions(e1);
 
                     Optional<VersioningJpaLongIdEntity> fetched = repo.findById(e1.getXid());

@@ -56,22 +56,22 @@ public class EnableFullTextSolrIndexingTest {
     @Nested
     class EnableFullTextSolrIndexingCases {
         @Test
-        void shouldHaveASolrPropertiesBean() {
+        void shouldHaveSolrPropertiesBean() {
             assertThat(context.getBean(SolrProperties.class)).isNotNull();
         }
 
         @Test
-        void shouldHaveASolrIndexingStoreEventHandlerBean() {
+        void shouldHaveSolrIndexingStoreEventHandlerBean() {
             assertThat(context.getBean(SolrIndexerStoreEventHandler.class)).isNotNull();
         }
 
         @Test
-        void shouldHaveASearchableImplementationBean() {
+        void shouldHaveSearchableImplementationBean() {
             assertThat(context.getBeansOfType(SearchableImpl.class)).isNotNull();
         }
 
         @Test
-        void shouldHaveASolrBasedFulltextIndexServiceBean() {
+        void shouldHaveSolrBasedFulltextIndexServiceBean() {
             assertThat(context.getBean(IndexService.class)).isInstanceOf(SolrFulltextIndexServiceImpl.class);
         }
     }

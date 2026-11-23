@@ -1,6 +1,7 @@
 package org.springframework.content.commons.io;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -16,7 +17,8 @@ public class FileRemoverTest {
     @Nested
     class FileRemoverCases {
         @Nested
-        class WhenAFileInputStreamObserverSClosedIsCalled {
+        @DisplayName("When a file input stream observer s closed is called")
+        class FileInputStreamObserverSClosedIsCalled {
             @BeforeEach
             void setUp() {
                 file = mock(File.class);
@@ -26,7 +28,7 @@ public class FileRemoverTest {
             }
 
             @Test
-            void shouldDeleteTheUnderlyingFile() {
+            void shouldDeleteUnderlyingFile() {
                 verify(file).delete();
             }
         }

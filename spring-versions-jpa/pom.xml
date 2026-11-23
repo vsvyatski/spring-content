@@ -75,6 +75,14 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>io.github.vsvyatski</groupId>
+      <artifactId>spring-content-commons</artifactId>
+      <version>${project.parent.version}</version>
+      <type>test-jar</type>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
       <scope>test</scope>

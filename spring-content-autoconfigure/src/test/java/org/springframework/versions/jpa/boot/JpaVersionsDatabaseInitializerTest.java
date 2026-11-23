@@ -3,6 +3,7 @@ package org.springframework.versions.jpa.boot;
 import internal.org.springframework.versions.jpa.boot.autoconfigure.JpaVersionsDatabaseInitializer;
 import internal.org.springframework.versions.jpa.boot.autoconfigure.JpaVersionsProperties;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.sql.init.DatabaseInitializationMode;
@@ -36,38 +37,37 @@ public class JpaVersionsDatabaseInitializerTest {
     }
 
     @Nested
-    class JpaVersionsDatabaseInitializerCases {
-        @Nested
-        class WhenInitializationIsEnabled {
-            @BeforeEach
-            void setUp() {
-                ds = new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.HSQL).build();
-                props = new JpaVersionsProperties();
-                initializer = new JpaVersionsDatabaseInitializer(ds, props);
-                initializer.initializeDatabase();
-            }
-
-            @Test
-            void shouldExecuteCreateTableStatementsOnTheDatabase() throws SQLException {
-                assertThat(locksTableExists()).isTrue();
-            }
+    @DisplayName("When initialization is enabled")
+    class InitializationIsEnabled {
+        @BeforeEach
+        void setUp() {
+            ds = new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.HSQL).build();
+            props = new JpaVersionsProperties();
+            initializer = new JpaVersionsDatabaseInitializer(ds, props);
+            initializer.initializeDatabase();
         }
 
-        @Nested
-        class WhenInitializationIsDisabled {
-            @BeforeEach
-            void setUp() {
-                ds = new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.HSQL).build();
-                props = new JpaVersionsProperties();
-                props.getInitializer().setInitializeSchema(DatabaseInitializationMode.NEVER);
-                initializer = new JpaVersionsDatabaseInitializer(ds, props);
-                initializer.initializeDatabase();
-            }
+        @Test
+        void shouldExecuteCreateTableStatementsOnDatabase() throws SQLException {
+            assertThat(locksTableExists()).isTrue();
+        }
+    }
 
-            @Test
-            void shouldNotExecuteCreateTableStatementsOnTheDatabase() throws SQLException {
-                assertThat(locksTableExists()).isFalse();
-            }
+    @Nested
+    @DisplayName("When initialization is disabled")
+    class InitializationIsDisabled {
+        @BeforeEach
+        void setUp() {
+            ds = new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.HSQL).build();
+            props = new JpaVersionsProperties();
+            props.getInitializer().setInitializeSchema(DatabaseInitializationMode.NEVER);
+            initializer = new JpaVersionsDatabaseInitializer(ds, props);
+            initializer.initializeDatabase();
+        }
+
+        @Test
+        void shouldNotExecuteCreateTableStatementsOnDatabase() throws SQLException {
+            assertThat(locksTableExists()).isFalse();
         }
     }
 }
