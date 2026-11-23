@@ -374,7 +374,7 @@ public class AzureStorageIT {
                             }
 
                             @Test
-                            void shouldBeRecordedAsSuchOnEntitySContentId() {
+                            void shouldBeRecordedAsSuchOnEntityContentId() {
                                 assertThat(entity.getContentId()).isEqualTo(resourceLocation);
                                 assertThat(entity.getRenditionId()).isEqualTo(resourceLocation);
                             }
@@ -455,7 +455,7 @@ public class AzureStorageIT {
                             }
 
                             @Test
-                            void shouldResetEntitySContentId() {
+                            void shouldResetEntityContentId() {
                                 assertThat(entity.getContentId()).isNull();
                                 assertThat(entity.getRenditionId()).isNull();
                             }

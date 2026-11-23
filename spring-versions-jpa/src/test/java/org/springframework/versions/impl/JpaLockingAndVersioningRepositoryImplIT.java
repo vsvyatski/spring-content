@@ -236,7 +236,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         }
 
                         @Test
-                        void shouldUpdateEntitySLockOwnerField() {
+                        void shouldUpdateEntityLockOwnerField() {
                             assertThat(e1.getXLockOwner()).isEqualTo("some-principal");
                         }
 

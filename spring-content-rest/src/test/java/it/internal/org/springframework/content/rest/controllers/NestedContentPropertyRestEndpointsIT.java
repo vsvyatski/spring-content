@@ -101,7 +101,7 @@ public class NestedContentPropertyRestEndpointsIT {
                 }
 
                 @Test
-                void shouldCreateNewEntityAndItsContentAndRespondWithA201Created() throws Exception {
+                void shouldCreateNewEntityAndItsContentAndRespondWith201Created() throws Exception {
                     // assert content does not exist
                     String newContent = "This is some new content";
 

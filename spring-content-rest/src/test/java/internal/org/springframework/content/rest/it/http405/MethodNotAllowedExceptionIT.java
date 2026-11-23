@@ -123,7 +123,7 @@ public class MethodNotAllowedExceptionIT {
         }
 
         @Test
-        void shouldThrowA405NotAllowed() {
+        void shouldThrow405NotAllowed() {
             UnexportedStoreMethodsEntity entity = new UnexportedStoreMethodsEntity();
             entity = store.setContent(entity, new ByteArrayInputStream("some content".getBytes()));
             entity = repo.save(entity);
@@ -146,7 +146,7 @@ public class MethodNotAllowedExceptionIT {
         }
 
         @Test
-        void shouldThrowA405NotAllowed() {
+        void shouldThrow405NotAllowed() {
             UnexportedStoreMethodsEntity entity = new UnexportedStoreMethodsEntity();
             entity = repo.save(entity);
 
@@ -169,7 +169,7 @@ public class MethodNotAllowedExceptionIT {
         }
 
         @Test
-        void shouldThrowA405NotAllowed() {
+        void shouldThrow405NotAllowed() {
             UnexportedStoreMethodsEntity entity = new UnexportedStoreMethodsEntity();
             entity = store.setContent(entity, new ByteArrayInputStream("some content".getBytes()));
             entity = repo.save(entity);
@@ -192,7 +192,7 @@ public class MethodNotAllowedExceptionIT {
         }
 
         @Test
-        void shouldThrowA405NotAllowedForAllRequests() {
+        void shouldThrow405NotAllowedForAllRequests() {
             UnexportedContentPropertyEntity entity = new UnexportedContentPropertyEntity();
             entity = store2.setContent(entity, new ByteArrayInputStream("some content".getBytes()));
             entity = repo2.save(entity);

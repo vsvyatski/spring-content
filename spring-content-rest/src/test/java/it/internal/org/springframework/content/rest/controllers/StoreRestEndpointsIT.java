@@ -112,7 +112,7 @@ public class StoreRestEndpointsIT {
                 }
 
                 @Test
-                void shouldReturnA404() throws Exception {
+                void shouldReturn404() throws Exception {
                     mvc.perform(delete(request)).andExpect(status().isNotFound());
                 }
             }
@@ -136,7 +136,7 @@ public class StoreRestEndpointsIT {
             }
 
             @Test
-            void shouldReturnResourceSContent() throws Exception {
+            void shouldReturnResourceContent() throws Exception {
                 MockHttpServletResponse response = mvc.perform(get(request))
                     .andExpect(status().isOk()).andReturn().getResponse();
 
@@ -156,7 +156,7 @@ public class StoreRestEndpointsIT {
             }
 
             @Test
-            void shouldOverwriteResourceSContent() throws Exception {
+            void shouldOverwriteResourceContent() throws Exception {
                 mvc.perform(put(request).content("New Existing content")
                     .contentType("text/plain")).andExpect(status().isOk());
 
@@ -227,7 +227,7 @@ public class StoreRestEndpointsIT {
             }
 
             @Test
-            void shouldReturnResourceSContent() throws Exception {
+            void shouldReturnResourceContent() throws Exception {
                 MockHttpServletResponse response = mvc.perform(get(request))
                     .andExpect(status().isOk()).andReturn().getResponse();
 
@@ -247,7 +247,7 @@ public class StoreRestEndpointsIT {
             }
 
             @Test
-            void shouldOverwriteResourceSContent() throws Exception {
+            void shouldOverwriteResourceContent() throws Exception {
                 mvc.perform(put(request).content("New Existing content")
                     .contentType("text/plain")).andExpect(status().isOk());
 
@@ -283,7 +283,7 @@ public class StoreRestEndpointsIT {
                 }
 
                 @Test
-                void shouldReturnResourceSContent() throws Exception {
+                void shouldReturnResourceContent() throws Exception {
                     MockHttpServletResponse response = mvc
                         .perform(get(request).accept("text/html",
                             "application/xhtml+xml", "application/xml;q=0.9",

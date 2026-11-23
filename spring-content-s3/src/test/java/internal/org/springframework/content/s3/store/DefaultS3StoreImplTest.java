@@ -832,7 +832,7 @@ public class DefaultS3StoreImplTest {
                 }
 
                 @Test
-                void shouldSetEntitySContentIDAttribute() {
+                void shouldSetEntityContentIdAttribute() {
                     assertThat(entity.getContentId()).isEqualTo(SAMPLE_CONTENT_ID);
                 }
             }
@@ -860,7 +860,7 @@ public class DefaultS3StoreImplTest {
                 }
 
                 @Test
-                void shouldResetEntitySContentIDAttribute() {
+                void shouldResetEntityContentIdAttribute() {
                     assertThat(entity.getContentId()).isNull();
                 }
             }

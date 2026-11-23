@@ -319,7 +319,7 @@ public class FileSystemStorePropertyPathAccessorsIT {
                         }
 
                         @Test
-                        void shouldBeRecordedAsSuchOnEntitySContentId() {
+                        void shouldBeRecordedAsSuchOnEntityContentId() {
                             assertThat(entity.getContent().getContentId()).isEqualTo(resourceLocation);
                         }
 
@@ -353,7 +353,7 @@ public class FileSystemStorePropertyPathAccessorsIT {
                             }
 
                             @Test
-                            void shouldResetEntitySContentId() {
+                            void shouldResetEntityContentId() {
                                 assertThat(entity.getContent().getContentId()).isNull();
                             }
                         }

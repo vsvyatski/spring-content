@@ -58,7 +58,7 @@ public class StoreUtilsTest {
             }
 
             @Test
-            void shouldReturnReturnTestEntities() {
+            void shouldReturnTestEntities() {
                 assertThat(storePath).isEqualTo("uuidSingleContentEntities");
             }
         }
@@ -76,7 +76,7 @@ public class StoreUtilsTest {
             }
 
             @Test
-            void shouldReturnReturnSpecifiedPath() {
+            void shouldReturnSpecifiedPath() {
                 assertThat(storePath).isEqualTo("uuidSingleContentEntities");
             }
         }
@@ -93,7 +93,7 @@ public class StoreUtilsTest {
             }
 
             @Test
-            void shouldReturnReturnSpecifiedPath() {
+            void shouldReturnSpecifiedPath() {
                 assertThat(storePath).isEqualTo("some-other-path");
             }
         }

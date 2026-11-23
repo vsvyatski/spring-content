@@ -218,7 +218,7 @@ public class StoredRenditionsRestIT {
                     }
 
                     @Test
-                    void shouldReturnA405() throws Exception {
+                    void shouldReturn405() throws Exception {
                         mvc.perform(
                                 get("/dualContentRenditionEntities/" + testEntity5.getId() + "/rendition")
                                     .accept("text/html"))

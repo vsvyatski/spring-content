@@ -228,7 +228,7 @@ public class DefaultFileSystemStoresImplTest {
                 }
 
                 @Test
-                void shouldSetEntitySContentIDAttribute() {
+                void shouldSetEntityContentIdAttribute() {
                     assertThat(entity.getContentId()).isEqualTo(SAMPLE_CONTENT_ID);
                 }
             }
@@ -251,7 +251,7 @@ public class DefaultFileSystemStoresImplTest {
                 }
 
                 @Test
-                void shouldResetEntitySContentIDAttribute() {
+                void shouldResetEntityContentIdAttribute() {
                     assertThat(entity.getContentId()).isNull();
                 }
             }
@@ -319,7 +319,7 @@ public class DefaultFileSystemStoresImplTest {
                         }
 
                         @Test
-                        void shouldWriteToResourceSOutputStream() throws IOException {
+                        void shouldWriteToResourceOutputStream() throws IOException {
                             verify(writeableResource).getOutputStream();
                             verify(output, times(1)).write(ArgumentMatchers.any(), eq(0),
                                 eq(20));
@@ -362,7 +362,7 @@ public class DefaultFileSystemStoresImplTest {
                         }
 
                         @Test
-                        void shouldWriteToResourceSOutputStream() throws IOException {
+                        void shouldWriteToResourceOutputStream() throws IOException {
                             verify(output, times(1)).write(ArgumentMatchers.any(), eq(0),
                                 eq(20));
                             verify(output).close();
@@ -435,7 +435,7 @@ public class DefaultFileSystemStoresImplTest {
                         }
 
                         @Test
-                        void shouldWriteToResourceSOutputStream() throws IOException {
+                        void shouldWriteToResourceOutputStream() throws IOException {
                             verify(writeableResource).getOutputStream();
                             verify(output, times(1)).write(ArgumentMatchers.any(), eq(0),
                                 eq(20));
@@ -508,7 +508,7 @@ public class DefaultFileSystemStoresImplTest {
                         }
 
                         @Test
-                        void shouldWriteToResourceSOutputStream() throws IOException {
+                        void shouldWriteToResourceOutputStream() throws IOException {
                             verify(writeableResource).getOutputStream();
                             verify(output, times(1)).write(ArgumentMatchers.any(), eq(0),
                                 eq(20));

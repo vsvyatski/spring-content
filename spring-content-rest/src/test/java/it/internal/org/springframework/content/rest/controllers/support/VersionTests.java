@@ -118,7 +118,7 @@ public class VersionTests {
     @DisplayName("GET request to store ID with a matching If-None-Match header")
     class GetRequestToStoreIdWithMatchingIfNoneMatchHeader {
         @Test
-        void shouldRespondWithA304NotModified() throws Exception {
+        void shouldRespondWith304NotModified() throws Exception {
             mvc.perform(get(url)
                     .accept("text/plain")
                     .header("if-none-match", etag))
@@ -179,7 +179,7 @@ public class VersionTests {
     @DisplayName("DELETE to store ID with a matching If-Match header")
     class DeleteToStoreIdWithMatchingIfMatchHeader {
         @Test
-        void shouldDeleteContentAttributesAndReturnA200Response() throws Exception {
+        void shouldDeleteContentAttributesAndReturn200Response() throws Exception {
             mvc.perform(delete(url)
                     .contentType("text/plain"))
                 .andExpect(status().isNoContent());
@@ -212,7 +212,7 @@ public class VersionTests {
     @DisplayName("PUT to store ID with a matching If-None-Match header")
     class PutToStoreIdWithMatchingIfNoneMatchHeader {
         @Test
-        void shouldRespondWithA412PreconditionFailed() throws Exception {
+        void shouldRespondWith412PreconditionFailed() throws Exception {
             mvc.perform(put(url)
                     .content("Hello Modified Spring Content World!")
                     .contentType("text/plain")
@@ -238,7 +238,7 @@ public class VersionTests {
     @DisplayName("PUT to store ID with matching If-Match and If-None-Match headers")
     class PutToStoreIdWithMatchingIfMatchAndIfNoneMatchHeaders {
         @Test
-        void shouldRespondWithA412PreconditionFailed() throws Exception {
+        void shouldRespondWith412PreconditionFailed() throws Exception {
             mvc.perform(put(url)
                     .content("Hello Modified Spring Content World!")
                     .contentType("text/plain")

@@ -198,7 +198,7 @@ public class FileSystemStoreIT {
         }
 
         @Test
-        void shouldBeRecordedAsSuchOnEntitySContentId() {
+        void shouldBeRecordedAsSuchOnEntityContentId() {
             associateBoth();
             assertThat(entity.getContentId()).isEqualTo(resourceLocation);
             assertThat(entity.getRenditionId()).isEqualTo(resourceLocation);
@@ -218,7 +218,7 @@ public class FileSystemStoreIT {
         }
 
         @Test
-        void shouldResetEntitySContentId() {
+        void shouldResetEntityContentId() {
             associateBoth();
             store.unassociate(entity);
             store.unassociate(entity, PropertyPath.from("rendition"));

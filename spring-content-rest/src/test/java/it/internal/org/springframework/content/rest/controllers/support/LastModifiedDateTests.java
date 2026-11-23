@@ -204,7 +204,7 @@ public abstract class LastModifiedDateTests {
     @DisplayName("PUT to store ID with matching If-Unmodified-Since and If-None-Match headers")
     class PutToStoreIdWithMatchingIfUnmodifiedSinceAndIfNoneMatchHeaders {
         @Test
-        void shouldRespondWithA412PreconditionFailed() throws Exception {
+        void shouldRespondWith412PreconditionFailed() throws Exception {
             if (etag != null) {
                 mvc.perform(put(url)
                         .content("Hello Modified Spring Content World!")

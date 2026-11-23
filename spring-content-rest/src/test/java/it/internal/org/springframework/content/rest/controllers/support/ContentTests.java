@@ -563,7 +563,7 @@ public class ContentTests {
             }
 
             @Test
-            void shouldDeleteContentAttributesAndReturnA200Response() throws Exception {
+            void shouldDeleteContentAttributesAndReturn200Response() throws Exception {
                 mvc.perform(delete(url)
                         .contentType("text/plain")
                         .contextPath(contextPath)

@@ -213,7 +213,7 @@ public class ContentEntityRestEndpointsIT {
             }
 
             @Test
-            void shouldCreateNewEntityAndItsContentAndRespondWithA201Created() throws Exception {
+            void shouldCreateNewEntityAndItsContentAndRespondWith201Created() throws Exception {
                 // assert content does not exist
                 String newContent = "This is some new content";
 
@@ -269,7 +269,7 @@ public class ContentEntityRestEndpointsIT {
                 }
 
                 @Test
-                void shouldCreateNewEntityAndItsContentAndRespondWithA201Created() throws Exception {
+                void shouldCreateNewEntityAndItsContentAndRespondWith201Created() throws Exception {
                     String newContent = "This is some new content";
 
                     MockMultipartFile file = new MockMultipartFile("content", "filename.txt", "text/plain",
@@ -315,7 +315,7 @@ public class ContentEntityRestEndpointsIT {
                 }
 
                 @Test
-                void shouldCreateNewEntityAndRespondWithA201Created() throws Exception {
+                void shouldCreateNewEntityAndRespondWith201Created() throws Exception {
                     // POST the entity
                     MockHttpServletResponse response = mvc.perform(multipart("/oneToOneLinkedContentEntities")
                             .param("name", "foo")
@@ -386,7 +386,7 @@ public class ContentEntityRestEndpointsIT {
             }
 
             @Test
-            void shouldCreateNewEntityAndItsContentAndRespondWithA201Created() throws Exception {
+            void shouldCreateNewEntityAndItsContentAndRespondWith201Created() throws Exception {
                 // assert content does not exist
                 String newContent = "This is some new content";
 
@@ -429,7 +429,7 @@ public class ContentEntityRestEndpointsIT {
             }
 
             @Test
-            void shouldCreateNewEntityWithNoContentAndRespondWithA201Created() throws Exception {
+            void shouldCreateNewEntityWithNoContentAndRespondWith201Created() throws Exception {
                 var testEntity4Id = repo4.save(new OneToOneLinkedContentEntity()).getId();
 
                 // POST the entity
@@ -526,7 +526,7 @@ public class ContentEntityRestEndpointsIT {
             }
 
             @Test
-            void shouldCreateNewEntityAndItsContentAndRespondWithA201Created() throws Exception {
+            void shouldCreateNewEntityAndItsContentAndRespondWith201Created() throws Exception {
                 // assert content does not exist
                 String newContent = "This is some new content";
 

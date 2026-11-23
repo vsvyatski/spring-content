@@ -89,7 +89,7 @@ public class PdfToJpegRendererTest {
                     }
 
                     @Test
-                    void shouldGetEmbeddedThumbnailFromXWPFDocumentSProperties() throws IOException {
+                    void shouldGetEmbeddedThumbnailFromXWPFDocumentProperties() throws IOException {
                         verify(pdfRenderer).renderImageWithDPI(0, 300, ImageType.RGB);
                     }
 
@@ -183,7 +183,7 @@ public class PdfToJpegRendererTest {
                 }
 
                 @Test
-                void shouldGetEmbeddedThumbnailFromXWPFDocumentSProperties() {
+                void shouldGetEmbeddedThumbnailFromXWPFDocumentProperties() {
                     assertThat(e).isNotNull();
                 }
             }

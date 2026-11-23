@@ -103,7 +103,7 @@ public class RevisionPropertyRestEndpointsIT {
                 }
 
                 @Test
-                void shouldReturnA404() throws Exception {
+                void shouldReturn404() throws Exception {
                     mvc.perform(
                             get("/revisionPropertyEntities/" + testEntity.getId() + "/revisions/1/content").
                                 accept("text/plain")).

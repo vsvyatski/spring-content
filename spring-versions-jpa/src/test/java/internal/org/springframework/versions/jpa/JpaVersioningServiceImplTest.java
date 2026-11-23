@@ -36,7 +36,7 @@ public class JpaVersioningServiceImplTest {
             }
 
             @Test
-            void shouldSetAncestorRootIdToItSOwnId() {
+            void shouldSetAncestorRootIdToItsOwnId() {
                 assertThat(entity.getAncestorRootId()).isEqualTo(entity.getId());
             }
 

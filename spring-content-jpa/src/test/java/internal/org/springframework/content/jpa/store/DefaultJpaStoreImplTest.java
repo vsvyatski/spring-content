@@ -129,7 +129,7 @@ public class DefaultJpaStoreImplTest {
                 }
 
                 @Test
-                void shouldSetEntitySContentIDAttribute() {
+                void shouldSetEntityContentIdAttribute() {
                     assertThat(entity.getContentId()).isEqualTo("12345");
                 }
             }
@@ -262,7 +262,7 @@ public class DefaultJpaStoreImplTest {
                 }
 
                 @Test
-                void shouldWriteContentsOfInputStreamToResourceSOutputStream() throws IOException {
+                void shouldWriteContentsOfInputStreamToResourceOutputStream() throws IOException {
                     verify(outputStream, atLeastOnce()).write(any(), anyInt(), anyInt());
                 }
 
