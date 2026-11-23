@@ -117,7 +117,8 @@ Storage type selection uses `spring.content.storage.type.default` (FS is the def
 
 ## Build and test
 
-JDK 17. Maven 3.6.3+ if not using the wrapper.
+JDK 17. Maven 3.6.3+ if not using the wrapper. On Windows with another JDK on `PATH`, source
+`scripts/wsl-java17-env.sh` in AlmaLinux WSL before `./mvnw`.
 
 ```text
 ./mvnw clean install                    # default: unit tests only (*Test.java)
