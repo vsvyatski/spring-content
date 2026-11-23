@@ -57,7 +57,7 @@ public class ContentRestAutoConfigurationTest {
         }
 
         @Nested
-        @DisplayName("Given an environment specifying rest properties")
+        @DisplayName("Given an environment specifying REST properties")
         class EnvironmentSpecifyingRestProperties {
             @BeforeEach
             void setUp() {

@@ -49,7 +49,7 @@ public class ContentLinksResourceProcessorIT {
     private PersistentEntityResource resource;
 
     @Nested
-    @DisplayName("Given the spring content base uri property is set to content api cases")
+    @DisplayName("Given the Spring Content base URI property is set to /contentApi")
     class SpringContentBaseUriPropertyIsSetToContentApiCases {
         @Nested
         @DisplayName("Given an entity with a single content ID property")

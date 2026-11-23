@@ -81,7 +81,7 @@ public class ContextPathIT {
         @DisplayName("Given an entity is the subject of a repository and storage")
         class EntityIsSubjectOfRepositoryAndStorage {
             @Nested
-            @DisplayName("Given the repository and storage are exported to the same uri")
+            @DisplayName("Given the repository and storage are exported to the same URI")
             class RepositoryAndStorageAreExportedToSameURIContent extends ContentTests {
                 @BeforeEach
                 void setUp() {

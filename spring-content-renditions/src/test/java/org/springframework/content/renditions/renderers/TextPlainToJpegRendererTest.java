@@ -209,7 +209,7 @@ public class TextPlainToJpegRendererTest {
             }
 
             @Nested
-            @DisplayName("When the input stream is not a valid word file")
+            @DisplayName("When the input stream is not a valid Word file")
             class InputStreamIsNotValidWordFile {
                 @BeforeEach
                 void setUp() {

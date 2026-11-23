@@ -30,7 +30,7 @@ public class SpringBootContentRestConfigurerTest {
         @Nested
         class Configure {
             @Nested
-            @DisplayName("Given a base uri property")
+            @DisplayName("Given a base URI property")
             class BaseUriProperty {
                 @BeforeEach
                 void setUp() {
@@ -196,7 +196,7 @@ public class SpringBootContentRestConfigurerTest {
             }
 
             @Nested
-            @DisplayName("Given a null base uri property")
+            @DisplayName("Given a null base URI property")
             class ullBaseUriProperty {
                 @BeforeEach
                 void setUp() {

@@ -18,7 +18,7 @@ public class FileSystemPropertiesTest {
     @Nested
     class FileSystemPropertiesCases {
         @Nested
-        @DisplayName("Given a filesystem properties with no root set")
+        @DisplayName("Given file system properties with no root set")
         class FilesystemPropertiesWithNoRootSet {
             @BeforeEach
             void setUp() {
@@ -32,7 +32,7 @@ public class FileSystemPropertiesTest {
         }
 
         @Nested
-        @DisplayName("Given a filesystem properties with root set")
+        @DisplayName("Given file system properties with root set")
         class FilesystemPropertiesWithRootSet {
             @BeforeEach
             void setUp() {

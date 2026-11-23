@@ -68,7 +68,7 @@ public class BaseUriIT {
         @DisplayName("Given an entity is the subject of a repository and storage")
         class EntityIsSubjectOfRepositoryAndStorage {
             @Nested
-            @DisplayName("Given the repository and storage are exported to the same uri")
+            @DisplayName("Given the repository and storage are exported to the same URI")
             class RepositoryAndStorageAreExportedToSameURIEntity extends EntityTests {
                 @BeforeEach
                 void setUp() {
@@ -85,7 +85,7 @@ public class BaseUriIT {
             }
 
             @Nested
-            @DisplayName("Given the repository and storage are exported to the same uri")
+            @DisplayName("Given the repository and storage are exported to the same URI")
             class RepositoryAndStorageAreExportedToSameURIContent extends ContentTests {
                 @BeforeEach
                 void setUp() {
