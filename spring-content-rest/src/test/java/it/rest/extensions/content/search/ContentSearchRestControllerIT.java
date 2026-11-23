@@ -70,9 +70,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 // to behave differently in each tests
 @WebAppConfiguration
 @ContextConfiguration(classes = {
-    ContentSearchRestControllerIT.TestConfig.class,
-    DelegatingWebMvcConfiguration.class, RepositoryRestMvcConfiguration.class,
-    RestConfiguration.class})
+    ContentSearchRestControllerIT.TestConfig.class, DelegatingWebMvcConfiguration.class,
+    RepositoryRestMvcConfiguration.class, RestConfiguration.class
+})
 @Transactional
 @ExtendWith(SpringExtension.class)
 public class ContentSearchRestControllerIT {
@@ -356,636 +356,150 @@ public class ContentSearchRestControllerIT {
     }
 
     @Nested
-    class ContentSearchRestControllerCases {
-        @Nested
-        class SearchEndpointCases {
-            @Nested
-            @DisplayName("Given an entity has no content associations")
-            class EntityHasNoContentAssociations {
-                @BeforeEach
-                void setUp() {
-                    mvc = MockMvcBuilders.webAppContextSetup(context).build();
-
-                    reflectionService = mock(ReflectionService.class);
-                    ContentSearchRestController controller = context.getBean(ContentSearchRestController.class);
-                    controller.setReflectionService(reflectionService);
-
-                    defaultLookupStrategy = spy(new DefaultEntityLookupStrategy());
-                    controller.setDefaultEntityLookupStrategy(defaultLookupStrategy);
-                    queryMethodsLookupStrategy = spy(new QueryMethodsEntityLookupStrategy());
-                    controller.setQueryMethodsEntityLookupStrategy(queryMethodsLookupStrategy);
-                }
-
-                @Test
-                void shouldThrowException() throws Exception {
-                    MvcResult result = mvc.perform(get(
-                            "/testEntityNoContents/searchContent?queryString=one")
-                            .accept("application/hal+json"))
-                        .andExpect(status().isNotFound()).andReturn();
-
-                    assertThat(result.getResolvedException()).isNotNull();
-                    assertThat(result.getResolvedException().getMessage()).contains("no content");
-                }
-            }
-
-            @Nested
-            @DisplayName("Given a store that is not searchable")
-            class StoreThatIsNotSearchable {
-                @BeforeEach
-                void setUp() {
-                    mvc = MockMvcBuilders.webAppContextSetup(context).build();
-
-                    reflectionService = mock(ReflectionService.class);
-                    ContentSearchRestController controller = context.getBean(ContentSearchRestController.class);
-                    controller.setReflectionService(reflectionService);
-
-                    defaultLookupStrategy = spy(new DefaultEntityLookupStrategy());
-                    controller.setDefaultEntityLookupStrategy(defaultLookupStrategy);
-                    queryMethodsLookupStrategy = spy(new QueryMethodsEntityLookupStrategy());
-                    controller.setQueryMethodsEntityLookupStrategy(queryMethodsLookupStrategy);
-                }
-
-                @Test
-                void shouldThrowResourceNotFoundException() throws Exception {
-                    MvcResult result = mvc.perform(get(
-                            "/testEntityNotSearchables/searchContent?queryString=one")
-                            .accept("application/hal+json"))
-                        .andExpect(status().isNotFound()).andReturn();
-
-                    assertThat(result.getResolvedException()).isNotNull();
-                    assertThat(result.getResolvedException().getMessage()).contains("not searchable");
-                }
-            }
-
-            @Nested
-            @DisplayName("Given the search method is invalid")
-            class SearchMethodIsInvalid {
-                @BeforeEach
-                void setUp() {
-                    mvc = MockMvcBuilders.webAppContextSetup(context).build();
-
-                    reflectionService = mock(ReflectionService.class);
-                    ContentSearchRestController controller = context.getBean(ContentSearchRestController.class);
-                    controller.setReflectionService(reflectionService);
-
-                    defaultLookupStrategy = spy(new DefaultEntityLookupStrategy());
-                    controller.setDefaultEntityLookupStrategy(defaultLookupStrategy);
-                    queryMethodsLookupStrategy = spy(new QueryMethodsEntityLookupStrategy());
-                    controller.setQueryMethodsEntityLookupStrategy(queryMethodsLookupStrategy);
-                }
-
-                @Test
-                void shouldReturnResourceNotFoundException() throws Exception {
-                    mvc.perform(get(
-                            "/testEntityWithSharedIds/searchContent/invalidSearchMethod?keyword=one")
-                            .accept("application/hal+json"))
-                        .andExpect(status().isNotFound()).andReturn();
-                }
-            }
-
-            @Nested
-            @DisplayName("Given no keywords are specified")
-            class NoKeywordsAreSpecified {
-                @BeforeEach
-                void setUp() {
-                    mvc = MockMvcBuilders.webAppContextSetup(context).build();
-
-                    reflectionService = mock(ReflectionService.class);
-                    ContentSearchRestController controller = context.getBean(ContentSearchRestController.class);
-                    controller.setReflectionService(reflectionService);
-
-                    defaultLookupStrategy = spy(new DefaultEntityLookupStrategy());
-                    controller.setDefaultEntityLookupStrategy(defaultLookupStrategy);
-                    queryMethodsLookupStrategy = spy(new QueryMethodsEntityLookupStrategy());
-                    controller.setQueryMethodsEntityLookupStrategy(queryMethodsLookupStrategy);
-                }
-
-                @Test
-                void shouldReturnBadRequestException() throws Exception {
-                    mvc.perform(get("/testEntityWithSharedIds/searchContent")
-                            .accept("application/hal+json"))
-                        .andExpect(status().isBadRequest());
-                }
-            }
-
-            @Nested
-            @DisplayName("Given paged results are requested")
-            class PagedResultsAreRequested {
-                @BeforeEach
-                void setUp() {
-                    mvc = MockMvcBuilders.webAppContextSetup(context).build();
-
-                    reflectionService = mock(ReflectionService.class);
-                    ContentSearchRestController controller = context.getBean(ContentSearchRestController.class);
-                    controller.setReflectionService(reflectionService);
-
-                    defaultLookupStrategy = spy(new DefaultEntityLookupStrategy());
-                    controller.setDefaultEntityLookupStrategy(defaultLookupStrategy);
-                    queryMethodsLookupStrategy = spy(new QueryMethodsEntityLookupStrategy());
-                    controller.setQueryMethodsEntityLookupStrategy(queryMethodsLookupStrategy);
-                }
-
-                @Test
-                void shouldInvokeSearchWithPageRequest() throws Exception {
-                    mvc.perform(get("/testEntityWithSeparateIds/searchContent?queryString=else&page=1&size=1")
-                            .accept("application/hal+json"))
-                        .andExpect(status().isOk()).andReturn();
-
-                    Method m = ReflectionUtils.findMethod(Searchable.class, "search", String.class, Pageable.class);
-                    PageRequest pageable = PageRequest.of(1, 1);
-
-                    verify(reflectionService).invokeMethod(eq(m), any(), eq("else"), eq(pageable));
-                }
-            }
-
-            @Nested
-            @DisplayName("Given an entity with an overloaded ID field")
-            class EntityWithOverloadedIdField {
-                @Nested
-                @DisplayName("Given no results are found")
-                class NoResultsAreFound {
-                    @BeforeEach
-                    void setUp() {
-                        mvc = MockMvcBuilders.webAppContextSetup(context).build();
-
-                        reflectionService = mock(ReflectionService.class);
-                        ContentSearchRestController controller = context.getBean(ContentSearchRestController.class);
-                        controller.setReflectionService(reflectionService);
-
-                        defaultLookupStrategy = spy(new DefaultEntityLookupStrategy());
-                        controller.setDefaultEntityLookupStrategy(defaultLookupStrategy);
-                        queryMethodsLookupStrategy = spy(new QueryMethodsEntityLookupStrategy());
-                        controller.setQueryMethodsEntityLookupStrategy(queryMethodsLookupStrategy);
-
-                        when(reflectionService.invokeMethod(any(), any(),
-                            eq("one"), isA(Pageable.class), eq(InternalResult.class)))
-                            .thenReturn(Collections.emptyList());
-                    }
-
-                    @Test
-                    void shouldReturnEmptyResponseEntity() throws Exception {
-                        MvcResult result = mvc.perform(get(
-                                "/testEntityWithSharedIds/searchContent?queryString=one")
-                                .accept("application/hal+json"))
-                            .andExpect(status().isOk()).andReturn();
-
-                        ReadableRepresentation halResponse = representationFactory
-                            .readRepresentation("application/hal+json",
-                                new StringReader(result.getResponse()
-                                    .getContentAsString()));
-                        assertThat(halResponse.getResources().size()).isEqualTo(0);
-                    }
-                }
-
-                @Nested
-                @DisplayName("Given results are found")
-                class ResultsAreFound {
-                    @BeforeEach
-                    void setUp() {
-                        mvc = MockMvcBuilders.webAppContextSetup(context).build();
-
-                        reflectionService = mock(ReflectionService.class);
-                        ContentSearchRestController controller = context.getBean(ContentSearchRestController.class);
-                        controller.setReflectionService(reflectionService);
-
-                        defaultLookupStrategy = spy(new DefaultEntityLookupStrategy());
-                        controller.setDefaultEntityLookupStrategy(defaultLookupStrategy);
-                        queryMethodsLookupStrategy = spy(new QueryMethodsEntityLookupStrategy());
-                        controller.setQueryMethodsEntityLookupStrategy(queryMethodsLookupStrategy);
-
-                        TestEntityWithSharedId entity = new TestEntityWithSharedId();
-                        repository.save(entity);
-
-                        entity2 = new TestEntityWithSharedId();
-                        repository.save(entity2);
-
-                        internalResults = new ArrayList<>();
-                        internalResults.add(new InternalResult(null, entity.getContentId()));
-                        internalResults.add(new InternalResult(entity2.getId(), entity2.getContentId()));
-
-                        sharedIds = new ArrayList<>();
-                        sharedIds.add(entity.getId());
-                        sharedIds.add(entity2.getId());
-
-                        when(reflectionService.invokeMethod(any(), any(),
-                            eq("two"))).thenReturn(internalResults);
-                    }
-
-                    @Test
-                    void shouldReturnResponseEntityWithEntity() throws Exception {
-                        MvcResult result = mvc.perform(get(
-                                "/testEntityWithSharedIds/searchContent?queryString=two")
-                                .accept("application/hal+json"))
-                            .andExpect(status().isOk()).andReturn();
-
-                        verify(defaultLookupStrategy, never()).lookup(any(RootResourceInformation.class), any(RepositoryInformation.class), anyList(),
-                            anyList());
-                        verify(queryMethodsLookupStrategy, never()).lookup(any(RootResourceInformation.class), any(RepositoryInformation.class), anyList(),
-                            anyList());
-
-                        ReadableRepresentation halResponse = representationFactory
-                            .readRepresentation("application/hal+json",
-                                new StringReader(result.getResponse()
-                                    .getContentAsString()));
-                        assertThat(halResponse
-                            .getResourcesByRel("testEntityWithSharedIds").size()).isEqualTo(2);
-                        String id1 = halResponse
-                            .getResourcesByRel("testEntityWithSharedIds").get(0)
-                            .getValue("contentId").toString();
-                        String id2 = halResponse
-                            .getResourcesByRel("testEntityWithSharedIds").get(1)
-                            .getValue("contentId").toString();
-                        assertThat(sharedIds).contains(id1);
-                        assertThat(sharedIds).contains(id2);
-                        assertThat(id1).isNotEqualTo(id2);
-                    }
-                }
-
-                @Nested
-                @DisplayName("Given results contain orphaned fulltext documents")
-                class ResultsContainOrphanedFulltextDocuments {
-                    @BeforeEach
-                    void setUp() {
-                        mvc = MockMvcBuilders.webAppContextSetup(context).build();
-
-                        reflectionService = mock(ReflectionService.class);
-                        ContentSearchRestController controller = context.getBean(ContentSearchRestController.class);
-                        controller.setReflectionService(reflectionService);
-
-                        defaultLookupStrategy = spy(new DefaultEntityLookupStrategy());
-                        controller.setDefaultEntityLookupStrategy(defaultLookupStrategy);
-                        queryMethodsLookupStrategy = spy(new QueryMethodsEntityLookupStrategy());
-                        controller.setQueryMethodsEntityLookupStrategy(queryMethodsLookupStrategy);
-
-                        entity2 = new TestEntityWithSharedId();
-                        repository.save(entity2);
-
-                        String orphanedContentId = UUID.randomUUID().toString();
-
-                        internalResults = new ArrayList<>();
-                        internalResults.add(new InternalResult(null, orphanedContentId));
-                        internalResults.add(new InternalResult(entity2.getId(), entity2.getContentId()));
-
-                        contentIds = new ArrayList<>();
-                        contentIds.add(orphanedContentId); // invalid id
-                        contentIds.add(entity2.getContentId());
-
-                        when(reflectionService.invokeMethod(any(), any(),
-                            eq("else"))).thenReturn(internalResults);
-                    }
-
-                    @Test
-                    void shouldFilterOutInvalidIDs() throws Exception {
-                        MvcResult result = mvc.perform(get(
-                                "/testEntityWithSharedIds/searchContent?queryString=else")
-                                .accept("application/hal+json"))
-                            .andExpect(status().isOk()).andReturn();
-
-                        ReadableRepresentation halResponse = representationFactory
-                            .readRepresentation("application/hal+json",
-                                new StringReader(result.getResponse()
-                                    .getContentAsString()));
-                        assertThat(halResponse
-                            .getResourcesByRel("testEntityWithSharedIds").size()).isEqualTo(1);
-                        String id1 = halResponse
-                            .getResourcesByRel("testEntityWithSharedIds").get(0)
-                            .getValue("contentId").toString();
-                        assertThat(contentIds).contains(id1);
-                    }
-                }
-            }
-
-            @Nested
-            @DisplayName("Given an entity with separate ID content ID fields")
-            class EntityWithSeparateIdContentIdFields {
-                @Nested
-                @DisplayName("Given no results are found")
-                class NoResultsAreFound {
-                    @BeforeEach
-                    void setUp() {
-                        mvc = MockMvcBuilders.webAppContextSetup(context).build();
-
-                        reflectionService = mock(ReflectionService.class);
-                        ContentSearchRestController controller = context.getBean(ContentSearchRestController.class);
-                        controller.setReflectionService(reflectionService);
-
-                        defaultLookupStrategy = spy(new DefaultEntityLookupStrategy());
-                        controller.setDefaultEntityLookupStrategy(defaultLookupStrategy);
-                        queryMethodsLookupStrategy = spy(new QueryMethodsEntityLookupStrategy());
-                        controller.setQueryMethodsEntityLookupStrategy(queryMethodsLookupStrategy);
-
-                        when(reflectionService.invokeMethod(any(), any(),
-                            eq("something"), isA(Pageable.class), eq(InternalResult.class)))
-                            .thenReturn(Collections.emptyList());
-                    }
-
-                    @Test
-                    void shouldReturnEmptyResponseEntity() throws Exception {
-                        MvcResult result = mvc.perform(get(
-                                "/testEntityWithSeparateIds/searchContent?queryString=something")
-                                .accept("application/hal+json"))
-                            .andExpect(status().isOk()).andReturn();
-
-                        ReadableRepresentation halResponse = representationFactory
-                            .readRepresentation("application/hal+json",
-                                new StringReader(result.getResponse()
-                                    .getContentAsString()));
-                        assertThat(halResponse.getResources().size()).isEqualTo(0);
-                    }
-                }
-
-                @Nested
-                @DisplayName("Given results are found with entity i ds")
-                class ResultsAreFoundWithEntityIDs {
-                    @BeforeEach
-                    void setUp() {
-                        mvc = MockMvcBuilders.webAppContextSetup(context).build();
-
-                        reflectionService = mock(ReflectionService.class);
-                        ContentSearchRestController controller = context.getBean(ContentSearchRestController.class);
-                        controller.setReflectionService(reflectionService);
-
-                        defaultLookupStrategy = spy(new DefaultEntityLookupStrategy());
-                        controller.setDefaultEntityLookupStrategy(defaultLookupStrategy);
-                        queryMethodsLookupStrategy = spy(new QueryMethodsEntityLookupStrategy());
-                        controller.setQueryMethodsEntityLookupStrategy(queryMethodsLookupStrategy);
-
-                        entity3 = new TestEntityWithSeparateId();
-                        entityWithSeparateRepository.save(entity3);
-
-                        TestEntityWithSeparateId entity4 = new TestEntityWithSeparateId();
-                        entityWithSeparateRepository.save(entity4);
-
-                        internalResults = new ArrayList<>();
-                        internalResults.add(new InternalResult(null, entity3.getContentId()));
-                        internalResults.add(new InternalResult(entity4.getId(), entity4.getContentId()));
-
-                        contentIds = new ArrayList<>();
-                        contentIds.add(entity3.getContentId());
-                        contentIds.add(entity4.getContentId());
-
-                        when(reflectionService.invokeMethod(any(), any(),
-                            eq("else"))).thenReturn(internalResults);
-                    }
-
-                    @Test
-                    void shouldReturnResponseEntityWithEntity() throws Exception {
-                        MvcResult result = mvc.perform(get(
-                                "/testEntityWithSeparateIds/searchContent?queryString=else")
-                                .accept("application/hal+json"))
-                            .andExpect(status().isOk()).andReturn();
-
-                        verify(defaultLookupStrategy, never()).lookup(any(RootResourceInformation.class), any(RepositoryInformation.class), anyList(),
-                            anyList());
-                        verify(queryMethodsLookupStrategy).lookup(any(RootResourceInformation.class), any(RepositoryInformation.class), anyList(),
-                            anyList());
-
-                        ReadableRepresentation halResponse = representationFactory
-                            .readRepresentation("application/hal+json",
-                                new StringReader(result.getResponse()
-                                    .getContentAsString()));
-                        assertThat(halResponse
-                            .getResourcesByRel("testEntityWithSeparateIds").size()).isEqualTo(2);
-                        String id1 = halResponse
-                            .getResourcesByRel("testEntityWithSeparateIds").get(0)
-                            .getValue("contentId").toString();
-                        String id2 = halResponse
-                            .getResourcesByRel("testEntityWithSeparateIds").get(1)
-                            .getValue("contentId").toString();
-                        assertThat(contentIds).contains(id1);
-                        assertThat(contentIds).contains(id2);
-                        assertThat(id1).isNotEqualTo(id2);
-                    }
-                }
-
-                @Nested
-                @DisplayName("Given results contain orphaned fulltext documents")
-                class ResultsContainOrphanedFulltextDocuments {
-                    @BeforeEach
-                    void setUp() {
-                        mvc = MockMvcBuilders.webAppContextSetup(context).build();
-
-                        reflectionService = mock(ReflectionService.class);
-                        ContentSearchRestController controller = context.getBean(ContentSearchRestController.class);
-                        controller.setReflectionService(reflectionService);
-
-                        defaultLookupStrategy = spy(new DefaultEntityLookupStrategy());
-                        controller.setDefaultEntityLookupStrategy(defaultLookupStrategy);
-                        queryMethodsLookupStrategy = spy(new QueryMethodsEntityLookupStrategy());
-                        controller.setQueryMethodsEntityLookupStrategy(queryMethodsLookupStrategy);
-
-                        entity3 = new TestEntityWithSeparateId();
-                        entityWithSeparateRepository.save(entity3);
-
-                        String orphanedContentId = UUID.randomUUID().toString();
-
-                        internalResults = new ArrayList<>();
-                        internalResults.add(new InternalResult(null, orphanedContentId));
-                        internalResults.add(new InternalResult(entity3.getId(), entity3.getContentId()));
-
-                        contentIds = new ArrayList<>();
-                        contentIds.add(orphanedContentId); // invalid id
-                        contentIds.add(entity3.getContentId());
-
-                        when(reflectionService.invokeMethod(any(), any(),
-                            eq("else"))).thenReturn(internalResults);
-                    }
-
-                    @Test
-                    void shouldFilterOutInvalidIDs() throws Exception {
-                        MvcResult result = mvc.perform(get(
-                                "/testEntityWithSeparateIds/searchContent?queryString=else")
-                                .accept("application/hal+json"))
-                            .andExpect(status().isOk()).andReturn();
-
-                        ReadableRepresentation halResponse = representationFactory
-                            .readRepresentation("application/hal+json",
-                                new StringReader(result.getResponse()
-                                    .getContentAsString()));
-                        assertThat(halResponse
-                            .getResourcesByRel("testEntityWithSeparateIds").size()).isEqualTo(1);
-                        String id1 = halResponse
-                            .getResourcesByRel("testEntityWithSeparateIds").get(0)
-                            .getValue("contentId").toString();
-                        assertThat(contentIds).contains(id1);
-                    }
-                }
-            }
-
-            @Nested
-            @DisplayName("Given results are found returning a custom result type")
-            class ResultsAreFoundReturningCustomResultType {
-                @BeforeEach
-                void setUp() {
-                    mvc = MockMvcBuilders.webAppContextSetup(context).build();
-
-                    reflectionService = mock(ReflectionService.class);
-                    ContentSearchRestController controller = context.getBean(ContentSearchRestController.class);
-                    controller.setReflectionService(reflectionService);
-
-                    defaultLookupStrategy = spy(new DefaultEntityLookupStrategy());
-                    controller.setDefaultEntityLookupStrategy(defaultLookupStrategy);
-                    queryMethodsLookupStrategy = spy(new QueryMethodsEntityLookupStrategy());
-                    controller.setQueryMethodsEntityLookupStrategy(queryMethodsLookupStrategy);
-
-                    List<CustomResult> results = new ArrayList<>();
-
-                    results.add(new CustomResult("12345", "<em>something else</em>", "foo1", "bar1"));
-                    results.add(new CustomResult("67890", "<em>else altogether</em>", "foo2", "bar2"));
-
-                    when(reflectionService.invokeMethod(any(), any(),
-                        eq("else"))).thenReturn(results);
-                }
-
-                @Test
-                void shouldReturnResponseEntityWithEntity() throws Exception {
-                    MvcResult result = mvc.perform(get(
-                            "/repoWithCustomSearchReturnType/searchContent?queryString=else")
-                            .accept("application/hal+json"))
-                        .andExpect(status().isOk()).andReturn();
-
-                    ReadableRepresentation halResponse = representationFactory
-                        .readRepresentation("application/hal+json",
-                            new StringReader(result.getResponse()
-                                .getContentAsString()));
-                    assertThat(halResponse
-                        .getResourcesByRel("customResults").size()).isEqualTo(2);
-                    assertThat(halResponse
-                        .getResourcesByRel("customResults").get(0)
-                        .getValue("highlight").toString()).isEqualTo("<em>something else</em>");
-                    assertThat(halResponse
-                        .getResourcesByRel("customResults").get(0)
-                        .getValue("foo").toString()).isEqualTo("foo1");
-                    assertThat(halResponse
-                        .getResourcesByRel("customResults").get(0)
-                        .getValue("bar").toString()).isEqualTo("bar1");
-                    assertThat(halResponse
-                        .getResourcesByRel("customResults").get(1)
-                        .getValue("highlight").toString()).isEqualTo("<em>else altogether</em>");
-                    assertThat(halResponse
-                        .getResourcesByRel("customResults").get(1)
-                        .getValue("foo").toString()).isEqualTo("foo2");
-                    assertThat(halResponse
-                        .getResourcesByRel("customResults").get(1)
-                        .getValue("bar").toString()).isEqualTo("bar2");
-                }
-            }
-
-            @Nested
-            @DisplayName("Given paged results are found returning a custom result type")
-            class PagedResultsAreFoundReturningCustomResultType {
-                @BeforeEach
-                void setUp() {
-                    mvc = MockMvcBuilders.webAppContextSetup(context).build();
-
-                    reflectionService = mock(ReflectionService.class);
-                    ContentSearchRestController controller = context.getBean(ContentSearchRestController.class);
-                    controller.setReflectionService(reflectionService);
-
-                    defaultLookupStrategy = spy(new DefaultEntityLookupStrategy());
-                    controller.setDefaultEntityLookupStrategy(defaultLookupStrategy);
-                    queryMethodsLookupStrategy = spy(new QueryMethodsEntityLookupStrategy());
-                    controller.setQueryMethodsEntityLookupStrategy(queryMethodsLookupStrategy);
-
-                    List<CustomResult> results = new ArrayList<>();
-
-                    results.add(new CustomResult("12345", "<em>something else</em>", "foo1", "bar1"));
-
-                    when(reflectionService.invokeMethod(any(), any(),
-                        eq("else"), isA(Pageable.class))).thenReturn(results);
-                }
-
-                @Test
-                void shouldReturnResponseEntityWithEntity() throws Exception {
-                    MvcResult result = mvc.perform(get(
-                            "/repoWithCustomSearchReturnType/searchContent?queryString=else&page=1&size=1")
-                            .accept("application/hal+json"))
-                        .andExpect(status().isOk()).andReturn();
-
-                    ReadableRepresentation halResponse = representationFactory
-                        .readRepresentation("application/hal+json",
-                            new StringReader(result.getResponse()
-                                .getContentAsString()));
-                    assertThat(halResponse
-                        .getResourcesByRel("customResults").size()).isEqualTo(1);
-                    assertThat(halResponse
-                        .getResourcesByRel("customResults").get(0)
-                        .getValue("highlight").toString()).isEqualTo("<em>something else</em>");
-                    assertThat(halResponse
-                        .getResourcesByRel("customResults").get(0)
-                        .getValue("foo").toString()).isEqualTo("foo1");
-                    assertThat(halResponse
-                        .getResourcesByRel("customResults").get(0)
-                        .getValue("bar").toString()).isEqualTo("bar1");
-                }
-            }
-
-            @Nested
-            @DisplayName("Given a repository with no entity lookup query method")
-            class RepositoryWithNoEntityLookupQueryMethod {
-                @BeforeEach
-                void setUp() {
-                    mvc = MockMvcBuilders.webAppContextSetup(context).build();
-
-                    reflectionService = mock(ReflectionService.class);
-                    ContentSearchRestController controller = context.getBean(ContentSearchRestController.class);
-                    controller.setReflectionService(reflectionService);
-
-                    defaultLookupStrategy = spy(new DefaultEntityLookupStrategy());
-                    controller.setDefaultEntityLookupStrategy(defaultLookupStrategy);
-                    queryMethodsLookupStrategy = spy(new QueryMethodsEntityLookupStrategy());
-                    controller.setQueryMethodsEntityLookupStrategy(queryMethodsLookupStrategy);
-
-                    NoLookupStrategySearchEntity entity5 = new NoLookupStrategySearchEntity();
-                    repoWithNoLookupStrategy.save(entity5);
-
-                    NoLookupStrategySearchEntity entity6 = new NoLookupStrategySearchEntity();
-                    repoWithNoLookupStrategy.save(entity6);
-
-                    internalResults = new ArrayList<>();
-                    internalResults.add(new InternalResult(null, entity5.getContentId()));
-                    internalResults.add(new InternalResult(entity6.getId(), entity6.getContentId()));
-
-                    contentIds = new ArrayList<>();
-                    contentIds.add(entity5.getContentId());
-                    contentIds.add(entity6.getContentId());
-
-                    when(reflectionService.invokeMethod(any(), any(), eq("else"))).thenReturn(internalResults);
-                }
-
-                @Test
-                void shouldReturnResponseWithEntity() throws Exception {
-                    MvcResult result = mvc.perform(get(
-                            "/repoWithNoLookupStrategy/searchContent?queryString=else")
-                            .accept("application/hal+json"))
-                        .andExpect(status().isOk()).andReturn();
-
-                    verify(defaultLookupStrategy).lookup(any(RootResourceInformation.class), any(RepositoryInformation.class), anyList(),
-                        anyList());
-                    verify(queryMethodsLookupStrategy, never()).lookup(any(RootResourceInformation.class), any(RepositoryInformation.class), anyList(),
-                        anyList());
-
-                    ReadableRepresentation halResponse = representationFactory
-                        .readRepresentation("application/hal+json",
-                            new StringReader(result.getResponse()
-                                .getContentAsString()));
-                    assertThat(halResponse
-                        .getResourcesByRel("noLookupStrategySearchEntities").size()).isEqualTo(2);
-                    String id1 = halResponse
-                        .getResourcesByRel("noLookupStrategySearchEntities").get(0)
-                        .getValue("contentId").toString();
-                    String id2 = halResponse
-                        .getResourcesByRel("noLookupStrategySearchEntities").get(1)
-                        .getValue("contentId").toString();
-                    assertThat(contentIds).contains(id1);
-                    assertThat(contentIds).contains(id2);
-                    assertThat(id1).isNotEqualTo(id2);
-                }
-            }
+    @DisplayName("Given an entity has no content associations")
+    class EntityHasNoContentAssociations {
+        @BeforeEach
+        void setUp() {
+            mvc = MockMvcBuilders.webAppContextSetup(context).build();
+
+            reflectionService = mock(ReflectionService.class);
+            ContentSearchRestController controller = context.getBean(ContentSearchRestController.class);
+            controller.setReflectionService(reflectionService);
+
+            defaultLookupStrategy = spy(new DefaultEntityLookupStrategy());
+            controller.setDefaultEntityLookupStrategy(defaultLookupStrategy);
+            queryMethodsLookupStrategy = spy(new QueryMethodsEntityLookupStrategy());
+            controller.setQueryMethodsEntityLookupStrategy(queryMethodsLookupStrategy);
         }
 
+        @Test
+        void shouldThrowException() throws Exception {
+            MvcResult result = mvc.perform(get(
+                    "/testEntityNoContents/searchContent?queryString=one")
+                    .accept("application/hal+json"))
+                .andExpect(status().isNotFound()).andReturn();
+
+            assertThat(result.getResolvedException()).isNotNull();
+            assertThat(result.getResolvedException().getMessage()).contains("no content");
+        }
+    }
+
+    @Nested
+    @DisplayName("Given a store that is not searchable")
+    class StoreThatIsNotSearchable {
+        @BeforeEach
+        void setUp() {
+            mvc = MockMvcBuilders.webAppContextSetup(context).build();
+
+            reflectionService = mock(ReflectionService.class);
+            ContentSearchRestController controller = context.getBean(ContentSearchRestController.class);
+            controller.setReflectionService(reflectionService);
+
+            defaultLookupStrategy = spy(new DefaultEntityLookupStrategy());
+            controller.setDefaultEntityLookupStrategy(defaultLookupStrategy);
+            queryMethodsLookupStrategy = spy(new QueryMethodsEntityLookupStrategy());
+            controller.setQueryMethodsEntityLookupStrategy(queryMethodsLookupStrategy);
+        }
+
+        @Test
+        void shouldThrowResourceNotFoundException() throws Exception {
+            MvcResult result = mvc.perform(get(
+                    "/testEntityNotSearchables/searchContent?queryString=one")
+                    .accept("application/hal+json"))
+                .andExpect(status().isNotFound()).andReturn();
+
+            assertThat(result.getResolvedException()).isNotNull();
+            assertThat(result.getResolvedException().getMessage()).contains("not searchable");
+        }
+    }
+
+    @Nested
+    @DisplayName("Given the search method is invalid")
+    class SearchMethodIsInvalid {
+        @BeforeEach
+        void setUp() {
+            mvc = MockMvcBuilders.webAppContextSetup(context).build();
+
+            reflectionService = mock(ReflectionService.class);
+            ContentSearchRestController controller = context.getBean(ContentSearchRestController.class);
+            controller.setReflectionService(reflectionService);
+
+            defaultLookupStrategy = spy(new DefaultEntityLookupStrategy());
+            controller.setDefaultEntityLookupStrategy(defaultLookupStrategy);
+            queryMethodsLookupStrategy = spy(new QueryMethodsEntityLookupStrategy());
+            controller.setQueryMethodsEntityLookupStrategy(queryMethodsLookupStrategy);
+        }
+
+        @Test
+        void shouldReturnResourceNotFoundException() throws Exception {
+            mvc.perform(get(
+                    "/testEntityWithSharedIds/searchContent/invalidSearchMethod?keyword=one")
+                    .accept("application/hal+json"))
+                .andExpect(status().isNotFound()).andReturn();
+        }
+    }
+
+    @Nested
+    @DisplayName("Given no keywords are specified")
+    class NoKeywordsAreSpecified {
+        @BeforeEach
+        void setUp() {
+            mvc = MockMvcBuilders.webAppContextSetup(context).build();
+
+            reflectionService = mock(ReflectionService.class);
+            ContentSearchRestController controller = context.getBean(ContentSearchRestController.class);
+            controller.setReflectionService(reflectionService);
+
+            defaultLookupStrategy = spy(new DefaultEntityLookupStrategy());
+            controller.setDefaultEntityLookupStrategy(defaultLookupStrategy);
+            queryMethodsLookupStrategy = spy(new QueryMethodsEntityLookupStrategy());
+            controller.setQueryMethodsEntityLookupStrategy(queryMethodsLookupStrategy);
+        }
+
+        @Test
+        void shouldReturnBadRequestException() throws Exception {
+            mvc.perform(get("/testEntityWithSharedIds/searchContent")
+                    .accept("application/hal+json"))
+                .andExpect(status().isBadRequest());
+        }
+    }
+
+    @Nested
+    @DisplayName("Given paged results are requested")
+    class PagedResultsAreRequested {
+        @BeforeEach
+        void setUp() {
+            mvc = MockMvcBuilders.webAppContextSetup(context).build();
+
+            reflectionService = mock(ReflectionService.class);
+            ContentSearchRestController controller = context.getBean(ContentSearchRestController.class);
+            controller.setReflectionService(reflectionService);
+
+            defaultLookupStrategy = spy(new DefaultEntityLookupStrategy());
+            controller.setDefaultEntityLookupStrategy(defaultLookupStrategy);
+            queryMethodsLookupStrategy = spy(new QueryMethodsEntityLookupStrategy());
+            controller.setQueryMethodsEntityLookupStrategy(queryMethodsLookupStrategy);
+        }
+
+        @Test
+        void shouldInvokeSearchWithPageRequest() throws Exception {
+            mvc.perform(get("/testEntityWithSeparateIds/searchContent?queryString=else&page=1&size=1")
+                    .accept("application/hal+json"))
+                .andExpect(status().isOk()).andReturn();
+
+            Method m = ReflectionUtils.findMethod(Searchable.class, "search", String.class, Pageable.class);
+            PageRequest pageable = PageRequest.of(1, 1);
+
+            verify(reflectionService).invokeMethod(eq(m), any(), eq("else"), eq(pageable));
+        }
+    }
+
+    @Nested
+    @DisplayName("Given an entity with an overloaded ID field")
+    class EntityWithOverloadedIdField {
         @Nested
-        class FetchEntitiesInBatchesCases {
+        @DisplayName("Given no results are found")
+        class NoResultsAreFound {
             @BeforeEach
             void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -998,27 +512,508 @@ public class ContentSearchRestControllerIT {
                 controller.setDefaultEntityLookupStrategy(defaultLookupStrategy);
                 queryMethodsLookupStrategy = spy(new QueryMethodsEntityLookupStrategy());
                 controller.setQueryMethodsEntityLookupStrategy(queryMethodsLookupStrategy);
+
+                when(reflectionService.invokeMethod(any(), any(),
+                    eq("one"), isA(Pageable.class), eq(InternalResult.class)))
+                    .thenReturn(Collections.emptyList());
             }
 
             @Test
-            void shouldBatchQueriesAppropriately() {
-                List<String> ids = new ArrayList<>();
-                for (int i = 0; i < 500; i++) {
-                    TestEntityWithSeparateId entity = new TestEntityWithSeparateId();
-                    entity = entityWithSeparateRepository.save(entity);
-                    ids.add(entity.getId());
-                }
+            void shouldReturnEmptyResponseEntity() throws Exception {
+                MvcResult result = mvc.perform(get(
+                        "/testEntityWithSharedIds/searchContent?queryString=one")
+                        .accept("application/hal+json"))
+                    .andExpect(status().isOk()).andReturn();
 
-                List<TestEntityWithSeparateId> entities = new ArrayList<>();
-
-                CrudRepository<?, ?> repoSpy = mock(CrudRepository.class, AdditionalAnswers.delegatesTo(entityWithSeparateRepository));
-
-                ContentSearchRestController.fetchEntitiesInBatches(repoSpy, ids, entities);
-
-                verify(repoSpy, times(2)).findAllById(anyCollection());
-
-                assertThat(entities.size()).isEqualTo(500);
+                ReadableRepresentation halResponse = representationFactory
+                    .readRepresentation("application/hal+json",
+                        new StringReader(result.getResponse()
+                            .getContentAsString()));
+                assertThat(halResponse.getResources().size()).isEqualTo(0);
             }
+        }
+
+        @Nested
+        @DisplayName("Given results are found")
+        class ResultsAreFound {
+            @BeforeEach
+            void setUp() {
+                mvc = MockMvcBuilders.webAppContextSetup(context).build();
+
+                reflectionService = mock(ReflectionService.class);
+                ContentSearchRestController controller = context.getBean(ContentSearchRestController.class);
+                controller.setReflectionService(reflectionService);
+
+                defaultLookupStrategy = spy(new DefaultEntityLookupStrategy());
+                controller.setDefaultEntityLookupStrategy(defaultLookupStrategy);
+                queryMethodsLookupStrategy = spy(new QueryMethodsEntityLookupStrategy());
+                controller.setQueryMethodsEntityLookupStrategy(queryMethodsLookupStrategy);
+
+                TestEntityWithSharedId entity = new TestEntityWithSharedId();
+                repository.save(entity);
+
+                entity2 = new TestEntityWithSharedId();
+                repository.save(entity2);
+
+                internalResults = new ArrayList<>();
+                internalResults.add(new InternalResult(null, entity.getContentId()));
+                internalResults.add(new InternalResult(entity2.getId(), entity2.getContentId()));
+
+                sharedIds = new ArrayList<>();
+                sharedIds.add(entity.getId());
+                sharedIds.add(entity2.getId());
+
+                when(reflectionService.invokeMethod(any(), any(),
+                    eq("two"))).thenReturn(internalResults);
+            }
+
+            @Test
+            void shouldReturnResponseEntityWithEntity() throws Exception {
+                MvcResult result = mvc.perform(get(
+                        "/testEntityWithSharedIds/searchContent?queryString=two")
+                        .accept("application/hal+json"))
+                    .andExpect(status().isOk()).andReturn();
+
+                verify(defaultLookupStrategy, never()).lookup(any(RootResourceInformation.class), any(RepositoryInformation.class), anyList(),
+                    anyList());
+                verify(queryMethodsLookupStrategy, never()).lookup(any(RootResourceInformation.class), any(RepositoryInformation.class), anyList(),
+                    anyList());
+
+                ReadableRepresentation halResponse = representationFactory
+                    .readRepresentation("application/hal+json",
+                        new StringReader(result.getResponse()
+                            .getContentAsString()));
+                assertThat(halResponse
+                    .getResourcesByRel("testEntityWithSharedIds").size()).isEqualTo(2);
+                String id1 = halResponse
+                    .getResourcesByRel("testEntityWithSharedIds").get(0)
+                    .getValue("contentId").toString();
+                String id2 = halResponse
+                    .getResourcesByRel("testEntityWithSharedIds").get(1)
+                    .getValue("contentId").toString();
+                assertThat(sharedIds).contains(id1);
+                assertThat(sharedIds).contains(id2);
+                assertThat(id1).isNotEqualTo(id2);
+            }
+        }
+
+        @Nested
+        @DisplayName("Given results contain orphaned fulltext documents")
+        class ResultsContainOrphanedFulltextDocuments {
+            @BeforeEach
+            void setUp() {
+                mvc = MockMvcBuilders.webAppContextSetup(context).build();
+
+                reflectionService = mock(ReflectionService.class);
+                ContentSearchRestController controller = context.getBean(ContentSearchRestController.class);
+                controller.setReflectionService(reflectionService);
+
+                defaultLookupStrategy = spy(new DefaultEntityLookupStrategy());
+                controller.setDefaultEntityLookupStrategy(defaultLookupStrategy);
+                queryMethodsLookupStrategy = spy(new QueryMethodsEntityLookupStrategy());
+                controller.setQueryMethodsEntityLookupStrategy(queryMethodsLookupStrategy);
+
+                entity2 = new TestEntityWithSharedId();
+                repository.save(entity2);
+
+                String orphanedContentId = UUID.randomUUID().toString();
+
+                internalResults = new ArrayList<>();
+                internalResults.add(new InternalResult(null, orphanedContentId));
+                internalResults.add(new InternalResult(entity2.getId(), entity2.getContentId()));
+
+                contentIds = new ArrayList<>();
+                contentIds.add(orphanedContentId); // invalid id
+                contentIds.add(entity2.getContentId());
+
+                when(reflectionService.invokeMethod(any(), any(),
+                    eq("else"))).thenReturn(internalResults);
+            }
+
+            @Test
+            void shouldFilterOutInvalidIDs() throws Exception {
+                MvcResult result = mvc.perform(get(
+                        "/testEntityWithSharedIds/searchContent?queryString=else")
+                        .accept("application/hal+json"))
+                    .andExpect(status().isOk()).andReturn();
+
+                ReadableRepresentation halResponse = representationFactory
+                    .readRepresentation("application/hal+json",
+                        new StringReader(result.getResponse()
+                            .getContentAsString()));
+                assertThat(halResponse
+                    .getResourcesByRel("testEntityWithSharedIds").size()).isEqualTo(1);
+                String id1 = halResponse
+                    .getResourcesByRel("testEntityWithSharedIds").get(0)
+                    .getValue("contentId").toString();
+                assertThat(contentIds).contains(id1);
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("Given an entity with separate ID content ID fields")
+    class EntityWithSeparateIdContentIdFields {
+        @Nested
+        @DisplayName("Given no results are found")
+        class NoResultsAreFound {
+            @BeforeEach
+            void setUp() {
+                mvc = MockMvcBuilders.webAppContextSetup(context).build();
+
+                reflectionService = mock(ReflectionService.class);
+                ContentSearchRestController controller = context.getBean(ContentSearchRestController.class);
+                controller.setReflectionService(reflectionService);
+
+                defaultLookupStrategy = spy(new DefaultEntityLookupStrategy());
+                controller.setDefaultEntityLookupStrategy(defaultLookupStrategy);
+                queryMethodsLookupStrategy = spy(new QueryMethodsEntityLookupStrategy());
+                controller.setQueryMethodsEntityLookupStrategy(queryMethodsLookupStrategy);
+
+                when(reflectionService.invokeMethod(any(), any(),
+                    eq("something"), isA(Pageable.class), eq(InternalResult.class)))
+                    .thenReturn(Collections.emptyList());
+            }
+
+            @Test
+            void shouldReturnEmptyResponseEntity() throws Exception {
+                MvcResult result = mvc.perform(get(
+                        "/testEntityWithSeparateIds/searchContent?queryString=something")
+                        .accept("application/hal+json"))
+                    .andExpect(status().isOk()).andReturn();
+
+                ReadableRepresentation halResponse = representationFactory
+                    .readRepresentation("application/hal+json",
+                        new StringReader(result.getResponse()
+                            .getContentAsString()));
+                assertThat(halResponse.getResources().size()).isEqualTo(0);
+            }
+        }
+
+        @Nested
+        @DisplayName("Given results are found with entity i ds")
+        class ResultsAreFoundWithEntityIDs {
+            @BeforeEach
+            void setUp() {
+                mvc = MockMvcBuilders.webAppContextSetup(context).build();
+
+                reflectionService = mock(ReflectionService.class);
+                ContentSearchRestController controller = context.getBean(ContentSearchRestController.class);
+                controller.setReflectionService(reflectionService);
+
+                defaultLookupStrategy = spy(new DefaultEntityLookupStrategy());
+                controller.setDefaultEntityLookupStrategy(defaultLookupStrategy);
+                queryMethodsLookupStrategy = spy(new QueryMethodsEntityLookupStrategy());
+                controller.setQueryMethodsEntityLookupStrategy(queryMethodsLookupStrategy);
+
+                entity3 = new TestEntityWithSeparateId();
+                entityWithSeparateRepository.save(entity3);
+
+                TestEntityWithSeparateId entity4 = new TestEntityWithSeparateId();
+                entityWithSeparateRepository.save(entity4);
+
+                internalResults = new ArrayList<>();
+                internalResults.add(new InternalResult(null, entity3.getContentId()));
+                internalResults.add(new InternalResult(entity4.getId(), entity4.getContentId()));
+
+                contentIds = new ArrayList<>();
+                contentIds.add(entity3.getContentId());
+                contentIds.add(entity4.getContentId());
+
+                when(reflectionService.invokeMethod(any(), any(),
+                    eq("else"))).thenReturn(internalResults);
+            }
+
+            @Test
+            void shouldReturnResponseEntityWithEntity() throws Exception {
+                MvcResult result = mvc.perform(get(
+                        "/testEntityWithSeparateIds/searchContent?queryString=else")
+                        .accept("application/hal+json"))
+                    .andExpect(status().isOk()).andReturn();
+
+                verify(defaultLookupStrategy, never()).lookup(any(RootResourceInformation.class), any(RepositoryInformation.class), anyList(),
+                    anyList());
+                verify(queryMethodsLookupStrategy).lookup(any(RootResourceInformation.class), any(RepositoryInformation.class), anyList(),
+                    anyList());
+
+                ReadableRepresentation halResponse = representationFactory
+                    .readRepresentation("application/hal+json",
+                        new StringReader(result.getResponse()
+                            .getContentAsString()));
+                assertThat(halResponse
+                    .getResourcesByRel("testEntityWithSeparateIds").size()).isEqualTo(2);
+                String id1 = halResponse
+                    .getResourcesByRel("testEntityWithSeparateIds").get(0)
+                    .getValue("contentId").toString();
+                String id2 = halResponse
+                    .getResourcesByRel("testEntityWithSeparateIds").get(1)
+                    .getValue("contentId").toString();
+                assertThat(contentIds).contains(id1);
+                assertThat(contentIds).contains(id2);
+                assertThat(id1).isNotEqualTo(id2);
+            }
+        }
+
+        @Nested
+        @DisplayName("Given results contain orphaned fulltext documents")
+        class ResultsContainOrphanedFulltextDocuments {
+            @BeforeEach
+            void setUp() {
+                mvc = MockMvcBuilders.webAppContextSetup(context).build();
+
+                reflectionService = mock(ReflectionService.class);
+                ContentSearchRestController controller = context.getBean(ContentSearchRestController.class);
+                controller.setReflectionService(reflectionService);
+
+                defaultLookupStrategy = spy(new DefaultEntityLookupStrategy());
+                controller.setDefaultEntityLookupStrategy(defaultLookupStrategy);
+                queryMethodsLookupStrategy = spy(new QueryMethodsEntityLookupStrategy());
+                controller.setQueryMethodsEntityLookupStrategy(queryMethodsLookupStrategy);
+
+                entity3 = new TestEntityWithSeparateId();
+                entityWithSeparateRepository.save(entity3);
+
+                String orphanedContentId = UUID.randomUUID().toString();
+
+                internalResults = new ArrayList<>();
+                internalResults.add(new InternalResult(null, orphanedContentId));
+                internalResults.add(new InternalResult(entity3.getId(), entity3.getContentId()));
+
+                contentIds = new ArrayList<>();
+                contentIds.add(orphanedContentId); // invalid id
+                contentIds.add(entity3.getContentId());
+
+                when(reflectionService.invokeMethod(any(), any(),
+                    eq("else"))).thenReturn(internalResults);
+            }
+
+            @Test
+            void shouldFilterOutInvalidIDs() throws Exception {
+                MvcResult result = mvc.perform(get(
+                        "/testEntityWithSeparateIds/searchContent?queryString=else")
+                        .accept("application/hal+json"))
+                    .andExpect(status().isOk()).andReturn();
+
+                ReadableRepresentation halResponse = representationFactory
+                    .readRepresentation("application/hal+json",
+                        new StringReader(result.getResponse()
+                            .getContentAsString()));
+                assertThat(halResponse
+                    .getResourcesByRel("testEntityWithSeparateIds").size()).isEqualTo(1);
+                String id1 = halResponse
+                    .getResourcesByRel("testEntityWithSeparateIds").get(0)
+                    .getValue("contentId").toString();
+                assertThat(contentIds).contains(id1);
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("Given results are found returning a custom result type")
+    class ResultsAreFoundReturningCustomResultType {
+        @BeforeEach
+        void setUp() {
+            mvc = MockMvcBuilders.webAppContextSetup(context).build();
+
+            reflectionService = mock(ReflectionService.class);
+            ContentSearchRestController controller = context.getBean(ContentSearchRestController.class);
+            controller.setReflectionService(reflectionService);
+
+            defaultLookupStrategy = spy(new DefaultEntityLookupStrategy());
+            controller.setDefaultEntityLookupStrategy(defaultLookupStrategy);
+            queryMethodsLookupStrategy = spy(new QueryMethodsEntityLookupStrategy());
+            controller.setQueryMethodsEntityLookupStrategy(queryMethodsLookupStrategy);
+
+            List<CustomResult> results = new ArrayList<>();
+
+            results.add(new CustomResult("12345", "<em>something else</em>", "foo1", "bar1"));
+            results.add(new CustomResult("67890", "<em>else altogether</em>", "foo2", "bar2"));
+
+            when(reflectionService.invokeMethod(any(), any(),
+                eq("else"))).thenReturn(results);
+        }
+
+        @Test
+        void shouldReturnResponseEntityWithEntity() throws Exception {
+            MvcResult result = mvc.perform(get(
+                    "/repoWithCustomSearchReturnType/searchContent?queryString=else")
+                    .accept("application/hal+json"))
+                .andExpect(status().isOk()).andReturn();
+
+            ReadableRepresentation halResponse = representationFactory
+                .readRepresentation("application/hal+json",
+                    new StringReader(result.getResponse()
+                        .getContentAsString()));
+            assertThat(halResponse
+                .getResourcesByRel("customResults").size()).isEqualTo(2);
+            assertThat(halResponse
+                .getResourcesByRel("customResults").get(0)
+                .getValue("highlight").toString()).isEqualTo("<em>something else</em>");
+            assertThat(halResponse
+                .getResourcesByRel("customResults").get(0)
+                .getValue("foo").toString()).isEqualTo("foo1");
+            assertThat(halResponse
+                .getResourcesByRel("customResults").get(0)
+                .getValue("bar").toString()).isEqualTo("bar1");
+            assertThat(halResponse
+                .getResourcesByRel("customResults").get(1)
+                .getValue("highlight").toString()).isEqualTo("<em>else altogether</em>");
+            assertThat(halResponse
+                .getResourcesByRel("customResults").get(1)
+                .getValue("foo").toString()).isEqualTo("foo2");
+            assertThat(halResponse
+                .getResourcesByRel("customResults").get(1)
+                .getValue("bar").toString()).isEqualTo("bar2");
+        }
+    }
+
+    @Nested
+    @DisplayName("Given paged results are found returning a custom result type")
+    class PagedResultsAreFoundReturningCustomResultType {
+        @BeforeEach
+        void setUp() {
+            mvc = MockMvcBuilders.webAppContextSetup(context).build();
+
+            reflectionService = mock(ReflectionService.class);
+            ContentSearchRestController controller = context.getBean(ContentSearchRestController.class);
+            controller.setReflectionService(reflectionService);
+
+            defaultLookupStrategy = spy(new DefaultEntityLookupStrategy());
+            controller.setDefaultEntityLookupStrategy(defaultLookupStrategy);
+            queryMethodsLookupStrategy = spy(new QueryMethodsEntityLookupStrategy());
+            controller.setQueryMethodsEntityLookupStrategy(queryMethodsLookupStrategy);
+
+            List<CustomResult> results = new ArrayList<>();
+
+            results.add(new CustomResult("12345", "<em>something else</em>", "foo1", "bar1"));
+
+            when(reflectionService.invokeMethod(any(), any(),
+                eq("else"), isA(Pageable.class))).thenReturn(results);
+        }
+
+        @Test
+        void shouldReturnResponseEntityWithEntity() throws Exception {
+            MvcResult result = mvc.perform(get(
+                    "/repoWithCustomSearchReturnType/searchContent?queryString=else&page=1&size=1")
+                    .accept("application/hal+json"))
+                .andExpect(status().isOk()).andReturn();
+
+            ReadableRepresentation halResponse = representationFactory
+                .readRepresentation("application/hal+json",
+                    new StringReader(result.getResponse()
+                        .getContentAsString()));
+            assertThat(halResponse
+                .getResourcesByRel("customResults").size()).isEqualTo(1);
+            assertThat(halResponse
+                .getResourcesByRel("customResults").get(0)
+                .getValue("highlight").toString()).isEqualTo("<em>something else</em>");
+            assertThat(halResponse
+                .getResourcesByRel("customResults").get(0)
+                .getValue("foo").toString()).isEqualTo("foo1");
+            assertThat(halResponse
+                .getResourcesByRel("customResults").get(0)
+                .getValue("bar").toString()).isEqualTo("bar1");
+        }
+    }
+
+    @Nested
+    @DisplayName("Given a repository with no entity lookup query method")
+    class RepositoryWithNoEntityLookupQueryMethod {
+        @BeforeEach
+        void setUp() {
+            mvc = MockMvcBuilders.webAppContextSetup(context).build();
+
+            reflectionService = mock(ReflectionService.class);
+            ContentSearchRestController controller = context.getBean(ContentSearchRestController.class);
+            controller.setReflectionService(reflectionService);
+
+            defaultLookupStrategy = spy(new DefaultEntityLookupStrategy());
+            controller.setDefaultEntityLookupStrategy(defaultLookupStrategy);
+            queryMethodsLookupStrategy = spy(new QueryMethodsEntityLookupStrategy());
+            controller.setQueryMethodsEntityLookupStrategy(queryMethodsLookupStrategy);
+
+            NoLookupStrategySearchEntity entity5 = new NoLookupStrategySearchEntity();
+            repoWithNoLookupStrategy.save(entity5);
+
+            NoLookupStrategySearchEntity entity6 = new NoLookupStrategySearchEntity();
+            repoWithNoLookupStrategy.save(entity6);
+
+            internalResults = new ArrayList<>();
+            internalResults.add(new InternalResult(null, entity5.getContentId()));
+            internalResults.add(new InternalResult(entity6.getId(), entity6.getContentId()));
+
+            contentIds = new ArrayList<>();
+            contentIds.add(entity5.getContentId());
+            contentIds.add(entity6.getContentId());
+
+            when(reflectionService.invokeMethod(any(), any(), eq("else"))).thenReturn(internalResults);
+        }
+
+        @Test
+        void shouldReturnResponseWithEntity() throws Exception {
+            MvcResult result = mvc.perform(get(
+                    "/repoWithNoLookupStrategy/searchContent?queryString=else")
+                    .accept("application/hal+json"))
+                .andExpect(status().isOk()).andReturn();
+
+            verify(defaultLookupStrategy).lookup(any(RootResourceInformation.class), any(RepositoryInformation.class), anyList(),
+                anyList());
+            verify(queryMethodsLookupStrategy, never()).lookup(any(RootResourceInformation.class), any(RepositoryInformation.class), anyList(),
+                anyList());
+
+            ReadableRepresentation halResponse = representationFactory
+                .readRepresentation("application/hal+json",
+                    new StringReader(result.getResponse()
+                        .getContentAsString()));
+            assertThat(halResponse
+                .getResourcesByRel("noLookupStrategySearchEntities").size()).isEqualTo(2);
+            String id1 = halResponse
+                .getResourcesByRel("noLookupStrategySearchEntities").get(0)
+                .getValue("contentId").toString();
+            String id2 = halResponse
+                .getResourcesByRel("noLookupStrategySearchEntities").get(1)
+                .getValue("contentId").toString();
+            assertThat(contentIds).contains(id1);
+            assertThat(contentIds).contains(id2);
+            assertThat(id1).isNotEqualTo(id2);
+        }
+    }
+
+    @Nested
+    @DisplayName("When fetching entities in batches")
+    class FetchEntitiesInBatches {
+        @BeforeEach
+        void setUp() {
+            mvc = MockMvcBuilders.webAppContextSetup(context).build();
+
+            reflectionService = mock(ReflectionService.class);
+            ContentSearchRestController controller = context.getBean(ContentSearchRestController.class);
+            controller.setReflectionService(reflectionService);
+
+            defaultLookupStrategy = spy(new DefaultEntityLookupStrategy());
+            controller.setDefaultEntityLookupStrategy(defaultLookupStrategy);
+            queryMethodsLookupStrategy = spy(new QueryMethodsEntityLookupStrategy());
+            controller.setQueryMethodsEntityLookupStrategy(queryMethodsLookupStrategy);
+        }
+
+        @Test
+        void shouldBatchQueriesAppropriately() {
+            List<String> ids = new ArrayList<>();
+            for (int i = 0; i < 500; i++) {
+                TestEntityWithSeparateId entity = new TestEntityWithSeparateId();
+                entity = entityWithSeparateRepository.save(entity);
+                ids.add(entity.getId());
+            }
+
+            List<TestEntityWithSeparateId> entities = new ArrayList<>();
+
+            CrudRepository<?, ?> repoSpy = mock(CrudRepository.class, AdditionalAnswers.delegatesTo(entityWithSeparateRepository));
+
+            ContentSearchRestController.fetchEntitiesInBatches(repoSpy, ids, entities);
+
+            verify(repoSpy, times(2)).findAllById(anyCollection());
+
+            assertThat(entities.size()).isEqualTo(500);
         }
     }
 }
