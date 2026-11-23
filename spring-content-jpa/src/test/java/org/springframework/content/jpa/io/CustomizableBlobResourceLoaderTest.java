@@ -87,7 +87,7 @@ public class CustomizableBlobResourceLoaderTest {
 
         class ResourceProvider {
             @Nested
-           class GetResource {
+            class GetResource {
                 private Resource expectedResource;
 
                 @BeforeEach

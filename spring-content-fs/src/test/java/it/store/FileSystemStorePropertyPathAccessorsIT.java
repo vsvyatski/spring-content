@@ -94,7 +94,7 @@ public class FileSystemStorePropertyPathAccessorsIT {
         @Nested
         class Store {
             @Nested
-           class GetResource {
+            class GetResource {
                 @BeforeEach
                 void setUp() {
                     context = new AnnotationConfigApplicationContext();

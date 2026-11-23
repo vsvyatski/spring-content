@@ -147,7 +147,7 @@ public class EncryptionIT {
         @DisplayName("Given content")
         class Content {
             @Nested
-           class Tests {
+            class Tests {
                 @BeforeEach
                 void setUp() {
                     RestAssuredMockMvc.webAppContextSetup(webApplicationContext);

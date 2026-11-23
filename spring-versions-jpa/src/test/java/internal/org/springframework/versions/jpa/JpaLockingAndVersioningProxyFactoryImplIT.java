@@ -75,7 +75,7 @@ public class JpaLockingAndVersioningProxyFactoryImplIT {
         @DisplayName("Given a context with a repository and a store")
         class ContextWithARepositoryAndAStore {
             @Nested
-           class Apply {
+            class Apply {
                 @Nested
                 @DisplayName("Given no existing advise")
                 class NoExistingAdvise {

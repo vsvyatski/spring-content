@@ -99,7 +99,7 @@ public class AzureStorageIT {
         @Nested
         class StoreCases {
             @Nested
-           class GetResource {
+            class GetResource {
                 @Nested
                class Tests {
                     @BeforeEach
@@ -603,7 +603,7 @@ public class AzureStorageIT {
         @Nested
         class ContentStoreCases {
             @Nested
-           class Tests {
+            class Tests {
                 @BeforeEach
                 void setUp() {
                     context = new AnnotationConfigApplicationContext();
@@ -1068,7 +1068,7 @@ public class AzureStorageIT {
             }
 
             @Nested
-           class EmbeddedContent {
+            class EmbeddedContent {
                 @Nested
                 @DisplayName("Given an entity with a null embedded content object")
                 class EntityWithANullEmbeddedContentObject {

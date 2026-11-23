@@ -137,7 +137,7 @@ public class JpaLockingServiceImplTest {
         class IsLockOwner {
             @Nested
             @DisplayName("Given a null principal")
-            class ullPrincipal {
+            class NullPrincipal {
                 @BeforeEach
                 void setUp() {
                     jdbcTemplate = mock(JdbcTemplate.class);

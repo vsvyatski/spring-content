@@ -290,9 +290,9 @@ public class NestedContentPropertiesRestEndpointsIT {
 
                 @Nested
 
-                @DisplayName("GET to repository id content property with multiple MIME types the last of which matches the co")
+                @DisplayName("GET to repository ID content property with multiple MIME types the last of which matches content")
 
-                class GetToRepositoryIdContentPropertyWithMultipleMimeTypesTheLastOfWhichMatchesTheCo {
+                class GetToRepositoryIdWhenLastAcceptedMimeTypeMatches {
                     @BeforeEach
                     void setUp() throws IOException {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();

@@ -151,10 +151,10 @@ public class JpaLockingAndVersioningRepositoryImplIT {
         @DisplayName("Given two entities with two versions each")
         class TwoEntitiesWithTwoVersionsEach {
             @Nested
-           class Lock {
+            class Lock {
                 @Nested
                 @DisplayName("Given a null principal")
-                class ullPrincipal {
+                class NullPrincipal {
                     @BeforeEach
                     void setUp() {
                         repo = context.getBean(VersioningJpaLongIdRepository.class);
@@ -364,10 +364,10 @@ public class JpaLockingAndVersioningRepositoryImplIT {
             }
 
             @Nested
-           class Unlock {
+            class Unlock {
                 @Nested
                 @DisplayName("Given a null principal")
-                class ullPrincipal {
+                class NullPrincipal {
                     @BeforeEach
                     void setUp() {
                         repo = context.getBean(VersioningJpaLongIdRepository.class);
@@ -543,7 +543,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
             }
 
             @Nested
-           class Save {
+            class Save {
                 @Nested
                 @DisplayName("Given an authenticated principal")
                 class AuthenticatedPrincipal {
@@ -817,7 +817,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
             }
 
             @Nested
-           class FindAllVersions {
+            class FindAllVersions {
                 @BeforeEach
                 void setUp() {
                     repo = context.getBean(VersioningJpaLongIdRepository.class);
@@ -857,7 +857,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
             }
 
             @Nested
-           class FindAllLatestVersions {
+            class FindAllLatestVersions {
                 @BeforeEach
                 void setUp() {
                     repo = context.getBean(VersioningJpaLongIdRepository.class);
@@ -892,7 +892,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
             }
 
             @Nested
-           class WorkingCopy {
+            class WorkingCopy {
                 @Nested
                 @DisplayName("When the entity is new")
                 class EntityIsNew {
@@ -1078,7 +1078,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
             }
 
             @Nested
-           class IsPrivateWorkingCopy {
+            class IsPrivateWorkingCopy {
                 @BeforeEach
                 void setUp() {
                     repo = context.getBean(VersioningJpaLongIdRepository.class);
@@ -1107,7 +1107,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
             }
 
             @Nested
-           class FindWorkingCopy {
+            class FindWorkingCopy {
                 @BeforeEach
                 void setUp() {
                     repo = context.getBean(VersioningJpaLongIdRepository.class);
@@ -1131,7 +1131,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
             }
 
             @Nested
-           class Delete {
+            class Delete {
                 @Nested
                 @DisplayName("Given no principal")
                 class NoPrincipal {
@@ -1437,7 +1437,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
             }
 
             @Nested
-           class DeleteAllVersions {
+            class DeleteAllVersions {
                 @Nested
                 @DisplayName("Given no principal")
                 class NoPrincipal {
@@ -1653,7 +1653,10 @@ public class JpaLockingAndVersioningRepositoryImplIT {
             }
 
             @Nested
-           class Issue2039 {
+
+            @DisplayName("Given findAllVersions with descending sort")
+
+            class FindAllVersionsWithDescendingSort {
                 @BeforeEach
                 void setUp() {
                     repo = context.getBean(VersioningJpaLongIdRepository.class);

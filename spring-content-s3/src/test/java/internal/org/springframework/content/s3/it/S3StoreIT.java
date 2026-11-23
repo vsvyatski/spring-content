@@ -123,7 +123,7 @@ public class S3StoreIT {
         @Nested
         class StoreCases {
             @Nested
-           class GetResource {
+            class GetResource {
                 @Nested
                class Tests {
                     @BeforeEach
@@ -503,7 +503,7 @@ public class S3StoreIT {
         @Nested
         class ContentStoreCases {
             @Nested
-           class Tests {
+            class Tests {
                 @BeforeEach
                 void setUp() throws InterruptedException {
                     ensureTestBucket();
@@ -886,7 +886,7 @@ public class S3StoreIT {
             }
 
             @Nested
-           class EmbeddedContent {
+            class EmbeddedContent {
                 @Nested
                 @DisplayName("Given a entity with a null embedded content object")
                 class EntityWithANullEmbeddedContentObject {

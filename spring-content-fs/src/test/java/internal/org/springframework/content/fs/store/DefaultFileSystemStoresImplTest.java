@@ -60,7 +60,7 @@ public class DefaultFileSystemStoresImplTest {
         @Nested
         class Store {
             @Nested
-           class GetResource {
+            class GetResource {
                 @BeforeEach
                 void setUp() {
                     loader = mock(FileSystemResourceLoader.class);
@@ -89,7 +89,7 @@ public class DefaultFileSystemStoresImplTest {
         @Nested
         class AssociativeStore {
             @Nested
-           class GetResource {
+            class GetResource {
                 @Nested
                 @DisplayName("When the entity is not already associated with a resource")
                 class EntityIsNotAlreadyAssociatedWithAResource {
@@ -180,9 +180,9 @@ public class DefaultFileSystemStoresImplTest {
 
                 @Nested
 
-                @DisplayName("When the entity has a string arg constructor issue57")
+                @DisplayName("When the entity has a string-arg constructor")
 
-                class EntityHasAStringArgConstructorIssue57 {
+                class EntityHasStringArgConstructor {
                     @BeforeEach
                     void setUp() {
                         loader = mock(FileSystemResourceLoader.class);
@@ -208,7 +208,7 @@ public class DefaultFileSystemStoresImplTest {
             }
 
             @Nested
-           class Associate {
+            class Associate {
                 @BeforeEach
                 void setUp() throws IOException {
                     loader = mock(FileSystemResourceLoader.class);
@@ -240,7 +240,7 @@ public class DefaultFileSystemStoresImplTest {
             }
 
             @Nested
-           class Unassociate {
+            class Unassociate {
                 @BeforeEach
                 void setUp() {
                     loader = mock(FileSystemResourceLoader.class);
@@ -266,7 +266,7 @@ public class DefaultFileSystemStoresImplTest {
         @Nested
         class ContentStoreScenario {
             @Nested
-           class SetContent {
+            class SetContent {
                 @Nested
                 @DisplayName("Given an entity converter")
                 class EntityConverter {
@@ -589,7 +589,7 @@ public class DefaultFileSystemStoresImplTest {
             }
 
             @Nested
-           class SetContentFromResource {
+            class SetContentFromResource {
                 @BeforeEach
                 void setUp() {
                     loader = mock(FileSystemResourceLoader.class);
@@ -652,7 +652,7 @@ public class DefaultFileSystemStoresImplTest {
             }
 
             @Nested
-           class GetContent {
+            class GetContent {
                 @Nested
                 @DisplayName("Given an entity converter")
                 class EntityConverter {
@@ -964,7 +964,7 @@ public class DefaultFileSystemStoresImplTest {
             }
 
             @Nested
-           class UnsetContent {
+            class UnsetContent {
                 @Nested
                 @DisplayName("Given an entity converter")
                 class EntityConverter {

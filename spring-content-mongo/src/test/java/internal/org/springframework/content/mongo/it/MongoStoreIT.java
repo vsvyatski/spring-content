@@ -91,7 +91,7 @@ public class MongoStoreIT {
         @Nested
         class StoreCases {
             @Nested
-           class GetResource {
+            class GetResource {
                 @Nested
                class Tests {
                     @BeforeEach
@@ -582,7 +582,7 @@ public class MongoStoreIT {
         @Nested
         class ContentStoreCases {
             @Nested
-           class Tests {
+            class Tests {
                 @BeforeEach
                 void setUp() {
                     context = new AnnotationConfigApplicationContext();

@@ -61,7 +61,7 @@ public class ContentLinksResourceProcessorIT {
         @DisplayName("Given an entity with a single content ID property")
         class EntityWithASingleContentIdProperty {
             @Nested
-           class Tests {
+            class Tests {
                 @BeforeEach
                 void setUp() {
                     PersistentEntity<?, ?> persistentEntity = repositories.getPersistentEntity(OneToOneLinkedContentEntity.class);
@@ -225,9 +225,9 @@ public class ContentLinksResourceProcessorIT {
 
         @Nested
 
-        @DisplayName("Given an entity with embedded object with rest resource customizations issue1049")
+        @DisplayName("Given an entity with embedded object with REST resource customizations")
 
-        class EntityWithEmbeddedObjectWithRestResourceCustomizationsIssue1049 {
+        class EntityWithEmbeddedObjectWithRestResourceCustomizations {
             @BeforeEach
             void setUp() {
                 PersistentEntity<?, ?> persistentEntity = persistentEntities.getRequiredPersistentEntity(RestResourcePackageEntity.class);

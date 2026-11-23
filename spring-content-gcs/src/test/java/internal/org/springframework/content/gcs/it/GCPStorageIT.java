@@ -94,7 +94,7 @@ public class GCPStorageIT {
         @Nested
         class StoreCases {
             @Nested
-           class GetResource {
+            class GetResource {
                 @Nested
                class Tests {
                     @BeforeEach
@@ -613,7 +613,7 @@ public class GCPStorageIT {
         @Nested
         class ContentStoreCases {
             @Nested
-           class Tests {
+            class Tests {
                 @BeforeEach
                 void setUp() {
                     context = new AnnotationConfigApplicationContext();
@@ -1101,7 +1101,7 @@ public class GCPStorageIT {
             }
 
             @Nested
-           class EmbeddedContent {
+            class EmbeddedContent {
                 @Nested
                 @DisplayName("Given a entity with a null embedded content object")
                 class EntityWithANullEmbeddedContentObject {

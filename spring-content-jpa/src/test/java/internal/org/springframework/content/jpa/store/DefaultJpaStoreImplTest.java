@@ -48,7 +48,7 @@ public class DefaultJpaStoreImplTest {
         @Nested
         class Store {
             @Nested
-           class GetResource {
+            class GetResource {
                 @Nested
                 @DisplayName("Given an id")
                 class Id {
@@ -71,7 +71,7 @@ public class DefaultJpaStoreImplTest {
         @Nested
         class AssociativeStore {
             @Nested
-           class GetResource {
+            class GetResource {
                 @Nested
                 @DisplayName("When the entity is not associated with a resource")
                 class EntityIsNotAssociatedWithAResource {
@@ -113,7 +113,7 @@ public class DefaultJpaStoreImplTest {
             }
 
             @Nested
-           class Associate {
+            class Associate {
                 @BeforeEach
                 void setUp() throws IOException {
                     blobResourceLoader = mock(BlobResourceLoader.class);
@@ -137,7 +137,7 @@ public class DefaultJpaStoreImplTest {
             }
 
             @Nested
-           class Unassociate {
+            class Unassociate {
                 @BeforeEach
                 void setUp() {
                     blobResourceLoader = mock(BlobResourceLoader.class);
@@ -161,7 +161,7 @@ public class DefaultJpaStoreImplTest {
         @Nested
         class ContentStoreScenario {
             @Nested
-           class GetContent {
+            class GetContent {
                 @Nested
                 @DisplayName("Given content")
                 class Content {
@@ -238,7 +238,7 @@ public class DefaultJpaStoreImplTest {
             }
 
             @Nested
-           class SetContent {
+            class SetContent {
                 @BeforeEach
                 void setUp() throws IOException {
                     blobResourceLoader = mock(BlobResourceLoader.class);
@@ -322,7 +322,7 @@ public class DefaultJpaStoreImplTest {
             }
 
             @Nested
-           class SetContentFromResource {
+            class SetContentFromResource {
                 @BeforeEach
                 void setUp() {
                     entity = new SingleContentFields();
@@ -373,7 +373,7 @@ public class DefaultJpaStoreImplTest {
             }
 
             @Nested
-           class UnsetContent {
+            class UnsetContent {
                 @BeforeEach
                 void setUp() {
                     blobResourceLoader = mock(BlobResourceLoader.class);
@@ -437,7 +437,7 @@ public class DefaultJpaStoreImplTest {
         @Nested
         class Store {
             @Nested
-           class GetResource {
+            class GetResource {
                 @Nested
                 @DisplayName("Given an id")
                 class Id {
@@ -460,7 +460,7 @@ public class DefaultJpaStoreImplTest {
         @Nested
         class AssociativeStore {
             @Nested
-           class UnassociateJakartaAnnotatedEntity {
+            class UnassociateJakartaAnnotatedEntity {
                 @BeforeEach
                 void setUp() {
                     blobResourceLoader = mock(BlobResourceLoader.class);
@@ -487,7 +487,7 @@ public class DefaultJpaStoreImplTest {
         @Nested
         class AssociativeStore {
             @Nested
-           class UnassociateSpringAnnotatedEntity {
+            class UnassociateSpringAnnotatedEntity {
                 @BeforeEach
                 void setUp() {
                     blobResourceLoader = mock(BlobResourceLoader.class);

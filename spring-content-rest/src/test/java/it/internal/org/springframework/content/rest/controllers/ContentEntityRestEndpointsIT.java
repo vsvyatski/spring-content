@@ -102,7 +102,7 @@ public class ContentEntityRestEndpointsIT {
         @Nested
         class EntityWithASingleUncorrelatedContentProperties {
             @Nested
-           class RepositoryAndStorageAreExportedToTheSameURI {
+            class RepositoryAndStorageAreExportedToTheSameURI {
                 @Nested
                class DeleteToStoreIdSoftDeleteCustomHandler {
                     @BeforeEach
@@ -123,7 +123,7 @@ public class ContentEntityRestEndpointsIT {
             }
 
             @Nested
-           class RepositoryAndStorageAreExportedToDifferentURIs {
+            class RepositoryAndStorageAreExportedToDifferentURIs {
                 @Nested
                class OptionsRequestToTheRepositoryFromAKnownHost {
                     @BeforeEach
@@ -191,7 +191,7 @@ public class ContentEntityRestEndpointsIT {
             }
 
             @Nested
-           class EntityWithASharedIdAndContentIdField {
+            class EntityWithASharedIdAndContentIdField {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -210,7 +210,7 @@ public class ContentEntityRestEndpointsIT {
         }
 
         @Nested
-        class MultipartFormPOSTToAnEntityWithASingleUncorrelatedContentProperty {
+        class PostMultipartToEntityWithSingleUncorrelatedContentProperty {
             @BeforeEach
             void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -264,9 +264,9 @@ public class ContentEntityRestEndpointsIT {
         }
 
         @Nested
-        class MultipartFormPOSTToAnEntityWithANonDefaultInitializedVersionPropertyIssue2 {
+        class PostMultipartToEntityWithNonDefaultInitializedVersionProperty {
             @Nested
-           class WithContent {
+            class WithContent {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -312,7 +312,7 @@ public class ContentEntityRestEndpointsIT {
             }
 
             @Nested
-           class WithoutContent {
+            class WithoutContent {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -383,7 +383,7 @@ public class ContentEntityRestEndpointsIT {
         }
 
         @Nested
-        class MultipartFormPOSTToAnEntityWithASingleCorrelatedContentProperty {
+        class PostMultipartToEntityWithSingleCorrelatedContentProperty {
             @BeforeEach
             void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -426,7 +426,7 @@ public class ContentEntityRestEndpointsIT {
         }
 
         @Nested
-        class MultipartFormPOSTThatDoesntIncludeTheContentProperty {
+        class PostMultipartWithoutContentProperty {
             @BeforeEach
             void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -466,7 +466,7 @@ public class ContentEntityRestEndpointsIT {
         }
 
         @Nested
-        class MultipartFormPOSTAndAnEventListener {
+        class PostMultipartWithEventListener {
             @BeforeEach
             void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -492,7 +492,7 @@ public class ContentEntityRestEndpointsIT {
         }
 
         @Nested
-        class MultipartFormPOSTButWithTheWrongContentPropertyName {
+        class PostMultipartWithWrongContentPropertyName {
             @BeforeEach
             void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -523,7 +523,7 @@ public class ContentEntityRestEndpointsIT {
         }
 
         @Nested
-        class MultipartFormPOSTToAnEntityWithAMappedContentProperty {
+        class PostMultipartToEntityWithMappedContentProperty {
             @BeforeEach
             void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();

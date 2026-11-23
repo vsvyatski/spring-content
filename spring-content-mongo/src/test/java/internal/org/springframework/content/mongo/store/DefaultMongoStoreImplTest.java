@@ -48,9 +48,9 @@ public class DefaultMongoStoreImplTest {
 
         @Nested
 
-        @DisplayName("When the entity has a string arg constructor issue57")
+        @DisplayName("When the entity has a string-arg constructor")
 
-        class EntityHasAStringArgConstructorIssue57 {
+        class EntityHasStringArgConstructor {
             @BeforeEach
             void entity() {
                 mongoContentRepoImpl = new DefaultMongoStoreImpl<>(gridFsTemplate, null, placer);

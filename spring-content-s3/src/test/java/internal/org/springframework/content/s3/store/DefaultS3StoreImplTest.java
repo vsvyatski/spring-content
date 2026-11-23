@@ -123,7 +123,7 @@ public class DefaultS3StoreImplTest {
         @Nested
         class Store {
             @Nested
-           class GetResource {
+            class GetResource {
                 @Nested
                 @DisplayName("Given the store sid is an s3object id type")
                 class StoreSIDIsAnS3ObjectIdType {
@@ -321,7 +321,7 @@ public class DefaultS3StoreImplTest {
         @Nested
         class AssociativeStore {
             @Nested
-           class GetResource {
+            class GetResource {
                 @Nested
                 @DisplayName("Given the default associative store ID resolver")
                 class DefaultAssociativeStoreIdResolver {
@@ -574,7 +574,7 @@ public class DefaultS3StoreImplTest {
             }
 
             @Nested
-           class GetResourceWithPropertyPath {
+            class GetResourceWithPropertyPath {
                 @Nested
                 @DisplayName("Given the default associative store ID resolver")
                 class DefaultAssociativeStoreIdResolver {
@@ -833,7 +833,7 @@ public class DefaultS3StoreImplTest {
             }
 
             @Nested
-           class Associate {
+            class Associate {
                 @BeforeEach
                 void setUp() {
                     resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
@@ -860,7 +860,7 @@ public class DefaultS3StoreImplTest {
             }
 
             @Nested
-           class Unassociate {
+            class Unassociate {
                 @BeforeEach
                 void setUp() {
                     resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
@@ -891,7 +891,7 @@ public class DefaultS3StoreImplTest {
         @Nested
         class ContentStoreScenario {
             @Nested
-           class SetContent {
+            class SetContent {
                 @Nested
                 @DisplayName("Given the default associative store ID resolver")
                 class DefaultAssociativeStoreIdResolver {
@@ -1133,7 +1133,7 @@ public class DefaultS3StoreImplTest {
             }
 
             @Nested
-           class SetContentFromResource {
+            class SetContentFromResource {
                 @BeforeEach
                 void setUp() {
                     resource = mock(WritableResource.class, withSettings().extraInterfaces(RangeableResource.class));
@@ -1206,7 +1206,7 @@ public class DefaultS3StoreImplTest {
             }
 
             @Nested
-           class GetContent {
+            class GetContent {
                 @Nested
                 @DisplayName("Given the default associative store ID resolver")
                 class DefaultAssociativeStoreIdResolver {
@@ -1417,7 +1417,7 @@ public class DefaultS3StoreImplTest {
             }
 
             @Nested
-           class UnsetContent {
+            class UnsetContent {
                 @Nested
                 @DisplayName("Given the default associative store ID resolver")
                 class DefaultAssociativeStoreIdResolver {
