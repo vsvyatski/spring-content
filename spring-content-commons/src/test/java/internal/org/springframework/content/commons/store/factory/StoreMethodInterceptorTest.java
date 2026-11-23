@@ -255,7 +255,7 @@ public class StoreMethodInterceptorTest {
 
             @DisplayName("When the before set content event consumes the entire input stream")
 
-            class BeforeSetContentEventConsumesTheEntireInputStream {
+            class BeforeSetContentEventConsumesEntireInputStream {
                 @BeforeEach
                 void setUp() {
                     publisher = mock(ApplicationEventPublisher.class);
@@ -351,7 +351,7 @@ public class StoreMethodInterceptorTest {
 
             @DisplayName("When the before set content event does not consume any of the input stream")
 
-            class BeforeSetContentEventDoesNotConsumeAnyOfTheInputStream {
+            class BeforeSetContentEventDoesNotConsumeAnyOfInputStream {
                 @BeforeEach
                 void setUp() {
                     publisher = mock(ApplicationEventPublisher.class);
@@ -395,7 +395,7 @@ public class StoreMethodInterceptorTest {
 
             @DisplayName("When the before set content event replaces the input stream")
 
-            class BeforeSetContentEventReplacesTheInputStream {
+            class BeforeSetContentEventReplacesInputStream {
                 @BeforeEach
                 void setUp() {
                     publisher = mock(ApplicationEventPublisher.class);

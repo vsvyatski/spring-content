@@ -151,7 +151,7 @@ public class AssociativeStoreIT {
 
             @DisplayName("When an invalid property path is used to associate a resource")
 
-            class InvalidPropertyPathIsUsedToAssociateAResource {
+            class InvalidPropertyPathIsUsedToAssociateResource {
                 @ParameterizedTest(name = "{0}")
                 @MethodSource("internal.org.springframework.content.jpa.StoreIT#databaseConfigs")
                 void shouldThrowAnError(Class<?> configClass) {
@@ -171,7 +171,7 @@ public class AssociativeStoreIT {
 
             @DisplayName("When an invalid property path is used to load a resource")
 
-            class InvalidPropertyPathIsUsedToLoadAResource {
+            class InvalidPropertyPathIsUsedToLoadResource {
                 @ParameterizedTest(name = "{0}")
                 @MethodSource("internal.org.springframework.content.jpa.StoreIT#databaseConfigs")
                 void shouldThrowAnError(Class<?> configClass) {
@@ -191,7 +191,7 @@ public class AssociativeStoreIT {
 
             @DisplayName("When an invalid property path is used to unassociate a resource")
 
-            class InvalidPropertyPathIsUsedToUnassociateAResource {
+            class InvalidPropertyPathIsUsedToUnassociateResource {
                 @ParameterizedTest(name = "{0}")
                 @MethodSource("internal.org.springframework.content.jpa.StoreIT#databaseConfigs")
                 void shouldThrowAnError(Class<?> configClass) {

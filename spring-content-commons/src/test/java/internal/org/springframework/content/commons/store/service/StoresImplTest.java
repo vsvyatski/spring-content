@@ -260,7 +260,7 @@ public class StoresImplTest {
 
         @DisplayName("Given multiple stores for the same entity")
 
-        class MultipleStoresForTheSameEntity {
+        class MultipleStoresForSameEntity {
             @BeforeEach
             void setUp() {
                 context = mock(ApplicationContext.class);

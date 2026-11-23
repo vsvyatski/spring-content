@@ -74,7 +74,7 @@ public class DefaultJpaStoreImplTest {
             class GetResource {
                 @Nested
                 @DisplayName("When the entity is not associated with a resource")
-                class EntityIsNotAssociatedWithAResource {
+                class EntityIsNotAssociatedWithResource {
                     @BeforeEach
                     void setUp() {
                         blobResourceLoader = mock(BlobResourceLoader.class);
@@ -94,7 +94,7 @@ public class DefaultJpaStoreImplTest {
 
                 @DisplayName("When the entity is associated with a resource")
 
-                class EntityIsAssociatedWithAResource {
+                class EntityIsAssociatedWithResource {
                     @BeforeEach
                     void setUp() {
                         blobResourceLoader = mock(BlobResourceLoader.class);
@@ -205,7 +205,7 @@ public class DefaultJpaStoreImplTest {
 
                 @DisplayName("Given fetching the input stream fails")
 
-                class FetchingTheInputStreamFails {
+                class FetchingInputStreamFails {
                     @BeforeEach
                     void setUp() throws IOException {
                         blobResourceLoader = mock(BlobResourceLoader.class);
@@ -284,7 +284,7 @@ public class DefaultJpaStoreImplTest {
 
                 @DisplayName("When the resource output stream throws an io exception")
 
-                class ResourceOutputStreamThrowsAnIOException {
+                class ResourceOutputStreamThrowsIOException {
                     @BeforeEach
                     void setUp() throws IOException {
                         blobResourceLoader = mock(BlobResourceLoader.class);
@@ -346,7 +346,7 @@ public class DefaultJpaStoreImplTest {
 
                 @DisplayName("When the resource throws an io exception")
 
-                class ResourceThrowsAnIOException {
+                class ResourceThrowsIOException {
                     @BeforeEach
                     void setUp() throws IOException {
                         entity = new SingleContentFields();
@@ -400,7 +400,7 @@ public class DefaultJpaStoreImplTest {
                 }
 
                 @Nested
-               class ResourceDeleteThrowsAnException {
+               class ResourceDeleteThrowsException {
                     @BeforeEach
                     void setUp() throws IOException {
                         blobResourceLoader = mock(BlobResourceLoader.class);

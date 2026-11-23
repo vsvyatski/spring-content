@@ -42,7 +42,7 @@ public class FileServiceTest {
    class Mkdirs {
         @Nested
         @DisplayName("When passed in a file that exists")
-        class PassedInAFileThatExists {
+        class PassedInFileThatExists {
             @BeforeEach
             void setUp() throws IOException {
                 parent = Files.createTempDirectory("commons-").toFile();
@@ -70,7 +70,7 @@ public class FileServiceTest {
 
         @DisplayName("When passed in a file that does not exist")
 
-        class PassedInAFileThatDoesNotExist {
+        class PassedInFileThatDoesNotExist {
             @BeforeEach
             void setUp() throws IOException {
                 parent = Files.createTempDirectory("commons-").toFile();
@@ -102,7 +102,7 @@ public class FileServiceTest {
 
         @DisplayName("When passed in a directory that exists")
 
-        class PassedInADirectoryThatExists {
+        class PassedInDirectoryThatExists {
             @BeforeEach
             void setUp() throws IOException {
                 parent = Files.createTempDirectory("commons-").toFile();
@@ -133,7 +133,7 @@ public class FileServiceTest {
 
         @DisplayName("When passed in a directory that does not exist")
 
-        class PassedInADirectoryThatDoesNotExist {
+        class PassedInDirectoryThatDoesNotExist {
             @BeforeEach
             void setUp() throws IOException {
                 parent = Files.createTempDirectory("commons-").toFile();

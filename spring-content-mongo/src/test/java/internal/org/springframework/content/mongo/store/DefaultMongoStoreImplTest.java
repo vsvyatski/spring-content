@@ -75,7 +75,7 @@ public class DefaultMongoStoreImplTest {
 
             @DisplayName("When the entity has a shared id content ID field")
 
-            class EntityHasASharedIdContentIdField {
+            class EntityHasSharedIdContentIdField {
                 @BeforeEach
                 void sharedId() {
                     property = new SharedIdJakartaMongoDocument();
@@ -127,7 +127,7 @@ public class DefaultMongoStoreImplTest {
 
                 @DisplayName("When the gridfs store throws an exception")
 
-                class GridfsStoreThrowsAnException {
+                class GridfsStoreThrowsException {
                     @BeforeEach
                     void storeFails() {
                         when(gridFsTemplate.store(any(), anyString())).thenThrow(new RuntimeException("set-exception"));
@@ -170,7 +170,7 @@ public class DefaultMongoStoreImplTest {
 
             @DisplayName("When the resource throws an io exception")
 
-            class ResourceThrowsAnIOException {
+            class ResourceThrowsIOException {
                 @BeforeEach
                 void brokenResource() throws IOException {
                     inputResource = mock(Resource.class);
@@ -216,7 +216,7 @@ public class DefaultMongoStoreImplTest {
 
                 @DisplayName("When the resource input stream throws an io exception")
 
-                class ResourceInputStreamThrowsAnIOException {
+                class ResourceInputStreamThrowsIOException {
                     @BeforeEach
                     void brokenStream() throws IOException {
                         when(resource.getInputStream()).thenThrow(new IOException("get-ioexception"));
@@ -251,7 +251,7 @@ public class DefaultMongoStoreImplTest {
 
             @DisplayName("When gridfs deletion throws an exception")
 
-            class GridfsDeletionThrowsAnException {
+            class GridfsDeletionThrowsException {
                 @BeforeEach
                 void deleteFails() {
                     doThrow(new RuntimeException("unset-exception")).when(gridFsTemplate).delete(any());

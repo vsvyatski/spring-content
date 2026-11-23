@@ -66,7 +66,7 @@ public class EnableJpaStoresTest {
    class EnableJpaStoresCases {
         @Nested
         @DisplayName("Given a context and a configuration with a jpa content store bean")
-        class ContextAndAConfigurationWithAJpaContentStoreBean {
+        class ContextAndConfigurationWithJpaContentStoreBean {
             @BeforeEach
             void setUp() {
                 context = new AnnotationConfigApplicationContext();
@@ -116,7 +116,7 @@ public class EnableJpaStoresTest {
 
         @DisplayName("Given a context with an empty configuration")
 
-        class ContextWithAnEmptyConfiguration {
+        class ContextWithEmptyConfiguration {
             @BeforeEach
             void setUp() {
                 context = new AnnotationConfigApplicationContext();

@@ -372,7 +372,7 @@ public class FileSystemStorePropertyPathAccessorsIT {
 
                         @DisplayName("When a invalid property path is used to associate a resource")
 
-                        class InvalidPropertyPathIsUsedToAssociateAResource {
+                        class InvalidPropertyPathIsUsedToAssociateResource {
                             @BeforeEach
                             void setUp() {
                                 context = new AnnotationConfigApplicationContext();
@@ -412,7 +412,7 @@ public class FileSystemStorePropertyPathAccessorsIT {
 
                         @DisplayName("When a invalid property path is used to load a resource")
 
-                        class InvalidPropertyPathIsUsedToLoadAResource {
+                        class InvalidPropertyPathIsUsedToLoadResource {
                             @BeforeEach
                             void setUp() {
                                 context = new AnnotationConfigApplicationContext();
@@ -452,7 +452,7 @@ public class FileSystemStorePropertyPathAccessorsIT {
 
                         @DisplayName("When a invalid property path is used to unassociate a resource")
 
-                        class InvalidPropertyPathIsUsedToUnassociateAResource {
+                        class InvalidPropertyPathIsUsedToUnassociateResource {
                             @BeforeEach
                             void setUp() {
                                 context = new AnnotationConfigApplicationContext();

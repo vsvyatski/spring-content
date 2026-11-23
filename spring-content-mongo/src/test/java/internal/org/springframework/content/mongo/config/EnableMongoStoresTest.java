@@ -88,7 +88,7 @@ public class EnableMongoStoresTest {
    class EnableMongoStoresCases {
         @Nested
         @DisplayName("Given an enabled configuration with a mongo content store bean")
-        class EnabledConfigurationWithAMongoContentStoreBean {
+        class EnabledConfigurationWithMongoContentStoreBean {
             @BeforeEach
             void setUp() {
                 context = new AnnotationConfigApplicationContext();
@@ -116,7 +116,7 @@ public class EnableMongoStoresTest {
 
         @DisplayName("Given a context with a custom converter")
 
-        class ContextWithACustomConverter {
+        class ContextWithCustomConverter {
             @BeforeEach
             void setUp() {
                 context = new AnnotationConfigApplicationContext();

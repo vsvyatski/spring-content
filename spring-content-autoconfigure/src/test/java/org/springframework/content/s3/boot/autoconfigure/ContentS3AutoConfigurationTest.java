@@ -104,7 +104,7 @@ public class ContentS3AutoConfigurationTest {
 
         @DisplayName("Given a configuration with an explicit enable s3stores annotation")
 
-        class ConfigurationWithAnExplicitEnableS3StoresAnnotation {
+        class ConfigurationWithExplicitEnableS3StoresAnnotation {
             @BeforeEach
             void setUp() {
                 contextRunner = new ApplicationContextRunner()

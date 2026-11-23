@@ -60,7 +60,7 @@ public class PessimisticLockingInterceptorTest {
                 class MethodIsSetContent {
                     @Nested
                     @DisplayName("When there is no lock owner")
-                    class ThereIsNoLockOwner {
+                    class NoLockOwner {
                         @BeforeEach
                         void setUp() throws Throwable {
                             locker = mock(LockingService.class);
@@ -93,7 +93,7 @@ public class PessimisticLockingInterceptorTest {
 
                     @DisplayName("When the principal is the lock owner")
 
-                    class PrincipalIsTheLockOwner {
+                    class PrincipalIsLockOwner {
                         private Authentication principal;
 
                         @BeforeEach
@@ -132,7 +132,7 @@ public class PessimisticLockingInterceptorTest {
 
                     @DisplayName("When the principal is not the lock owner")
 
-                    class PrincipalIsNotTheLockOwner {
+                    class PrincipalIsNotLockOwner {
                         @BeforeEach
                         void setUp() throws Throwable {
                             locker = mock(LockingService.class);
@@ -168,7 +168,7 @@ public class PessimisticLockingInterceptorTest {
 
                     @DisplayName("When the entity doesnt have an id")
 
-                    class EntityDoesntHaveAnID {
+                    class EntityDoesntHaveID {
                         @BeforeEach
                         void setUp() throws Throwable {
                             locker = mock(LockingService.class);

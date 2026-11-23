@@ -90,7 +90,7 @@ public class ShortcutExclusionsIT {
    class ExcludedShortcutLinkTests {
         @Nested
         @DisplayName("When all content property shortcut ge ts are excluded and a non JSON request is made")
-        class llContentPropertyShortcutGETsAreExcludedAndANonJsonRequestIsMade {
+        class AllContentPropertyShortcutGETsAreExcludedAndNonJsonRequestIsMade {
             @BeforeEach
             void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();

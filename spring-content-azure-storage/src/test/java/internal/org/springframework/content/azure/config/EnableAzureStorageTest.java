@@ -72,7 +72,7 @@ public class EnableAzureStorageTest {
    class EnableAzureStorageCases {
         @Nested
         @DisplayName("Given a context and a configuration with an azure content store")
-        class ContextAndAConfigurationWithAnAzureContentStore {
+        class ContextAndConfigurationWithAzureContentStore {
             @BeforeEach
             void setUp() {
                 context = new AnnotationConfigApplicationContext();
@@ -100,7 +100,7 @@ public class EnableAzureStorageTest {
 
         @DisplayName("Given a context with a configurer")
 
-        class ContextWithAConfigurer {
+        class ContextWithConfigurer {
             @BeforeEach
             void setUp() {
                 context = new AnnotationConfigApplicationContext();
@@ -124,7 +124,7 @@ public class EnableAzureStorageTest {
 
         @DisplayName("Given a context with an empty configuration")
 
-        class ContextWithAnEmptyConfiguration {
+        class ContextWithEmptyConfiguration {
             @BeforeEach
             void setUp() {
                 context = new AnnotationConfigApplicationContext();

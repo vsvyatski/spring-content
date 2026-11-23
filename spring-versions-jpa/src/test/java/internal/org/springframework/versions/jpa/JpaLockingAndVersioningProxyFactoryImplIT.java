@@ -73,7 +73,7 @@ public class JpaLockingAndVersioningProxyFactoryImplIT {
    class JpaLockingAndVersioningProxyFactoryImplCases {
         @Nested
         @DisplayName("Given a context with a repository and a store")
-        class ContextWithARepositoryAndAStore {
+        class ContextWithRepositoryAndStore {
             @Nested
             class Apply {
                 @Nested

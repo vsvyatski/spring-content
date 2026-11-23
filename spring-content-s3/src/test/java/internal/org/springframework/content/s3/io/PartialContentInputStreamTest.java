@@ -27,7 +27,7 @@ public class PartialContentInputStreamTest {
     @Nested
    class PartialContentInputStreamCases {
         @Nested
-        class WithARangeFromTheStart {
+        class WithRangeFromStart {
             @BeforeEach
             void setUp() {
                 inputStream = PartialContentInputStream.fromContentRange(
@@ -96,7 +96,7 @@ public class PartialContentInputStreamTest {
         }
 
         @Nested
-        class WithARangeToTheEnd {
+        class WithRangeToEnd {
             @BeforeEach
             void setUp() {
                 inputStream = PartialContentInputStream.fromContentRange(
@@ -174,7 +174,7 @@ public class PartialContentInputStreamTest {
         }
 
         @Nested
-        class WithARangeInTheMiddle {
+        class WithRangeInMiddle {
             @BeforeEach
             void setUp() {
                 inputStream = PartialContentInputStream.fromContentRange(

@@ -67,7 +67,7 @@ public class StoreUtilsTest {
 
         @DisplayName("Given a content store with a store rest resource annotation")
 
-        class ContentStoreWithAStoreRestResourceAnnotation {
+        class ContentStoreWithStoreRestResourceAnnotation {
             @BeforeEach
             void setUp() {
                 ContentStore storeImpl = mock(ContentStoreWithAnnotation.class);
@@ -87,7 +87,7 @@ public class StoreUtilsTest {
 
         @DisplayName("Given a content store with a store rest resource annotation that specifies a path")
 
-        class ContentStoreWithAStoreRestResourceAnnotationThatSpecifiesAPath {
+        class ContentStoreWithStoreRestResourceAnnotationThatSpecifiesPath {
             @BeforeEach
             void setUp() {
                 ContentStore storeImpl = mock(ContentStoreWithAnotherPath.class);
@@ -125,7 +125,7 @@ public class StoreUtilsTest {
 
         @DisplayName("Given a store with a store rest resource annotation")
 
-        class StoreWithAStoreRestResourceAnnotation {
+        class StoreWithStoreRestResourceAnnotation {
             @BeforeEach
             void setUp() {
                 Store storeImpl = mock(TestStoreWithAnnotation.class);
@@ -144,7 +144,7 @@ public class StoreUtilsTest {
 
         @DisplayName("Given a store with a store rest resource annotation with a path of foo")
 
-        class StoreWithAStoreRestResourceAnnotationWithAPathOfFoo {
+        class StoreWithStoreRestResourceAnnotationWithPathOfFoo {
             @BeforeEach
             void setUp() {
                 Store storeImpl = mock(TestStoreWithPath.class);

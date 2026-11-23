@@ -68,7 +68,7 @@ public class DelegatingBlobResourceLoaderTest {
 
             @DisplayName("Given a datasource that doesnt have a matching blob resource loader")
 
-            class DatasourceThatDoesntHaveAMatchingBlobResourceLoader {
+            class DatasourceThatDoesntHaveMatchingBlobResourceLoader {
                 @BeforeEach
                 void setUp() throws SQLException {
                     ds = mock(DataSource.class);

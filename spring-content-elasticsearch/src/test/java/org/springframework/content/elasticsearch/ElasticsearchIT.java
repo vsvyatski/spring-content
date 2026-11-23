@@ -310,7 +310,7 @@ public class ElasticsearchIT {
    class CustomAttributesCases {
         @Nested
         @DisplayName("Given a context configured to sync attributes and provide a filter query")
-        class ContextConfiguredToSyncAttributesAndProvideAFilterQuery {
+        class ContextConfiguredToSyncAttributesAndProvideFilterQuery {
             @BeforeEach
             void setUp() {
                 context = new AnnotationConfigApplicationContext();

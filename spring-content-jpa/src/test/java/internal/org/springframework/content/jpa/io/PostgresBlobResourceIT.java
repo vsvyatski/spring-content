@@ -88,7 +88,7 @@ public class PostgresBlobResourceIT {
    class PostgresBlobResourceCases {
         @Nested
         @DisplayName("Given there is content")
-        class ThereIsContent {
+        class Content {
             @Nested
             @DisplayName("When the content is deleted")
             class ContentIsDeleted {

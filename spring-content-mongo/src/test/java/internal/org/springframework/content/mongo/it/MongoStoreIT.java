@@ -450,7 +450,7 @@ public class MongoStoreIT {
 
                         @DisplayName("When a invalid property path is used to associate a resource")
 
-                        class InvalidPropertyPathIsUsedToAssociateAResource {
+                        class InvalidPropertyPathIsUsedToAssociateResource {
                             @BeforeEach
                             void setUp() {
                                 context = new AnnotationConfigApplicationContext();
@@ -493,7 +493,7 @@ public class MongoStoreIT {
 
                         @DisplayName("When a invalid property path is used to load a resource")
 
-                        class InvalidPropertyPathIsUsedToLoadAResource {
+                        class InvalidPropertyPathIsUsedToLoadResource {
                             @BeforeEach
                             void setUp() {
                                 context = new AnnotationConfigApplicationContext();
@@ -536,7 +536,7 @@ public class MongoStoreIT {
 
                         @DisplayName("When a invalid property path is used to unassociate a resource")
 
-                        class InvalidPropertyPathIsUsedToUnassociateAResource {
+                        class InvalidPropertyPathIsUsedToUnassociateResource {
                             @BeforeEach
                             void setUp() {
                                 context = new AnnotationConfigApplicationContext();
@@ -1029,7 +1029,7 @@ public class MongoStoreIT {
 
             @DisplayName("When content is deleted and the id field is shared with jakarta id")
 
-            class ContentIsDeletedAndTheIdFieldIsSharedWithJakartaId {
+            class ContentIsDeletedAndIdFieldIsSharedWithJakartaId {
                 @BeforeEach
                 void setUp() {
                     context = new AnnotationConfigApplicationContext();
@@ -1076,7 +1076,7 @@ public class MongoStoreIT {
 
             @DisplayName("When content is deleted and the id field is shared with spring id")
 
-            class ContentIsDeletedAndTheIdFieldIsSharedWithSpringId {
+            class ContentIsDeletedAndIdFieldIsSharedWithSpringId {
                 @BeforeEach
                 void setUp() {
                     context = new AnnotationConfigApplicationContext();

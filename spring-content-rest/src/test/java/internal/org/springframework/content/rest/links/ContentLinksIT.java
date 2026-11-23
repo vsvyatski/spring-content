@@ -24,7 +24,7 @@ public class ContentLinksIT {
         @Nested
         @NestedTestConfiguration(NestedTestConfiguration.EnclosingConfiguration.INHERIT)
         @DisplayName("Given a store and an entity with a top-level uncorrelated content property")
-        class StoreAndAnEntityWithATopLevelUncorrelatedContentPropertyContentLinkTests extends ContentLinkTests {
+        class StoreAndEntityWithTopLevelUncorrelatedContentPropertyContentLinkTests extends ContentLinkTests {
             @Autowired
             private WebApplicationContext context;
 
@@ -51,7 +51,7 @@ public class ContentLinksIT {
         @Nested
         @NestedTestConfiguration(NestedTestConfiguration.EnclosingConfiguration.INHERIT)
         @DisplayName("Given a store and an entity with top-level correlated content properties")
-        class StoreAndAnEntityWithTopLevelCorrelatedContentPropertiesContentLinkTests extends ContentLinkTests {
+        class StoreAndEntityWithTopLevelCorrelatedContentPropertiesContentLinkTests extends ContentLinkTests {
             @Autowired
             private WebApplicationContext context;
 
@@ -78,7 +78,7 @@ public class ContentLinksIT {
         @Nested
         @NestedTestConfiguration(NestedTestConfiguration.EnclosingConfiguration.INHERIT)
         @DisplayName("Given a store and an entity with a nested content property")
-        class StoreSpecifyingALinkrelAndAnEntityANestedContentPropertyContentLinkTests extends ContentLinkTests {
+        class StoreSpecifyingLinkrelAndEntityNestedContentPropertyContentLinkTests extends ContentLinkTests {
             @Autowired
             private WebApplicationContext context;
 

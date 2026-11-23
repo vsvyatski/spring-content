@@ -61,7 +61,7 @@ public class EnableGCPStorageTest {
    class EnableGCPStorageCases {
         @Nested
         @DisplayName("Given a context and a configuration with an gcs content store")
-        class ContextAndAConfigurationWithAnGCSContentStore {
+        class ContextAndConfigurationWithGCSContentStore {
             @BeforeEach
             void setUp() {
                 context = new AnnotationConfigApplicationContext();
@@ -89,7 +89,7 @@ public class EnableGCPStorageTest {
 
         @DisplayName("Given a context with a configurer")
 
-        class ContextWithAConfigurer {
+        class ContextWithConfigurer {
             @BeforeEach
             void setUp() {
                 context = new AnnotationConfigApplicationContext();
@@ -113,7 +113,7 @@ public class EnableGCPStorageTest {
 
         @DisplayName("Given a context with an empty configuration")
 
-        class ContextWithAnEmptyConfiguration {
+        class ContextWithEmptyConfiguration {
             @BeforeEach
             void setUp() {
                 context = new AnnotationConfigApplicationContext();

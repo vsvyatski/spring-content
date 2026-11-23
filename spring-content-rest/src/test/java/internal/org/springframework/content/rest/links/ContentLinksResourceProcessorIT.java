@@ -59,7 +59,7 @@ public class ContentLinksResourceProcessorIT {
     class SpringContentBaseUriPropertyIsSetToContentApiCases {
         @Nested
         @DisplayName("Given an entity with a single content ID property")
-        class EntityWithASingleContentIdProperty {
+        class EntityWithSingleContentIdProperty {
             @Nested
             class Tests {
                 @BeforeEach
@@ -196,7 +196,7 @@ public class ContentLinksResourceProcessorIT {
 
         @DisplayName("Given an entity with an embedded object containing content ID properties")
 
-        class EntityWithAnEmbeddedObjectContainingContentIdProperties {
+        class EntityWithEmbeddedObjectContainingContentIdProperties {
             @BeforeEach
             void setUp() {
                 PersistentEntity<?, ?> persistentEntity = repositories.getPersistentEntity(AuditedNestedContentEntity.class);
@@ -255,7 +255,7 @@ public class ContentLinksResourceProcessorIT {
 
         @DisplayName("Given the embedded object in an entity containing content ID properties")
 
-        class EmbeddedObjectInAnEntityContainingContentIdProperties {
+        class EmbeddedObjectInEntityContainingContentIdProperties {
             @BeforeEach
             void setUp() {
                 PersistentEntity<?, ?> persistentEntity = persistentEntities.getRequiredPersistentEntity(AuditedNestedContentChild.class);

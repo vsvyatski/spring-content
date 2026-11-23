@@ -155,7 +155,7 @@ public class StoredRenditionsRestIT {
    class StoredRenditions {
         @Nested
         @DisplayName("Given an entity with a content property")
-        class EntityWithAContentProperty {
+        class EntityWithContentProperty {
             @Nested
             @DisplayName("PUT to repository id content property")
             class PutToRepositoryIdContentProperty {

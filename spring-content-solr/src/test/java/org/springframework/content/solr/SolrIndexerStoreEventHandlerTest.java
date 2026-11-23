@@ -80,7 +80,7 @@ public class SolrIndexerStoreEventHandlerTest {
 
                 @DisplayName("Given the indexer throws an exception")
 
-                class IndexerThrowsAnException {
+                class IndexerThrowsException {
                     @BeforeEach
                     void setUp() throws IOException {
                         store = mock(ContentStore.class);
@@ -114,7 +114,7 @@ public class SolrIndexerStoreEventHandlerTest {
 
             @DisplayName("Given a content entity with a null content ID")
 
-            class ContentEntityWithANullContentId {
+            class ContentEntityWithNullContentId {
                 @BeforeEach
                 void setUp() {
                     store = mock(ContentStore.class);
@@ -231,7 +231,7 @@ public class SolrIndexerStoreEventHandlerTest {
 
             @DisplayName("Given a content entity with a null content ID")
 
-            class ContentEntityWithANullContentId {
+            class ContentEntityWithNullContentId {
                 @BeforeEach
                 void setUp() {
                     store = mock(ContentStore.class);

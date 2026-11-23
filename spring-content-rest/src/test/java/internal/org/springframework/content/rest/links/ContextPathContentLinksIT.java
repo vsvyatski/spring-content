@@ -86,7 +86,7 @@ public class ContextPathContentLinksIT {
         @Nested
         @NestedTestConfiguration(NestedTestConfiguration.EnclosingConfiguration.INHERIT)
         @DisplayName("given an Entity and a Store with a default store path")
-        class EntityAndAStoreWithADefaultStorePathContentLinkTests extends ContentLinkTests {
+        class EntityAndStoreWithDefaultStorePathContentLinkTests extends ContentLinkTests {
             @BeforeEach
             void setUp() {
                 MockMvc mvc = MockMvcBuilders.webAppContextSetup(context).build();

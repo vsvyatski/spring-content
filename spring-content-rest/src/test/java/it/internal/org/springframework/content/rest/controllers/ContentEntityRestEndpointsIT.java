@@ -100,9 +100,9 @@ public class ContentEntityRestEndpointsIT {
     @Nested
    class ContentEntityRESTEndpoints {
         @Nested
-        class EntityWithASingleUncorrelatedContentProperties {
+        class EntityWithSingleUncorrelatedContentProperties {
             @Nested
-            class RepositoryAndStorageAreExportedToTheSameURI {
+            class RepositoryAndStorageAreExportedToSameURI {
                 @Nested
                class DeleteToStoreIdSoftDeleteCustomHandler {
                     @BeforeEach
@@ -125,7 +125,7 @@ public class ContentEntityRestEndpointsIT {
             @Nested
             class RepositoryAndStorageAreExportedToDifferentURIs {
                 @Nested
-               class OptionsRequestToTheRepositoryFromAKnownHost {
+               class OptionsRequestToRepositoryFromKnownHost {
                     @BeforeEach
                     void setUp() {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -191,7 +191,7 @@ public class ContentEntityRestEndpointsIT {
             }
 
             @Nested
-            class EntityWithASharedIdAndContentIdField {
+            class EntityWithSharedIdAndContentIdField {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -345,7 +345,7 @@ public class ContentEntityRestEndpointsIT {
         }
 
         @Nested
-        class EntityWithASingleCorrelatedContentProperty {
+        class EntityWithSingleCorrelatedContentProperty {
             @BeforeEach
             void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();

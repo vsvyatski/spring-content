@@ -88,7 +88,7 @@ public class JpaVersionsAutoConfigurationTest {
 
         @DisplayName("Given an application context with a enable jpa repositories annotation")
 
-        class ApplicationContextWithAEnableJpaRepositoriesAnnotation {
+        class ApplicationContextWithEnableJpaRepositoriesAnnotation {
             @BeforeEach
             void setUp() {
                 contextRunner = new ApplicationContextRunner()

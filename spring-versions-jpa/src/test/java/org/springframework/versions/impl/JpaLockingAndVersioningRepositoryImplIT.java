@@ -146,7 +146,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
 
     @DisplayName("Given a locking and versioning repository and a security context")
 
-    class LockingAndVersioningRepositoryAndASecurityContext {
+    class LockingAndVersioningRepositoryAndSecurityContext {
         @Nested
         @DisplayName("Given two entities with two versions each")
         class TwoEntitiesWithTwoVersionsEach {
@@ -432,7 +432,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                 class EntityExists {
                     @Nested
                     @DisplayName("Given the principal is the lock owner")
-                    class PrincipalIsTheLockOwner {
+                    class PrincipalIsLockOwner {
                         @BeforeEach
                         void setUp() {
                             repo = context.getBean(VersioningJpaLongIdRepository.class);
@@ -473,7 +473,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
 
                     @DisplayName("Given the principal is not the lock owner")
 
-                    class PrincipalIsNotTheLockOwner {
+                    class PrincipalIsNotLockOwner {
                         @BeforeEach
                         void setUp() {
                             repo = context.getBean(VersioningJpaLongIdRepository.class);
@@ -552,7 +552,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     class EntityIsNew {
                         @Nested
                         @DisplayName("Given there is no lock owner")
-                        class ThereIsNoLockOwner {
+                        class NoLockOwner {
                             @BeforeEach
                             void setUp() {
                                 repo = context.getBean(VersioningJpaLongIdRepository.class);
@@ -589,7 +589,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     class EntityExists {
                         @Nested
                         @DisplayName("Given the principal is the lock owner")
-                        class PrincipalIsTheLockOwner {
+                        class PrincipalIsLockOwner {
                             @BeforeEach
                             void setUp() {
                                 repo = context.getBean(VersioningJpaLongIdRepository.class);
@@ -626,7 +626,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
 
                         @DisplayName("Given the principal is not the lock owner")
 
-                        class PrincipalIsNotTheLockOwner {
+                        class PrincipalIsNotLockOwner {
                             @BeforeEach
                             void setUp() {
                                 repo = context.getBean(VersioningJpaLongIdRepository.class);
@@ -663,7 +663,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
 
                         @DisplayName("Given there is no lock owner")
 
-                        class ThereIsNoLockOwner {
+                        class NoLockOwner {
                             @BeforeEach
                             void setUp() {
                                 repo = context.getBean(VersioningJpaLongIdRepository.class);
@@ -706,7 +706,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     class EntityIsNew {
                         @Nested
                         @DisplayName("Given there is no lock owner")
-                        class ThereIsNoLockOwner {
+                        class NoLockOwner {
                             @BeforeEach
                             void setUp() {
                                 repo = context.getBean(VersioningJpaLongIdRepository.class);
@@ -743,7 +743,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     class EntityExists {
                         @Nested
                         @DisplayName("Given there is no lock owner")
-                        class ThereIsNoLockOwner {
+                        class NoLockOwner {
                             @BeforeEach
                             void setUp() {
                                 repo = context.getBean(VersioningJpaLongIdRepository.class);
@@ -780,13 +780,13 @@ public class JpaLockingAndVersioningRepositoryImplIT {
 
                 @DisplayName("Given there is no principal")
 
-                class ThereIsNoPrincipal {
+                class NoPrincipal {
                     @Nested
                     @DisplayName("Given the entity is new")
                     class EntityIsNew {
                         @Nested
                         @DisplayName("Given there is no lock owner")
-                        class ThereIsNoLockOwner {
+                        class NoLockOwner {
                             @BeforeEach
                             void setUp() {
                                 repo = context.getBean(VersioningJpaLongIdRepository.class);
@@ -928,10 +928,10 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                 class EntityExists {
                     @Nested
                     @DisplayName("Given the principal is the lock owner")
-                    class PrincipalIsTheLockOwner {
+                    class PrincipalIsLockOwner {
                         @Nested
                         @DisplayName("When the entity is not yet part of a version tree")
-                        class EntityIsNotYetPartOfAVersionTree {
+                        class EntityIsNotYetPartOfVersionTree {
                             @BeforeEach
                             void setUp() {
                                 repo = context.getBean(VersioningJpaLongIdRepository.class);
@@ -971,7 +971,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
 
                     @DisplayName("Given the principal is not the lock owner")
 
-                    class PrincipalIsNotTheLockOwner {
+                    class PrincipalIsNotLockOwner {
                         @BeforeEach
                         void setUp() {
                             repo = context.getBean(VersioningJpaLongIdRepository.class);
@@ -1042,7 +1042,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
 
                     @DisplayName("Given the entity is not the current version")
 
-                    class EntityIsNotTheCurrentVersion {
+                    class EntityIsNotCurrentVersion {
                         @BeforeEach
                         void setUp() {
                             repo = context.getBean(VersioningJpaLongIdRepository.class);
@@ -1199,10 +1199,10 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                 class Principal {
                     @Nested
                     @DisplayName("Given the entity is not in a version tree")
-                    class EntityIsNotInAVersionTree {
+                    class EntityIsNotInVersionTree {
                         @Nested
                         @DisplayName("Given the principal is the lock owner")
-                        class PrincipalIsTheLockOwner {
+                        class PrincipalIsLockOwner {
                             @BeforeEach
                             void setUp() {
                                 repo = context.getBean(VersioningJpaLongIdRepository.class);
@@ -1237,7 +1237,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
 
                         @DisplayName("Given the principal is not the lock owner")
 
-                        class PrincipalIsNotTheLockOwner {
+                        class PrincipalIsNotLockOwner {
                             @BeforeEach
                             void setUp() {
                                 repo = context.getBean(VersioningJpaLongIdRepository.class);
@@ -1273,7 +1273,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
 
                         @DisplayName("Given there is no lock")
 
-                        class ThereIsNoLock {
+                        class NoLock {
                             @BeforeEach
                             void setUp() {
                                 repo = context.getBean(VersioningJpaLongIdRepository.class);
@@ -1308,7 +1308,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
 
                     @DisplayName("Given the entity is not the HEAD")
 
-                    class EntityIsNotTheHead {
+                    class EntityIsNotHead {
                         @BeforeEach
                         void setUp() {
                             repo = context.getBean(VersioningJpaLongIdRepository.class);
@@ -1341,10 +1341,8 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     }
 
                     @Nested
-
-                    @DisplayName("Given the entity is the HEAD of a version series of3versions and the ancestor is not ancestral ro")
-
-                    class EntityIsTheHeadOfAVersionSeriesOf3VersionsAndTheAncestorIsNotAncestralRo {
+                    @DisplayName("Given the entity is the head of a version series of 3 versions and the ancestor is not ancestral root")
+                    class EntityIsHeadOfVersionSeriesOf3VersionsAndAncestorIsNotAncestralRoot {
                         @BeforeEach
                         void setUp() {
                             repo = context.getBean(VersioningJpaLongIdRepository.class);
@@ -1393,10 +1391,8 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     }
 
                     @Nested
-
-                    @DisplayName("Given the entity is the HEAD of a version tree of2versions ancestor is ancestral root")
-
-                    class EntityIsTheHeadOfAVersionTreeOf2VersionsAncestorIsAncestralRoot {
+                    @DisplayName("Given the entity is the head of a version tree of 2 versions and the ancestor is ancestral root")
+                    class EntityIsHeadOfVersionTreeOf2VersionsAndAncestorIsAncestralRoot {
                         @BeforeEach
                         void setUp() {
                             repo = context.getBean(VersioningJpaLongIdRepository.class);
@@ -1507,10 +1503,10 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                 class Principal {
                     @Nested
                     @DisplayName("Given the entity is not in a version tree")
-                    class EntityIsNotInAVersionTree {
+                    class EntityIsNotInVersionTree {
                         @Nested
                         @DisplayName("Given the principal is the lock owner")
-                        class PrincipalIsTheLockOwner {
+                        class PrincipalIsLockOwner {
                             @BeforeEach
                             void setUp() {
                                 repo = context.getBean(VersioningJpaLongIdRepository.class);
@@ -1548,7 +1544,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
 
                         @DisplayName("Given the principal is not the lock owner")
 
-                        class PrincipalIsNotTheLockOwner {
+                        class PrincipalIsNotLockOwner {
                             @BeforeEach
                             void setUp() {
                                 repo = context.getBean(VersioningJpaLongIdRepository.class);
@@ -1584,7 +1580,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
 
                         @DisplayName("Given there is no lock")
 
-                        class ThereIsNoLock {
+                        class NoLock {
                             @BeforeEach
                             void setUp() {
                                 repo = context.getBean(VersioningJpaLongIdRepository.class);
@@ -1621,7 +1617,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
 
                     @DisplayName("Given the entity is not the HEAD")
 
-                    class EntityIsNotTheHead {
+                    class EntityIsNotHead {
                         @BeforeEach
                         void setUp() {
                             repo = context.getBean(VersioningJpaLongIdRepository.class);

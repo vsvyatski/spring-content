@@ -64,7 +64,7 @@ public class PdfToJpegRendererTest {
         class Convert {
             @Nested
             @DisplayName("Given an input stream and a mimetype")
-            class InputStreamAndAMimetype {
+            class InputStreamAndMimetype {
                 @Nested
                 @DisplayName("When the pdf has more than one page")
                 class PdfHasMoreThanOnePage {
@@ -102,7 +102,7 @@ public class PdfToJpegRendererTest {
 
                     @DisplayName("When the pdf document fails to return a thumbnail")
 
-                    class PdfDocumentFailsToReturnAThumbnail {
+                    class PdfDocumentFailsToReturnThumbnail {
                         @BeforeEach
                         void setUp() throws IOException {
                             pdf = mock(PDFService.class);
@@ -142,7 +142,7 @@ public class PdfToJpegRendererTest {
 
                 @DisplayName("When the input stream is not a valid pdf file")
 
-                class InputStreamIsNotAValidPdfFile {
+                class InputStreamIsNotValidPdfFile {
                     @BeforeEach
                     void setUp() throws IOException {
                         pdf = mock(PDFService.class);

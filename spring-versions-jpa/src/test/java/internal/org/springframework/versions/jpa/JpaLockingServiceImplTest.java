@@ -41,7 +41,7 @@ public class JpaLockingServiceImplTest {
         class Lock {
             @Nested
             @DisplayName("Given selecting a lock record fails")
-            class SelectingALockRecordFails {
+            class SelectingLockRecordFails {
                 @BeforeEach
                 void setUp() {
                     jdbcTemplate = mock(JdbcTemplate.class);
@@ -72,7 +72,7 @@ public class JpaLockingServiceImplTest {
 
             @DisplayName("Given inserting the lock record fails")
 
-            class InsertingTheLockRecordFails {
+            class InsertingLockRecordFails {
                 @BeforeEach
                 void setUp() {
                     jdbcTemplate = mock(JdbcTemplate.class);
@@ -197,7 +197,7 @@ public class JpaLockingServiceImplTest {
 
             @DisplayName("Given the principal is the lock owner")
 
-            class PrincipalIsTheLockOwner {
+            class PrincipalIsLockOwner {
                 @BeforeEach
                 void setUp() {
                     jdbcTemplate = mock(JdbcTemplate.class);
@@ -229,7 +229,7 @@ public class JpaLockingServiceImplTest {
 
             @DisplayName("Given the principal is not the lock owner")
 
-            class PrincipalIsNotTheLockOwner {
+            class PrincipalIsNotLockOwner {
                 @BeforeEach
                 void setUp() {
                     jdbcTemplate = mock(JdbcTemplate.class);
@@ -290,7 +290,7 @@ public class JpaLockingServiceImplTest {
 
             @DisplayName("Given there is no lock record")
 
-            class ThereIsNoLockRecord {
+            class NoLockRecord {
                 @BeforeEach
                 void setUp() {
                     jdbcTemplate = mock(JdbcTemplate.class);
@@ -318,7 +318,7 @@ public class JpaLockingServiceImplTest {
 
             @DisplayName("Given there is a lock record")
 
-            class ThereIsALockRecord {
+            class LockRecord {
                 @BeforeEach
                 void setUp() {
                     jdbcTemplate = mock(JdbcTemplate.class);
@@ -347,7 +347,7 @@ public class JpaLockingServiceImplTest {
 
             @DisplayName("Given there are multiple lock records")
 
-            class ThereAreMultipleLockRecords {
+            class MultipleLockRecords {
                 @BeforeEach
                 void setUp() {
                     jdbcTemplate = mock(JdbcTemplate.class);

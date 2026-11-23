@@ -101,7 +101,7 @@ public class ObservableOutputStreamTest {
 
         @DisplayName("When the output stream is closed and throws an exception")
 
-        class OutputStreamIsClosedAndThrowsAnException {
+        class OutputStreamIsClosedAndThrowsException {
             @BeforeEach
             void setUp() throws IOException {
                 os = mock(OutputStream.class);

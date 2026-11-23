@@ -54,7 +54,7 @@ public class StoresIT {
     class GetStoreCases {
         @Nested
         @DisplayName("When there are two stores that the filter matches but no store resolver")
-        class ThereAreTwoStoresThatTheFilterMatchesButNoStoreResolver {
+        class TwoStoresThatFilterMatchesButNoStoreResolver {
             @BeforeEach
             void setUp() {
                 TestStoreFactoryBean factory1 = new TestStoreFactoryBean(WrongStore.class);
@@ -81,7 +81,7 @@ public class StoresIT {
 
         @Nested
         @DisplayName("When there are two stores that the filter matches and a store resolver")
-        class ThereAreTwoStoresThatTheFilterMatchesAndAStoreResolver {
+        class TwoStoresThatFilterMatchesAndStoreResolver {
             @BeforeEach
             void setUp() {
                 TestStoreFactoryBean factory1 = new TestStoreFactoryBean(WrongStore.class);
@@ -121,7 +121,7 @@ public class StoresIT {
     class StoreExceptionTranslatorInterceptorCases {
         @Nested
         @DisplayName("Given there is no store exception translator registered")
-        class ThereIsNoStoreExceptionTranslatorRegistered {
+        class NoStoreExceptionTranslatorRegistered {
             @BeforeEach
             void setUp() {
                 // All TestContentStore methods throw an UnsupportedOperationException, this test relies on this
@@ -146,10 +146,8 @@ public class StoresIT {
         }
 
         @Nested
-
         @DisplayName("Given there is a store exception translator registered")
-
-        class ThereIsAStoreExceptionTranslatorRegistered {
+        class StoreExceptionTranslatorRegistered {
             @BeforeEach
             void setUp() {
                 // All TestContentStore methods throw an UnsupportedOperationException, this test relies on this

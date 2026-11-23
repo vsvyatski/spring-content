@@ -50,7 +50,7 @@ public class RestConfigurationTest {
    class RestConfigurationCases {
         @Nested
         @DisplayName("Given a context with a content rest configuration")
-        class ContextWithAContentRestConfiguration {
+        class ContextWithContentRestConfiguration {
             @BeforeEach
             void setUp() {
                 configurer = mock(ContentRestConfigurer.class);

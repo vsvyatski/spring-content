@@ -68,7 +68,7 @@ public class ContentFileSystemAutoConfigurationTest {
 
         @DisplayName("Given an environment specifying a filesystem root using spring prefix")
 
-        class EnvironmentSpecifyingAFilesystemRootUsingSpringPrefix {
+        class EnvironmentSpecifyingFilesystemRootUsingSpringPrefix {
             @BeforeEach
             void setUp() {
                 contextRunner = new ApplicationContextRunner()
@@ -94,7 +94,7 @@ public class ContentFileSystemAutoConfigurationTest {
 
         @DisplayName("Given a configuration that contributes a loader bean")
 
-        class ConfigurationThatContributesALoaderBean {
+        class ConfigurationThatContributesLoaderBean {
             @BeforeEach
             void setUp() {
                 contextRunner = new ApplicationContextRunner()

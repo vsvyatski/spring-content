@@ -407,7 +407,7 @@ public class S3StoreIT {
 
                         @DisplayName("When a invalid property path is used to associate a resource")
 
-                        class InvalidPropertyPathIsUsedToAssociateAResource {
+                        class InvalidPropertyPathIsUsedToAssociateResource {
                             @BeforeEach
                             void setUp() throws InterruptedException {
                                 ensureTestBucket();
@@ -438,7 +438,7 @@ public class S3StoreIT {
 
                         @DisplayName("When a invalid property path is used to load a resource")
 
-                        class InvalidPropertyPathIsUsedToLoadAResource {
+                        class InvalidPropertyPathIsUsedToLoadResource {
                             @BeforeEach
                             void setUp() throws InterruptedException {
                                 ensureTestBucket();
@@ -469,7 +469,7 @@ public class S3StoreIT {
 
                         @DisplayName("When a invalid property path is used to unassociate a resource")
 
-                        class InvalidPropertyPathIsUsedToUnassociateAResource {
+                        class InvalidPropertyPathIsUsedToUnassociateResource {
                             @BeforeEach
                             void setUp() throws InterruptedException {
                                 ensureTestBucket();
@@ -856,7 +856,7 @@ public class S3StoreIT {
 
             @DisplayName("When content is deleted and the content ID field is shared with entity id")
 
-            class ContentIsDeletedAndTheContentIdFieldIsSharedWithEntityId {
+            class ContentIsDeletedAndContentIdFieldIsSharedWithEntityId {
                 @BeforeEach
                 void setUp() throws InterruptedException {
                     ensureTestBucket();
@@ -889,7 +889,7 @@ public class S3StoreIT {
             class EmbeddedContent {
                 @Nested
                 @DisplayName("Given a entity with a null embedded content object")
-                class EntityWithANullEmbeddedContentObject {
+                class EntityWithNullEmbeddedContentObject {
                     @BeforeEach
                     void setUp() throws InterruptedException {
                         ensureTestBucket();

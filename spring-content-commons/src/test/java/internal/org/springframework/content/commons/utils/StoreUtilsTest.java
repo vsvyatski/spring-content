@@ -49,7 +49,7 @@ public class StoreUtilsTest {
         class MultipleStorageBeansAreFound {
             @Nested
             @DisplayName("When multiple storage modules are found on the classpath")
-            class MultipleStorageModulesAreFoundOnTheClasspath {
+            class MultipleStorageModulesAreFoundOnClasspath {
                 @BeforeEach
                 void setUp() {
                     env = mock(Environment.class);
@@ -128,7 +128,7 @@ public class StoreUtilsTest {
 
                 @DisplayName("When the store beans cant be matched against signature types and the registrar doesnt match the")
 
-                class StoreBeansCantBeMatchedAgainstSignatureTypesAndTheRegistrarDoesntMatchThe {
+                class StoreBeansCantBeMatchedAgainstSignatureTypesAndRegistrarDoesntMatch {
                     @BeforeEach
                     void setUp() {
                         env = mock(Environment.class);

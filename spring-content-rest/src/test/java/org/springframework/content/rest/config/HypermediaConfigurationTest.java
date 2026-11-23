@@ -43,7 +43,7 @@ public class HypermediaConfigurationTest {
    class HypermediaConfigurationCases {
         @Nested
         @DisplayName("Given a context with a content rest configuration")
-        class ContextWithAContentRestConfiguration {
+        class ContextWithContentRestConfiguration {
             @BeforeEach
             void setUp() {
                 context = new AnnotationConfigWebApplicationContext();

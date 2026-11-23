@@ -208,7 +208,7 @@ public class AnnotatedStoreEventInvokerTest {
    class PostProcessAfterInitialization {
         @Nested
         @DisplayName("When initialized with a store event handler bean")
-        class InitializedWithAStoreEventHandlerBean {
+        class InitializedWithStoreEventHandlerBean {
             @BeforeEach
             void setUp() {
                 reflectionService = mock(ReflectionService.class);
@@ -285,7 +285,7 @@ public class AnnotatedStoreEventInvokerTest {
 
         @DisplayName("Given an event handler and an unknown event")
 
-        class EventHandlerAndAnUnknownEvent {
+        class EventHandlerAndUnknownEvent {
             @Test
             void shouldNotCallAnEventHandler() {
                 reflectionService = mock(ReflectionService.class);

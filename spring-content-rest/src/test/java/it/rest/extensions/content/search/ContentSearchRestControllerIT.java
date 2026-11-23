@@ -510,7 +510,7 @@ public class ContentSearchRestControllerIT {
 
             @DisplayName("Given an entity with an overloaded id field")
 
-            class EntityWithAnOverloadedIdField {
+            class EntityWithOverloadedIdField {
                 @Nested
                 @DisplayName("Given no results are found")
                 class NoResultsAreFound {
@@ -836,7 +836,7 @@ public class ContentSearchRestControllerIT {
 
             @DisplayName("Given results are found returning a custom result type")
 
-            class ResultsAreFoundReturningACustomResultType {
+            class ResultsAreFoundReturningCustomResultType {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -897,7 +897,7 @@ public class ContentSearchRestControllerIT {
 
             @DisplayName("Given paged results are found returning a custom result type")
 
-            class PagedResultsAreFoundReturningACustomResultType {
+            class PagedResultsAreFoundReturningCustomResultType {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();

@@ -53,7 +53,7 @@ public class JpaCloningServiceImplTest {
         class Clone {
             @Nested
             @DisplayName("Given an entity with a copy constructor")
-            class EntityWithACopyConstructor {
+            class EntityWithCopyConstructor {
                 @BeforeEach
                 void setUp() {
                     entity = new TestEntity();
@@ -78,7 +78,7 @@ public class JpaCloningServiceImplTest {
 
             @DisplayName("Given an entity with a copy constructor2")
 
-            class EntityWithACopyConstructor2 {
+            class EntityWithCopyConstructor2 {
                 @BeforeEach
                 void setUp() {
                     entity = new NoCopyConstructorTestEntity();
@@ -103,7 +103,7 @@ public class JpaCloningServiceImplTest {
 
             @DisplayName("Given an entity with a failing copy constructor")
 
-            class EntityWithAFailingCopyConstructor {
+            class EntityWithFailingCopyConstructor {
                 @BeforeEach
                 void setUp() {
                     entity = new FailingCopyConstructorTestEntity();

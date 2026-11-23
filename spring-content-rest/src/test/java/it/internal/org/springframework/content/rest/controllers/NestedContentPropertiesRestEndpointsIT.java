@@ -69,10 +69,10 @@ public class NestedContentPropertiesRestEndpointsIT {
    class NestedContentPropertiesRESTEndpoints {
         @Nested
         @DisplayName("Given an entity with a simple content property")
-        class EntityWithASimpleContentProperty {
+        class EntityWithSimpleContentProperty {
             @Nested
             @DisplayName("Given a request to a non existent entity")
-            class RequestToANonExistentEntity {
+            class RequestToNonExistentEntity {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -92,7 +92,7 @@ public class NestedContentPropertiesRestEndpointsIT {
 
             @DisplayName("Given a request to a non existent content property")
 
-            class RequestToANonExistentContentProperty {
+            class RequestToNonExistentContentProperty {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -255,7 +255,7 @@ public class NestedContentPropertiesRestEndpointsIT {
 
                 @DisplayName("GET to repository id content property with a MIME type that matches a renderer")
 
-                class GetToRepositoryIdContentPropertyWithAMimeTypeThatMatchesARenderer {
+                class GetToRepositoryIdContentPropertyWithMimeTypeThatMatchesRenderer {
                     @BeforeEach
                     void setUp() throws IOException {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -407,7 +407,7 @@ public class NestedContentPropertiesRestEndpointsIT {
 
         @DisplayName("Given apost to the entity endpoint with a multipart form request")
 
-        class PostToTheEntityEndpointWithAMultipartFormRequest {
+        class PostToEntityEndpointWithMultipartFormRequest {
             @BeforeEach
             void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();

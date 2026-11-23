@@ -193,7 +193,7 @@ public class TextPlainToJpegRendererTest {
 
                 @DisplayName("Given a line file will overflow the image size")
 
-                class LineFileWillOverflowTheImageSize {
+                class LineFileWillOverflowImageSize {
                     @BeforeEach
                     void setUp() {
                         input = new ByteArrayInputStream(
@@ -220,7 +220,7 @@ public class TextPlainToJpegRendererTest {
 
             @DisplayName("When the input stream is not a valid word file")
 
-            class InputStreamIsNotAValidWordFile {
+            class InputStreamIsNotValidWordFile {
                 @BeforeEach
                 void setUp() {
                     input = this.getClass().getResourceAsStream("/sample-docx.docx");

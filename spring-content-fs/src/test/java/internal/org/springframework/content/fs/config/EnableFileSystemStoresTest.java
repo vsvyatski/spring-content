@@ -77,7 +77,7 @@ public class EnableFileSystemStoresTest {
    class EnableFileSystemStoresCases {
         @Nested
         @DisplayName("Given a context and a configuration with a filesystem content store bean")
-        class ContextAndAConfigurationWithAFilesystemContentStoreBean {
+        class ContextAndConfigurationWithFilesystemContentStoreBean {
             @BeforeEach
             void setUp() {
                 context = new AnnotationConfigApplicationContext();
@@ -110,7 +110,7 @@ public class EnableFileSystemStoresTest {
 
         @DisplayName("Given a context with a configurer")
 
-        class ContextWithAConfigurer {
+        class ContextWithConfigurer {
             @BeforeEach
             void setUp() {
                 context = new AnnotationConfigApplicationContext();
@@ -134,7 +134,7 @@ public class EnableFileSystemStoresTest {
 
         @DisplayName("Given a context with an empty configuration")
 
-        class ContextWithAnEmptyConfiguration {
+        class ContextWithEmptyConfiguration {
             @BeforeEach
             void setUp() {
                 context = new AnnotationConfigApplicationContext();

@@ -64,7 +64,7 @@ public class WordToJpegRendererTest {
         class Convert {
             @Nested
             @DisplayName("Given an input stream and a mimetype")
-            class InputStreamAndAMimetype {
+            class InputStreamAndMimetype {
                 @BeforeEach
                 void setUp() throws IOException {
                     poi = mock(POIService.class);
@@ -93,7 +93,7 @@ public class WordToJpegRendererTest {
 
                 @DisplayName("When the input stream is not a valid word file")
 
-                class InputStreamIsNotAValidWordFile {
+                class InputStreamIsNotValidWordFile {
                     @BeforeEach
                     void setUp() throws IOException {
                         poi = mock(POIService.class);
@@ -164,7 +164,7 @@ public class WordToJpegRendererTest {
 
                 @DisplayName("When the word document fails to return a thumbnail")
 
-                class WordDocumentFailsToReturnAThumbnail {
+                class WordDocumentFailsToReturnThumbnail {
                     @BeforeEach
                     void setUp() throws IOException {
                         poi = mock(POIService.class);

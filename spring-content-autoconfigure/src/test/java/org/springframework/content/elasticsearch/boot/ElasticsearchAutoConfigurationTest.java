@@ -54,7 +54,7 @@ public class ElasticsearchAutoConfigurationTest {
 
     @DisplayName("Given a context without a elasticsearch client configured")
 
-    class ContextWithoutAElasticsearchClientConfigured {
+    class ContextWithoutElasticsearchClientConfigured {
         @Test
         void shouldCreateAClient() {
             final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
@@ -76,7 +76,7 @@ public class ElasticsearchAutoConfigurationTest {
 
     @DisplayName("Given a context with a elasticsearch client configured")
 
-    class ContextWithAElasticsearchClientConfigured {
+    class ContextWithElasticsearchClientConfigured {
         @Test
         void shouldUseThatClient() {
             final ApplicationContextRunner contextRunner = new ApplicationContextRunner()

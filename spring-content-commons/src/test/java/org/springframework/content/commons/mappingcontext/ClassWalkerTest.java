@@ -272,7 +272,7 @@ public class ClassWalkerTest {
 
     @DisplayName("Given a class with a child with uncorrelated attributes")
 
-    class ClassWithAChildWithUncorrelatedAttributes {
+    class ClassWithChildWithUncorrelatedAttributes {
         @Test
         void shouldReturnTwoContentProperties() {
             ContentPropertyMappingContextVisitor visitor = new ContentPropertyMappingContextVisitor("/", ".");
@@ -388,7 +388,7 @@ public class ClassWalkerTest {
 
     @DisplayName("Given a class with a child with multiple content property objects")
 
-    class ClassWithAChildWithMultipleContentPropertyObjects {
+    class ClassWithChildWithMultipleContentPropertyObjects {
         @Test
         void shouldReturnTwoContentProperties() {
             ContentPropertyMappingContextVisitor visitor = new ContentPropertyMappingContextVisitor("/", ".");
@@ -421,7 +421,7 @@ public class ClassWalkerTest {
 
     @DisplayName("Given a class with a child with a child with multiple content property objects")
 
-    class ClassWithAChildWithAChildWithMultipleContentPropertyObjects {
+    class ClassWithChildWithChildWithMultipleContentPropertyObjects {
         @Test
         void shouldReturnTwoContentProperties() {
             ContentPropertyMappingContextVisitor visitor = new ContentPropertyMappingContextVisitor("/", ".");

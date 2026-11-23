@@ -29,7 +29,7 @@ public class FileSystemResourceLoaderTest {
         class GetResource {
             @Nested
             @DisplayName("Given well formed path has a trailing slash")
-            class WellFormedPathHasATrailingSlash {
+            class WellFormedPathHasTrailingSlash {
                 @Test
                 @DisabledOnOs(OS.WINDOWS)
                 void succeeds() throws IOException {
@@ -51,7 +51,7 @@ public class FileSystemResourceLoaderTest {
 
             @DisplayName("Given malformed path without a trailing slash")
 
-            class MalformedPathWithoutATrailingSlash {
+            class MalformedPathWithoutTrailingSlash {
                 @Test
                 @DisabledOnOs(OS.WINDOWS)
                 void succeeds() throws IOException {

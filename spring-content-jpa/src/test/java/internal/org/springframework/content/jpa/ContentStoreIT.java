@@ -409,7 +409,7 @@ public class ContentStoreIT {
         class EmbeddedContent {
             @Nested
             @DisplayName("Given an entity with a null embedded content object")
-            class EntityWithANullEmbeddedContentObject {
+            class EntityWithNullEmbeddedContentObject {
                 @ParameterizedTest(name = "{0}")
                 @MethodSource("internal.org.springframework.content.jpa.StoreIT#databaseConfigs")
                 void shouldReturnNullWhenContentIsFetched(Class<?> configClass) throws IOException {
