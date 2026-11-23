@@ -44,7 +44,7 @@ public class AzureStorageWithEntityConverterIT extends AbstractEntityConverterBu
             containerClient.create();
         }
 
-        System.setProperty("spring.content.azure.bucket", BUCKET);
+        System.setProperty("spring.content.azure.bucket", INIT_BUCKET);
     }
 
     static Stream<Case> converterConfigs() {
@@ -87,7 +87,7 @@ public class AzureStorageWithEntityConverterIT extends AbstractEntityConverterBu
         @Bean
         public AzureStorageConfigurer configurer() {
             return registry -> {
-                registry.addConverter((Converter<ContentPropertyInfo<TestEntity, Serializable>, BlobId>) info -> new BlobId(OTHER_OTHER_BUCKET, info.contentId().toString()));
+                registry.addConverter((Converter<ContentPropertyInfo<TestEntity, Serializable>, BlobId>) info -> new BlobId(CUSTOM_BUCKET, info.contentId().toString()));
 
                 registry.addConverter((Converter<ContentPropertyInfo<FakeEntity, Serializable>, BlobId>) info -> {
                     throw new IllegalStateException("wrong converter called");
@@ -126,6 +126,6 @@ public class AzureStorageWithEntityConverterIT extends AbstractEntityConverterBu
 
         @Bucket
         @SuppressWarnings("unused") // read by Azure entity-level @Bucket mapping
-        private final String bucket = OTHER_BUCKET;
+        private final String bucket = DEFAULT_BUCKET;
     }
 }

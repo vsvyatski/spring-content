@@ -50,7 +50,7 @@ public class S3StoreWithEntityConverterIT extends AbstractEntityConverterBucketI
     private static S3Client s3ClientSpy;
 
     static {
-        System.setProperty("spring.content.s3.bucket", BUCKET);
+        System.setProperty("spring.content.s3.bucket", INIT_BUCKET);
     }
 
     private S3Client client;
@@ -123,7 +123,7 @@ public class S3StoreWithEntityConverterIT extends AbstractEntityConverterBucketI
             return registry -> {
                 registry.addConverter(
                     (@NonNull ContentPropertyInfo<TestEntity, Serializable> info) ->
-                        new S3ObjectId(OTHER_OTHER_BUCKET, String.valueOf(info.contentId())));
+                        new S3ObjectId(CUSTOM_BUCKET, String.valueOf(info.contentId())));
                 registry.addConverter(
                     (@NonNull ContentPropertyInfo<FakeEntity, Serializable> info) -> {
                         throw new IllegalStateException("wrong converter called");
@@ -162,6 +162,6 @@ public class S3StoreWithEntityConverterIT extends AbstractEntityConverterBucketI
 
         @Bucket
         @SuppressWarnings("unused") // read by S3 entity-level @Bucket mapping
-        private final String bucket = OTHER_BUCKET;
+        private final String bucket = DEFAULT_BUCKET;
     }
 }

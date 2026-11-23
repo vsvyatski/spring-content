@@ -36,7 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class GCPStorageWithEntityConverterIT extends AbstractEntityConverterBucketIT {
 
     static {
-        System.setProperty("spring.content.gcp.storage.bucket", BUCKET);
+        System.setProperty("spring.content.gcp.storage.bucket", INIT_BUCKET);
     }
 
     private Storage storage;
@@ -86,7 +86,7 @@ public class GCPStorageWithEntityConverterIT extends AbstractEntityConverterBuck
         @Bean
         public GCPStorageConfigurer configurer() {
             return registry -> {
-                registry.addConverter((Converter<ContentPropertyInfo<TestEntity, Serializable>, BlobId>) info -> BlobId.of(OTHER_OTHER_BUCKET, info.contentId().toString()));
+                registry.addConverter((Converter<ContentPropertyInfo<TestEntity, Serializable>, BlobId>) info -> BlobId.of(CUSTOM_BUCKET, info.contentId().toString()));
                 registry.addConverter((Converter<ContentPropertyInfo<FakeEntity, Serializable>, BlobId>) info -> {
                     throw new IllegalStateException("wrong converter called");
                 });
@@ -124,6 +124,6 @@ public class GCPStorageWithEntityConverterIT extends AbstractEntityConverterBuck
 
         @Bucket
         @SuppressWarnings("unused") // read by GCS entity-level @Bucket mapping
-        private final String bucket = OTHER_BUCKET;
+        private final String bucket = DEFAULT_BUCKET;
     }
 }

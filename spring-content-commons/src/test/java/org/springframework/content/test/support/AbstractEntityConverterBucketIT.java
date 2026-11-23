@@ -1,5 +1,6 @@
 package org.springframework.content.test.support;
 
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.content.commons.property.PropertyPath;
@@ -20,11 +21,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public abstract class AbstractEntityConverterBucketIT {
 
-    public static final String BUCKET = "spring-eg-content";
+    public static final String INIT_BUCKET = "spring-eg-content";
 
-    public static final String OTHER_BUCKET = "other-bucket-4f91c2";
+    public static final String DEFAULT_BUCKET = "default-4f91c2";
 
-    public static final String OTHER_OTHER_BUCKET = "other-other-bucket-8c3e17";
+    public static final String CUSTOM_BUCKET = "custom-8c3e17";
 
     protected DualContentJpaLongIdMimeEntity entity;
 
@@ -36,8 +37,8 @@ public abstract class AbstractEntityConverterBucketIT {
 
     protected static Case[] cases(Class<?> storeConfig, Class<?> customConverterConfig) {
         return new Case[] {
-            new Case("Default Converter", new Class<?>[] {storeConfig}, OTHER_BUCKET),
-            new Case("Custom Converter", new Class<?>[] {customConverterConfig, storeConfig}, OTHER_OTHER_BUCKET)
+            new Case("Default Converter", new Class<?>[] {storeConfig}, DEFAULT_BUCKET),
+            new Case("Custom Converter", new Class<?>[] {customConverterConfig, storeConfig}, CUSTOM_BUCKET)
         };
     }
 
@@ -114,7 +115,7 @@ public abstract class AbstractEntityConverterBucketIT {
 
     public record Case(String name, Class<?>[] config, String bucket) {
         @Override
-        public String toString() {
+        public @NonNull String toString() {
             return name;
         }
     }
