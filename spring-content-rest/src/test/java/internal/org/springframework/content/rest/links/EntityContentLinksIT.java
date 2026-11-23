@@ -65,7 +65,7 @@ public class EntityContentLinksIT {
             }
 
             @Test
-            void shouldProvideAResponseWithAContentLink() throws Exception {
+            void shouldProvideResponseWithContentLink() throws Exception {
                 assertContentLinkInHalResponse();
             }
         }

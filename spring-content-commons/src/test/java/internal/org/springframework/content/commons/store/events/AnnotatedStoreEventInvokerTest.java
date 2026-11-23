@@ -246,7 +246,7 @@ public class AnnotatedStoreEventInvokerTest {
                 }
 
                 @Test
-                void shouldOrderTheHandlersByPriority() {
+                void shouldOrderHandlersByPriority() {
                     assertThat(invoker.getHandlers().get(BeforeGetResourceEvent.class).size()).isEqualTo(3);
                     assertThat(invoker.getHandlers().get(BeforeGetResourceEvent.class).get(0).handler).isEqualTo(priorityHandler);
                 }
@@ -283,7 +283,7 @@ public class AnnotatedStoreEventInvokerTest {
         @DisplayName("Given an event handler and an unknown event")
         class EventHandlerAndUnknownEvent {
             @Test
-            void shouldNotCallAnEventHandler() {
+            void shouldNotCallEventHandler() {
                 reflectionService = mock(ReflectionService.class);
                 invoker = new AnnotatedStoreEventInvoker(reflectionService);
 

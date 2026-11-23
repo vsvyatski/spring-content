@@ -78,7 +78,7 @@ public class RestResourceMappingBuilderTest {
     @Nested
     class RestResourceMappingBuilderCases {
         @Test
-        void shouldCreateAMapOfContentPropertyPathsToRequestMappingPaths() {
+        void shouldCreateMapOfContentPropertyPathsToRequestMappingPaths() {
             RestResourceMappingBuilder visitor = new RestResourceMappingBuilder(RestResource::path);
             ClassWalker walker = new ClassWalker(visitor);
             walker.accept(TestClass.class);

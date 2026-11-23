@@ -37,7 +37,7 @@ public class POIServiceTest {
                 }
 
                 @Test
-                void shouldReturnAnInstanceOfAnXPWFDocument() throws IOException {
+                void shouldReturnInstanceOfXPWFDocument() throws IOException {
                     assertThat(poi.xwpfDocument(stream)).isNotNull();
                 }
             }
@@ -51,7 +51,7 @@ public class POIServiceTest {
                 }
 
                 @Test
-                void shouldThrowAnException() {
+                void shouldThrowException() {
                     assertThatThrownBy(() -> poi.xwpfDocument(stream))
                         .isInstanceOf(IllegalArgumentException.class);
                 }
@@ -69,7 +69,7 @@ public class POIServiceTest {
                 }
 
                 @Test
-                void shouldThrowAnException() {
+                void shouldThrowException() {
                     assertThatThrownBy(() -> poi.xwpfDocument(stream))
                         .isInstanceOf(NotOfficeXmlFileException.class);
                 }

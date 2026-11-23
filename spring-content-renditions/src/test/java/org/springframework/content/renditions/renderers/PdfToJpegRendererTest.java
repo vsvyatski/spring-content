@@ -89,12 +89,12 @@ public class PdfToJpegRendererTest {
                     }
 
                     @Test
-                    void shouldGetTheEmbeddedThumbnailFromTheXWPFDocumentSProperties() throws IOException {
+                    void shouldGetEmbeddedThumbnailFromXWPFDocumentSProperties() throws IOException {
                         verify(pdfRenderer).renderImageWithDPI(0, 300, ImageType.RGB);
                     }
 
                     @Test
-                    void shouldOutputTheRenderedImage() throws IOException {
+                    void shouldOutputRenderedImage() throws IOException {
                         verify(pdf).writeImage(any(), eq("jpeg"), isA(OutputStream.class));
                     }
 
@@ -124,13 +124,13 @@ public class PdfToJpegRendererTest {
                         }
 
                         @Test
-                        void shouldThrowARenditionException() {
+                        void shouldThrowRenditionException() {
                             assertThat(e).isNotNull();
                             assertThat(e).isInstanceOf(RenditionException.class);
                         }
 
                         @Test
-                        void shouldCloseTheDocument() throws IOException {
+                        void shouldCloseDocument() throws IOException {
                             verify(doc).close();
                         }
                     }
@@ -160,7 +160,7 @@ public class PdfToJpegRendererTest {
                     }
 
                     @Test
-                    void shouldThrowARenditionException() {
+                    void shouldThrowRenditionException() {
                         assertThat(e).isNotNull();
                         assertThat(e).isInstanceOf(RenditionException.class);
                     }
@@ -183,7 +183,7 @@ public class PdfToJpegRendererTest {
                 }
 
                 @Test
-                void shouldGetTheEmbeddedThumbnailFromTheXWPFDocumentSProperties() {
+                void shouldGetEmbeddedThumbnailFromXWPFDocumentSProperties() {
                     assertThat(e).isNotNull();
                 }
             }

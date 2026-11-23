@@ -333,7 +333,7 @@ public class GCPStorageIT {
                     }
 
                     @Test
-                    void shouldNotHaveAnAssociatedResource() {
+                    void shouldNotHaveAssociatedResource() {
                         assertThat(entity.getContentId()).isNull();
                         assertThat(store.getResource(entity)).isNull();
                     }
@@ -375,7 +375,7 @@ public class GCPStorageIT {
                             }
 
                             @Test
-                            void shouldBeRecordedAsSuchOnTheEntitySContentId() {
+                            void shouldBeRecordedAsSuchOnEntitySContentId() {
                                 assertThat(entity.getContentId()).isEqualTo(resourceLocation);
                                 assertThat(entity.getRenditionId()).isEqualTo(resourceLocation);
                             }
@@ -459,7 +459,7 @@ public class GCPStorageIT {
                             }
 
                             @Test
-                            void shouldResetTheEntitySContentId() {
+                            void shouldResetEntitySContentId() {
                                 assertThat(entity.getContentId()).isNull();
                                 assertThat(entity.getRenditionId()).isNull();
                             }
@@ -496,7 +496,7 @@ public class GCPStorageIT {
                             }
 
                             @Test
-                            void shouldThrowAnError() {
+                            void shouldThrowError() {
                                 try {
                                     store.associate(entity, PropertyPath.from("does.not.exist"), resourceLocation);
                                 } catch (Exception sae) {
@@ -537,7 +537,7 @@ public class GCPStorageIT {
                             }
 
                             @Test
-                            void shouldThrowAnError() {
+                            void shouldThrowError() {
                                 try {
                                     store.getResource(entity, PropertyPath.from("does.not.exist"));
                                 } catch (Exception sae) {
@@ -578,7 +578,7 @@ public class GCPStorageIT {
                             }
 
                             @Test
-                            void shouldThrowAnError() {
+                            void shouldThrowError() {
                                 try {
                                     store.unassociate(entity, PropertyPath.from("does.not.exist"));
                                 } catch (Exception sae) {
@@ -685,7 +685,7 @@ public class GCPStorageIT {
                 }
 
                 @Test
-                void shouldHaveTheUpdatedContent() throws IOException {
+                void shouldHaveUpdatedContent() throws IOException {
                     //content
                     try (InputStream content = store.getContent(entity)) {
                         boolean matches = IOUtils.contentEquals(TestSupportData.sampleUpdatedTextStream(), content);
@@ -734,7 +734,7 @@ public class GCPStorageIT {
                 }
 
                 @Test
-                void shouldStoreOnlyTheNewContent() throws IOException {
+                void shouldStoreOnlyNewContent() throws IOException {
                     //content
                     try (InputStream content = store.getContent(entity)) {
                         boolean matches = IOUtils.contentEquals(TestSupportData.samplePartialUpdateStream(), content);
@@ -779,7 +779,7 @@ public class GCPStorageIT {
                 }
 
                 @Test
-                void shouldHaveTheUpdatedContent() throws IOException {
+                void shouldHaveUpdatedContent() throws IOException {
                     String contentId = entity.getContentId();
                     assertThat(contentId).isNotNull();
                     assertThat(storage.get(BlobId.of("test-bucket", contentId)).exists()).isTrue();
@@ -929,7 +929,7 @@ public class GCPStorageIT {
                 }
 
                 @Test
-                void shouldThrowAnError() {
+                void shouldThrowError() {
                     try {
                         store.setContent(entity, PropertyPath.from("does.not.exist"), new ByteArrayInputStream("foo".getBytes()));
                     } catch (Exception sae) {
@@ -969,7 +969,7 @@ public class GCPStorageIT {
                 }
 
                 @Test
-                void shouldThrowAnError() {
+                void shouldThrowError() {
                     try {
                         store.getContent(entity, PropertyPath.from("does.not.exist"));
                     } catch (Exception sae) {
@@ -1009,7 +1009,7 @@ public class GCPStorageIT {
                 }
 
                 @Test
-                void shouldThrowAnError() {
+                void shouldThrowError() {
                     try {
                         store.unsetContent(entity, PropertyPath.from("does.not.exist"));
                     } catch (Exception sae) {
@@ -1049,7 +1049,7 @@ public class GCPStorageIT {
                 }
 
                 @Test
-                void shouldNotResetTheIdField() {
+                void shouldNotResetIdField() {
                     SharedIdJakartaJpaRepository sharedIdRepository = context.getBean(SharedIdJakartaJpaRepository.class);
                     SharedIdJakartaJpaStore sharedIdStore = context.getBean(SharedIdJakartaJpaStore.class);
 

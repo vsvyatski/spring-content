@@ -357,7 +357,7 @@ public class AbstractStoreEventListenerTest {
 
         @ParameterizedTest
         @MethodSource("internal.org.springframework.content.commons.store.events.AbstractStoreEventListenerTest#storeListenerCases")
-        void shouldCallTheEventConsumer(StoreListenerCase listenerCase) {
+        void shouldCallEventConsumer(StoreListenerCase listenerCase) {
             StoreEventSource source = new StoreEventSource();
             event = listenerCase.eventFactory().apply(source, store);
             listener.onApplicationEvent(event);
@@ -366,7 +366,7 @@ public class AbstractStoreEventListenerTest {
 
         @ParameterizedTest
         @MethodSource("internal.org.springframework.content.commons.store.events.AbstractStoreEventListenerTest#storeListenerCases")
-        void shouldCallTheEventSourceConsumer(StoreListenerCase listenerCase) {
+        void shouldCallEventSourceConsumer(StoreListenerCase listenerCase) {
             StoreEventSource source = new StoreEventSource();
             event = listenerCase.eventFactory().apply(source, store);
             listener.onApplicationEvent(event);

@@ -192,13 +192,13 @@ public class FileSystemStoreIT {
         }
 
         @Test
-        void shouldNotHaveAnAssociatedResource() {
+        void shouldNotHaveAssociatedResource() {
             assertThat(entity.getContentId()).isNull();
             assertThat(store.getResource(entity)).isNull();
         }
 
         @Test
-        void shouldBeRecordedAsSuchOnTheEntitySContentId() {
+        void shouldBeRecordedAsSuchOnEntitySContentId() {
             associateBoth();
             assertThat(entity.getContentId()).isEqualTo(resourceLocation);
             assertThat(entity.getRenditionId()).isEqualTo(resourceLocation);
@@ -218,7 +218,7 @@ public class FileSystemStoreIT {
         }
 
         @Test
-        void shouldResetTheEntitySContentId() {
+        void shouldResetEntitySContentId() {
             associateBoth();
             store.unassociate(entity);
             store.unassociate(entity, PropertyPath.from("rendition"));
@@ -227,7 +227,7 @@ public class FileSystemStoreIT {
         }
 
         @Test
-        void shouldThrowWhenAssociatingAnInvalidPropertyPath() {
+        void shouldThrowWhenAssociatingInvalidPropertyPath() {
             associateBoth();
             try {
                 store.associate(entity, PropertyPath.from("does.not.exist"), resourceLocation);
@@ -238,7 +238,7 @@ public class FileSystemStoreIT {
         }
 
         @Test
-        void shouldThrowWhenLoadingAnInvalidPropertyPath() {
+        void shouldThrowWhenLoadingInvalidPropertyPath() {
             associateBoth();
             try {
                 store.getResource(entity, PropertyPath.from("does.not.exist"));
@@ -249,7 +249,7 @@ public class FileSystemStoreIT {
         }
 
         @Test
-        void shouldThrowWhenUnassociatingAnInvalidPropertyPath() {
+        void shouldThrowWhenUnassociatingInvalidPropertyPath() {
             associateBoth();
             try {
                 store.unassociate(entity, PropertyPath.from("does.not.exist"));
@@ -301,7 +301,7 @@ public class FileSystemStoreIT {
         }
 
         @Test
-        void shouldHaveTheUpdatedContent() throws IOException {
+        void shouldHaveUpdatedContent() throws IOException {
             FileSystemResourceLoader loader = context.getBean(FileSystemResourceLoader.class);
             String contentId = Objects.requireNonNull(entity.getContentId());
             assertThat(new File(loader.getRootResource().getPath(), contentId).exists()).isTrue();
@@ -330,7 +330,7 @@ public class FileSystemStoreIT {
         }
 
         @Test
-        void shouldStoreOnlyTheNewContent() throws IOException {
+        void shouldStoreOnlyNewContent() throws IOException {
             entity = store.setContent(entity,
                 TestSupportData.samplePartialUpdateStream());
             entity = store.setContent(entity, PropertyPath.from("rendition"),
@@ -348,7 +348,7 @@ public class FileSystemStoreIT {
         }
 
         @Test
-        void shouldHaveTheUpdatedContentWhenNotOverwritten() throws IOException {
+        void shouldHaveUpdatedContentWhenNotOverwritten() throws IOException {
             FileSystemResourceLoader loader = context.getBean(FileSystemResourceLoader.class);
             String contentId = Objects.requireNonNull(entity.getContentId());
             assertThat(new File(loader.getRootResource().getPath(), contentId).exists()).isTrue();
@@ -410,7 +410,7 @@ public class FileSystemStoreIT {
         }
 
         @Test
-        void shouldThrowWhenSettingContentOnAnInvalidPropertyPath() {
+        void shouldThrowWhenSettingContentOnInvalidPropertyPath() {
             try {
                 store.setContent(entity, PropertyPath.from("does.not.exist"), new ByteArrayInputStream("foo".getBytes()));
             } catch (Exception sae) {
@@ -420,7 +420,7 @@ public class FileSystemStoreIT {
         }
 
         @Test
-        void shouldThrowWhenGettingContentOnAnInvalidPropertyPath() {
+        void shouldThrowWhenGettingContentOnInvalidPropertyPath() {
             try {
                 store.getContent(entity, PropertyPath.from("does.not.exist"));
             } catch (Exception sae) {
@@ -430,7 +430,7 @@ public class FileSystemStoreIT {
         }
 
         @Test
-        void shouldThrowWhenUnsettingContentOnAnInvalidPropertyPath() {
+        void shouldThrowWhenUnsettingContentOnInvalidPropertyPath() {
             try {
                 store.unsetContent(entity, PropertyPath.from("does.not.exist"));
             } catch (Exception sae) {
@@ -440,7 +440,7 @@ public class FileSystemStoreIT {
         }
 
         @Test
-        void shouldNotResetTheIdField() {
+        void shouldNotResetIdField() {
             SharedIdJakartaJpaRepository sharedIdRepository = context.getBean(SharedIdJakartaJpaRepository.class);
             SharedIdJakartaJpaStore sharedIdStore = context.getBean(SharedIdJakartaJpaStore.class);
 

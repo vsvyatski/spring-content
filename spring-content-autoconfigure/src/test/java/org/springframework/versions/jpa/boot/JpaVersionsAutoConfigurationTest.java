@@ -79,7 +79,7 @@ public class JpaVersionsAutoConfigurationTest {
             }
 
             @Test
-            void shouldIncludeTheRepositoryBean() {
+            void shouldIncludeRepositoryBean() {
                 contextRunner.withUserConfiguration(StarterConfig.class).run((context) -> Assertions.assertThat(context).hasSingleBean(JpaVersionsDatabaseInitializer.class));
             }
         }
@@ -94,7 +94,7 @@ public class JpaVersionsAutoConfigurationTest {
             }
 
             @Test
-            void shouldIncludeTheRepositoryBean() {
+            void shouldIncludeRepositoryBean() {
                 contextRunner.withUserConfiguration(StarterWithAnnotationConfig.class).run(
                     (context) ->
                         Assertions.assertThat(context).hasSingleBean(VersioningJpaLongIdRepository.class)

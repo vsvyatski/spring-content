@@ -93,7 +93,7 @@ public class StoreFragmentTest {
         @DisplayName("Given the application context")
         class ApplicationContext {
             @Test
-            void shouldSupportTheExtension() {
+            void shouldSupportExtension() {
                 assertThat(context.getBean(TestContentStore.class)).isNotNull();
                 assertThat(context.getBean(CustomizationImpl.class).getBean()).isEqualTo("Spring Content");
                 assertThat(context.getBean(CustomizationImpl.class).getDomainClass()).isEqualTo(Object.class);

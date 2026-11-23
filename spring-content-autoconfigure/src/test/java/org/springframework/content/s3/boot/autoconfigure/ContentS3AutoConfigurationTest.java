@@ -72,7 +72,7 @@ public class ContentS3AutoConfigurationTest {
             }
 
             @Test
-            void shouldLoadTheContext() {
+            void shouldLoadContext() {
                 contextRunner.withUserConfiguration(TestConfig.class).run((context) -> {
                     Assertions.assertThat(context).hasSingleBean(TestEntityContentStore.class);
                     Assertions.assertThat(context).hasSingleBean(S3Client.class);
@@ -90,7 +90,7 @@ public class ContentS3AutoConfigurationTest {
             }
 
             @Test
-            void shouldLoadTheContext() {
+            void shouldLoadContext() {
                 contextRunner.withUserConfiguration(TestConfigWithoutBeans.class).run((context) -> {
                     Assertions.assertThat(context).hasSingleBean(TestEntityContentStore.class);
                     Assertions.assertThat(context).hasSingleBean(S3Client.class);
@@ -108,7 +108,7 @@ public class ContentS3AutoConfigurationTest {
             }
 
             @Test
-            void shouldLoadTheContext() {
+            void shouldLoadContext() {
                 contextRunner.withUserConfiguration(TestConfigWithExplicitEnableS3Stores.class).run((context) -> {
                     Assertions.assertThat(context).hasSingleBean(TestEntityContentStore.class);
                     Assertions.assertThat(context).hasSingleBean(S3Client.class);
@@ -139,7 +139,7 @@ public class ContentS3AutoConfigurationTest {
             }
 
             @Test
-            void shouldHaveAFilesystemPropertiesBeanWithTheCorrectRootSet() {
+            void shouldHaveFilesystemPropertiesBeanWithCorrectRootSet() {
                 contextRunner.withUserConfiguration(TestConfigWithProperties.class).run((context) -> Assertions.assertThat(context).hasSingleBean(S3Client.class));
             }
         }

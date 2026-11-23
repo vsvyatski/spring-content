@@ -101,7 +101,7 @@ public class NestedContentPropertyRestEndpointsIT {
                 }
 
                 @Test
-                void shouldCreateANewEntityAndItsContentAndRespondWithA201Created() throws Exception {
+                void shouldCreateNewEntityAndItsContentAndRespondWithA201Created() throws Exception {
                     // assert content does not exist
                     String newContent = "This is some new content";
 
@@ -176,7 +176,7 @@ public class NestedContentPropertyRestEndpointsIT {
                     }
 
                     @Test
-                    void shouldCreateTheContent() throws Exception {
+                    void shouldCreateContent() throws Exception {
                         mvc.perform(
                                 put("/embeddedChildContentEntities/" + testEntity8.getId() + "/child")
                                     .content("Hello New Spring Content World!")
@@ -205,7 +205,7 @@ public class NestedContentPropertyRestEndpointsIT {
                     }
 
                     @Test
-                    void shouldSetTheContentAndReturn201() throws Exception {
+                    void shouldSetContentAndReturn201() throws Exception {
                         String content = "{\"content\":\"Hello New Spring Content World!\"}";
                         mvc.perform(
                                 put("/embeddedChildContentEntities/" + testEntity8.getId() + "/child")
@@ -249,7 +249,7 @@ public class NestedContentPropertyRestEndpointsIT {
                     }
 
                     @Test
-                    void shouldReturnTheContent() throws Exception {
+                    void shouldReturnContent() throws Exception {
                         MockHttpServletResponse response = mvc
                             .perform(get("/embeddedChildContentEntities/" + testEntity8.getId() + "/child")
                                 .accept("text/plain"))
@@ -285,7 +285,7 @@ public class NestedContentPropertyRestEndpointsIT {
                     }
 
                     @Test
-                    void shouldReturnTheRenditionAnd200() throws Exception {
+                    void shouldReturnRenditionAnd200() throws Exception {
                         MockHttpServletResponse response = mvc
                             .perform(get(
                                 "/embeddedChildContentEntities/" + testEntity8.getId()
@@ -320,7 +320,7 @@ public class NestedContentPropertyRestEndpointsIT {
                     }
 
                     @Test
-                    void shouldReturnTheOriginalContentAnd200() throws Exception {
+                    void shouldReturnOriginalContentAnd200() throws Exception {
                         MockHttpServletResponse response = mvc
                             .perform(get("/embeddedChildContentEntities/"
                                 + testEntity8.getId()
@@ -356,7 +356,7 @@ public class NestedContentPropertyRestEndpointsIT {
                     }
 
                     @Test
-                    void shouldCreateTheContent() throws Exception {
+                    void shouldCreateContent() throws Exception {
                         mvc.perform(
                                 put("/embeddedChildContentEntities/" + testEntity8.getId() + "/child")
                                     .content("Hello New Spring Content World!")
@@ -393,7 +393,7 @@ public class NestedContentPropertyRestEndpointsIT {
                     }
 
                     @Test
-                    void shouldDeleteTheContent() throws Exception {
+                    void shouldDeleteContent() throws Exception {
                         mvc.perform(delete(
                                 "/embeddedChildContentEntities/" + testEntity8.getId() + "/child"))
                             .andExpect(status().isNoContent());

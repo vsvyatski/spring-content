@@ -102,12 +102,12 @@ public class EnableMongoStoresTest {
             }
 
             @Test
-            void shouldHaveAMongoContentStoreBean() {
+            void shouldHaveMongoContentStoreBean() {
                 assertThat(context.getBean(SingleContentMongoStore.class)).isNotNull();
             }
 
             @Test
-            void shouldHaveAMongoStoreConverter() {
+            void shouldHaveMongoStoreConverter() {
                 assertThat(context.getBean("mongoStorePlacementService")).isNotNull();
             }
         }
@@ -154,7 +154,7 @@ public class EnableMongoStoresTest {
             }
 
             @Test
-            void shouldLoadTheContextButHaveNoMongoRepositoryBeans() {
+            void shouldLoadContextButHaveNoMongoRepositoryBeans() {
                 assertThat(context.getBeanNamesForType(SingleContentMongoStore.class)).isEmpty();
             }
         }

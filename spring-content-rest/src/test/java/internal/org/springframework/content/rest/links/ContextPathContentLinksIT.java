@@ -101,7 +101,7 @@ public class ContextPathContentLinksIT {
             }
 
             @Test
-            void shouldProvideAResponseWithAContentLink() throws Exception {
+            void shouldProvideResponseWithContentLink() throws Exception {
                 assertContentLinkInHalResponse();
             }
         }

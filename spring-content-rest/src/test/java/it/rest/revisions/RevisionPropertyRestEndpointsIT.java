@@ -127,7 +127,7 @@ public class RevisionPropertyRestEndpointsIT {
                 }
 
                 @Test
-                void shouldReturnTheContent() throws Exception {
+                void shouldReturnContent() throws Exception {
                     Revisions<Integer, RevisionPropertyEntity> revisions = repository.findRevisions(testEntity.getId());
                     Integer revisionId = revisions.getLatestRevision().getRequiredRevisionNumber();
 

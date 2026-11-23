@@ -175,7 +175,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     }
 
                     @Test
-                    void shouldThrowASecurityException() {
+                    void shouldThrowSecurityException() {
                         assertThat(e).isInstanceOf(SecurityException.class);
                     }
                 }
@@ -236,12 +236,12 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         }
 
                         @Test
-                        void shouldUpdateTheEntitySLockOwnerField() {
+                        void shouldUpdateEntitySLockOwnerField() {
                             assertThat(e1.getXLockOwner()).isEqualTo("some-principal");
                         }
 
                         @Test
-                        void shouldSaveTheEntity() {
+                        void shouldSaveEntity() {
                             assertThat(e).isNull();
                             assertThat(result.getXid()).isEqualTo(e1.getXid());
                         }
@@ -344,7 +344,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         }
 
                         @Test
-                        void shouldReturnSecurityException() {
+                        void shouldThrowSecurityException() {
                             assertThat(e).isInstanceOf(SecurityException.class);
                         }
                     }
@@ -378,7 +378,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     }
 
                     @Test
-                    void shouldThrowASecurityException() {
+                    void shouldThrowSecurityException() {
                         assertThat(e).isInstanceOf(SecurityException.class);
                     }
                 }
@@ -442,12 +442,12 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         }
 
                         @Test
-                        void shouldNullTheLockOwnerFieldAndSave() {
+                        void shouldNullLockOwnerFieldAndSave() {
                             assertThat(result.getXLockOwner()).isNull();
                         }
 
                         @Test
-                        void shouldUnlockTheEntityAndReturnIt() {
+                        void shouldUnlockEntityAndReturnIt() {
                             assertThat(e).isNull();
                             assertThat(result.getXid()).isEqualTo(e1.getXid());
                         }
@@ -482,7 +482,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         }
 
                         @Test
-                        void shouldASecurityException() {
+                        void shouldThrowSecurityException() {
                             assertThat(e).isInstanceOf(LockOwnerException.class);
                             assertThat(e.getMessage()).contains("not lock owner");
                         }
@@ -515,7 +515,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         }
 
                         @Test
-                        void shouldASecurityException() {
+                        void shouldThrowSecurityException() {
                             assertThat(e).isInstanceOf(SecurityException.class);
                         }
                     }
@@ -555,7 +555,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                             }
 
                             @Test
-                            void shouldMergeAndReturnTheEntity() {
+                            void shouldMergeAndReturnEntity() {
                                 assertThat(e).isNull();
                                 assertThat(result.getXid()).isEqualTo(e3.getXid());
                             }
@@ -594,7 +594,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                             }
 
                             @Test
-                            void shouldReturnTheEntity() {
+                            void shouldReturnEntity() {
                                 assertThat(e).isNull();
                                 assertThat(result.getXid()).isEqualTo(e3.getXid());
                             }
@@ -630,7 +630,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                             }
 
                             @Test
-                            void shouldThrowALockOwnerException() {
+                            void shouldThrowLockOwnerException() {
                                 assertThat(e).isInstanceOf(LockOwnerException.class);
                             }
                         }
@@ -662,7 +662,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                             }
 
                             @Test
-                            void shouldMergeAndReturnTheEntity() {
+                            void shouldMergeAndReturnEntity() {
                                 assertThat(e).isNull();
                                 assertThat(result.getXid()).isEqualTo(e3.getXid());
                             }
@@ -701,7 +701,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                             }
 
                             @Test
-                            void shouldMergeAndReturnTheEntity() {
+                            void shouldMergeAndReturnEntity() {
                                 assertThat(e).isNull();
                                 assertThat(result.getXid()).isEqualTo(e3.getXid());
                             }
@@ -738,7 +738,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                             }
 
                             @Test
-                            void shouldMergeAndReturnTheEntity() {
+                            void shouldMergeAndReturnEntity() {
                                 assertThat(e).isNull();
                                 assertThat(result.getXid()).isEqualTo(e3.getXid());
                             }
@@ -810,14 +810,14 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                 }
 
                 @Test
-                void shouldReturnTheVersionSeries() {
+                void shouldReturnVersionSeries() {
                     List<VersioningJpaLongIdEntity> results = repo.findAllVersions(e1, Sort.by(Order.desc("id")));
                     assertThat(results.size()).isEqualTo(2);
                     assertThat(results).extracting("xid").contains(e1.getXid(), e1v11.getXid());
                 }
 
                 @Test
-                void shouldReturnTheOrderedVersionSeries() {
+                void shouldReturnOrderedVersionSeries() {
                     List<VersioningJpaLongIdEntity> results = repo.findAllVersions(e1, Sort.by(Order.desc("id")));
                     assertThat(results.size()).isEqualTo(2);
                     assertThat(results).extracting("xid").containsExactly(e1v11.getXid(), e1.getXid());
@@ -853,7 +853,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                 }
 
                 @Test
-                void shouldReturnOnlyTheLatestVersionOfTheEntities() {
+                void shouldReturnOnlyLatestVersionOfEntities() {
                     List<VersioningJpaLongIdEntity> results = repo.findAllVersionsLatest(VersioningJpaLongIdEntity.class);
                     assertThat(results).extracting("xid").contains(e1v11.getXid(), e2v2.getXid()).doesNotContain(e3wc.getXid());
                 }
@@ -923,7 +923,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                             }
 
                             @Test
-                            void shouldCreateThePwcWithANewId() {
+                            void shouldCreatePwcWithNewId() {
                                 assertThat(result.getXid()).isNotNull();
                                 assertThat(result.getVersionLabel()).isEqualTo("~~PWC~~");
                                 assertThat(result.getXAncestorId()).isEqualTo(e1.getXid());
@@ -962,7 +962,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         }
 
                         @Test
-                        void shouldCreateThePwcWithANewId() {
+                        void shouldCreatePwcWithNewId() {
                             assertThat(e).isInstanceOf(LockOwnerException.class);
                         }
                     }
@@ -994,7 +994,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         }
 
                         @Test
-                        void shouldThrowASecurityException() {
+                        void shouldThrowSecurityException() {
                             assertThat(e).isInstanceOf(SecurityException.class);
                             assertThat(e.getMessage()).contains("no principal");
                         }
@@ -1029,7 +1029,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         }
 
                         @Test
-                        void shouldThrowAnException() {
+                        void shouldThrowException() {
                             assertThat(e).isInstanceOf(LockingAndVersioningException.class);
                             assertThat(e.getMessage()).contains("not head");
                         }
@@ -1116,7 +1116,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     }
 
                     @Test
-                    void shouldThrowASecurityException() {
+                    void shouldThrowSecurityException() {
                         assertThat(e).isInstanceOf(SecurityException.class);
                     }
                 }
@@ -1145,7 +1145,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     }
 
                     @Test
-                    void shouldThrowASecurityException() {
+                    void shouldThrowSecurityException() {
                         assertThat(e).isInstanceOf(SecurityException.class);
                     }
                 }
@@ -1217,7 +1217,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                             }
 
                             @Test
-                            void shouldFailToDeleteTheEntity() {
+                            void shouldFailToDeleteEntity() {
                                 assertThat(e).isInstanceOf(LockOwnerException.class);
                                 assertThat(e.getMessage()).contains("not lock owner");
                             }
@@ -1319,23 +1319,23 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         }
 
                         @Test
-                        void shouldDeleteTheEntity() {
+                        void shouldDeleteEntity() {
                             assertThat(repo.findById(e1v12.getXid())).isEqualTo(Optional.empty());
                         }
 
                         @Test
-                        void shouldReInstateTheAncestorAsTheHead() {
+                        void shouldReInstateAncestorAsHead() {
                             e1v11 = repo.findById(e1v11.getXid()).orElseThrow();
                             assertThat(e1v11.getXSuccessorId()).isNull();
                         }
 
                         @Test
-                        void shouldRemoveTheLock() {
+                        void shouldRemoveLock() {
                             assertThat(lockingService.lockOwner(e1v12.getXid())).isNull();
                         }
 
                         @Test
-                        void shouldReInstateTheLockOnTheNewHead() {
+                        void shouldReInstateLockOnNewHead() {
                             assertThat(lockingService.lockOwner(e1v11.getXid())).isNotNull();
                         }
                     }
@@ -1368,13 +1368,13 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                         }
 
                         @Test
-                        void shouldDeleteTheEntity() {
+                        void shouldDeleteEntity() {
                             assertThat(e).isNull();
                             assertThat(repo.findById(e1v11.getXid())).isEqualTo(Optional.empty());
                         }
 
                         @Test
-                        void shouldReInstateTheAncestorAsTheHead() {
+                        void shouldReInstateAncestorAsHead() {
                             e1 = repo.findById(e1.getXid()).orElseThrow();
                             assertThat(e1.getXSuccessorId()).isNull();
                         }
@@ -1408,7 +1408,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     }
 
                     @Test
-                    void shouldThrowASecurityException() {
+                    void shouldThrowSecurityException() {
                         assertThatThrownBy(() -> repo.deleteAllVersions(e1v11))
                             .isInstanceOf(SecurityException.class);
                     }
@@ -1438,7 +1438,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                     }
 
                     @Test
-                    void shouldThrowASecurityException() {
+                    void shouldThrowSecurityException() {
                         assertThatThrownBy(() -> repo.deleteAllVersions(e1v11))
                             .isInstanceOf(SecurityException.class);
                     }
@@ -1513,7 +1513,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                             }
 
                             @Test
-                            void shouldFailToDeleteTheEntity() {
+                            void shouldFailToDeleteEntity() {
                                 assertThatThrownBy(() -> repo.deleteAllVersions(e1v11))
                                     .isInstanceOf(LockOwnerException.class)
                                     .hasMessageContaining("not lock owner");
@@ -1609,13 +1609,13 @@ public class JpaLockingAndVersioningRepositoryImplIT {
                 }
 
                 @Test
-                void shouldReturnTheProvidedEntity() {
+                void shouldReturnProvidedEntity() {
                     List<VersioningJpaLongIdEntity> results = repo.findAllVersions(e1, Sort.by(Order.desc("id")));
                     assertThat(results.size()).isEqualTo(1);
                 }
 
                 @Test
-                void shouldDeleteJustTheProvidedEntity() {
+                void shouldDeleteJustProvidedEntity() {
                     repo.deleteAllVersions(e1);
 
                     Optional<VersioningJpaLongIdEntity> fetched = repo.findById(e1.getXid());

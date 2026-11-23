@@ -80,23 +80,23 @@ public class EnableJpaStoresTest {
             }
 
             @Test
-            void shouldHaveAContentStoreBean() {
+            void shouldHaveContentStoreBean() {
                 // Dual-content JPA fixture (not SingleContent*): exercises two @ContentId properties in test-jar.
                 assertThat(context.getBean(DualContentJpaStringIdStore.class)).isNotNull();
             }
 
             @Test
-            void shouldHaveADelegatingBlobResourceLoader() {
+            void shouldHaveDelegatingBlobResourceLoader() {
                 assertThat(context.getBean(DelegatingBlobResourceLoader.class)).isNotNull();
             }
 
             @Test
-            void shouldHaveAGenericBlobResourceLoader() {
+            void shouldHaveGenericBlobResourceLoader() {
                 assertThat(context.getBean("genericBlobResourceLoader")).isNotNull();
             }
 
             @Test
-            void shouldHaveAMySQLBlobResourceLoader() {
+            void shouldHaveMySQLBlobResourceLoader() {
                 BlobResourceLoader loader = (BlobResourceLoader) context.getBean("mysqlBlobResourceLoader");
                 assertThat(loader).isNotNull();
                 assertThat(loader.getDatabaseName()).isEqualTo("MySQL");
@@ -104,7 +104,7 @@ public class EnableJpaStoresTest {
             }
 
             @Test
-            void shouldHaveASQLServerBlobResourceLoader() {
+            void shouldHaveSQLServerBlobResourceLoader() {
                 BlobResourceLoader loader = (BlobResourceLoader) context.getBean("sqlServerBlobResourceLoader");
                 assertThat(loader).isNotNull();
                 assertThat(loader.getDatabaseName()).isEqualTo("Microsoft SQL Server");

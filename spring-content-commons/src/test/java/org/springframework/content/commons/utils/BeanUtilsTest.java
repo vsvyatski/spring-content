@@ -89,7 +89,7 @@ public class BeanUtilsTest {
 
             @ParameterizedTest
             @MethodSource("org.springframework.content.commons.utils.BeanUtilsTest#entityFixtures")
-            void shouldNotFailWhenToldToSetOnAMissingField(EntityFixture fixture) {
+            void shouldNotFailWhenToldToSetOnMissingField(EntityFixture fixture) {
                 SingleContentFields testEntity = fixture.factory().get();
                 assertThatCode(() -> BeanUtils.setFieldWithAnnotation(testEntity, Override.class, "value"))
                     .doesNotThrowAnyException();
@@ -100,7 +100,7 @@ public class BeanUtilsTest {
         class SetFieldWithAnnotationConditionally {
             @ParameterizedTest
             @MethodSource("org.springframework.content.commons.utils.BeanUtilsTest#entityFixtures")
-            void shouldSetContentIdIfTheConditionMatches(EntityFixture fixture) {
+            void shouldSetContentIdIfConditionMatches(EntityFixture fixture) {
                 SingleContentFields testEntity = fixture.factory().get();
                 BeanUtils.setFieldWithAnnotationConditionally(testEntity, ContentId.class, "a value", new MatchingCondition());
                 assertThat(testEntity.getContentId()).isEqualTo("a value");
@@ -108,7 +108,7 @@ public class BeanUtilsTest {
 
             @ParameterizedTest
             @MethodSource("org.springframework.content.commons.utils.BeanUtilsTest#entityFixtures")
-            void shouldSetContentLenIfTheConditionMatches(EntityFixture fixture) {
+            void shouldSetContentLenIfConditionMatches(EntityFixture fixture) {
                 SingleContentFields testEntity = fixture.factory().get();
                 BeanUtils.setFieldWithAnnotationConditionally(testEntity, ContentLength.class, 42L, new MatchingCondition());
                 assertThat(testEntity.getContentLen()).isEqualTo(42L);
@@ -116,7 +116,7 @@ public class BeanUtilsTest {
 
             @ParameterizedTest
             @MethodSource("org.springframework.content.commons.utils.BeanUtilsTest#entityFixtures")
-            void shouldNotSetContentIdIfTheConditionDoesNotMatch(EntityFixture fixture) {
+            void shouldNotSetContentIdIfConditionDoesNotMatch(EntityFixture fixture) {
                 SingleContentFields testEntity = fixture.factory().get();
                 BeanUtils.setFieldWithAnnotationConditionally(testEntity, ContentId.class, "a value", new UnmatchingCondition());
                 assertThat(testEntity.getContentId()).isNull();
@@ -124,7 +124,7 @@ public class BeanUtilsTest {
 
             @ParameterizedTest
             @MethodSource("org.springframework.content.commons.utils.BeanUtilsTest#entityFixtures")
-            void shouldNotSetContentLenIfTheConditionDoesNotMatch(EntityFixture fixture) {
+            void shouldNotSetContentLenIfConditionDoesNotMatch(EntityFixture fixture) {
                 SingleContentFields testEntity = fixture.factory().get();
                 BeanUtils.setFieldWithAnnotationConditionally(testEntity, ContentLength.class, 42L, new UnmatchingCondition());
                 assertThat(testEntity.getContentLen()).isNull();
@@ -132,7 +132,7 @@ public class BeanUtilsTest {
 
             @ParameterizedTest
             @MethodSource("org.springframework.content.commons.utils.BeanUtilsTest#entityFixtures")
-            void shouldNotFailWhenToldToSetOnAMissingField(EntityFixture fixture) {
+            void shouldNotFailWhenToldToSetOnMissingField(EntityFixture fixture) {
                 SingleContentFields testEntity = fixture.factory().get();
                 assertThatCode(() -> BeanUtils.setFieldWithAnnotationConditionally(testEntity, Override.class, "value", new MatchingCondition()))
                     .doesNotThrowAnyException();
@@ -163,7 +163,7 @@ public class BeanUtilsTest {
 
             @ParameterizedTest
             @MethodSource("org.springframework.content.commons.utils.BeanUtilsTest#entityFixtures")
-            void shouldNotFailWhenToldToGetOnAMissingField(EntityFixture fixture) {
+            void shouldNotFailWhenToldToGetOnMissingField(EntityFixture fixture) {
                 SingleContentFields testEntity = fixture.factory().get();
                 testEntity.setContentId("a value");
                 testEntity.setContentLen(42L);
@@ -190,7 +190,7 @@ public class BeanUtilsTest {
 
             @ParameterizedTest
             @MethodSource("org.springframework.content.commons.utils.BeanUtilsTest#entityFixtures")
-            void shouldNotFailWhenAboutAMissingField(EntityFixture fixture) {
+            void shouldNotFailWhenAboutMissingField(EntityFixture fixture) {
                 SingleContentFields testEntity = fixture.factory().get();
                 assertThatCode(() -> BeanUtils.hasFieldWithAnnotation(testEntity, Override.class))
                     .doesNotThrowAnyException();
@@ -215,7 +215,7 @@ public class BeanUtilsTest {
 
             @ParameterizedTest
             @MethodSource("org.springframework.content.commons.utils.BeanUtilsTest#entityFixtures")
-            void shouldNotFailWhenAskedAboutAMissingField(EntityFixture fixture) {
+            void shouldNotFailWhenAskedAboutMissingField(EntityFixture fixture) {
                 SingleContentFields testEntity = fixture.factory().get();
                 assertThatCode(() -> BeanUtils.getFieldWithAnnotationType(testEntity, Override.class))
                     .doesNotThrowAnyException();
@@ -240,7 +240,7 @@ public class BeanUtilsTest {
 
             @ParameterizedTest
             @MethodSource("org.springframework.content.commons.utils.BeanUtilsTest#entityFixtures")
-            void shouldNotFailWhenAboutAMissingField(EntityFixture fixture) {
+            void shouldNotFailWhenAboutMissingField(EntityFixture fixture) {
                 SingleContentFields testEntity = fixture.factory().get();
                 assertThatCode(() -> BeanUtils.findFieldWithAnnotation(testEntity, Override.class))
                     .doesNotThrowAnyException();

@@ -60,7 +60,7 @@ public class FileServiceTest {
             }
 
             @Test
-            void shouldThrowAnIOException() {
+            void shouldThrowIOException() {
                 assertThat(ex).isNotNull();
                 assertThat(ex).isInstanceOf(IOException.class);
             }
@@ -85,12 +85,12 @@ public class FileServiceTest {
             }
 
             @Test
-            void shouldNotThrowAnException() {
+            void shouldNotThrowException() {
                 assertThat(ex).isNull();
             }
 
             @Test
-            void shouldCreateTheDirectory() {
+            void shouldCreateDirectory() {
                 assertThat(file.isDirectory()).isTrue();
                 assertThat(file.exists()).isTrue();
             }
@@ -163,7 +163,7 @@ public class FileServiceTest {
             }
 
             @Test
-            void shouldThrowAnIllegalArgumentException() {
+            void shouldThrowIllegalArgumentException() {
                 assertThat(ex).isNotNull();
                 assertThat(ex).isInstanceOf(IllegalArgumentException.class);
             }
@@ -214,7 +214,7 @@ public class FileServiceTest {
         }
 
         @Test
-        void shouldDoNothingWhenFromAndToAreTheSame() throws IOException {
+        void shouldDoNothingWhenFromAndToAreSame() throws IOException {
             Path p0 = Files.createTempDirectory(null);
 
             fileService.rmdirs(p0.toFile(), p0.toFile());

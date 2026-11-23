@@ -68,7 +68,7 @@ public class JpaCloningServiceImplTest {
                 }
 
                 @Test
-                void shouldCloneTheEntity() {
+                void shouldCloneEntity() {
                     assertThat(result).isNotNull();
                     assertThat(result).isNotEqualTo(entity);
                 }
@@ -91,7 +91,7 @@ public class JpaCloningServiceImplTest {
                 }
 
                 @Test
-                void shouldCloneTheEntity() {
+                void shouldCloneEntity() {
                     assertThat(e).isInstanceOf(LockingAndVersioningException.class);
                     assertThat(e.getMessage()).contains("no copy constructor");
                 }
@@ -114,7 +114,7 @@ public class JpaCloningServiceImplTest {
                 }
 
                 @Test
-                void shouldCloneTheEntity() {
+                void shouldCloneEntity() {
                     assertThat(e).isInstanceOf(LockingAndVersioningException.class);
                     assertThat(e.getMessage()).contains("copy constructor failed");
                 }

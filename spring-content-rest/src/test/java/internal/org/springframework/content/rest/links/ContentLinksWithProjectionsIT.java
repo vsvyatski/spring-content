@@ -141,7 +141,7 @@ public class ContentLinksWithProjectionsIT {
                 }
 
                 @Test
-                void shouldProvideAResponseWithAContentLink() throws Exception {
+                void shouldProvideResponseWithContentLink() throws Exception {
                     MockHttpServletResponse response = mvc.perform(get("/projectedContentEntities/" + testEntity.getId() + "?projection=customTEntity")
                             .accept("application/hal+json"))
                         .andExpect(status().isOk()).andReturn().getResponse();

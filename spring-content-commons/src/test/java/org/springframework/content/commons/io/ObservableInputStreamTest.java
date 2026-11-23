@@ -53,7 +53,7 @@ public class ObservableInputStreamTest {
                 }
 
                 @Test
-                void shouldDelegateToTheUnderlyingInputStream() throws IOException {
+                void shouldDelegateToUnderlyingInputStream() throws IOException {
                     assertThat(ois.read()).isZero();
                     verify(fis).read();
                 }

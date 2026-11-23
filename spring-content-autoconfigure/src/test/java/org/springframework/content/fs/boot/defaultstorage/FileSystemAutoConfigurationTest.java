@@ -41,7 +41,7 @@ public class FileSystemAutoConfigurationTest {
             }
 
             @Test
-            void shouldCreateAnFileSystemResourceLoaderBean() {
+            void shouldCreateFileSystemResourceLoaderBean() {
                 contextRunner
                     .withUserConfiguration(TestConfig.class).run((context) ->
                         Assertions.assertThat(context).hasSingleBean(FileSystemResourceLoader.class));
@@ -64,7 +64,7 @@ public class FileSystemAutoConfigurationTest {
             }
 
             @Test
-            void shouldNotCreateAnFileSystemResourceLoaderBean() {
+            void shouldNotCreateFileSystemResourceLoaderBean() {
                 contextRunner.withUserConfiguration(TestConfig.class).run((context) ->
                     Assertions.assertThat(context).doesNotHaveBean(FileSystemResourceLoader.class));
             }
@@ -80,7 +80,7 @@ public class FileSystemAutoConfigurationTest {
             }
 
             @Test
-            void shouldCreateAnFileSystemResourceLoaderBean() {
+            void shouldCreateFileSystemResourceLoaderBean() {
                 contextRunner.withUserConfiguration(TestConfig.class)
                     .run((context) -> Assertions.assertThat(context).hasSingleBean(FileSystemResourceLoader.class));
             }

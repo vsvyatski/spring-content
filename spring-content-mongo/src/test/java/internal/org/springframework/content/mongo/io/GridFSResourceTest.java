@@ -71,7 +71,7 @@ public class GridFSResourceTest {
                 }
 
                 @Test
-                void shouldReturnTheFilesLength() throws Exception {
+                void shouldReturnFilesLength() throws Exception {
                     r.contentLength();
                     verify(file).getLength();
                 }
@@ -92,7 +92,7 @@ public class GridFSResourceTest {
         @Nested
         class GetFilename {
             @Test
-            void shouldReturnTheLocation() {
+            void shouldReturnLocation() {
                 assertThat(r.getFilename()).isEqualTo("some-location");
             }
         }
@@ -113,7 +113,7 @@ public class GridFSResourceTest {
                 }
 
                 @Test
-                void shouldReturnTheFilesId() {
+                void shouldReturnFilesId() {
                     r.getId();
                     verify(file).getId();
                 }
@@ -171,7 +171,7 @@ public class GridFSResourceTest {
                 }
 
                 @Test
-                void shouldReturnTheFilesInputStream() throws Exception {
+                void shouldReturnFilesInputStream() throws Exception {
                     r.getInputStream();
                     verify(gridfs).getResource(location);
                 }
@@ -205,7 +205,7 @@ public class GridFSResourceTest {
                 }
 
                 @Test
-                void shouldReturnTheFilesUploadDate() throws Exception {
+                void shouldReturnFilesUploadDate() throws Exception {
                     r.lastModified();
                     verify(file).getUploadDate();
                 }
@@ -234,7 +234,7 @@ public class GridFSResourceTest {
         @Nested
         class GetOutputStream {
             @Test
-            void shouldStoreTheContentAndDeleteExistingContent() throws Exception {
+            void shouldStoreContentAndDeleteExistingContent() throws Exception {
                 OutputStream out = r.getOutputStream();
                 out.write(new byte[]{32}, 0, 1);
                 IOUtils.closeQuietly(out);
@@ -259,7 +259,7 @@ public class GridFSResourceTest {
                 }
 
                 @Test
-                void shouldDeleteTheFile() {
+                void shouldDeleteFile() {
                     r.delete();
                     verify(gridfs).delete(any());
                 }

@@ -73,7 +73,7 @@ public class StoresIT {
             }
 
             @Test
-            void shouldReturnTheRightStore() {
+            void shouldReturnRightStore() {
                 assertThatThrownBy(() -> stores.getStore(Store.class, testStoreFilter()))
                     .hasMessageContaining("unable to resolve store");
             }
@@ -109,7 +109,7 @@ public class StoresIT {
             }
 
             @Test
-            void shouldReturnTheRightStore() {
+            void shouldReturnRightStore() {
                 StoreInfo info = stores.getStore(Store.class, testStoreFilter());
 
                 assertThat(info.getInterface()).isEqualTo(RightStore.class);

@@ -34,7 +34,7 @@ public class CorsTests {
     @DisplayName("An OPTIONS request from a known host")
     class OptionsRequestFromKnownHost {
         @Test
-        void shouldReturnTheRelevantCORSHeadersAndOK() throws Exception {
+        void shouldReturnRelevantCORSHeadersAndOK() throws Exception {
             mvc.perform(options(url)
                     .header("Access-Control-Request-Method", "DELETE")
                     .header("Origin", "http://www.someurl.com"))

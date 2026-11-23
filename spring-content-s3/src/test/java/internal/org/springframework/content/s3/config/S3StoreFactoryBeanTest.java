@@ -56,7 +56,7 @@ public class S3StoreFactoryBeanTest {
                 }
 
                 @Test
-                void shouldReturnAStoreImplementation() {
+                void shouldReturnStoreImplementation() {
                     assertThat(store).isNotNull();
                 }
             }
@@ -83,7 +83,7 @@ public class S3StoreFactoryBeanTest {
                 }
 
                 @Test
-                void shouldReturnAStoreImplementation() {
+                void shouldReturnStoreImplementation() {
                     assertThat(store).isNotNull();
                 }
             }

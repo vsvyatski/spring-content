@@ -283,7 +283,7 @@ public class FileSystemStorePropertyPathAccessorsIT {
                 }
 
                 @Test
-                void shouldNotHaveAnAssociatedResource() {
+                void shouldNotHaveAssociatedResource() {
                     assertThat(entity.getContent().getContentId()).isNull();
                     assertThat(store.getResource(entity, PropertyPath.from("content"))).isNull();
                 }
@@ -319,7 +319,7 @@ public class FileSystemStorePropertyPathAccessorsIT {
                         }
 
                         @Test
-                        void shouldBeRecordedAsSuchOnTheEntitySContentId() {
+                        void shouldBeRecordedAsSuchOnEntitySContentId() {
                             assertThat(entity.getContent().getContentId()).isEqualTo(resourceLocation);
                         }
 
@@ -353,7 +353,7 @@ public class FileSystemStorePropertyPathAccessorsIT {
                             }
 
                             @Test
-                            void shouldResetTheEntitySContentId() {
+                            void shouldResetEntitySContentId() {
                                 assertThat(entity.getContent().getContentId()).isNull();
                             }
                         }
@@ -386,7 +386,7 @@ public class FileSystemStorePropertyPathAccessorsIT {
                             }
 
                             @Test
-                            void shouldThrowAnError() {
+                            void shouldThrowError() {
                                 try {
                                     store.associate(entity, PropertyPath.from("does.not.exist"), resourceLocation);
                                 } catch (Exception sae) {
@@ -424,7 +424,7 @@ public class FileSystemStorePropertyPathAccessorsIT {
                             }
 
                             @Test
-                            void shouldThrowAnError() {
+                            void shouldThrowError() {
                                 try {
                                     store.getResource(entity, PropertyPath.from("does.not.exist"));
                                 } catch (Exception sae) {
@@ -462,7 +462,7 @@ public class FileSystemStorePropertyPathAccessorsIT {
                             }
 
                             @Test
-                            void shouldThrowAnError() {
+                            void shouldThrowError() {
                                 try {
                                     store.unassociate(entity, PropertyPath.from("does.not.exist"));
                                 } catch (Exception sae) {
@@ -547,7 +547,7 @@ public class FileSystemStorePropertyPathAccessorsIT {
                 }
 
                 @Test
-                void shouldHaveTheUpdatedContent() throws IOException {
+                void shouldHaveUpdatedContent() throws IOException {
                     //content
                     try (InputStream content = store.getContent(entity, PropertyPath.from("content"))) {
                         boolean matches = IOUtils.contentEquals(TestSupportData.sampleUpdatedTextStream(), content);
@@ -586,7 +586,7 @@ public class FileSystemStorePropertyPathAccessorsIT {
                 }
 
                 @Test
-                void shouldStoreOnlyTheNewContent() throws IOException {
+                void shouldStoreOnlyNewContent() throws IOException {
                     //content
                     try (InputStream content = store.getContent(entity, PropertyPath.from("content"))) {
                         boolean matches = IOUtils.contentEquals(TestSupportData.samplePartialUpdateStream(), content);
@@ -662,7 +662,7 @@ public class FileSystemStorePropertyPathAccessorsIT {
                 }
 
                 @Test
-                void shouldThrowAnError() {
+                void shouldThrowError() {
                     try {
                         store.setContent(entity, PropertyPath.from("does.not.exist"), new ByteArrayInputStream("foo".getBytes()));
                     } catch (Exception sae) {
@@ -698,7 +698,7 @@ public class FileSystemStorePropertyPathAccessorsIT {
                 }
 
                 @Test
-                void shouldThrowAnError() {
+                void shouldThrowError() {
                     try {
                         store.getContent(entity, PropertyPath.from("does.not.exist"));
                     } catch (Exception sae) {
@@ -734,7 +734,7 @@ public class FileSystemStorePropertyPathAccessorsIT {
                 }
 
                 @Test
-                void shouldThrowAnError() {
+                void shouldThrowError() {
                     try {
                         store.unsetContent(entity, PropertyPath.from("does.not.exist"));
                     } catch (Exception sae) {

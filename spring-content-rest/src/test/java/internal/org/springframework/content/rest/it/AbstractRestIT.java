@@ -120,7 +120,7 @@ public abstract class AbstractRestIT {
                     }
 
                     @Test
-                    void shouldReturnTheContentWith200OK() {
+                    void shouldReturnContentWith200OK() {
                         var response2 = given()
                             .header("accept", "text/plain")
                             .get("/files/" + existingClaim.getId() + "/child")

@@ -28,7 +28,7 @@ public class FileRemoverTest {
             }
 
             @Test
-            void shouldDeleteTheUnderlyingFile() {
+            void shouldDeleteUnderlyingFile() {
                 verify(file).delete();
             }
         }

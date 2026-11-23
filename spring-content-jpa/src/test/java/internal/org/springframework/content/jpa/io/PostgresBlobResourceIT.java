@@ -141,7 +141,7 @@ public class PostgresBlobResourceIT {
                 }
 
                 @Test
-                void shouldDeleteTheAssociatedLobResources() throws SQLException {
+                void shouldDeleteAssociatedLobResources() throws SQLException {
                     DataSource ds = PostgresBlobResourceIT.this.template.getDataSource();
                     assert ds != null;
                     Connection conn = DataSourceUtils.getConnection(ds);

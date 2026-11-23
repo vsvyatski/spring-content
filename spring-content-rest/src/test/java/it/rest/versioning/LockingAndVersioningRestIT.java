@@ -157,7 +157,7 @@ public class LockingAndVersioningRestIT {
             }
 
             @Test
-            void shouldBeAbleToVersionAnEntityAndItsContent() {
+            void shouldBeAbleToVersionEntityAndItsContent() {
                 // assert content does not exist
                 given()
                     .auth().with(SecurityMockMvcRequestPostProcessors.user("paul123").password("password"))

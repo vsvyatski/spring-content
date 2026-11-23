@@ -106,7 +106,7 @@ public class TextPlainToJpegRendererTest {
                     }
 
                     @Test
-                    void shouldProduceTheCorrectImage() throws Exception {
+                    void shouldProduceCorrectImage() throws Exception {
                         assertJpegMatchesGoldenPng(result, "/textplaintorenderer/single-line.png");
                     }
                 }
@@ -129,7 +129,7 @@ public class TextPlainToJpegRendererTest {
                     }
 
                     @Test
-                    void shouldProduceTheCorrectImage() throws Exception {
+                    void shouldProduceCorrectImage() throws Exception {
                         assertJpegMatchesGoldenPng(result, "/textplaintorenderer/multi-line.png");
                     }
                 }
@@ -154,7 +154,7 @@ public class TextPlainToJpegRendererTest {
                     }
 
                     @Test
-                    void shouldProduceTheCorrectImage() throws Exception {
+                    void shouldProduceCorrectImage() throws Exception {
                         assertJpegMatchesGoldenPng(result, "/textplaintorenderer/wrapped-line.png");
                     }
                 }
@@ -178,7 +178,7 @@ public class TextPlainToJpegRendererTest {
                     }
 
                     @Test
-                    void shouldProduceTheCorrectImage() throws Exception {
+                    void shouldProduceCorrectImage() throws Exception {
                         assertJpegMatchesGoldenPng(result, "/textplaintorenderer/overflowed-line.png");
                     }
                 }
@@ -202,7 +202,7 @@ public class TextPlainToJpegRendererTest {
                     }
 
                     @Test
-                    void shouldProduceTheCorrectImage() throws Exception {
+                    void shouldProduceCorrectImage() throws Exception {
                         assertJpegMatchesGoldenPng(result, "/textplaintorenderer/overflowed-image.png");
                     }
                 }
@@ -245,7 +245,7 @@ public class TextPlainToJpegRendererTest {
                 }
 
                 @Test
-                void shouldReturnAnError() {
+                void shouldReturnError() {
                     assertThat(e).isNotNull();
                 }
             }

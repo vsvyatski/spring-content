@@ -91,17 +91,17 @@ public class EnableFileSystemStoresTest {
             }
 
             @Test
-            void shouldHaveAContentStoreBean() {
+            void shouldHaveContentStoreBean() {
                 assertThat(context.getBean(SingleContentFsStore.class)).isNotNull();
             }
 
             @Test
-            void shouldHaveAFilesystemPlacementServiceBean() {
+            void shouldHaveFilesystemPlacementServiceBean() {
                 assertThat(context.getBean("filesystemStorePlacementService")).isNotNull();
             }
 
             @Test
-            void shouldHaveAFileSystemResourceLoaderBean() {
+            void shouldHaveFileSystemResourceLoaderBean() {
                 assertThat(context.getBean("fileSystemResourceLoader")).isNotNull();
             }
         }
@@ -123,7 +123,7 @@ public class EnableFileSystemStoresTest {
             }
 
             @Test
-            void shouldCallThatConfigurerToHelpCustomizeTheStore() {
+            void shouldCallThatConfigurerToHelpCustomizeStore() {
                 verify(configurer).configureFileSystemStoreConverters(any());
             }
         }

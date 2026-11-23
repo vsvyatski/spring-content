@@ -94,7 +94,7 @@ public class ContentTests {
     @DisplayName("PUT to store ID with content body")
     class PutToStoreIdWithContentBody {
         @Test
-        void shouldSetTheContentAndReturn201() throws Exception {
+        void shouldSetContentAndReturn201() throws Exception {
             String content = "Hello New Spring Content World!";
             mvc.perform(put(url).contextPath(contextPath).content(content).contentType("text/plain"))
                 .andExpect(status().isCreated());
@@ -121,7 +121,7 @@ public class ContentTests {
     @DisplayName("POST to store ID with multipart form data request")
     class PostToStoreIdWithMultipartFormData {
         @Test
-        void shouldSetTheContentAndReturn200() throws Exception {
+        void shouldSetContentAndReturn200() throws Exception {
             String content = "This is Spring Content!";
 
             mvc.perform(multipart(url)
@@ -155,7 +155,7 @@ public class ContentTests {
             }
 
             @Test
-            void shouldReturnTheOriginalContentFilenameAnd200() throws Exception {
+            void shouldReturnOriginalContentFilenameAnd200() throws Exception {
                 assertThat(Charset.defaultCharset()).isEqualTo(StandardCharsets.UTF_8);
 
                 MockHttpServletResponse response = mvc
@@ -184,7 +184,7 @@ public class ContentTests {
             }
 
             @Test
-            void shouldReturnTheOriginalContent() throws Exception {
+            void shouldReturnOriginalContent() throws Exception {
                 MockHttpServletResponse response = mvc.perform(
                         get(url)
                             .contextPath(contextPath)
@@ -210,7 +210,7 @@ public class ContentTests {
             }
 
             @Test
-            void shouldReturnTheRenditionAnd200() throws Exception {
+            void shouldReturnRenditionAnd200() throws Exception {
                 MockHttpServletResponse response = mvc
                     .perform(get(url)
                         .contextPath(contextPath)
@@ -242,7 +242,7 @@ public class ContentTests {
             }
 
             @Test
-            void shouldReturnTheRenditionAnd200() throws Exception {
+            void shouldReturnRenditionAnd200() throws Exception {
                 MockHttpServletResponse response = mvc
                     .perform(get(url)
                         .contextPath(contextPath)
@@ -269,7 +269,7 @@ public class ContentTests {
             }
 
             @Test
-            void shouldReturnTheOriginalContentAnd200() throws Exception {
+            void shouldReturnOriginalContentAnd200() throws Exception {
                 MockHttpServletResponse response = mvc.perform(get(url)
                         .contextPath(contextPath)
                         .accept("text/xml", "text/plain"))
@@ -295,7 +295,7 @@ public class ContentTests {
             }
 
             @Test
-            void shouldReturnTheOriginalContentAnd200() throws Exception {
+            void shouldReturnOriginalContentAnd200() throws Exception {
                 MockHttpServletResponse response = mvc.perform(get(url)
                         .contextPath(contextPath)
                         .accept("text/xml", "text/html", "*/*"))
@@ -321,7 +321,7 @@ public class ContentTests {
             }
 
             @Test
-            void shouldReturnTheOriginalContentAnd200() throws Exception {
+            void shouldReturnOriginalContentAnd200() throws Exception {
                 MockHttpServletResponse response = mvc.perform(get(url)
                         .contextPath(contextPath)
                         .accept("*/*"))
@@ -347,7 +347,7 @@ public class ContentTests {
             }
 
             @Test
-            void shouldReturnTheOriginalContentAnd200() throws Exception {
+            void shouldReturnOriginalContentAnd200() throws Exception {
                 MockHttpServletResponse response = mvc.perform(get(url)
                         .contextPath(contextPath)
                         .accept("text/html;charset=ISO-8859-1"))
@@ -376,7 +376,7 @@ public class ContentTests {
             }
 
             @Test
-            void shouldReturnTheOriginalContentAnd200() throws Exception {
+            void shouldReturnOriginalContentAnd200() throws Exception {
                 MockHttpServletResponse response = mvc.perform(get(url)
                         .contextPath(contextPath)
                         .accept("text/plain"))
@@ -402,7 +402,7 @@ public class ContentTests {
             }
 
             @Test
-            void shouldReturnTheOriginalContentAnd200() throws Exception {
+            void shouldReturnOriginalContentAnd200() throws Exception {
                 mvc.perform(get(url)
                         .contextPath(contextPath)
                         .accept("text/css"))
@@ -423,7 +423,7 @@ public class ContentTests {
             }
 
             @Test
-            void shouldReturnTheContentRangeAnd206() throws Exception {
+            void shouldReturnContentRangeAnd206() throws Exception {
                 MockHttpServletResponse response = mvc
                     .perform(get(url)
                         .contextPath(contextPath)
@@ -450,7 +450,7 @@ public class ContentTests {
             }
 
             @Test
-            void shouldOverwriteTheContentAndReturn200() throws Exception {
+            void shouldOverwriteContentAndReturn200() throws Exception {
                 mvc.perform(put(url)
                         .contextPath(contextPath)
                         .content("Hello Modified Spring Content World!")
@@ -475,7 +475,7 @@ public class ContentTests {
             }
 
             @Test
-            void shouldOverwriteTheContentAndReturn200() throws Exception {
+            void shouldOverwriteContentAndReturn200() throws Exception {
                 String content = "This is Modified Spring Content!";
 
                 mvc.perform(multipart(url)
@@ -530,7 +530,7 @@ public class ContentTests {
             }
 
             @Test
-            void shouldOverwriteTheContentAndReturn200() throws Exception {
+            void shouldOverwriteContentAndReturn200() throws Exception {
                 String content = "This is Modified Spring Content!";
 
                 mvc.perform(multipart(HttpMethod.PUT, url)
@@ -563,7 +563,7 @@ public class ContentTests {
             }
 
             @Test
-            void shouldDeleteTheContentAttributesAndReturnA200Response() throws Exception {
+            void shouldDeleteContentAttributesAndReturnA200Response() throws Exception {
                 mvc.perform(delete(url)
                         .contentType("text/plain")
                         .contextPath(contextPath)

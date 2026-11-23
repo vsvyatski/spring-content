@@ -101,7 +101,7 @@ public class VersionTests {
     @DisplayName("GET request to store ID")
     class GetRequestToStoreId {
         @Test
-        void shouldReturnAnEtagHeader() throws Exception {
+        void shouldReturnEtagHeader() throws Exception {
             MockHttpServletResponse response = mvc
                 .perform(get(url)
                     .accept("text/plain"))
@@ -130,7 +130,7 @@ public class VersionTests {
     @DisplayName("GET request to store ID with a non-matching If-None-Match header")
     class GetRequestToStoreIdWithNonMatchingIfNoneMatchHeader {
         @Test
-        void shouldRespondWithTheContent() throws Exception {
+        void shouldRespondWithContent() throws Exception {
             MockHttpServletResponse response = mvc
                 .perform(get(url)
                     .accept("text/plain")
@@ -148,7 +148,7 @@ public class VersionTests {
     @DisplayName("PUT to store ID with a matching If-Match header")
     class PutToStoreIdWithMatchingIfMatchHeader {
         @Test
-        void shouldUpdateTheContent() throws Exception {
+        void shouldUpdateContent() throws Exception {
             mvc.perform(put(url)
                     .content("Hello Modified Spring Content World!")
                     .contentType("text/other")
@@ -157,7 +157,7 @@ public class VersionTests {
         }
 
         @Test
-        void shouldUpdateTheContentAttributes() throws Exception {
+        void shouldUpdateContentAttributes() throws Exception {
             mvc.perform(multipart(url)
                     .file(new MockMultipartFile("file",
                         "test-file-modified.txt",
@@ -179,7 +179,7 @@ public class VersionTests {
     @DisplayName("DELETE to store ID with a matching If-Match header")
     class DeleteToStoreIdWithMatchingIfMatchHeader {
         @Test
-        void shouldDeleteTheContentAttributesAndReturnA200Response() throws Exception {
+        void shouldDeleteContentAttributesAndReturnA200Response() throws Exception {
             mvc.perform(delete(url)
                     .contentType("text/plain"))
                 .andExpect(status().isNoContent());
@@ -225,7 +225,7 @@ public class VersionTests {
     @DisplayName("PUT to store ID with a non-matching If-None-Match header")
     class PutToStoreIdWithNonMatchingIfNoneMatchHeader {
         @Test
-        void shouldRespondWith200OKAndSetTheContent() throws Exception {
+        void shouldRespondWith200OKAndSetContent() throws Exception {
             mvc.perform(put(url)
                     .content("Hello Modified Spring Content World!")
                     .contentType("text/plain")

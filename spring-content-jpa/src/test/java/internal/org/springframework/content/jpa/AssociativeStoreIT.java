@@ -69,7 +69,7 @@ public class AssociativeStoreIT {
     class NewEntity {
         @ParameterizedTest(name = "{0}")
         @MethodSource("internal.org.springframework.content.jpa.StoreIT#databaseConfigs")
-        void shouldNotHaveAnAssociatedResource(Class<?> configClass) {
+        void shouldNotHaveAssociatedResource(Class<?> configClass) {
             boot(configClass);
             saveNewDocument();
             assertThat(document.getContentId()).isNull();
@@ -144,7 +144,7 @@ public class AssociativeStoreIT {
             class InvalidPropertyPathIsUsedToAssociateResource {
                 @ParameterizedTest(name = "{0}")
                 @MethodSource("internal.org.springframework.content.jpa.StoreIT#databaseConfigs")
-                void shouldThrowAnError(Class<?> configClass) {
+                void shouldThrowError(Class<?> configClass) {
                     boot(configClass);
                     saveNewDocument();
                     prepareResource();
@@ -162,7 +162,7 @@ public class AssociativeStoreIT {
             class InvalidPropertyPathIsUsedToLoadResource {
                 @ParameterizedTest(name = "{0}")
                 @MethodSource("internal.org.springframework.content.jpa.StoreIT#databaseConfigs")
-                void shouldThrowAnError(Class<?> configClass) {
+                void shouldThrowError(Class<?> configClass) {
                     boot(configClass);
                     saveNewDocument();
                     prepareResource();
@@ -180,7 +180,7 @@ public class AssociativeStoreIT {
             class InvalidPropertyPathIsUsedToUnassociateResource {
                 @ParameterizedTest(name = "{0}")
                 @MethodSource("internal.org.springframework.content.jpa.StoreIT#databaseConfigs")
-                void shouldThrowAnError(Class<?> configClass) {
+                void shouldThrowError(Class<?> configClass) {
                     boot(configClass);
                     saveNewDocument();
                     prepareResource();

@@ -63,7 +63,7 @@ public class ObservableOutputStreamTest {
             }
 
             @Test
-            void shouldDelegateToTheUnderlyingInputStream() throws IOException {
+            void shouldDelegateToUnderlyingInputStream() throws IOException {
                 verify(os).write(32);
             }
         }
@@ -112,7 +112,7 @@ public class ObservableOutputStreamTest {
             }
 
             @Test
-            void shouldCallListenersOnClosedEventHandlerAndThrowTheException() {
+            void shouldCallListenersOnClosedEventHandlerAndThrowException() {
                 verify(observer1).closed();
                 assertThat(exception).isNotNull();
             }

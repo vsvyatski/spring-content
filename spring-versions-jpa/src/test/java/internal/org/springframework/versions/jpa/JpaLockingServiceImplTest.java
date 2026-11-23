@@ -62,7 +62,7 @@ public class JpaLockingServiceImplTest {
                 }
 
                 @Test
-                void shouldThrowTheDataAccessExceptionClass() {
+                void shouldThrowDataAccessExceptionClass() {
                     assertThat(e).isInstanceOf(DataAccessException.class);
                     assertThat(e.getMessage()).isEqualTo("connection-error");
                 }
@@ -92,7 +92,7 @@ public class JpaLockingServiceImplTest {
                 }
 
                 @Test
-                void shouldThrowTheDataAccessExceptionClass() {
+                void shouldThrowDataAccessExceptionClass() {
                     assertThat(e).isInstanceOf(DataAccessException.class);
                     assertThat(e.getMessage()).isEqualTo("connection-error");
                 }
@@ -124,7 +124,7 @@ public class JpaLockingServiceImplTest {
                 }
 
                 @Test
-                void shouldThrowADataAccessException() {
+                void shouldThrowDataAccessException() {
                     assertThat(e).isInstanceOf(DataAccessException.class);
                     assertThat(e.getMessage()).isEqualTo("connection-error");
                 }
@@ -156,7 +156,7 @@ public class JpaLockingServiceImplTest {
                 }
 
                 @Test
-                void shouldThrowASecurityException() {
+                void shouldThrowSecurityException() {
                     assertThat(e).isInstanceOf(SecurityException.class);
                 }
             }
@@ -184,7 +184,7 @@ public class JpaLockingServiceImplTest {
                 }
 
                 @Test
-                void shouldThrowTheDataAccessException() {
+                void shouldThrowDataAccessException() {
                     assertThat(e).isInstanceOf(DataAccessException.class);
                 }
             }
@@ -273,7 +273,7 @@ public class JpaLockingServiceImplTest {
                 }
 
                 @Test
-                void shouldThrowTheDataAccessException() {
+                void shouldThrowDataAccessException() {
                     assertThat(e).isInstanceOf(DataAccessException.class);
                 }
             }
@@ -325,7 +325,7 @@ public class JpaLockingServiceImplTest {
                 }
 
                 @Test
-                void shouldReturnAPrincipal() {
+                void shouldReturnPrincipal() {
                     assertThat(result).isInstanceOf(Principal.class);
                     assertThat(((Principal) result).getName()).isEqualTo("some-principal");
                 }
@@ -352,7 +352,7 @@ public class JpaLockingServiceImplTest {
                 }
 
                 @Test
-                void shouldThrowAnIncorrectResultSizeException() {
+                void shouldThrowIncorrectResultSizeException() {
                     assertThat(e).isInstanceOf(IncorrectResultSizeDataAccessException.class);
                 }
             }

@@ -97,7 +97,7 @@ public abstract class LastModifiedDateTests {
     @DisplayName("GET request to store ID with no headers")
     class GetRequestToStoreIdWithNoHeaders {
         @Test
-        void shouldReturnTheContentWithTheLastModifiedHeader() throws Exception {
+        void shouldReturnContentWithLastModifiedHeader() throws Exception {
             MockHttpServletResponse response = mvc
                 .perform(get(url)
                     .accept("text/plain"))
@@ -114,7 +114,7 @@ public abstract class LastModifiedDateTests {
     @DisplayName("GET request to store ID with If-Modified-Since before the entity modified date")
     class GetRequestToStoreIdWithIfModifiedSinceBeforeEntityModifiedDate {
         @Test
-        void shouldRespondWith200AndTheContent() throws Exception {
+        void shouldRespondWith200AndContent() throws Exception {
             SimpleDateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
             format.setTimeZone(TimeZone.getTimeZone("GMT"));
             Calendar cal = Calendar.getInstance();
@@ -165,7 +165,7 @@ public abstract class LastModifiedDateTests {
     @DisplayName("GET request to store ID with If-Unmodified-Since same as entity modified date")
     class GetRequestToStoreIdWithIfUnmodifiedSinceSameAsEntityModifiedDate {
         @Test
-        void shouldRespondWith200AndTheContent() throws Exception {
+        void shouldRespondWith200AndContent() throws Exception {
             mvc.perform(get(url)
                     .accept("text/plain")
                     .header("if-unmodified-since", isWithinASecond(lastModifiedDate)))
@@ -191,7 +191,7 @@ public abstract class LastModifiedDateTests {
     @DisplayName("PUT to store ID with If-Unmodified-Since same as entity modified date")
     class PutToStoreIdWithIfUnmodifiedSinceSameAsEntityModifiedDate {
         @Test
-        void shouldUpdateTheContent() throws Exception {
+        void shouldUpdateContent() throws Exception {
             mvc.perform(put(url)
                     .content("Hello Modified Spring Content World!")
                     .contentType("text/plain")
@@ -231,7 +231,7 @@ public abstract class LastModifiedDateTests {
     @DisplayName("DELETE to store ID with If-Unmodified-Since same as entity modified date")
     class DeleteToStoreIdWithIfUnmodifiedSinceSameAsEntityModifiedDate {
         @Test
-        void shouldUpdateTheContent() throws Exception {
+        void shouldUpdateContent() throws Exception {
             mvc.perform(delete(url)
                     .header("if-unmodified-since", toHeaderDateFormat(lastModifiedDate)))
                 .andExpect(status().isNoContent());

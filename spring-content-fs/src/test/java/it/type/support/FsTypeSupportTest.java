@@ -59,7 +59,7 @@ public class FsTypeSupportTest {
                 }
 
                 @Test
-                void shouldStoreTheContentSuccessfully() throws IOException {
+                void shouldStoreContentSuccessfully() throws IOException {
                     assertThat(IOUtils.contentEquals(
                         uuidStore.getContent((UUIDBasedContentEntity) entity),
                         IOUtils.toInputStream("uuid", Charset.defaultCharset())
@@ -86,7 +86,7 @@ public class FsTypeSupportTest {
                 }
 
                 @Test
-                void shouldStoreTheContentSuccessfully() throws IOException {
+                void shouldStoreContentSuccessfully() throws IOException {
                     assertThat(IOUtils.contentEquals(
                         uuidStore.getContent((UUIDBasedContentEntity) entity),
                         IOUtils.toInputStream("uuid", Charset.defaultCharset())
@@ -121,7 +121,7 @@ public class FsTypeSupportTest {
                 }
 
                 @Test
-                void shouldStoreTheContentSuccessfully() throws IOException {
+                void shouldStoreContentSuccessfully() throws IOException {
                     assertThat(IOUtils.contentEquals(
                         uriStore.getContent((URIBasedContentEntity) entity),
                         IOUtils.toInputStream("uri", Charset.defaultCharset())
@@ -156,7 +156,7 @@ public class FsTypeSupportTest {
                 }
 
                 @Test
-                void shouldStoreTheContentSuccessfully() throws IOException {
+                void shouldStoreContentSuccessfully() throws IOException {
                     assertThat(IOUtils.contentEquals(
                         longStore.getContent((LongBasedContentEntity) entity),
                         IOUtils.toInputStream("long", Charset.defaultCharset())
@@ -191,7 +191,7 @@ public class FsTypeSupportTest {
                 }
 
                 @Test
-                void shouldStoreTheContentSuccessfully() throws IOException {
+                void shouldStoreContentSuccessfully() throws IOException {
                     assertThat(IOUtils.contentEquals(
                         bigIntStore.getContent((BigIntegerBasedContentEntity) entity),
                         IOUtils.toInputStream("big-int", Charset.defaultCharset())

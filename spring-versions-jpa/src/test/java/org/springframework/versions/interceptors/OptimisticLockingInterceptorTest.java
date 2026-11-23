@@ -74,7 +74,7 @@ public class OptimisticLockingInterceptorTest {
                 }
 
                 @Test
-                void shouldLockTheEntityAndProceed() throws Throwable {
+                void shouldLockEntityAndProceed() throws Throwable {
                     verify(em).lock(entity, LockModeType.OPTIMISTIC);
                     verify(mi).setArguments(entity);
                     verify(mi).proceed();
@@ -101,7 +101,7 @@ public class OptimisticLockingInterceptorTest {
                 }
 
                 @Test
-                void shouldLockTheEntityAndProceed() throws Throwable {
+                void shouldLockEntityAndProceed() throws Throwable {
                     verify(em).lock(entity, LockModeType.OPTIMISTIC);
                     verify(mi).setArguments(entity, PropertyPath.from("foo"));
                     verify(mi).proceed();
@@ -131,7 +131,7 @@ public class OptimisticLockingInterceptorTest {
                     }
 
                     @Test
-                    void shouldLockTheEntityAndProceed() throws Throwable {
+                    void shouldLockEntityAndProceed() throws Throwable {
                         assertThat(result).isNotNull();
                         verify(em).lock(entity, LockModeType.OPTIMISTIC);
                         verify(mi).setArguments(eq(entity), any());
@@ -192,7 +192,7 @@ public class OptimisticLockingInterceptorTest {
                     }
 
                     @Test
-                    void shouldLockTheEntityAndProceed() throws Throwable {
+                    void shouldLockEntityAndProceed() throws Throwable {
                         assertThat(result).isNotNull();
                         verify(em).lock(entity, LockModeType.OPTIMISTIC);
                         verify(mi).setArguments(eq(entity), eq(PropertyPath.from("foo")), any(ByteArrayInputStream.class));
@@ -253,7 +253,7 @@ public class OptimisticLockingInterceptorTest {
                     }
 
                     @Test
-                    void shouldLockTheEntityAndProceed() throws Throwable {
+                    void shouldLockEntityAndProceed() throws Throwable {
                         assertThat(result).isNotNull();
                         verify(em).lock(entity, LockModeType.OPTIMISTIC);
                         verify(mi).setArguments(eq(entity), any());
@@ -314,7 +314,7 @@ public class OptimisticLockingInterceptorTest {
                     }
 
                     @Test
-                    void shouldLockTheEntityAndProceed() throws Throwable {
+                    void shouldLockEntityAndProceed() throws Throwable {
                         assertThat(result).isNotNull();
                         verify(em).lock(entity, LockModeType.OPTIMISTIC);
                         verify(mi).setArguments(eq(entity), eq(PropertyPath.from("foo")), any(FileSystemResource.class));
@@ -375,7 +375,7 @@ public class OptimisticLockingInterceptorTest {
                     }
 
                     @Test
-                    void shouldLockTheEntityAndProceed() throws Throwable {
+                    void shouldLockEntityAndProceed() throws Throwable {
                         assertThat(result).isNotNull();
                         verify(em).lock(entity, LockModeType.OPTIMISTIC);
                         verify(mi).setArguments(eq(entity));
@@ -436,7 +436,7 @@ public class OptimisticLockingInterceptorTest {
                     }
 
                     @Test
-                    void shouldLockTheEntityAndProceed() throws Throwable {
+                    void shouldLockEntityAndProceed() throws Throwable {
                         assertThat(result).isNotNull();
                         verify(em).lock(entity, LockModeType.OPTIMISTIC);
                         verify(mi).setArguments(eq(entity), eq(PropertyPath.from("foo")));

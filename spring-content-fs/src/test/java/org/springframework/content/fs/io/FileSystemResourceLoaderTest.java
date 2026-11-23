@@ -91,7 +91,7 @@ public class FileSystemResourceLoaderTest {
                 }
 
                 @Test
-                void shouldDeleteTheUnderlyingFile() {
+                void shouldDeleteUnderlyingFile() {
                     assertThat(file.exists()).isFalse();
                 }
             }

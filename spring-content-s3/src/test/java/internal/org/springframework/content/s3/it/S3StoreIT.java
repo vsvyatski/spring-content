@@ -151,7 +151,7 @@ public class S3StoreIT {
                     }
 
                     @Test
-                    void shouldBeARangeableResource() {
+                    void shouldBeRangeableResource() {
                         assertThat(genericResource).isInstanceOf(RangeableResource.class);
                     }
                 }
@@ -257,7 +257,7 @@ public class S3StoreIT {
                         }
 
                         @Test
-                        void shouldReturnAPartialContentInputStreamAndThePartialContent() throws IOException {
+                        void shouldReturnPartialContentInputStreamAndPartialContent() throws IOException {
                             ((RangeableResource) genericResource).setRange("bytes=6-19");
 
                             var expectedBytes = TestSupportData.sampleTextBytes();
@@ -327,7 +327,7 @@ public class S3StoreIT {
                     }
 
                     @Test
-                    void shouldNotHaveAnAssociatedResource() {
+                    void shouldNotHaveAssociatedResource() {
                         assertThat(entity.getContentId()).isNull();
                         assertThat(store.getResource(entity)).isNull();
                     }
@@ -357,7 +357,7 @@ public class S3StoreIT {
                             }
 
                             @Test
-                            void shouldBeRecordedAsSuchOnTheEntitySContentId() {
+                            void shouldBeRecordedAsSuchOnEntitySContentId() {
                                 assertThat(entity.getContentId()).isEqualTo(resourceLocation);
                                 assertThat(entity.getRenditionId()).isEqualTo(resourceLocation);
                             }
@@ -385,7 +385,7 @@ public class S3StoreIT {
                             }
 
                             @Test
-                            void shouldResetTheEntitySContentId() {
+                            void shouldResetEntitySContentId() {
                                 assertThat(entity.getContentId()).isNull();
                                 assertThat(entity.getRenditionId()).isNull();
                             }
@@ -410,7 +410,7 @@ public class S3StoreIT {
                             }
 
                             @Test
-                            void shouldThrowAnError() {
+                            void shouldThrowError() {
                                 try {
                                     store.associate(entity, PropertyPath.from("does.not.exist"), resourceLocation);
                                 } catch (Exception sae) {
@@ -439,7 +439,7 @@ public class S3StoreIT {
                             }
 
                             @Test
-                            void shouldThrowAnError() {
+                            void shouldThrowError() {
                                 try {
                                     store.getResource(entity, PropertyPath.from("does.not.exist"));
                                 } catch (Exception sae) {
@@ -468,7 +468,7 @@ public class S3StoreIT {
                             }
 
                             @Test
-                            void shouldThrowAnError() {
+                            void shouldThrowError() {
                                 try {
                                     store.unassociate(entity, PropertyPath.from("does.not.exist"));
                                 } catch (Exception sae) {
@@ -562,7 +562,7 @@ public class S3StoreIT {
                 }
 
                 @Test
-                void shouldHaveTheUpdatedContent() throws IOException {
+                void shouldHaveUpdatedContent() throws IOException {
                     //content
                     try (InputStream content = store.getContent(entity)) {
                         assertThat(IOUtils.contentEquals(TestSupportData.sampleUpdatedTextStream(), content)).isTrue();
@@ -598,7 +598,7 @@ public class S3StoreIT {
                 }
 
                 @Test
-                void shouldStoreOnlyTheNewContent() throws IOException {
+                void shouldStoreOnlyNewContent() throws IOException {
                     //content
                     try (InputStream content = store.getContent(entity)) {
                         assertThat(IOUtils.contentEquals(TestSupportData.samplePartialUpdateStream(), content)).isTrue();
@@ -630,7 +630,7 @@ public class S3StoreIT {
                 }
 
                 @Test
-                void shouldHaveTheUpdatedContent() throws IOException {
+                void shouldHaveUpdatedContent() throws IOException {
                     String contentId = entity.getContentId();
                     client.headObject(HeadObjectRequest.builder().bucket(BUCKET).key(contentId).build());
 
@@ -750,7 +750,7 @@ public class S3StoreIT {
                 }
 
                 @Test
-                void shouldThrowAnError() {
+                void shouldThrowError() {
                     try {
                         store.setContent(entity, PropertyPath.from("does.not.exist"), new ByteArrayInputStream("foo".getBytes()));
                     } catch (Exception sae) {
@@ -779,7 +779,7 @@ public class S3StoreIT {
                 }
 
                 @Test
-                void shouldThrowAnError() {
+                void shouldThrowError() {
                     try {
                         store.getContent(entity, PropertyPath.from("does.not.exist"));
                     } catch (Exception sae) {
@@ -808,7 +808,7 @@ public class S3StoreIT {
                 }
 
                 @Test
-                void shouldThrowAnError() {
+                void shouldThrowError() {
                     try {
                         store.unsetContent(entity, PropertyPath.from("does.not.exist"));
                     } catch (Exception sae) {
@@ -837,7 +837,7 @@ public class S3StoreIT {
                 }
 
                 @Test
-                void shouldNotResetTheIdField() {
+                void shouldNotResetIdField() {
                     SharedIdJakartaJpaEntity sharedIdContentIdEntity = sharedIdRepository.save(new SharedIdJakartaJpaEntity());
 
                     sharedIdContentIdEntity = sharedIdStore.setContent(sharedIdContentIdEntity, TestSupportData.sampleTextStream());

@@ -103,7 +103,7 @@ public class ContentJpaAutoConfigurationTest {
         }
 
         @Test
-        void shouldHaveAContentStore() {
+        void shouldHaveContentStore() {
             contextRunner.withUserConfiguration(TestConfig.class).run((context) -> {
                 Assertions.assertThat(context).hasSingleBean(TestEntityContentStore.class);
                 Assertions.assertThat(context).hasSingleBean(ContentJpaDatabaseInitializer.class);
@@ -121,7 +121,7 @@ public class ContentJpaAutoConfigurationTest {
             }
 
             @Test
-            void shouldUseTheSuppliedCustomBean() {
+            void shouldUseSuppliedCustomBean() {
                 contextRunner.withUserConfiguration(CustomBeanConfig.class).run((context) -> {
                     Assertions.assertThat(context).getBean(ContentJpaDatabaseInitializer.class).isEqualTo(initializer);
                     Assertions.assertThat(context).getBean("copyBufferSize").isEqualTo(16192);
@@ -140,7 +140,7 @@ public class ContentJpaAutoConfigurationTest {
             }
 
             @Test
-            void shouldLoadTheContext() {
+            void shouldLoadContext() {
                 contextRunner.withUserConfiguration(ConfigWithExplicitEnableJpaStores.class).run((context) -> {
                     Assertions.assertThat(context).hasSingleBean(TestEntityContentStore.class);
                     Assertions.assertThat(context).hasSingleBean(ContentJpaProperties.class);

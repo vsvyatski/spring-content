@@ -215,7 +215,7 @@ public class ContentStoreIT {
         class ContentIsUpdated {
             @ParameterizedTest(name = "{0}")
             @MethodSource("internal.org.springframework.content.jpa.StoreIT#databaseConfigs")
-            void shouldHaveTheUpdatedContent(Class<?> configClass) {
+            void shouldHaveUpdatedContent(Class<?> configClass) {
                 try {
                     boot(configClass);
                     setInitialContent();
@@ -252,7 +252,7 @@ public class ContentStoreIT {
         class ContentIsUpdatedWithShorterContent {
             @ParameterizedTest(name = "{0}")
             @MethodSource("internal.org.springframework.content.jpa.StoreIT#databaseConfigs")
-            void shouldStoreOnlyTheNewContent(Class<?> configClass) {
+            void shouldStoreOnlyNewContent(Class<?> configClass) {
                 try {
                     boot(configClass);
                     setInitialContent();
@@ -289,7 +289,7 @@ public class ContentStoreIT {
         class ContentIsUpdatedAndNotOverwritten {
             @ParameterizedTest(name = "{0}")
             @MethodSource("internal.org.springframework.content.jpa.StoreIT#databaseConfigs")
-            void shouldHaveTheUpdatedContent(Class<?> configClass) throws IOException {
+            void shouldHaveUpdatedContent(Class<?> configClass) throws IOException {
                 try {
                     boot(configClass);
                     setInitialContent();

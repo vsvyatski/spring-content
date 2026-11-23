@@ -34,7 +34,7 @@ public class SolrAutoConfigurationTest {
             }
 
             @Test
-            void shouldIncludeTheAutoconfiguredAnnotatedEventHandlerBean() {
+            void shouldIncludeAutoconfiguredAnnotatedEventHandlerBean() {
                 contextRunner.withUserConfiguration(TestConfig.class)
                     .run((context) ->
                         Assertions.assertThat(context).getBean("solrFulltextEventListener")

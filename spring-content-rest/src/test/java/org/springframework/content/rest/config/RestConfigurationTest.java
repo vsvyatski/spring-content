@@ -65,12 +65,12 @@ public class RestConfigurationTest {
             }
 
             @Test
-            void shouldHaveAContentHandlerMappingBean() {
+            void shouldHaveContentHandlerMappingBean() {
                 assertThat(context.getBean("contentHandlerMapping")).isNotNull();
             }
 
             @Test
-            void shouldHaveTheContentRestControllers() {
+            void shouldHaveContentRestControllers() {
                 assertThat(context.getBean("storeRestController")).isNotNull();
             }
 

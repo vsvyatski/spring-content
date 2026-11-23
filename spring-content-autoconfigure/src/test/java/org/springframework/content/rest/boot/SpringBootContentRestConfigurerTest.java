@@ -46,7 +46,7 @@ public class SpringBootContentRestConfigurerTest {
                 }
 
                 @Test
-                void shouldSetThePropertyOnTheRestConfiguration() {
+                void shouldSetPropertyOnRestConfiguration() {
                     verify(restConfig).setBaseUri(eq(properties.getBaseUri()));
                 }
             }
@@ -68,7 +68,7 @@ public class SpringBootContentRestConfigurerTest {
                 }
 
                 @Test
-                void shouldSetThePropertyOnTheRestConfiguration() {
+                void shouldSetPropertyOnRestConfiguration() {
                     verify(restConfig).setFullyQualifiedLinks(eq(true));
                 }
             }
@@ -92,7 +92,7 @@ public class SpringBootContentRestConfigurerTest {
                 }
 
                 @Test
-                void shouldDisableTheShortcutLinks() {
+                void shouldDisableShortcutLinks() {
                     verify(restConfig).setShortcutLinks(false);
                 }
             }
@@ -116,7 +116,7 @@ public class SpringBootContentRestConfigurerTest {
                 }
 
                 @Test
-                void shouldSetTheExclusionsPropertyOnTheRestConfiguration() {
+                void shouldSetExclusionsPropertyOnRestConfiguration() {
                     verify(exclusions).exclude("GET", MediaType.parseMediaType("a/b"));
                     verify(exclusions).exclude("GET", MediaType.parseMediaType("c/d"));
                     verify(exclusions).exclude("PUT", MediaType.parseMediaType("*/*"));
@@ -142,7 +142,7 @@ public class SpringBootContentRestConfigurerTest {
                 }
 
                 @Test
-                void shouldNotSetTheExclusionsPropertyOnTheRestConfiguration() {
+                void shouldNotSetExclusionsPropertyOnRestConfiguration() {
                     verify(exclusions, never()).exclude(any(), any());
                 }
             }
@@ -166,7 +166,7 @@ public class SpringBootContentRestConfigurerTest {
                 }
 
                 @Test
-                void shouldNotSetTheExclusionsPropertyOnTheRestConfiguration() {
+                void shouldNotSetExclusionsPropertyOnRestConfiguration() {
                     verify(exclusions, never()).exclude(any(), any());
                 }
             }
@@ -190,7 +190,7 @@ public class SpringBootContentRestConfigurerTest {
                 }
 
                 @Test
-                void shouldNotSetTheExclusionsPropertyOnTheRestConfiguration() {
+                void shouldNotSetExclusionsPropertyOnRestConfiguration() {
                     verify(exclusions, never()).exclude(any(), any());
                 }
             }
@@ -210,7 +210,7 @@ public class SpringBootContentRestConfigurerTest {
                 }
 
                 @Test
-                void shouldNotSetThePropertyOnTheRestConfiguration() {
+                void shouldNotSetPropertyOnRestConfiguration() {
                     verify(restConfig, never()).setBaseUri(any());
                 }
             }
@@ -230,7 +230,7 @@ public class SpringBootContentRestConfigurerTest {
                 }
 
                 @Test
-                void shouldNotSetThePropertyOnTheRestConfiguration() {
+                void shouldNotSetPropertyOnRestConfiguration() {
                     verify(restConfig, never()).setBaseUri(any());
                     verify(restConfig, never()).setFullyQualifiedLinks(anyBoolean());
                 }

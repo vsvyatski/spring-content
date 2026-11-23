@@ -59,7 +59,7 @@ public class ContentFileSystemAutoConfigurationTest {
             }
 
             @Test
-            void shouldLoadTheContext() {
+            void shouldLoadContext() {
                 contextRunner.withUserConfiguration(TestConfig.class).run((context) -> Assertions.assertThat(context).hasSingleBean(TestEntityContentStore.class));
             }
         }
@@ -80,7 +80,7 @@ public class ContentFileSystemAutoConfigurationTest {
             }
 
             @Test
-            void shouldHaveAFilesystemPropertiesBeanWithTheCorrectRootSet() {
+            void shouldHaveFilesystemPropertiesBeanWithCorrectRootSet() {
                 contextRunner.withUserConfiguration(TestConfig.class).run((context) -> {
                     Assertions.assertThat(context).hasSingleBean(FileSystemContentAutoConfiguration.FileSystemProperties.class);
                     Assertions.assertThat(context).getBean(FileSystemContentAutoConfiguration.FileSystemProperties.class).extracting("fileSystemRoot").matches((val) -> val.toString().endsWith("/UPPERCASE/NOTATION/"));
@@ -99,7 +99,7 @@ public class ContentFileSystemAutoConfigurationTest {
 
             @Test
             @DisabledOnOs(OS.WINDOWS)
-            void shouldHaveThatLoaderBeanInTheContext() {
+            void shouldHaveThatLoaderBeanInContext() {
                 contextRunner.withUserConfiguration(ConfigWithLoaderBean.class).run((context) -> {
                     Assertions.assertThat(context).hasSingleBean(FileSystemResourceLoader.class);
                     Assertions.assertThat(context).getBean(FileSystemResourceLoader.class).extracting("root").matches((val) -> val.toString().contains("/some/random/path"));
@@ -108,7 +108,7 @@ public class ContentFileSystemAutoConfigurationTest {
 
             @Test
             @EnabledOnOs(OS.WINDOWS)
-            void shouldHaveThatLoaderBeanInTheContextOnWindows() {
+            void shouldHaveThatLoaderBeanInContextOnWindows() {
                 contextRunner.withUserConfiguration(ConfigWithLoaderBean.class).run((context) -> {
                     Assertions.assertThat(context).hasSingleBean(FileSystemResourceLoader.class);
                     Assertions.assertThat(context).getBean(FileSystemResourceLoader.class).extracting("root").matches((val) -> val.toString().matches("(?s).*([A-Za-z]:)?\\\\some\\\\random\\\\path.*"));
@@ -126,7 +126,7 @@ public class ContentFileSystemAutoConfigurationTest {
             }
 
             @Test
-            void shouldLoadTheContext() {
+            void shouldLoadContext() {
                 contextRunner.withUserConfiguration(ConfigWithExplicitEnableFileSystemStores.class).run((context) -> {
                     Assertions.assertThat(context).hasSingleBean(TestEntityContentStore.class);
                     Assertions.assertThat(context).hasSingleBean(FileSystemResourceLoader.class);

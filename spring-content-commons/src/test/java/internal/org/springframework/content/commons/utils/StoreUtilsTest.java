@@ -76,7 +76,7 @@ public class StoreUtilsTest {
                 }
 
                 @Test
-                void shouldReturnTheStoreMatchingTheIdentifyingType() {
+                void shouldReturnStoreMatchingIdentifyingType() {
                     Set<GenericBeanDefinition> beans = StoreUtils.getStoreCandidates(scanner, env, loader, basePackages, multiStoreMode, identifyingTypes, registrarId);
                     assertThat(beans).contains(def1);
                     assertThat(beans).doesNotContain(def2);

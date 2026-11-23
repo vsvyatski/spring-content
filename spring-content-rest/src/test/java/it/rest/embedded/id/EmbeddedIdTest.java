@@ -183,7 +183,7 @@ public class EmbeddedIdTest {
         }
 
         @Test
-        void shouldHaveAContentHandlerMappingBean() throws Exception {
+        void shouldHaveContentHandlerMappingBean() throws Exception {
             String content = "this is some content";
 
             TestEntity entity = repo.save(new TestEntity());

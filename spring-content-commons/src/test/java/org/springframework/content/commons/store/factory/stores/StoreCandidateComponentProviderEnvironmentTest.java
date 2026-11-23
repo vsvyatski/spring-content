@@ -53,7 +53,7 @@ public class StoreCandidateComponentProviderEnvironmentTest {
     @DisplayName("Given two stores with profiles")
     class TwoStoresWithProfiles {
         @Test
-        void shouldHaveAStoreBean() {
+        void shouldHaveStoreBean() {
             assertThat(store).isNotNull();
             assertThat(associativeStore).isNull();
             assertThat(contentStore).isNotNull();

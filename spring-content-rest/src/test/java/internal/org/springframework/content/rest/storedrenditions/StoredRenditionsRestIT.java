@@ -169,7 +169,7 @@ public class StoredRenditionsRestIT {
                 }
 
                 @Test
-                void shouldStoreTheRendition() throws IOException {
+                void shouldStoreRendition() throws IOException {
                     testEntity5 = repo.findById(testEntity5.getId()).orElseThrow();
                     Resource r = store.getResource(testEntity5, PropertyPath.from("content"));
                     try (InputStream actual = r.getInputStream()) {
@@ -195,7 +195,7 @@ public class StoredRenditionsRestIT {
                     }
 
                     @Test
-                    void shouldGetTheStoredRendition() throws Exception {
+                    void shouldGetStoredRendition() throws Exception {
                         mvc.perform(
                                 get("/dualContentRenditionEntities/" + testEntity5.getId() + "/content")
                                     .accept("text/html"))
@@ -239,7 +239,7 @@ public class StoredRenditionsRestIT {
                     }
 
                     @Test
-                    void shouldAlsoDeleteTheRendition() throws Exception {
+                    void shouldAlsoDeleteRendition() throws Exception {
                         Long id = testEntity5.getId();
 
                         mvc.perform(delete("/dualContentRenditionEntities/" + testEntity5.getId() + "/content")).andExpect(status().isNoContent());

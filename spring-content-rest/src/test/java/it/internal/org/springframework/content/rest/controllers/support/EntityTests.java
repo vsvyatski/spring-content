@@ -64,7 +64,7 @@ public class EntityTests {
     @DisplayName("GET to store ID accepting HAL JSON")
     class GetToStoreIdAcceptingHalJson {
         @Test
-        void shouldReturnTheEntity() throws Exception {
+        void shouldReturnEntity() throws Exception {
             MockHttpServletResponse response = mvc
                 .perform(get(url)
                     .accept("application/hal+json"))
@@ -104,7 +104,7 @@ public class EntityTests {
     @DisplayName("PATCH to store ID with a JSON body")
     class PatchToStoreIdWithJsonBody {
         @Test
-        void shouldPatchTheEntityDataAndReturn200() throws Exception {
+        void shouldPatchEntityDataAndReturn200() throws Exception {
             mvc.perform(patch(url)
                     .content("{\"title\":\"Spring Content Modified\"}")
                     .contentType("application/hal+json"))

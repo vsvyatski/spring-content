@@ -56,7 +56,7 @@ public class HypermediaConfigurationTest {
             }
 
             @Test
-            void shouldHaveAContentLinksProcessorBean() {
+            void shouldHaveContentLinksProcessorBean() {
                 assertThat(context.getBean("contentLinksProcessor")).isNotNull();
             }
         }

@@ -226,13 +226,13 @@ public class StoresImplTest {
             }
 
             @Test
-            void shouldReturnStoresThatMatchTheFilter() {
+            void shouldReturnStoresThatMatchFilter() {
                 StoreInfo[] infos = storesImpl.getStores(AssociativeStore.class, Stores.MATCH_ALL);
                 assertThat(infos.length).isEqualTo(2);
             }
 
             @Test
-            void shouldNotReturnStoresThatDontMatchTheFilter() {
+            void shouldNotReturnStoresThatDontMatchFilter() {
                 StoreInfo[] infos = storesImpl.getStores(AssociativeStore.class, new StoreFilter() {
                     @Override
                     public String name() {
@@ -279,7 +279,7 @@ public class StoresImplTest {
             }
 
             @Test
-            void shouldReturnStoresThatMatchTheFilter() {
+            void shouldReturnStoresThatMatchFilter() {
                 StoreInfo[] infos = storesImpl.getStores(ContentStore.class, Stores.MATCH_ALL);
                 assertThat(infos.length).isEqualTo(2);
             }

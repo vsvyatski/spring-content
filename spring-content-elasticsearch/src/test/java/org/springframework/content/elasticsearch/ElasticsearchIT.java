@@ -93,7 +93,7 @@ public class ElasticsearchIT {
         }
 
         @Test
-        void shouldIndexTheDocuments() throws Exception {
+        void shouldIndexDocuments() throws Exception {
             doc1 = new FulltextJpaUuidDocumentEntity();
             doc1.setTitle("doc 1");
             doc1.setAuthor("author@email.com");
@@ -114,7 +114,7 @@ public class ElasticsearchIT {
         }
 
         @Test
-        void shouldBePossibleToCloseTheIndex() throws Exception {
+        void shouldBePossibleToCloseIndex() throws Exception {
             doc1 = new FulltextJpaUuidDocumentEntity();
             doc1.setTitle("doc 1");
             doc1.setAuthor("author@email.com");
@@ -143,7 +143,7 @@ public class ElasticsearchIT {
         }
 
         @Test
-        void shouldReturnTheMatches() {
+        void shouldReturnMatches() {
             doc1 = new FulltextJpaUuidDocumentEntity();
             doc1.setTitle("doc 1");
             doc1.setAuthor("author@email.com");
@@ -181,7 +181,7 @@ public class ElasticsearchIT {
         }
 
         @Test
-        void shouldIndexTheDocumentsUsingATextExtractingRenderer() {
+        void shouldIndexDocumentsUsingTextExtractingRenderer() {
             doc1 = new FulltextJpaUuidDocumentEntity();
             doc1.setTitle("doc 1");
             doc1.setAuthor("author@email.com");
@@ -208,7 +208,7 @@ public class ElasticsearchIT {
         }
 
         @Test
-        void shouldDeleteTheRecordOfTheContentFromTheIndex() throws Exception {
+        void shouldDeleteRecordOfContentFromIndex() throws Exception {
             doc1 = new FulltextJpaUuidDocumentEntity();
             doc1.setTitle("doc 1");
             doc1.setAuthor("author@email.com");
@@ -345,7 +345,7 @@ public class ElasticsearchIT {
             }
 
             @Test
-            void shouldReturnTheSpecifiedAttributes() {
+            void shouldReturnSpecifiedAttributes() {
                 org.awaitility.Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> assertThat(store.search("one", PageRequest.of(0, 10)))
                     .contains(doc1.getContentId())
                     .doesNotContain(doc2.getContentId()));
@@ -383,7 +383,7 @@ public class ElasticsearchIT {
         }
 
         @Test
-        void shouldReturnResultsUsingTheCustomReturnType() {
+        void shouldReturnResultsUsingCustomReturnType() {
             org.awaitility.Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
                 var result = searchableStore.search("one");
                 assertThat(result).isNotNull();

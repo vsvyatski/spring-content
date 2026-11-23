@@ -54,7 +54,7 @@ public class ElasticsearchAutoConfigurationTest {
     @DisplayName("Given a context without a elasticsearch client configured")
     class ContextWithoutElasticsearchClientConfigured {
         @Test
-        void shouldCreateAClient() {
+        void shouldCreateClient() {
             final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
                 .withConfiguration(AutoConfigurations.of(ElasticsearchAutoConfiguration.class));
 
@@ -98,7 +98,7 @@ public class ElasticsearchAutoConfigurationTest {
         }
 
         @Test
-        void shouldNotConfigureTheIndexingEventHandler() {
+        void shouldNotConfigureIndexingEventHandler() {
             final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
                 .withConfiguration(AutoConfigurations.of(ElasticsearchAutoConfiguration.class));
 
@@ -122,7 +122,7 @@ public class ElasticsearchAutoConfigurationTest {
         }
 
         @Test
-        void shouldLoadTheContext() {
+        void shouldLoadContext() {
             final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
                 .withConfiguration(AutoConfigurations.of(ElasticsearchAutoConfiguration.class));
 
@@ -136,7 +136,7 @@ public class ElasticsearchAutoConfigurationTest {
     @DisplayName("Given a context that already has @EnableElasticsearchFulltextIndexing")
     class ContextThatAlreadyEnablesElasticSearchFulltextIndexing {
         @Test
-        void shouldLoadTheContextAndNotThrowABeanDefinitionOverrideException() {
+        void shouldLoadContextAndNotThrowBeanDefinitionOverrideException() {
             final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
                 .withConfiguration(AutoConfigurations.of(ElasticsearchAutoConfiguration.class));
 

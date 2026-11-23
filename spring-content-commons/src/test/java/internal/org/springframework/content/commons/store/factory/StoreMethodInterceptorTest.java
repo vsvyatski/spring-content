@@ -275,7 +275,7 @@ public class StoreMethodInterceptorTest {
                 }
 
                 @Test
-                void shouldStillReceiveTheInputStreamInTheSetContentInvocation() throws IOException {
+                void shouldStillReceiveInputStreamInSetContentInvocation() throws IOException {
                     assertThat(e).isNull();
 
                     ArgumentCaptor<InputStream> setContentArgCaptor = ArgumentCaptor.forClass(InputStream.class);
@@ -320,7 +320,7 @@ public class StoreMethodInterceptorTest {
                 }
 
                 @Test
-                void shouldStillReceiveTheInputStreamInTheSetContentInvocation() throws IOException {
+                void shouldStillReceiveInputStreamInSetContentInvocation() throws IOException {
                     assertThat(e).isNull();
 
                     InOrder inOrder = Mockito.inOrder(publisher, store);
@@ -362,7 +362,7 @@ public class StoreMethodInterceptorTest {
                 }
 
                 @Test
-                void shouldStillReceiveTheInputStreamInTheSetContentInvocation() throws IOException {
+                void shouldStillReceiveInputStreamInSetContentInvocation() throws IOException {
                     assertThat(e).isNull();
 
                     InOrder inOrder = Mockito.inOrder(publisher, store);
@@ -408,7 +408,7 @@ public class StoreMethodInterceptorTest {
                 }
 
                 @Test
-                void shouldStillReceiveTheReplacedInputStreamInTheSetContentInvocation() throws IOException {
+                void shouldStillReceiveReplacedInputStreamInSetContentInvocation() throws IOException {
                     assertThat(e).isNull();
 
                     InOrder inOrder = Mockito.inOrder(publisher, store);
@@ -700,7 +700,7 @@ public class StoreMethodInterceptorTest {
     @Nested
     class FindMethodCases {
         @Test
-        void shouldResolveTheMethodWhenNotOverridden() {
+        void shouldResolveMethodWhenNotOverridden() {
             store = CommonsTestStores.mockContentStore();
             publisher = mock(ApplicationEventPublisher.class);
             interceptor = new StoreMethodInterceptor();
@@ -711,7 +711,7 @@ public class StoreMethodInterceptorTest {
         }
 
         @Test
-        void shouldResolveTheMethodWhenItIsOverriddenInTheInterface() {
+        void shouldResolveMethodWhenItIsOverriddenInInterface() {
             store = CommonsTestStores.mockContentStore();
             publisher = mock(ApplicationEventPublisher.class);
             interceptor = new StoreMethodInterceptor();

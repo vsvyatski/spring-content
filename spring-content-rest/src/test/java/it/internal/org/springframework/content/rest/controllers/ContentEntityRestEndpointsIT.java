@@ -134,7 +134,7 @@ public class ContentEntityRestEndpointsIT {
                     }
 
                     @Test
-                    void shouldReturnTheRelevantCORSHeadersAndOK() throws Exception {
+                    void shouldReturnRelevantCORSHeadersAndOK() throws Exception {
                         mvc.perform(options("/uuidSingleContentEntities/" + testEntity.getId())
                                 .header("Access-Control-Request-Method", "PUT")
                                 .header("Origin", "http://www.someurl.com"))
@@ -213,7 +213,7 @@ public class ContentEntityRestEndpointsIT {
             }
 
             @Test
-            void shouldCreateANewEntityAndItsContentAndRespondWithA201Created() throws Exception {
+            void shouldCreateNewEntityAndItsContentAndRespondWithA201Created() throws Exception {
                 // assert content does not exist
                 String newContent = "This is some new content";
 
@@ -269,7 +269,7 @@ public class ContentEntityRestEndpointsIT {
                 }
 
                 @Test
-                void shouldCreateANewEntityAndItsContentAndRespondWithA201Created() throws Exception {
+                void shouldCreateNewEntityAndItsContentAndRespondWithA201Created() throws Exception {
                     String newContent = "This is some new content";
 
                     MockMultipartFile file = new MockMultipartFile("content", "filename.txt", "text/plain",
@@ -315,7 +315,7 @@ public class ContentEntityRestEndpointsIT {
                 }
 
                 @Test
-                void shouldCreateANewEntityAndRespondWithA201Created() throws Exception {
+                void shouldCreateNewEntityAndRespondWithA201Created() throws Exception {
                     // POST the entity
                     MockHttpServletResponse response = mvc.perform(multipart("/oneToOneLinkedContentEntities")
                             .param("name", "foo")
@@ -386,7 +386,7 @@ public class ContentEntityRestEndpointsIT {
             }
 
             @Test
-            void shouldCreateANewEntityAndItsContentAndRespondWithA201Created() throws Exception {
+            void shouldCreateNewEntityAndItsContentAndRespondWithA201Created() throws Exception {
                 // assert content does not exist
                 String newContent = "This is some new content";
 
@@ -429,7 +429,7 @@ public class ContentEntityRestEndpointsIT {
             }
 
             @Test
-            void shouldCreateANewEntityWithNoContentAndRespondWithA201Created() throws Exception {
+            void shouldCreateNewEntityWithNoContentAndRespondWithA201Created() throws Exception {
                 var testEntity4Id = repo4.save(new OneToOneLinkedContentEntity()).getId();
 
                 // POST the entity
@@ -471,7 +471,7 @@ public class ContentEntityRestEndpointsIT {
             }
 
             @Test
-            void shouldCreateANewEntityAndFireTheOnBeforeCreateOnAfterCreateEvents() throws Exception {
+            void shouldCreateNewEntityAndFireOnBeforeCreateOnAfterCreateEvents() throws Exception {
                 // POST the entity
                 mvc.perform(multipart("/jsonMappedContentEntities")
                         .param("name", "foo foo")
@@ -495,7 +495,7 @@ public class ContentEntityRestEndpointsIT {
             }
 
             @Test
-            void shouldReturnAnErrorAndNotMakeTheEntity() {
+            void shouldReturnErrorAndNotMakeEntity() {
                 MockMultipartFile file = new MockMultipartFile("oopsDoesntExist", "filename.txt", "text/plain",
                     "foo".getBytes());
 
@@ -526,7 +526,7 @@ public class ContentEntityRestEndpointsIT {
             }
 
             @Test
-            void shouldCreateANewEntityAndItsContentAndRespondWithA201Created() throws Exception {
+            void shouldCreateNewEntityAndItsContentAndRespondWithA201Created() throws Exception {
                 // assert content does not exist
                 String newContent = "This is some new content";
 

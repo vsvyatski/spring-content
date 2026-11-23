@@ -158,7 +158,7 @@ public class DefaultS3StoreImplTest {
                     }
 
                     @Test
-                    void shouldReturnTheResource() {
+                    void shouldReturnResource() {
                         assertThat(e).isNull();
                         assertThat(r).isInstanceOf(S3StoreResource.class);
                         assertThat(((S3StoreResource) r).getClient()).isEqualTo(client);
@@ -216,7 +216,7 @@ public class DefaultS3StoreImplTest {
                                 }
 
                                 @Test
-                                void shouldFetchTheResource() {
+                                void shouldFetchResource() {
                                     assertThat(e).isNull();
                                     assertThat(r).isInstanceOf(S3StoreResource.class);
                                     assertThat(((S3StoreResource) r).getClient()).isEqualTo(client);
@@ -264,7 +264,7 @@ public class DefaultS3StoreImplTest {
                                 }
 
                                 @Test
-                                void shouldThrowAnError() {
+                                void shouldThrowError() {
                                     assertThat(e).isInstanceOf(ConversionFailedException.class);
                                 }
                             }
@@ -302,7 +302,7 @@ public class DefaultS3StoreImplTest {
                     }
 
                     @Test
-                    void shouldFetchTheResourceUsingTheCorrectClient() {
+                    void shouldFetchResourceUsingCorrectClient() {
                         assertThat(e).isNull();
                         assertThat(r).isInstanceOf(S3StoreResource.class);
                         assertThat(((S3StoreResource) r).getClient()).isEqualTo(client2);
@@ -362,7 +362,7 @@ public class DefaultS3StoreImplTest {
                             }
 
                             @Test
-                            void shouldFetchTheResource() {
+                            void shouldFetchResource() {
                                 assertThat(e).isNull();
                                 assertThat(r).isInstanceOf(S3StoreResource.class);
                                 assertThat(((S3StoreResource) r).getClient()).isEqualTo(client);
@@ -409,7 +409,7 @@ public class DefaultS3StoreImplTest {
                             }
 
                             @Test
-                            void shouldFetchTheCorrectResource() {
+                            void shouldFetchCorrectResource() {
                                 assertThat(e).isNull();
                                 assertThat(r).isInstanceOf(S3StoreResource.class);
                                 assertThat(((S3StoreResource) r).getClient()).isEqualTo(client);
@@ -500,7 +500,7 @@ public class DefaultS3StoreImplTest {
                             }
 
                             @Test
-                            void shouldFetchTheResource() {
+                            void shouldFetchResource() {
                                 assertThat(e).isNull();
                                 assertThat(r).isInstanceOf(S3StoreResource.class);
                                 assertThat(((S3StoreResource) r).getClient()).isEqualTo(client);
@@ -551,7 +551,7 @@ public class DefaultS3StoreImplTest {
                             }
 
                             @Test
-                            void shouldThrowAnException() {
+                            void shouldThrowException() {
                                 assertThat(e).isInstanceOf(ConversionFailedException.class);
                             }
                         }
@@ -607,7 +607,7 @@ public class DefaultS3StoreImplTest {
                             }
 
                             @Test
-                            void shouldFetchTheResource() {
+                            void shouldFetchResource() {
                                 assertThat(e).isNull();
                                 assertThat(r).isInstanceOf(S3StoreResource.class);
                                 assertThat(((S3StoreResource) r).getClient()).isEqualTo(client);
@@ -654,7 +654,7 @@ public class DefaultS3StoreImplTest {
                             }
 
                             @Test
-                            void shouldFetchTheCorrectResource() {
+                            void shouldFetchCorrectResource() {
                                 assertThat(e).isNull();
                                 assertThat(r).isInstanceOf(S3StoreResource.class);
                                 assertThat(((S3StoreResource) r).getClient()).isEqualTo(client);
@@ -752,7 +752,7 @@ public class DefaultS3StoreImplTest {
                             }
 
                             @Test
-                            void shouldFetchTheResource() {
+                            void shouldFetchResource() {
                                 assertThat(e).isNull();
                                 assertThat(r).isInstanceOf(S3StoreResource.class);
                                 assertThat(((S3StoreResource) r).getClient()).isEqualTo(client);
@@ -802,7 +802,7 @@ public class DefaultS3StoreImplTest {
                             }
 
                             @Test
-                            void shouldThrowAnException() {
+                            void shouldThrowException() {
                                 assertThat(e).isInstanceOf(ConversionFailedException.class);
                             }
                         }
@@ -832,7 +832,7 @@ public class DefaultS3StoreImplTest {
                 }
 
                 @Test
-                void shouldSetTheEntitySContentIDAttribute() {
+                void shouldSetEntitySContentIDAttribute() {
                     assertThat(entity.getContentId()).isEqualTo(SAMPLE_CONTENT_ID);
                 }
             }
@@ -860,7 +860,7 @@ public class DefaultS3StoreImplTest {
                 }
 
                 @Test
-                void shouldResetTheEntitySContentIDAttribute() {
+                void shouldResetEntitySContentIDAttribute() {
                     assertThat(entity.getContentId()).isNull();
                 }
             }
@@ -920,17 +920,17 @@ public class DefaultS3StoreImplTest {
                             }
 
                             @Test
-                            void shouldFetchTheResource() {
+                            void shouldFetchResource() {
                                 verify(loader).getResource(eq("s3://default-defaultBucket/" + SAMPLE_CONTENT_ID));
                             }
 
                             @Test
-                            void shouldChangeTheContentLength() {
+                            void shouldChangeContentLength() {
                                 assertThat(entity.getContentLen()).isEqualTo(20L);
                             }
 
                             @Test
-                            void shouldWriteToTheResourcesOutputStream() throws IOException {
+                            void shouldWriteToResourcesOutputStream() throws IOException {
                                 verify(resource).getOutputStream();
                                 verify(output, times(1)).write(any(byte[].class),
                                     eq(0), eq(20));
@@ -982,7 +982,7 @@ public class DefaultS3StoreImplTest {
                                 }
 
                                 @Test
-                                void shouldThrowAStoreAccessException() {
+                                void shouldThrowStoreAccessException() {
                                     assertThat(e).isInstanceOf(StoreAccessException.class);
                                     assertThat(e.getCause().getMessage()).isEqualTo("set-ioexception");
                                 }
@@ -1037,17 +1037,17 @@ public class DefaultS3StoreImplTest {
                             }
 
                             @Test
-                            void shouldMakeANewUUID() {
+                            void shouldMakeNewUUID() {
                                 assertThat(entity.getContentId()).isNotNull();
                             }
 
                             @Test
-                            void shouldCreateANewResource() {
+                            void shouldCreateNewResource() {
                                 verify(loader).getResource(matches("^s3://.*[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"));
                             }
 
                             @Test
-                            void shouldWriteToTheResourcesOutputStream() throws IOException {
+                            void shouldWriteToResourcesOutputStream() throws IOException {
                                 verify(resource).getOutputStream();
                                 verify(output, times(1)).write(any(byte[].class),
                                     eq(0), eq(20));
@@ -1168,7 +1168,7 @@ public class DefaultS3StoreImplTest {
                     }
 
                     @Test
-                    void shouldThrowAStoreAccessException() {
+                    void shouldThrowStoreAccessException() {
                         assertThat(e).isInstanceOf(StoreAccessException.class);
                         assertThat(e.getCause().getMessage()).contains("setContent badness");
                     }
@@ -1225,7 +1225,7 @@ public class DefaultS3StoreImplTest {
                                 }
 
                                 @Test
-                                void shouldFetchTheResource() {
+                                void shouldFetchResource() {
                                     verify(loader).getResource(eq("s3://default-defaultBucket/" + SAMPLE_CONTENT_ID));
                                 }
 
@@ -1275,7 +1275,7 @@ public class DefaultS3StoreImplTest {
                                     }
 
                                     @Test
-                                    void shouldThrowAStoreAccessException() {
+                                    void shouldThrowStoreAccessException() {
                                         assertThat(e).isInstanceOf(StoreAccessException.class);
                                         assertThat(e.getCause().getMessage()).isEqualTo("get-ioexception");
                                     }
@@ -1324,12 +1324,12 @@ public class DefaultS3StoreImplTest {
                                 }
 
                                 @Test
-                                void shouldFetchTheResource() {
+                                void shouldFetchResource() {
                                     verify(loader).getResource(eq("s3://default-defaultBucket/" + SAMPLE_CONTENT_ID));
                                 }
 
                                 @Test
-                                void shouldNotFindTheContent() {
+                                void shouldNotFindContent() {
                                     assertThat(result).isNull();
                                 }
                             }
@@ -1431,7 +1431,7 @@ public class DefaultS3StoreImplTest {
                                 }
 
                                 @Test
-                                void shouldFetchTheResource() {
+                                void shouldFetchResource() {
                                     verify(loader).getResource(eq("s3://default-defaultBucket/" + SAMPLE_CONTENT_ID));
                                 }
 
@@ -1473,7 +1473,7 @@ public class DefaultS3StoreImplTest {
                                     }
 
                                     @Test
-                                    void shouldResetTheMetadata() {
+                                    void shouldResetMetadata() {
                                         assertThat(entity.getContentId()).isNull();
                                         assertThat(entity.getContentLen()).isNull();
                                     }
@@ -1520,7 +1520,7 @@ public class DefaultS3StoreImplTest {
                                     }
 
                                     @Test
-                                    void shouldNotResetTheContentIdMetadata() {
+                                    void shouldNotResetContentIdMetadata() {
                                         assertThat(entity.getContentId()).isEqualTo(SAMPLE_CONTENT_ID);
                                         assertThat(entity.getContentLen()).isNull();
                                     }
@@ -1567,7 +1567,7 @@ public class DefaultS3StoreImplTest {
                                     }
 
                                     @Test
-                                    void shouldNotResetTheContentIdMetadata() {
+                                    void shouldNotResetContentIdMetadata() {
                                         assertThat(entity.getContentId()).isEqualTo(SAMPLE_CONTENT_ID);
                                         assertThat(entity.getContentLen()).isNull();
                                     }
@@ -1613,12 +1613,12 @@ public class DefaultS3StoreImplTest {
                                 }
 
                                 @Test
-                                void shouldFetchTheResource() {
+                                void shouldFetchResource() {
                                     verify(loader).getResource(eq("s3://default-defaultBucket/" + SAMPLE_CONTENT_ID));
                                 }
 
                                 @Test
-                                void shouldUnsetTheContent() {
+                                void shouldUnsetContent() {
                                     verify(client, never()).deleteObject(any(DeleteObjectRequest.class));
                                     assertThat(entity.getContentId()).isNull();
                                     assertThat(entity.getContentLen()).isNull();

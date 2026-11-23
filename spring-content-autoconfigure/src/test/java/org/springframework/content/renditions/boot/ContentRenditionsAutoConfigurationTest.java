@@ -37,7 +37,7 @@ public class ContentRenditionsAutoConfigurationTest {
         @DisplayName("Given a default configuration")
         class DefaultConfiguration {
             @Test
-            void shouldLoadTheAllRenderers() {
+            void shouldLoadAllRenderers() {
                 AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
                 context.register(TestConfig.class);
                 context.refresh();

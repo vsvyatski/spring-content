@@ -75,12 +75,12 @@ public class EnableGCPStorageTest {
             }
 
             @Test
-            void shouldHaveAContentStoreBean() {
+            void shouldHaveContentStoreBean() {
                 assertThat(context.getBean(SingleContentGcsStore.class)).isNotNull();
             }
 
             @Test
-            void shouldHaveAnPlacementService() {
+            void shouldHavePlacementService() {
                 assertThat(context.getBean("gcpStoragePlacementService")).isNotNull();
             }
         }
@@ -102,7 +102,7 @@ public class EnableGCPStorageTest {
             }
 
             @Test
-            void shouldCallThatConfigurerToHelpSetupTheStore() {
+            void shouldCallThatConfigurerToHelpSetupStore() {
                 verify(configurer).configureGCPStorageConverters(any());
             }
         }

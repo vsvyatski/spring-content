@@ -79,7 +79,7 @@ public class DefaultFileSystemStoresImplTest {
                 }
 
                 @Test
-                void shouldUseThePlacerServiceToGetAResourcePath() {
+                void shouldUsePlacerServiceToGetResourcePath() {
                     verify(placer).convert(eq(SAMPLE_CONTENT_ID), eq(String.class));
                     verify(loader).getResource(eq(SAMPLE_CONTENT_ID));
                 }
@@ -107,7 +107,7 @@ public class DefaultFileSystemStoresImplTest {
                     }
 
                     @Test
-                    void shouldNotReturnAResource() {
+                    void shouldNotReturnResource() {
                         assertThat(resource).isNull();
                     }
                 }
@@ -134,7 +134,7 @@ public class DefaultFileSystemStoresImplTest {
                     }
 
                     @Test
-                    void shouldUseThePlacerServiceToGetAResourcePath() {
+                    void shouldUsePlacerServiceToGetResourcePath() {
                         verify(placer).convert(eq(SAMPLE_CONTENT_ID), eq(String.class));
                         verify(loader).getResource(eq(SAMPLE_FS_RESOURCE_PATH));
                     }
@@ -164,12 +164,12 @@ public class DefaultFileSystemStoresImplTest {
                     }
 
                     @Test
-                    void shouldNotNeedToConvertTheId() {
+                    void shouldNotNeedToConvertId() {
                         verify(placer, never()).convert(not(eq(entity)), eq(String.class));
                     }
 
                     @Test
-                    void shouldReturnTheResource() {
+                    void shouldReturnResource() {
                         assertThat(resource).isEqualTo(deletableResource);
                     }
                 }
@@ -195,7 +195,7 @@ public class DefaultFileSystemStoresImplTest {
                     }
 
                     @Test
-                    void shouldNotCallThePlacementServiceTryingToConvertTheEntityToAString() {
+                    void shouldNotCallPlacementServiceTryingToConvertEntityToString() {
                         verify(placer, never()).convert(eq(entity), eq(String.class));
                     }
                 }
@@ -228,7 +228,7 @@ public class DefaultFileSystemStoresImplTest {
                 }
 
                 @Test
-                void shouldSetTheEntitySContentIDAttribute() {
+                void shouldSetEntitySContentIDAttribute() {
                     assertThat(entity.getContentId()).isEqualTo(SAMPLE_CONTENT_ID);
                 }
             }
@@ -251,7 +251,7 @@ public class DefaultFileSystemStoresImplTest {
                 }
 
                 @Test
-                void shouldResetTheEntitySContentIDAttribute() {
+                void shouldResetEntitySContentIDAttribute() {
                     assertThat(entity.getContentId()).isNull();
                 }
             }
@@ -309,17 +309,17 @@ public class DefaultFileSystemStoresImplTest {
                         }
 
                         @Test
-                        void shouldMakeANewUUID() {
+                        void shouldMakeNewUUID() {
                             assertThat(entity.getContentId()).isNotNull();
                         }
 
                         @Test
-                        void shouldCreateANewResource() {
+                        void shouldCreateNewResource() {
                             verify(loader).getResource(eq(SAMPLE_CONTENT_ID));
                         }
 
                         @Test
-                        void shouldWriteToTheResourceSOutputStream() throws IOException {
+                        void shouldWriteToResourceSOutputStream() throws IOException {
                             verify(writeableResource).getOutputStream();
                             verify(output, times(1)).write(ArgumentMatchers.any(), eq(0),
                                 eq(20));
@@ -362,14 +362,14 @@ public class DefaultFileSystemStoresImplTest {
                         }
 
                         @Test
-                        void shouldWriteToTheResourceSOutputStream() throws IOException {
+                        void shouldWriteToResourceSOutputStream() throws IOException {
                             verify(output, times(1)).write(ArgumentMatchers.any(), eq(0),
                                 eq(20));
                             verify(output).close();
                         }
 
                         @Test
-                        void shouldChangeTheContentLength() {
+                        void shouldChangeContentLength() {
                             assertThat(entity.getContentLen()).isEqualTo(20L);
                         }
                     }
@@ -424,18 +424,18 @@ public class DefaultFileSystemStoresImplTest {
                         }
 
                         @Test
-                        void shouldUseThePlacerServiceToGetAResourcePath() {
+                        void shouldUsePlacerServiceToGetResourcePath() {
                             verify(placer, atLeastOnce()).convert(any(), eq(String.class));
                             verify(loader).getResource(eq(SAMPLE_CONTENT_ID));
                         }
 
                         @Test
-                        void shouldChangeTheContentLength() {
+                        void shouldChangeContentLength() {
                             assertThat(entity.getContentLen()).isEqualTo(20L);
                         }
 
                         @Test
-                        void shouldWriteToTheResourceSOutputStream() throws IOException {
+                        void shouldWriteToResourceSOutputStream() throws IOException {
                             verify(writeableResource).getOutputStream();
                             verify(output, times(1)).write(ArgumentMatchers.any(), eq(0),
                                 eq(20));
@@ -498,17 +498,17 @@ public class DefaultFileSystemStoresImplTest {
                         }
 
                         @Test
-                        void shouldMakeANewUUID() {
+                        void shouldMakeNewUUID() {
                             assertThat(entity.getContentId()).isNotNull();
                         }
 
                         @Test
-                        void shouldCreateANewResource() {
+                        void shouldCreateNewResource() {
                             verify(loader).getResource(eq(SAMPLE_CONTENT_ID));
                         }
 
                         @Test
-                        void shouldWriteToTheResourceSOutputStream() throws IOException {
+                        void shouldWriteToResourceSOutputStream() throws IOException {
                             verify(writeableResource).getOutputStream();
                             verify(output, times(1)).write(ArgumentMatchers.any(), eq(0),
                                 eq(20));
@@ -566,7 +566,7 @@ public class DefaultFileSystemStoresImplTest {
                         }
 
                         @Test
-                        void shouldReturnAStoreAccessExceptionWrappingTheIOException() {
+                        void shouldReturnStoreAccessExceptionWrappingIOException() {
                             assertThat(e).isInstanceOf(StoreAccessException.class);
                             assertThat(e.getCause()).isInstanceOf(IOException.class);
                         }
@@ -628,7 +628,7 @@ public class DefaultFileSystemStoresImplTest {
                     }
 
                     @Test
-                    void shouldThrowAStoreAccessException() {
+                    void shouldThrowStoreAccessException() {
                         assertThat(e).isInstanceOf(StoreAccessException.class);
                         assertThat(e.getCause().getMessage()).contains("setContent badness");
                     }
@@ -686,7 +686,7 @@ public class DefaultFileSystemStoresImplTest {
                         }
 
                         @Test
-                        void shouldNotReturnTheContent() {
+                        void shouldNotReturnContent() {
                             assertThat(result).isNull();
                         }
                     }
@@ -786,7 +786,7 @@ public class DefaultFileSystemStoresImplTest {
                         }
 
                         @Test
-                        void shouldNotFindTheContent() {
+                        void shouldNotFindContent() {
                             assertThat(result).isNull();
                         }
                     }
@@ -870,7 +870,7 @@ public class DefaultFileSystemStoresImplTest {
                             }
 
                             @Test
-                            void shouldReturnAStoreAccessExceptionWrappingTheIOException() {
+                            void shouldReturnStoreAccessExceptionWrappingIOException() {
                                 assertThat(e).isInstanceOf(StoreAccessException.class);
                                 assertThat(e.getCause().getMessage()).isEqualTo("test-ioexception");
                             }
@@ -922,7 +922,7 @@ public class DefaultFileSystemStoresImplTest {
                         }
 
                         @Test
-                        void shouldCheckTheNewLocationAndThenTheOld() {
+                        void shouldCheckNewLocationAndThenOld() {
                             InOrder inOrder = Mockito.inOrder(loader);
 
                             inOrder.verify(loader).getResource(eq(SAMPLE_CONTENT_ID));
@@ -975,7 +975,7 @@ public class DefaultFileSystemStoresImplTest {
                         }
 
                         @Test
-                        void shouldNotDeleteTheResource() throws IOException {
+                        void shouldNotDeleteResource() throws IOException {
                             verify(nonExistentResource, never()).delete();
                         }
                     }
@@ -1022,7 +1022,7 @@ public class DefaultFileSystemStoresImplTest {
                         }
 
                         @Test
-                        void shouldDeleteTheResource() throws IOException {
+                        void shouldDeleteResource() throws IOException {
                             verify(deletableResource, times(1)).delete();
                         }
                     }
@@ -1071,7 +1071,7 @@ public class DefaultFileSystemStoresImplTest {
                         }
 
                         @Test
-                        void shouldDeleteTheResource() throws IOException {
+                        void shouldDeleteResource() throws IOException {
                             verify(deletableResource, times(1)).delete();
                         }
 
@@ -1115,7 +1115,7 @@ public class DefaultFileSystemStoresImplTest {
                             }
 
                             @Test
-                            void shouldResetTheMetadata() {
+                            void shouldResetMetadata() {
                                 assertThat(entity.getContentId()).isNull();
                                 assertThat(entity.getContentLen()).isNull();
                             }
@@ -1164,7 +1164,7 @@ public class DefaultFileSystemStoresImplTest {
                             }
 
                             @Test
-                            void shouldNotResetTheContentIdMetadata() {
+                            void shouldNotResetContentIdMetadata() {
                                 assertThat(entity.getContentId()).isEqualTo(SAMPLE_CONTENT_ID);
                                 assertThat(entity.getContentLen()).isNull();
                             }
@@ -1213,7 +1213,7 @@ public class DefaultFileSystemStoresImplTest {
                             }
 
                             @Test
-                            void shouldNotResetTheContentIdMetadata() {
+                            void shouldNotResetContentIdMetadata() {
                                 assertThat(entity.getContentId()).isEqualTo(SAMPLE_CONTENT_ID);
                                 assertThat(entity.getContentLen()).isNull();
                             }
@@ -1251,7 +1251,7 @@ public class DefaultFileSystemStoresImplTest {
                         }
 
                         @Test
-                        void shouldUnsetTheContent() throws IOException {
+                        void shouldUnsetContent() throws IOException {
                             verify(nonExistentResource, never()).delete();
                             assertThat(entity.getContentId()).isNull();
                             assertThat(entity.getContentLen()).isNull();

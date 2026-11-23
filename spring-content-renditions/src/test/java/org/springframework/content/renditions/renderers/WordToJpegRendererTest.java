@@ -85,7 +85,7 @@ public class WordToJpegRendererTest {
                 }
 
                 @Test
-                void shouldGetTheEmbeddedThumbnailFromTheXWPFDocumentSProperties() throws IOException {
+                void shouldGetEmbeddedThumbnailFromXWPFDocumentSProperties() throws IOException {
                     verify(props).getThumbnailImage();
                 }
 
@@ -116,7 +116,7 @@ public class WordToJpegRendererTest {
                     }
 
                     @Test
-                    void shouldThrowARenditionException() {
+                    void shouldThrowRenditionException() {
                         assertThat(e).isNotNull();
                         assertThat(e).isInstanceOf(RenditionException.class);
                     }
@@ -150,7 +150,7 @@ public class WordToJpegRendererTest {
                     }
 
                     @Test
-                    void shouldThrowARenditionException() {
+                    void shouldThrowRenditionException() {
                         assertThat(e).isNotNull();
                         assertThat(e).isInstanceOf(RenditionException.class);
                     }
@@ -185,7 +185,7 @@ public class WordToJpegRendererTest {
                     }
 
                     @Test
-                    void shouldThrowARenditionException() {
+                    void shouldThrowRenditionException() {
                         assertThat(e).isNotNull();
                         assertThat(e).isInstanceOf(RenditionException.class);
                     }
@@ -208,7 +208,7 @@ public class WordToJpegRendererTest {
                 }
 
                 @Test
-                void shouldGetTheEmbeddedThumbnailFromTheXWPFDocumentSProperties() {
+                void shouldGetEmbeddedThumbnailFromXWPFDocumentSProperties() {
                     assertThat(e).isNotNull();
                 }
             }

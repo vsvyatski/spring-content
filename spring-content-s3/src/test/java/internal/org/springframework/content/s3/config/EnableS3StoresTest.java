@@ -111,12 +111,12 @@ public class EnableS3StoresTest {
             }
 
             @Test
-            void shouldHaveAContentStoreBean() {
+            void shouldHaveContentStoreBean() {
                 assertThat(context.getBean(SingleContentS3Store.class)).isNotNull();
             }
 
             @Test
-            void shouldHaveAnPlacementService() {
+            void shouldHavePlacementService() {
                 assertThat(context.getBean("s3StorePlacementService")).isNotNull();
             }
         }
@@ -138,7 +138,7 @@ public class EnableS3StoresTest {
             }
 
             @Test
-            void shouldCallThatConfigurerToHelpSetupTheStore() {
+            void shouldCallThatConfigurerToHelpSetupStore() {
                 verify(configurer).configureS3StoreConverters(any(ConverterRegistry.class));
             }
         }
@@ -181,7 +181,7 @@ public class EnableS3StoresTest {
             }
 
             @Test
-            void shouldUseTheCorrectClient() {
+            void shouldUseCorrectClient() {
                 SingleContentS3Store repo = context.getBean(SingleContentS3Store.class);
                 SingleContentFields entity = new SingleContentFields();
                 entity.setContentId("12345");

@@ -26,7 +26,7 @@ public class FileSystemPropertiesTest {
             }
 
             @Test
-            void shouldReturnAJavaIOTmpDirBasedDefault() {
+            void shouldReturnJavaIOTmpDirBasedDefault() {
                 assertThat(props.getFileSystemRoot()).startsWith(System.getProperty("java.io.tmpdir"));
             }
         }
@@ -41,14 +41,14 @@ public class FileSystemPropertiesTest {
 
             @Test
             @EnabledOnOs(OS.WINDOWS)
-            void shouldReturnTheConfiguredRootOnWindows() {
+            void shouldReturnConfiguredRootOnWindows() {
                 props.setFileSystemRoot("C:\\some\\random\\path");
                 assertThat(props.getFileSystemRoot()).isEqualTo("C:\\some\\random\\path");
             }
 
             @Test
             @DisabledOnOs(OS.WINDOWS)
-            void shouldReturnTheConfiguredRoot() {
+            void shouldReturnConfiguredRoot() {
                 props.setFileSystemRoot("/some/random/path");
                 assertThat(props.getFileSystemRoot()).isEqualTo("/some/random/path");
             }

@@ -302,7 +302,7 @@ public class MongoStoreIT {
                     }
 
                     @Test
-                    void shouldNotHaveAnAssociatedResource() {
+                    void shouldNotHaveAssociatedResource() {
                         assertThat(entity.getContentId()).isNull();
                         NullableAssertions.assertNull(store.getResource(entity));
                     }
@@ -344,7 +344,7 @@ public class MongoStoreIT {
                             }
 
                             @Test
-                            void shouldBeRecordedAsSuchOnTheEntitySContentId() {
+                            void shouldBeRecordedAsSuchOnEntitySContentId() {
                                 assertThat(entity.getContentId()).isEqualTo(resourceLocation);
                                 assertThat(entity.getRenditionId()).isEqualTo(resourceLocation);
                             }
@@ -428,7 +428,7 @@ public class MongoStoreIT {
                             }
 
                             @Test
-                            void shouldResetTheEntitySContentId() {
+                            void shouldResetEntitySContentId() {
                                 assertThat(entity.getContentId()).isNull();
                                 assertThat(entity.getRenditionId()).isNull();
                             }
@@ -465,7 +465,7 @@ public class MongoStoreIT {
                             }
 
                             @Test
-                            void shouldThrowAnError() {
+                            void shouldThrowError() {
                                 try {
                                     store.associate(entity, PropertyPath.from("does.not.exist"), resourceLocation);
                                 } catch (Exception sae) {
@@ -506,7 +506,7 @@ public class MongoStoreIT {
                             }
 
                             @Test
-                            void shouldThrowAnError() {
+                            void shouldThrowError() {
                                 try {
                                     store.getResource(entity, PropertyPath.from("does.not.exist"));
                                 } catch (Exception sae) {
@@ -547,7 +547,7 @@ public class MongoStoreIT {
                             }
 
                             @Test
-                            void shouldThrowAnError() {
+                            void shouldThrowError() {
                                 try {
                                     store.unassociate(entity, PropertyPath.from("does.not.exist"));
                                 } catch (Exception sae) {
@@ -654,7 +654,7 @@ public class MongoStoreIT {
                 }
 
                 @Test
-                void shouldHaveTheUpdatedContent() throws IOException {
+                void shouldHaveUpdatedContent() throws IOException {
                     //content
                     try (InputStream content = store.getContent(entity)) {
                         boolean matches = IOUtils.contentEquals(TestSupportData.sampleUpdatedTextStream(), content);
@@ -702,7 +702,7 @@ public class MongoStoreIT {
                 }
 
                 @Test
-                void shouldStoreOnlyTheNewContent() throws IOException {
+                void shouldStoreOnlyNewContent() throws IOException {
                     //content
                     try (InputStream content = store.getContent(entity)) {
                         boolean matches = IOUtils.contentEquals(TestSupportData.samplePartialUpdateStream(), content);
@@ -746,7 +746,7 @@ public class MongoStoreIT {
                 }
 
                 @Test
-                void shouldHaveTheUpdatedContent() throws IOException {
+                void shouldHaveUpdatedContent() throws IOException {
                     String contentId = entity.getContentId();
                     assertThat(contentId).isNotNull();
                     assertThat(gridFsTemplate.getResource(contentId).exists()).isTrue();
@@ -903,7 +903,7 @@ public class MongoStoreIT {
                 }
 
                 @Test
-                void shouldThrowAnError() {
+                void shouldThrowError() {
                     try {
                         store.setContent(entity, PropertyPath.from("does.not.exist"), new ByteArrayInputStream("foo".getBytes()));
                     } catch (Exception sae) {
@@ -942,7 +942,7 @@ public class MongoStoreIT {
                 }
 
                 @Test
-                void shouldThrowAnError() {
+                void shouldThrowError() {
                     try {
                         store.getContent(entity, PropertyPath.from("does.not.exist"));
                     } catch (Exception sae) {
@@ -981,7 +981,7 @@ public class MongoStoreIT {
                 }
 
                 @Test
-                void shouldThrowAnError() {
+                void shouldThrowError() {
                     try {
                         store.unsetContent(entity, PropertyPath.from("does.not.exist"));
                     } catch (Exception sae) {
@@ -1020,7 +1020,7 @@ public class MongoStoreIT {
                 }
 
                 @Test
-                void shouldNotResetTheIdField() {
+                void shouldNotResetIdField() {
                     SharedIdJakartaMongoRepository sharedIdRepository = context.getBean(SharedIdJakartaMongoRepository.class);
                     SharedIdJakartaMongoStore sharedIdStore = context.getBean(SharedIdJakartaMongoStore.class);
 
@@ -1065,7 +1065,7 @@ public class MongoStoreIT {
                 }
 
                 @Test
-                void shouldNotResetTheIdField() {
+                void shouldNotResetIdField() {
                     SharedIdSpringMongoRepository SharedIdSpringMongoRepository = context.getBean(SharedIdSpringMongoRepository.class);
                     SharedIdSpringMongoStore SharedIdSpringMongoStore = context.getBean(SharedIdSpringMongoStore.class);
 

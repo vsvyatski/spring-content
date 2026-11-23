@@ -43,7 +43,7 @@ public class ContentLinksIT {
             }
 
             @Test
-            void shouldProvideAResponseWithAContentLink() throws Exception {
+            void shouldProvideResponseWithContentLink() throws Exception {
                 assertContentLinkInHalResponse();
             }
         }
@@ -70,7 +70,7 @@ public class ContentLinksIT {
             }
 
             @Test
-            void shouldProvideAResponseWithAContentLink() throws Exception {
+            void shouldProvideResponseWithContentLink() throws Exception {
                 assertContentLinkInHalResponse();
             }
         }
@@ -98,7 +98,7 @@ public class ContentLinksIT {
             }
 
             @Test
-            void shouldProvideAResponseWithAContentLink() throws Exception {
+            void shouldProvideResponseWithContentLink() throws Exception {
                 assertContentLinkInHalResponse();
             }
         }
@@ -129,7 +129,7 @@ public class ContentLinksIT {
             }
 
             @Test
-            void shouldProvideAResponseWithAContentLink() throws Exception {
+            void shouldProvideResponseWithContentLink() throws Exception {
                 assertContentLinkInHalResponse();
             }
         }

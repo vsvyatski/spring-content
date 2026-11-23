@@ -377,7 +377,7 @@ public class ContentSearchRestControllerIT {
                 }
 
                 @Test
-                void shouldThrowAnException() throws Exception {
+                void shouldThrowException() throws Exception {
                     MvcResult result = mvc.perform(get(
                             "/testEntityNoContents/searchContent?queryString=one")
                             .accept("application/hal+json"))
@@ -406,7 +406,7 @@ public class ContentSearchRestControllerIT {
                 }
 
                 @Test
-                void shouldThrowAResourceNotFoundException() throws Exception {
+                void shouldThrowResourceNotFoundException() throws Exception {
                     MvcResult result = mvc.perform(get(
                             "/testEntityNotSearchables/searchContent?queryString=one")
                             .accept("application/hal+json"))
@@ -435,7 +435,7 @@ public class ContentSearchRestControllerIT {
                 }
 
                 @Test
-                void shouldReturnAResourceNotFoundException() throws Exception {
+                void shouldReturnResourceNotFoundException() throws Exception {
                     mvc.perform(get(
                             "/testEntityWithSharedIds/searchContent/invalidSearchMethod?keyword=one")
                             .accept("application/hal+json"))
@@ -461,7 +461,7 @@ public class ContentSearchRestControllerIT {
                 }
 
                 @Test
-                void shouldReturnABadRequestException() throws Exception {
+                void shouldReturnBadRequestException() throws Exception {
                     mvc.perform(get("/testEntityWithSharedIds/searchContent")
                             .accept("application/hal+json"))
                         .andExpect(status().isBadRequest());
@@ -486,7 +486,7 @@ public class ContentSearchRestControllerIT {
                 }
 
                 @Test
-                void shouldInvokeSearchWithThePageRequest() throws Exception {
+                void shouldInvokeSearchWithPageRequest() throws Exception {
                     mvc.perform(get("/testEntityWithSeparateIds/searchContent?queryString=else&page=1&size=1")
                             .accept("application/hal+json"))
                         .andExpect(status().isOk()).andReturn();
@@ -523,7 +523,7 @@ public class ContentSearchRestControllerIT {
                     }
 
                     @Test
-                    void shouldReturnAnEmptyResponseEntity() throws Exception {
+                    void shouldReturnEmptyResponseEntity() throws Exception {
                         MvcResult result = mvc.perform(get(
                                 "/testEntityWithSharedIds/searchContent?queryString=one")
                                 .accept("application/hal+json"))
@@ -572,7 +572,7 @@ public class ContentSearchRestControllerIT {
                     }
 
                     @Test
-                    void shouldReturnAResponseEntityWithTheEntity() throws Exception {
+                    void shouldReturnResponseEntityWithEntity() throws Exception {
                         MvcResult result = mvc.perform(get(
                                 "/testEntityWithSharedIds/searchContent?queryString=two")
                                 .accept("application/hal+json"))
@@ -680,7 +680,7 @@ public class ContentSearchRestControllerIT {
                     }
 
                     @Test
-                    void shouldReturnAnEmptyResponseEntity() throws Exception {
+                    void shouldReturnEmptyResponseEntity() throws Exception {
                         MvcResult result = mvc.perform(get(
                                 "/testEntityWithSeparateIds/searchContent?queryString=something")
                                 .accept("application/hal+json"))
@@ -729,7 +729,7 @@ public class ContentSearchRestControllerIT {
                     }
 
                     @Test
-                    void shouldReturnAResponseEntityWithTheEntity() throws Exception {
+                    void shouldReturnResponseEntityWithEntity() throws Exception {
                         MvcResult result = mvc.perform(get(
                                 "/testEntityWithSeparateIds/searchContent?queryString=else")
                                 .accept("application/hal+json"))
@@ -838,7 +838,7 @@ public class ContentSearchRestControllerIT {
                 }
 
                 @Test
-                void shouldReturnAResponseEntityWithTheEntity() throws Exception {
+                void shouldReturnResponseEntityWithEntity() throws Exception {
                     MvcResult result = mvc.perform(get(
                             "/repoWithCustomSearchReturnType/searchContent?queryString=else")
                             .accept("application/hal+json"))
@@ -896,7 +896,7 @@ public class ContentSearchRestControllerIT {
                 }
 
                 @Test
-                void shouldReturnAResponseEntityWithTheEntity() throws Exception {
+                void shouldReturnResponseEntityWithEntity() throws Exception {
                     MvcResult result = mvc.perform(get(
                             "/repoWithCustomSearchReturnType/searchContent?queryString=else&page=1&size=1")
                             .accept("application/hal+json"))
@@ -954,7 +954,7 @@ public class ContentSearchRestControllerIT {
                 }
 
                 @Test
-                void shouldReturnAResponseWithTheEntity() throws Exception {
+                void shouldReturnResponseWithEntity() throws Exception {
                     MvcResult result = mvc.perform(get(
                             "/repoWithNoLookupStrategy/searchContent?queryString=else")
                             .accept("application/hal+json"))

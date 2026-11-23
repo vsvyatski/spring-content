@@ -78,7 +78,7 @@ public class ContentLinksResourceProcessorIT {
                 }
 
                 @Test
-                void shouldAddAnEntityContentLinks() {
+                void shouldAddEntityContentLinks() {
                     assertThat(resource.getLinks("content")).extracting("href").contains("http://localhost/contentApi/oneToOneLinkedContentEntities/999/content");
                 }
             }
@@ -260,7 +260,7 @@ public class ContentLinksResourceProcessorIT {
             }
 
             @Test
-            void shouldNotTryToGenerateContentPropertyLinksForTheEmbeddedObject() {
+            void shouldNotTryToGenerateContentPropertyLinksForEmbeddedObject() {
                 assertThat(resource.getLinks().isEmpty()).isTrue();
             }
         }

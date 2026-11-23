@@ -86,12 +86,12 @@ public class EnableAzureStorageTest {
             }
 
             @Test
-            void shouldHaveAContentStoreBean() {
+            void shouldHaveContentStoreBean() {
                 assertThat(context.getBean(SingleContentAzureStore.class)).isNotNull();
             }
 
             @Test
-            void shouldHaveAnPlacementService() {
+            void shouldHavePlacementService() {
                 assertThat(context.getBean("azureStoragePlacementService")).isNotNull();
             }
         }
@@ -113,7 +113,7 @@ public class EnableAzureStorageTest {
             }
 
             @Test
-            void shouldCallThatConfigurerToHelpSetupTheStore() {
+            void shouldCallThatConfigurerToHelpSetupStore() {
                 verify(configurer).configureAzureStorageConverters(any());
             }
         }

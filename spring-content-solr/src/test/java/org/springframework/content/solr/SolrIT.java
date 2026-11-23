@@ -86,7 +86,7 @@ public class SolrIT {
         }
 
         @Test
-        void shouldIndexTheContentOfThatDocument() {
+        void shouldIndexContentOfThatDocument() {
             org.awaitility.Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
                 SolrQuery query = new SolrQuery();
                 query.setQuery("foo");
@@ -127,7 +127,7 @@ public class SolrIT {
             }
 
             @Test
-            void shouldReturnTheSearchedContent() {
+            void shouldReturnSearchedContent() {
                 Iterable<UUID> content = docContentStore.search("one");
                 assertThat(content).contains(doc.getContentId());
             }
@@ -163,7 +163,7 @@ public class SolrIT {
             }
 
             @Test
-            void shouldIndexTheNewContent() {
+            void shouldIndexNewContent() {
                 org.awaitility.Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
                     SolrQuery query = new SolrQuery();
                     query.setQuery("bar");
@@ -204,7 +204,7 @@ public class SolrIT {
             }
 
             @Test
-            void shouldDeleteTheRecordOfTheContentFromTheIndex() throws SolrServerException, IOException {
+            void shouldDeleteRecordOfContentFromIndex() throws SolrServerException, IOException {
                 SolrQuery query = new SolrQuery();
                 query.setQuery("one");
                 query.addFilterQuery(format(
@@ -326,7 +326,7 @@ public class SolrIT {
         }
 
         @Test
-        void shouldApplyTheProvidedAttributesAndFilterQuery() {
+        void shouldApplyProvidedAttributesAndFilterQuery() {
             Iterable<UUID> tmp = docContentStore.search("one");
             assertThat(tmp).isNotNull();
 
@@ -362,7 +362,7 @@ public class SolrIT {
         }
 
         @Test
-        void shouldReturnResultsUsingTheReturnType() {
+        void shouldReturnResultsUsingReturnType() {
             org.awaitility.Awaitility.await().untilAsserted(() -> {
                 var result = (store.search("one"));
                 Iterator<FulltextSearchResult> iterator = result.iterator();

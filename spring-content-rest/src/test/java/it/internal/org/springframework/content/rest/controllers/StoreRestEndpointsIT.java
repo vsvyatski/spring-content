@@ -85,7 +85,7 @@ public class StoreRestEndpointsIT {
                 }
 
                 @Test
-                void shouldSetTheContentAndReturn201() throws Exception {
+                void shouldSetContentAndReturn201() throws Exception {
                     String content = "New multi-part content";
 
                     mvc.perform(multipart(request).file(new MockMultipartFile("file",
@@ -136,7 +136,7 @@ public class StoreRestEndpointsIT {
             }
 
             @Test
-            void shouldReturnTheResourceSContent() throws Exception {
+            void shouldReturnResourceSContent() throws Exception {
                 MockHttpServletResponse response = mvc.perform(get(request))
                     .andExpect(status().isOk()).andReturn().getResponse();
 
@@ -145,7 +145,7 @@ public class StoreRestEndpointsIT {
             }
 
             @Test
-            void shouldReturnAByteRangeWhenRequested() throws Exception {
+            void shouldReturnByteRangeWhenRequested() throws Exception {
                 MockHttpServletResponse response = mvc
                     .perform(get(request).header("range", "bytes=9-12"))
                     .andExpect(status().isPartialContent()).andReturn()
@@ -156,7 +156,7 @@ public class StoreRestEndpointsIT {
             }
 
             @Test
-            void shouldOverwriteTheResourceSContent() throws Exception {
+            void shouldOverwriteResourceSContent() throws Exception {
                 mvc.perform(put(request).content("New Existing content")
                     .contentType("text/plain")).andExpect(status().isOk());
 
@@ -167,7 +167,7 @@ public class StoreRestEndpointsIT {
             }
 
             @Test
-            void shouldDeleteTheResource() throws Exception {
+            void shouldDeleteResource() throws Exception {
                 mvc.perform(delete(request)).andExpect(status().isNoContent());
 
                 Resource r = store.getResource(path);
@@ -192,7 +192,7 @@ public class StoreRestEndpointsIT {
                 }
 
                 @Test
-                void shouldOverwriteTheContentAndReturn200() throws Exception {
+                void shouldOverwriteContentAndReturn200() throws Exception {
                     String content = "New multi-part content";
 
                     mvc.perform(multipart(request).file(new MockMultipartFile("file",
@@ -227,7 +227,7 @@ public class StoreRestEndpointsIT {
             }
 
             @Test
-            void shouldReturnTheResourceSContent() throws Exception {
+            void shouldReturnResourceSContent() throws Exception {
                 MockHttpServletResponse response = mvc.perform(get(request))
                     .andExpect(status().isOk()).andReturn().getResponse();
 
@@ -236,7 +236,7 @@ public class StoreRestEndpointsIT {
             }
 
             @Test
-            void shouldReturnAByteRangeWhenRequested() throws Exception {
+            void shouldReturnByteRangeWhenRequested() throws Exception {
                 MockHttpServletResponse response = mvc
                     .perform(get(request).header("range", "bytes=9-12"))
                     .andExpect(status().isPartialContent()).andReturn()
@@ -247,7 +247,7 @@ public class StoreRestEndpointsIT {
             }
 
             @Test
-            void shouldOverwriteTheResourceSContent() throws Exception {
+            void shouldOverwriteResourceSContent() throws Exception {
                 mvc.perform(put(request).content("New Existing content")
                     .contentType("text/plain")).andExpect(status().isOk());
 
@@ -258,7 +258,7 @@ public class StoreRestEndpointsIT {
             }
 
             @Test
-            void shouldDeleteTheResource() throws Exception {
+            void shouldDeleteResource() throws Exception {
                 mvc.perform(delete(request)).andExpect(status().isNoContent());
 
                 Resource r = store.getResource(path);
@@ -283,7 +283,7 @@ public class StoreRestEndpointsIT {
                 }
 
                 @Test
-                void shouldReturnTheResourceSContent() throws Exception {
+                void shouldReturnResourceSContent() throws Exception {
                     MockHttpServletResponse response = mvc
                         .perform(get(request).accept("text/html",
                             "application/xhtml+xml", "application/xml;q=0.9",
@@ -313,7 +313,7 @@ public class StoreRestEndpointsIT {
                 }
 
                 @Test
-                void shouldOverwriteTheContentAndReturn200() throws Exception {
+                void shouldOverwriteContentAndReturn200() throws Exception {
                     String content = "New multi-part content";
 
                     mvc.perform(multipart(request).file(new MockMultipartFile("file",

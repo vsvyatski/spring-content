@@ -157,7 +157,7 @@ public class RestResourceMappedRestEndpointsIT {
                     }
 
                     @Test
-                    void shouldCreateTheContent() throws Exception {
+                    void shouldCreateContent() throws Exception {
                         mvc.perform(
                                 put("/restResourcePackageEntities/" + testEntity11.getId() + "/package/content")
                                     .content("Hello New Spring Content World!")
@@ -186,7 +186,7 @@ public class RestResourceMappedRestEndpointsIT {
                     }
 
                     @Test
-                    void shouldSetTheContentAndReturn201() throws Exception {
+                    void shouldSetContentAndReturn201() throws Exception {
                         String content = "{\"content\":\"Hello New Spring Content World!\"}";
                         mvc.perform(
                                 put("/restResourcePackageEntities/" + testEntity11.getId() + "/package/content")
@@ -230,7 +230,7 @@ public class RestResourceMappedRestEndpointsIT {
                     }
 
                     @Test
-                    void shouldReturnTheMappedContentLinks() throws Exception {
+                    void shouldReturnMappedContentLinks() throws Exception {
                         MockHttpServletResponse res = mvc.perform(
                                 get("/restResourcePackageEntities/" + testEntity11.getId())
                                     .accept("application/hal+json"))
@@ -269,7 +269,7 @@ public class RestResourceMappedRestEndpointsIT {
                     }
 
                     @Test
-                    void shouldReturnTheContent() throws Exception {
+                    void shouldReturnContent() throws Exception {
                         MockHttpServletResponse response = mvc
                             .perform(get("/restResourcePackageEntities/" + testEntity11.getId() + "/package/content")
                                 .accept("text/plain"))
@@ -305,7 +305,7 @@ public class RestResourceMappedRestEndpointsIT {
                     }
 
                     @Test
-                    void shouldReturnTheRenditionAnd200() throws Exception {
+                    void shouldReturnRenditionAnd200() throws Exception {
                         MockHttpServletResponse response = mvc
                             .perform(get(
                                 "/restResourcePackageEntities/" + testEntity11.getId() + "/package/content")
@@ -339,7 +339,7 @@ public class RestResourceMappedRestEndpointsIT {
                     }
 
                     @Test
-                    void shouldReturnTheOriginalContentAnd200() throws Exception {
+                    void shouldReturnOriginalContentAnd200() throws Exception {
                         MockHttpServletResponse response = mvc
                             .perform(get("/restResourcePackageEntities/" + testEntity11.getId() + "/package/content").accept(
                                 "text/xml",
@@ -373,7 +373,7 @@ public class RestResourceMappedRestEndpointsIT {
                     }
 
                     @Test
-                    void shouldCreateTheContent() throws Exception {
+                    void shouldCreateContent() throws Exception {
                         mvc.perform(
                                 put("/restResourcePackageEntities/" + testEntity11.getId() + "/package/content")
                                     .content("Hello New Spring Content World!")
@@ -409,7 +409,7 @@ public class RestResourceMappedRestEndpointsIT {
                     }
 
                     @Test
-                    void shouldDeleteTheContent() throws Exception {
+                    void shouldDeleteContent() throws Exception {
                         mvc.perform(delete(
                                 "/restResourcePackageEntities/" + testEntity11.getId() + "/package/content"))
                             .andExpect(status().isNoContent());

@@ -71,7 +71,7 @@ public class SolrIndexerStoreEventHandlerTest {
                 }
 
                 @Test
-                void shouldUseTheIndexerToIndexTheContent() {
+                void shouldUseIndexerToIndexContent() {
                     assertThat(e).isNull();
                     verify(indexer).index(eq(contentEntity), eq(content));
                 }
@@ -184,7 +184,7 @@ public class SolrIndexerStoreEventHandlerTest {
                 }
 
                 @Test
-                void shouldUseTheIndexerToUnindexTheContent() {
+                void shouldUseIndexerToUnindexContent() {
                     assertThat(e).isNull();
                     verify(indexer).unindex(eq(contentEntity));
                 }
@@ -213,7 +213,7 @@ public class SolrIndexerStoreEventHandlerTest {
                     }
 
                     @Test
-                    void shouldThrowAContextAccessException() {
+                    void shouldThrowContextAccessException() {
                         assertThat(e).isEqualTo(sae);
                     }
                 }

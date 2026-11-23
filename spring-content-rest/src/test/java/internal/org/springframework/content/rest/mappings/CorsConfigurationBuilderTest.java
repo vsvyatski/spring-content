@@ -106,7 +106,7 @@ public class CorsConfigurationBuilderTest {
                 }
 
                 @Test
-                void shouldNotACorsConfiguration() {
+                void shouldNotCorsConfiguration() {
                     assertThat(config).isNull();
                 }
             }
@@ -127,7 +127,7 @@ public class CorsConfigurationBuilderTest {
                 }
 
                 @Test
-                void shouldCreateACorsConfigurationWithThoseOrigins() {
+                void shouldCreateCorsConfigurationWithThoseOrigins() {
                     assertThat(config.getAllowedOrigins()).contains("http://domain1.com", "http://domain2.com");
                 }
             }
@@ -148,7 +148,7 @@ public class CorsConfigurationBuilderTest {
                 }
 
                 @Test
-                void shouldSetTheDefaultOrigin() {
+                void shouldSetDefaultOrigin() {
                     assertThat(config.getAllowedOrigins()).contains("*");
                 }
             }
@@ -169,7 +169,7 @@ public class CorsConfigurationBuilderTest {
                 }
 
                 @Test
-                void shouldCreateACorsConfigurationWithThoseAllowedMethods() {
+                void shouldCreateCorsConfigurationWithThoseAllowedMethods() {
                     assertThat(config.getAllowedMethods()).contains("GET", "PUT", "POST", "DELETE");
                 }
             }
@@ -190,7 +190,7 @@ public class CorsConfigurationBuilderTest {
                 }
 
                 @Test
-                void shouldSetTheDefaultAllowedMethods() {
+                void shouldSetDefaultAllowedMethods() {
                     assertThat(config.getAllowedMethods()).contains("GET", "POST", "HEAD");
                 }
             }
@@ -211,7 +211,7 @@ public class CorsConfigurationBuilderTest {
                 }
 
                 @Test
-                void shouldCreateACorsConfigurationWithThoseAllowedHeaders() {
+                void shouldCreateCorsConfigurationWithThoseAllowedHeaders() {
                     assertThat(config.getAllowedHeaders()).contains("header1", "header2");
                 }
             }
@@ -232,7 +232,7 @@ public class CorsConfigurationBuilderTest {
                 }
 
                 @Test
-                void shouldSetTheDefaultAllowedHeaders() {
+                void shouldSetDefaultAllowedHeaders() {
                     assertThat(config.getAllowedHeaders()).contains("*");
                 }
             }
@@ -253,7 +253,7 @@ public class CorsConfigurationBuilderTest {
                 }
 
                 @Test
-                void shouldCreateACorsConfigurationWithThoseExposedHeaders() {
+                void shouldCreateCorsConfigurationWithThoseExposedHeaders() {
                     assertThat(config.getExposedHeaders()).contains("exposed1", "exposed2");
                 }
             }
@@ -274,7 +274,7 @@ public class CorsConfigurationBuilderTest {
                 }
 
                 @Test
-                void shouldCreateACorsConfigurationWithANullExposedHeaders() {
+                void shouldCreateCorsConfigurationWithNullExposedHeaders() {
                     assertThat(config.getExposedHeaders()).isNull();
                 }
             }
@@ -295,7 +295,7 @@ public class CorsConfigurationBuilderTest {
                 }
 
                 @Test
-                void shouldCreateACorsConfigurationWithThatValue() {
+                void shouldCreateCorsConfigurationWithThatValue() {
                     assertThat(config.getAllowCredentials()).isTrue();
                 }
             }
@@ -316,7 +316,7 @@ public class CorsConfigurationBuilderTest {
                 }
 
                 @Test
-                void shouldCreateACorsConfigurationWithThatValue() {
+                void shouldCreateCorsConfigurationWithThatValue() {
                     assertThat(config.getAllowCredentials()).isFalse();
                 }
             }
@@ -337,7 +337,7 @@ public class CorsConfigurationBuilderTest {
                 }
 
                 @Test
-                void shouldCreateACorsConfigurationWithThatValue() {
+                void shouldCreateCorsConfigurationWithThatValue() {
                     assertThat(e).isNotNull();
                 }
             }
@@ -358,7 +358,7 @@ public class CorsConfigurationBuilderTest {
                 }
 
                 @Test
-                void shouldCreateACorsConfigurationWithTheDefaultAllowCredentialsValue() {
+                void shouldCreateCorsConfigurationWithDefaultAllowCredentialsValue() {
                     assertThat(config.getAllowCredentials()).isNull();
                 }
             }
@@ -379,7 +379,7 @@ public class CorsConfigurationBuilderTest {
                 }
 
                 @Test
-                void shouldCreateACorsConfigurationWithThatMaxAge() {
+                void shouldCreateCorsConfigurationWithThatMaxAge() {
                     assertThat(config.getMaxAge()).isEqualTo(1000L);
                 }
             }
@@ -400,7 +400,7 @@ public class CorsConfigurationBuilderTest {
                 }
 
                 @Test
-                void shouldCreateACorsConfigurationWithThatMaxAge() {
+                void shouldCreateCorsConfigurationWithThatMaxAge() {
                     assertThat(config.getMaxAge()).isEqualTo(0L);
                 }
             }
@@ -421,7 +421,7 @@ public class CorsConfigurationBuilderTest {
                 }
 
                 @Test
-                void shouldCreateACorsConfigurationWithTheDefaultMaxAge() {
+                void shouldCreateCorsConfigurationWithDefaultMaxAge() {
                     assertThat(config.getMaxAge()).isEqualTo(1800L);
                 }
             }

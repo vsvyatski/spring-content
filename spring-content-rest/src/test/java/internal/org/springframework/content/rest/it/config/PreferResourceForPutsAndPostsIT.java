@@ -124,7 +124,7 @@ public class PreferResourceForPutsAndPostsIT {
         }
 
         @Test
-        void shouldUseTheSetContentSResourceMethod() {
+        void shouldUseSetContentSResourceMethod() {
             UuidSingleContentEntity entity = new UuidSingleContentEntity();
             entity = repo.save(entity);
 

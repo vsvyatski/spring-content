@@ -70,7 +70,7 @@ public class BeforeSetEventIT {
         @DisplayName("When the content input stream is consumed by a beforesetevent")
         class ContentInputStreamIsConsumedByBeforeSetEvent {
             @Test
-            void shouldStillSetTheContentInTheStore() throws IOException {
+            void shouldStillSetContentInStore() throws IOException {
                 SingleContentFields te = new SingleContentFields();
                 ByteArrayInputStream bais = new ByteArrayInputStream("Still here!".getBytes());
                 te = store.setContent(te, bais);

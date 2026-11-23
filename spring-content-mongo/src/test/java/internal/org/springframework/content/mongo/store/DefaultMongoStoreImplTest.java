@@ -56,7 +56,7 @@ public class DefaultMongoStoreImplTest {
             }
 
             @Test
-            void shouldNotCallThePlacementServiceByDefault() {
+            void shouldNotCallPlacementServiceByDefault() {
                 verify(placer, never()).convert(property, String.class);
             }
         }
@@ -80,7 +80,7 @@ public class DefaultMongoStoreImplTest {
                 }
 
                 @Test
-                void shouldNotResetTheContentIdBecauseItIsAlsoTheId() {
+                void shouldNotResetContentIdBecauseItIsAlsoId() {
                     assertThat(property.getContentId()).isEqualTo(SAMPLE_SHORT_CONTENT_ID);
                 }
             }
@@ -131,7 +131,7 @@ public class DefaultMongoStoreImplTest {
                     }
 
                     @Test
-                    void shouldThrowAStoreAccessException() {
+                    void shouldThrowStoreAccessException() {
                         assertThat(e).isInstanceOf(StoreAccessException.class);
                         assertThat(e.getCause().getMessage()).isEqualTo("set-exception");
                     }
@@ -173,7 +173,7 @@ public class DefaultMongoStoreImplTest {
                 }
 
                 @Test
-                void shouldThrowAStoreAccessException() {
+                void shouldThrowStoreAccessException() {
                     assertThat(e).isInstanceOf(StoreAccessException.class);
                     assertThat(e.getCause()).hasMessageContaining("setContent badness");
                 }
@@ -214,7 +214,7 @@ public class DefaultMongoStoreImplTest {
                     }
 
                     @Test
-                    void shouldThrowAStoreAccessException() {
+                    void shouldThrowStoreAccessException() {
                         assertThat(e).isInstanceOf(StoreAccessException.class);
                         assertThat(e.getCause().getMessage()).isEqualTo("get-ioexception");
                     }
@@ -247,7 +247,7 @@ public class DefaultMongoStoreImplTest {
                 }
 
                 @Test
-                void shouldThrowAStoreAccessException() {
+                void shouldThrowStoreAccessException() {
                     assertThat(e).isInstanceOf(StoreAccessException.class);
                     assertThat(e.getCause().getMessage()).isEqualTo("unset-exception");
                 }

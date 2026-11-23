@@ -70,7 +70,7 @@ public class ContentMongoAutoConfigurationTest {
         }
 
         @Test
-        void shouldLoadTheContext() {
+        void shouldLoadContext() {
             contextRunner.withUserConfiguration(TestConfig.class)
                 .run((context) ->
                     Assertions.assertThat(context).hasSingleBean(TestEntityContentStore.class));

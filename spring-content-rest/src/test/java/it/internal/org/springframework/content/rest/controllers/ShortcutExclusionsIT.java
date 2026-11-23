@@ -100,7 +100,7 @@ public class ShortcutExclusionsIT {
             }
 
             @Test
-            void shouldReturnTheEntity() throws Exception {
+            void shouldReturnEntity() throws Exception {
                 MockHttpServletResponse response = mvc
                     .perform(get("/jsonMappedContentEntities/" + testEntity.getId())
                         .accept("*/*"))

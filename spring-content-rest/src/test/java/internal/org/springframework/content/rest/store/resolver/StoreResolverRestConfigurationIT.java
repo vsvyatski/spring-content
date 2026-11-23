@@ -55,7 +55,7 @@ public class StoreResolverRestConfigurationIT {
             }
 
             @Test
-            void shouldReturnTheContentFromTheCorrectStore() throws IOException {
+            void shouldReturnContentFromCorrectStore() throws IOException {
                 assertThat(jpaStore).isNotNull();
                 assertThat(fsStore).isNotNull();
                 assertThat(repo).isNotNull();

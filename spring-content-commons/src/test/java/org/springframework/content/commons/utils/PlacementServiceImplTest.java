@@ -22,7 +22,7 @@ public class PlacementServiceImplTest {
             }
 
             @Test
-            void shouldHaveRemovedTheFallbackObjectToStringConverter() {
+            void shouldHaveRemovedFallbackObjectToStringConverter() {
                 assertThat(placer.canConvert(Object.class, String.class)).isFalse();
             }
         }

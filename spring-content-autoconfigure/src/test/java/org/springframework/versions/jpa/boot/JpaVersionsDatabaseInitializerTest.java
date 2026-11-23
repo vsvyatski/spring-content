@@ -50,7 +50,7 @@ public class JpaVersionsDatabaseInitializerTest {
             }
 
             @Test
-            void shouldExecuteCreateTableStatementsOnTheDatabase() throws SQLException {
+            void shouldExecuteCreateTableStatementsOnDatabase() throws SQLException {
                 assertThat(locksTableExists()).isTrue();
             }
         }
@@ -68,7 +68,7 @@ public class JpaVersionsDatabaseInitializerTest {
             }
 
             @Test
-            void shouldNotExecuteCreateTableStatementsOnTheDatabase() throws SQLException {
+            void shouldNotExecuteCreateTableStatementsOnDatabase() throws SQLException {
                 assertThat(locksTableExists()).isFalse();
             }
         }

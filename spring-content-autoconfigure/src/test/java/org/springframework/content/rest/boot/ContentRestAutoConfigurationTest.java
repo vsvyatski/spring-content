@@ -47,7 +47,7 @@ public class ContentRestAutoConfigurationTest {
         @DisplayName("Given a default configuration")
         class DefaultConfiguration {
             @Test
-            void shouldLoadTheContext() {
+            void shouldLoadContext() {
                 AnnotationConfigServletWebApplicationContext context = new AnnotationConfigServletWebApplicationContext();
                 context.setServletContext(new MockServletContext());
                 context.register(TestConfig.class, HypermediaConfig.class);
@@ -82,7 +82,7 @@ public class ContentRestAutoConfigurationTest {
             }
 
             @Test
-            void shouldHaveAFilesystemPropertiesBeanWithTheCorrectPropertiesSet() {
+            void shouldHaveFilesystemPropertiesBeanWithCorrectPropertiesSet() {
                 AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
                 context.register(TestConfig.class);
                 context.setServletContext(new MockServletContext());

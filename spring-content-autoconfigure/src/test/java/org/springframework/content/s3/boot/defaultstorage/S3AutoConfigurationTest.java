@@ -43,7 +43,7 @@ public class S3AutoConfigurationTest {
             }
 
             @Test
-            void shouldCreateAnS3ClientBean() {
+            void shouldCreateS3ClientBean() {
                 contextRunner.withUserConfiguration(TestConfigWithoutBeans.class)
                     .run((context) -> Assertions.assertThat(context).hasSingleBean(S3Client.class));
             }
@@ -66,7 +66,7 @@ public class S3AutoConfigurationTest {
             }
 
             @Test
-            void shouldNotCreateAnS3ClientBean() {
+            void shouldNotCreateS3ClientBean() {
                 contextRunner.withUserConfiguration(TestConfigWithoutBeans.class).run((context) -> Assertions.assertThat(context).doesNotHaveBean(S3Client.class));
             }
         }
@@ -81,7 +81,7 @@ public class S3AutoConfigurationTest {
             }
 
             @Test
-            void shouldCreateAnS3ClientBean() {
+            void shouldCreateS3ClientBean() {
                 contextRunner.withUserConfiguration(TestConfigWithoutBeans.class)
                     .run((context) -> Assertions.assertThat(context).hasSingleBean(S3Client.class));
             }

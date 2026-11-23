@@ -99,7 +99,7 @@ public class JpaLockingAndVersioningProxyFactoryImplIT {
                     }
 
                     @Test
-                    void shouldApplyTheTxnAdvice() {
+                    void shouldApplyTxnAdvice() {
                         Advisor[] advices = proxyFactory.getAdvisors();
                         assertThat(advices.length).isEqualTo(3);
                         assertThat(advices[0].getAdvice()).isInstanceOf(TransactionInterceptor.class);
@@ -132,7 +132,7 @@ public class JpaLockingAndVersioningProxyFactoryImplIT {
                     }
 
                     @Test
-                    void shouldNotApplyTheAdviceAgain() {
+                    void shouldNotApplyAdviceAgain() {
                         Advisor[] advices = proxyFactory.getAdvisors();
                         assertThat(advices.length).isEqualTo(3);
                         assertThat(advices[0].getAdvice()).isInstanceOf(TransactionInterceptor.class);

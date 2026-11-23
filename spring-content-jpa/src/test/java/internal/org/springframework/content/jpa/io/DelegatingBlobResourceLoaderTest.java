@@ -59,7 +59,7 @@ public class DelegatingBlobResourceLoaderTest {
                 }
 
                 @Test
-                void shouldReturnAPostgresBlobResource() {
+                void shouldReturnPostgresBlobResource() {
                     verify(customLoader).getResource(any());
                 }
             }
@@ -86,7 +86,7 @@ public class DelegatingBlobResourceLoaderTest {
                 }
 
                 @Test
-                void shouldReturnAGenericBlobResource() {
+                void shouldReturnGenericBlobResource() {
                     assertThat(resource).isInstanceOf(GenericBlobResource.class);
                 }
             }

@@ -51,27 +51,27 @@ public class StoreTest {
         @DisplayName("Given the application context")
         class ApplicationContext {
             @Test
-            void shouldHaveAStoreBean() {
+            void shouldHaveStoreBean() {
                 assertThat(context.getBean(TestContentStore.class)).isNotNull();
             }
 
             @Test
-            void shouldHaveTheCoreSpringContentServiceBeans() {
+            void shouldHaveCoreSpringContentServiceBeans() {
                 assertThat(context.getBean(AnnotatedStoreEventInvoker.class)).isNotNull();
             }
 
             @Test
-            void shouldHaveATestStoreBean() {
+            void shouldHaveTestStoreBean() {
                 assertThat(context.getBean(TestStore.class)).isNotNull();
             }
 
             @Test
-            void shouldHaveAnTestAssociativeStoreBean() {
+            void shouldHaveTestAssociativeStoreBean() {
                 assertThat(context.getBean(TestAssociativeStore.class)).isNotNull();
             }
 
             @Test
-            void shouldHaveAnTestAssociativeAndContentStoreBean() {
+            void shouldHaveTestAssociativeAndContentStoreBean() {
                 assertThat(context.getBean(TestAssociativeAndContentStore.class)).isNotNull();
             }
         }
