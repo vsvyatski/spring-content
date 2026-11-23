@@ -27,12 +27,9 @@ import static java.lang.String.format;
 
 @WebAppConfiguration
 @ContextConfiguration(classes = {
-    BaseUriConfig.class,
-    EntityConfig.class,
-    DelegatingWebMvcConfiguration.class,
-    RepositoryRestMvcConfiguration.class,
-    RestConfiguration.class,
-    HypermediaConfiguration.class})
+    BaseUriConfig.class, EntityConfig.class, DelegatingWebMvcConfiguration.class,
+    RepositoryRestMvcConfiguration.class, RestConfiguration.class, HypermediaConfiguration.class
+})
 @Transactional
 @ActiveProfiles("store")
 @ExtendWith(SpringExtension.class)
@@ -68,10 +65,11 @@ public class BaseUriIT {
     @Nested
     class BaseUriContentTests {
         @Nested
-        class GivenAnEntityIsTheSubjectOfARepositoryAndStorage {
+        @DisplayName("Given an entity is the Subject of a repository and storage")
+        class EntityIsTheSubjectOfARepositoryAndStorage {
             @Nested
-            @DisplayName("given the repository and storage are exported to the same URI")
-            class GivenTheRepositoryAndStorageAreExportedToTheSameURIEntity extends EntityTests {
+            @DisplayName("Given the repository and storage are exported to the same URI")
+            class RepositoryAndStorageAreExportedToTheSameURIEntity extends EntityTests {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -87,8 +85,8 @@ public class BaseUriIT {
             }
 
             @Nested
-            @DisplayName("given the repository and storage are exported to the same URI")
-            class GivenTheRepositoryAndStorageAreExportedToTheSameURIContent extends ContentTests {
+            @DisplayName("Given the repository and storage are exported to the same URI")
+            class RepositoryAndStorageAreExportedToTheSameURIContent extends ContentTests {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -104,8 +102,8 @@ public class BaseUriIT {
             }
 
             @Nested
-            @DisplayName("given the repository and storage are exported to different URIs")
-            class GivenTheRepositoryAndStorageAreExportedToDifferentURIsContent extends ContentTests {
+            @DisplayName("Given the repository and storage are exported to different URIs")
+            class RepositoryAndStorageAreExportedToDifferentURIsContent extends ContentTests {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -119,8 +117,8 @@ public class BaseUriIT {
             }
 
             @Nested
-            @DisplayName("given the repository and storage are exported to different URIs")
-            class GivenTheRepositoryAndStorageAreExportedToDifferentURIsCors extends CorsTests {
+            @DisplayName("Given the repository and storage are exported to different URIs")
+            class RepositoryAndStorageAreExportedToDifferentURIsCors extends CorsTests {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -131,8 +129,8 @@ public class BaseUriIT {
             }
 
             @Nested
-            @DisplayName("given an entity with @Version")
-            class GivenAnEntityWithVersionVersion extends VersionTests {
+            @DisplayName("Given an entity with @Version")
+            class EntityWithVersion extends VersionTests {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -153,8 +151,8 @@ public class BaseUriIT {
             }
 
             @Nested
-            @DisplayName("given an entity with @LastModifiedDate")
-            class GivenAnEntityWithLastModifiedDateLastModifiedDate extends LastModifiedDateTests {
+            @DisplayName("Given an entity with @LastModifiedDate")
+            class EntityWithLastModifiedDate extends LastModifiedDateTests {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();

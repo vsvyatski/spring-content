@@ -1,6 +1,7 @@
 package it.events;
 
 import org.apache.commons.io.IOUtils;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -66,7 +67,8 @@ public class BeforeSetEventIT {
     @Nested
     class BeforeSetEventInputStreamAccessCases {
         @Nested
-        class WhenTheContentInputStreamIsConsumedByABeforeSetEvent {
+        @DisplayName("When the content input Stream is consumed by a BeforeSetEvent")
+        class ContentInputStreamIsConsumedByBeforeSetEvent {
             @Test
             void shouldStillSetTheContentInTheStore() throws IOException {
                 SingleContentFields te = new SingleContentFields();
