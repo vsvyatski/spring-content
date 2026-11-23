@@ -54,7 +54,7 @@ where:
 - the optional `-P tests` invokes the maven build with integration (*IT.java) tests as well as units (default).
 
 If you want to build with the regular `mvn` command, you will need
-[Maven v3.6.3 or above](https://maven.apache.org/run-maven/index.html).
+[Maven v3.9.0 or above](https://maven.apache.org/run-maven/index.html).
 
 _Also see [CONTRIBUTING.md](CONTRIBUTING.md) if you wish to submit pull requests, and in particular please fill out
 the [Contributor's License Agreement](https://cla-assistant.io/paulcwarren/spring-content) before your first change,

@@ -117,7 +117,7 @@ Storage type selection uses `spring.content.storage.type.default` (FS is the def
 
 ## Build and test
 
-JDK 17. Maven 3.6.3+ if not using the wrapper. On Windows with another JDK on `PATH`, source
+JDK 17. Maven 3.9.0+ if not using the wrapper (the wrapper ships 3.9.x). On Windows with another JDK on `PATH`, source
 `scripts/wsl-java17-env.sh` in AlmaLinux WSL before `./mvnw`.
 
 ```text
@@ -143,8 +143,8 @@ Change version for the whole reactor with:
 ./mvnw versions:set -DnewVersion=...
 ```
 
-Check dependency, property, and plugin updates with the wrapper (Maven 3.9.x), not system `mvn` 3.6.x — especially
-`versions:display-plugin-updates`, which expects a declared minimum Maven version from `maven-enforcer-plugin`:
+Check dependency, property, and plugin updates with `./mvnw` so the run matches the enforcer floor (`[3.9.0,)` on
+`maven-enforcer-plugin`):
 
 ```text
 ./mvnw versions:display-dependency-updates

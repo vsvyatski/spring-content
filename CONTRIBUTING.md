@@ -63,7 +63,7 @@ plugin for Maven support. Other IDEs and tools should also work without an issue
 
 ### Building from Source
 
-To build the source you will need to install [Apache Maven](https://maven.apache.org/run-maven/index.html) v3.6.3
+To build the source you will need to install [Apache Maven](https://maven.apache.org/run-maven/index.html) v3.9.0
 or above and JDK 17.
 
 #### Default Build
