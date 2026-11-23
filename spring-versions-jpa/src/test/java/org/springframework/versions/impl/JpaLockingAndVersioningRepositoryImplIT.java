@@ -74,7 +74,7 @@ public class JpaLockingAndVersioningRepositoryImplIT {
     }
 
     @Configuration
-    @EnableJpaRepositories(basePackages = VersioningTestPackages.JPA)
+    @EnableJpaRepositories(basePackages = VersioningTestPackages.REPOSITORIES)
     @Import({H2Config.class, JpaLockingAndVersioningConfig.class})
     public static class TestConfig {
     }
