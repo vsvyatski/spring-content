@@ -73,8 +73,8 @@ public class ContentTests {
     }
 
     @Nested
-    @DisplayName("GET to {store ID} accepting")
-    class GetToStoreIdAccepting {
+    @DisplayName("GET to {store ID} with Accept */*")
+    class GetToStoreIdWithAcceptWildcard {
         @Test
         void shouldReturn404() throws Exception {
             mvc.perform(get(url).accept("*/*")).andExpect(status().isNotFound());

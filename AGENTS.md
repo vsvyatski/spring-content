@@ -149,8 +149,8 @@ Change version for the whole reactor with:
 - Naming: `*Test.java` = unit (always); `*IT.java` = integration (`-P tests` only)
 - `@Nested` classes use PascalCase identifiers without articles (`a`, `an`, `the`) or BDD prefixes (`Given`, `When`,
   `Then`) in the type name. Use `@DisplayName` when the old Ginkgo phrase should still
-  appear in test reports (for example `class GetToStoreIdAccepting` with `@DisplayName("GET to store ID
-  accepting")`). HTTP scenario nests name the verb first (`Get`, `Put`, `Post`, `Delete`, `Head`,
+  appear in test reports (for example `class GetToStoreIdWithAcceptWildcard` with `@DisplayName("GET to {store ID} with
+  Accept */*")`). HTTP scenario nests name the verb first (`Get`, `Put`, `Post`, `Delete`, `Head`,
   `Options`). Setup nests describe state (`ApplicationSetsId`, `EntityHasTextPlainContent`). Test methods
   may stay `should…` unless you are aligning a file to another style deliberately.
 - In `@DisplayName`, comments, and other human-readable test prose, use **sentence case** (like the REST
