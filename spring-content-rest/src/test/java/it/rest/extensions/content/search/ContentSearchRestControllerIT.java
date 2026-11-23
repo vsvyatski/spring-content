@@ -499,7 +499,7 @@ public class ContentSearchRestControllerIT {
             }
 
             @Nested
-            @DisplayName("Given an entity with an overloaded id field")
+            @DisplayName("Given an entity with an overloaded ID field")
             class EntityWithOverloadedIdField {
                 @Nested
                 @DisplayName("Given no results are found")
@@ -656,7 +656,7 @@ public class ContentSearchRestControllerIT {
             }
 
             @Nested
-            @DisplayName("Given an entity with separate id content ID fields")
+            @DisplayName("Given an entity with separate ID content ID fields")
             class EntityWithSeparateIdContentIdFields {
                 @Nested
                 @DisplayName("Given no results are found")

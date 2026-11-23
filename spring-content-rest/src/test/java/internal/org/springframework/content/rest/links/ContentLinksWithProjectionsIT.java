@@ -128,7 +128,7 @@ public class ContentLinksWithProjectionsIT {
         @DisplayName("Given content is associated")
         class ContentIsAssociated {
             @Nested
-            @DisplayName("GET to api repository id projection id")
+            @DisplayName("GET to api repository ID projection ID")
             class GetToApiRepositoryIdProjectionId {
                 @BeforeEach
                 void setUp() {

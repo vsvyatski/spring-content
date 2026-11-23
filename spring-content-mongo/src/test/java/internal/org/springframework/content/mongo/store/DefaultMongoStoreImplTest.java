@@ -70,7 +70,7 @@ public class DefaultMongoStoreImplTest {
             }
 
             @Nested
-            @DisplayName("When the entity has a shared id content ID field")
+            @DisplayName("When the entity has a shared ID content ID field")
             class EntityHasSharedIdContentIdField {
                 @BeforeEach
                 void sharedId() {

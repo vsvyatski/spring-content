@@ -68,7 +68,7 @@ public class FsTypeSupportTest {
             }
 
             @Nested
-            @DisplayName("Given spring content generates the id")
+            @DisplayName("Given Spring Content generates the ID")
             class StoreGeneratesId {
                 @BeforeEach
                 void setUp() {

@@ -148,7 +148,7 @@ public class NestedContentPropertyRestEndpointsIT {
             @DisplayName("Given that is has no content")
             class IsHasNoContent {
                 @Nested
-                @DisplayName("GET to repository id content property")
+                @DisplayName("GET to repository ID content property")
                 class GetToRepositoryIdContentProperty {
                     @BeforeEach
                     void setUp() {
@@ -166,7 +166,7 @@ public class NestedContentPropertyRestEndpointsIT {
                 }
 
                 @Nested
-                @DisplayName("PUT to repository id content property")
+                @DisplayName("PUT to repository ID content property")
                 class PutToRepositoryIdContentProperty {
                     @BeforeEach
                     void setUp() {
@@ -229,7 +229,7 @@ public class NestedContentPropertyRestEndpointsIT {
             @DisplayName("Given that it has content")
             class ItHasContent {
                 @Nested
-                @DisplayName("GET to repository id content property")
+                @DisplayName("GET to repository ID content property")
                 class GetToRepositoryIdContentProperty {
                     @BeforeEach
                     void setUp() throws IOException {
@@ -265,7 +265,7 @@ public class NestedContentPropertyRestEndpointsIT {
                 }
 
                 @Nested
-                @DisplayName("GET to repository id content property with a MIME type that matches a renderer")
+                @DisplayName("GET to repository ID content property with a MIME type that matches a renderer")
                 class GetToRepositoryIdContentPropertyWithMimeTypeThatMatchesRenderer {
                     @BeforeEach
                     void setUp() throws IOException {
@@ -336,7 +336,7 @@ public class NestedContentPropertyRestEndpointsIT {
                 }
 
                 @Nested
-                @DisplayName("PUT to repository id content property")
+                @DisplayName("PUT to repository ID content property")
                 class PutToRepositoryIdContentProperty {
                     @BeforeEach
                     void setUp() throws IOException {
@@ -373,7 +373,7 @@ public class NestedContentPropertyRestEndpointsIT {
                 }
 
                 @Nested
-                @DisplayName("DELETE to repository id content property")
+                @DisplayName("DELETE to repository ID content property")
                 class DeleteToRepositoryIdContentProperty {
                     @BeforeEach
                     void setUp() throws IOException {

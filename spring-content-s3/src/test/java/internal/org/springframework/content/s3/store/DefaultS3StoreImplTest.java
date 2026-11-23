@@ -455,7 +455,7 @@ public class DefaultS3StoreImplTest {
                 }
 
                 @Nested
-                @DisplayName("Given a custom id resolver")
+                @DisplayName("Given a custom ID resolver")
                 class CustomIdResolver {
                     @Nested
                     @DisplayName("Given a default bucket")
@@ -511,7 +511,7 @@ public class DefaultS3StoreImplTest {
                 }
 
                 @Nested
-                @DisplayName("Given a custom id resolver that cannot resolve the bucket")
+                @DisplayName("Given a custom ID resolver that cannot resolve the bucket")
                 class CustomIdResolverThatCannotResolveBucket {
                     @Nested
                     @DisplayName("Given the default bucket is not set")
@@ -700,7 +700,7 @@ public class DefaultS3StoreImplTest {
                 }
 
                 @Nested
-                @DisplayName("Given a custom id resolver")
+                @DisplayName("Given a custom ID resolver")
                 class CustomIdResolver {
                     @Nested
                     @DisplayName("Given a default bucket")
@@ -763,7 +763,7 @@ public class DefaultS3StoreImplTest {
                 }
 
                 @Nested
-                @DisplayName("Given a custom id resolver that cannot resolve the bucket")
+                @DisplayName("Given a custom ID resolver that cannot resolve the bucket")
                 class CustomIdResolverThatCannotResolveBucket {
                     @Nested
                     @DisplayName("Given the default bucket is not set")

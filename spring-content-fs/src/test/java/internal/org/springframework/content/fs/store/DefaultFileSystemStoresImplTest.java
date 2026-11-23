@@ -376,7 +376,7 @@ public class DefaultFileSystemStoresImplTest {
                 }
 
                 @Nested
-                @DisplayName("Given just the default id converters")
+                @DisplayName("Given just the default ID converters")
                 class JustDefaultIDConverters {
                     @Nested
                     @DisplayName("When the content already exists")
@@ -744,7 +744,7 @@ public class DefaultFileSystemStoresImplTest {
                 }
 
                 @Nested
-                @DisplayName("Given just the default id converter")
+                @DisplayName("Given just the default ID converter")
                 class JustDefaultIDConverter {
                     @Nested
                     @DisplayName("When the resource does not exists")
@@ -1029,7 +1029,7 @@ public class DefaultFileSystemStoresImplTest {
                 }
 
                 @Nested
-                @DisplayName("Given just the default id converter")
+                @DisplayName("Given just the default ID converter")
                 class JustDefaultIDConverter {
                     @Nested
                     @DisplayName("When the content exists in the new location")

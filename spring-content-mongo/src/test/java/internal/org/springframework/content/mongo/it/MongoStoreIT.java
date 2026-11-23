@@ -988,7 +988,7 @@ public class MongoStoreIT {
             }
 
             @Nested
-            @DisplayName("When content is deleted and the id field is shared with jakarta id")
+            @DisplayName("When content is deleted and the ID field is shared with Jakarta ID")
             class ContentIsDeletedAndIdFieldIsSharedWithJakartaId {
                 @BeforeEach
                 void setUp() {
@@ -1033,7 +1033,7 @@ public class MongoStoreIT {
             }
 
             @Nested
-            @DisplayName("When content is deleted and the id field is shared with spring id")
+            @DisplayName("When content is deleted and the ID field is shared with Spring ID")
             class ContentIsDeletedAndIdFieldIsSharedWithSpringId {
                 @BeforeEach
                 void setUp() {

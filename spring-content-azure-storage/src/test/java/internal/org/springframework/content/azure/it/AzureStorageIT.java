@@ -990,7 +990,7 @@ public class AzureStorageIT {
             }
 
             @Nested
-            @DisplayName("When content is deleted and the content ID field is shared with entity id")
+            @DisplayName("When content is deleted and the content ID field is shared with entity ID")
             class ContentIsDeletedAndContentIdFieldIsSharedWithEntityId {
                 @BeforeEach
                 void setUp() {
