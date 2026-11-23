@@ -67,7 +67,7 @@ public class EnableAzureStorageTest {
     @Nested
     class EnableAzureStorageCases {
         @Nested
-        @DisplayName("Given a context and a configuration with an azure content store")
+        @DisplayName("Given a context and a configuration with an Azure content store")
         class ContextAndConfigurationWithAzureContentStore {
             @BeforeEach
             void setUp() {

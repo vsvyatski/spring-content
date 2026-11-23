@@ -35,7 +35,7 @@ public class SolrFulltextIndexServiceImplTest {
     @Nested
     class IndexCases {
         @Nested
-        @DisplayName("When solr throws solr server exception")
+        @DisplayName("When Solr throws a Solr server exception")
         class SolrThrowsSolrServerException {
             @Test
             void shouldThrowStoreAccessException() throws Exception {
@@ -62,7 +62,7 @@ public class SolrFulltextIndexServiceImplTest {
         }
 
         @Nested
-        @DisplayName("When solr throws io exception")
+        @DisplayName("When Solr throws an IO exception")
         class SolrThrowsIOException {
             @Test
             void shouldThrowStoreAccessException() throws Exception {
@@ -92,7 +92,7 @@ public class SolrFulltextIndexServiceImplTest {
     @Nested
     class UnindexCases {
         @Nested
-        @DisplayName("When solr throws solr server exception")
+        @DisplayName("When Solr throws a Solr server exception")
         class SolrThrowsSolrServerException {
             @Test
             void shouldThrowStoreAccessException() throws Exception {
@@ -118,7 +118,7 @@ public class SolrFulltextIndexServiceImplTest {
         }
 
         @Nested
-        @DisplayName("When solr throws io exception")
+        @DisplayName("When Solr throws an IO exception")
         class SolrThrowsIOException {
             @Test
             void shouldThrowStoreAccessException() throws Exception {

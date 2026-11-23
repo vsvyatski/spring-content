@@ -25,7 +25,7 @@ public class SolrAutoConfigurationTest {
     @Nested
     class Solr {
         @Nested
-        @DisplayName("Given an application context with a solr client bean and solr auto configuration")
+        @DisplayName("Given an application context with a Solr client bean and Solr auto configuration")
         class ApplicationContextWithSolrClientBeanAndSolrAutoConfiguration {
             @BeforeEach
             void setUp() {

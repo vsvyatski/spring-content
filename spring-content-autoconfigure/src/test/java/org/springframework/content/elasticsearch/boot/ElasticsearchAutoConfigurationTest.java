@@ -47,7 +47,7 @@ public class ElasticsearchAutoConfigurationTest {
     }
 
     @Nested
-    @DisplayName("Given a context without a elasticsearch client configured")
+    @DisplayName("Given a context without an Elasticsearch client configured")
     class ContextWithoutElasticsearchClientConfigured {
         @Test
         void shouldCreateClient() {
@@ -67,7 +67,7 @@ public class ElasticsearchAutoConfigurationTest {
     }
 
     @Nested
-    @DisplayName("Given a context with a elasticsearch client configured")
+    @DisplayName("Given a context with an Elasticsearch client configured")
     class ContextWithElasticsearchClientConfigured {
         @Test
         void shouldUseThatClient() {
