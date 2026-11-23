@@ -57,7 +57,7 @@ public class StoreRestEndpointsIT {
         @DisplayName("Given a root resource path")
         class RootResourcePath {
             @Nested
-            @DisplayName("Given aget request to that path")
+            @DisplayName("Given a GET request to that path")
             class GetRequestToThatPath {
                 @BeforeEach
                 void setUp() {
@@ -74,7 +74,7 @@ public class StoreRestEndpointsIT {
             }
 
             @Nested
-            @DisplayName("Given apost to that path with content")
+            @DisplayName("Given a POST to that path with content")
             class PostToThatPathWithContent {
                 @BeforeEach
                 void setUp() {
@@ -101,7 +101,7 @@ public class StoreRestEndpointsIT {
             }
 
             @Nested
-            @DisplayName("Given adelete request to that path")
+            @DisplayName("Given a DELETE request to that path")
             class DeleteRequestToThatPath {
                 @BeforeEach
                 void setUp() {

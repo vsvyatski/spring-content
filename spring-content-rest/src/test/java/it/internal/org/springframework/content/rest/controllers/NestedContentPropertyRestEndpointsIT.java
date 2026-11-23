@@ -91,7 +91,7 @@ public class NestedContentPropertyRestEndpointsIT {
             }
 
             @Nested
-            @DisplayName("Given apost to the entity endpoint with a multipart form request")
+            @DisplayName("Given a POST to the entity endpoint with a multipart form request")
             class PostToEntityEndpointWithMultipartFormRequest {
                 @BeforeEach
                 void setUp() {

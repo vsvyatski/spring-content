@@ -56,7 +56,7 @@ public class EnableGCPStorageTest {
     @Nested
     class EnableGCPStorageCases {
         @Nested
-        @DisplayName("Given a context and a configuration with an gcs content store")
+        @DisplayName("Given a context and a configuration with a GCS content store")
         class ContextAndConfigurationWithGCSContentStore {
             @BeforeEach
             void setUp() {
