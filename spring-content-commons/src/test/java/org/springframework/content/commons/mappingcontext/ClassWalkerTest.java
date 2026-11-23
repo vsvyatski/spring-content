@@ -158,7 +158,7 @@ public class ClassWalkerTest {
     private static class PluralizedCamelCasedContentProperty {
         private @ContentId UUID camelCasePropertyIds;
         private @ContentLength Long camelCasePropertyLens;
-        private @MimeType String camelCasePropertyMimetypes;
+        private @MimeType String camelCasePropertyMimeTypes;
         private @OriginalFileName String camelCasePropertyFilenames;
     }
 
@@ -216,7 +216,7 @@ public class ClassWalkerTest {
             expectedOtherCamelCaseProperty.setContentIdType(TypeDescriptor.valueOf(UUID.class));
             expectedOtherCamelCaseProperty.setContentLengthPropertyPath("otherCamelCaseProperty.camelCasePropertyLens");
             expectedOtherCamelCaseProperty.setContentLengthType(TypeDescriptor.valueOf(Long.class));
-            expectedOtherCamelCaseProperty.setMimeTypePropertyPath("otherCamelCaseProperty.camelCasePropertyMimetypes");
+            expectedOtherCamelCaseProperty.setMimeTypePropertyPath("otherCamelCaseProperty.camelCasePropertyMimeTypes");
             expectedOtherCamelCaseProperty.setOriginalFileNamePropertyPath("otherCamelCaseProperty.camelCasePropertyFilenames");
             assertThat(visitor.getProperties()).containsEntry("otherCamelCaseProperty", expectedOtherCamelCaseProperty);
         }

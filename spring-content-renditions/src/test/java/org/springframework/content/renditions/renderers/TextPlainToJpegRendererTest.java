@@ -77,7 +77,7 @@ public class TextPlainToJpegRendererTest {
             }
 
             @Test
-            void shouldReturnJpegMimetype() {
+            void shouldReturnJpegMimeType() {
                 assertThat(renderer.produces()).contains("image/jpg");
                 assertThat(renderer.produces()).contains("image/jpeg");
             }

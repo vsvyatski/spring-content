@@ -31,7 +31,7 @@ public class PdfToJpegRendererTest {
     private Exception e;
 
     @Nested
-    class WordToJpegRenderer {
+    class PdfToJpegRendererCases {
         @Nested
         class Consumes {
             @BeforeEach
@@ -41,7 +41,7 @@ public class PdfToJpegRendererTest {
             }
 
             @Test
-            void shouldReturnWordMlMimetype() {
+            void shouldReturnPdfMimeType() {
                 assertThat(renderer.consumes()).isEqualTo("application/pdf");
             }
         }
@@ -55,7 +55,7 @@ public class PdfToJpegRendererTest {
             }
 
             @Test
-            void shouldReturnJpegMimetype() {
+            void shouldReturnJpegMimeType() {
                 assertThat(renderer.produces()).contains("image/jpg");
             }
         }
@@ -63,8 +63,8 @@ public class PdfToJpegRendererTest {
         @Nested
         class Convert {
             @Nested
-            @DisplayName("Given an input stream and a mimetype")
-            class InputStreamAndMimetype {
+            @DisplayName("Given an input stream and a MIME type")
+            class InputStreamAndMimeType {
                 @Nested
                 @DisplayName("When the pdf has more than one page")
                 class PdfHasMoreThanOnePage {
@@ -89,7 +89,7 @@ public class PdfToJpegRendererTest {
                     }
 
                     @Test
-                    void shouldGetEmbeddedThumbnailFromXWPFDocumentProperties() throws IOException {
+                    void shouldRenderFirstPageAtDpi() throws IOException {
                         verify(pdfRenderer).renderImageWithDPI(0, 300, ImageType.RGB);
                     }
 
@@ -169,7 +169,7 @@ public class PdfToJpegRendererTest {
 
             @Nested
             @DisplayName("Given a null input stream")
-            class ullInputStream {
+            class NullInputStream {
                 @BeforeEach
                 void setUp() {
                     pdf = mock(PDFService.class);
@@ -183,7 +183,7 @@ public class PdfToJpegRendererTest {
                 }
 
                 @Test
-                void shouldGetEmbeddedThumbnailFromXWPFDocumentProperties() {
+                void shouldThrowWhenInputStreamIsNull() {
                     assertThat(e).isNotNull();
                 }
             }

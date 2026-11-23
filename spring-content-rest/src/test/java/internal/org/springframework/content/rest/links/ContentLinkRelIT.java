@@ -30,7 +30,7 @@ public class ContentLinkRelIT {
         class LinkRel {
             @Nested
             @DisplayName("Given a store with @StoreRestResource(linkRel = \"foo\") and an entity with a top-level uncorrelated content property")
-            class StoreSpecifyingLinkRelAndEntityWithTopLevelUncorrelatedContentProperty extends ContentLinkTests {
+            class StoreSpecifyingLinkRelAndEntityWithTopLevelUncorrelatedContentPropertyContentLinkTests extends ContentLinkTests {
                 @Autowired
                 private WebApplicationContext context;
 
@@ -57,7 +57,7 @@ public class ContentLinkRelIT {
 
             @Nested
             @DisplayName("Given a store with @StoreRestResource(linkRel = \"foo\") and an entity with top-level correlated content properties")
-            class StoreSpecifyingLinkRelAndEntityWithTopLevelCorrelatedContentProperties extends ContentLinkTests {
+            class StoreSpecifyingLinkRelAndEntityWithTopLevelCorrelatedContentPropertiesContentLinkTests extends ContentLinkTests {
                 @Autowired
                 private WebApplicationContext context;
 

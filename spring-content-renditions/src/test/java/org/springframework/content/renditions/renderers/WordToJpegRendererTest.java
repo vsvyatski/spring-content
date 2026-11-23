@@ -41,7 +41,7 @@ public class WordToJpegRendererTest {
             }
 
             @Test
-            void shouldReturnWordMlMimetype() {
+            void shouldReturnWordMlMimeType() {
                 assertThat(renderer.consumes()).isEqualTo("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
             }
         }
@@ -55,7 +55,7 @@ public class WordToJpegRendererTest {
             }
 
             @Test
-            void shouldReturnJpegMimetype() {
+            void shouldReturnJpegMimeType() {
                 assertThat(renderer.produces()).contains("image/jpg");
             }
         }
@@ -63,8 +63,8 @@ public class WordToJpegRendererTest {
         @Nested
         class Convert {
             @Nested
-            @DisplayName("Given an input stream and a mimetype")
-            class InputStreamAndMimetype {
+            @DisplayName("Given an input stream and a MIME type")
+            class InputStreamAndMimeType {
                 @BeforeEach
                 void setUp() throws IOException {
                     poi = mock(POIService.class);
