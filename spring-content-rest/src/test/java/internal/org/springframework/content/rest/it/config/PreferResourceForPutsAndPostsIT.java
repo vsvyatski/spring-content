@@ -2,9 +2,9 @@ package internal.org.springframework.content.rest.it.config;
 
 import internal.org.springframework.content.rest.it.SecurityConfiguration;
 import internal.org.springframework.content.rest.support.UuidSingleContentEntity;
-import internal.org.springframework.content.rest.support.mockstore.EnableMockStores;
-import internal.org.springframework.content.rest.support.mockstore.MockContentStore;
-import internal.org.springframework.content.rest.support.mockstore.MockStoreFactoryBean;
+import internal.org.springframework.content.rest.support.mock.store.EnableMockStores;
+import internal.org.springframework.content.rest.support.mock.store.MockContentStore;
+import internal.org.springframework.content.rest.support.mock.store.MockStoreFactoryBean;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;

@@ -23,6 +23,8 @@ public final class TestSupportPackages {
 
     public static final String FULLTEXT = ROOT + ".fulltext";
 
+    public static final String ID_TYPE = ROOT + ".id.type";
+
     public static final String ENCRYPTION = ROOT + ".encryption";
 
     private TestSupportPackages() {
