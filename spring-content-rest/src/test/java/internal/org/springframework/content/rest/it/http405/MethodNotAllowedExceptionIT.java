@@ -115,7 +115,7 @@ public class MethodNotAllowedExceptionIT {
     }
 
     @Nested
-    @DisplayName("When GET content methods are not exported")
+    @DisplayName("When content-getting methods are not exported")
     class GetContentMethodIsNotExportedCases {
         @BeforeEach
         void setUp() {
@@ -138,7 +138,7 @@ public class MethodNotAllowedExceptionIT {
     }
 
     @Nested
-    @DisplayName("When set content methods are not exported")
+    @DisplayName("When content-setting methods are not exported")
     class SetContentMethodsAreNotExportedCases {
         @BeforeEach
         void setUp() {
@@ -161,7 +161,7 @@ public class MethodNotAllowedExceptionIT {
     }
 
     @Nested
-    @DisplayName("When unset content methods are not exported")
+    @DisplayName("When content-unsetting methods are not exported")
     class UnsetContentMethodAreNotExportedCases {
         @BeforeEach
         void setUp() {
