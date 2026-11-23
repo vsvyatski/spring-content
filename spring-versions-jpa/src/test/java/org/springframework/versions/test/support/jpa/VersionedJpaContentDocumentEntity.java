@@ -16,7 +16,7 @@ import java.util.UUID;
 @Entity
 @Access(AccessType.FIELD)
 @Table(name = "VERSIONED_DOCUMENTS")
-@SuppressWarnings("unused")
+@SuppressWarnings("unused") // copy ctor and accessors used by cloning, BeanWrapper, and Jackson
 public class VersionedJpaContentDocumentEntity {
 
     @Id

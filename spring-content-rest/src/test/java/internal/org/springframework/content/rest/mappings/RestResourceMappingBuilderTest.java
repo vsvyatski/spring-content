@@ -17,21 +17,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class RestResourceMappingBuilderTest {
 
-    @SuppressWarnings("unused") // reflective ClassWalker fixture
+    @SuppressWarnings("unused") // fields read by ClassWalker
     public static class TestSubClass {
         @RestResource(path = "two")
         private TestSubSubClass child;
         private TestSubSubClass childWithout;
     }
 
-    @SuppressWarnings("unused") // reflective ClassWalker fixture
+    @SuppressWarnings("unused") // fields read by ClassWalker
     public static class TestClass {
         @RestResource(path = "one")
         private TestSubClass child;
         private TestSubClass childWithout;
     }
 
-    @SuppressWarnings("unused") // reflective ClassWalker fixture
+    @SuppressWarnings("unused") // fields read by ClassWalker
     public static class TestSubSubClass {
         @RestResource(path = "three")
         private @ContentId UUID contentId;

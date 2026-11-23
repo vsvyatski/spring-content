@@ -7,7 +7,6 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 /**
  * @author Vladimir Svyatski
  */
-@SuppressWarnings("unused") // classpath / store component scan
 @RepositoryRestResource(path = "storeResolverEntities")
 public interface StoreResolverEntityRepository extends JpaRepository<SingleContentJpaLongIdMimeEntity, Long> {
 }

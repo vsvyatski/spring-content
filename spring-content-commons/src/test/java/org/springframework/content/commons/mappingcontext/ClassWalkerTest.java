@@ -21,7 +21,7 @@ public class ClassWalkerTest {
     /**
      * Hierarchy root; primary content from {@link SingleContentFields}.
      */
-    @SuppressWarnings("unused")
+    @SuppressWarnings("unused") // fields read by ClassWalker
     public static class RootWithNestedContent extends SingleContentFields {
 
         @MimeType
@@ -37,7 +37,7 @@ public class ClassWalkerTest {
     /**
      * Nested level; {@code long} / {@code int} lengths exercise {@link TypeDescriptor} primitives.
      */
-    @SuppressWarnings("unused")
+    @SuppressWarnings("unused") // fields read by ClassWalker
     public static class NestedContentChild {
         @ContentId
         private String contentId;
@@ -50,7 +50,7 @@ public class ClassWalkerTest {
         private NestedContentGrandchild subChild;
     }
 
-    @SuppressWarnings("unused")
+    @SuppressWarnings("unused") // fields read by ClassWalker
     public static class NestedContentGrandchild {
         @ContentId
         private String contentId;
@@ -65,7 +65,7 @@ public class ClassWalkerTest {
     /**
      * Uncorrelated attribute names; not shared test-jar shape.
      */
-    @SuppressWarnings("unused")
+    @SuppressWarnings("unused") // fields read by ClassWalker
     public static class UncorrelatedAttrClass {
         private @Id
         @GeneratedValue Long id;
@@ -77,7 +77,7 @@ public class ClassWalkerTest {
         private String title;
     }
 
-    @SuppressWarnings("unused")
+    @SuppressWarnings("unused") // fields read by ClassWalker
     public static class CorrelatedAttrClass extends UuidSingleContentFields {
 
         private @Id
@@ -88,12 +88,12 @@ public class ClassWalkerTest {
         private String title;
     }
 
-    @SuppressWarnings("unused")
+    @SuppressWarnings("unused") // fields read by ClassWalker
     public static class WrapperWithUncorrelatedChild {
         private UncorrelatedAttrClass child;
     }
 
-    @SuppressWarnings("unused")
+    @SuppressWarnings("unused") // fields read by ClassWalker
     public static class EntityWithNonContentRelations {
 
         @OneToOne
@@ -108,29 +108,27 @@ public class ClassWalkerTest {
         private NestedContentChild docRef;
     }
 
-    @SuppressWarnings("unused")
     public static class SubclassOfNestedContentGrandchild extends NestedContentGrandchild {
     }
 
     /**
      * No declared content fields; {@link ContentId} comes only from {@link UuidSingleContentFields}.
      */
-    @SuppressWarnings("unused")
     public static class InheritedUuidContentOnly extends UuidSingleContentFields {
     }
 
-    @SuppressWarnings("unused")
+    @SuppressWarnings("unused") // fields read by ClassWalker
     public static class EntityWithTwoUncorrelatedChildren {
         private UncorrelatedAttrClass child1;
         private UncorrelatedAttrClass child2;
     }
 
-    @SuppressWarnings("unused")
+    @SuppressWarnings("unused") // fields read by ClassWalker
     public static class WrapperWithPrimaryAndPreviewChild {
         private PrimaryAndPreviewContent child;
     }
 
-    @SuppressWarnings("unused")
+    @SuppressWarnings("unused") // fields read by ClassWalker
     public static class PrimaryAndPreviewContent extends UuidSingleContentFields {
 
         private @MimeType String contentMimeType;
@@ -142,12 +140,12 @@ public class ClassWalkerTest {
         private @OriginalFileName String previewOriginalFileName;
     }
 
-    @SuppressWarnings("unused")
+    @SuppressWarnings("unused") // fields read by ClassWalker
     public static class NestedWrapperWithPrimaryAndPreviewChild {
         private WrapperWithPrimaryAndPreviewChild child;
     }
 
-    @SuppressWarnings("unused")
+    @SuppressWarnings("unused") // fields read by ClassWalker
     private static class CamelCasedContentProperty {
         private @ContentId UUID camelCasePropertyId;
         private @ContentLength Long camelCasePropertyLen;
@@ -155,7 +153,7 @@ public class ClassWalkerTest {
         private @OriginalFileName String camelCasePropertyOriginalFileName;
     }
 
-    @SuppressWarnings("unused")
+    @SuppressWarnings("unused") // fields read by ClassWalker
     private static class PluralizedCamelCasedContentProperty {
         private @ContentId UUID camelCasePropertyIds;
         private @ContentLength Long camelCasePropertyLens;

@@ -6,6 +6,5 @@ import org.springframework.content.test.support.jpa.fixture.SingleContentJpaLong
 /**
  * @author Vladimir Svyatski
  */
-@SuppressWarnings("unused") // classpath / store component scan
 public interface StoreResolverEntityJpaStore extends JpaContentStore<SingleContentJpaLongIdMimeEntity, String> {
 }

@@ -36,11 +36,9 @@ public class BeanUtilsTest {
         }
     }
 
-    @SuppressWarnings("unused")
     public static class InheritingSingleContentFields extends SingleContentFields {
     }
 
-    @SuppressWarnings("unused")
     public static class DualContentWithMimeType extends DualContentFields {
 
         @MimeType

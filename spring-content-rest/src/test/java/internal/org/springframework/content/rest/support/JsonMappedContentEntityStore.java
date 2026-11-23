@@ -7,7 +7,6 @@ import org.springframework.content.rest.StoreRestResource;
 
 import java.io.InputStream;
 
-@SuppressWarnings("unused") // classpath / store component scan
 @StoreRestResource(path = "jsonMappedContentEntities")
 public interface JsonMappedContentEntityStore extends FileSystemContentStore<JsonMappedContentEntity, Long>,
     Renderable<JsonMappedContentEntity> {

@@ -12,7 +12,7 @@ import org.springframework.versions.*;
  * @author Vladimir Svyatski
  */
 @Entity
-@SuppressWarnings("unused")
+@SuppressWarnings("unused") // accessors used by BeanWrapper and JPA
 public class VersioningJpaLongIdEntity {
 
     @Id

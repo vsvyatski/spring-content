@@ -6,7 +6,6 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 /**
  * @author Vladimir Svyatski
  */
-@SuppressWarnings("unused") // classpath / store component scan
 @RepositoryRestResource(path = "unexportedStoreMethodsEntities")
 public interface UnexportedStoreMethodsEntityRepository extends JpaRepository<UnexportedStoreMethodsEntity, Long> {
 }

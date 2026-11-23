@@ -32,7 +32,6 @@ public class OptimisticLockingInterceptorTest {
     private ProxyMethodInvocation mi;
     private Object entity;
 
-    @SuppressWarnings("unused")
     private static class TestEntity {
         @Version
         private Long version = 0L;
@@ -41,6 +40,7 @@ public class OptimisticLockingInterceptorTest {
             return version;
         }
 
+        @SuppressWarnings("unused") // BeanWrapper write method for @Version
         public void setVersion(Long version) {
             this.version = version;
         }

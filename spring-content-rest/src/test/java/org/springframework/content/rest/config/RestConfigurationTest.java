@@ -26,7 +26,6 @@ public class RestConfigurationTest {
     private static ContentRestConfigurer configurer;
     private AnnotationConfigWebApplicationContext context;
 
-    @SuppressWarnings("unused") // classpath / store component scan
     public interface SingleContentMongoDocumentFsStore
         extends FileSystemContentStore<SingleContentMongoDocument, String> {
     }
