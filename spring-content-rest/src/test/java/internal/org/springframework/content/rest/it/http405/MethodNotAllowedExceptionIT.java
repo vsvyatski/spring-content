@@ -161,7 +161,7 @@ public class MethodNotAllowedExceptionIT {
     }
 
     @Nested
-    @DisplayName("When unset content method are not exported cases")
+    @DisplayName("When unset content methods are not exported cases")
     class UnsetContentMethodAreNotExportedCases {
         @BeforeEach
         void setUp() {

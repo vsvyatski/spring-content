@@ -195,7 +195,7 @@ public class NestedContentPropertyRestEndpointsIT {
                 }
 
                 @Nested
-                @DisplayName("PUT to store ID with json content")
+                @DisplayName("PUT to store ID with JSON content")
                 class PutToStoreIdWithJsonContent {
                     @BeforeEach
                     void setUp() {

@@ -176,7 +176,7 @@ public class RestResourceMappedRestEndpointsIT {
                 }
 
                 @Nested
-                @DisplayName("PUT to store ID with json content")
+                @DisplayName("PUT to store ID with JSON content")
                 class PutToStoreIdWithJsonContent {
                     @BeforeEach
                     void setUp() {
@@ -210,7 +210,7 @@ public class RestResourceMappedRestEndpointsIT {
             @DisplayName("Given that it has content")
             class ItHasContent {
                 @Nested
-                @DisplayName("GET to repository ID for the entity json")
+                @DisplayName("GET to repository ID for the entity JSON")
                 class GetToRepositoryIdForEntityJson {
                     @BeforeEach
                     void setUp() throws IOException {

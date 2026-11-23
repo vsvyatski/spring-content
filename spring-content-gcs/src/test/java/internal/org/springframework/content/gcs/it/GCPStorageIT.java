@@ -936,7 +936,7 @@ public class GCPStorageIT {
             }
 
             @Nested
-            @DisplayName("When an invalid property path is used to GET content")
+            @DisplayName("When an invalid property path is used to get content")
             class InvalidPropertyPathIsUsedToGetContent {
                 @BeforeEach
                 void setUp() {

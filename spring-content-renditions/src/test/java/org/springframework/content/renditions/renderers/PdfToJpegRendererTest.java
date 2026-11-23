@@ -66,7 +66,7 @@ public class PdfToJpegRendererTest {
             @DisplayName("Given an input stream and a MIME type")
             class InputStreamAndMimeType {
                 @Nested
-                @DisplayName("When the pdf has more than one page")
+                @DisplayName("When the PDF has more than one page")
                 class PdfHasMoreThanOnePage {
                     @BeforeEach
                     void setUp() throws IOException {
@@ -99,7 +99,7 @@ public class PdfToJpegRendererTest {
                     }
 
                     @Nested
-                    @DisplayName("When the pdf document fails to return a thumbnail")
+                    @DisplayName("When the PDF document fails to return a thumbnail")
                     class PdfDocumentFailsToReturnThumbnail {
                         @BeforeEach
                         void setUp() throws IOException {
@@ -137,7 +137,7 @@ public class PdfToJpegRendererTest {
                 }
 
                 @Nested
-                @DisplayName("When the input stream is not a valid pdf file")
+                @DisplayName("When the input stream is not a valid PDF file")
                 class InputStreamIsNotValidPdfFile {
                     @BeforeEach
                     void setUp() throws IOException {

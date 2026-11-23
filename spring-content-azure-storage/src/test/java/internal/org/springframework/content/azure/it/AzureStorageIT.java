@@ -879,7 +879,7 @@ public class AzureStorageIT {
             }
 
             @Nested
-            @DisplayName("When an invalid property path is used to set a content")
+            @DisplayName("When an invalid property path is used to set content")
             class InvalidPropertyPathIsUsedToSetContent {
                 @BeforeEach
                 void setUp() {
@@ -916,7 +916,7 @@ public class AzureStorageIT {
             }
 
             @Nested
-            @DisplayName("When an invalid property path is used to GET a content")
+            @DisplayName("When an invalid property path is used to get content")
             class InvalidPropertyPathIsUsedToGetContent {
                 @BeforeEach
                 void setUp() {
@@ -953,7 +953,7 @@ public class AzureStorageIT {
             }
 
             @Nested
-            @DisplayName("When an invalid property path is used to unset a content")
+            @DisplayName("When an invalid property path is used to unset content")
             class InvalidPropertyPathIsUsedToUnsetContent {
                 @BeforeEach
                 void setUp() {

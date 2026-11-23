@@ -118,7 +118,7 @@ public class DefaultMongoStoreImplTest {
                 }
 
                 @Nested
-                @DisplayName("When the gridfs store throws an exception")
+                @DisplayName("When the GridFS store throws an exception")
                 class GridfsStoreThrowsException {
                     @BeforeEach
                     void storeFails() {
@@ -234,7 +234,7 @@ public class DefaultMongoStoreImplTest {
             }
 
             @Nested
-            @DisplayName("When gridfs deletion throws an exception")
+            @DisplayName("When GridFS deletion throws an exception")
             class GridfsDeletionThrowsException {
                 @BeforeEach
                 void deleteFails() {
