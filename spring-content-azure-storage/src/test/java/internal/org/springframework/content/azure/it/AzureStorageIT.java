@@ -143,7 +143,7 @@ public class AzureStorageIT {
                 }
 
                 @Nested
-                @DisplayName("Given a content is added to that resource")
+                @DisplayName("Given content is added to that resource")
                 class ContentIsAddedToThatResource {
                     @Nested
                     class Tests {
@@ -639,7 +639,7 @@ public class AzureStorageIT {
             }
 
             @Nested
-            @DisplayName("When a content is updated")
+            @DisplayName("When content is updated")
             class ContentIsUpdated {
                 @BeforeEach
                 void setUp() {
@@ -685,7 +685,7 @@ public class AzureStorageIT {
             }
 
             @Nested
-            @DisplayName("When a content is updated with a shorter content")
+            @DisplayName("When content is updated with a shorter content")
             class ContentIsUpdatedWithShorterContent {
                 @BeforeEach
                 void setUp() {
@@ -731,7 +731,7 @@ public class AzureStorageIT {
             }
 
             @Nested
-            @DisplayName("When a content is updated and not overwritten")
+            @DisplayName("When content is updated and not overwritten")
             class ContentIsUpdatedAndNotOverwritten {
                 @BeforeEach
                 void setUp() {
@@ -780,7 +780,7 @@ public class AzureStorageIT {
             }
 
             @Nested
-            @DisplayName("When a content is unset")
+            @DisplayName("When content is unset")
             class ContentIsUnset {
                 @BeforeEach
                 void setUp() {
@@ -834,7 +834,7 @@ public class AzureStorageIT {
             }
 
             @Nested
-            @DisplayName("When a content is unset but kept")
+            @DisplayName("When content is unset but kept")
             class ContentIsUnsetButKept {
                 @BeforeEach
                 void setUp() {
@@ -990,7 +990,7 @@ public class AzureStorageIT {
             }
 
             @Nested
-            @DisplayName("When a content is deleted and the content ID field is shared with entity id")
+            @DisplayName("When content is deleted and the content ID field is shared with entity id")
             class ContentIsDeletedAndContentIdFieldIsSharedWithEntityId {
                 @BeforeEach
                 void setUp() {

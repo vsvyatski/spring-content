@@ -388,7 +388,7 @@ public class S3StoreIT {
                         }
 
                         @Nested
-                        @DisplayName("When a invalid property path is used to associate a resource")
+                        @DisplayName("When an invalid property path is used to associate a resource")
                         class InvalidPropertyPathIsUsedToAssociateResource {
                             @BeforeEach
                             void setUp() throws InterruptedException {
@@ -417,7 +417,7 @@ public class S3StoreIT {
                         }
 
                         @Nested
-                        @DisplayName("When a invalid property path is used to load a resource")
+                        @DisplayName("When an invalid property path is used to load a resource")
                         class InvalidPropertyPathIsUsedToLoadResource {
                             @BeforeEach
                             void setUp() throws InterruptedException {
@@ -446,7 +446,7 @@ public class S3StoreIT {
                         }
 
                         @Nested
-                        @DisplayName("When a invalid property path is used to unassociate a resource")
+                        @DisplayName("When an invalid property path is used to unassociate a resource")
                         class InvalidPropertyPathIsUsedToUnassociateResource {
                             @BeforeEach
                             void setUp() throws InterruptedException {
@@ -848,7 +848,7 @@ public class S3StoreIT {
             @Nested
             class EmbeddedContent {
                 @Nested
-                @DisplayName("Given a entity with a null embedded content object")
+                @DisplayName("Given an entity with a null embedded content object")
                 class EntityWithNullEmbeddedContentObject {
                     @BeforeEach
                     void setUp() throws InterruptedException {

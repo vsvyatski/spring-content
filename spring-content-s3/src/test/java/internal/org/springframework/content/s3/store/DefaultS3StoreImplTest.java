@@ -323,7 +323,7 @@ public class DefaultS3StoreImplTest {
                     @DisplayName("Given a default bucket")
                     class DefaultBucket {
                         @Nested
-                        @DisplayName("When called with an entity that doesnt have an bucket value")
+                        @DisplayName("When called with an entity that doesnt have a bucket value")
                         class CalledWithEntityThatDoesntHaveBucketValue {
                             @BeforeEach
                             void setUp() {
@@ -371,7 +371,7 @@ public class DefaultS3StoreImplTest {
                         }
 
                         @Nested
-                        @DisplayName("When called with an entity that has an bucket value")
+                        @DisplayName("When called with an entity that has a bucket value")
                         class CalledWithEntityThatHasBucketValue {
                             @BeforeEach
                             void setUp() {
@@ -616,7 +616,7 @@ public class DefaultS3StoreImplTest {
                         }
 
                         @Nested
-                        @DisplayName("When called with an entity that has an bucket value")
+                        @DisplayName("When called with an entity that has a bucket value")
                         class CalledWithEntityThatHasBucketValue {
                             @BeforeEach
                             void setUp() {

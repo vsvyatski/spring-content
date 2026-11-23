@@ -355,7 +355,7 @@ public class FileSystemStorePropertyPathAccessorsIT {
                         }
 
                         @Nested
-                        @DisplayName("When a invalid property path is used to associate a resource")
+                        @DisplayName("When an invalid property path is used to associate a resource")
                         class InvalidPropertyPathIsUsedToAssociateResource {
                             @BeforeEach
                             void setUp() {
@@ -393,7 +393,7 @@ public class FileSystemStorePropertyPathAccessorsIT {
                         }
 
                         @Nested
-                        @DisplayName("When a invalid property path is used to load a resource")
+                        @DisplayName("When an invalid property path is used to load a resource")
                         class InvalidPropertyPathIsUsedToLoadResource {
                             @BeforeEach
                             void setUp() {
@@ -431,7 +431,7 @@ public class FileSystemStorePropertyPathAccessorsIT {
                         }
 
                         @Nested
-                        @DisplayName("When a invalid property path is used to unassociate a resource")
+                        @DisplayName("When an invalid property path is used to unassociate a resource")
                         class InvalidPropertyPathIsUsedToUnassociateResource {
                             @BeforeEach
                             void setUp() {

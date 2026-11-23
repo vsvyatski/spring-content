@@ -385,7 +385,7 @@ public class CorsConfigurationBuilderTest {
             }
 
             @Nested
-            @DisplayName("Given an zero max age specification")
+            @DisplayName("Given a zero max age specification")
             class ZeroMaxAgeSpecification {
                 @BeforeEach
                 void setUp() {
@@ -406,7 +406,7 @@ public class CorsConfigurationBuilderTest {
             }
 
             @Nested
-            @DisplayName("Given an negative max age specification")
+            @DisplayName("Given a negative max age specification")
             class NegativeMaxAgeSpecification {
                 @BeforeEach
                 void setUp() {
