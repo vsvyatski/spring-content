@@ -216,8 +216,8 @@ public class SpringBootContentRestConfigurerTest {
             }
 
             @Nested
-            @DisplayName("Given a null properties")
-            class ullProperties {
+            @DisplayName("Given null REST properties")
+            class NullRestProperties {
                 @BeforeEach
                 void setUp() {
                     properties = new ContentRestProperties();

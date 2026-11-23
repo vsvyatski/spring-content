@@ -157,7 +157,7 @@ public class StoredRenditionsRestIT {
         @DisplayName("Given an entity with a content property")
         class EntityWithContentProperty {
             @Nested
-            @DisplayName("PUT to repository ID content property")
+            @DisplayName("PUT to {repository ID}/content")
             class PutToRepositoryIdContentProperty {
                 @BeforeEach
                 void setUp() throws Exception {
@@ -183,7 +183,7 @@ public class StoredRenditionsRestIT {
                 }
 
                 @Nested
-                @DisplayName("GET to repository ID content property")
+                @DisplayName("GET to {repository ID}/content")
                 class GetToRepositoryIdContentProperty {
                     @BeforeEach
                     void setUp() throws Exception {
@@ -206,7 +206,7 @@ public class StoredRenditionsRestIT {
                 }
 
                 @Nested
-                @DisplayName("GET to repository ID rendition property")
+                @DisplayName("GET to {repository ID}/rendition")
                 class GetToRepositoryIdRenditionProperty {
                     @BeforeEach
                     void setUp() throws Exception {
@@ -227,7 +227,7 @@ public class StoredRenditionsRestIT {
                 }
 
                 @Nested
-                @DisplayName("DELETE to repository ID content property")
+                @DisplayName("DELETE to {repository ID}/content")
                 class DeleteToRepositoryIdContentProperty {
                     @BeforeEach
                     void setUp() throws Exception {

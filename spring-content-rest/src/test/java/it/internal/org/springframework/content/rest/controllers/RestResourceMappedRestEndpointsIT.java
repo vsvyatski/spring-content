@@ -129,7 +129,7 @@ public class RestResourceMappedRestEndpointsIT {
             @DisplayName("Given that is has no content")
             class IsHasNoContent {
                 @Nested
-                @DisplayName("GET to repository ID content property")
+                @DisplayName("GET to {repository ID}/package/content")
                 class GetToRepositoryIdContentProperty {
                     @BeforeEach
                     void setUp() {
@@ -147,7 +147,7 @@ public class RestResourceMappedRestEndpointsIT {
                 }
 
                 @Nested
-                @DisplayName("PUT to repository ID content property")
+                @DisplayName("PUT to {repository ID}/package/content")
                 class PutToRepositoryIdContentProperty {
                     @BeforeEach
                     void setUp() {
@@ -176,7 +176,7 @@ public class RestResourceMappedRestEndpointsIT {
                 }
 
                 @Nested
-                @DisplayName("PUT to store ID with JSON content")
+                @DisplayName("PUT to {repository ID}/package/content with JSON content")
                 class PutToStoreIdWithJsonContent {
                     @BeforeEach
                     void setUp() {
@@ -210,7 +210,7 @@ public class RestResourceMappedRestEndpointsIT {
             @DisplayName("Given that it has content")
             class ItHasContent {
                 @Nested
-                @DisplayName("GET to repository ID for the entity JSON")
+                @DisplayName("GET to {repository ID} accepting HAL JSON")
                 class GetToRepositoryIdForEntityJson {
                     @BeforeEach
                     void setUp() throws IOException {
@@ -249,7 +249,7 @@ public class RestResourceMappedRestEndpointsIT {
                 }
 
                 @Nested
-                @DisplayName("GET to repository ID content property")
+                @DisplayName("GET to {repository ID}/package/content")
                 class GetToRepositoryIdContentProperty {
                     @BeforeEach
                     void setUp() throws IOException {
@@ -285,7 +285,7 @@ public class RestResourceMappedRestEndpointsIT {
                 }
 
                 @Nested
-                @DisplayName("GET to repository ID content property with a MIME type that matches a renderer")
+                @DisplayName("GET to {repository ID}/package/content with a MIME type that matches a renderer")
                 class GetToRepositoryIdContentPropertyWithMimeTypeThatMatchesRenderer {
                     @BeforeEach
                     void setUp() throws IOException {
@@ -319,7 +319,7 @@ public class RestResourceMappedRestEndpointsIT {
                 }
 
                 @Nested
-                @DisplayName("GET to repository ID content property with multiple MIME types the last of which matches content")
+                @DisplayName("GET to {repository ID}/package/content with multiple MIME types the last of which matches content")
                 class GetToRepositoryIdWhenLastAcceptedMimeTypeMatches {
                     @BeforeEach
                     void setUp() throws IOException {
@@ -353,7 +353,7 @@ public class RestResourceMappedRestEndpointsIT {
                 }
 
                 @Nested
-                @DisplayName("PUT to repository ID content property")
+                @DisplayName("PUT to {repository ID}/package/content")
                 class PutToRepositoryIdContentProperty {
                     @BeforeEach
                     void setUp() throws IOException {
@@ -389,7 +389,7 @@ public class RestResourceMappedRestEndpointsIT {
                 }
 
                 @Nested
-                @DisplayName("DELETE to repository ID content property")
+                @DisplayName("DELETE to {repository ID}/package/content")
                 class DeleteToRepositoryIdContentProperty {
                     @BeforeEach
                     void setUp() throws IOException {
