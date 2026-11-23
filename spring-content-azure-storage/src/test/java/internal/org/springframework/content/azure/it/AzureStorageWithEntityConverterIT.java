@@ -47,11 +47,14 @@ public class AzureStorageWithEntityConverterIT {
     private static final BlobServiceClientBuilder builder = Azurite.getBlobServiceClientBuilder();
     private static final BlobContainerClient containerClient = builder.buildClient().getBlobContainerClient("test");
 
-    private static final String BUCKET = "aws-test-bucket";
-    private static final String OTHER_BUCKET = "other-bucket";
-    private static final String OTHER_OTHER_BUCKET = "other-other-bucket";
+    private static final String BUCKET = "spring-eg-content-azure";
+    private static final String OTHER_BUCKET = "other-bucket-4f91c2";
+    private static final String OTHER_OTHER_BUCKET = "other-other-bucket-8c3e17";
 
-    private static final TestData[] testDataSets;
+    private static final TestData[] TEST_DATA_SETS = {
+        new TestData("Default Converter", new Class<?>[]{TestConfig.class}, OTHER_BUCKET),
+        new TestData("Custom Converter", new Class<?>[]{CustomConverterConfig.class, TestConfig.class}, OTHER_OTHER_BUCKET)
+    };
 
     static {
         if (!containerClient.exists()) {
@@ -59,11 +62,6 @@ public class AzureStorageWithEntityConverterIT {
         }
 
         System.setProperty("spring.content.azure.bucket", BUCKET);
-
-        testDataSets = new TestData[]{
-            new TestData("Default Converter", new Class<?>[]{TestConfig.class}, OTHER_BUCKET),
-            new TestData("Custom Converter", new Class<?>[]{CustomConverterConfig.class, TestConfig.class}, OTHER_OTHER_BUCKET)
-        };
     }
 
     private DualContentJpaLongIdMimeEntity entity;
@@ -71,8 +69,8 @@ public class AzureStorageWithEntityConverterIT {
     private DualContentJpaLongIdMimeRepository repo;
     private DualContentJpaLongIdMimeStore store;
 
-    static Stream<TestData> converterTestData() {
-        return Stream.of(testDataSets);
+    static Stream<TestData> converterConfigs() {
+        return Stream.of(TEST_DATA_SETS);
     }
 
     private void bootContext(TestData testDataSet) {
@@ -148,23 +146,23 @@ public class AzureStorageWithEntityConverterIT {
 
         @Bucket
         @SuppressWarnings("unused") // read by Azure entity-level @Bucket mapping
-        private final String bucket = "other-bucket";
+        private final String bucket = OTHER_BUCKET;
     }
 
     @Nested
     class GivenAnEntityWithContent {
         @ParameterizedTest(name = "{0}")
-        @MethodSource("internal.org.springframework.content.azure.it.AzureStorageWithEntityConverterIT#converterTestData")
-        void shouldStoreNewContentInBucket(TestData data) {
+        @MethodSource("internal.org.springframework.content.azure.it.AzureStorageWithEntityConverterIT#converterConfigs")
+        void shouldStoreNewContentInBucket(TestData testDataSet) {
             try {
-                bootContext(data);
+                bootContext(testDataSet);
 
                 entity = new TestEntity();
                 entity.setContentType("text/plain");
                 entity = repo.save(entity);
 
                 store.setContent(entity, PropertyPath.from("content"), TestSupportData.sampleTextStream());
-                BlobClient blobClient = builder.buildClient().getBlobContainerClient(data.bucket())
+                BlobClient blobClient = builder.buildClient().getBlobContainerClient(testDataSet.bucket())
                     .getBlobClient(Objects.requireNonNull(entity.getContentId()));
                 assertThat(blobClient.exists()).isTrue();
             } finally {
@@ -173,10 +171,10 @@ public class AzureStorageWithEntityConverterIT {
         }
 
         @ParameterizedTest(name = "{0}")
-        @MethodSource("internal.org.springframework.content.azure.it.AzureStorageWithEntityConverterIT#converterTestData")
-        void shouldHaveContentMetadata(TestData data) {
+        @MethodSource("internal.org.springframework.content.azure.it.AzureStorageWithEntityConverterIT#converterConfigs")
+        void shouldHaveContentMetadata(TestData testDataSet) {
             try {
-                bootContext(data);
+                bootContext(testDataSet);
 
                 entity = new TestEntity();
                 entity.setContentType("text/plain");
@@ -195,10 +193,10 @@ public class AzureStorageWithEntityConverterIT {
         @Nested
         class WhenContentIsDeleted {
             @ParameterizedTest(name = "{0}")
-            @MethodSource("internal.org.springframework.content.azure.it.AzureStorageWithEntityConverterIT#converterTestData")
-            void shouldDeleteContentFromBucket(TestData data) {
+            @MethodSource("internal.org.springframework.content.azure.it.AzureStorageWithEntityConverterIT#converterConfigs")
+            void shouldDeleteContentFromBucket(TestData testDataSet) {
                 try {
-                    bootContext(data);
+                    bootContext(testDataSet);
 
                     entity = new TestEntity();
                     entity.setContentType("text/plain");
@@ -209,7 +207,7 @@ public class AzureStorageWithEntityConverterIT {
                     String resourceLocation = Objects.requireNonNull(entity.getContentId());
                     entity = store.unsetContent(entity, PropertyPath.from("content"));
                     entity = repo.save(entity);
-                    BlobClient blobClient = builder.buildClient().getBlobContainerClient(data.bucket()).getBlobClient(resourceLocation);
+                    BlobClient blobClient = builder.buildClient().getBlobContainerClient(testDataSet.bucket()).getBlobClient(resourceLocation);
                     assertThat(blobClient.exists()).isFalse();
                 } finally {
                     context.close();

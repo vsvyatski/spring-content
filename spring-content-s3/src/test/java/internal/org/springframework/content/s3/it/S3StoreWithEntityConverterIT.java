@@ -49,8 +49,8 @@ import static org.mockito.Mockito.verify;
 public class S3StoreWithEntityConverterIT {
 
     private static final String BUCKET = "spring-eg-content-s3";
-    private static final String OTHER_BUCKET = "other-other-other-bucket";
-    private static final String OTHER_OTHER_BUCKET = "other-other-bucket";
+    private static final String OTHER_BUCKET = "other-bucket-4f91c2";
+    private static final String OTHER_OTHER_BUCKET = "other-other-bucket-8c3e17";
 
     private static final TestData[] TEST_DATA_SETS = {
         new TestData("Default Converter", new Class<?>[]{TestConfig.class}, OTHER_BUCKET),
@@ -174,7 +174,7 @@ public class S3StoreWithEntityConverterIT {
 
         @Bucket
         @SuppressWarnings("unused") // read by S3 entity-level @Bucket mapping
-        private final String bucket = "other-other-other-bucket";
+        private final String bucket = OTHER_BUCKET;
     }
 
     @Nested
