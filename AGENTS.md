@@ -158,9 +158,10 @@ Change version for the whole reactor with:
   not `Given a Class With Uncorrelated Attributes`. Capitalize HTTP verbs (`GET`, `PUT`), header names
   (`If-Match`), and the usual **MIME type** / **store ID** spellings; keep articles and prepositions lowercase.
   Place `@Nested`, `@DisplayName`, and the nested `class` on consecutive lines with no blank line between them.
-- Write **MIME type** (not `mimetype` or `mime type`) and **ID** for identifiers (not `id` in phrases like
-  "store ID"), unless a framework literal requires another spelling (for example a fixed header or property
-  name).
+- In prose use **MIME type**, **mime type**, or **mime-type** (two words or hyphenated — never one word
+  `mimetype`). In Java identifiers use **`MimeType`** / **`mimeType`** (not `Mimetype`). Write **ID** in prose
+  (not `id` in phrases like "store ID"), unless a framework literal requires another spelling (for example a
+  fixed header or property name).
 - Follow existing IT style: inner entity/store/repo types, `@Enable*Stores` + `@EnableJpaRepositories` test configs,
   assert streams with Commons IO + AssertJ
 - Test entities: provide a public no-arg constructor; add parameterized constructors only when a test calls

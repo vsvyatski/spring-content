@@ -39,7 +39,7 @@ public class ClassWalker {
     }
 
     public static String calculateName(String name) {
-        Pattern p = Pattern.compile("^(.+)(Id|Len|Length|MimeTypes|MimeType|Mimetype|ContentType|(?<!Mime|Content)Type|(?<!Original)FileName|(?<!Original)Filename|OriginalFileName|OriginalFilename)$");
+        Pattern p = Pattern.compile("^(.+)(Id|Len|Length|MimeTypes|MimeType|ContentType|(?<!Mime|Content)Type|(?<!Original)FileName|(?<!Original)Filename|OriginalFileName|OriginalFilename)$");
         Matcher m = p.matcher(name);
         if (!m.matches()) {
             return null;
