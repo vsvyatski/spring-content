@@ -179,7 +179,7 @@ public class VersionTests {
     @DisplayName("DELETE to store ID with a matching If-Match header")
     class DeleteToStoreIdWithMatchingIfMatchHeader {
         @Test
-        void shouldDeleteContentAttributesAndReturn200Response() throws Exception {
+        void shouldDeleteContentAttributesAndReturn204() throws Exception {
             mvc.perform(delete(url)
                     .contentType("text/plain"))
                 .andExpect(status().isNoContent());
