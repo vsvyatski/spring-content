@@ -104,7 +104,8 @@ public class ContentEntityRestEndpointsIT {
             @Nested
             class RepositoryAndStorageAreExportedToSameURI {
                 @Nested
-                class DeleteToStoreIdSoftDeleteCustomHandler {
+                @DisplayName("DELETE to /softDelete custom handler")
+                class DeleteCustomHandler {
                     @BeforeEach
                     void setUp() {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -125,7 +126,7 @@ public class ContentEntityRestEndpointsIT {
             @Nested
             class RepositoryAndStorageAreExportedToDifferentURIs {
                 @Nested
-                class OptionsRequestToRepositoryFromKnownHost {
+                class OptionsFromKnownHost {
                     @BeforeEach
                     void setUp() {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -206,7 +207,7 @@ public class ContentEntityRestEndpointsIT {
         }
 
         @Nested
-        class PostMultipartToEntityWithSingleUncorrelatedContentProperty {
+        class PostMultipartSingleUncorrelatedContentProperty {
             @BeforeEach
             void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -260,7 +261,7 @@ public class ContentEntityRestEndpointsIT {
         }
 
         @Nested
-        class PostMultipartToEntityWithNonDefaultInitializedVersionProperty {
+        class PostMultipartNonDefaultInitializedVersionProperty {
             @Nested
             class WithContent {
                 @BeforeEach
@@ -379,7 +380,7 @@ public class ContentEntityRestEndpointsIT {
         }
 
         @Nested
-        class PostMultipartToEntityWithSingleCorrelatedContentProperty {
+        class PostMultipartSingleCorrelatedContentProperty {
             @BeforeEach
             void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -519,7 +520,7 @@ public class ContentEntityRestEndpointsIT {
         }
 
         @Nested
-        class PostMultipartToEntityWithMappedContentProperty {
+        class PostMultipartMappedContentProperty {
             @BeforeEach
             void setUp() {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();

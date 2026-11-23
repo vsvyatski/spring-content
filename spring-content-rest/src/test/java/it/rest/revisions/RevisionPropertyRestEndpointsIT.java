@@ -89,7 +89,7 @@ public class RevisionPropertyRestEndpointsIT {
         class EntityWithRevisions {
             @Nested
             @DisplayName("GET to {repository ID}/revisions/1/content")
-            class GetToRepositoryIdRevisions1Content {
+            class GetRevisions1Content {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -113,7 +113,7 @@ public class RevisionPropertyRestEndpointsIT {
 
             @Nested
             @DisplayName("GET to {repository ID}/revisions/latest/content")
-            class GetToRepositoryIdRevisionsLatestContent {
+            class GetRevisionsLatestContent {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();

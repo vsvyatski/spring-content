@@ -32,7 +32,7 @@ public class CorsTests {
 
     @Nested
     @DisplayName("An OPTIONS request from a known host")
-    class OptionsRequestFromKnownHost {
+    class OptionsFromKnownHost {
         @Test
         void shouldReturnRelevantCORSHeadersAndOK() throws Exception {
             mvc.perform(options(url)
@@ -45,7 +45,7 @@ public class CorsTests {
 
     @Nested
     @DisplayName("An OPTIONS request from an unknown host")
-    class OptionsRequestFromUnknownHost {
+    class OptionsFromUnknownHost {
         @Test
         void shouldBeForbidden() throws Exception {
             mvc.perform(options(url)

@@ -91,7 +91,7 @@ public class RestResourceMappedRestEndpointsIT {
         class EntityWithSimpleContentProperty {
             @Nested
             @DisplayName("Given a request to a non-existent entity")
-            class RequestToNonExistentEntity {
+            class NonExistentEntity {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -109,7 +109,7 @@ public class RestResourceMappedRestEndpointsIT {
 
             @Nested
             @DisplayName("Given a request to a non-existent content property")
-            class RequestToNonExistentContentProperty {
+            class NonExistentContentProperty {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -130,7 +130,7 @@ public class RestResourceMappedRestEndpointsIT {
             class HasNoContent {
                 @Nested
                 @DisplayName("GET to {repository ID}/package/content")
-                class GetToRepositoryIdContentProperty {
+                class GetContentProperty {
                     @BeforeEach
                     void setUp() {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -148,7 +148,7 @@ public class RestResourceMappedRestEndpointsIT {
 
                 @Nested
                 @DisplayName("PUT to {repository ID}/package/content")
-                class PutToRepositoryIdContentProperty {
+                class PutContentProperty {
                     @BeforeEach
                     void setUp() {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -177,7 +177,7 @@ public class RestResourceMappedRestEndpointsIT {
 
                 @Nested
                 @DisplayName("PUT to {repository ID}/package/content with JSON content")
-                class PutToRepositoryIdPackageContentWithJsonContent {
+                class PutPackageContentWithJsonContent {
                     @BeforeEach
                     void setUp() {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -211,7 +211,7 @@ public class RestResourceMappedRestEndpointsIT {
             class HasContent {
                 @Nested
                 @DisplayName("GET to {repository ID} accepting HAL JSON")
-                class GetToRepositoryIdAcceptingHalJson {
+                class GetAcceptingHalJson {
                     @BeforeEach
                     void setUp() throws IOException {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -250,7 +250,7 @@ public class RestResourceMappedRestEndpointsIT {
 
                 @Nested
                 @DisplayName("GET to {repository ID}/package/content")
-                class GetToRepositoryIdContentProperty {
+                class GetContentProperty {
                     @BeforeEach
                     void setUp() throws IOException {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -286,7 +286,7 @@ public class RestResourceMappedRestEndpointsIT {
 
                 @Nested
                 @DisplayName("GET to {repository ID}/package/content with a MIME type that matches a renderer")
-                class GetToRepositoryIdContentPropertyWithMimeTypeThatMatchesRenderer {
+                class GetContentPropertyWithMimeTypeThatMatchesRenderer {
                     @BeforeEach
                     void setUp() throws IOException {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -320,7 +320,7 @@ public class RestResourceMappedRestEndpointsIT {
 
                 @Nested
                 @DisplayName("GET to {repository ID}/package/content with multiple MIME types the last of which matches content")
-                class GetToRepositoryIdWhenLastAcceptedMimeTypeMatches {
+                class GetWhenLastAcceptedMimeTypeMatches {
                     @BeforeEach
                     void setUp() throws IOException {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -354,7 +354,7 @@ public class RestResourceMappedRestEndpointsIT {
 
                 @Nested
                 @DisplayName("PUT to {repository ID}/package/content")
-                class PutToRepositoryIdContentProperty {
+                class PutContentProperty {
                     @BeforeEach
                     void setUp() throws IOException {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -390,7 +390,7 @@ public class RestResourceMappedRestEndpointsIT {
 
                 @Nested
                 @DisplayName("DELETE to {repository ID}/package/content")
-                class DeleteToRepositoryIdContentProperty {
+                class DeleteContentProperty {
                     @BeforeEach
                     void setUp() throws IOException {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();

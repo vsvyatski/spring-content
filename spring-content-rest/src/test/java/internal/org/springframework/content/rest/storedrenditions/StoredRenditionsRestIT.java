@@ -158,7 +158,7 @@ public class StoredRenditionsRestIT {
         class EntityWithContentProperty {
             @Nested
             @DisplayName("PUT to {repository ID}/content")
-            class PutToRepositoryIdContentProperty {
+            class PutContentProperty {
                 @BeforeEach
                 void setUp() throws Exception {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -184,7 +184,7 @@ public class StoredRenditionsRestIT {
 
                 @Nested
                 @DisplayName("GET to {repository ID}/content")
-                class GetToRepositoryIdContentProperty {
+                class GetContentProperty {
                     @BeforeEach
                     void setUp() throws Exception {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -207,7 +207,7 @@ public class StoredRenditionsRestIT {
 
                 @Nested
                 @DisplayName("GET to {repository ID}/rendition")
-                class GetToRepositoryIdRenditionProperty {
+                class GetRenditionProperty {
                     @BeforeEach
                     void setUp() throws Exception {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -228,7 +228,7 @@ public class StoredRenditionsRestIT {
 
                 @Nested
                 @DisplayName("DELETE to {repository ID}/content")
-                class DeleteToRepositoryIdContentProperty {
+                class DeleteContentProperty {
                     @BeforeEach
                     void setUp() throws Exception {
                         mvc = MockMvcBuilders.webAppContextSetup(context).build();

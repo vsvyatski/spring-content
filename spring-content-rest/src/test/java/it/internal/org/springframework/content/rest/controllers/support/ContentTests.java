@@ -74,7 +74,7 @@ public class ContentTests {
 
     @Nested
     @DisplayName("GET to {store ID} with Accept */*")
-    class GetToStoreIdWithAcceptWildcard {
+    class GetWithAcceptWildcard {
         @Test
         void shouldReturn404() throws Exception {
             mvc.perform(get(url).accept("*/*")).andExpect(status().isNotFound());
@@ -83,7 +83,7 @@ public class ContentTests {
 
     @Nested
     @DisplayName("GET to {store ID} accepting a content MIME type")
-    class GetToStoreIdAcceptingContentMimeType {
+    class GetAcceptingContentMimeType {
         @Test
         void shouldReturn404() throws Exception {
             mvc.perform(get(url).accept("text/plain")).andExpect(status().isNotFound());
@@ -92,7 +92,7 @@ public class ContentTests {
 
     @Nested
     @DisplayName("PUT to {store ID} with content body")
-    class PutToStoreIdWithContentBody {
+    class PutWithContentBody {
         @Test
         void shouldSetContentAndReturn201() throws Exception {
             String content = "Hello New Spring Content World!";
@@ -110,7 +110,7 @@ public class ContentTests {
 
     @Nested
     @DisplayName("DELETE to {store ID} with MIME type")
-    class DeleteToStoreIdWithMimeType {
+    class DeleteWithMimeType {
         @Test
         void shouldReturn404() throws Exception {
             mvc.perform(delete(url).contextPath(contextPath).accept("text/plain")).andExpect(status().isNotFound());
@@ -119,7 +119,7 @@ public class ContentTests {
 
     @Nested
     @DisplayName("POST to {store ID} with multipart form data request")
-    class PostToStoreIdWithMultipartFormData {
+    class PostWithMultipartFormData {
         @Test
         void shouldSetContentAndReturn200() throws Exception {
             String content = "This is Spring Content!";
@@ -144,7 +144,7 @@ public class ContentTests {
     class EntityHasTextPlainContent {
         @Nested
         @DisplayName("GET to {store ID}")
-        class GetToStoreId {
+        class Get {
             @BeforeEach
             void setUp() {
                 String content = "Hello Spring Content World!";
@@ -173,7 +173,7 @@ public class ContentTests {
 
         @Nested
         @DisplayName("GET to {store ID} with no Accept header")
-        class GetToStoreIdWithNoAcceptHeader {
+        class GetWithNoAcceptHeader {
             @BeforeEach
             void setUp() {
                 String content = "Hello Spring Content World!";
@@ -199,7 +199,7 @@ public class ContentTests {
 
         @Nested
         @DisplayName("GET to {store ID} with a MIME type that matches a renderer")
-        class GetToStoreIdWithMimeTypeMatchingRenderer {
+        class GetWithMimeTypeMatchingRenderer {
             @BeforeEach
             void setUp() {
                 String content = "Hello Spring Content World!";
@@ -226,7 +226,7 @@ public class ContentTests {
 
         @Nested
         @DisplayName("GET to {store ID} with a MIME type that matches a renderer and the original content type")
-        class GetToStoreIdWithRendererMimeTypeAndOriginalContentType {
+        class GetWithRendererMimeTypeAndOriginalContentType {
             @BeforeEach
             void setUp() {
                 String content = "Hello Spring Content World!";
@@ -258,7 +258,7 @@ public class ContentTests {
 
         @Nested
         @DisplayName("GET to {store ID} with multiple MIME types, last matches content")
-        class GetToStoreIdWithMultipleMimeTypesLastMatchesContent {
+        class GetWithMultipleMimeTypesLastMatchesContent {
             @BeforeEach
             void setUp() {
                 String content = "Hello Spring Content World!";
@@ -284,7 +284,7 @@ public class ContentTests {
 
         @Nested
         @DisplayName("GET to {store ID} with multiple MIME types, middle matches content")
-        class GetToStoreIdWithMultipleMimeTypesMiddleMatchesContent {
+        class GetWithMultipleMimeTypesMiddleMatchesContent {
             @BeforeEach
             void setUp() {
                 String content = "Hello Spring Content World!";
@@ -310,7 +310,7 @@ public class ContentTests {
 
         @Nested
         @DisplayName("GET to {store ID} with accept-all MIME type")
-        class GetToStoreIdWithAcceptAllMimeType {
+        class GetWithAcceptAllMimeType {
             @BeforeEach
             void setUp() {
                 String content = "Hello Spring Content World!";
@@ -336,7 +336,7 @@ public class ContentTests {
 
         @Nested
         @DisplayName("GET to {store ID} with MIME type specifying charset")
-        class GetToStoreIdWithMimeTypeSpecifyingCharset {
+        class GetWithMimeTypeSpecifyingCharset {
             @BeforeEach
             void setUp() {
                 String content = "Hello Spring Content World!";
@@ -362,7 +362,7 @@ public class ContentTests {
 
         @Nested
         @DisplayName("GET to {store ID} when original MIME type has charset")
-        class GetToStoreIdWhenOriginalMimeTypeHasCharset {
+        class GetWhenOriginalMimeTypeHasCharset {
             @BeforeEach
             void setUp() {
                 String content = "Hello Spring Content World!";
@@ -391,7 +391,7 @@ public class ContentTests {
 
         @Nested
         @DisplayName("GET to {store ID} with MIME type that does not match renderer or original content")
-        class GetToStoreIdWithMimeTypeNoMatch {
+        class GetWithMimeTypeNoMatch {
             @BeforeEach
             void setUp() {
                 String content = "Hello Spring Content World!";
@@ -412,7 +412,7 @@ public class ContentTests {
 
         @Nested
         @DisplayName("GET to {store ID} with Range header")
-        class GetToStoreIdWithRangeHeader {
+        class GetWithRangeHeader {
             @BeforeEach
             void setUp() {
                 String content = "Hello Spring Content World!";
@@ -439,7 +439,7 @@ public class ContentTests {
 
         @Nested
         @DisplayName("PUT to {store ID}")
-        class PutToStoreId {
+        class Put {
             @BeforeEach
             void setUp() {
                 String content = "Hello Spring Content World!";
@@ -464,7 +464,7 @@ public class ContentTests {
 
         @Nested
         @DisplayName("POST to {store ID} with multipart request")
-        class PostToStoreIdWithMultipartRequest {
+        class PostWithMultipartRequest {
             @BeforeEach
             void setUp() {
                 String content = "Hello Spring Content World!";
@@ -497,7 +497,7 @@ public class ContentTests {
 
         @Nested
         @DisplayName("POST to {store ID} with missing content type")
-        class PostToStoreIdWithMissingContentType {
+        class PostWithMissingContentType {
             @BeforeEach
             void setUp() {
                 String content = "Hello Spring Content World!";
@@ -519,7 +519,7 @@ public class ContentTests {
 
         @Nested
         @DisplayName("PUT to {store ID} with multipart request")
-        class PutToStoreIdWithMultipartRequest {
+        class PutWithMultipartRequest {
             @BeforeEach
             void setUp() {
                 String content = "Hello Spring Content World!";
@@ -552,7 +552,7 @@ public class ContentTests {
 
         @Nested
         @DisplayName("DELETE to {store ID} with MIME type")
-        class DeleteToStoreIdWithMimeType {
+        class DeleteWithMimeType {
             @BeforeEach
             void setUp() {
                 String content = "Hello Spring Content World!";

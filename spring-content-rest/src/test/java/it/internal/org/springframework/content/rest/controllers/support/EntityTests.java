@@ -62,7 +62,7 @@ public class EntityTests {
 
     @Nested
     @DisplayName("GET to {store ID} accepting HAL JSON")
-    class GetToStoreIdAcceptingHalJson {
+    class GetAcceptingHalJson {
         @Test
         void shouldReturnEntity() throws Exception {
             MockHttpServletResponse response = mvc
@@ -83,7 +83,7 @@ public class EntityTests {
 
     @Nested
     @DisplayName("PUT to {store ID} with a JSON body")
-    class PutToStoreIdWithJsonBody {
+    class PutWithJsonBody {
         @Test
         void shouldSetEntitiesDataAndReturn200() throws Exception {
             entity.setTitle("Spring Content");
@@ -102,7 +102,7 @@ public class EntityTests {
 
     @Nested
     @DisplayName("PATCH to {store ID} with a JSON body")
-    class PatchToStoreIdWithJsonBody {
+    class PatchWithJsonBody {
         @Test
         void shouldPatchEntityDataAndReturn200() throws Exception {
             mvc.perform(patch(url)
@@ -121,7 +121,7 @@ public class EntityTests {
 
     @Nested
     @DisplayName("HEAD to {store ID} with a JSON body")
-    class HeadToStoreIdWithJsonBody {
+    class HeadWithJsonBody {
         @Test
         void shouldReturn200() throws Exception {
             mvc.perform(head(url))

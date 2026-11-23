@@ -99,7 +99,7 @@ public class VersionTests {
 
     @Nested
     @DisplayName("GET request to {store ID}")
-    class GetRequestToStoreId {
+    class Get {
         @Test
         void shouldReturnEtagHeader() throws Exception {
             MockHttpServletResponse response = mvc
@@ -116,7 +116,7 @@ public class VersionTests {
 
     @Nested
     @DisplayName("GET request to {store ID} with a matching If-None-Match header")
-    class GetRequestToStoreIdWithMatchingIfNoneMatchHeader {
+    class GetWithMatchingIfNoneMatchHeader {
         @Test
         void shouldRespondWith304NotModified() throws Exception {
             mvc.perform(get(url)
@@ -128,7 +128,7 @@ public class VersionTests {
 
     @Nested
     @DisplayName("GET request to {store ID} with a non-matching If-None-Match header")
-    class GetRequestToStoreIdWithNonMatchingIfNoneMatchHeader {
+    class GetWithNonMatchingIfNoneMatchHeader {
         @Test
         void shouldRespondWithContent() throws Exception {
             MockHttpServletResponse response = mvc
@@ -146,7 +146,7 @@ public class VersionTests {
 
     @Nested
     @DisplayName("PUT to {store ID} with a matching If-Match header")
-    class PutToStoreIdWithMatchingIfMatchHeader {
+    class PutWithMatchingIfMatchHeader {
         @Test
         void shouldUpdateContent() throws Exception {
             mvc.perform(put(url)
@@ -177,7 +177,7 @@ public class VersionTests {
 
     @Nested
     @DisplayName("DELETE to {store ID} with a matching If-Match header")
-    class DeleteToStoreIdWithMatchingIfMatchHeader {
+    class DeleteWithMatchingIfMatchHeader {
         @Test
         void shouldDeleteContentAttributesAndReturn204() throws Exception {
             mvc.perform(delete(url)
@@ -197,7 +197,7 @@ public class VersionTests {
 
     @Nested
     @DisplayName("PUT to {store ID} with a non-matching If-Match header")
-    class PutToStoreIdWithNonMatchingIfMatchHeader {
+    class PutWithNonMatchingIfMatchHeader {
         @Test
         void shouldRespondWith412PreconditionFailed() throws Exception {
             mvc.perform(put(url)
@@ -210,7 +210,7 @@ public class VersionTests {
 
     @Nested
     @DisplayName("PUT to {store ID} with a matching If-None-Match header")
-    class PutToStoreIdWithMatchingIfNoneMatchHeader {
+    class PutWithMatchingIfNoneMatchHeader {
         @Test
         void shouldRespondWith412PreconditionFailed() throws Exception {
             mvc.perform(put(url)
@@ -223,7 +223,7 @@ public class VersionTests {
 
     @Nested
     @DisplayName("PUT to {store ID} with a non-matching If-None-Match header")
-    class PutToStoreIdWithNonMatchingIfNoneMatchHeader {
+    class PutWithNonMatchingIfNoneMatchHeader {
         @Test
         void shouldRespondWith200OKAndSetContent() throws Exception {
             mvc.perform(put(url)
@@ -236,7 +236,7 @@ public class VersionTests {
 
     @Nested
     @DisplayName("PUT to {store ID} with matching If-Match and If-None-Match headers")
-    class PutToStoreIdWithMatchingIfMatchAndIfNoneMatchHeaders {
+    class PutWithMatchingIfMatchAndIfNoneMatchHeaders {
         @Test
         void shouldRespondWith412PreconditionFailed() throws Exception {
             mvc.perform(put(url)
@@ -250,7 +250,7 @@ public class VersionTests {
 
     @Nested
     @DisplayName("POST to {store ID} with a non-matching If-Match header")
-    class PostToStoreIdWithNonMatchingIfMatchHeader {
+    class PostWithNonMatchingIfMatchHeader {
         @Test
         void shouldRespondWith412PreconditionFailed() throws Exception {
             mvc.perform(multipart(url)
@@ -264,7 +264,7 @@ public class VersionTests {
 
     @Nested
     @DisplayName("DELETE to {store ID} with a non-matching If-Match header")
-    class DeleteToStoreIdWithNonMatchingIfMatchHeader {
+    class DeleteWithNonMatchingIfMatchHeader {
         @Test
         void shouldRespondWith412PreconditionFailed() throws Exception {
             mvc.perform(delete(url)

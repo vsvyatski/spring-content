@@ -129,7 +129,7 @@ public class ContentLinksWithProjectionsIT {
         class ContentIsAssociated {
             @Nested
             @DisplayName("GET to {repository ID} with projection")
-            class GetToRepositoryIdWithProjection {
+            class GetWithProjection {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();

@@ -58,7 +58,7 @@ public class StoreRestEndpointsIT {
         class RootResourcePath {
             @Nested
             @DisplayName("Given a GET request to that path")
-            class GetRequestToThatPath {
+            class GetThatPath {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -75,7 +75,7 @@ public class StoreRestEndpointsIT {
 
             @Nested
             @DisplayName("Given a POST to that path with content")
-            class PostToThatPathWithContent {
+            class PostThatPathWithContent {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -102,7 +102,7 @@ public class StoreRestEndpointsIT {
 
             @Nested
             @DisplayName("Given a DELETE request to that path")
-            class DeleteRequestToThatPath {
+            class DeleteThatPath {
                 @BeforeEach
                 void setUp() {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -176,7 +176,7 @@ public class StoreRestEndpointsIT {
 
             @Nested
             @DisplayName("POST to store path with multipart form data")
-            class PostToStorePathWithMultiPartFormData {
+            class PostStorePathWithMultiPartFormData {
                 @BeforeEach
                 void setUp() throws IOException {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -297,7 +297,7 @@ public class StoreRestEndpointsIT {
 
             @Nested
             @DisplayName("POST to store path with multipart form data")
-            class PostToStorePathWithMultiPartFormData {
+            class PostStorePathWithMultiPartFormData {
                 @BeforeEach
                 void setUp() throws IOException {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
