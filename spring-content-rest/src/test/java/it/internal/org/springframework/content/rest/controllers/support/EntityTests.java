@@ -5,6 +5,7 @@ import com.theoryinpractise.halbuilder.api.ReadableRepresentation;
 import com.theoryinpractise.halbuilder.api.RepresentationFactory;
 import com.theoryinpractise.halbuilder.standard.StandardRepresentationFactory;
 import internal.org.springframework.content.rest.support.ContentEntity;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.repository.CrudRepository;
@@ -60,7 +61,8 @@ public class EntityTests {
     }
 
     @Nested
-    class AGETToStoreIdAcceptingHalJson {
+    @DisplayName("GET to store ID accepting HAL JSON")
+    class GetToStoreIdAcceptingHalJson {
         @Test
         void shouldReturnTheEntity() throws Exception {
             MockHttpServletResponse response = mvc
@@ -80,7 +82,8 @@ public class EntityTests {
     }
 
     @Nested
-    class APUTToStoreIdWithAJsonBody {
+    @DisplayName("PUT to store ID with a JSON body")
+    class PutToStoreIdWithJsonBody {
         @Test
         void shouldSetEntitiesDataAndReturn200() throws Exception {
             entity.setTitle("Spring Content");
@@ -98,7 +101,8 @@ public class EntityTests {
     }
 
     @Nested
-    class APATCHToStoreIdWithAJsonBody {
+    @DisplayName("PATCH to store ID with a JSON body")
+    class PatchToStoreIdWithJsonBody {
         @Test
         void shouldPatchTheEntityDataAndReturn200() throws Exception {
             mvc.perform(patch(url)
@@ -116,7 +120,8 @@ public class EntityTests {
     }
 
     @Nested
-    class AHEADToStoreIdWithAJsonBody {
+    @DisplayName("HEAD to store ID with a JSON body")
+    class HeadToStoreIdWithJsonBody {
         @Test
         void shouldReturn200() throws Exception {
             mvc.perform(head(url))

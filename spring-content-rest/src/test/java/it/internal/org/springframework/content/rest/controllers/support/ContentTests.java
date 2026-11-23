@@ -3,6 +3,7 @@ package it.internal.org.springframework.content.rest.controllers.support;
 import internal.org.springframework.content.rest.support.ContentEntity;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.content.commons.store.ContentStore;
@@ -72,35 +73,30 @@ public class ContentTests {
     }
 
     @Nested
-    class AGETToStoreIdAccepting {
+    @DisplayName("GET to store ID accepting")
+    class GetToStoreIdAccepting {
         @Test
         void shouldReturn404() throws Exception {
-            mvc.perform(get(url)
-                    .accept("*/*"))
-                .andExpect(status().isNotFound());
+            mvc.perform(get(url).accept("*/*")).andExpect(status().isNotFound());
         }
     }
 
     @Nested
-    class AGETToStoreIdAcceptingAContentMimeType {
+    @DisplayName("GET to store ID accepting a content MIME type")
+    class GetToStoreIdAcceptingContentMimeType {
         @Test
         void shouldReturn404() throws Exception {
-            mvc.perform(get(url)
-                    .accept("text/plain"))
-                .andExpect(status().isNotFound());
+            mvc.perform(get(url).accept("text/plain")).andExpect(status().isNotFound());
         }
     }
 
     @Nested
-    class APUTToStoreIdWithAContentBody {
+    @DisplayName("PUT to store ID with content body")
+    class PutToStoreIdWithContentBody {
         @Test
         void shouldSetTheContentAndReturn201() throws Exception {
             String content = "Hello New Spring Content World!";
-            mvc.perform(
-                    put(url)
-                        .contextPath(contextPath)
-                        .content(content)
-                        .contentType("text/plain"))
+            mvc.perform(put(url).contextPath(contextPath).content(content).contentType("text/plain"))
                 .andExpect(status().isCreated());
 
             Optional<ContentEntity> fetched = repository.findById(entity.getId());
@@ -113,17 +109,17 @@ public class ContentTests {
     }
 
     @Nested
-    class ADELETEToStoreIdWithAMimeType {
+    @DisplayName("DELETE to store ID with MIME type")
+    class DeleteToStoreIdWithMimeType {
         @Test
         void shouldReturn404() throws Exception {
-            mvc.perform(delete(url)
-                .contextPath(contextPath)
-                .accept("text/plain")).andExpect(status().isNotFound());
+            mvc.perform(delete(url).contextPath(contextPath).accept("text/plain")).andExpect(status().isNotFound());
         }
     }
 
     @Nested
-    class APOSTToStoreIdWithAMultiPartFormDataRequest {
+    @DisplayName("POST to store ID with multipart form data request")
+    class PostToStoreIdWithMultipartFormData {
         @Test
         void shouldSetTheContentAndReturn200() throws Exception {
             String content = "This is Spring Content!";
@@ -144,9 +140,11 @@ public class ContentTests {
     }
 
     @Nested
-    class GivenTheEntityHasTextPlainContent {
+    @DisplayName("Given the entity has text/plain content")
+    class EntityHasTextPlainContent {
         @Nested
-        class AGETToStoreId {
+        @DisplayName("GET to store ID")
+        class GetToStoreId {
             @BeforeEach
             void setUp() {
                 String content = "Hello Spring Content World!";
@@ -174,7 +172,8 @@ public class ContentTests {
         }
 
         @Nested
-        class AGETToStoreIdWithNoAcceptHeader {
+        @DisplayName("GET to store ID with no Accept header")
+        class GetToStoreIdWithNoAcceptHeader {
             @BeforeEach
             void setUp() {
                 String content = "Hello Spring Content World!";
@@ -199,7 +198,8 @@ public class ContentTests {
         }
 
         @Nested
-        class AGETToStoreIdWithAMimeTypeThatMatchesARenderer {
+        @DisplayName("GET to store ID with a MIME type that matches a renderer")
+        class GetToStoreIdWithMimeTypeMatchingRenderer {
             @BeforeEach
             void setUp() {
                 String content = "Hello Spring Content World!";
@@ -225,7 +225,8 @@ public class ContentTests {
         }
 
         @Nested
-        class AGETToStoreIdWithAMimeTypeThatMatchesARendererAndTheOriginalContentType {
+        @DisplayName("GET to store ID with a MIME type that matches a renderer and the original content type")
+        class GetToStoreIdWithRendererMimeTypeAndOriginalContentType {
             @BeforeEach
             void setUp() {
                 String content = "Hello Spring Content World!";
@@ -256,7 +257,8 @@ public class ContentTests {
         }
 
         @Nested
-        class AGETToStoreIdWithMultipleMimeTypesTheLastOfWhichMatchesTheContent {
+        @DisplayName("GET to store ID with multiple MIME types, last matches content")
+        class GetToStoreIdWithMultipleMimeTypesLastMatchesContent {
             @BeforeEach
             void setUp() {
                 String content = "Hello Spring Content World!";
@@ -281,7 +283,8 @@ public class ContentTests {
         }
 
         @Nested
-        class AGETToStoreIdWithMultipleMimeTypesTheMiddleOfWhichMatchesTheContent {
+        @DisplayName("GET to store ID with multiple MIME types, middle matches content")
+        class GetToStoreIdWithMultipleMimeTypesMiddleMatchesContent {
             @BeforeEach
             void setUp() {
                 String content = "Hello Spring Content World!";
@@ -306,7 +309,8 @@ public class ContentTests {
         }
 
         @Nested
-        class AGETToStoreIdWithJustAnAcceptAllMimeType {
+        @DisplayName("GET to store ID with accept-all MIME type")
+        class GetToStoreIdWithAcceptAllMimeType {
             @BeforeEach
             void setUp() {
                 String content = "Hello Spring Content World!";
@@ -331,7 +335,8 @@ public class ContentTests {
         }
 
         @Nested
-        class AGETToStoreIdWithAMimeTypeSpecifyingCharset {
+        @DisplayName("GET to store ID with MIME type specifying charset")
+        class GetToStoreIdWithMimeTypeSpecifyingCharset {
             @BeforeEach
             void setUp() {
                 String content = "Hello Spring Content World!";
@@ -356,7 +361,8 @@ public class ContentTests {
         }
 
         @Nested
-        class AGETToStoreIdWhenTheOriginalMimeTypeHasACharset {
+        @DisplayName("GET to store ID when original MIME type has charset")
+        class GetToStoreIdWhenOriginalMimeTypeHasCharset {
             @BeforeEach
             void setUp() {
                 String content = "Hello Spring Content World!";
@@ -384,7 +390,8 @@ public class ContentTests {
         }
 
         @Nested
-        class AGETToStoreIdWithAMimeTypeThatDoesNotMatchARendererOrTheOriginalContent {
+        @DisplayName("GET to store ID with MIME type that does not match renderer or original content")
+        class GetToStoreIdWithMimeTypeNoMatch {
             @BeforeEach
             void setUp() {
                 String content = "Hello Spring Content World!";
@@ -404,7 +411,8 @@ public class ContentTests {
         }
 
         @Nested
-        class AGETToStoreIdWithARangeHeader {
+        @DisplayName("GET to store ID with Range header")
+        class GetToStoreIdWithRangeHeader {
             @BeforeEach
             void setUp() {
                 String content = "Hello Spring Content World!";
@@ -430,7 +438,8 @@ public class ContentTests {
         }
 
         @Nested
-        class APUTToStoreId {
+        @DisplayName("PUT to store ID")
+        class PutToStoreId {
             @BeforeEach
             void setUp() {
                 String content = "Hello Spring Content World!";
@@ -454,7 +463,8 @@ public class ContentTests {
         }
 
         @Nested
-        class APOSTToStoreIdWithAMultiPartRequest {
+        @DisplayName("POST to store ID with multipart request")
+        class PostToStoreIdWithMultipartRequest {
             @BeforeEach
             void setUp() {
                 String content = "Hello Spring Content World!";
@@ -486,7 +496,8 @@ public class ContentTests {
         }
 
         @Nested
-        class APOSTToStoreIdWithAMissingContentType {
+        @DisplayName("POST to store ID with missing content type")
+        class PostToStoreIdWithMissingContentType {
             @BeforeEach
             void setUp() {
                 String content = "Hello Spring Content World!";
@@ -507,7 +518,8 @@ public class ContentTests {
         }
 
         @Nested
-        class APUTToStoreIdWithAMultiPartRequest {
+        @DisplayName("PUT to store ID with multipart request")
+        class PutToStoreIdWithMultipartRequest {
             @BeforeEach
             void setUp() {
                 String content = "Hello Spring Content World!";
@@ -539,7 +551,8 @@ public class ContentTests {
         }
 
         @Nested
-        class ADELETEToStoreIdWithTheMimetype {
+        @DisplayName("DELETE to store ID with MIME type")
+        class DeleteToStoreIdWithMimeType {
             @BeforeEach
             void setUp() {
                 String content = "Hello Spring Content World!";

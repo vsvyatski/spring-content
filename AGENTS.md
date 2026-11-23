@@ -147,6 +147,15 @@ Change version for the whole reactor with:
 - Framework: JUnit Jupiter, AssertJ, Mockito, Testcontainers where needed
 - `@Test`, `@BeforeEach`, `@AfterEach`, `@Nested` from `org.junit.jupiter.api`
 - Naming: `*Test.java` = unit (always); `*IT.java` = integration (`-P tests` only)
+- `@Nested` classes use PascalCase identifiers without articles (`a`, `an`, `the`) or BDD prefixes
+  (`Given`, `When`, `Then`) in the type name. Use `@DisplayName` when the old Ginkgo phrase should still
+  appear in test reports (for example `class GetToStoreIdAccepting` with `@DisplayName("GET to store ID
+  accepting")`). HTTP scenario nests name the verb first (`Get`, `Put`, `Post`, `Delete`, `Head`,
+  `Options`). Setup nests describe state (`ApplicationSetsId`, `EntityHasTextPlainContent`). Test methods
+  may stay `should…` unless you are aligning a file to another style deliberately.
+- In `@DisplayName`, comments, and other human-readable test prose, write **MIME type** (not `mimetype` or
+  `mime type`) and **ID** for identifiers (not `id` in phrases like "store ID"), unless a framework literal
+  requires another spelling (for example a fixed header or property name).
 - Follow existing IT style: inner entity/store/repo types, `@Enable*Stores` + `@EnableJpaRepositories` test configs,
   assert streams with Commons IO + AssertJ
 - Test entities: provide a public no-arg constructor; add parameterized constructors only when a test calls

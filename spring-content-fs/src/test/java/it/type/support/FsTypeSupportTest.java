@@ -1,10 +1,7 @@
 package it.type.support;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.content.test.support.id.type.*;
@@ -38,11 +35,14 @@ public class FsTypeSupportTest {
     Object id;
 
     @Nested
-    class JavaUtilUUID {
+    @DisplayName("java.util.UUID")
+    class JavaUtilUuid {
         @Nested
-        class GivenAContentEntity {
+        @DisplayName("Given a content entity")
+        class ContentEntity {
             @Nested
-            class GivenTheApplicationSetsTheID {
+            @DisplayName("Given the application sets the ID")
+            class ApplicationSetsId {
                 @BeforeEach
                 void setUp() {
                     entity = new UUIDBasedContentEntity();
@@ -68,7 +68,8 @@ public class FsTypeSupportTest {
             }
 
             @Nested
-            class GivenSpringContentGeneratesTheID {
+            @DisplayName("Given Spring Content generates the ID")
+            class StoreGeneratesId {
                 @BeforeEach
                 void setUp() {
                     entity = new UUIDBasedContentEntity();
@@ -96,11 +97,14 @@ public class FsTypeSupportTest {
     }
 
     @Nested
-    class JavaNetURI {
+    @DisplayName("java.net.URI")
+    class JavaNetUri {
         @Nested
-        class GivenAContentEntity {
+        @DisplayName("Given a content entity")
+        class ContentEntity {
             @Nested
-            class GivenTheApplicationSetsTheID {
+            @DisplayName("Given the application sets the ID")
+            class ApplicationSetsId {
                 @BeforeEach
                 void setUp() throws URISyntaxException {
                     entity = new URIBasedContentEntity();
@@ -128,11 +132,14 @@ public class FsTypeSupportTest {
     }
 
     @Nested
+    @DisplayName("java.lang.Long")
     class JavaLangLong {
         @Nested
-        class GivenAContentEntity {
+        @DisplayName("Given a content entity")
+        class ContentEntity {
             @Nested
-            class GivenTheApplicationSetsTheID {
+            @DisplayName("Given the application sets the ID")
+            class ApplicationSetsId {
                 @BeforeEach
                 void setUp() {
                     entity = new LongBasedContentEntity();
@@ -160,11 +167,14 @@ public class FsTypeSupportTest {
     }
 
     @Nested
+    @DisplayName("java.math.BigInteger")
     class JavaMathBigInteger {
         @Nested
-        class GivenAContentEntity {
+        @DisplayName("Given a content entity")
+        class ContentEntity {
             @Nested
-            class GivenTheApplicationSetsTheID {
+            @DisplayName("Given the application sets the ID")
+            class ApplicationSetsId {
                 @BeforeEach
                 void setUp() {
                     entity = new BigIntegerBasedContentEntity();
