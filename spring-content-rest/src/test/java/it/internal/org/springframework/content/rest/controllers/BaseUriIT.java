@@ -136,7 +136,7 @@ public class BaseUriIT {
 
             @Nested
 
-            @DisplayName("Given an entity with @version")
+            @DisplayName("Given an entity with @Version")
 
             class EntityWithVersion extends VersionTests {
                 @BeforeEach
@@ -160,7 +160,7 @@ public class BaseUriIT {
 
             @Nested
 
-            @DisplayName("Given an entity with @lastmodifieddate")
+            @DisplayName("Given an entity with @LastModifiedDate")
 
             class EntityWithLastModifiedDate extends LastModifiedDateTests {
                 @BeforeEach

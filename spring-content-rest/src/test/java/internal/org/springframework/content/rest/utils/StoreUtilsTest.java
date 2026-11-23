@@ -47,7 +47,7 @@ public class StoreUtilsTest {
     @Nested
    class StorePath {
         @Nested
-        @DisplayName("Given a content store with no annotation")
+        @DisplayName("Given a content store without @StoreRestResource")
         class ContentStoreWithNoAnnotation {
             @BeforeEach
             void setUp() {
@@ -65,7 +65,7 @@ public class StoreUtilsTest {
 
         @Nested
 
-        @DisplayName("Given a content store with a store rest resource annotation")
+        @DisplayName("Given a content store with @StoreRestResource")
 
         class ContentStoreWithStoreRestResourceAnnotation {
             @BeforeEach
@@ -85,7 +85,7 @@ public class StoreUtilsTest {
 
         @Nested
 
-        @DisplayName("Given a content store with a store rest resource annotation that specifies a path")
+        @DisplayName("Given a content store with @StoreRestResource that specifies a path")
 
         class ContentStoreWithStoreRestResourceAnnotationThatSpecifiesPath {
             @BeforeEach
@@ -104,7 +104,7 @@ public class StoreUtilsTest {
 
         @Nested
 
-        @DisplayName("Given a store with no annotations")
+        @DisplayName("Given a store without @StoreRestResource")
 
         class StoreWithNoAnnotations {
             @BeforeEach
@@ -123,7 +123,7 @@ public class StoreUtilsTest {
 
         @Nested
 
-        @DisplayName("Given a store with a store rest resource annotation")
+        @DisplayName("Given a store with @StoreRestResource")
 
         class StoreWithStoreRestResourceAnnotation {
             @BeforeEach
@@ -142,7 +142,7 @@ public class StoreUtilsTest {
 
         @Nested
 
-        @DisplayName("Given a store with a store rest resource annotation with a path of foo")
+        @DisplayName("Given a store with @StoreRestResource with a path of foo")
 
         class StoreWithStoreRestResourceAnnotationWithPathOfFoo {
             @BeforeEach

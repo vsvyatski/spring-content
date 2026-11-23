@@ -122,7 +122,7 @@ public class ContentFileSystemAutoConfigurationTest {
 
         @Nested
 
-        @DisplayName("Given a configuration with explicit enable file system stores annotation")
+        @DisplayName("Given a configuration with explicit @EnableFileSystemStores")
 
         class ConfigurationWithExplicitEnableFileSystemStoresAnnotation {
             @BeforeEach

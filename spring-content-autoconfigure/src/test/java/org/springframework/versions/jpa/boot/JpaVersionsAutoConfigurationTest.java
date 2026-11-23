@@ -85,9 +85,7 @@ public class JpaVersionsAutoConfigurationTest {
         }
 
         @Nested
-
-        @DisplayName("Given an application context with a enable jpa repositories annotation")
-
+        @DisplayName("Given an application context with the @EnableJpaRepositories annotation")
         class ApplicationContextWithEnableJpaRepositoriesAnnotation {
             @BeforeEach
             void setUp() {

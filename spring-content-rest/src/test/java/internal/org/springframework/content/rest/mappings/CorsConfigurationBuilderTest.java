@@ -91,7 +91,7 @@ public class CorsConfigurationBuilderTest {
         @Nested
         class Build {
             @Nested
-            @DisplayName("Given no cross origin annotation")
+            @DisplayName("Given no @CrossOrigin annotation")
             class NoCrossOriginAnnotation {
                 @BeforeEach
                 void setUp() {

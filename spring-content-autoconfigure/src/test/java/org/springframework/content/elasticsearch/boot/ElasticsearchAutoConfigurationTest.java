@@ -142,7 +142,7 @@ public class ElasticsearchAutoConfigurationTest {
 
     @Nested
 
-    @DisplayName("Given a context that already enables elastic search fulltext indexing")
+    @DisplayName("Given a context that already has @EnableElasticsearchFulltextIndexing")
 
     class ContextThatAlreadyEnablesElasticSearchFulltextIndexing {
         @Test

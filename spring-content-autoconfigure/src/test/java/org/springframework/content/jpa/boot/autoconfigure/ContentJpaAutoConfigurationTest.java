@@ -133,7 +133,7 @@ public class ContentJpaAutoConfigurationTest {
 
         @Nested
 
-        @DisplayName("When an explicit enable file system stores is used")
+        @DisplayName("When explicit @EnableJpaStores is used")
 
         class ExplicitEnableFileSystemStoresIsUsed {
             @BeforeEach

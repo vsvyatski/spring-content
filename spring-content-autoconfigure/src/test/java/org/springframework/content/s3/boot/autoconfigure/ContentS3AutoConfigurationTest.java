@@ -102,7 +102,7 @@ public class ContentS3AutoConfigurationTest {
 
         @Nested
 
-        @DisplayName("Given a configuration with an explicit enable s3stores annotation")
+        @DisplayName("Given a configuration with explicit @EnableS3Stores")
 
         class ConfigurationWithExplicitEnableS3StoresAnnotation {
             @BeforeEach

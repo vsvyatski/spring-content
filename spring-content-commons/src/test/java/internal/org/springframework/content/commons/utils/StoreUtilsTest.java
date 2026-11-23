@@ -126,7 +126,7 @@ public class StoreUtilsTest {
 
                 @Nested
 
-                @DisplayName("When the store beans cant be matched against signature types and the registrar doesnt match the")
+                @DisplayName("When store beans cannot be matched against signature types and the registrar ID does not match")
 
                 class StoreBeansCantBeMatchedAgainstSignatureTypesAndRegistrarDoesntMatch {
                     @BeforeEach
