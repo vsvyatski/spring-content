@@ -1,6 +1,7 @@
 package internal.org.springframework.content.commons.store.events;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -206,7 +207,8 @@ public class AnnotatedStoreEventInvokerTest {
     @Nested
     class PostProcessAfterInitialization {
         @Nested
-        class WhenInitializedWithAStoreEventHandlerBean {
+        @DisplayName("When initialized with a store event handler bean")
+        class InitializedWithAStoreEventHandlerBean {
             @BeforeEach
             void setUp() {
                 reflectionService = mock(ReflectionService.class);
@@ -231,7 +233,9 @@ public class AnnotatedStoreEventInvokerTest {
             }
 
             @Nested
-            class WhenInitializedWithAnotherEventHandlerOfHighestPriority {
+
+            @DisplayName("When initialized with another event handler of highest priority")
+            class InitializedWithAnotherEventHandlerOfHighestPriority {
                 private final HighestPriorityCustomEventHandler priorityHandler = new HighestPriorityCustomEventHandler();
 
                 @BeforeEach
@@ -277,7 +281,9 @@ public class AnnotatedStoreEventInvokerTest {
         }
 
         @Nested
-        class GivenAnEventHandlerAndAnUnknownEvent {
+
+        @DisplayName("Given an event handler and an unknown event")
+        class EventHandlerAndAnUnknownEvent {
             @Test
             void shouldNotCallAnEventHandler() {
                 reflectionService = mock(ReflectionService.class);

@@ -2,6 +2,7 @@ package internal.org.springframework.content.jpa;
 
 import com.github.f4b6a3.uuid.UuidCreator;
 import org.apache.commons.io.IOUtils;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -64,7 +65,9 @@ public class AssociativeStoreIT {
     }
 
     @Nested
-    class GivenANewEntity {
+
+    @DisplayName("Given a new entity")
+    class NewEntity {
         @ParameterizedTest(name = "{0}")
         @MethodSource("internal.org.springframework.content.jpa.StoreIT#databaseConfigs")
         void shouldNotHaveAnAssociatedResource(Class<?> configClass) {
@@ -75,9 +78,11 @@ public class AssociativeStoreIT {
         }
 
         @Nested
-        class GivenAResource {
+        @DisplayName("Given a resource")
+        class AssociatedResource {
             @Nested
-            class WhenTheResourceIsAssociated {
+            @DisplayName("When the resource is associated")
+            class ResourceIsAssociated {
                 @ParameterizedTest(name = "{0}")
                 @MethodSource("internal.org.springframework.content.jpa.StoreIT#databaseConfigs")
                 void shouldBeRecordedAsSuchOnEntityContentId(Class<?> configClass) {
@@ -91,7 +96,8 @@ public class AssociativeStoreIT {
                 }
 
                 @Nested
-                class WhenTheResourceHasContent {
+                @DisplayName("When the resource has content")
+                class ResourceHasContent {
                     @ParameterizedTest(name = "{0}")
                     @MethodSource("internal.org.springframework.content.jpa.StoreIT#databaseConfigs")
                     void shouldNotHonorByteRanges(Class<?> configClass) throws IOException {
@@ -116,7 +122,8 @@ public class AssociativeStoreIT {
                 }
 
                 @Nested
-                class WhenTheResourceIsUnassociated {
+                @DisplayName("When the resource is unassociated")
+                class ResourceIsUnassociated {
                     @ParameterizedTest(name = "{0}")
                     @MethodSource("internal.org.springframework.content.jpa.StoreIT#databaseConfigs")
                     void shouldResetEntityContentId(Class<?> configClass) {
@@ -134,7 +141,8 @@ public class AssociativeStoreIT {
             }
 
             @Nested
-            class WhenAnInvalidPropertyPathIsUsedToAssociateAResource {
+            @DisplayName("When an invalid property path is used to associate a resource")
+            class InvalidPropertyPathIsUsedToAssociateAResource {
                 @ParameterizedTest(name = "{0}")
                 @MethodSource("internal.org.springframework.content.jpa.StoreIT#databaseConfigs")
                 void shouldThrowAnError(Class<?> configClass) {
@@ -151,7 +159,8 @@ public class AssociativeStoreIT {
             }
 
             @Nested
-            class WhenAnInvalidPropertyPathIsUsedToLoadAResource {
+            @DisplayName("When an invalid property path is used to load a resource")
+            class InvalidPropertyPathIsUsedToLoadAResource {
                 @ParameterizedTest(name = "{0}")
                 @MethodSource("internal.org.springframework.content.jpa.StoreIT#databaseConfigs")
                 void shouldThrowAnError(Class<?> configClass) {
@@ -168,7 +177,8 @@ public class AssociativeStoreIT {
             }
 
             @Nested
-            class WhenAnInvalidPropertyPathIsUsedToUnassociateAResource {
+            @DisplayName("When an invalid property path is used to unassociate a resource")
+            class InvalidPropertyPathIsUsedToUnassociateAResource {
                 @ParameterizedTest(name = "{0}")
                 @MethodSource("internal.org.springframework.content.jpa.StoreIT#databaseConfigs")
                 void shouldThrowAnError(Class<?> configClass) {

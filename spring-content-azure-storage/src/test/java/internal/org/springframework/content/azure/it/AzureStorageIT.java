@@ -5,10 +5,7 @@ import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.BlobServiceClientBuilder;
 import com.azure.storage.blob.models.BlobItem;
 import org.apache.commons.io.IOUtils;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.content.azure.config.EnableAzureStorage;
 import org.springframework.content.commons.io.DeletableResource;
 import org.springframework.content.commons.property.PropertyPath;
@@ -146,7 +143,8 @@ public class AzureStorageIT {
                 }
 
                 @Nested
-                class GivenContentIsAddedToThatResource {
+                @DisplayName("Given a content is added to that resource")
+                class ContentIsAddedToThatResource {
                     @Nested
                     class Tests {
                         @BeforeEach
@@ -198,7 +196,8 @@ public class AzureStorageIT {
                     }
 
                     @Nested
-                    class GivenThatResourceIsThenUpdated {
+                    @DisplayName("Given that resource is then updated")
+                    class ResourceIsThenUpdated {
                         @BeforeEach
                         void setUp() throws IOException {
                             context = new AnnotationConfigApplicationContext();
@@ -253,7 +252,8 @@ public class AzureStorageIT {
                     }
 
                     @Nested
-                    class GivenThatResourceIsThenDeleted {
+                    @DisplayName("Given that resource is then deleted")
+                    class ResourceIsThenDeleted {
                         @BeforeEach
                         void setUp() throws IOException {
                             context = new AnnotationConfigApplicationContext();
@@ -308,7 +308,8 @@ public class AzureStorageIT {
         @Nested
         class AssociativeStoreCases {
             @Nested
-            class GivenANewEntity {
+            @DisplayName("Given a new entity")
+            class NewEntity {
                 @Nested
                 class Tests {
                     @BeforeEach
@@ -340,9 +341,11 @@ public class AzureStorageIT {
                 }
 
                 @Nested
-                class GivenAResource {
+                @DisplayName("Given a resource")
+                class AssociatedResource {
                     @Nested
-                    class WhenTheResourceIsAssociated {
+                    @DisplayName("When the resource is associated")
+                    class ResourceIsAssociated {
                         @Nested
                         class Tests {
                             @BeforeEach
@@ -353,7 +356,6 @@ public class AzureStorageIT {
 
                                 repo = context.getBean(DualContentJpaLongIdRepository.class);
                                 store = context.getBean(DualContentJpaLongIdStore.class);
-
 
                                 resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
@@ -379,7 +381,8 @@ public class AzureStorageIT {
                         }
 
                         @Nested
-                        class WhenTheResourceHasContent {
+                        @DisplayName("When the resource has content")
+                        class ResourceHasContent {
                             @BeforeEach
                             void setUp() throws IOException {
                                 context = new AnnotationConfigApplicationContext();
@@ -388,7 +391,6 @@ public class AzureStorageIT {
 
                                 repo = context.getBean(DualContentJpaLongIdRepository.class);
                                 store = context.getBean(DualContentJpaLongIdStore.class);
-
 
                                 resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
@@ -421,7 +423,8 @@ public class AzureStorageIT {
                         }
 
                         @Nested
-                        class WhenTheResourceIsUnassociated {
+                        @DisplayName("When the resource is unassociated")
+                        class ResourceIsUnassociated {
                             @BeforeEach
                             void setUp() {
                                 context = new AnnotationConfigApplicationContext();
@@ -459,7 +462,8 @@ public class AzureStorageIT {
                         }
 
                         @Nested
-                        class WhenAInvalidPropertyPathIsUsedToAssociateAResource {
+                        @DisplayName("When an invalid property path is used to associate a resource")
+                        class InvalidPropertyPathIsUsedToAssociateAResource {
                             @BeforeEach
                             void setUp() {
                                 context = new AnnotationConfigApplicationContext();
@@ -468,7 +472,6 @@ public class AzureStorageIT {
 
                                 repo = context.getBean(DualContentJpaLongIdRepository.class);
                                 store = context.getBean(DualContentJpaLongIdStore.class);
-
 
                                 resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
@@ -498,7 +501,8 @@ public class AzureStorageIT {
                         }
 
                         @Nested
-                        class WhenAInvalidPropertyPathIsUsedToLoadAResource {
+                        @DisplayName("When an invalid property path is used to load a resource")
+                        class InvalidPropertyPathIsUsedToLoadAResource {
                             @BeforeEach
                             void setUp() {
                                 context = new AnnotationConfigApplicationContext();
@@ -507,7 +511,6 @@ public class AzureStorageIT {
 
                                 repo = context.getBean(DualContentJpaLongIdRepository.class);
                                 store = context.getBean(DualContentJpaLongIdStore.class);
-
 
                                 resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
@@ -537,7 +540,8 @@ public class AzureStorageIT {
                         }
 
                         @Nested
-                        class WhenAInvalidPropertyPathIsUsedToUnassociateAResource {
+                        @DisplayName("When an invalid property path is used to unassociate a resource")
+                        class InvalidPropertyPathIsUsedToUnassociateAResource {
                             @BeforeEach
                             void setUp() {
                                 context = new AnnotationConfigApplicationContext();
@@ -546,7 +550,6 @@ public class AzureStorageIT {
 
                                 repo = context.getBean(DualContentJpaLongIdRepository.class);
                                 store = context.getBean(DualContentJpaLongIdStore.class);
-
 
                                 resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
@@ -592,7 +595,6 @@ public class AzureStorageIT {
                     repo = context.getBean(DualContentJpaLongIdRepository.class);
                     store = context.getBean(DualContentJpaLongIdStore.class);
 
-
                     resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new DualContentJpaLongIdEntity();
@@ -637,7 +639,8 @@ public class AzureStorageIT {
             }
 
             @Nested
-            class WhenContentIsUpdated {
+            @DisplayName("When a content is updated")
+            class ContentIsUpdated {
                 @BeforeEach
                 void setUp() {
                     context = new AnnotationConfigApplicationContext();
@@ -646,7 +649,6 @@ public class AzureStorageIT {
 
                     repo = context.getBean(DualContentJpaLongIdRepository.class);
                     store = context.getBean(DualContentJpaLongIdStore.class);
-
 
                     resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
@@ -683,7 +685,8 @@ public class AzureStorageIT {
             }
 
             @Nested
-            class WhenContentIsUpdatedWithShorterContent {
+            @DisplayName("When a content is updated with a shorter content")
+            class ContentIsUpdatedWithShorterContent {
                 @BeforeEach
                 void setUp() {
                     context = new AnnotationConfigApplicationContext();
@@ -692,7 +695,6 @@ public class AzureStorageIT {
 
                     repo = context.getBean(DualContentJpaLongIdRepository.class);
                     store = context.getBean(DualContentJpaLongIdStore.class);
-
 
                     resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
@@ -729,7 +731,8 @@ public class AzureStorageIT {
             }
 
             @Nested
-            class WhenContentIsUpdatedAndNotOverwritten {
+            @DisplayName("When a content is updated and not overwritten")
+            class ContentIsUpdatedAndNotOverwritten {
                 @BeforeEach
                 void setUp() {
                     context = new AnnotationConfigApplicationContext();
@@ -738,7 +741,6 @@ public class AzureStorageIT {
 
                     repo = context.getBean(DualContentJpaLongIdRepository.class);
                     store = context.getBean(DualContentJpaLongIdStore.class);
-
 
                     resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
@@ -778,7 +780,8 @@ public class AzureStorageIT {
             }
 
             @Nested
-            class WhenContentIsUnset {
+            @DisplayName("When a content is unset")
+            class ContentIsUnset {
                 @BeforeEach
                 void setUp() {
                     context = new AnnotationConfigApplicationContext();
@@ -831,7 +834,8 @@ public class AzureStorageIT {
             }
 
             @Nested
-            class WhenContentIsUnsetButKept {
+            @DisplayName("When a content is unset but kept")
+            class ContentIsUnsetButKept {
                 @BeforeEach
                 void setUp() {
                     context = new AnnotationConfigApplicationContext();
@@ -875,7 +879,8 @@ public class AzureStorageIT {
             }
 
             @Nested
-            class WhenAnInvalidPropertyPathIsUsedToSetContent {
+            @DisplayName("When an invalid property path is used to set a content")
+            class InvalidPropertyPathIsUsedToSetContent {
                 @BeforeEach
                 void setUp() {
                     context = new AnnotationConfigApplicationContext();
@@ -911,7 +916,8 @@ public class AzureStorageIT {
             }
 
             @Nested
-            class WhenAnInvalidPropertyPathIsUsedToGetContent {
+            @DisplayName("When an invalid property path is used to get a content")
+            class InvalidPropertyPathIsUsedToGetContent {
                 @BeforeEach
                 void setUp() {
                     context = new AnnotationConfigApplicationContext();
@@ -947,7 +953,8 @@ public class AzureStorageIT {
             }
 
             @Nested
-            class WhenAnInvalidPropertyPathIsUsedToUnsetContent {
+            @DisplayName("When an invalid property path is used to unset a content")
+            class InvalidPropertyPathIsUsedToUnsetContent {
                 @BeforeEach
                 void setUp() {
                     context = new AnnotationConfigApplicationContext();
@@ -983,7 +990,8 @@ public class AzureStorageIT {
             }
 
             @Nested
-            class WhenContentIsDeletedAndTheContentIdFieldIsSharedWithEntityId {
+            @DisplayName("When a content is deleted and the content ID field is shared with entity ID")
+            class ContentIsDeletedAndTheContentIdFieldIsSharedWithEntityId {
                 @BeforeEach
                 void setUp() {
                     context = new AnnotationConfigApplicationContext();
@@ -1026,7 +1034,8 @@ public class AzureStorageIT {
             @Nested
             class EmbeddedContent {
                 @Nested
-                class GivenAEntityWithANullEmbeddedContentObject {
+                @DisplayName("Given an entity with a null embedded content object")
+                class EntityWithANullEmbeddedContentObject {
                     @BeforeEach
                     void setUp() {
                         context = new AnnotationConfigApplicationContext();
