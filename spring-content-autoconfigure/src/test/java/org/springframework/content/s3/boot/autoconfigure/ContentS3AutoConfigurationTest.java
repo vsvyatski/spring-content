@@ -113,7 +113,7 @@ public class ContentS3AutoConfigurationTest {
         }
 
         @Nested
-        @DisplayName("Given an environment specifying s3properties")
+        @DisplayName("Given an environment specifying S3 properties")
         class EnvironmentSpecifyingS3Properties {
             @BeforeEach
             void setUp() {

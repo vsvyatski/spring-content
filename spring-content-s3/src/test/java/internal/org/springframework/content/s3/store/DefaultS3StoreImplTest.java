@@ -125,7 +125,7 @@ public class DefaultS3StoreImplTest {
             @Nested
             class GetResource {
                 @Nested
-                @DisplayName("Given the store sid is an s3object id type")
+                @DisplayName("Given the store ID is an S3 object ID type")
                 class StoreSIDIsS3ObjectIdType {
                     @BeforeEach
                     void setUp() {
@@ -1055,7 +1055,7 @@ public class DefaultS3StoreImplTest {
                         }
 
                         @Nested
-                        @DisplayName("When s3throws an s3exception")
+                        @DisplayName("When S3 throws an S3 exception")
                         class S3ThrowsS3Exception {
                             @BeforeEach
                             void setUp() throws IOException {

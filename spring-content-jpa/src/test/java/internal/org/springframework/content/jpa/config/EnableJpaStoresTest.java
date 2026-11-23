@@ -61,7 +61,7 @@ public class EnableJpaStoresTest {
     @Nested
     class EnableJpaStoresCases {
         @Nested
-        @DisplayName("Given a context and a configuration with a jpa content store bean")
+        @DisplayName("Given a context and a configuration with a JPA content store bean")
         class ContextAndConfigurationWithJpaContentStoreBean {
             @BeforeEach
             void setUp() {

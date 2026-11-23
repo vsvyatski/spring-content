@@ -83,7 +83,7 @@ public class EnableMongoStoresTest {
     @Nested
     class EnableMongoStoresCases {
         @Nested
-        @DisplayName("Given an enabled configuration with a mongo content store bean")
+        @DisplayName("Given an enabled configuration with a Mongo content store bean")
         class EnabledConfigurationWithMongoContentStoreBean {
             @BeforeEach
             void setUp() {
@@ -135,7 +135,7 @@ public class EnableMongoStoresTest {
         }
 
         @Nested
-        @DisplayName("Given an enabled configuration with no mongo content store beans")
+        @DisplayName("Given an enabled configuration with no Mongo content store beans")
         class EnabledConfigurationWithNoMongoContentStoreBeans {
             @BeforeEach
             void setUp() {

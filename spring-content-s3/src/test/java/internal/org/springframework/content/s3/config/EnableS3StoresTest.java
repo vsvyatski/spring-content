@@ -92,7 +92,7 @@ public class EnableS3StoresTest {
     @Nested
     class EnableS3StoresCases {
         @Nested
-        @DisplayName("Given a context and a configuration with an s3content store bean")
+        @DisplayName("Given a context and a configuration with an S3 content store bean")
         class ContextAndConfigurationWithS3ContentStoreBean {
             @BeforeEach
             void setUp() {
