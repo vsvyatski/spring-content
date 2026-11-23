@@ -57,7 +57,7 @@ public class ContentLinkRelIT {
 
             @Nested
             @DisplayName("Given a store with @StoreRestResource(linkRel = \"foo\") and an entity with top-level correlated content properties")
-            class StoreSpecifyingLinkRelAndEntityWithTopLevelCorrelatedContentPropertiesC extends ContentLinkTests {
+            class StoreSpecifyingLinkRelAndEntityWithTopLevelCorrelatedContentProperties extends ContentLinkTests {
                 @Autowired
                 private WebApplicationContext context;
 
@@ -85,7 +85,7 @@ public class ContentLinkRelIT {
 
             @Nested
             @DisplayName("Given a store with @StoreRestResource(linkRel = \"foo\") and an entity with a nested content property")
-            class StoreSpecifyingLinkrelAndEntityNestedContentPropertyContentLinkTests extends ContentLinkTests {
+            class StoreSpecifyingLinkRelAndEntityWithNestedContentPropertyContentLinkTests extends ContentLinkTests {
                 @Autowired
                 private WebApplicationContext context;
 
@@ -113,7 +113,7 @@ public class ContentLinkRelIT {
 
             @Nested
             @DisplayName("Given a store with @StoreRestResource(linkRel = \"foo\") and an entity with nested content properties")
-            class StoreSpecifyingLinkRelAndEntityWithNestedContentPropertiesContentLink extends ContentLinkTests {
+            class StoreSpecifyingLinkRelAndEntityWithNestedContentPropertiesContentLinkTests extends ContentLinkTests {
                 @Autowired
                 private WebApplicationContext context;
 

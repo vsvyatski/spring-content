@@ -78,7 +78,7 @@ public class ContentLinksIT {
         @Nested
         @NestedTestConfiguration(NestedTestConfiguration.EnclosingConfiguration.INHERIT)
         @DisplayName("Given a store and an entity with a nested content property")
-        class StoreSpecifyingLinkrelAndEntityNestedContentPropertyContentLinkTests extends ContentLinkTests {
+        class StoreSpecifyingLinkRelAndEntityWithNestedContentPropertyContentLinkTests extends ContentLinkTests {
             @Autowired
             private WebApplicationContext context;
 
@@ -106,7 +106,7 @@ public class ContentLinksIT {
         @Nested
         @NestedTestConfiguration(NestedTestConfiguration.EnclosingConfiguration.INHERIT)
         @DisplayName("Given a store and an entity with nested content properties")
-        class StoreSpecifyingLinkRelAndEntityWithNestedContentPropertiesContentLinkTest extends ContentLinkTests {
+        class StoreSpecifyingLinkRelAndEntityWithNestedContentPropertiesContentLinkTests extends ContentLinkTests {
             @Autowired
             private WebApplicationContext context;
 
