@@ -102,7 +102,7 @@ public class BaseUriIT {
             }
 
             @Nested
-            @DisplayName("Given the repository and storage are exported to different uris")
+            @DisplayName("Given the repository and storage are exported to different URIs")
             class RepositoryAndStorageAreExportedToDifferentURIsContent extends ContentTests {
                 @BeforeEach
                 void setUp() {
@@ -117,7 +117,7 @@ public class BaseUriIT {
             }
 
             @Nested
-            @DisplayName("Given the repository and storage are exported to different uris")
+            @DisplayName("Given the repository and storage are exported to different URIs")
             class RepositoryAndStorageAreExportedToDifferentURIsCors extends CorsTests {
                 @BeforeEach
                 void setUp() {

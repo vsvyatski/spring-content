@@ -85,7 +85,7 @@ public class ContextPathContentLinksIT {
     class SpringContentBaseUriPropertyIsSetToContentApi {
         @Nested
         @NestedTestConfiguration(NestedTestConfiguration.EnclosingConfiguration.INHERIT)
-        @DisplayName("given an Entity and a Store with a default store path")
+        @DisplayName("Given an entity and a store with a default store path")
         class EntityAndStoreWithDefaultStorePathContentLinkTests extends ContentLinkTests {
             @BeforeEach
             void setUp() {

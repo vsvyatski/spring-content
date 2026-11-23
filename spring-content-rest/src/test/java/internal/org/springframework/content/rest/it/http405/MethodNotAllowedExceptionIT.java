@@ -115,7 +115,7 @@ public class MethodNotAllowedExceptionIT {
     }
 
     @Nested
-    @DisplayName("When GET content method is not exported")
+    @DisplayName("When GET content methods are not exported")
     class GetContentMethodIsNotExportedCases {
         @BeforeEach
         void setUp() {

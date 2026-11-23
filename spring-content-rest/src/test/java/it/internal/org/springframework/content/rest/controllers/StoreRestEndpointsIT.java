@@ -211,7 +211,7 @@ public class StoreRestEndpointsIT {
 
         @Nested
         @DisplayName("Given a nested resource")
-        class estedResource {
+        class NestedResource {
             @BeforeEach
             void setUp() throws IOException {
                 mvc = MockMvcBuilders.webAppContextSetup(context).build();

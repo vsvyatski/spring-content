@@ -145,7 +145,7 @@ public class NestedContentPropertyRestEndpointsIT {
             }
 
             @Nested
-            @DisplayName("Given that is has no content")
+            @DisplayName("Given that it has no content")
             class IsHasNoContent {
                 @Nested
                 @DisplayName("GET to {repository ID}/child")

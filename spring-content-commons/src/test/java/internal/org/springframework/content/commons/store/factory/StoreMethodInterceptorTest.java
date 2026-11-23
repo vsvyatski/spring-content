@@ -623,7 +623,7 @@ public class StoreMethodInterceptorTest {
         class AssociateCases {
             @Nested
             @DisplayName("When associate is invoked")
-            class ssociateIsInvoked {
+            class AssociateIsInvoked {
                 @BeforeEach
                 void setUp() {
                     publisher = mock(ApplicationEventPublisher.class);

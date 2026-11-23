@@ -194,7 +194,7 @@ public class WordToJpegRendererTest {
 
             @Nested
             @DisplayName("Given a null input stream")
-            class ullInputStream {
+            class NullInputStream {
                 @BeforeEach
                 void setUp() {
                     poi = mock(POIService.class);

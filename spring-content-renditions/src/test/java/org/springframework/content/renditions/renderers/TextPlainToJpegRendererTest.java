@@ -232,7 +232,7 @@ public class TextPlainToJpegRendererTest {
 
             @Nested
             @DisplayName("Given a null input stream")
-            class ullInputStream {
+            class NullInputStream {
                 @BeforeEach
                 void setUp() {
                     renderer = new TextplainToJpegRenderer(wrapText);

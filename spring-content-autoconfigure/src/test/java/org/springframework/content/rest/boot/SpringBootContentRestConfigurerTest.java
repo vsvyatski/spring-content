@@ -197,7 +197,7 @@ public class SpringBootContentRestConfigurerTest {
 
             @Nested
             @DisplayName("Given a null base URI property")
-            class ullBaseUriProperty {
+            class NullBaseUriProperty {
                 @BeforeEach
                 void setUp() {
                     properties = new ContentRestProperties();
