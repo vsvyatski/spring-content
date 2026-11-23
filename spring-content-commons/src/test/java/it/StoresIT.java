@@ -51,126 +51,120 @@ public class StoresIT {
     }
 
     @Nested
-    class GetStoreCases {
-        @Nested
-        @DisplayName("When there are two stores that the filter matches but no store resolver")
-        class TwoStoresThatFilterMatchesButNoStoreResolver {
-            @BeforeEach
-            void setUp() {
-                TestStoreFactoryBean factory1 = new TestStoreFactoryBean(WrongStore.class);
-                factory1.setBeanClassLoader(this.getClass().getClassLoader());
+    @DisplayName("When there are two stores that the filter matches but no store resolver")
+    class TwoStoresThatFilterMatchesButNoStoreResolver {
+        @BeforeEach
+        void setUp() {
+            TestStoreFactoryBean factory1 = new TestStoreFactoryBean(WrongStore.class);
+            factory1.setBeanClassLoader(this.getClass().getClassLoader());
 
-                TestStoreFactoryBean factory2 = new TestStoreFactoryBean(RightStore.class);
-                factory2.setBeanClassLoader(this.getClass().getClassLoader());
+            TestStoreFactoryBean factory2 = new TestStoreFactoryBean(RightStore.class);
+            factory2.setBeanClassLoader(this.getClass().getClassLoader());
 
-                context = new GenericApplicationContext();
-                context.registerBean("factory1", StoreFactory.class, () -> factory1);
-                context.registerBean("factory2", StoreFactory.class, () -> factory2);
+            context = new GenericApplicationContext();
+            context.registerBean("factory1", StoreFactory.class, () -> factory1);
+            context.registerBean("factory2", StoreFactory.class, () -> factory2);
 
-                context.refresh();
-                stores = new StoresImpl(context);
-                stores.afterPropertiesSet();
-            }
-
-            @Test
-            void shouldReturnRightStore() {
-                assertThatThrownBy(() -> stores.getStore(Store.class, testStoreFilter()))
-                    .hasMessageContaining("unable to resolve store");
-            }
+            context.refresh();
+            stores = new StoresImpl(context);
+            stores.afterPropertiesSet();
         }
 
-        @Nested
-        @DisplayName("When there are two stores that the filter matches and a store resolver")
-        class TwoStoresThatFilterMatchesAndStoreResolver {
-            @BeforeEach
-            void setUp() {
-                TestStoreFactoryBean factory1 = new TestStoreFactoryBean(WrongStore.class);
-                factory1.setBeanClassLoader(this.getClass().getClassLoader());
-
-                TestStoreFactoryBean factory2 = new TestStoreFactoryBean(RightStore.class);
-                factory2.setBeanClassLoader(this.getClass().getClassLoader());
-
-                context = new GenericApplicationContext();
-                context.registerBean("factory1", StoreFactory.class, () -> factory1);
-                context.registerBean("factory2", StoreFactory.class, () -> factory2);
-
-                context.refresh();
-                stores = new StoresImpl(context);
-                stores.afterPropertiesSet();
-
-                stores.addStoreResolver("test", infos -> {
-                    for (StoreInfo info : infos) {
-                        if (info.getInterface().equals(RightStore.class)) {
-                            return info;
-                        }
-                    }
-                    return null;
-                });
-            }
-
-            @Test
-            void shouldReturnRightStore() {
-                StoreInfo info = stores.getStore(Store.class, testStoreFilter());
-
-                assertThat(info.getInterface()).isEqualTo(RightStore.class);
-            }
+        @Test
+        void shouldReturnRightStore() {
+            assertThatThrownBy(() -> stores.getStore(Store.class, testStoreFilter()))
+                .hasMessageContaining("unable to resolve store");
         }
     }
 
     @Nested
-    class StoreExceptionTranslatorInterceptorCases {
-        @Nested
-        @DisplayName("Given there is no store exception translator registered")
-        class NoStoreExceptionTranslatorRegistered {
-            @BeforeEach
-            void setUp() {
-                // All TestContentStore methods throw an UnsupportedOperationException, this test relies on this
-                TestStoreFactoryBean factory = new TestStoreFactoryBean(RuntimeExceptionThrowingStore.class);
-                factory.setBeanClassLoader(this.getClass().getClassLoader());
+    @DisplayName("When there are two stores that the filter matches and a store resolver")
+    class TwoStoresThatFilterMatchesAndStoreResolver {
+        @BeforeEach
+        void setUp() {
+            TestStoreFactoryBean factory1 = new TestStoreFactoryBean(WrongStore.class);
+            factory1.setBeanClassLoader(this.getClass().getClassLoader());
 
-                context = new GenericApplicationContext();
-                context.registerBean("factory", StoreFactory.class, () -> factory);
+            TestStoreFactoryBean factory2 = new TestStoreFactoryBean(RightStore.class);
+            factory2.setBeanClassLoader(this.getClass().getClassLoader());
 
-                context.refresh();
-                stores = new StoresImpl(context);
-                stores.afterPropertiesSet();
-            }
+            context = new GenericApplicationContext();
+            context.registerBean("factory1", StoreFactory.class, () -> factory1);
+            context.registerBean("factory2", StoreFactory.class, () -> factory2);
 
-            @Test
-            void shouldReThrowRuntimeExceptionAsStoreAccessException() {
-                StoreInfo storeInfo = stores.getStore(Store.class, testStoreFilter());
-                RuntimeExceptionThrowingStore store = storeInfo.getImplementation(RuntimeExceptionThrowingStore.class);
-                assertThatThrownBy(() -> store.setContent(new Object(), new ByteArrayInputStream("".getBytes())))
-                    .isInstanceOf(UnsupportedOperationException.class);
-            }
+            context.refresh();
+            stores = new StoresImpl(context);
+            stores.afterPropertiesSet();
+
+            stores.addStoreResolver("test", infos -> {
+                for (StoreInfo info : infos) {
+                    if (info.getInterface().equals(RightStore.class)) {
+                        return info;
+                    }
+                }
+                return null;
+            });
         }
 
-        @Nested
-        @DisplayName("Given there is a store exception translator registered")
-        class StoreExceptionTranslatorRegistered {
-            @BeforeEach
-            void setUp() {
-                // All TestContentStore methods throw an UnsupportedOperationException, this test relies on this
-                TestStoreFactoryBean factory = new TestStoreFactoryBean(RuntimeExceptionThrowingStore.class);
-                factory.setBeanClassLoader(this.getClass().getClassLoader());
+        @Test
+        void shouldReturnRightStore() {
+            StoreInfo info = stores.getStore(Store.class, testStoreFilter());
 
-                context = new GenericApplicationContext();
-                context.registerBean("factory", StoreFactory.class, () -> factory);
+            assertThat(info.getInterface()).isEqualTo(RightStore.class);
+        }
+    }
 
-                context.registerBean("translator", StoreExceptionTranslator.class,
-                    () -> re -> new StoreAccessException(re.getMessage(), re));
-                context.refresh();
-                stores = new StoresImpl(context);
-                stores.afterPropertiesSet();
-            }
+    @Nested
+    @DisplayName("Given there is no store exception translator registered")
+    class NoStoreExceptionTranslatorRegistered {
+        @BeforeEach
+        void setUp() {
+            // All TestContentStore methods throw an UnsupportedOperationException, this test relies on this
+            TestStoreFactoryBean factory = new TestStoreFactoryBean(RuntimeExceptionThrowingStore.class);
+            factory.setBeanClassLoader(this.getClass().getClassLoader());
 
-            @Test
-            void shouldReThrowRuntimeExceptionAsStoreAccessException() {
-                StoreInfo storeInfo = stores.getStore(Store.class, testStoreFilter());
-                RuntimeExceptionThrowingStore store = storeInfo.getImplementation(RuntimeExceptionThrowingStore.class);
-                assertThatThrownBy(() -> store.setContent(new Object(), new ByteArrayInputStream("".getBytes())))
-                    .isInstanceOf(StoreAccessException.class);
-            }
+            context = new GenericApplicationContext();
+            context.registerBean("factory", StoreFactory.class, () -> factory);
+
+            context.refresh();
+            stores = new StoresImpl(context);
+            stores.afterPropertiesSet();
+        }
+
+        @Test
+        void shouldReThrowRuntimeExceptionAsStoreAccessException() {
+            StoreInfo storeInfo = stores.getStore(Store.class, testStoreFilter());
+            RuntimeExceptionThrowingStore store = storeInfo.getImplementation(RuntimeExceptionThrowingStore.class);
+            assertThatThrownBy(() -> store.setContent(new Object(), new ByteArrayInputStream("".getBytes())))
+                .isInstanceOf(UnsupportedOperationException.class);
+        }
+    }
+
+    @Nested
+    @DisplayName("Given there is a store exception translator registered")
+    class StoreExceptionTranslatorRegistered {
+        @BeforeEach
+        void setUp() {
+            // All TestContentStore methods throw an UnsupportedOperationException, this test relies on this
+            TestStoreFactoryBean factory = new TestStoreFactoryBean(RuntimeExceptionThrowingStore.class);
+            factory.setBeanClassLoader(this.getClass().getClassLoader());
+
+            context = new GenericApplicationContext();
+            context.registerBean("factory", StoreFactory.class, () -> factory);
+
+            context.registerBean("translator", StoreExceptionTranslator.class,
+                () -> re -> new StoreAccessException(re.getMessage(), re));
+            context.refresh();
+            stores = new StoresImpl(context);
+            stores.afterPropertiesSet();
+        }
+
+        @Test
+        void shouldReThrowRuntimeExceptionAsStoreAccessException() {
+            StoreInfo storeInfo = stores.getStore(Store.class, testStoreFilter());
+            RuntimeExceptionThrowingStore store = storeInfo.getImplementation(RuntimeExceptionThrowingStore.class);
+            assertThatThrownBy(() -> store.setContent(new Object(), new ByteArrayInputStream("".getBytes())))
+                .isInstanceOf(StoreAccessException.class);
         }
     }
 }

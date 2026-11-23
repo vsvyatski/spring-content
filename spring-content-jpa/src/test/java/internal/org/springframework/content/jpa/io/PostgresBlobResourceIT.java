@@ -85,81 +85,78 @@ public class PostgresBlobResourceIT {
     }
 
     @Nested
-    class PostgresBlobResourceCases {
+    @DisplayName("Given there is content")
+    class Content {
         @Nested
-        @DisplayName("Given there is content")
-        class Content {
-            @Nested
-            @DisplayName("When the content is deleted")
-            class ContentIsDeleted {
-                @BeforeEach
-                void setUp() throws IOException, SQLException {
-                    String entityId = UuidCreator.getTimeOrdered().toString();
-                    template = new JdbcTemplate(ds);
+        @DisplayName("When the content is deleted")
+        class ContentIsDeleted {
+            @BeforeEach
+            void setUp() throws IOException, SQLException {
+                String entityId = UuidCreator.getTimeOrdered().toString();
+                template = new JdbcTemplate(ds);
 
-                    PostgresBlobResource r = new PostgresBlobResource(entityId, template, txn);
+                PostgresBlobResource r = new PostgresBlobResource(entityId, template, txn);
 
-                    DataSource ds = PostgresBlobResourceIT.this.template.getDataSource();
-                    assert ds != null;
-                    Connection conn = DataSourceUtils.getConnection(ds);
+                DataSource ds = PostgresBlobResourceIT.this.template.getDataSource();
+                assert ds != null;
+                Connection conn = DataSourceUtils.getConnection(ds);
 
-                    TransactionStatus status = txn.getTransaction(new DefaultTransactionDefinition());
+                TransactionStatus status = txn.getTransaction(new DefaultTransactionDefinition());
 
-                    try (OutputStream os = r.getOutputStream()) {
-                        os.write(TestSupportData.sampleTextBytes());
-                    }
-
-                    txn.commit(status);
-
-                    // assert associated lob resource exist
-                    {
-                        String sql = "SELECT id, content FROM BLOBS WHERE id='" + entityId + "'";
-
-                        Statement stmt = conn.createStatement();
-                        ResultSet rs = stmt.executeQuery(sql);
-                        assertThat(rs.next()).isTrue();
-                        lobId = rs.getLong(2);
-                        rs.close();
-                        stmt.close();
-
-                        sql = "SELECT * from pg_largeobject where loid = " + lobId;
-                        stmt = conn.createStatement();
-                        rs = stmt.executeQuery(sql);
-                        assertThat(rs.next()).isTrue();
-                        rs.close();
-                        stmt.close();
-
-                        sql = "SELECT * from pg_largeobject_metadata where oid = " + lobId;
-                        stmt = conn.createStatement();
-                        rs = stmt.executeQuery(sql);
-                        assertThat(rs.next()).isTrue();
-                        rs.close();
-                        stmt.close();
-                    }
-
-                    r.delete();
+                try (OutputStream os = r.getOutputStream()) {
+                    os.write(TestSupportData.sampleTextBytes());
                 }
 
-                @Test
-                void shouldDeleteAssociatedLobResources() throws SQLException {
-                    DataSource ds = PostgresBlobResourceIT.this.template.getDataSource();
-                    assert ds != null;
-                    Connection conn = DataSourceUtils.getConnection(ds);
+                txn.commit(status);
 
-                    String sql = "SELECT * from pg_largeobject where loid = " + lobId;
+                // assert associated lob resource exist
+                {
+                    String sql = "SELECT id, content FROM BLOBS WHERE id='" + entityId + "'";
+
                     Statement stmt = conn.createStatement();
                     ResultSet rs = stmt.executeQuery(sql);
-                    assertThat(rs.next()).isFalse();
+                    assertThat(rs.next()).isTrue();
+                    lobId = rs.getLong(2);
+                    rs.close();
+                    stmt.close();
+
+                    sql = "SELECT * from pg_largeobject where loid = " + lobId;
+                    stmt = conn.createStatement();
+                    rs = stmt.executeQuery(sql);
+                    assertThat(rs.next()).isTrue();
                     rs.close();
                     stmt.close();
 
                     sql = "SELECT * from pg_largeobject_metadata where oid = " + lobId;
                     stmt = conn.createStatement();
                     rs = stmt.executeQuery(sql);
-                    assertThat(rs.next()).isFalse();
+                    assertThat(rs.next()).isTrue();
                     rs.close();
                     stmt.close();
                 }
+
+                r.delete();
+            }
+
+            @Test
+            void shouldDeleteAssociatedLobResources() throws SQLException {
+                DataSource ds = PostgresBlobResourceIT.this.template.getDataSource();
+                assert ds != null;
+                Connection conn = DataSourceUtils.getConnection(ds);
+
+                String sql = "SELECT * from pg_largeobject where loid = " + lobId;
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(sql);
+                assertThat(rs.next()).isFalse();
+                rs.close();
+                stmt.close();
+
+                sql = "SELECT * from pg_largeobject_metadata where oid = " + lobId;
+                stmt = conn.createStatement();
+                rs = stmt.executeQuery(sql);
+                assertThat(rs.next()).isFalse();
+                rs.close();
+                stmt.close();
             }
         }
     }

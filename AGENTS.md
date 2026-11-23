@@ -177,6 +177,12 @@ Change version for the whole reactor with:
   `internal.org.springframework.content.rest.support` with purpose names (e.g. `JsonMappedContentEntity`);
   `@RepositoryRestResource(path = …)` uses purpose-driven collection paths aligned with fixture type names (for
   example `jsonMappedContentEntities`).
+- Store backend ITs group scenarios under nested `Store`, `AssociativeStore`, and `ContentStore` (not `*Cases`). Drop
+  empty `*StorageCases` / `Default*ImplCases` shells; do not hoist nests that own `@BeforeEach` onto the outer IT class.
+- **Deferred (search IT, step 3 after *Cases* flatten):** `ContentSearchRestControllerIT` still nests entities, repos,
+  and stores in the IT class. After step 2 (`*Cases` removal) in that file, extract purpose-named fixtures to
+  `it.rest.extensions.content.search.support` and dedupe the three separate-id entity copies; see the `ponytail:` note
+  on that IT.
 
 When changing a store implementation, run that module’s `*Test` and, if behavior or IO/SQL is involved, the matching
 `*IT`.

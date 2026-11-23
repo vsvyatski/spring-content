@@ -77,6 +77,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 public class ContentSearchRestControllerIT {
 
+    /*
+     * ponytail: nested repo/entity/store types below (*Cases* flattening — step 2 — is done here).
+     * Step 3 — purpose-named types under it.rest.extensions.content.search.support, shared base for separate-id
+     * entities, paths aligned with REST collection names (see AGENTS.md).
+     */
     // mocks/spys
     private static ReflectionService reflectionService;
     private static DefaultEntityLookupStrategy defaultLookupStrategy;

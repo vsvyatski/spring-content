@@ -114,7 +114,7 @@ public class FileSystemStoreIT {
     }
 
     @Nested
-    class StoreCases {
+    class Store {
 
         @BeforeEach
         void setUp() {
@@ -184,7 +184,7 @@ public class FileSystemStoreIT {
     }
 
     @Nested
-    class AssociativeStoreCases {
+    class AssociativeStore {
 
         @BeforeEach
         void setUp() {
@@ -267,7 +267,7 @@ public class FileSystemStoreIT {
     }
 
     @Nested
-    class ContentStoreCases {
+    class ContentStore {
 
         @BeforeEach
         void setUp() {

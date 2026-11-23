@@ -36,45 +36,42 @@ public class CacheControlIT {
     private interface CacheControlStore extends FileSystemContentStore<UuidSingleContentEntity, UUID> {
     }
 
-    @Nested
-    class CacheControlCases {
-        @BeforeEach
-        void setUp() {
-            RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
-        }
+    @BeforeEach
+    void setUp() {
+        RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
+    }
 
-        @Test
-        void givenThePatternMatchesItShouldApplyTheConfiguredCacheSettings() {
-            UuidSingleContentEntity entity = new UuidSingleContentEntity();
-            entity = repo.save(entity);
-            entity = store.setContent(entity, new ByteArrayInputStream("some content".getBytes()));
-            entity.setMimeType("text/plain");
-            entity = repo.save(entity);
+    @Test
+    void givenThePatternMatchesItShouldApplyTheConfiguredCacheSettings() {
+        UuidSingleContentEntity entity = new UuidSingleContentEntity();
+        entity = repo.save(entity);
+        entity = store.setContent(entity, new ByteArrayInputStream("some content".getBytes()));
+        entity.setMimeType("text/plain");
+        entity = repo.save(entity);
 
-            given()
-                .accept("text/plain")
-                .when()
-                .get("/uuidSingleContentEntities/" + entity.getId())
-                .then()
-                .statusCode(200)
-                .header("Cache-Control", "max-age=60");
-        }
+        given()
+            .accept("text/plain")
+            .when()
+            .get("/uuidSingleContentEntities/" + entity.getId())
+            .then()
+            .statusCode(200)
+            .header("Cache-Control", "max-age=60");
+    }
 
-        @Test
-        void givenThePatternDoesntMatchItShouldNotApplyTheConfiguredCacheSettings() {
-            UuidSingleContentEntity entity = new UuidSingleContentEntity();
-            entity = repo.save(entity);
-            entity = store.setContent(entity, new ByteArrayInputStream("some content".getBytes()));
-            entity.setMimeType("text/plain");
-            entity = repo.save(entity);
+    @Test
+    void givenThePatternDoesntMatchItShouldNotApplyTheConfiguredCacheSettings() {
+        UuidSingleContentEntity entity = new UuidSingleContentEntity();
+        entity = repo.save(entity);
+        entity = store.setContent(entity, new ByteArrayInputStream("some content".getBytes()));
+        entity.setMimeType("text/plain");
+        entity = repo.save(entity);
 
-            given()
-                .accept("text/plain")
-                .when()
-                .get("/uuidSingleContentEntities/" + entity.getId() + "/content")
-                .then()
-                .statusCode(200)
-                .header("Cache-Control", "no-cache, no-store, max-age=0, must-revalidate");
-        }
+        given()
+            .accept("text/plain")
+            .when()
+            .get("/uuidSingleContentEntities/" + entity.getId() + "/content")
+            .then()
+            .statusCode(200)
+            .header("Cache-Control", "no-cache, no-store, max-age=0, must-revalidate");
     }
 }

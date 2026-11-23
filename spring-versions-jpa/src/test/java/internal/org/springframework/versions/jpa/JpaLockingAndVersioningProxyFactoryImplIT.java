@@ -70,75 +70,72 @@ public class JpaLockingAndVersioningProxyFactoryImplIT {
     }
 
     @Nested
-    class JpaLockingAndVersioningProxyFactoryImplCases {
+    @DisplayName("Given a context with a repository and a store")
+    class ContextWithRepositoryAndStore {
         @Nested
-        @DisplayName("Given a context with a repository and a store")
-        class ContextWithRepositoryAndStore {
+        class Apply {
             @Nested
-            class Apply {
-                @Nested
-                @DisplayName("Given no existing advise")
-                class NoExistingAdvise {
-                    @BeforeEach
-                    void setUp() {
-                        context = new AnnotationConfigApplicationContext();
-                        context.register(TestConfig.class);
-                        context.refresh();
+            @DisplayName("Given no existing advise")
+            class NoExistingAdvise {
+                @BeforeEach
+                void setUp() {
+                    context = new AnnotationConfigApplicationContext();
+                    context.register(TestConfig.class);
+                    context.refresh();
 
-                        txn = context.getBean(PlatformTransactionManager.class);
-                        EntityManagerFactory emf = context.getBean(EntityManagerFactory.class);
-                        em = emf.createEntityManager();
-                        locker = context.getBean(LockingService.class);
-                        auth = context.getBean(AuthenticationFacade.class);
+                    txn = context.getBean(PlatformTransactionManager.class);
+                    EntityManagerFactory emf = context.getBean(EntityManagerFactory.class);
+                    em = emf.createEntityManager();
+                    locker = context.getBean(LockingService.class);
+                    auth = context.getBean(AuthenticationFacade.class);
 
-                        proxyFactory = new ProxyFactory();
+                    proxyFactory = new ProxyFactory();
 
-                        factory = new JpaLockingAndVersioningProxyFactoryImpl(context, txn, em, locker, auth);
+                    factory = new JpaLockingAndVersioningProxyFactoryImpl(context, txn, em, locker, auth);
 
-                        factory.apply(proxyFactory);
-                    }
-
-                    @Test
-                    void shouldApplyTxnAdvice() {
-                        Advisor[] advices = proxyFactory.getAdvisors();
-                        assertThat(advices.length).isEqualTo(3);
-                        assertThat(advices[0].getAdvice()).isInstanceOf(TransactionInterceptor.class);
-                        assertThat(advices[1].getAdvice()).isInstanceOf(OptimisticLockingInterceptor.class);
-                        assertThat(advices[2].getAdvice()).isInstanceOf(PessimisticLockingInterceptor.class);
-                    }
+                    factory.apply(proxyFactory);
                 }
 
-                @Nested
-                @DisplayName("Given an existing txn advise")
-                class ExistingTxnAdvise {
-                    @BeforeEach
-                    void setUp() {
-                        context = new AnnotationConfigApplicationContext();
-                        context.register(TestConfig.class);
-                        context.refresh();
+                @Test
+                void shouldApplyTxnAdvice() {
+                    Advisor[] advices = proxyFactory.getAdvisors();
+                    assertThat(advices.length).isEqualTo(3);
+                    assertThat(advices[0].getAdvice()).isInstanceOf(TransactionInterceptor.class);
+                    assertThat(advices[1].getAdvice()).isInstanceOf(OptimisticLockingInterceptor.class);
+                    assertThat(advices[2].getAdvice()).isInstanceOf(PessimisticLockingInterceptor.class);
+                }
+            }
 
-                        txn = context.getBean(PlatformTransactionManager.class);
-                        EntityManagerFactory emf = context.getBean(EntityManagerFactory.class);
-                        em = emf.createEntityManager();
-                        locker = context.getBean(LockingService.class);
-                        auth = context.getBean(AuthenticationFacade.class);
+            @Nested
+            @DisplayName("Given an existing txn advise")
+            class ExistingTxnAdvise {
+                @BeforeEach
+                void setUp() {
+                    context = new AnnotationConfigApplicationContext();
+                    context.register(TestConfig.class);
+                    context.refresh();
 
-                        proxyFactory = new ProxyFactory();
-                        proxyFactory.addAdvice(new TransactionInterceptor());
+                    txn = context.getBean(PlatformTransactionManager.class);
+                    EntityManagerFactory emf = context.getBean(EntityManagerFactory.class);
+                    em = emf.createEntityManager();
+                    locker = context.getBean(LockingService.class);
+                    auth = context.getBean(AuthenticationFacade.class);
 
-                        factory = new JpaLockingAndVersioningProxyFactoryImpl(context, txn, em, locker, auth);
+                    proxyFactory = new ProxyFactory();
+                    proxyFactory.addAdvice(new TransactionInterceptor());
 
-                        factory.apply(proxyFactory);
-                    }
+                    factory = new JpaLockingAndVersioningProxyFactoryImpl(context, txn, em, locker, auth);
 
-                    @Test
-                    void shouldNotApplyAdviceAgain() {
-                        Advisor[] advices = proxyFactory.getAdvisors();
-                        assertThat(advices.length).isEqualTo(3);
-                        assertThat(advices[0].getAdvice()).isInstanceOf(TransactionInterceptor.class);
-                        assertThat(advices[1].getAdvice()).isInstanceOf(OptimisticLockingInterceptor.class);
-                        assertThat(advices[2].getAdvice()).isInstanceOf(PessimisticLockingInterceptor.class);
-                    }
+                    factory.apply(proxyFactory);
+                }
+
+                @Test
+                void shouldNotApplyAdviceAgain() {
+                    Advisor[] advices = proxyFactory.getAdvisors();
+                    assertThat(advices.length).isEqualTo(3);
+                    assertThat(advices[0].getAdvice()).isInstanceOf(TransactionInterceptor.class);
+                    assertThat(advices[1].getAdvice()).isInstanceOf(OptimisticLockingInterceptor.class);
+                    assertThat(advices[2].getAdvice()).isInstanceOf(PessimisticLockingInterceptor.class);
                 }
             }
         }
