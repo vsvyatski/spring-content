@@ -1,7 +1,7 @@
 package internal.org.springframework.content.rest.support.config;
 
-import org.springframework.content.test.support.EmbeddedJpa;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.content.test.support.EmbeddedJpa;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;

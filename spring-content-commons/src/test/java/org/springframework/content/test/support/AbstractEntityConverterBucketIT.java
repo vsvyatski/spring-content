@@ -36,9 +36,9 @@ public abstract class AbstractEntityConverterBucketIT {
     protected DualContentJpaLongIdMimeStore store;
 
     protected static Case[] cases(Class<?> storeConfig, Class<?> customConverterConfig) {
-        return new Case[] {
-            new Case("Default Converter", new Class<?>[] {storeConfig}, DEFAULT_BUCKET),
-            new Case("Custom Converter", new Class<?>[] {customConverterConfig, storeConfig}, CUSTOM_BUCKET)
+        return new Case[]{
+            new Case("Default Converter", new Class<?>[]{storeConfig}, DEFAULT_BUCKET),
+            new Case("Custom Converter", new Class<?>[]{customConverterConfig, storeConfig}, CUSTOM_BUCKET)
         };
     }
 
