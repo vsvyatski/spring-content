@@ -10,6 +10,7 @@ import org.springframework.content.commons.property.PropertyPath;
 import org.springframework.content.commons.store.StoreAccessException;
 import org.springframework.content.fs.config.EnableFileSystemStores;
 import org.springframework.content.fs.io.FileSystemResourceLoader;
+import org.springframework.content.test.support.EmbeddedJpa;
 import org.springframework.content.test.support.TestSupportData;
 import org.springframework.content.test.support.TestSupportPackages;
 import org.springframework.content.test.support.jpa.PropertyPathJpaUuidEntity;
@@ -22,12 +23,9 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.WritableResource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
-import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.Database;
-import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
@@ -76,31 +74,17 @@ public class FileSystemStorePropertyPathAccessorsIT {
 
         @Bean
         public DataSource dataSource() {
-            EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
-            return builder.setType(EmbeddedDatabaseType.HSQL).build();
+            return EmbeddedJpa.embeddedDataSource(EmbeddedDatabaseType.HSQL);
         }
 
         @Bean
         public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-
-            HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-            vendorAdapter.setDatabase(Database.HSQL);
-            vendorAdapter.setGenerateDdl(true);
-
-            LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
-            factory.setJpaVendorAdapter(vendorAdapter);
-            factory.setPackagesToScan(TestSupportPackages.JPA);
-            factory.setDataSource(dataSource());
-
-            return factory;
+            return EmbeddedJpa.entityManagerFactory(dataSource(), Database.HSQL, TestSupportPackages.JPA);
         }
 
         @Bean
         public PlatformTransactionManager transactionManager() {
-
-            JpaTransactionManager txManager = new JpaTransactionManager();
-            txManager.setEntityManagerFactory(entityManagerFactory().getObject());
-            return txManager;
+            return EmbeddedJpa.transactionManager(entityManagerFactory().getObject());
         }
     }
 

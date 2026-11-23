@@ -16,6 +16,7 @@ import org.springframework.content.commons.store.GetResourceParams;
 import org.springframework.content.commons.store.SetContentParams;
 import org.springframework.content.commons.store.StoreAccessException;
 import org.springframework.content.commons.store.UnsetContentParams;
+import org.springframework.content.test.support.EmbeddedJpa;
 import org.springframework.content.test.support.TestSupportData;
 import org.springframework.content.test.support.TestSupportPackages;
 import org.springframework.content.test.support.jpa.*;
@@ -26,16 +27,14 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.WritableResource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
-import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.Database;
-import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
 import java.io.ByteArrayInputStream;
+import java.util.Objects;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -84,31 +83,17 @@ public class AzureStorageIT {
 
         @Bean
         public DataSource dataSource() {
-            EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
-            return builder.setType(EmbeddedDatabaseType.H2).build();
+            return EmbeddedJpa.embeddedDataSource(EmbeddedDatabaseType.H2);
         }
 
         @Bean
         public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-
-            HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-            vendorAdapter.setDatabase(Database.H2);
-            vendorAdapter.setGenerateDdl(true);
-
-            LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
-            factory.setJpaVendorAdapter(vendorAdapter);
-            factory.setPackagesToScan(TestSupportPackages.JPA);
-            factory.setDataSource(dataSource());
-
-            return factory;
+            return EmbeddedJpa.entityManagerFactory(dataSource(), Database.H2, TestSupportPackages.JPA);
         }
 
         @Bean
         public PlatformTransactionManager transactionManager() {
-
-            JpaTransactionManager txManager = new JpaTransactionManager();
-            txManager.setEntityManagerFactory(entityManagerFactory().getObject());
-            return txManager;
+            return EmbeddedJpa.transactionManager(entityManagerFactory().getObject());
         }
     }
 
@@ -773,7 +758,7 @@ public class AzureStorageIT {
                 void shouldHaveTheUpdatedContent() throws IOException {
                     BlobContainerClient c = builder.buildClient().getBlobContainerClient("azure-test-bucket");
 
-                    String contentId = entity.getContentId();
+                    String contentId = Objects.requireNonNull(entity.getContentId());
                     assertThat(c.getBlobClient(contentId).getBlockBlobClient().exists()).isTrue();
 
                     store.setContent(entity, PropertyPath.from("content"), TestSupportData.sampleUpdatedTextStream(), new SetContentParams(-1, true, SetContentParams.ContentDisposition.CreateNew));
@@ -788,7 +773,7 @@ public class AzureStorageIT {
 
                     assertThat(entity.getContentId()).isNotEqualTo(contentId);
 
-                    assertThat(c.getBlobClient(entity.getContentId()).getBlockBlobClient().exists()).isTrue();
+                    assertThat(c.getBlobClient(Objects.requireNonNull(entity.getContentId())).getBlockBlobClient().exists()).isTrue();
                 }
             }
 
@@ -802,7 +787,6 @@ public class AzureStorageIT {
 
                     repo = context.getBean(DualContentJpaLongIdRepository.class);
                     store = context.getBean(DualContentJpaLongIdStore.class);
-
 
                     resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
@@ -857,7 +841,6 @@ public class AzureStorageIT {
                     repo = context.getBean(DualContentJpaLongIdRepository.class);
                     store = context.getBean(DualContentJpaLongIdStore.class);
 
-
                     resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new DualContentJpaLongIdEntity();
@@ -902,7 +885,6 @@ public class AzureStorageIT {
                     repo = context.getBean(DualContentJpaLongIdRepository.class);
                     store = context.getBean(DualContentJpaLongIdStore.class);
 
-
                     resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new DualContentJpaLongIdEntity();
@@ -938,7 +920,6 @@ public class AzureStorageIT {
 
                     repo = context.getBean(DualContentJpaLongIdRepository.class);
                     store = context.getBean(DualContentJpaLongIdStore.class);
-
 
                     resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
@@ -976,7 +957,6 @@ public class AzureStorageIT {
                     repo = context.getBean(DualContentJpaLongIdRepository.class);
                     store = context.getBean(DualContentJpaLongIdStore.class);
 
-
                     resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 
                     entity = new DualContentJpaLongIdEntity();
@@ -1012,7 +992,6 @@ public class AzureStorageIT {
 
                     repo = context.getBean(DualContentJpaLongIdRepository.class);
                     store = context.getBean(DualContentJpaLongIdStore.class);
-
 
                     resourceLocation = TestSupportData.UNASSOCIATED_RESOURCE_LOCATION;
 

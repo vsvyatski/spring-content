@@ -15,6 +15,7 @@ import org.springframework.content.s3.Bucket;
 import org.springframework.content.s3.S3ObjectId;
 import org.springframework.content.s3.config.EnableS3Stores;
 import org.springframework.content.s3.config.S3StoreConfigurer;
+import org.springframework.content.test.support.EmbeddedJpa;
 import org.springframework.content.test.support.FakeEntity;
 import org.springframework.content.test.support.TestSupportData;
 import org.springframework.content.test.support.TestSupportPackages;
@@ -26,12 +27,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
-import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.Database;
-import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -56,7 +54,7 @@ public class S3StoreWithEntityConverterIT {
 
     private static final TestData[] TEST_DATA_SETS = {
         new TestData("Default Converter", new Class<?>[]{TestConfig.class}, OTHER_BUCKET),
-        new TestData("Custom Converter", new Class<?>[]{CustomConverterConfig.class, TestConfig.class}, OTHER_OTHER_BUCKET),
+        new TestData("Custom Converter", new Class<?>[]{CustomConverterConfig.class, TestConfig.class}, OTHER_OTHER_BUCKET)
     };
     private static S3Client s3ClientSpy;
 
@@ -151,31 +149,18 @@ public class S3StoreWithEntityConverterIT {
 
         @Bean
         public DataSource dataSource() {
-            EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
-            return builder.setType(EmbeddedDatabaseType.H2).build();
+            return EmbeddedJpa.embeddedDataSource(EmbeddedDatabaseType.H2);
         }
 
         @Bean
         public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-
-            HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-            vendorAdapter.setDatabase(Database.H2);
-            vendorAdapter.setGenerateDdl(true);
-
-            LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
-            factory.setJpaVendorAdapter(vendorAdapter);
-            factory.setPackagesToScan("internal.org.springframework.content.s3.it", TestSupportPackages.JPA);
-            factory.setDataSource(dataSource());
-
-            return factory;
+            return EmbeddedJpa.entityManagerFactory(
+                dataSource(), Database.H2, "internal.org.springframework.content.s3.it", TestSupportPackages.JPA);
         }
 
         @Bean
         public PlatformTransactionManager transactionManager() {
-
-            JpaTransactionManager txManager = new JpaTransactionManager();
-            txManager.setEntityManagerFactory(entityManagerFactory().getObject());
-            return txManager;
+            return EmbeddedJpa.transactionManager(entityManagerFactory().getObject());
         }
     }
 

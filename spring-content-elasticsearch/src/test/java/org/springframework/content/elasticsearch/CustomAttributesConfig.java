@@ -4,6 +4,7 @@ import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.content.commons.renditions.RenditionProvider;
 import org.springframework.content.jpa.config.EnableJpaStores;
+import org.springframework.content.test.support.EmbeddedJpa;
 import org.springframework.content.test.support.TestSupportPackages;
 import org.springframework.content.test.support.fulltext.FulltextJpaUuidDocumentEntity;
 import org.springframework.context.annotation.Bean;
@@ -12,14 +13,10 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.core.io.Resource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.format.support.DefaultFormattingConversionService;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.jdbc.datasource.init.DataSourceInitializer;
-import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
-import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.Database;
-import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
@@ -89,44 +86,21 @@ public class CustomAttributesConfig {
 
     @Bean
     public DataSource dataSource() {
-        EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
-        return builder.setType(EmbeddedDatabaseType.H2).build();
+        return EmbeddedJpa.embeddedDataSource(EmbeddedDatabaseType.H2);
     }
 
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-        HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-        vendorAdapter.setDatabase(Database.H2);
-        vendorAdapter.setGenerateDdl(true);
-
-        LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
-        factory.setJpaVendorAdapter(vendorAdapter);
-        factory.setPackagesToScan(TestSupportPackages.FULLTEXT);
-        factory.setDataSource(dataSource());
-
-        return factory;
+        return EmbeddedJpa.entityManagerFactory(dataSource(), Database.H2, TestSupportPackages.FULLTEXT);
     }
 
     @Bean
     public PlatformTransactionManager transactionManager() {
-        JpaTransactionManager txManager = new JpaTransactionManager();
-        txManager.setEntityManagerFactory(entityManagerFactory().getObject());
-        return txManager;
+        return EmbeddedJpa.transactionManager(entityManagerFactory().getObject());
     }
 
     @Bean
     DataSourceInitializer datasourceInitializer(DataSource dataSource) {
-        ResourceDatabasePopulator databasePopulator =
-            new ResourceDatabasePopulator();
-
-        databasePopulator.addScript(dropRepositoryTables);
-        databasePopulator.addScript(dataRepositorySchema);
-        databasePopulator.setIgnoreFailedDrops(true);
-
-        DataSourceInitializer initializer = new DataSourceInitializer();
-        initializer.setDataSource(dataSource);
-        initializer.setDatabasePopulator(databasePopulator);
-
-        return initializer;
+        return EmbeddedJpa.schemaInitializer(dataSource, dropRepositoryTables, dataRepositorySchema);
     }
 }

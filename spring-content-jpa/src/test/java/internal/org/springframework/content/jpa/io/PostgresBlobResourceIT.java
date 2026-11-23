@@ -7,19 +7,16 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.content.test.support.EmbeddedJpa;
 import org.springframework.content.test.support.TestSupportData;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceUtils;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.datasource.init.DataSourceInitializer;
-import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
-import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.Database;
-import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -63,47 +60,26 @@ public class PostgresBlobResourceIT {
 
         @Bean
         DataSourceInitializer datasourceInitializer(DataSource dataSource) {
-            ResourceDatabasePopulator databasePopulator = new ResourceDatabasePopulator();
-
-            databasePopulator.addScript(dropStoreTables);
-            databasePopulator.addScript(dataStoreSchema);
-            databasePopulator.setIgnoreFailedDrops(true);
-
-            DataSourceInitializer initializer = new DataSourceInitializer();
-            initializer.setDataSource(dataSource);
-            initializer.setDatabasePopulator(databasePopulator);
-
-            return initializer;
+            return EmbeddedJpa.schemaInitializer(dataSource, dropStoreTables, dataStoreSchema);
         }
 
         @Bean
         public DataSource dataSource() {
-            DriverManagerDataSource ds = new DriverManagerDataSource();
-            ds.setUrl("jdbc:tc:postgresql:12:///databasename?TC_TMPFS=/testtmpfs:rw&TC_DAEMON=true");
-            ds.setUsername("test");
-            ds.setPassword("test");
-            return ds;
+            return EmbeddedJpa.driverManagerDataSource(
+                "jdbc:tc:postgresql:12:///databasename?TC_TMPFS=/testtmpfs:rw&TC_DAEMON=true",
+                "test",
+                "test");
         }
 
         @Bean
         public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-            HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-            vendorAdapter.setDatabase(Database.POSTGRESQL);
-            vendorAdapter.setGenerateDdl(true);
-
-            LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
-            factory.setJpaVendorAdapter(vendorAdapter);
-            factory.setPackagesToScan(getClass().getPackage().getName());
-            factory.setDataSource(dataSource());
-
-            return factory;
+            return EmbeddedJpa.entityManagerFactory(
+                dataSource(), Database.POSTGRESQL, getClass().getPackage().getName());
         }
 
         @Bean
         public PlatformTransactionManager transactionManager() {
-            JpaTransactionManager txManager = new JpaTransactionManager();
-            txManager.setEntityManagerFactory(entityManagerFactory().getObject());
-            return txManager;
+            return EmbeddedJpa.transactionManager(entityManagerFactory().getObject());
         }
     }
 

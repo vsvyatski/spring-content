@@ -19,6 +19,7 @@ import org.springframework.boot.persistence.autoconfigure.EntityScan;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.content.mongo.config.EnableMongoStores;
+import org.springframework.content.test.support.EmbeddedJpa;
 import org.springframework.content.mongo.store.MongoContentStore;
 import org.springframework.content.rest.StoreRestResource;
 import org.springframework.content.rest.config.RestConfiguration;
@@ -34,14 +35,10 @@ import org.springframework.data.mongodb.core.SimpleMongoClientDatabaseFactory;
 import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.http.HttpMethod;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.jdbc.datasource.init.DataSourceInitializer;
-import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
-import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.Database;
-import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -134,47 +131,23 @@ public class LockingAndVersioningRestIT {
 
             @Bean
             DataSourceInitializer datasourceInitializer(DataSource dataSource) {
-                ResourceDatabasePopulator databasePopulator =
-                    new ResourceDatabasePopulator();
-
-                databasePopulator.addScript(dropRepositoryTables);
-                databasePopulator.addScript(dataRepositorySchema);
-                databasePopulator.setIgnoreFailedDrops(true);
-
-                DataSourceInitializer initializer = new DataSourceInitializer();
-                initializer.setDataSource(dataSource);
-                initializer.setDatabasePopulator(databasePopulator);
-
-                return initializer;
+                return EmbeddedJpa.schemaInitializer(dataSource, dropRepositoryTables, dataRepositorySchema);
             }
 
             @Bean
             public DataSource dataSource() {
-                EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
-                return builder.setType(EmbeddedDatabaseType.HSQL).build();
+                return EmbeddedJpa.embeddedDataSource(EmbeddedDatabaseType.HSQL);
             }
 
             @Bean
             public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-
-                HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-                vendorAdapter.setDatabase(Database.HSQL);
-                vendorAdapter.setGenerateDdl(true);
-
-                LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
-                factory.setJpaVendorAdapter(vendorAdapter);
-                factory.setPackagesToScan("it.rest.jpaversioning.mongostorage", VersioningTestPackages.JPA);
-                factory.setDataSource(dataSource());
-
-                return factory;
+                return EmbeddedJpa.entityManagerFactory(
+                    dataSource(), Database.HSQL, "it.rest.jpaversioning.mongostorage", VersioningTestPackages.JPA);
             }
 
             @Bean
             public PlatformTransactionManager transactionManager() {
-
-                JpaTransactionManager txManager = new JpaTransactionManager();
-                txManager.setEntityManagerFactory(entityManagerFactory().getObject());
-                return txManager;
+                return EmbeddedJpa.transactionManager(entityManagerFactory().getObject());
             }
         }
     }

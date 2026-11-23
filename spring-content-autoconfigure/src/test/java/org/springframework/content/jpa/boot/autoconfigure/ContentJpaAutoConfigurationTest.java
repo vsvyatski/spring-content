@@ -16,17 +16,15 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.content.jpa.config.EnableJpaStores;
 import org.springframework.content.jpa.store.JpaContentStore;
+import org.springframework.content.test.support.EmbeddedJpa;
 import org.springframework.content.test.support.jpa.SingleContentJpaLongIdEntity;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
-import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.Database;
-import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
@@ -47,29 +45,17 @@ public class ContentJpaAutoConfigurationTest {
     public static class JpaTestConfig {
         @Bean
         public DataSource dataSource() {
-            EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
-            return builder.setType(EmbeddedDatabaseType.HSQL).build();
+            return EmbeddedJpa.embeddedDataSource(EmbeddedDatabaseType.HSQL);
         }
 
         @Bean
         public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-            HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-            vendorAdapter.setDatabase(Database.HSQL);
-            vendorAdapter.setGenerateDdl(true);
-
-            LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
-            factory.setJpaVendorAdapter(vendorAdapter);
-            factory.setPackagesToScan(getClass().getPackage().getName());
-            factory.setDataSource(dataSource());
-
-            return factory;
+            return EmbeddedJpa.entityManagerFactory(dataSource(), Database.HSQL, getClass().getPackage().getName());
         }
 
         @Bean
         public PlatformTransactionManager transactionManager() {
-            JpaTransactionManager txManager = new JpaTransactionManager();
-            txManager.setEntityManagerFactory(entityManagerFactory().getObject());
-            return txManager;
+            return EmbeddedJpa.transactionManager(entityManagerFactory().getObject());
         }
     }
 

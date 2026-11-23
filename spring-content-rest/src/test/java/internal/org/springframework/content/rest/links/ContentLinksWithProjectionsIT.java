@@ -14,6 +14,7 @@ import org.springframework.content.fs.config.EnableFileSystemStores;
 import org.springframework.content.fs.io.FileSystemResourceLoader;
 import org.springframework.content.rest.config.HypermediaConfiguration;
 import org.springframework.content.rest.config.RestConfiguration;
+import org.springframework.content.test.support.EmbeddedJpa;
 import org.springframework.content.test.support.TestSupportData;
 import org.springframework.content.test.support.jpa.fixture.SingleContentJpaLongIdUuidNamedEntity;
 import org.springframework.context.annotation.Bean;
@@ -21,13 +22,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.rest.core.config.Projection;
 import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguration;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.Database;
-import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -50,11 +49,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebAppConfiguration
 @ContextConfiguration(classes = {
-    ContentLinksWithProjectionsIT.StoreConfig.class,
-    DelegatingWebMvcConfiguration.class,
-    RepositoryRestMvcConfiguration.class,
-    RestConfiguration.class,
-    HypermediaConfiguration.class})
+    ContentLinksWithProjectionsIT.StoreConfig.class, DelegatingWebMvcConfiguration.class,
+    RepositoryRestMvcConfiguration.class, RestConfiguration.class, HypermediaConfiguration.class
+})
 @Transactional
 @ActiveProfiles("store")
 @ExtendWith(SpringExtension.class)
@@ -73,9 +70,7 @@ public class ContentLinksWithProjectionsIT {
 
     private SingleContentJpaLongIdUuidNamedEntity testEntity;
 
-    @Projection(
-        name = "customTEntity",
-        types = {SingleContentJpaLongIdUuidNamedEntity.class})
+    @Projection(name = "customTEntity", types = {SingleContentJpaLongIdUuidNamedEntity.class})
     @SuppressWarnings("unused") // Spring Data REST projection
     public interface CustomTEntity {
 
@@ -83,7 +78,8 @@ public class ContentLinksWithProjectionsIT {
     }
 
     @Configuration
-    @EnableJpaRepositories(basePackages = "internal.org.springframework.content.rest.scoped.projection", considerNestedRepositories = true)
+    @EnableJpaRepositories(basePackages = "internal.org.springframework.content.rest.scoped.projection",
+        considerNestedRepositories = true)
     @EnableTransactionManagement
     @EnableFileSystemStores(basePackages = "internal.org.springframework.content.rest.scoped.projection")
 //    @Profile("store")
@@ -91,31 +87,20 @@ public class ContentLinksWithProjectionsIT {
 
         @Bean
         public DataSource dataSource() {
-            EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
-            return builder.setType(EmbeddedDatabaseType.H2).build();
+            return EmbeddedJpa.embeddedDataSource(EmbeddedDatabaseType.H2);
         }
 
         @Bean
         public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-
-            HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-            vendorAdapter.setDatabase(Database.H2);
-            vendorAdapter.setGenerateDdl(true);
-
-            LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
-            factory.setJpaVendorAdapter(vendorAdapter);
-            factory.setPackagesToScan(packagesToScan());
+            LocalContainerEntityManagerFactoryBean factory =
+                EmbeddedJpa.entityManagerFactory(dataSource(), Database.H2, packagesToScan());
             factory.setPersistenceUnitName("content-links-with-projections");
-            factory.setDataSource(dataSource());
             factory.afterPropertiesSet();
-
             return factory;
         }
 
         protected String[] packagesToScan() {
-            return new String[]{
-                "org.springframework.content.test.support.jpa.fixture"
-            };
+            return new String[]{"org.springframework.content.test.support.jpa.fixture"};
         }
 
         @Bean
@@ -164,8 +149,7 @@ public class ContentLinksWithProjectionsIT {
 
                     RepresentationFactory representationFactory = new StandardRepresentationFactory();
                     ReadableRepresentation halResponse = representationFactory
-                        .readRepresentation("application/hal+json",
-                            new StringReader(response.getContentAsString()));
+                        .readRepresentation("application/hal+json", new StringReader(response.getContentAsString()));
 
                     assertThat(halResponse).isNotNull();
                     assertThat(halResponse.getLinksByRel("content")).isNotNull();

@@ -1,16 +1,14 @@
 package internal.org.springframework.content.rest.support.config;
 
+import org.springframework.content.test.support.EmbeddedJpa;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
-import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.Database;
-import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
@@ -22,24 +20,15 @@ public class JpaInfrastructureConfig {
 
     @Bean
     public DataSource dataSource() {
-        EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
-        return builder.setType(EmbeddedDatabaseType.H2).build();
+        return EmbeddedJpa.embeddedDataSource(EmbeddedDatabaseType.H2);
     }
 
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-
-        HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-        vendorAdapter.setDatabase(Database.H2);
-        vendorAdapter.setGenerateDdl(true);
-
-        LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
-        factory.setJpaVendorAdapter(vendorAdapter);
-        factory.setPackagesToScan(packagesToScan());
+        LocalContainerEntityManagerFactoryBean factory =
+            EmbeddedJpa.entityManagerFactory(dataSource(), Database.H2, packagesToScan());
         factory.setPersistenceUnitName("spring-data-rest-webmvc");
-        factory.setDataSource(dataSource());
         factory.afterPropertiesSet();
-
         return factory;
     }
 
@@ -53,6 +42,6 @@ public class JpaInfrastructureConfig {
     @DependsOn("entityManagerFactory")
     public PlatformTransactionManager transactionManager(
         @Autowired LocalContainerEntityManagerFactoryBean entityManagerFactory) {
-        return new JpaTransactionManager(Objects.requireNonNull(entityManagerFactory.getObject()));
+        return EmbeddedJpa.transactionManager(Objects.requireNonNull(entityManagerFactory.getObject()));
     }
 }

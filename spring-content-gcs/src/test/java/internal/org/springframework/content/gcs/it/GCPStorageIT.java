@@ -16,6 +16,7 @@ import org.springframework.content.commons.store.SetContentParams;
 import org.springframework.content.commons.store.StoreAccessException;
 import org.springframework.content.commons.store.UnsetContentParams;
 import org.springframework.content.gcs.config.EnableGCPStorage;
+import org.springframework.content.test.support.EmbeddedJpa;
 import org.springframework.content.test.support.TestSupportData;
 import org.springframework.content.test.support.TestSupportPackages;
 import org.springframework.content.test.support.jpa.*;
@@ -26,12 +27,9 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.WritableResource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
-import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.Database;
-import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
@@ -40,6 +38,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
+import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -75,31 +74,17 @@ public class GCPStorageIT {
 
         @Bean
         public DataSource dataSource() {
-            EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
-            return builder.setType(EmbeddedDatabaseType.H2).build();
+            return EmbeddedJpa.embeddedDataSource(EmbeddedDatabaseType.H2);
         }
 
         @Bean
         public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-
-            HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-            vendorAdapter.setDatabase(Database.H2);
-            vendorAdapter.setGenerateDdl(true);
-
-            LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
-            factory.setJpaVendorAdapter(vendorAdapter);
-            factory.setPackagesToScan(TestSupportPackages.JPA);
-            factory.setDataSource(dataSource());
-
-            return factory;
+            return EmbeddedJpa.entityManagerFactory(dataSource(), Database.H2, TestSupportPackages.JPA);
         }
 
         @Bean
         public PlatformTransactionManager transactionManager() {
-
-            JpaTransactionManager txManager = new JpaTransactionManager();
-            txManager.setEntityManagerFactory(entityManagerFactory().getObject());
-            return txManager;
+            return EmbeddedJpa.transactionManager(entityManagerFactory().getObject());
         }
     }
 
@@ -794,7 +779,7 @@ public class GCPStorageIT {
 
                     assertThat(entity.getContentId()).isNotEqualTo(contentId);
 
-                    assertThat(storage.get(BlobId.of("test-bucket", entity.getContentId())).exists()).isTrue();
+                    assertThat(storage.get(BlobId.of("test-bucket", Objects.requireNonNull(entity.getContentId()))).exists()).isTrue();
                 }
             }
 

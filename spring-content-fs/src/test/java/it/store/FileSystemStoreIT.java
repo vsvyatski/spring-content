@@ -13,6 +13,7 @@ import org.springframework.content.commons.store.StoreAccessException;
 import org.springframework.content.commons.store.UnsetContentParams;
 import org.springframework.content.fs.config.EnableFileSystemStores;
 import org.springframework.content.fs.io.FileSystemResourceLoader;
+import org.springframework.content.test.support.EmbeddedJpa;
 import org.springframework.content.test.support.TestSupportData;
 import org.springframework.content.test.support.TestSupportPackages;
 import org.springframework.content.test.support.jpa.*;
@@ -23,18 +24,16 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.WritableResource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
-import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.Database;
-import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -100,31 +99,17 @@ public class FileSystemStoreIT {
 
         @Bean
         public DataSource dataSource() {
-            EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
-            return builder.setType(EmbeddedDatabaseType.HSQL).build();
+            return EmbeddedJpa.embeddedDataSource(EmbeddedDatabaseType.HSQL);
         }
 
         @Bean
         public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-
-            HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-            vendorAdapter.setDatabase(Database.HSQL);
-            vendorAdapter.setGenerateDdl(true);
-
-            LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
-            factory.setJpaVendorAdapter(vendorAdapter);
-            factory.setPackagesToScan(TestSupportPackages.JPA);
-            factory.setDataSource(dataSource());
-
-            return factory;
+            return EmbeddedJpa.entityManagerFactory(dataSource(), Database.HSQL, TestSupportPackages.JPA);
         }
 
         @Bean
         public PlatformTransactionManager transactionManager() {
-
-            JpaTransactionManager txManager = new JpaTransactionManager();
-            txManager.setEntityManagerFactory(entityManagerFactory().getObject());
-            return txManager;
+            return EmbeddedJpa.transactionManager(entityManagerFactory().getObject());
         }
     }
 
@@ -318,9 +303,9 @@ public class FileSystemStoreIT {
         @Test
         void shouldHaveTheUpdatedContent() throws IOException {
             FileSystemResourceLoader loader = context.getBean(FileSystemResourceLoader.class);
-            String contentId = entity.getContentId();
+            String contentId = Objects.requireNonNull(entity.getContentId());
             assertThat(new File(loader.getRootResource().getPath(), contentId).exists()).isTrue();
-            String renditionId = entity.getRenditionId();
+            String renditionId = Objects.requireNonNull(entity.getRenditionId());
             assertThat(new File(loader.getRootResource().getPath(), renditionId).exists()).isTrue();
             entity = store.setContent(entity,
                 TestSupportData.sampleUpdatedTextStream());
@@ -340,8 +325,8 @@ public class FileSystemStoreIT {
             assertThat(entity.getContentId()).isEqualTo(contentId);
             assertThat(entity.getRenditionId()).isEqualTo(renditionId);
 
-            assertThat(new File(loader.getRootResource().getPath(), entity.getContentId()).exists()).isTrue();
-            assertThat(new File(loader.getRootResource().getPath(), entity.getRenditionId()).exists()).isTrue();
+            assertThat(new File(loader.getRootResource().getPath(), Objects.requireNonNull(entity.getContentId())).exists()).isTrue();
+            assertThat(new File(loader.getRootResource().getPath(), Objects.requireNonNull(entity.getRenditionId())).exists()).isTrue();
         }
 
         @Test
@@ -365,7 +350,7 @@ public class FileSystemStoreIT {
         @Test
         void shouldHaveTheUpdatedContentWhenNotOverwritten() throws IOException {
             FileSystemResourceLoader loader = context.getBean(FileSystemResourceLoader.class);
-            String contentId = entity.getContentId();
+            String contentId = Objects.requireNonNull(entity.getContentId());
             assertThat(new File(loader.getRootResource().getPath(), contentId).exists()).isTrue();
 
             entity = store.setContent(entity, PropertyPath.from("content"),
@@ -379,7 +364,7 @@ public class FileSystemStoreIT {
 
             assertThat(new File(loader.getRootResource().getPath(), contentId).exists()).isTrue();
             assertThat(entity.getContentId()).isNotEqualTo(contentId);
-            assertThat(new File(loader.getRootResource().getPath(), entity.getContentId()).exists()).isTrue();
+            assertThat(new File(loader.getRootResource().getPath(), Objects.requireNonNull(entity.getContentId())).exists()).isTrue();
         }
 
         @Test

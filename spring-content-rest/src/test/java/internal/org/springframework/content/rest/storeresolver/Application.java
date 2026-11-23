@@ -14,19 +14,16 @@ import org.springframework.content.fs.store.FileSystemContentStore;
 import org.springframework.content.jpa.config.EnableJpaStores;
 import org.springframework.content.rest.config.ContentRestConfigurer;
 import org.springframework.content.rest.config.RestConfiguration;
+import org.springframework.content.test.support.EmbeddedJpa;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.jdbc.datasource.init.DataSourceInitializer;
-import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
-import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.Database;
-import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
@@ -35,9 +32,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 
 @SpringBootApplication(exclude = {
-    MongoAutoConfiguration.class,
-    DataMongoAutoConfiguration.class,
-    DataMongoRepositoriesAutoConfiguration.class
+    MongoAutoConfiguration.class, DataMongoAutoConfiguration.class, DataMongoRepositoriesAutoConfiguration.class
 })
 public class Application {
 
@@ -47,12 +42,10 @@ public class Application {
 
     @Configuration
     @Import({RestConfiguration.class, SecurityConfiguration.class})
-    @EnableJpaRepositories(
-        basePackages = {
-            "internal.org.springframework.content.rest.storeresolver",
-            "internal.org.springframework.content.rest.scoped.storeresolver"
-        },
-        considerNestedRepositories = true)
+    @EnableJpaRepositories(basePackages = {
+        "internal.org.springframework.content.rest.storeresolver",
+        "internal.org.springframework.content.rest.scoped.storeresolver"
+    }, considerNestedRepositories = true)
     @EnableTransactionManagement
     @EnableJpaStores(basePackages = "internal.org.springframework.content.rest.scoped.storeresolver")
     @EnableFileSystemStores(basePackages = "internal.org.springframework.content.rest.scoped.storeresolver")
@@ -66,44 +59,23 @@ public class Application {
 
         @Bean
         DataSourceInitializer datasourceInitializer(DataSource dataSource) {
-            ResourceDatabasePopulator databasePopulator = new ResourceDatabasePopulator();
-
-            databasePopulator.addScript(dropRepositoryTables);
-            databasePopulator.addScript(dataRepositorySchema);
-            databasePopulator.setIgnoreFailedDrops(true);
-
-            DataSourceInitializer initializer = new DataSourceInitializer();
-            initializer.setDataSource(dataSource);
-            initializer.setDatabasePopulator(databasePopulator);
-
-            return initializer;
+            return EmbeddedJpa.schemaInitializer(dataSource, dropRepositoryTables, dataRepositorySchema);
         }
 
         @Bean
         public DataSource dataSource() {
-            EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
-            return builder.setType(EmbeddedDatabaseType.H2).build();
+            return EmbeddedJpa.embeddedDataSource(EmbeddedDatabaseType.H2);
         }
 
         @Bean
         public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-            HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-            vendorAdapter.setDatabase(Database.H2);
-            vendorAdapter.setGenerateDdl(true);
-
-            LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
-            factory.setJpaVendorAdapter(vendorAdapter);
-            factory.setPackagesToScan("org.springframework.content.test.support.jpa.fixture");
-            factory.setDataSource(dataSource());
-
-            return factory;
+            return EmbeddedJpa.entityManagerFactory(
+                dataSource(), Database.H2, "org.springframework.content.test.support.jpa.fixture");
         }
 
         @Bean
         public PlatformTransactionManager transactionManager() {
-            JpaTransactionManager txManager = new JpaTransactionManager();
-            txManager.setEntityManagerFactory(entityManagerFactory().getObject());
-            return txManager;
+            return EmbeddedJpa.transactionManager(entityManagerFactory().getObject());
         }
 
         @Bean
