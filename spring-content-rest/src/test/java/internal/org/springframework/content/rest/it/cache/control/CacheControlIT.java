@@ -35,7 +35,7 @@ public class CacheControlIT {
     }
 
     @Test
-    void givenThePatternMatchesItShouldApplyTheConfiguredCacheSettings() {
+    void givenPatternMatchesItShouldApplyConfiguredCacheSettings() {
         UuidSingleContentEntity entity = new UuidSingleContentEntity();
         entity = repo.save(entity);
         entity = store.setContent(entity, new ByteArrayInputStream("some content".getBytes()));
@@ -52,7 +52,7 @@ public class CacheControlIT {
     }
 
     @Test
-    void givenThePatternDoesntMatchItShouldNotApplyTheConfiguredCacheSettings() {
+    void givenPatternDoesntMatchItShouldNotApplyConfiguredCacheSettings() {
         UuidSingleContentEntity entity = new UuidSingleContentEntity();
         entity = repo.save(entity);
         entity = store.setContent(entity, new ByteArrayInputStream("some content".getBytes()));

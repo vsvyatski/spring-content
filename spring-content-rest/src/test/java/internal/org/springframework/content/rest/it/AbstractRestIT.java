@@ -60,7 +60,7 @@ public abstract class AbstractRestIT {
                 }
 
                 @Test
-                void shouldBePOSTableWithNewContentWith201Created() {
+                void shouldBePostableWithNewContentWith201Created() {
                     // assert content does not exist
                     when()
                         .get("/files/" + existingClaim.getId() + "/child")
@@ -132,7 +132,7 @@ public abstract class AbstractRestIT {
                     }
 
                     @Test
-                    void shouldBePOSTableWithNewContentWith201Created() {
+                    void shouldBePostableWithNewContentWith201Created() {
                         String newContent = "This is new content";
 
                         given()
