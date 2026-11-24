@@ -1,6 +1,7 @@
 <settings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/SETTINGS/1.0.0"
           xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
-  <!-- This file can be used as an example for the one you have in your ~/.m2/settings.xml -->
+  <!-- Template for Central publish and GPG signing. Not loaded automatically; use ~/.m2/settings.xml or pass
+       .mvn/settings.xml to mvnw via the settings switch (see scripts/deploy.sh). -->
   <servers>
     <server>
       <!-- User token for Central Portal -->
