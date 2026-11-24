@@ -9,9 +9,9 @@ public final class StoreItJdbcUrls {
 
     private static final String TESTCONTAINERS_OPTIONS = "?TC_TMPFS=/testtmpfs:rw&TC_DAEMON=true";
 
-    public static final String MARIADB = "jdbc:tc:mariadb:10.11:///databasename" + TESTCONTAINERS_OPTIONS;
+    public static final String MARIADB = "jdbc:tc:mariadb:11.8:///databasename" + TESTCONTAINERS_OPTIONS;
 
-    public static final String POSTGRESQL = "jdbc:tc:postgresql:12:///databasename" + TESTCONTAINERS_OPTIONS;
+    public static final String POSTGRESQL = "jdbc:tc:postgresql:16:///databasename" + TESTCONTAINERS_OPTIONS;
 
     public static final String SQL_SERVER = "jdbc:tc:sqlserver:///databasename" + TESTCONTAINERS_OPTIONS;
 
