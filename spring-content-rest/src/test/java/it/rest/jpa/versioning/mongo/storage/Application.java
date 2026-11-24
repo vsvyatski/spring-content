@@ -1,6 +1,7 @@
 package it.rest.jpa.versioning.mongo.storage;
 
 import com.mongodb.client.MongoClient;
+import it.rest.versioning.VersioningRestSecurityConfiguration;
 import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
@@ -36,7 +37,7 @@ import javax.sql.DataSource;
     basePackages = {"it.rest.jpa.versioning.mongo.storage", "org.springframework.versions"})
 @EnableTransactionManagement
 @EnableMongoStores(basePackages = "it.rest.jpa.versioning.mongo.storage")
-@Import({JpaLockingAndVersioningConfig.class, RestConfiguration.class, LockingAndVersioningRestIT.SecurityConfiguration.class})
+@Import({JpaLockingAndVersioningConfig.class, RestConfiguration.class, VersioningRestSecurityConfiguration.class})
 public class Application {
 
     public static void main(String[] args) {

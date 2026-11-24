@@ -17,10 +17,7 @@ import org.springframework.versions.test.support.VersioningTestPackages;
     basePackages = {"it.rest.versioning", "org.springframework.versions"})
 @EnableTransactionManagement
 @EnableFileSystemStores(basePackages = "it.rest.versioning")
-@Import({
-    JpaLockingAndVersioningConfig.class, RestConfiguration.class,
-    LockingAndVersioningRestIT.SecurityConfiguration.class
-})
+@Import({JpaLockingAndVersioningConfig.class, RestConfiguration.class, VersioningRestSecurityConfiguration.class})
 public class Application {
 
     public static void main(String[] args) {
