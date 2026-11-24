@@ -8,9 +8,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.hateoas.autoconfigure.HypermediaAutoConfiguration;
 import org.springframework.boot.security.autoconfigure.SecurityAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,16 +16,8 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.annotations.MimeType;
-import org.springframework.content.fs.config.EnableFileSystemStores;
-import org.springframework.content.fs.io.FileSystemResourceLoader;
 import org.springframework.content.fs.store.FileSystemContentStore;
-import org.springframework.content.rest.config.ContentRestConfigurer;
-import org.springframework.content.rest.config.RestConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
-import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -35,18 +25,15 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.Serial;
 import java.io.Serializable;
-import java.nio.file.Files;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(classes = {EmbeddedIdTest.Application.class},
-    webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = Application.class, webEnvironment = WebEnvironment.RANDOM_PORT)
 @EnableAutoConfiguration(exclude = {HypermediaAutoConfiguration.class, SecurityAutoConfiguration.class})
 @ExtendWith(SpringExtension.class)
 public class EmbeddedIdTest {
@@ -66,30 +53,6 @@ public class EmbeddedIdTest {
     }
 
     public interface TestEntityContentStore extends FileSystemContentStore<TestEntity, TestEntityId> {
-    }
-
-    @SpringBootApplication
-    @EnableJpaRepositories(considerNestedRepositories = true, basePackages = {"it.rest.embedded.id"})
-    @EnableFileSystemStores(basePackages = "it.rest.embedded.id")
-    @Import({RestConfiguration.class})
-    public static class Application {
-
-        public static void main(String[] args) {
-            SpringApplication.run(Application.class, args);
-        }
-
-        @Bean
-        public FileSystemResourceLoader filesystemRoot() throws IOException {
-            return new FileSystemResourceLoader(Files.createTempDirectory("").toFile().getAbsolutePath());
-        }
-
-        @Bean
-        public ContentRestConfigurer configureConversionService() {
-            return config -> config.converters().addConverter((Converter<String, TestEntityId>) source -> {
-                String[] segments = source.split("_");
-                return new TestEntityId(segments[0], segments[1]);
-            });
-        }
     }
 
     @Entity

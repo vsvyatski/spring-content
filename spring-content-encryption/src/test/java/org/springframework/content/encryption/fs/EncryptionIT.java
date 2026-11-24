@@ -1,7 +1,5 @@
 package org.springframework.content.encryption.fs;
 
-import internal.org.springframework.content.rest.boot.autoconfigure.ContentRestAutoConfiguration;
-import internal.org.springframework.content.s3.boot.autoconfigure.S3ContentAutoConfiguration;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import io.restassured.module.mockmvc.response.MockMvcResponse;
 import org.apache.commons.io.IOUtils;
@@ -12,19 +10,9 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.content.encryption.config.EncryptingContentStoreConfigurer;
-import org.springframework.content.fs.config.EnableFileSystemStores;
-import org.springframework.content.fs.io.FileSystemResourceLoader;
-import org.springframework.content.test.support.TestSupportPackages;
 import org.springframework.content.test.support.encryption.FsFile;
 import org.springframework.content.test.support.encryption.FsFileRepository;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -32,13 +20,14 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(classes = EncryptionIT.Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ExtendWith(SpringExtension.class)
 public class EncryptionIT {
 
@@ -52,39 +41,6 @@ public class EncryptionIT {
     private WebApplicationContext webApplicationContext;
 
     private FsFile f;
-
-    @SpringBootApplication(exclude = {S3ContentAutoConfiguration.class})
-    @ImportAutoConfiguration(ContentRestAutoConfiguration.class)
-    @EnableJpaRepositories(basePackages = TestSupportPackages.ENCRYPTION, considerNestedRepositories = true)
-    @EnableFileSystemStores(basePackages = "org.springframework.content.encryption.fs")
-    static class Application {
-        public static void main(String[] args) {
-            SpringApplication.run(Application.class, args);
-        }
-
-        @Configuration
-        public static class Config {
-
-            @Bean
-            public java.io.File filesystemRoot() {
-                try {
-                    return Files.createTempDirectory("").toFile();
-                } catch (IOException ignored) {
-                }
-                return null;
-            }
-
-            @Bean
-            public FileSystemResourceLoader fileSystemResourceLoader() {
-                return new FileSystemResourceLoader(filesystemRoot().getAbsolutePath());
-            }
-
-            @Bean
-            public EncryptingContentStoreConfigurer<EncryptedFsFileStore> config() {
-                return config -> config.encryptionKeyContentProperty("key");
-            }
-        }
-    }
 
     @Nested
     @DisplayName("Given content")
@@ -112,8 +68,9 @@ public class EncryptionIT {
                 assertThat(fetched.isPresent()).isTrue();
                 f = fetched.get();
 
+                UUID contentId = Objects.requireNonNull(f.getContentId());
                 String contents;
-                try (InputStream in = new FileInputStream(new java.io.File(filesystemRoot, f.getContentId().toString()))) {
+                try (InputStream in = new FileInputStream(new java.io.File(filesystemRoot, contentId.toString()))) {
                     contents = IOUtils.toString(in, StandardCharsets.UTF_8);
                 }
                 assertThat(contents).isNotEqualTo("Hello Client-side encryption World!");
@@ -169,7 +126,7 @@ public class EncryptionIT {
             @Test
             void itShouldRemoveTheContentAndClearTheContentKey() {
                 f = repo.findById(f.getId()).orElseThrow();
-                String contentId = f.getContentId().toString();
+                UUID contentId = Objects.requireNonNull(f.getContentId());
 
                 given()
                     .delete("/files/" + f.getId() + "/content")
@@ -178,7 +135,7 @@ public class EncryptionIT {
 
                 f = repo.findById(f.getId()).orElseThrow();
                 assertThat(f.getContentKey()).isNull();
-                assertThat(new java.io.File(filesystemRoot, contentId).exists()).isFalse();
+                assertThat(new java.io.File(filesystemRoot, contentId.toString()).exists()).isFalse();
             }
         }
     }

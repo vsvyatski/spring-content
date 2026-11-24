@@ -176,6 +176,16 @@ Check dependency, property, and plugin updates with `./mvnw` so the run matches 
   `mimetype`). In Java identifiers use **`MimeType`** / **`mimeType`** (not `Mimetype`). Write **ID** in prose (not `id`
   in phrases like "store ID"), unless a framework literal requires another spelling (for example a
   fixed header or property name).
+- **`@SpringBootTest` boot apps:** put a top-level `Application.java` in the IT’s package. Reference
+  `@SpringBootTest(classes = Application.class, …)`. Reuse shared pieces instead of copying JDBC or store setup:
+  `internal.org.springframework.content.rest.it.boot` (`@RestIntegrationBootApplication`,
+  `RestSupportJpaStoresConfig`, `H2ContentSchemaJdbcConfig`, dialect `*ContentSchemaJdbcConfig`, and so on); scenario-only
+  types stay beside the IT (`*ScenarioConfig`, package-local JDBC overrides). Encryption FS REST tests share
+  `org.springframework.content.encryption.support.EncryptionFsRestBootApplication` and
+  `EncryptionFsInfrastructureConfig`. Do **not** nest `Application` inside the IT class.
+- **Slice / manual contexts:** keep nested `@Configuration` types on the IT for `@ContextConfiguration`,
+  `ApplicationContextRunner`, or `AnnotationConfigApplicationContext` (for example `TestConfig`, `H2Config` on
+  `StoreIT`); those are not `Application` types.
 - Follow existing IT style: inner entity/store/repo types, `@Enable*Stores` + `@EnableJpaRepositories` test configs,
   assert streams with Commons IO + AssertJ
 - Test entities: provide a public no-arg constructor; add parameterized constructors only when a test calls

@@ -4,9 +4,6 @@ import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.persistence.autoconfigure.EntityScan;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.content.commons.io.DeletableResource;
 import org.springframework.content.commons.io.RangeableResource;
@@ -14,15 +11,10 @@ import org.springframework.content.commons.property.PropertyPath;
 import org.springframework.content.commons.store.SetContentParams;
 import org.springframework.content.commons.store.StoreAccessException;
 import org.springframework.content.commons.store.UnsetContentParams;
-import org.springframework.content.s3.config.EnableS3Stores;
 import org.springframework.content.test.support.TestSupportData;
-import org.springframework.content.test.support.TestSupportPackages;
 import org.springframework.content.test.support.jpa.*;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.WritableResource;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
@@ -31,13 +23,12 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URISyntaxException;
 import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@SpringBootTest()
+@SpringBootTest(classes = Application.class)
 @ExtendWith(SpringExtension.class)
 public class S3StoreIT {
 
@@ -91,25 +82,6 @@ public class S3StoreIT {
                     System.out.println("sleeping...");
                     Thread.sleep(100);
                 }
-            }
-        }
-    }
-
-    @SpringBootApplication(scanBasePackages = {"internal.org.springframework.content.s3.it", TestSupportPackages.JPA})
-    @EntityScan(basePackages = TestSupportPackages.JPA)
-    @EnableJpaRepositories(basePackages = {TestSupportPackages.JPA, "internal.org.springframework.content.s3.it"}, considerNestedRepositories = true)
-    @EnableS3Stores(basePackages = {TestSupportPackages.JPA, "internal.org.springframework.content.s3.it"})
-    static class Application {
-        public static void main(String[] args) {
-            SpringApplication.run(Application.class, args);
-        }
-
-        @Configuration
-        public static class Config {
-
-            @Bean
-            public S3Client amazonS3() throws URISyntaxException {
-                return LocalStack.getAmazonS3Client();
             }
         }
     }

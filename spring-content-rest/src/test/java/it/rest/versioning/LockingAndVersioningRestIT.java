@@ -12,20 +12,13 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.persistence.autoconfigure.EntityScan;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.content.fs.config.EnableFileSystemStores;
 import org.springframework.content.fs.store.FileSystemContentStore;
 import org.springframework.content.rest.StoreRestResource;
-import org.springframework.content.rest.config.RestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -39,10 +32,7 @@ import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequ
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.versions.LockingAndVersioningRepository;
-import org.springframework.versions.jpa.config.JpaLockingAndVersioningConfig;
-import org.springframework.versions.test.support.VersioningTestPackages;
 import org.springframework.versions.test.support.jpa.VersionedJpaContentDocumentEntity;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -53,7 +43,7 @@ import java.util.UUID;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(classes = {LockingAndVersioningRestIT.Application.class}, webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = Application.class, webEnvironment = WebEnvironment.RANDOM_PORT)
 @ExtendWith(SpringExtension.class)
 public class LockingAndVersioningRestIT {
 
@@ -72,20 +62,6 @@ public class LockingAndVersioningRestIT {
     @StoreRestResource(path = "versionedDocumentsContent")
     @SuppressWarnings("unused") // classpath / store component scan
     public interface VersionedDocumentStore extends FileSystemContentStore<VersionedJpaContentDocumentEntity, UUID> {
-    }
-
-    @SpringBootApplication
-    @EntityScan(basePackages = VersioningTestPackages.JPA)
-    @EnableJpaRepositories(considerNestedRepositories = true,
-        basePackages = {"it.rest.versioning", "org.springframework.versions"})
-    @EnableTransactionManagement
-    @EnableFileSystemStores(basePackages = "it.rest.versioning")
-    @Import({JpaLockingAndVersioningConfig.class, RestConfiguration.class, SecurityConfiguration.class})
-    public static class Application {
-
-        public static void main(String[] args) {
-            SpringApplication.run(Application.class, args);
-        }
     }
 
     @Configuration
