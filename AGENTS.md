@@ -181,14 +181,16 @@ Check dependency, property, and plugin updates with `./mvnw` so the run matches 
 - **`@SpringBootTest` boot apps:** put a top-level `Application.java` in the IT’s package. Reference
   `@SpringBootTest(classes = Application.class, …)`. Reuse shared pieces instead of copying JDBC or store setup:
   `internal.org.springframework.content.rest.it.boot` (`@RestIntegrationBootApplication`,
-  `RestSupportJpaStoresConfig`, `H2ContentSchemaJdbcConfig`, dialect `*ContentSchemaJdbcConfig`, and so on);
-  scenario-only
+  `RestSupportJpaStoresConfig`, dialect `*ContentSchemaJdbcConfig`, and so on). JDBC/schema/Testcontainers URLs live in
+  `spring-content-jpa` test-jar (`internal.org.springframework.content.jpa.it.support.*StoreItJdbcConfig`,
+  `StoreItJdbcUrls`); REST `*ContentSchemaJdbcConfig` types extend those and override `entityPackagesToScan()` (see
+  `RestItEntityPackages.REST_SUPPORT`). Scenario-only
   types stay beside the IT (`*ScenarioConfig`, package-local JDBC overrides). Encryption FS REST tests share
   `org.springframework.content.encryption.support.EncryptionFsRestBootApplication` and
   `EncryptionFsInfrastructureConfig`. Do **not** nest `Application` inside the IT class.
 - **Slice / manual contexts:** keep nested `@Configuration` types on the IT for `@ContextConfiguration`,
-  `ApplicationContextRunner`, or `AnnotationConfigApplicationContext` (for example `TestConfig`, `H2Config` on
-  `StoreIT`); those are not `Application` types.
+  `ApplicationContextRunner`, or `AnnotationConfigApplicationContext` (for example `StoreIT.TestConfig` plus dialect
+  `*StoreItJdbcConfig` from the JPA test-jar); those are not `Application` types.
 - Follow existing IT style: inner entity/store/repo types, `@Enable*Stores` + `@EnableJpaRepositories` test configs,
   assert streams with Commons IO + AssertJ
 - Test entities: provide a public no-arg constructor; add parameterized constructors only when a test calls
@@ -196,8 +198,10 @@ Check dependency, property, and plugin updates with `./mvnw` so the run matches 
 - `ContentStore` marker interfaces use a `*Store` suffix (e.g. `TestEntityContentStore`), not `*ContentRepository`.
   Reserve `*Repository` for Spring Data `CrudRepository` / `JpaRepository` types only.
 - Shared fixtures live in `spring-content-commons` test-jar (`org.springframework.content.test.support.**`).
-  Reuse `TestSupportData` for synthetic content ids, default UTF-8 payloads (`sampleTextStream()`, etc.), and
-  `UNASSOCIATED_RESOURCE_LOCATION` instead of `RandomString` or letter-salad literals.
+  JPA JDBC IT wiring lives in `spring-content-jpa` test-jar (`internal.org.springframework.content.jpa.it.support.**`);
+  `spring-content-rest` test scope depends on that classifier. Bump MariaDB/Postgres Testcontainers image tags in
+  `StoreItJdbcUrls` only. Reuse `TestSupportData` for synthetic content ids, default UTF-8 payloads (`sampleTextStream()`,
+  etc.), and `UNASSOCIATED_RESOURCE_LOCATION` instead of `RandomString` or letter-salad literals.
   `@Enable*Stores` unit tests scan `TestSupportPackages` (`.jpa`, `.mongo`, `.fs`, `.s3`, `.gcs`, `.azure`) instead of
   inner `TestEntity` types. `EnableJpaStoresTest` asserts `DualContentJpaStringIdStore` (dual `@ContentId` entity in the
   test-jar); other backends use single-content store marker interfaces. REST module fixtures live under

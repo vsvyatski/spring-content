@@ -1,28 +1,21 @@
 package internal.org.springframework.content.jpa.io;
 
 import com.github.f4b6a3.uuid.UuidCreator;
+import internal.org.springframework.content.jpa.it.support.PostgresStoreItJdbcConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.content.test.support.EmbeddedJpa;
 import org.springframework.content.test.support.TestSupportData;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.Resource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceUtils;
-import org.springframework.jdbc.datasource.init.DataSourceInitializer;
-import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-import org.springframework.orm.jpa.vendor.Database;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import javax.sql.DataSource;
@@ -50,37 +43,11 @@ public class PostgresBlobResourceIT {
     private long lobId;
 
     @Configuration
-    @EnableTransactionManagement
-    public static class PostgresConfig {
+    public static class PostgresConfig extends PostgresStoreItJdbcConfig {
 
-        @Value("/org/springframework/content/jpa/schema-drop-postgresql.sql")
-        private Resource dropStoreTables;
-
-        @Value("/org/springframework/content/jpa/schema-postgresql.sql")
-        private Resource dataStoreSchema;
-
-        @Bean
-        DataSourceInitializer datasourceInitializer(DataSource dataSource) {
-            return EmbeddedJpa.schemaInitializer(dataSource, dropStoreTables, dataStoreSchema);
-        }
-
-        @Bean
-        public DataSource dataSource() {
-            return EmbeddedJpa.driverManagerDataSource(
-                "jdbc:tc:postgresql:12:///databasename?TC_TMPFS=/testtmpfs:rw&TC_DAEMON=true",
-                "test",
-                "test");
-        }
-
-        @Bean
-        public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-            return EmbeddedJpa.entityManagerFactory(
-                dataSource(), Database.POSTGRESQL, getClass().getPackage().getName());
-        }
-
-        @Bean
-        public PlatformTransactionManager transactionManager() {
-            return EmbeddedJpa.transactionManager(entityManagerFactory().getObject());
+        @Override
+        protected String[] entityPackagesToScan() {
+            return new String[]{getClass().getPackage().getName()};
         }
     }
 
