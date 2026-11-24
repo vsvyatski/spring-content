@@ -2,10 +2,7 @@ package it.rest.jpa.versioning.mongo.storage;
 
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import io.restassured.path.json.JsonPath;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.apache.http.HttpStatus;
-import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -16,28 +13,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.content.mongo.store.MongoContentStore;
 import org.springframework.content.rest.StoreRestResource;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.http.HttpMethod;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
-import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.versions.LockingAndVersioningRepository;
 import org.springframework.versions.test.support.jpa.VersionedJpaContentDocumentEntity;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.UUID;
 
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
@@ -61,60 +43,6 @@ public class LockingAndVersioningRestIT {
     @StoreRestResource(path = "versionedDocumentsContent")
     @SuppressWarnings("unused") // classpath / store component scan
     public interface VersionedDocumentStore extends MongoContentStore<VersionedJpaContentDocumentEntity, UUID> {
-    }
-
-    @Configuration
-    @EnableWebSecurity
-    public static class SecurityConfiguration {
-
-        protected static String REALM = "SPRING_CONTENT";
-
-        @Autowired
-        public void configureGlobalSecurity(AuthenticationManagerBuilder auth) {
-            // Enable if spring-doc apps supports user accounts in the future
-            auth.inMemoryAuthentication()
-                .withUser(User.withUsername("paul123").password("{noop}password").roles("USER"))
-                .withUser(User.withUsername("john123").password("{noop}password").roles("USER"));
-        }
-
-        @Bean
-        public AuthenticationEntryPoint getBasicAuthEntryPoint() {
-            return new AuthenticationEntryPoint();
-        }
-
-        @Bean
-        public SecurityFilterChain filterChain(HttpSecurity http) {
-            http.csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(c -> c.requestMatchers("/admin/**").hasRole("ADMIN"))
-                .httpBasic(c -> c.realmName(REALM).authenticationEntryPoint(getBasicAuthEntryPoint()))
-                .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-
-            return http.build();
-        }
-
-        @Bean
-        public WebSecurityCustomizer webSecurityCustomizer() {
-            return (web) -> web.ignoring().requestMatchers(HttpMethod.OPTIONS, "/**");
-        }
-    }
-
-    public static class AuthenticationEntryPoint extends BasicAuthenticationEntryPoint {
-
-        @Override
-        public void commence(final @NonNull HttpServletRequest request, final HttpServletResponse response,
-                             final AuthenticationException authException) throws IOException {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.addHeader("WWW-Authenticate", "Basic realm=" + getRealmName());
-
-            PrintWriter writer = response.getWriter();
-            writer.println("HTTP Status 401 : " + authException.getMessage());
-        }
-
-        @Override
-        public void afterPropertiesSet() {
-            setRealmName(SecurityConfiguration.REALM);
-            super.afterPropertiesSet();
-        }
     }
 
     @Nested
