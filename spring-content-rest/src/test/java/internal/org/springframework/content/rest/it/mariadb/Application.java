@@ -1,4 +1,4 @@
-package internal.org.springframework.content.rest.it.mysql;
+package internal.org.springframework.content.rest.it.mariadb;
 
 import internal.org.springframework.content.rest.it.SecurityConfiguration;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,10 +39,10 @@ public class Application {
     @EnableJpaStores(basePackages = "internal.org.springframework.content.rest.support")
     public static class AppConfig {
 
-        @Value("/org/springframework/content/jpa/schema-drop-mysql.sql")
+        @Value("/org/springframework/content/jpa/schema-drop-mariadb.sql")
         private ClassPathResource dropRepositoryTables;
 
-        @Value("/org/springframework/content/jpa/schema-mysql.sql")
+        @Value("/org/springframework/content/jpa/schema-mariadb.sql")
         private ClassPathResource dataRepositorySchema;
 
         @Bean
@@ -53,7 +53,7 @@ public class Application {
         @Bean
         public DataSource dataSource() {
             return EmbeddedJpa.driverManagerDataSource(
-                "jdbc:tc:mysql:5.7.34:///databasename?TC_TMPFS=/testtmpfs:rw&TC_DAEMON=true&emulateLocators=true",
+                "jdbc:tc:mariadb:10.11:///databasename?TC_TMPFS=/testtmpfs:rw&TC_DAEMON=true",
                 "test",
                 "test");
         }

@@ -127,7 +127,7 @@ public class LockingAndVersioningConfig {
     }
 }
 ----
-<1> Replace with schema resources for database.  Supported databases; H2, HSQL, MySQL, Postgres and SQL Server.
+<1> Replace with schema resources for database.  Supported databases; H2, HSQL, MariaDB, Postgres and SQL Server.
 ====
 
 IMPORTANT: This step is unnecessary if you are using Spring Boot as it will automatically enable Spring Versions JPA

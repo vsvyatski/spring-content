@@ -30,7 +30,6 @@ import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.TimeZone;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,15 +38,14 @@ import static org.mockito.Mockito.mock;
 public class StoreIT {
 
     /**
-     * Shared by JPA storage ITs; SqlServer/Oracle need Docker and stay commented until re-enabled (#2227).
+     * Shared by JPA storage ITs; SqlServer needs Docker and stays commented until re-enabled (#2227).
      */
     public static final Class<?>[] DATABASE_CONFIG_CLASSES = {
         H2Config.class,
         HSQLConfig.class,
-        MySqlConfig.class,
+        MariaDbConfig.class,
         PostgresConfig.class,
         //SqlServerConfig.class,
-        //OracleConfig.class
     };
     private static final String IT_PACKAGE = "internal.org.springframework.content.jpa";
     // for postgres (large object api operations must be in a transaction)
@@ -151,12 +149,12 @@ public class StoreIT {
 
     @Configuration
     @EnableTransactionManagement
-    public static class MySqlConfig {
+    public static class MariaDbConfig {
 
-        @Value("/org/springframework/content/jpa/schema-drop-mysql.sql")
+        @Value("/org/springframework/content/jpa/schema-drop-mariadb.sql")
         private Resource dropRepositoryTables;
 
-        @Value("/org/springframework/content/jpa/schema-mysql.sql")
+        @Value("/org/springframework/content/jpa/schema-mariadb.sql")
         private Resource dataRepositorySchema;
 
         @Bean
@@ -167,7 +165,7 @@ public class StoreIT {
         @Bean
         public DataSource dataSource() {
             return EmbeddedJpa.driverManagerDataSource(
-                "jdbc:tc:mysql:5.7.34:///databasename?TC_TMPFS=/testtmpfs:rw&TC_DAEMON=true&emulateLocators=true",
+                "jdbc:tc:mariadb:10.11:///databasename?TC_TMPFS=/testtmpfs:rw&TC_DAEMON=true",
                 "test",
                 "test");
         }
@@ -251,43 +249,6 @@ public class StoreIT {
         @Bean
         public PlatformTransactionManager transactionManager() {
             return EmbeddedJpa.transactionManager(entityManagerFactory().getObject());
-        }
-    }
-
-    @Configuration
-    @EnableTransactionManagement
-    public static class OracleConfig {
-
-        @Value("/org/springframework/content/jpa/schema-drop-oracle.sql")
-        private Resource dropRepositoryTables;
-
-        @Value("/org/springframework/content/jpa/schema-oracle.sql")
-        private Resource dataRepositorySchema;
-
-        @Bean
-        DataSourceInitializer datasourceInitializer(DataSource dataSource) {
-            return EmbeddedJpa.schemaInitializer(dataSource, dropRepositoryTables, dataRepositorySchema);
-        }
-
-        @Bean
-        public DataSource dataSource() {
-            // Timezone is not set in GitHub containers, need this for connections to work
-            TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
-            return EmbeddedJpa.driverManagerDataSource(
-                "jdbc:tc:oracle:///databasename?TC_TMPFS=/testtmpfs:rw?TC_DAEMON=true",
-                "system",
-                "oracle");
-        }
-
-        @Bean
-        public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource) {
-            return EmbeddedJpa.entityManagerFactory(dataSource, Database.ORACLE, IT_PACKAGE, TestSupportPackages.JPA);
-        }
-
-        @Bean
-        public PlatformTransactionManager transactionManager(
-            LocalContainerEntityManagerFactoryBean entityManagerFactory) {
-            return EmbeddedJpa.transactionManager(entityManagerFactory.getObject());
         }
     }
 

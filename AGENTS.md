@@ -43,8 +43,8 @@ Each backend has public `Enable*Stores` annotations, store marker interfaces, an
 | `spring-content-gcs`           | `@EnableGCPStorage`       | GCS store                               |
 | `spring-content-azure-storage` | `@EnableAzureStorage`     | Azure Blob store (Spring Cloud Azure 7) |
 
-JPA ships vendor SQL under `spring-content-jpa/src/main/resources/org/springframework/content/jpa/` (H2, HSQLDB, MySQL,
-PostgreSQL, SQL Server, Oracle).
+JPA ships vendor SQL under `spring-content-jpa/src/main/resources/org/springframework/content/jpa/` (H2, HSQLDB, MariaDB,
+PostgreSQL, SQL Server).
 
 ### Cross-cutting modules
 

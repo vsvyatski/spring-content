@@ -60,15 +60,11 @@
     <uuid-creator.version>6.1.1</uuid-creator.version>
 
     <!-- Test dependencies -->
-    <test-containers.version>1.21.4</test-containers.version>
     <mockito.version>5.24.0</mockito.version>
     <surefire.mockitoAgent>
       -javaagent:${settings.localRepository}/org/mockito/mockito-core/${mockito.version}/mockito-core-${mockito.version}.jar
       -Xshare:off
     </surefire.mockitoAgent>
-    <mysql-connector.version>26.10.0</mysql-connector.version>
-    <ojdbc.version>23.26.4.0.0</ojdbc.version>
-
     <!-- Align with spring-boot-dependencies when bumping ${springboot.version} -->
     <maven-jar-plugin.version>3.5.1</maven-jar-plugin.version>
 
@@ -95,8 +91,10 @@
       </dependency>
       <dependency>
         <groupId>org.testcontainers</groupId>
-        <artifactId>testcontainers</artifactId>
-        <version>${test-containers.version}</version>
+        <artifactId>testcontainers-bom</artifactId>
+        <version>2.0.5</version>
+        <type>pom</type>
+        <scope>import</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>
