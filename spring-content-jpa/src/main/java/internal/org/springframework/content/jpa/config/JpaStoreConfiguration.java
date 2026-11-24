@@ -31,9 +31,9 @@ public class JpaStoreConfiguration {
     }
 
     @Bean
-    public BlobResourceLoader mariadbBlobResourceLoader(DataSource ds, PlatformTransactionManager txnMgr) {
+    public BlobResourceLoader mariaDbBlobResourceLoader(DataSource ds, PlatformTransactionManager txnMgr) {
         return new CustomizableBlobResourceLoader(new JdbcTemplate(ds), txnMgr, "MariaDB", (l, t, txn) -> {
-            return new MariaDBBlobResource(l, t, txn);
+            return new MariaDbBlobResource(l, t, txn);
         });
     }
 

@@ -1,7 +1,7 @@
 package internal.org.springframework.content.jpa.config;
 
 import internal.org.springframework.content.jpa.io.DelegatingBlobResourceLoader;
-import internal.org.springframework.content.jpa.io.MariaDBBlobResource;
+import internal.org.springframework.content.jpa.io.MariaDbBlobResource;
 import internal.org.springframework.content.jpa.io.SQLServerBlobResource;
 import org.junit.jupiter.api.*;
 import org.springframework.content.jpa.config.EnableJpaStores;
@@ -92,11 +92,11 @@ public class EnableJpaStoresTest {
             }
 
             @Test
-            void shouldHaveMariaDBBlobResourceLoader() {
-                BlobResourceLoader loader = (BlobResourceLoader) context.getBean("mariadbBlobResourceLoader");
+            void shouldHaveMariaDbBlobResourceLoader() {
+                BlobResourceLoader loader = (BlobResourceLoader) context.getBean("mariaDbBlobResourceLoader");
                 assertThat(loader).isNotNull();
                 assertThat(loader.getDatabaseName()).isEqualTo("MariaDB");
-                assertThat(loader.getResource("some-id")).isInstanceOf(MariaDBBlobResource.class);
+                assertThat(loader.getResource("some-id")).isInstanceOf(MariaDbBlobResource.class);
             }
 
             @Test

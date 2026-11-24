@@ -108,7 +108,7 @@ the entire BLOB into memory.  In order to do this the following database-specifi
 
 ==== MariaDB
 
-MariaDB uses the same BLOB streaming approach as the former MySQL support: `MariaDBBlobResource` loads content with a
+MariaDB uses the same BLOB streaming approach as the former MySQL support: `MariaDbBlobResource` loads content with a
 plain JDBC query.  Use the MariaDB JDBC driver and InnoDB tables as shown in `schema-mariadb.sql`.
 
 === Postgresql

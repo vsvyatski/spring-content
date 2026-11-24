@@ -4,9 +4,9 @@ import org.springframework.content.jpa.io.AbstractBlobResource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 
-public class MariaDBBlobResource extends AbstractBlobResource {
+public class MariaDbBlobResource extends AbstractBlobResource {
 
-    public MariaDBBlobResource(Object id, JdbcTemplate template, PlatformTransactionManager txnMgr) {
+    public MariaDbBlobResource(Object id, JdbcTemplate template, PlatformTransactionManager txnMgr) {
         super(id, template, txnMgr);
     }
 
