@@ -135,7 +135,7 @@ Profiles:
 - `docs` — AsciiDoctor → `target/generated-docs/refs/...`
 - `ci` — Central publish, sources/javadoc jars, GPG
 
-CI: `.github/workflows/prs.yml` (PR: `-P tests` then getting-started guides) and `maven.yml` (main/tags).
+CI: `.github/workflows/prs.yml` (PRs into `develop`: `-P tests` then getting-started guides) and `maven.yml` (`develop`/tags).
 
 Change version for the whole reactor with:
 
