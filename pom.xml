@@ -48,7 +48,6 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
     <spring-content.version>${project.version}</spring-content.version>
-    <springboot.version>4.1.3</springboot.version>
     <commons-io.version>2.22.0</commons-io.version>
     <commons-lang.version>3.22.0</commons-lang.version>
     <commons-logging.version>1.4.0</commons-logging.version>
@@ -63,8 +62,6 @@
       -javaagent:${settings.localRepository}/org/mockito/mockito-core/${mockito.version}/mockito-core-${mockito.version}.jar
       -Xshare:off
     </surefire.mockitoAgent>
-    <!-- Align with spring-boot-dependencies when bumping ${springboot.version} -->
-    <maven-jar-plugin.version>3.5.1</maven-jar-plugin.version>
 
     <!--suppress UnresolvedMavenProperty -->
     <docs.output.dir>../target/generated-docs/refs/${env.BUILD_TYPE}/</docs.output.dir>
@@ -76,7 +73,7 @@
         <!-- Import dependency management from Spring Boot -->
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-dependencies</artifactId>
-        <version>${springboot.version}</version>
+        <version>4.1.3</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -132,7 +129,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jar-plugin</artifactId>
-          <version>${maven-jar-plugin.version}</version>
+          <version>3.5.1</version>
         </plugin>
       </plugins>
     </pluginManagement>
