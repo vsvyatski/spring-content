@@ -5,11 +5,7 @@ import org.springframework.boot.data.mongodb.autoconfigure.DataMongoAutoConfigur
 import org.springframework.boot.data.mongodb.autoconfigure.DataMongoRepositoriesAutoConfiguration;
 import org.springframework.boot.mongodb.autoconfigure.MongoAutoConfiguration;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
  * Shared {@link SpringBootApplication} defaults for REST integration Boot tests (Mongo auto-config off).

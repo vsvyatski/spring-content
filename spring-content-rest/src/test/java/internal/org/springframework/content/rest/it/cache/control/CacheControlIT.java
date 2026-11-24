@@ -3,7 +3,6 @@ package internal.org.springframework.content.rest.it.cache.control;
 import internal.org.springframework.content.rest.support.UuidSingleContentEntity;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,12 +28,6 @@ public class CacheControlIT {
     private CacheControlStore store;
     @Autowired
     private WebApplicationContext webApplicationContext;
-
-    public interface CacheControlRepository extends CrudRepository<UuidSingleContentEntity, Long> {
-    }
-
-    private interface CacheControlStore extends FileSystemContentStore<UuidSingleContentEntity, UUID> {
-    }
 
     @BeforeEach
     void setUp() {
@@ -73,5 +66,11 @@ public class CacheControlIT {
             .then()
             .statusCode(200)
             .header("Cache-Control", "no-cache, no-store, max-age=0, must-revalidate");
+    }
+
+    public interface CacheControlRepository extends CrudRepository<UuidSingleContentEntity, Long> {
+    }
+
+    private interface CacheControlStore extends FileSystemContentStore<UuidSingleContentEntity, UUID> {
     }
 }

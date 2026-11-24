@@ -5,7 +5,8 @@ alwaysApply: true
 
 # Git commit on PowerShell
 
-When Vladimir asks for a **git commit** in this repo, run Git from the **current** shell session. Prefer **pwsh** when the session is
+When Vladimir asks for a **git commit** in this repo, run Git from the **current** shell session. Prefer **pwsh** when
+the session is
 already pwsh; follow [`powershell.mdc`](powershell.mdc) for script execution.
 
 ## Do
@@ -13,17 +14,20 @@ already pwsh; follow [`powershell.mdc`](powershell.mdc) for script execution.
 - Use **single-quoted** `-m` strings:
   `git commit -m 'Subject line.' -m 'Body paragraph.'`
 - Use multiple `-m` flags for subject and body (tbaggery style per `CONTRIBUTING.md`).
-- Put awkward messages in a **file** and use `git commit -F path\to\msg.txt` when the body has `<`, `` ` ``, or heavy quoting.
+- Put awkward messages in a **file** and use `git commit -F path\to\msg.txt` when the body has `<`, `` ` ``, or heavy
+  quoting.
 - Chain with **`;`** in Windows PowerShell 5.1 (not `&&` unless pwsh 7+).
 - Run `git status`, `git diff`, and `git log` as needed before commit per his workflow; **do not push** unless he asks.
 
 ## Do not
 
 - Wrap `git commit` in nested `pwsh -Command "..."` one-liners with long double-quoted messages.
-- Pass `--trailer` values containing **`<email>`** through double-quoted PowerShell strings (PowerShell treats `<` as an operator).
+- Pass `--trailer` values containing **`<email>`** through double-quoted PowerShell strings (PowerShell treats `<` as an
+  operator).
 - Use **bash HEREDOC** (`cat <<'EOF'`) for commit messages; that pattern is not reliable here.
 
 ## If commit fails with “`<` operator is reserved for future use”
 
-Retry with **single-quoted** `-m` only or **`-F`**, with no trailers in the shell line. Prefer `git.exe` or a direct `git commit` in the shell
+Retry with **single-quoted** `-m` only or **`-F`**, with no trailers in the shell line. Prefer `git.exe` or a direct
+`git commit` in the shell
 without a wrapper that injects `Co-authored-by: ... <...>` into the command line.

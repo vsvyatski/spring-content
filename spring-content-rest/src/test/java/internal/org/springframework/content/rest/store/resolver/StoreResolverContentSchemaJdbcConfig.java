@@ -11,6 +11,6 @@ public class StoreResolverContentSchemaJdbcConfig extends H2ContentSchemaJdbcCon
 
     @Override
     protected String[] entityPackagesToScan() {
-        return new String[] {"org.springframework.content.test.support.jpa.fixture"};
+        return new String[]{"org.springframework.content.test.support.jpa.fixture"};
     }
 }

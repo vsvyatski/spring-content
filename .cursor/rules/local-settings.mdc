@@ -5,7 +5,9 @@ alwaysApply: true
 
 # Local settings by default
 
-When Vladimir asks to change settings (Cursor/VS Code `settings.json`, git config, Maven, env, CLI config, formatter, etc.):
+When Vladimir asks to change settings (Cursor/VS Code `settings.json`, git config, Maven, env, CLI config, formatter,
+etc.):
 
-- Apply them **locally to the current workspace/repo** (e.g. `.vscode/settings.json`, `git config --local`, repo `.mvn`, project files).
+- Apply them **locally to the current workspace/repo** (e.g. `.vscode/settings.json`, `git config --local`, repo `.mvn`,
+  project files).
 - Do **not** change user/global/machine-wide config unless he explicitly says global/user-level.

@@ -1,11 +1,11 @@
 {
-	"folders": [
-		{
-			"name": "Spring Content",
-			"path": "."
-		}
-	],
-	"settings": {
-		"explorer.excludeGitIgnore": true
-	}
+  "folders": [
+    {
+      "name": "Spring Content",
+      "path": "."
+    }
+  ],
+  "settings": {
+    "explorer.excludeGitIgnore": true
+  }
 }

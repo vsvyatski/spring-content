@@ -30,7 +30,7 @@ public abstract class AbstractContentSchemaJdbcConfig {
     protected abstract Database jpaDatabase();
 
     protected String[] entityPackagesToScan() {
-        return new String[] {REST_SUPPORT_ENTITIES};
+        return new String[]{REST_SUPPORT_ENTITIES};
     }
 
     @Bean

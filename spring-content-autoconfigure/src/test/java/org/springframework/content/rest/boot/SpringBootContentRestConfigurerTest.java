@@ -27,211 +27,211 @@ public class SpringBootContentRestConfigurerTest {
 
     @Nested
     class Configure {
-            @Nested
-            @DisplayName("Given a base URI property")
-            class BaseUriProperty {
-                @BeforeEach
-                void setUp() {
-                    properties = new ContentRestProperties();
-                    restConfig = mock(RestConfiguration.class);
-                    exclusions = mock(RestConfiguration.Exclusions.class);
-                    when(restConfig.shortcutExclusions()).thenReturn(exclusions);
+        @Nested
+        @DisplayName("Given a base URI property")
+        class BaseUriProperty {
+            @BeforeEach
+            void setUp() {
+                properties = new ContentRestProperties();
+                restConfig = mock(RestConfiguration.class);
+                exclusions = mock(RestConfiguration.Exclusions.class);
+                when(restConfig.shortcutExclusions()).thenReturn(exclusions);
 
-                    properties.setBaseUri(URI.create("/test"));
+                properties.setBaseUri(URI.create("/test"));
 
-                    configurer = new SpringBootContentRestConfigurer(properties);
-                    configurer.configure(restConfig);
-                }
-
-                @Test
-                void shouldSetPropertyOnRestConfiguration() {
-                    verify(restConfig).setBaseUri(eq(properties.getBaseUri()));
-                }
+                configurer = new SpringBootContentRestConfigurer(properties);
+                configurer.configure(restConfig);
             }
 
-            @Nested
-            @DisplayName("Given a fully qualified links property setting")
-            class FullyQualifiedLinksPropertySetting {
-                @BeforeEach
-                void setUp() {
-                    properties = new ContentRestProperties();
-                    restConfig = mock(RestConfiguration.class);
-                    exclusions = mock(RestConfiguration.Exclusions.class);
-                    when(restConfig.shortcutExclusions()).thenReturn(exclusions);
+            @Test
+            void shouldSetPropertyOnRestConfiguration() {
+                verify(restConfig).setBaseUri(eq(properties.getBaseUri()));
+            }
+        }
 
-                    properties.setFullyQualifiedLinks(true);
+        @Nested
+        @DisplayName("Given a fully qualified links property setting")
+        class FullyQualifiedLinksPropertySetting {
+            @BeforeEach
+            void setUp() {
+                properties = new ContentRestProperties();
+                restConfig = mock(RestConfiguration.class);
+                exclusions = mock(RestConfiguration.Exclusions.class);
+                when(restConfig.shortcutExclusions()).thenReturn(exclusions);
 
-                    configurer = new SpringBootContentRestConfigurer(properties);
-                    configurer.configure(restConfig);
-                }
+                properties.setFullyQualifiedLinks(true);
 
-                @Test
-                void shouldSetPropertyOnRestConfiguration() {
-                    verify(restConfig).setFullyQualifiedLinks(eq(true));
-                }
+                configurer = new SpringBootContentRestConfigurer(properties);
+                configurer.configure(restConfig);
             }
 
-            @Nested
-            @DisplayName("Given disabled shortcut request mappings")
-            class DisabledShortcutRequestMappings {
-                @BeforeEach
-                void setUp() {
-                    properties = new ContentRestProperties();
-                    restConfig = mock(RestConfiguration.class);
-                    exclusions = mock(RestConfiguration.Exclusions.class);
-                    when(restConfig.shortcutExclusions()).thenReturn(exclusions);
+            @Test
+            void shouldSetPropertyOnRestConfiguration() {
+                verify(restConfig).setFullyQualifiedLinks(eq(true));
+            }
+        }
 
-                    ShortcutRequestMappings mappings = new ShortcutRequestMappings();
-                    mappings.setDisabled(true);
-                    properties.setShortcutRequestMappings(mappings);
+        @Nested
+        @DisplayName("Given disabled shortcut request mappings")
+        class DisabledShortcutRequestMappings {
+            @BeforeEach
+            void setUp() {
+                properties = new ContentRestProperties();
+                restConfig = mock(RestConfiguration.class);
+                exclusions = mock(RestConfiguration.Exclusions.class);
+                when(restConfig.shortcutExclusions()).thenReturn(exclusions);
 
-                    configurer = new SpringBootContentRestConfigurer(properties);
-                    configurer.configure(restConfig);
-                }
+                ShortcutRequestMappings mappings = new ShortcutRequestMappings();
+                mappings.setDisabled(true);
+                properties.setShortcutRequestMappings(mappings);
 
-                @Test
-                void shouldDisableShortcutLinks() {
-                    verify(restConfig).setShortcutLinks(false);
-                }
+                configurer = new SpringBootContentRestConfigurer(properties);
+                configurer.configure(restConfig);
             }
 
-            @Nested
-            @DisplayName("Given excluded shortcut request mappings")
-            class ExcludedShortcutRequestMappings {
-                @BeforeEach
-                void setUp() {
-                    properties = new ContentRestProperties();
-                    restConfig = mock(RestConfiguration.class);
-                    exclusions = mock(RestConfiguration.Exclusions.class);
-                    when(restConfig.shortcutExclusions()).thenReturn(exclusions);
+            @Test
+            void shouldDisableShortcutLinks() {
+                verify(restConfig).setShortcutLinks(false);
+            }
+        }
 
-                    ShortcutRequestMappings mappings = new ShortcutRequestMappings();
-                    mappings.setExcludes("GET=a/b,c/d:PUT=*/*");
-                    properties.setShortcutRequestMappings(mappings);
+        @Nested
+        @DisplayName("Given excluded shortcut request mappings")
+        class ExcludedShortcutRequestMappings {
+            @BeforeEach
+            void setUp() {
+                properties = new ContentRestProperties();
+                restConfig = mock(RestConfiguration.class);
+                exclusions = mock(RestConfiguration.Exclusions.class);
+                when(restConfig.shortcutExclusions()).thenReturn(exclusions);
 
-                    configurer = new SpringBootContentRestConfigurer(properties);
-                    configurer.configure(restConfig);
-                }
+                ShortcutRequestMappings mappings = new ShortcutRequestMappings();
+                mappings.setExcludes("GET=a/b,c/d:PUT=*/*");
+                properties.setShortcutRequestMappings(mappings);
 
-                @Test
-                void shouldSetExclusionsPropertyOnRestConfiguration() {
-                    verify(exclusions).exclude("GET", MediaType.parseMediaType("a/b"));
-                    verify(exclusions).exclude("GET", MediaType.parseMediaType("c/d"));
-                    verify(exclusions).exclude("PUT", MediaType.parseMediaType("*/*"));
-                }
+                configurer = new SpringBootContentRestConfigurer(properties);
+                configurer.configure(restConfig);
             }
 
-            @Nested
-            @DisplayName("Given empty excluded shortcut request mapping")
-            class EmptyExcludedShortcutRequestMapping {
-                @BeforeEach
-                void setUp() {
-                    properties = new ContentRestProperties();
-                    restConfig = mock(RestConfiguration.class);
-                    exclusions = mock(RestConfiguration.Exclusions.class);
-                    when(restConfig.shortcutExclusions()).thenReturn(exclusions);
+            @Test
+            void shouldSetExclusionsPropertyOnRestConfiguration() {
+                verify(exclusions).exclude("GET", MediaType.parseMediaType("a/b"));
+                verify(exclusions).exclude("GET", MediaType.parseMediaType("c/d"));
+                verify(exclusions).exclude("PUT", MediaType.parseMediaType("*/*"));
+            }
+        }
 
-                    ShortcutRequestMappings mappings = new ShortcutRequestMappings();
-                    mappings.setExcludes("");
-                    properties.setShortcutRequestMappings(mappings);
+        @Nested
+        @DisplayName("Given empty excluded shortcut request mapping")
+        class EmptyExcludedShortcutRequestMapping {
+            @BeforeEach
+            void setUp() {
+                properties = new ContentRestProperties();
+                restConfig = mock(RestConfiguration.class);
+                exclusions = mock(RestConfiguration.Exclusions.class);
+                when(restConfig.shortcutExclusions()).thenReturn(exclusions);
 
-                    configurer = new SpringBootContentRestConfigurer(properties);
-                    configurer.configure(restConfig);
-                }
+                ShortcutRequestMappings mappings = new ShortcutRequestMappings();
+                mappings.setExcludes("");
+                properties.setShortcutRequestMappings(mappings);
 
-                @Test
-                void shouldNotSetExclusionsPropertyOnRestConfiguration() {
-                    verify(exclusions, never()).exclude(any(), any());
-                }
+                configurer = new SpringBootContentRestConfigurer(properties);
+                configurer.configure(restConfig);
             }
 
-            @Nested
-            @DisplayName("Given empty excluded shortcut GET request mapping")
-            class EmptyExcludedShortcutGETRequestMapping {
-                @BeforeEach
-                void setUp() {
-                    properties = new ContentRestProperties();
-                    restConfig = mock(RestConfiguration.class);
-                    exclusions = mock(RestConfiguration.Exclusions.class);
-                    when(restConfig.shortcutExclusions()).thenReturn(exclusions);
+            @Test
+            void shouldNotSetExclusionsPropertyOnRestConfiguration() {
+                verify(exclusions, never()).exclude(any(), any());
+            }
+        }
 
-                    ShortcutRequestMappings mappings = new ShortcutRequestMappings();
-                    mappings.setExcludes("GET=");
-                    properties.setShortcutRequestMappings(mappings);
+        @Nested
+        @DisplayName("Given empty excluded shortcut GET request mapping")
+        class EmptyExcludedShortcutGETRequestMapping {
+            @BeforeEach
+            void setUp() {
+                properties = new ContentRestProperties();
+                restConfig = mock(RestConfiguration.class);
+                exclusions = mock(RestConfiguration.Exclusions.class);
+                when(restConfig.shortcutExclusions()).thenReturn(exclusions);
 
-                    configurer = new SpringBootContentRestConfigurer(properties);
-                    configurer.configure(restConfig);
-                }
+                ShortcutRequestMappings mappings = new ShortcutRequestMappings();
+                mappings.setExcludes("GET=");
+                properties.setShortcutRequestMappings(mappings);
 
-                @Test
-                void shouldNotSetExclusionsPropertyOnRestConfiguration() {
-                    verify(exclusions, never()).exclude(any(), any());
-                }
+                configurer = new SpringBootContentRestConfigurer(properties);
+                configurer.configure(restConfig);
             }
 
-            @Nested
-            @DisplayName("Given invalid excluded shortcut request mapping")
-            class InvalidExcludedShortcutRequestMapping {
-                @BeforeEach
-                void setUp() {
-                    properties = new ContentRestProperties();
-                    restConfig = mock(RestConfiguration.class);
-                    exclusions = mock(RestConfiguration.Exclusions.class);
-                    when(restConfig.shortcutExclusions()).thenReturn(exclusions);
+            @Test
+            void shouldNotSetExclusionsPropertyOnRestConfiguration() {
+                verify(exclusions, never()).exclude(any(), any());
+            }
+        }
 
-                    ShortcutRequestMappings mappings = new ShortcutRequestMappings();
-                    mappings.setExcludes("GET=/");
-                    properties.setShortcutRequestMappings(mappings);
+        @Nested
+        @DisplayName("Given invalid excluded shortcut request mapping")
+        class InvalidExcludedShortcutRequestMapping {
+            @BeforeEach
+            void setUp() {
+                properties = new ContentRestProperties();
+                restConfig = mock(RestConfiguration.class);
+                exclusions = mock(RestConfiguration.Exclusions.class);
+                when(restConfig.shortcutExclusions()).thenReturn(exclusions);
 
-                    configurer = new SpringBootContentRestConfigurer(properties);
-                    configurer.configure(restConfig);
-                }
+                ShortcutRequestMappings mappings = new ShortcutRequestMappings();
+                mappings.setExcludes("GET=/");
+                properties.setShortcutRequestMappings(mappings);
 
-                @Test
-                void shouldNotSetExclusionsPropertyOnRestConfiguration() {
-                    verify(exclusions, never()).exclude(any(), any());
-                }
+                configurer = new SpringBootContentRestConfigurer(properties);
+                configurer.configure(restConfig);
             }
 
-            @Nested
-            @DisplayName("Given a null base URI property")
-            class NullBaseUriProperty {
-                @BeforeEach
-                void setUp() {
-                    properties = new ContentRestProperties();
-                    restConfig = mock(RestConfiguration.class);
-                    exclusions = mock(RestConfiguration.Exclusions.class);
-                    when(restConfig.shortcutExclusions()).thenReturn(exclusions);
+            @Test
+            void shouldNotSetExclusionsPropertyOnRestConfiguration() {
+                verify(exclusions, never()).exclude(any(), any());
+            }
+        }
 
-                    configurer = new SpringBootContentRestConfigurer(properties);
-                    configurer.configure(restConfig);
-                }
+        @Nested
+        @DisplayName("Given a null base URI property")
+        class NullBaseUriProperty {
+            @BeforeEach
+            void setUp() {
+                properties = new ContentRestProperties();
+                restConfig = mock(RestConfiguration.class);
+                exclusions = mock(RestConfiguration.Exclusions.class);
+                when(restConfig.shortcutExclusions()).thenReturn(exclusions);
 
-                @Test
-                void shouldNotSetPropertyOnRestConfiguration() {
-                    verify(restConfig, never()).setBaseUri(any());
-                }
+                configurer = new SpringBootContentRestConfigurer(properties);
+                configurer.configure(restConfig);
             }
 
-            @Nested
-            @DisplayName("Given null REST properties")
-            class NullRestProperties {
-                @BeforeEach
-                void setUp() {
-                    properties = new ContentRestProperties();
-                    restConfig = mock(RestConfiguration.class);
-                    exclusions = mock(RestConfiguration.Exclusions.class);
-                    when(restConfig.shortcutExclusions()).thenReturn(exclusions);
-
-                    configurer = new SpringBootContentRestConfigurer(properties = null);
-                    configurer.configure(restConfig);
-                }
-
-                @Test
-                void shouldNotSetPropertyOnRestConfiguration() {
-                    verify(restConfig, never()).setBaseUri(any());
-                    verify(restConfig, never()).setFullyQualifiedLinks(anyBoolean());
-                }
+            @Test
+            void shouldNotSetPropertyOnRestConfiguration() {
+                verify(restConfig, never()).setBaseUri(any());
             }
+        }
+
+        @Nested
+        @DisplayName("Given null REST properties")
+        class NullRestProperties {
+            @BeforeEach
+            void setUp() {
+                properties = new ContentRestProperties();
+                restConfig = mock(RestConfiguration.class);
+                exclusions = mock(RestConfiguration.Exclusions.class);
+                when(restConfig.shortcutExclusions()).thenReturn(exclusions);
+
+                configurer = new SpringBootContentRestConfigurer(properties = null);
+                configurer.configure(restConfig);
+            }
+
+            @Test
+            void shouldNotSetPropertyOnRestConfiguration() {
+                verify(restConfig, never()).setBaseUri(any());
+                verify(restConfig, never()).setFullyQualifiedLinks(anyBoolean());
+            }
+        }
     }
 }

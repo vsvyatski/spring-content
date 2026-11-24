@@ -43,7 +43,8 @@ Each backend has public `Enable*Stores` annotations, store marker interfaces, an
 | `spring-content-gcs`           | `@EnableGCPStorage`       | GCS store                               |
 | `spring-content-azure-storage` | `@EnableAzureStorage`     | Azure Blob store (Spring Cloud Azure 7) |
 
-JPA ships vendor SQL under `spring-content-jpa/src/main/resources/org/springframework/content/jpa/` (H2, HSQLDB, MariaDB,
+JPA ships vendor SQL under `spring-content-jpa/src/main/resources/org/springframework/content/jpa/` (H2, HSQLDB,
+MariaDB,
 PostgreSQL, SQL Server).
 
 ### Cross-cutting modules
@@ -135,7 +136,8 @@ Profiles:
 - `docs` — AsciiDoctor → `target/generated-docs/refs/...`
 - `ci` — Central publish, sources/javadoc jars, GPG
 
-CI: `.github/workflows/prs.yml` (PRs into `develop`: `-P tests` then getting-started guides) and `maven.yml` (`develop`/tags).
+CI: `.github/workflows/prs.yml` (PRs into `develop`: `-P tests` then getting-started guides) and `maven.yml` (`develop`
+/tags).
 
 Reactor version uses the CI-friendly `${revision}` property (root `pom.xml` and `.mvn/maven.config`). Bump from the repo
 root with (Windows or Linux, via `pwsh`):
@@ -179,7 +181,8 @@ Check dependency, property, and plugin updates with `./mvnw` so the run matches 
 - **`@SpringBootTest` boot apps:** put a top-level `Application.java` in the IT’s package. Reference
   `@SpringBootTest(classes = Application.class, …)`. Reuse shared pieces instead of copying JDBC or store setup:
   `internal.org.springframework.content.rest.it.boot` (`@RestIntegrationBootApplication`,
-  `RestSupportJpaStoresConfig`, `H2ContentSchemaJdbcConfig`, dialect `*ContentSchemaJdbcConfig`, and so on); scenario-only
+  `RestSupportJpaStoresConfig`, `H2ContentSchemaJdbcConfig`, dialect `*ContentSchemaJdbcConfig`, and so on);
+  scenario-only
   types stay beside the IT (`*ScenarioConfig`, package-local JDBC overrides). Encryption FS REST tests share
   `org.springframework.content.encryption.support.EncryptionFsRestBootApplication` and
   `EncryptionFsInfrastructureConfig`. Do **not** nest `Application` inside the IT class.

@@ -6,7 +6,8 @@ alwaysApply: true
 
 # Java 17
 
-This reactor builds with **Java 17** (`release` 17 in the parent POM). All new and edited Java must stay **17-compatible**
+This reactor builds with **Java 17** (`release` 17 in the parent POM). All new and edited Java must stay
+**17-compatible**
 and must not reintroduce pre-17 habits.
 
 ## Do

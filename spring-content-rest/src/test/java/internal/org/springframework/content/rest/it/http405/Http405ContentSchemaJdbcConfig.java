@@ -11,7 +11,7 @@ public class Http405ContentSchemaJdbcConfig extends H2ContentSchemaJdbcConfig {
 
     @Override
     protected String[] entityPackagesToScan() {
-        return new String[] {
+        return new String[]{
             "internal.org.springframework.content.rest.scoped.http405",
             "org.springframework.content.test.support.jpa.fixture"
         };
