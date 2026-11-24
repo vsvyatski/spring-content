@@ -27,16 +27,16 @@ import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.springframework.content.test.support.AbstractEntityConverterBucketIT.INIT_BUCKET;
 
 @SpringBootTest(classes = Application.class)
 @ExtendWith(SpringExtension.class)
 public class S3StoreIT {
 
-    private static final String BUCKET = "test-bucket";
     private static final Object mutex = new Object();
 
     static {
-        System.setProperty("spring.content.s3.bucket", BUCKET);
+        System.setProperty("spring.content.s3.bucket", INIT_BUCKET);
     }
 
     @Autowired
@@ -64,15 +64,15 @@ public class S3StoreIT {
     private void ensureTestBucket() throws InterruptedException {
         synchronized (mutex) {
             HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                .bucket(BUCKET)
+                .bucket(INIT_BUCKET)
                 .build();
             try {
                 client.headBucket(headBucketRequest);
             } catch (NoSuchBucketException ignored) {
-                client.createBucket(CreateBucketRequest.builder().bucket(BUCKET).build());
+                client.createBucket(CreateBucketRequest.builder().bucket(INIT_BUCKET).build());
                 boolean found = false;
                 while (!found) {
-                    headBucketRequest = HeadBucketRequest.builder().bucket(BUCKET).build();
+                    headBucketRequest = HeadBucketRequest.builder().bucket(INIT_BUCKET).build();
                     try {
                         client.headBucket(headBucketRequest);
                         found = true;
@@ -496,11 +496,11 @@ public class S3StoreIT {
                 assertThat(entity.getRenditionType()).isEqualTo("text/html");
 
                 HeadObjectResponse contentHead = client.headObject(
-                    HeadObjectRequest.builder().bucket(BUCKET).key(entity.getContentId()).build());
+                    HeadObjectRequest.builder().bucket(INIT_BUCKET).key(entity.getContentId()).build());
                 assertThat(contentHead.contentType()).isEqualTo("text/plain");
 
                 HeadObjectResponse renditionHead = client.headObject(
-                    HeadObjectRequest.builder().bucket(BUCKET).key(entity.getRenditionId()).build());
+                    HeadObjectRequest.builder().bucket(INIT_BUCKET).key(entity.getRenditionId()).build());
                 assertThat(renditionHead.contentType()).isEqualTo("text/html");
             }
         }
@@ -598,7 +598,7 @@ public class S3StoreIT {
             @Test
             void shouldHaveUpdatedContent() throws IOException {
                 String contentId = entity.getContentId();
-                client.headObject(HeadObjectRequest.builder().bucket(BUCKET).key(contentId).build());
+                client.headObject(HeadObjectRequest.builder().bucket(INIT_BUCKET).key(contentId).build());
 
                 store.setContent(entity, PropertyPath.from("content"), TestSupportData.sampleUpdatedTextStream(), new SetContentParams(-1, true, SetContentParams.ContentDisposition.CreateNew));
                 entity = repo.save(entity);
@@ -608,7 +608,7 @@ public class S3StoreIT {
                 }
 
                 assertThat(entity.getContentId()).isNotEqualTo(contentId);
-                client.headObject(HeadObjectRequest.builder().bucket(BUCKET).key(entity.getContentId()).build());
+                client.headObject(HeadObjectRequest.builder().bucket(INIT_BUCKET).key(entity.getContentId()).build());
             }
         }
 
@@ -647,7 +647,7 @@ public class S3StoreIT {
                 assertThat(entity.getContentLen()).isNull();
 
                 assertThatThrownBy(() -> client.headObject(
-                    HeadObjectRequest.builder().bucket(BUCKET).key(resourceLocation).build()))
+                    HeadObjectRequest.builder().bucket(INIT_BUCKET).key(resourceLocation).build()))
                     .isInstanceOf(NoSuchKeyException.class);
 
                 //rendition
@@ -693,7 +693,7 @@ public class S3StoreIT {
                 assertThat(entity.getContentId()).isNull();
                 assertThat(entity.getContentLen()).isNull();
 
-                client.headObject(HeadObjectRequest.builder().bucket(BUCKET).key(resourceLocation).build());
+                client.headObject(HeadObjectRequest.builder().bucket(INIT_BUCKET).key(resourceLocation).build());
             }
         }
 
