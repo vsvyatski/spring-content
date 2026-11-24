@@ -53,8 +53,6 @@
     <commons-lang.version>3.22.0</commons-lang.version>
     <commons-logging.version>1.4.0</commons-logging.version>
     <commons-text.version>1.15.0</commons-text.version>
-    <jakarta-persistence-api.version>3.2.0</jakarta-persistence-api.version>
-    <hibernate-orm.version>7.4.17.Final</hibernate-orm.version>
     <solr-solrj.version>10.1.0</solr-solrj.version>
     <elastic-client.version>9.5.7</elastic-client.version>
     <uuid-creator.version>6.1.1</uuid-creator.version>

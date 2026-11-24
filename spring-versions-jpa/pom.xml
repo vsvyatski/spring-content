@@ -29,12 +29,10 @@
     <dependency>
       <groupId>jakarta.persistence</groupId>
       <artifactId>jakarta.persistence-api</artifactId>
-      <version>${jakarta-persistence-api.version}</version>
     </dependency>
     <dependency>
       <groupId>org.hibernate.orm</groupId>
       <artifactId>hibernate-core</artifactId>
-      <version>${hibernate-orm.version}</version>
     </dependency>
     <dependency>
       <groupId>io.github.vsvyatski</groupId>
