@@ -137,13 +137,15 @@ Profiles:
 
 CI: `.github/workflows/prs.yml` (PRs into `develop`: `-P tests` then getting-started guides) and `maven.yml` (`develop`/tags).
 
-Reactor version uses the CI-friendly `${revision}` property (root `pom.xml` and `.mvn/maven.config`). Bump with:
+Reactor version uses the CI-friendly `${revision}` property (root `pom.xml` and `.mvn/maven.config`). Bump from the repo
+root with (Windows or Linux, via `pwsh`):
 
 ```text
-./mvnw versions:set-property -Dproperty=revision -DnewVersion=...
+pwsh ./scripts/Set-Revision.ps1 NEW_VERSION
 ```
 
-Also update `.mvn/maven.config` when changing the default snapshot. Tag releases in CI override with `-Drevision=${TAG}`.
+Pass `-BackupPoms` to keep Maven `versions:set-property` backup POMs (omitted by default). Tag releases in CI override
+with `-Drevision=${TAG}`.
 
 Check dependency, property, and plugin updates with `./mvnw` so the run matches the enforcer floor (`[3.9.0,)` on
 `maven-enforcer-plugin`):
