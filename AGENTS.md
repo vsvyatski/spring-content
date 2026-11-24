@@ -9,7 +9,7 @@ with Spring Data entities, store it in pluggable backends, optionally expose it 
 renditions, encryption, and locking/versioning.
 
 - Group ID: `io.github.vsvyatski`
-- Current version: `4.1.0-SNAPSHOT` (keep all modules on the parent version)
+- Current version: `${revision}` in POMs (default `4.1.0-SNAPSHOT` in root `pom.xml` and `.mvn/maven.config`)
 - Java 17, Spring Boot 4.x (`spring-boot-dependencies` BOM), Jakarta Persistence 3.2
 - License: Apache 2.0
 - Fork of Paul Warren’s project; this tree targets Spring Boot 4 compatibility
@@ -137,11 +137,13 @@ Profiles:
 
 CI: `.github/workflows/prs.yml` (PRs into `develop`: `-P tests` then getting-started guides) and `maven.yml` (`develop`/tags).
 
-Change version for the whole reactor with:
+Reactor version uses the CI-friendly `${revision}` property (root `pom.xml` and `.mvn/maven.config`). Bump with:
 
 ```text
-./mvnw versions:set -DnewVersion=...
+./mvnw versions:set-property -Dproperty=revision -DnewVersion=...
 ```
+
+Also update `.mvn/maven.config` when changing the default snapshot. Tag releases in CI override with `-Drevision=${TAG}`.
 
 Check dependency, property, and plugin updates with `./mvnw` so the run matches the enforcer floor (`[3.9.0,)` on
 `maven-enforcer-plugin`):

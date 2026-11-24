@@ -34,6 +34,7 @@ Temporary Items
 *.icloud
 
 ### Maven ###
+.flattened-pom.xml
 target/
 pom.xml.tag
 pom.xml.releaseBackup
