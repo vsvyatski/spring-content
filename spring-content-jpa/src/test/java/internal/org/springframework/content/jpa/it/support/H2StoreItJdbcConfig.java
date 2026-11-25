@@ -15,10 +15,10 @@ import javax.sql.DataSource;
 @Configuration
 public class H2StoreItJdbcConfig extends AbstractStoreItJdbcConfig {
 
-    @Value("/org/springframework/content/jpa/schema-drop-h2.sql")
+    @Value("classpath:/org/springframework/content/jpa/schema-drop-h2.sql")
     private Resource dropRepositoryTables;
 
-    @Value("/org/springframework/content/jpa/schema-h2.sql")
+    @Value("classpath:/org/springframework/content/jpa/schema-h2.sql")
     private Resource dataRepositorySchema;
 
     @Override

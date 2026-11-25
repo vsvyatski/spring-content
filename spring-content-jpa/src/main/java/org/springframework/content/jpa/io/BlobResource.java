@@ -7,5 +7,4 @@ import org.springframework.core.io.WritableResource;
 public interface BlobResource extends Resource, WritableResource, DeletableResource {
 
     Object getId();
-
 }

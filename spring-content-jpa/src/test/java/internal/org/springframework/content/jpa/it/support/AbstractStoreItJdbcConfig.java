@@ -1,5 +1,6 @@
 package internal.org.springframework.content.jpa.it.support;
 
+import jakarta.persistence.EntityManagerFactory;
 import org.springframework.content.test.support.EmbeddedJpa;
 import org.springframework.content.test.support.TestSupportPackages;
 import org.springframework.context.annotation.Bean;
@@ -47,12 +48,12 @@ public abstract class AbstractStoreItJdbcConfig {
     }
 
     @Bean
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource) {
-        return EmbeddedJpa.entityManagerFactory(dataSource, jpaDatabase(), entityPackagesToScan());
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+        return EmbeddedJpa.entityManagerFactory(dataSource(), jpaDatabase(), entityPackagesToScan());
     }
 
     @Bean
-    public PlatformTransactionManager transactionManager(LocalContainerEntityManagerFactoryBean entityManagerFactory) {
-        return EmbeddedJpa.transactionManager(entityManagerFactory.getObject());
+    public PlatformTransactionManager transactionManager(EntityManagerFactory entityManagerFactory) {
+        return EmbeddedJpa.transactionManager(entityManagerFactory);
     }
 }

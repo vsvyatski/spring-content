@@ -14,10 +14,10 @@ import javax.sql.DataSource;
 @Configuration
 public class SqlServerStoreItJdbcConfig extends AbstractStoreItJdbcConfig {
 
-    @Value("/org/springframework/content/jpa/schema-drop-sqlserver.sql")
+    @Value("classpath:/org/springframework/content/jpa/schema-drop-sqlserver.sql")
     private Resource dropRepositoryTables;
 
-    @Value("/org/springframework/content/jpa/schema-sqlserver.sql")
+    @Value("classpath:/org/springframework/content/jpa/schema-sqlserver.sql")
     private Resource dataRepositorySchema;
 
     @Override

@@ -14,10 +14,10 @@ import javax.sql.DataSource;
 @Configuration
 public class PostgresStoreItJdbcConfig extends AbstractStoreItJdbcConfig {
 
-    @Value("/org/springframework/content/jpa/schema-drop-postgresql.sql")
+    @Value("classpath:/org/springframework/content/jpa/schema-drop-postgresql.sql")
     private Resource dropRepositoryTables;
 
-    @Value("/org/springframework/content/jpa/schema-postgresql.sql")
+    @Value("classpath:/org/springframework/content/jpa/schema-postgresql.sql")
     private Resource dataRepositorySchema;
 
     @Override
@@ -32,10 +32,8 @@ public class PostgresStoreItJdbcConfig extends AbstractStoreItJdbcConfig {
 
     @Override
     protected DataSource jdbcDataSource() {
-        return EmbeddedJpa.driverManagerDataSource(
-            StoreItJdbcUrls.POSTGRESQL,
-            StoreItJdbcUrls.TESTCONTAINERS_USERNAME,
-            StoreItJdbcUrls.TESTCONTAINERS_PASSWORD);
+        return EmbeddedJpa.driverManagerDataSource(StoreItJdbcUrls.POSTGRESQL,
+            StoreItJdbcUrls.TESTCONTAINERS_USERNAME, StoreItJdbcUrls.TESTCONTAINERS_PASSWORD);
     }
 
     @Override

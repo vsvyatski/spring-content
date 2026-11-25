@@ -438,7 +438,8 @@ public class ContentStoreContentService implements ContentService {
             // if developer chooses to decorate content property and annotate with @RestResource(exported=false)
             Pair<Optional<Class<?>>, Class<? extends Serializable>> types = StoreInterfaceUtils.getStoreTypes(storeInterface);
             types.getFirst().ifPresent((clazz) -> {
-                if (exportContext.getMappings(types.getFirst().get()).get(path.name()) == false) {
+                Boolean exported = exportContext.getMappings(types.getFirst().get()).get(path.name());
+                if (Boolean.FALSE.equals(exported)) {
                     unexportedMethods.addAll(Arrays.asList(storeMethods));
                 }
             });
@@ -457,9 +458,7 @@ public class ContentStoreContentService implements ContentService {
             }
 
             for (int i = 0; i < m.getParameterTypes().length; i++) {
-
                 if (!m.getParameterTypes()[i].isAssignableFrom(dm.getParameterTypes()[i])) {
-
                     return false;
                 }
             }

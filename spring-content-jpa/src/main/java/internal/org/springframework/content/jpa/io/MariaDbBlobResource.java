@@ -9,9 +9,4 @@ public class MariaDbBlobResource extends AbstractBlobResource {
     public MariaDbBlobResource(Object id, JdbcTemplate template, PlatformTransactionManager txnMgr) {
         super(id, template, txnMgr);
     }
-
-    @Override
-    protected String getSelectBlobSQL(Object id) {
-        return "SELECT id, 'content' as content FROM BLOBS WHERE id='" + id + "'";
-    }
 }

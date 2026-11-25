@@ -83,7 +83,7 @@ public class PostgresBlobResourceIT {
                     Statement stmt = conn.createStatement();
                     ResultSet rs = stmt.executeQuery(sql);
                     assertThat(rs.next()).isTrue();
-                    lobId = rs.getLong(2);
+                    lobId = rs.getLong("content");
                     rs.close();
                     stmt.close();
 

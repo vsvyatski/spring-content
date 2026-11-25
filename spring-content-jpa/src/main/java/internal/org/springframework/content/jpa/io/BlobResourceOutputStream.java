@@ -4,28 +4,30 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.content.jpa.io.BlobResource;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 
+import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.*;
+import java.util.Objects;
+
+import static java.lang.String.format;
 
 public class BlobResourceOutputStream extends OutputStream {
 
-    private static Log logger = LogFactory.getLog(BlobResourceOutputStream.class);
+    private static final Log logger = LogFactory.getLog(BlobResourceOutputStream.class);
 
-    private BlobResource blobResource;
-    private JdbcTemplate template;
+    private final BlobResource blobResource;
+    private final JdbcTemplate template;
 
-    private Connection con;
-    private PreparedStatement ps;
-    private ResultSet rs;
-    private OutputStream os;
-    private Blob blob;
-    private boolean insert;
+    protected Connection con;
+    protected PreparedStatement ps;
+    protected ResultSet rs;
+    protected OutputStream os;
+    protected Blob blob;
+    protected boolean insert;
 
     public BlobResourceOutputStream(BlobResource blobResource, JdbcTemplate template) {
         this.blobResource = blobResource;
@@ -42,7 +44,6 @@ public class BlobResourceOutputStream extends OutputStream {
 
     @Override
     public void write(int b) throws IOException {
-
         if (os == null) {
             os = initializeStream();
         }
@@ -51,9 +52,8 @@ public class BlobResourceOutputStream extends OutputStream {
     }
 
     protected OutputStream initializeStream() {
-
         final Object rid = blobResource.getId();
-        con = DataSourceUtils.getConnection(template.getDataSource());
+        con = DataSourceUtils.getConnection(dataSource());
 
         String sql = "SELECT id, content FROM BLOBS WHERE id=?";
         try {
@@ -61,18 +61,16 @@ public class BlobResourceOutputStream extends OutputStream {
             ps.setString(1, rid.toString());
             rs = ps.executeQuery();
 
-
             if (!rs.next()) {
                 insert = true;
                 rs.moveToInsertRow();
-            } else {
             }
 
             blob = ps.getConnection().createBlob();
             return blob.setBinaryStream(1L);
 
         } catch (SQLException e) {
-            logger.error(String.format("intializing stream for blob resource %s", rid), e);
+            logger.error(format("initializing stream for blob resource %s", rid), e);
         }
 
         return null;
@@ -80,11 +78,9 @@ public class BlobResourceOutputStream extends OutputStream {
 
     @Override
     public void close() throws IOException {
-
         IOUtils.closeQuietly(os);
 
         try {
-
             rs.updateString(1, blobResource.getId().toString());
             rs.updateBlob(2, blob);
 
@@ -94,33 +90,21 @@ public class BlobResourceOutputStream extends OutputStream {
                 rs.insertRow();
             }
         } catch (SQLException e) {
-            logger.error(String.format("closing stream for blob resource %s", blobResource.getId()), e);
+            logger.error(format("closing stream for blob resource %s", blobResource.getId()), e);
         } finally {
             try {
                 rs.close();
                 ps.close();
-                DataSourceUtils.releaseConnection(con, template.getDataSource());
+                DataSourceUtils.releaseConnection(con, dataSource());
             } catch (SQLException e) {
-                logger.error(String.format("closing resources for blob resource %s", blobResource.getId()), e);
+                logger.error(format("closing resources for blob resource %s", blobResource.getId()), e);
             }
         }
 
         super.close();
     }
 
-
-    public Blob getBlob() {
-        String sql = "SELECT id, content FROM BLOBS WHERE id='" + blobResource.getId() + "'";
-        return this.template.query(sql, new ResultSetExtractor<Blob>() {
-            @Override
-            public Blob extractData(ResultSet rs)
-                throws SQLException, DataAccessException {
-                if (rs.next()) {
-                    return rs.getBlob(1);
-                } else {
-                    return null;
-                }
-            }
-        });
+    private DataSource dataSource() {
+        return Objects.requireNonNull(template.getDataSource(), "JdbcTemplate DataSource");
     }
 }
