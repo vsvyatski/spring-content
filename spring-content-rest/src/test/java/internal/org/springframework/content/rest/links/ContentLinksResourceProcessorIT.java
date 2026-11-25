@@ -27,11 +27,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @WebAppConfiguration
 @ContextConfiguration(classes = {
-    BaseUriConfig.class,
-    DelegatingWebMvcConfiguration.class,
-    RepositoryRestMvcConfiguration.class,
-    RestConfiguration.class,
-    HypermediaConfiguration.class})
+    BaseUriConfig.class, DelegatingWebMvcConfiguration.class, RepositoryRestMvcConfiguration.class,
+    RestConfiguration.class, HypermediaConfiguration.class
+})
 @Transactional
 @ActiveProfiles("store")
 @ExtendWith(SpringExtension.class)
@@ -189,10 +187,7 @@ public class ContentLinksResourceProcessorIT {
 
                 AuditedNestedContentEntity obj = new AuditedNestedContentEntity();
                 obj.setId(999L);
-                UUID contentId = UUID.randomUUID();
-                AuditedNestedContentChild child = new AuditedNestedContentChild();
-                child.setContentId(contentId);
-                obj.setChild(child);
+                obj.getChild().setContentId(UUID.randomUUID().toString());
 
                 PersistentEntityResource.Builder build = PersistentEntityResource.build(obj, persistentEntity);
                 resource = build.build();
@@ -242,9 +237,8 @@ public class ContentLinksResourceProcessorIT {
             void setUp() {
                 PersistentEntity<?, ?> persistentEntity = persistentEntities.getRequiredPersistentEntity(AuditedNestedContentChild.class);
 
-                UUID contentId = UUID.randomUUID();
                 AuditedNestedContentChild child = new AuditedNestedContentChild();
-                child.setContentId(contentId);
+                child.setContentId(UUID.randomUUID().toString());
 
                 PersistentEntityResource.Builder build = PersistentEntityResource.build(child, persistentEntity);
                 resource = build.buildNested();

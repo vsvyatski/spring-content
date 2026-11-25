@@ -13,6 +13,11 @@ public class AuditedNestedContentEntity {
     private Long version;
 
     @Embedded
+    @AttributeOverrides({
+        @AttributeOverride(name = "contentId", column = @Column(name = "child_content_id")),
+        @AttributeOverride(name = "contentLen", column = @Column(name = "child_content_len")),
+        @AttributeOverride(name = "mimeType", column = @Column(name = "child_mime_type"))
+    })
     private AuditedNestedContentChild child = new AuditedNestedContentChild();
 
     public AuditedNestedContentEntity() {
@@ -38,6 +43,7 @@ public class AuditedNestedContentEntity {
         return child;
     }
 
+    @SuppressWarnings("unused")
     public void setChild(AuditedNestedContentChild child) {
         this.child = child;
     }

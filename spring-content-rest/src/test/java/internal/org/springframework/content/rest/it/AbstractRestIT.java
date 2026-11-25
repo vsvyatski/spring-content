@@ -1,6 +1,5 @@
 package internal.org.springframework.content.rest.it;
 
-import internal.org.springframework.content.rest.support.AuditedNestedContentChild;
 import internal.org.springframework.content.rest.support.AuditedNestedContentEntity;
 import internal.org.springframework.content.rest.support.AuditedNestedContentEntityJpaStore;
 import internal.org.springframework.content.rest.support.AuditedNestedContentEntityRepository;
@@ -94,7 +93,6 @@ public abstract class AbstractRestIT {
     @DisplayName("Given that claim has existing content, should return content with 200 OK")
     void shouldReturnContentWith200OK() {
         AuditedNestedContentEntity existingClaim = newClaim();
-        existingClaim.setChild(new AuditedNestedContentChild());
         existingClaim.getChild().setMimeType("text/plain");
         claimFormStore.setContent(
             existingClaim,
@@ -116,7 +114,6 @@ public abstract class AbstractRestIT {
     @DisplayName("Given that claim has existing content, should be postable with new content with 200 OK")
     void shouldBePostableWithNewContentWith200OkWhenContentExists() {
         AuditedNestedContentEntity existingClaim = newClaim();
-        existingClaim.setChild(new AuditedNestedContentChild());
         existingClaim.getChild().setMimeType("text/plain");
         claimFormStore.setContent(
             existingClaim,
@@ -148,7 +145,6 @@ public abstract class AbstractRestIT {
     @DisplayName("Given that claim has existing content, should be deletable with 204 No Content")
     void shouldBeDeletableWith204NoContent() {
         AuditedNestedContentEntity existingClaim = newClaim();
-        existingClaim.setChild(new AuditedNestedContentChild());
         existingClaim.getChild().setMimeType("text/plain");
         claimFormStore.setContent(
             existingClaim,

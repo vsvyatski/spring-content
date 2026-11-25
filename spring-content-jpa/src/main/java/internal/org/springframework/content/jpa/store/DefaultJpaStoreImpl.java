@@ -4,6 +4,8 @@ import com.github.f4b6a3.uuid.UuidCreator;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.io.DeletableResource;
@@ -25,10 +27,7 @@ import org.springframework.core.io.WritableResource;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Serializable;
+import java.io.*;
 import java.lang.annotation.Annotation;
 
 import static java.lang.String.format;
@@ -137,11 +136,18 @@ public class DefaultJpaStoreImpl<S, SID extends Serializable>
         }
         Resource resource = loader.getResource(id.toString());
         try {
-            return resource.getInputStream();
+            if (resource.exists()) {
+                try {
+                    return resource.getInputStream();
+                } catch (FileNotFoundException e) {
+                    return null;
+                }
+            }
         } catch (IOException e) {
             logger.error(format("Unexpected error getting content for entity %s", entity), e);
             throw new StoreAccessException(format("Getting content for entity %s", entity), e);
         }
+        return null;
     }
 
     @Override
@@ -157,11 +163,18 @@ public class DefaultJpaStoreImpl<S, SID extends Serializable>
         }
         Resource resource = loader.getResource(id.toString());
         try {
-            return resource.getInputStream();
+            if (resource.exists()) {
+                try {
+                    return resource.getInputStream();
+                } catch (FileNotFoundException e) {
+                    return null;
+                }
+            }
         } catch (IOException e) {
             logger.error(format("Unexpected error getting content for entity %s", entity), e);
             throw new StoreAccessException(format("Getting content for entity %s", entity), e);
         }
+        return null;
     }
 
     @Transactional
@@ -198,8 +211,7 @@ public class DefaultJpaStoreImpl<S, SID extends Serializable>
             IOUtils.closeQuietly(os);
         }
 
-        BeanUtils.setFieldWithAnnotation(entity, ContentId.class,
-            ((BlobResource) resource).getId());
+        BeanUtils.setFieldWithAnnotation(entity, ContentId.class, requireBlobResource(resource).getId());
         BeanUtils.setFieldWithAnnotation(entity, ContentLength.class, contentLen);
 
         return entity;
@@ -230,13 +242,14 @@ public class DefaultJpaStoreImpl<S, SID extends Serializable>
 
             Serializable newId = UuidCreator.getTimeOrdered().toString();
 
-            Object convertedId = convertToExternalContentIdType(newId, property.getContentIdType(entity));
+            SID convertedId = convertToStoreContentId(newId, property.getContentIdType(entity));
 
-            setContentId(entity, propertyPath, (SID) convertedId);
+            setContentId(entity, propertyPath, convertedId);
         }
 
         Resource resource = getResource(entity, propertyPath);
         if (resource == null) {
+            reassignEmbeddableForPersistence(entity, property);
             return entity;
         }
 
@@ -255,13 +268,14 @@ public class DefaultJpaStoreImpl<S, SID extends Serializable>
             IOUtils.closeQuietly(os);
         }
 
-        property.setContentId(entity, ((BlobResource) resource).getId(), null);
+        property.setContentId(entity, requireBlobResource(resource).getId(), null);
 
         long len = params.contentLength();
         if (len == -1L) {
             len = readLen;
         }
         property.setContentLength(entity, len);
+        reassignEmbeddableForPersistence(entity, property);
 
         return entity;
     }
@@ -341,6 +355,7 @@ public class DefaultJpaStoreImpl<S, SID extends Serializable>
         if (resource != null) {
             unassociate(entity, propertyPath);
             property.setContentLength(entity, BeanUtils.getDefaultValueForType(property.getContentLengthType().getType()));
+            reassignEmbeddableForPersistence(entity, property);
         }
 
         return entity;
@@ -380,7 +395,7 @@ public class DefaultJpaStoreImpl<S, SID extends Serializable>
             throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.name()));
         }
 
-        return (SID) property.getContentId(entity);
+        return castStoreContentId(property.getContentId(entity));
     }
 
     private void setContentId(S entity, PropertyPath propertyPath, SID contentId) {
@@ -393,5 +408,45 @@ public class DefaultJpaStoreImpl<S, SID extends Serializable>
             throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.name()));
         }
         property.setContentId(entity, contentId, null);
+    }
+
+    private BlobResource requireBlobResource(Resource resource) {
+        if (resource instanceof BlobResource blobResource) {
+            return blobResource;
+        }
+        throw new StoreAccessException(format("JPA store expected BlobResource but got %s", resource));
+    }
+
+    private SID convertToStoreContentId(Object contentId, TypeDescriptor contentIdType) {
+        return castStoreContentId(convertToExternalContentIdType(contentId, contentIdType));
+    }
+
+    @SuppressWarnings("unchecked")
+    private SID castStoreContentId(Object contentId) {
+        return contentId == null ? null : (SID) contentId;
+    }
+
+    /**
+     * Hibernate may not flush in-place mutations of a reusable {@code @Embedded} instance; assign a copy so content
+     * metadata columns are written.
+     */
+    private void reassignEmbeddableForPersistence(S entity, ContentProperty property) {
+        String contentIdPropertyPath = property.getContentIdPropertyPath();
+        if (contentIdPropertyPath == null || !contentIdPropertyPath.contains(".")) {
+            return;
+        }
+        String embeddablePath = contentIdPropertyPath.substring(0, contentIdPropertyPath.lastIndexOf('.'));
+        BeanWrapper wrapper = new BeanWrapperImpl(entity);
+        Object embeddable = wrapper.getPropertyValue(embeddablePath);
+        if (embeddable == null) {
+            return;
+        }
+        try {
+            Object replacement = org.springframework.beans.BeanUtils.instantiateClass(embeddable.getClass());
+            org.springframework.beans.BeanUtils.copyProperties(embeddable, replacement);
+            wrapper.setPropertyValue(embeddablePath, replacement);
+        } catch (Exception ex) {
+            logger.warn(format("Failed to reassign JPA embeddable at %s on %s", embeddablePath, entity), ex);
+        }
     }
 }
