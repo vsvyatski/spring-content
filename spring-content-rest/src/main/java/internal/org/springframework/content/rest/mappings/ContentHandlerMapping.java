@@ -7,6 +7,7 @@ import internal.org.springframework.content.rest.mappingcontext.ContentPropertyT
 import internal.org.springframework.content.rest.utils.StoreUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.io.FilenameUtils;
+import org.jspecify.annotations.NonNull;
 import org.springframework.content.commons.store.AssociativeStore;
 import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.commons.store.Store;
@@ -30,11 +31,10 @@ import java.util.List;
 
 public class ContentHandlerMapping extends StoreAwareHandlerMapping {
 
-    private static MediaType hal = MediaType.parseMediaType("application/hal+json");
-    private static MediaType json = MediaType.parseMediaType("application/json");
+    private static final MediaType HAL_JSON = MediaType.parseMediaType("application/hal+json");
     private final ContentPropertyToRequestMappingContext requestMappingContext;
     private Exclusions exclusions = null;
-    private Stores contentStores;
+    private final Stores contentStores;
     private EntityResolvers entityResolvers = null;
 
     public ContentHandlerMapping(Stores contentStores, EntityResolvers entityResolvers, ContentPropertyToRequestMappingContext requestMappingContext, RestConfiguration config) {
@@ -48,18 +48,18 @@ public class ContentHandlerMapping extends StoreAwareHandlerMapping {
 
     private void initExclusions(Exclusions exclusions, RestConfiguration config) {
         this.exclusions = config.shortcutExclusions();
-        if (this.exclusions.size() == 0) {
+        if (this.exclusions.isEmpty()) {
             this.exclusions
-                .exclude("GET", MediaType.parseMediaType("application/json"))
-                .exclude("GET", MediaType.parseMediaType("application/hal+json"))
-                .exclude("DELETE", MediaType.parseMediaType("application/json"))
-                .exclude("DELETE", MediaType.parseMediaType("application/hal+json"))
-                .exclude("PUT", MediaType.parseMediaType("application/json"))
-                .exclude("PUT", MediaType.parseMediaType("application/hal+json"))
-                .exclude("POST", MediaType.parseMediaType("application/json"))
-                .exclude("POST", MediaType.parseMediaType("application/hal+json"))
-                .exclude("PATCH", MediaType.parseMediaType("*/*"))
-                .exclude("HEAD", MediaType.parseMediaType("*/*"));
+                .exclude("GET", MediaType.APPLICATION_JSON)
+                .exclude("GET", HAL_JSON)
+                .exclude("DELETE", MediaType.APPLICATION_JSON)
+                .exclude("DELETE", HAL_JSON)
+                .exclude("PUT", MediaType.APPLICATION_JSON)
+                .exclude("PUT", HAL_JSON)
+                .exclude("POST", MediaType.APPLICATION_JSON)
+                .exclude("POST", HAL_JSON)
+                .exclude("PATCH", MediaType.ALL)
+                .exclude("HEAD", MediaType.ALL);
         }
     }
 
@@ -82,7 +82,7 @@ public class ContentHandlerMapping extends StoreAwareHandlerMapping {
      * lookupHandlerMethod(java.lang.String, javax.servlet.http.HttpServletRequest)
      */
     @Override
-    protected HandlerMethod lookupHandlerMethod(String lookupPath, HttpServletRequest request)
+    protected HandlerMethod lookupHandlerMethod(@NonNull String lookupPath, @NonNull HttpServletRequest request)
         throws Exception {
 
         String storeLookupPath = StoreUtils.storeLookupPath(lookupPath, this.getConfiguration().getBaseUri());
@@ -106,7 +106,7 @@ public class ContentHandlerMapping extends StoreAwareHandlerMapping {
                     }
                 } else if (this.getConfiguration().shortcutLinks()) {
                     // for backward compatibility
-                    if (info2 != null && isExcludedShortcutContentPropertyRequest(request) == false) {
+                    if (info2 != null && !isExcludedShortcutContentPropertyRequest(request)) {
                         return super.lookupHandlerMethod(lookupPath, request);
                     }
                 }
@@ -116,12 +116,12 @@ public class ContentHandlerMapping extends StoreAwareHandlerMapping {
     }
 
     @Override
-    protected boolean hasCorsConfigurationSource(Object handler) {
+    protected boolean hasCorsConfigurationSource(@NonNull Object handler) {
         return true;
     }
 
     @Override
-    protected CorsConfiguration getCorsConfiguration(Object handler, HttpServletRequest request) {
+    protected CorsConfiguration getCorsConfiguration(@NonNull Object handler, @NonNull HttpServletRequest request) {
         String lookupPath = ServletRequestPathUtils.getCachedPathValue(request);
         String storeLookupPath = StoreUtils.storeLookupPath(lookupPath, this.getConfiguration().getBaseUri());
         CorsConfiguration corsConfiguration = super.getCorsConfiguration(handler, request);
@@ -153,7 +153,7 @@ public class ContentHandlerMapping extends StoreAwareHandlerMapping {
             return false;
         }
 
-        String mediaTypes = "*/*";
+        String mediaTypes = MediaType.ALL_VALUE;
         if ("GET".equals(method) || "DELETE".equals(method)) {
             mediaTypes = request.getHeader("Accept");
         } else if ("PUT".equals(method) || "POST".equals(method)) {
@@ -179,7 +179,7 @@ public class ContentHandlerMapping extends StoreAwareHandlerMapping {
     }
 
     @Override
-    protected void detectHandlerMethods(final Object handler) {
+    protected void detectHandlerMethods(final @NonNull Object handler) {
         super.detectHandlerMethods(handler);
     }
 
@@ -188,7 +188,7 @@ public class ContentHandlerMapping extends StoreAwareHandlerMapping {
      * request is targeting a Store or content associated with an Entity
      */
     @Override
-    protected RequestCondition<?> getCustomMethodCondition(Method method) {
+    protected RequestCondition<?> getCustomMethodCondition(@NonNull Method method) {
         StoreType typeAnnotation = AnnotationUtils.findAnnotation(method,
             StoreType.class);
         if (typeAnnotation != null) {
@@ -207,9 +207,9 @@ public class ContentHandlerMapping extends StoreAwareHandlerMapping {
     public static class StoreCondition implements RequestCondition<StoreCondition> {
 
         private String storeType = "store";
-        private Stores stores;
-        private Method method;
-        private URI baseUri;
+        private final Stores stores;
+        private final Method method;
+        private final URI baseUri;
 
         public StoreCondition(StoreType typeAnnotation, Stores stores, Method method, URI baseUri) {
             storeType = typeAnnotation.value();
@@ -219,12 +219,12 @@ public class ContentHandlerMapping extends StoreAwareHandlerMapping {
         }
 
         @Override
-        public StoreCondition combine(StoreCondition other) {
+        public @NonNull StoreCondition combine(@NonNull StoreCondition other) {
             throw new UnsupportedOperationException();
         }
 
         @Override
-        public StoreCondition getMatchingCondition(HttpServletRequest request) {
+        public StoreCondition getMatchingCondition(@NonNull HttpServletRequest request) {
             String path = new UrlPathHelper().getPathWithinApplication(request);
 
             String storeLookupPath = StoreUtils.storeLookupPath(path, baseUri);
@@ -249,12 +249,10 @@ public class ContentHandlerMapping extends StoreAwareHandlerMapping {
         }
 
         @Override
-        public int compareTo(StoreCondition other, HttpServletRequest request) {
-            if (this.isMappingForRequest(request)
-                && other.isMappingForRequest(request) == false)
+        public int compareTo(@NonNull StoreCondition other, @NonNull HttpServletRequest request) {
+            if (this.isMappingForRequest(request) && !other.isMappingForRequest(request))
                 return 1;
-            else if (this.isMappingForRequest(request) == false
-                && other.isMappingForRequest(request))
+            else if (!this.isMappingForRequest(request) && other.isMappingForRequest(request))
                 return -1;
             else {
                 String path = new UrlPathHelper().getPathWithinApplication(request);

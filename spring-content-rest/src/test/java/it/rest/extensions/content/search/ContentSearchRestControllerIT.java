@@ -3,6 +3,7 @@ package it.rest.extensions.content.search;
 import com.theoryinpractise.halbuilder.api.ReadableRepresentation;
 import com.theoryinpractise.halbuilder.api.RepresentationFactory;
 import com.theoryinpractise.halbuilder.standard.StandardRepresentationFactory;
+import internal.org.springframework.content.rest.support.RestTestMediaTypes;
 import internal.org.springframework.content.rest.support.config.JpaInfrastructureConfig;
 import internal.org.springframework.data.rest.extensions.contentsearch.DefaultEntityLookupStrategy;
 import internal.org.springframework.data.rest.extensions.contentsearch.QueryMethodsEntityLookupStrategy;
@@ -144,7 +145,7 @@ public class ContentSearchRestControllerIT {
         void shouldThrowException() throws Exception {
             MvcResult result = mvc.perform(get(
                     "/searchNoContentEntities/searchContent?queryString=one")
-                    .accept("application/hal+json"))
+                    .accept(RestTestMediaTypes.APPLICATION_HAL_JSON_VALUE))
                 .andExpect(status().isNotFound()).andReturn();
 
             assertThat(result.getResolvedException()).isNotNull();
@@ -173,7 +174,7 @@ public class ContentSearchRestControllerIT {
         void shouldThrowResourceNotFoundException() throws Exception {
             MvcResult result = mvc.perform(get(
                     "/searchNotSearchableEntities/searchContent?queryString=one")
-                    .accept("application/hal+json"))
+                    .accept(RestTestMediaTypes.APPLICATION_HAL_JSON_VALUE))
                 .andExpect(status().isNotFound()).andReturn();
 
             assertThat(result.getResolvedException()).isNotNull();
@@ -202,7 +203,7 @@ public class ContentSearchRestControllerIT {
         void shouldReturnResourceNotFoundException() throws Exception {
             mvc.perform(get(
                     "/searchSharedContentIdEntities/searchContent/invalidSearchMethod?keyword=one")
-                    .accept("application/hal+json"))
+                    .accept(RestTestMediaTypes.APPLICATION_HAL_JSON_VALUE))
                 .andExpect(status().isNotFound()).andReturn();
         }
     }
@@ -227,7 +228,7 @@ public class ContentSearchRestControllerIT {
         @Test
         void shouldReturnBadRequestException() throws Exception {
             mvc.perform(get("/searchSharedContentIdEntities/searchContent")
-                    .accept("application/hal+json"))
+                    .accept(RestTestMediaTypes.APPLICATION_HAL_JSON_VALUE))
                 .andExpect(status().isBadRequest());
         }
     }
@@ -252,7 +253,7 @@ public class ContentSearchRestControllerIT {
         @Test
         void shouldInvokeSearchWithPageRequest() throws Exception {
             mvc.perform(get("/searchSeparateContentIdEntities/searchContent?queryString=else&page=1&size=1")
-                    .accept("application/hal+json"))
+                    .accept(RestTestMediaTypes.APPLICATION_HAL_JSON_VALUE))
                 .andExpect(status().isOk()).andReturn();
 
             Method m = ReflectionUtils.findMethod(Searchable.class, "search", String.class, Pageable.class);
@@ -290,11 +291,11 @@ public class ContentSearchRestControllerIT {
             void shouldReturnEmptyResponseEntity() throws Exception {
                 MvcResult result = mvc.perform(get(
                         "/searchSharedContentIdEntities/searchContent?queryString=one")
-                        .accept("application/hal+json"))
+                        .accept(RestTestMediaTypes.APPLICATION_HAL_JSON_VALUE))
                     .andExpect(status().isOk()).andReturn();
 
                 ReadableRepresentation halResponse = representationFactory
-                    .readRepresentation("application/hal+json",
+                    .readRepresentation(RestTestMediaTypes.APPLICATION_HAL_JSON_VALUE,
                         new StringReader(result.getResponse()
                             .getContentAsString()));
                 assertThat(halResponse.getResources().size()).isEqualTo(0);
@@ -339,7 +340,7 @@ public class ContentSearchRestControllerIT {
             void shouldReturnResponseEntityWithEntity() throws Exception {
                 MvcResult result = mvc.perform(get(
                         "/searchSharedContentIdEntities/searchContent?queryString=two")
-                        .accept("application/hal+json"))
+                        .accept(RestTestMediaTypes.APPLICATION_HAL_JSON_VALUE))
                     .andExpect(status().isOk()).andReturn();
 
                 verify(defaultLookupStrategy, never()).lookup(any(RootResourceInformation.class), any(RepositoryInformation.class), anyList(),
@@ -348,7 +349,7 @@ public class ContentSearchRestControllerIT {
                     anyList());
 
                 ReadableRepresentation halResponse = representationFactory
-                    .readRepresentation("application/hal+json",
+                    .readRepresentation(RestTestMediaTypes.APPLICATION_HAL_JSON_VALUE,
                         new StringReader(result.getResponse()
                             .getContentAsString()));
                 assertThat(halResponse
@@ -402,11 +403,11 @@ public class ContentSearchRestControllerIT {
             void shouldFilterOutInvalidIDs() throws Exception {
                 MvcResult result = mvc.perform(get(
                         "/searchSharedContentIdEntities/searchContent?queryString=else")
-                        .accept("application/hal+json"))
+                        .accept(RestTestMediaTypes.APPLICATION_HAL_JSON_VALUE))
                     .andExpect(status().isOk()).andReturn();
 
                 ReadableRepresentation halResponse = representationFactory
-                    .readRepresentation("application/hal+json",
+                    .readRepresentation(RestTestMediaTypes.APPLICATION_HAL_JSON_VALUE,
                         new StringReader(result.getResponse()
                             .getContentAsString()));
                 assertThat(halResponse
@@ -447,11 +448,11 @@ public class ContentSearchRestControllerIT {
             void shouldReturnEmptyResponseEntity() throws Exception {
                 MvcResult result = mvc.perform(get(
                         "/searchSeparateContentIdEntities/searchContent?queryString=something")
-                        .accept("application/hal+json"))
+                        .accept(RestTestMediaTypes.APPLICATION_HAL_JSON_VALUE))
                     .andExpect(status().isOk()).andReturn();
 
                 ReadableRepresentation halResponse = representationFactory
-                    .readRepresentation("application/hal+json",
+                    .readRepresentation(RestTestMediaTypes.APPLICATION_HAL_JSON_VALUE,
                         new StringReader(result.getResponse()
                             .getContentAsString()));
                 assertThat(halResponse.getResources().size()).isEqualTo(0);
@@ -496,7 +497,7 @@ public class ContentSearchRestControllerIT {
             void shouldReturnResponseEntityWithEntity() throws Exception {
                 MvcResult result = mvc.perform(get(
                         "/searchSeparateContentIdEntities/searchContent?queryString=else")
-                        .accept("application/hal+json"))
+                        .accept(RestTestMediaTypes.APPLICATION_HAL_JSON_VALUE))
                     .andExpect(status().isOk()).andReturn();
 
                 verify(defaultLookupStrategy, never()).lookup(any(RootResourceInformation.class), any(RepositoryInformation.class), anyList(),
@@ -505,7 +506,7 @@ public class ContentSearchRestControllerIT {
                     anyList());
 
                 ReadableRepresentation halResponse = representationFactory
-                    .readRepresentation("application/hal+json",
+                    .readRepresentation(RestTestMediaTypes.APPLICATION_HAL_JSON_VALUE,
                         new StringReader(result.getResponse()
                             .getContentAsString()));
                 assertThat(halResponse
@@ -559,11 +560,11 @@ public class ContentSearchRestControllerIT {
             void shouldFilterOutInvalidIDs() throws Exception {
                 MvcResult result = mvc.perform(get(
                         "/searchSeparateContentIdEntities/searchContent?queryString=else")
-                        .accept("application/hal+json"))
+                        .accept(RestTestMediaTypes.APPLICATION_HAL_JSON_VALUE))
                     .andExpect(status().isOk()).andReturn();
 
                 ReadableRepresentation halResponse = representationFactory
-                    .readRepresentation("application/hal+json",
+                    .readRepresentation(RestTestMediaTypes.APPLICATION_HAL_JSON_VALUE,
                         new StringReader(result.getResponse()
                             .getContentAsString()));
                 assertThat(halResponse
@@ -605,11 +606,11 @@ public class ContentSearchRestControllerIT {
         void shouldReturnResponseEntityWithEntity() throws Exception {
             MvcResult result = mvc.perform(get(
                     "/customSearchReturnTypeEntities/searchContent?queryString=else")
-                    .accept("application/hal+json"))
+                    .accept(RestTestMediaTypes.APPLICATION_HAL_JSON_VALUE))
                 .andExpect(status().isOk()).andReturn();
 
             ReadableRepresentation halResponse = representationFactory
-                .readRepresentation("application/hal+json",
+                .readRepresentation(RestTestMediaTypes.APPLICATION_HAL_JSON_VALUE,
                     new StringReader(result.getResponse()
                         .getContentAsString()));
             assertThat(halResponse
@@ -663,11 +664,11 @@ public class ContentSearchRestControllerIT {
         void shouldReturnResponseEntityWithEntity() throws Exception {
             MvcResult result = mvc.perform(get(
                     "/customSearchReturnTypeEntities/searchContent?queryString=else&page=1&size=1")
-                    .accept("application/hal+json"))
+                    .accept(RestTestMediaTypes.APPLICATION_HAL_JSON_VALUE))
                 .andExpect(status().isOk()).andReturn();
 
             ReadableRepresentation halResponse = representationFactory
-                .readRepresentation("application/hal+json",
+                .readRepresentation(RestTestMediaTypes.APPLICATION_HAL_JSON_VALUE,
                     new StringReader(result.getResponse()
                         .getContentAsString()));
             assertThat(halResponse
@@ -721,7 +722,7 @@ public class ContentSearchRestControllerIT {
         void shouldReturnResponseWithEntity() throws Exception {
             MvcResult result = mvc.perform(get(
                     "/noLookupStrategySearchEntities/searchContent?queryString=else")
-                    .accept("application/hal+json"))
+                    .accept(RestTestMediaTypes.APPLICATION_HAL_JSON_VALUE))
                 .andExpect(status().isOk()).andReturn();
 
             verify(defaultLookupStrategy).lookup(any(RootResourceInformation.class), any(RepositoryInformation.class), anyList(),
@@ -730,7 +731,7 @@ public class ContentSearchRestControllerIT {
                 anyList());
 
             ReadableRepresentation halResponse = representationFactory
-                .readRepresentation("application/hal+json",
+                .readRepresentation(RestTestMediaTypes.APPLICATION_HAL_JSON_VALUE,
                     new StringReader(result.getResponse()
                         .getContentAsString()));
             assertThat(halResponse

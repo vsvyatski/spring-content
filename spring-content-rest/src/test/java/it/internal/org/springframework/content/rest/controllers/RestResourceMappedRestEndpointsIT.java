@@ -1,5 +1,7 @@
 package it.internal.org.springframework.content.rest.controllers;
 
+import org.springframework.http.MediaType;
+import internal.org.springframework.content.rest.support.RestTestMediaTypes;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import internal.org.springframework.content.rest.support.RestResourcePackageEntity;
@@ -161,14 +163,14 @@ public class RestResourceMappedRestEndpointsIT {
                         mvc.perform(
                                 put("/restResourcePackageEntities/" + testEntity11.getId() + "/package/content")
                                     .content("Hello New Spring Content World!")
-                                    .contentType("text/plain"))
+                                    .contentType(MediaType.TEXT_PLAIN_VALUE))
                             .andExpect(status().is2xxSuccessful());
 
                         Optional<RestResourcePackageEntity> fetched = repo.findById(testEntity11.getId());
                         assertThat(fetched.isPresent()).isTrue();
                         assertThat(fetched.get().getContentPackage().contentId).isNotNull();
                         assertThat(fetched.get().getContentPackage().contentLen).isEqualTo(31L);
-                        assertThat(fetched.get().getContentPackage().contentMimeType).isEqualTo("text/plain");
+                        assertThat(fetched.get().getContentPackage().contentMimeType).isEqualTo(MediaType.TEXT_PLAIN_VALUE);
                         try (InputStream actual = store.getResource(fetched.get(), PropertyPath.from("contentPackage/content")).getInputStream()) {
                             IOUtils.contentEquals(actual, new ByteArrayInputStream("Hello New Spring Content World!".getBytes()));
                         }
@@ -191,14 +193,14 @@ public class RestResourceMappedRestEndpointsIT {
                         mvc.perform(
                                 put("/restResourcePackageEntities/" + testEntity11.getId() + "/package/content")
                                     .content(content)
-                                    .contentType("application/json"))
+                                    .contentType(MediaType.APPLICATION_JSON_VALUE))
                             .andExpect(status().isCreated());
 
                         Optional<RestResourcePackageEntity> fetched = repo.findById(testEntity11.getId());
                         assertThat(fetched.isPresent()).isTrue();
                         assertThat(fetched.get().getContentPackage().getContentId()).isNotNull();
                         assertThat(fetched.get().getContentPackage().getContentLen()).isEqualTo(45L);
-                        assertThat(fetched.get().getContentPackage().getContentMimeType()).isEqualTo("application/json");
+                        assertThat(fetched.get().getContentPackage().getContentMimeType()).isEqualTo(MediaType.APPLICATION_JSON_VALUE);
                         try (InputStream actual = store.getResource(fetched.get(), PropertyPath.from("contentPackage/content")).getInputStream()) {
                             IOUtils.contentEquals(actual, new ByteArrayInputStream(content.getBytes()));
                         }
@@ -219,7 +221,7 @@ public class RestResourceMappedRestEndpointsIT {
                         testEntity11 = repo.save(new RestResourcePackageEntity());
 
                         String content = TestSupportData.SAMPLE_TEXT_PAYLOAD;
-                        testEntity11.getContentPackage().contentMimeType = "text/plain";
+                        testEntity11.getContentPackage().contentMimeType = MediaType.TEXT_PLAIN_VALUE;
                         UUID contentId = UUID.randomUUID();
                         store.associate(testEntity11, PropertyPath.from("contentPackage/content"), contentId);
                         WritableResource r = (WritableResource) store.getResource(testEntity11, PropertyPath.from("contentPackage/content"));
@@ -233,7 +235,7 @@ public class RestResourceMappedRestEndpointsIT {
                     void shouldReturnMappedContentLinks() throws Exception {
                         MockHttpServletResponse res = mvc.perform(
                                 get("/restResourcePackageEntities/" + testEntity11.getId())
-                                    .accept("application/hal+json"))
+                                    .accept(RestTestMediaTypes.APPLICATION_HAL_JSON_VALUE))
                             .andExpect(status().is2xxSuccessful())
                             .andReturn().getResponse();
 
@@ -258,7 +260,7 @@ public class RestResourceMappedRestEndpointsIT {
                         testEntity11 = repo.save(new RestResourcePackageEntity());
 
                         String content = TestSupportData.SAMPLE_TEXT_PAYLOAD;
-                        testEntity11.getContentPackage().contentMimeType = "text/plain";
+                        testEntity11.getContentPackage().contentMimeType = MediaType.TEXT_PLAIN_VALUE;
                         UUID contentId = UUID.randomUUID();
                         store.associate(testEntity11, PropertyPath.from("contentPackage/content"), contentId);
                         WritableResource r = (WritableResource) store.getResource(testEntity11, PropertyPath.from("contentPackage/content"));
@@ -272,7 +274,7 @@ public class RestResourceMappedRestEndpointsIT {
                     void shouldReturnContent() throws Exception {
                         MockHttpServletResponse response = mvc
                             .perform(get("/restResourcePackageEntities/" + testEntity11.getId() + "/package/content")
-                                .accept("text/plain"))
+                                .accept(MediaType.TEXT_PLAIN_VALUE))
                             .andExpect(status().isOk())
                             .andExpect(header().string("etag", is("\"1\"")))
                             .andExpect(header().string("last-modified", LastModifiedDateTests
@@ -294,7 +296,7 @@ public class RestResourceMappedRestEndpointsIT {
                         testEntity11 = repo.save(new RestResourcePackageEntity());
 
                         String content = TestSupportData.SAMPLE_TEXT_PAYLOAD;
-                        testEntity11.getContentPackage().contentMimeType = "text/plain";
+                        testEntity11.getContentPackage().contentMimeType = MediaType.TEXT_PLAIN_VALUE;
                         UUID contentId = UUID.randomUUID();
                         store.associate(testEntity11, PropertyPath.from("contentPackage/content"), contentId);
                         WritableResource r = (WritableResource) store.getResource(testEntity11, PropertyPath.from("contentPackage/content"));
@@ -309,7 +311,7 @@ public class RestResourceMappedRestEndpointsIT {
                         MockHttpServletResponse response = mvc
                             .perform(get(
                                 "/restResourcePackageEntities/" + testEntity11.getId() + "/package/content")
-                                .accept("text/html"))
+                                .accept(MediaType.TEXT_HTML_VALUE))
                             .andExpect(status().isOk()).andReturn()
                             .getResponse();
 
@@ -328,7 +330,7 @@ public class RestResourceMappedRestEndpointsIT {
                         testEntity11 = repo.save(new RestResourcePackageEntity());
 
                         String content = TestSupportData.SAMPLE_TEXT_PAYLOAD;
-                        testEntity11.getContentPackage().contentMimeType = "text/plain";
+                        testEntity11.getContentPackage().contentMimeType = MediaType.TEXT_PLAIN_VALUE;
                         UUID contentId = UUID.randomUUID();
                         store.associate(testEntity11, PropertyPath.from("contentPackage/content"), contentId);
                         WritableResource r = (WritableResource) store.getResource(testEntity11, PropertyPath.from("contentPackage/content"));
@@ -342,8 +344,8 @@ public class RestResourceMappedRestEndpointsIT {
                     void shouldReturnOriginalContentAnd200() throws Exception {
                         MockHttpServletResponse response = mvc
                             .perform(get("/restResourcePackageEntities/" + testEntity11.getId() + "/package/content").accept(
-                                "text/xml",
-                                "text/plain"))
+                                MediaType.TEXT_XML_VALUE,
+                                MediaType.TEXT_PLAIN_VALUE))
                             .andExpect(status().isOk()).andReturn()
                             .getResponse();
 
@@ -362,7 +364,7 @@ public class RestResourceMappedRestEndpointsIT {
                         testEntity11 = repo.save(new RestResourcePackageEntity());
 
                         String content = TestSupportData.SAMPLE_TEXT_PAYLOAD;
-                        testEntity11.getContentPackage().contentMimeType = "text/plain";
+                        testEntity11.getContentPackage().contentMimeType = MediaType.TEXT_PLAIN_VALUE;
                         UUID contentId = UUID.randomUUID();
                         store.associate(testEntity11, PropertyPath.from("contentPackage/content"), contentId);
                         WritableResource r = (WritableResource) store.getResource(testEntity11, PropertyPath.from("contentPackage/content"));
@@ -377,14 +379,14 @@ public class RestResourceMappedRestEndpointsIT {
                         mvc.perform(
                                 put("/restResourcePackageEntities/" + testEntity11.getId() + "/package/content")
                                     .content("Hello New Spring Content World!")
-                                    .contentType("text/plain"))
+                                    .contentType(MediaType.TEXT_PLAIN_VALUE))
                             .andExpect(status().is2xxSuccessful());
 
                         Optional<RestResourcePackageEntity> fetched = repo.findById(testEntity11.getId());
                         assertThat(fetched.isPresent()).isTrue();
                         assertThat(fetched.get().getContentPackage().contentId).isNotNull();
                         assertThat(fetched.get().getContentPackage().contentLen).isEqualTo(31L);
-                        assertThat(fetched.get().getContentPackage().contentMimeType).isEqualTo("text/plain");
+                        assertThat(fetched.get().getContentPackage().contentMimeType).isEqualTo(MediaType.TEXT_PLAIN_VALUE);
                     }
                 }
 
@@ -398,7 +400,7 @@ public class RestResourceMappedRestEndpointsIT {
                         testEntity11 = repo.save(new RestResourcePackageEntity());
 
                         String content = TestSupportData.SAMPLE_TEXT_PAYLOAD;
-                        testEntity11.getContentPackage().contentMimeType = "text/plain";
+                        testEntity11.getContentPackage().contentMimeType = MediaType.TEXT_PLAIN_VALUE;
                         UUID contentId = UUID.randomUUID();
                         store.associate(testEntity11, PropertyPath.from("contentPackage/content"), contentId);
                         WritableResource r = (WritableResource) store.getResource(testEntity11, PropertyPath.from("contentPackage/content"));

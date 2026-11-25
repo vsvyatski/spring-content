@@ -15,6 +15,7 @@ import org.springframework.content.commons.property.PropertyPath;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -56,7 +57,7 @@ public class PreferResourceForPutsAndPostsIT {
             entity = repo.save(entity);
 
             given()
-                .contentType("text/plain")
+                .contentType(MediaType.TEXT_PLAIN_VALUE)
                 .body("some content".getBytes())
                 .when()
                 .post("/uuidSingleContentEntities/" + entity.getId());

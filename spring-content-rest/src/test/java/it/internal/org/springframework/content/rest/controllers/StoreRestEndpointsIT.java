@@ -1,5 +1,6 @@
 package it.internal.org.springframework.content.rest.controllers;
 
+import org.springframework.http.MediaType;
 import internal.org.springframework.content.rest.support.StoreConfig;
 import internal.org.springframework.content.rest.support.TestStore;
 import org.apache.commons.io.IOUtils;
@@ -89,7 +90,7 @@ public class StoreRestEndpointsIT {
                     String content = "New multi-part content";
 
                     mvc.perform(multipart(request).file(new MockMultipartFile("file",
-                            "test-file.txt", "text/plain", content.getBytes())))
+                            "test-file.txt", MediaType.TEXT_PLAIN_VALUE, content.getBytes())))
                         .andExpect(status().isCreated());
 
                     Resource r = store.getResource(path);
@@ -158,7 +159,7 @@ public class StoreRestEndpointsIT {
             @Test
             void shouldOverwriteResourceContent() throws Exception {
                 mvc.perform(put(request).content("New Existing content")
-                    .contentType("text/plain")).andExpect(status().isOk());
+                    .contentType(MediaType.TEXT_PLAIN_VALUE)).andExpect(status().isOk());
 
                 Resource r = store.getResource(path);
                 assertThat(IOUtils.contentEquals(
@@ -196,7 +197,7 @@ public class StoreRestEndpointsIT {
                     String content = "New multi-part content";
 
                     mvc.perform(multipart(request).file(new MockMultipartFile("file",
-                            "tests-file.txt", "text/plain", content.getBytes())))
+                            "tests-file.txt", MediaType.TEXT_PLAIN_VALUE, content.getBytes())))
                         .andExpect(status().isOk());
 
                     Resource r = store.getResource(path);
@@ -249,7 +250,7 @@ public class StoreRestEndpointsIT {
             @Test
             void shouldOverwriteResourceContent() throws Exception {
                 mvc.perform(put(request).content("New Existing content")
-                    .contentType("text/plain")).andExpect(status().isOk());
+                    .contentType(MediaType.TEXT_PLAIN_VALUE)).andExpect(status().isOk());
 
                 Resource r = store.getResource(path);
                 assertThat(IOUtils.contentEquals(
@@ -285,7 +286,7 @@ public class StoreRestEndpointsIT {
                 @Test
                 void shouldReturnResourceContent() throws Exception {
                     MockHttpServletResponse response = mvc
-                        .perform(get(request).accept("text/html",
+                        .perform(get(request).accept(MediaType.TEXT_HTML_VALUE,
                             "application/xhtml+xml", "application/xml;q=0.9",
                             "image/webp", "image/apng", "*/*;q=0.8"))
                         .andExpect(status().isOk()).andReturn().getResponse();
@@ -317,7 +318,7 @@ public class StoreRestEndpointsIT {
                     String content = "New multi-part content";
 
                     mvc.perform(multipart(request).file(new MockMultipartFile("file",
-                            "tests-file.txt", "text/plain", content.getBytes())))
+                            "tests-file.txt", MediaType.TEXT_PLAIN_VALUE, content.getBytes())))
                         .andExpect(status().isOk());
 
                     Resource r = store.getResource(path);

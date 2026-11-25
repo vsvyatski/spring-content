@@ -1,5 +1,6 @@
 package it.internal.org.springframework.content.rest.controllers;
 
+import org.springframework.http.MediaType;
 import internal.org.springframework.content.rest.support.*;
 import internal.org.springframework.content.rest.support.EventListenerConfig.TestEventListener;
 import it.internal.org.springframework.content.rest.controllers.support.LastModifiedDateTests;
@@ -42,13 +43,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebAppConfiguration
 @ContextConfiguration(classes = {
-    StoreConfig.class,
-    EntityConfig.class,
-    DelegatingWebMvcConfiguration.class,
-    RepositoryRestMvcConfiguration.class,
-    RestConfiguration.class,
-    HypermediaConfiguration.class,
-    EventListenerConfig.class
+    StoreConfig.class, EntityConfig.class, DelegatingWebMvcConfiguration.class, RepositoryRestMvcConfiguration.class,
+    RestConfiguration.class, HypermediaConfiguration.class, EventListenerConfig.class
 })
 @Transactional
 @ActiveProfiles("store")
@@ -153,7 +149,7 @@ public class ContentEntityRestEndpointsIT {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
                     testEntity4 = new OneToOneLinkedContentEntity();
                     testEntity4 = store4.setContent(testEntity4, TestSupportData.sampleTextStream());
-                    testEntity4.mimeType = "text/plain";
+                    testEntity4.mimeType = MediaType.TEXT_PLAIN_VALUE;
                     testEntity4 = repo4.save(testEntity4);
                     String url = "/oneToOneLinkedContentEntities/" + testEntity4.getId();
                     this.setMvc(mvc);
@@ -176,7 +172,7 @@ public class ContentEntityRestEndpointsIT {
                     String content = TestSupportData.SAMPLE_LAST_MODIFIED_DATE_PAYLOAD;
                     testEntity4 = new OneToOneLinkedContentEntity();
                     testEntity4 = store4.setContent(testEntity4, new ByteArrayInputStream(content.getBytes()));
-                    testEntity4.mimeType = "text/plain";
+                    testEntity4.mimeType = MediaType.TEXT_PLAIN_VALUE;
                     testEntity4 = repo4.save(testEntity4);
                     String url = "/oneToOneLinkedContentEntities/" + testEntity4.getId();
                     this.setMvc(mvc);
@@ -200,7 +196,7 @@ public class ContentEntityRestEndpointsIT {
                 @Test
                 void shouldReturn404WhenNoContentIsSet() throws Exception {
                     mvc.perform(get("/sharedUuidContentIdEntities/" + testEntity6.getId())
-                            .accept("text/plain"))
+                            .accept(MediaType.TEXT_PLAIN_VALUE))
                         .andExpect(status().isNotFound());
                 }
             }
@@ -218,14 +214,14 @@ public class ContentEntityRestEndpointsIT {
                 // assert content does not exist
                 String newContent = "This is some new content";
 
-                MockMultipartFile file = new MockMultipartFile("content", "filename.txt", "text/plain", newContent.getBytes());
+                MockMultipartFile file = new MockMultipartFile("content", "filename.txt", MediaType.TEXT_PLAIN_VALUE, newContent.getBytes());
 
                 var testEntity4Id = repo4.save(new OneToOneLinkedContentEntity()).getId();
 
                 // POST the new content
                 MockHttpServletResponse response = mvc.perform(multipart("/jsonMappedContentEntities")
                         .file(file)
-                        .contentType("multipart/form-data; boundary=c0de8278")
+                        .contentType(MediaType.MULTIPART_FORM_DATA_VALUE + "; boundary=c0de8278")
                         .param("name", "foo")
                         .param("hidden", "bar")
                         .param("ying", "yang")
@@ -252,7 +248,7 @@ public class ContentEntityRestEndpointsIT {
 
                 // assert that it now exists
                 response = mvc.perform(get(location)
-                        .accept("text/plain"))
+                        .accept(MediaType.TEXT_PLAIN_VALUE))
                     .andExpect(status().isOk())
                     .andReturn().getResponse();
 
@@ -273,7 +269,7 @@ public class ContentEntityRestEndpointsIT {
                 void shouldCreateNewEntityAndItsContentAndRespondWith201Created() throws Exception {
                     String newContent = "This is some new content";
 
-                    MockMultipartFile file = new MockMultipartFile("content", "filename.txt", "text/plain",
+                    MockMultipartFile file = new MockMultipartFile("content", "filename.txt", MediaType.TEXT_PLAIN_VALUE,
                         newContent.getBytes());
 
                     // POST the entity
@@ -300,7 +296,7 @@ public class ContentEntityRestEndpointsIT {
 
                     // assert that the content now exists
                     response = mvc.perform(get(location)
-                            .accept("text/plain"))
+                            .accept(MediaType.TEXT_PLAIN_VALUE))
                         .andExpect(status().isOk())
                         .andReturn().getResponse();
 
@@ -357,7 +353,7 @@ public class ContentEntityRestEndpointsIT {
                         put("/jsonIgnoredContentEntities/" + testEntity9.id)
                             .contextPath("")
                             .content(content)
-                            .contentType("text/plain"))
+                            .contentType(MediaType.TEXT_PLAIN_VALUE))
                     .andExpect(status().isCreated());
 
                 Optional<JsonIgnoredContentEntity> fetched = repo9.findById(testEntity9.getId());
@@ -365,13 +361,13 @@ public class ContentEntityRestEndpointsIT {
                 JsonIgnoredContentEntity saved = fetched.orElseThrow();
                 assertThat(saved.getContentId()).isNotNull();
                 assertThat(saved.getContentLen()).isEqualTo(27L);
-                assertThat(saved.getContentMimeType()).isEqualTo("text/plain");
+                assertThat(saved.getContentMimeType()).isEqualTo(MediaType.TEXT_PLAIN_VALUE);
                 assertThat(IOUtils.toString(store9.getContent(saved), Charset.defaultCharset())).isEqualTo(content);
 
                 MockHttpServletResponse response = mvc
                     .perform(get("/jsonIgnoredContentEntities/" + testEntity9.id)
                         .contextPath("")
-                        .accept("text/plain"))
+                        .accept(MediaType.TEXT_PLAIN_VALUE))
                     .andExpect(status().isOk()).andReturn().getResponse();
 
                 assertThat(response).isNotNull();
@@ -391,7 +387,7 @@ public class ContentEntityRestEndpointsIT {
                 // assert content does not exist
                 String newContent = "This is some new content";
 
-                MockMultipartFile file = new MockMultipartFile("content", "filename.txt", "text/plain", newContent.getBytes());
+                MockMultipartFile file = new MockMultipartFile("content", "filename.txt", MediaType.TEXT_PLAIN_VALUE, newContent.getBytes());
 
                 // POST the new content
                 MockHttpServletResponse response = mvc.perform(multipart("/jsonIgnoredContentEntities")
@@ -415,7 +411,7 @@ public class ContentEntityRestEndpointsIT {
 
                 // assert content now exists
                 response = mvc.perform(get(location + "/content")
-                        .accept("text/plain"))
+                        .accept(MediaType.TEXT_PLAIN_VALUE))
                     .andExpect(status().isOk())
                     .andReturn().getResponse();
                 assertThat(response.getContentAsString()).isEqualTo(newContent);
@@ -497,7 +493,7 @@ public class ContentEntityRestEndpointsIT {
 
             @Test
             void shouldReturnErrorAndNotMakeEntity() {
-                MockMultipartFile file = new MockMultipartFile("oopsDoesntExist", "filename.txt", "text/plain",
+                MockMultipartFile file = new MockMultipartFile("oopsDoesntExist", "filename.txt", MediaType.TEXT_PLAIN_VALUE,
                     "foo".getBytes());
 
                 var before = repo3.count();
@@ -531,7 +527,7 @@ public class ContentEntityRestEndpointsIT {
                 // assert content does not exist
                 String newContent = "This is some new content";
 
-                MockMultipartFile file = new MockMultipartFile("package/content", "filename.txt", "text/plain", newContent.getBytes());
+                MockMultipartFile file = new MockMultipartFile("package/content", "filename.txt", MediaType.TEXT_PLAIN_VALUE, newContent.getBytes());
 
                 // POST the new content
                 MockHttpServletResponse response = mvc.perform(multipart("/restResourcePackageEntities")
@@ -553,7 +549,7 @@ public class ContentEntityRestEndpointsIT {
 
                 // assert content now exists
                 response = mvc.perform(get(location + "/package/content")
-                        .accept("text/plain"))
+                        .accept(MediaType.TEXT_PLAIN_VALUE))
                     .andExpect(status().isOk())
                     .andReturn().getResponse();
                 assertThat(response.getContentAsString()).isEqualTo(newContent);

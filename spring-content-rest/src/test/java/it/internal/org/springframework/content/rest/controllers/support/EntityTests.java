@@ -5,6 +5,7 @@ import com.theoryinpractise.halbuilder.api.ReadableRepresentation;
 import com.theoryinpractise.halbuilder.api.RepresentationFactory;
 import com.theoryinpractise.halbuilder.standard.StandardRepresentationFactory;
 import internal.org.springframework.content.rest.support.ContentEntity;
+import internal.org.springframework.content.rest.support.RestTestMediaTypes;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -67,13 +68,13 @@ public class EntityTests {
         void shouldReturnEntity() throws Exception {
             MockHttpServletResponse response = mvc
                 .perform(get(url)
-                    .accept("application/hal+json"))
+                    .accept(RestTestMediaTypes.APPLICATION_HAL_JSON_VALUE))
                 .andExpect(status().isOk())
                 .andReturn().getResponse();
 
             RepresentationFactory representationFactory = new StandardRepresentationFactory();
             ReadableRepresentation halResponse = representationFactory
-                .readRepresentation("application/hal+json",
+                .readRepresentation(RestTestMediaTypes.APPLICATION_HAL_JSON_VALUE,
                     new StringReader(response.getContentAsString()));
             assertThat(halResponse.getLinksByRel(linkRel)).isNotNull();
             assertThat(halResponse.getLinksByRel(linkRel).size()).isEqualTo(1);
@@ -89,7 +90,7 @@ public class EntityTests {
             entity.setTitle("Spring Content");
             mvc.perform(put(url)
                     .content(new ObjectMapper().writeValueAsString(entity))
-                    .contentType("application/hal+json"))
+                    .contentType(RestTestMediaTypes.APPLICATION_HAL_JSON_VALUE))
                 .andExpect(status().is2xxSuccessful());
 
             Optional<ContentEntity> fetched = repository.findById(entity.getId());
@@ -107,7 +108,7 @@ public class EntityTests {
         void shouldPatchEntityDataAndReturn200() throws Exception {
             mvc.perform(patch(url)
                     .content("{\"title\":\"Spring Content Modified\"}")
-                    .contentType("application/hal+json"))
+                    .contentType(RestTestMediaTypes.APPLICATION_HAL_JSON_VALUE))
                 .andExpect(status().is2xxSuccessful());
 
             Optional<ContentEntity> fetched = repository.findById(entity.getId());

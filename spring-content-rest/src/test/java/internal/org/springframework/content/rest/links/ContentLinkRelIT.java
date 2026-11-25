@@ -1,5 +1,6 @@
 package internal.org.springframework.content.rest.links;
 
+import org.springframework.http.MediaType;
 import internal.org.springframework.content.rest.links.linkrel.LinkRelAuditedNestedContentEntityStore;
 import internal.org.springframework.content.rest.links.linkrel.LinkRelDualContentRenditionEntityStore;
 import internal.org.springframework.content.rest.links.linkrel.LinkRelEmbeddedDualContentEntityStore;
@@ -95,7 +96,7 @@ public class ContentLinkRelIT {
                     AuditedNestedContentEntityRepository repository2 = context.getBean(AuditedNestedContentEntityRepository.class);
                     LinkRelAuditedNestedContentEntityStore store2 = context.getBean(LinkRelAuditedNestedContentEntityStore.class);
                     AuditedNestedContentEntity entity = new AuditedNestedContentEntity();
-                    entity.getChild().setMimeType("text/plain");
+                    entity.getChild().setMimeType(MediaType.TEXT_PLAIN_VALUE);
                     store2.setContent(entity, PropertyPath.from("child"),
                         TestSupportData.sampleTextStream());
                     entity = repository2.save(entity);
@@ -123,11 +124,11 @@ public class ContentLinkRelIT {
                     EmbeddedDualContentEntityRepository repository10 = context.getBean(EmbeddedDualContentEntityRepository.class);
                     LinkRelEmbeddedDualContentEntityStore store10 = context.getBean(LinkRelEmbeddedDualContentEntityStore.class);
                     EmbeddedDualContentEntity entity = new EmbeddedDualContentEntity();
-                    entity.getChild().setContentMimeType("text/plain");
+                    entity.getChild().setContentMimeType(MediaType.TEXT_PLAIN_VALUE);
                     entity.getChild().setContentFileName("test");
                     store10.setContent(entity, PropertyPath.from("child/content"),
                         TestSupportData.sampleTextStream());
-                    entity.getChild().setPreviewMimeType("text/plain");
+                    entity.getChild().setPreviewMimeType(MediaType.TEXT_PLAIN_VALUE);
                     store10.setContent(entity, PropertyPath.from("child/preview"),
                         TestSupportData.sampleTextStream());
                     entity = repository10.save(entity);

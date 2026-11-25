@@ -5,6 +5,7 @@ import com.theoryinpractise.halbuilder.api.RepresentationFactory;
 import com.theoryinpractise.halbuilder.standard.StandardRepresentationFactory;
 import internal.org.springframework.content.rest.scoped.projection.ProjectedContentEntityRepository;
 import internal.org.springframework.content.rest.scoped.projection.ProjectedContentEntityStore;
+import internal.org.springframework.content.rest.support.RestTestMediaTypes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -143,13 +144,13 @@ public class ContentLinksWithProjectionsIT {
                 @Test
                 void shouldProvideResponseWithContentLink() throws Exception {
                     MockHttpServletResponse response = mvc.perform(get("/projectedContentEntities/" + testEntity.getId() + "?projection=customTEntity")
-                            .accept("application/hal+json"))
+                            .accept(RestTestMediaTypes.APPLICATION_HAL_JSON_VALUE))
                         .andExpect(status().isOk()).andReturn().getResponse();
                     assertThat(response).isNotNull();
 
                     RepresentationFactory representationFactory = new StandardRepresentationFactory();
                     ReadableRepresentation halResponse = representationFactory
-                        .readRepresentation("application/hal+json", new StringReader(response.getContentAsString()));
+                        .readRepresentation(RestTestMediaTypes.APPLICATION_HAL_JSON_VALUE, new StringReader(response.getContentAsString()));
 
                     assertThat(halResponse).isNotNull();
                     assertThat(halResponse.getLinksByRel("content")).isNotNull();

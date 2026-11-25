@@ -1,5 +1,6 @@
 package it.internal.org.springframework.content.rest.controllers.support;
 
+import org.springframework.http.MediaType;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
@@ -100,7 +101,7 @@ public abstract class LastModifiedDateTests {
         void shouldReturnContentWithLastModifiedHeader() throws Exception {
             MockHttpServletResponse response = mvc
                 .perform(get(url)
-                    .accept("text/plain"))
+                    .accept(MediaType.TEXT_PLAIN_VALUE))
                 .andExpect(status().isOk())
                 .andReturn().getResponse();
 
@@ -124,7 +125,7 @@ public abstract class LastModifiedDateTests {
 
             MockHttpServletResponse response = mvc
                 .perform(get(url)
-                    .accept("text/plain")
+                    .accept(MediaType.TEXT_PLAIN_VALUE)
                     .header("if-modified-since", ifModifiedSince))
                 .andExpect(status().isOk())
                 .andReturn().getResponse();
@@ -141,7 +142,7 @@ public abstract class LastModifiedDateTests {
         @Test
         void shouldRespondWith304NotModified() throws Exception {
             mvc.perform(get(url)
-                    .accept("text/plain")
+                    .accept(MediaType.TEXT_PLAIN_VALUE)
                     .header("if-modified-since", toHeaderDateFormat(lastModifiedDate)))
                 .andExpect(status().isNotModified())
                 .andExpect(content().string(""));
@@ -154,7 +155,7 @@ public abstract class LastModifiedDateTests {
         @Test
         void shouldRespondWith412PreconditionFailed() throws Exception {
             mvc.perform(get(url)
-                    .accept("text/plain")
+                    .accept(MediaType.TEXT_PLAIN_VALUE)
                     .header("if-unmodified-since", toHeaderDateFormat(dayBefore(lastModifiedDate))))
                 .andExpect(status().isPreconditionFailed())
                 .andReturn();
@@ -167,7 +168,7 @@ public abstract class LastModifiedDateTests {
         @Test
         void shouldRespondWith200AndContent() throws Exception {
             mvc.perform(get(url)
-                    .accept("text/plain")
+                    .accept(MediaType.TEXT_PLAIN_VALUE)
                     .header("if-unmodified-since", isWithinASecond(lastModifiedDate)))
                 .andExpect(status().isOk())
                 .andExpect(content().string(content));
@@ -181,7 +182,7 @@ public abstract class LastModifiedDateTests {
         void shouldRespondWith412PreconditionFailed() throws Exception {
             mvc.perform(put(url)
                     .content("Hello Modified Spring Content World!")
-                    .contentType("text/plain")
+                    .contentType(MediaType.TEXT_PLAIN_VALUE)
                     .header("if-unmodified-since", toHeaderDateFormat(dayBefore(lastModifiedDate))))
                 .andExpect(status().isPreconditionFailed());
         }
@@ -194,7 +195,7 @@ public abstract class LastModifiedDateTests {
         void shouldUpdateContent() throws Exception {
             mvc.perform(put(url)
                     .content("Hello Modified Spring Content World!")
-                    .contentType("text/plain")
+                    .contentType(MediaType.TEXT_PLAIN_VALUE)
                     .header("if-unmodified-since", toHeaderDateFormat(lastModifiedDate)))
                 .andExpect(status().isOk());
         }
@@ -208,7 +209,7 @@ public abstract class LastModifiedDateTests {
             if (etag != null) {
                 mvc.perform(put(url)
                         .content("Hello Modified Spring Content World!")
-                        .contentType("text/plain")
+                        .contentType(MediaType.TEXT_PLAIN_VALUE)
                         .header("if-unmodified-since", toHeaderDateFormat(lastModifiedDate))
                         .header("if-none-match", etag))
                     .andExpect(status().isPreconditionFailed());

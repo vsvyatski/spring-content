@@ -1,5 +1,6 @@
 package it.internal.org.springframework.content.rest.controllers.support;
 
+import org.springframework.http.MediaType;
 import internal.org.springframework.content.rest.support.ContentEntity;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -77,7 +78,7 @@ public class ContentTests {
     class GetWithAcceptWildcard {
         @Test
         void shouldReturn404() throws Exception {
-            mvc.perform(get(url).accept("*/*")).andExpect(status().isNotFound());
+            mvc.perform(get(url).accept(MediaType.ALL_VALUE)).andExpect(status().isNotFound());
         }
     }
 
@@ -86,7 +87,7 @@ public class ContentTests {
     class GetAcceptingContentMimeType {
         @Test
         void shouldReturn404() throws Exception {
-            mvc.perform(get(url).accept("text/plain")).andExpect(status().isNotFound());
+            mvc.perform(get(url).accept(MediaType.TEXT_PLAIN_VALUE)).andExpect(status().isNotFound());
         }
     }
 
@@ -96,14 +97,14 @@ public class ContentTests {
         @Test
         void shouldSetContentAndReturn201() throws Exception {
             String content = "Hello New Spring Content World!";
-            mvc.perform(put(url).contextPath(contextPath).content(content).contentType("text/plain"))
+            mvc.perform(put(url).contextPath(contextPath).content(content).contentType(MediaType.TEXT_PLAIN_VALUE))
                 .andExpect(status().isCreated());
 
             Optional<ContentEntity> fetched = repository.findById(entity.getId());
             assertThat(fetched.isPresent()).isTrue();
             assertThat(fetched.get().getContentId()).isNotNull();
             assertThat(fetched.get().getLen()).isEqualTo(31L);
-            assertThat(fetched.get().getMimeType()).isEqualTo("text/plain");
+            assertThat(fetched.get().getMimeType()).isEqualTo(MediaType.TEXT_PLAIN_VALUE);
             assertThat(IOUtils.toString(store.getContent(fetched.get()), StandardCharsets.UTF_8)).isEqualTo(content);
         }
     }
@@ -113,7 +114,7 @@ public class ContentTests {
     class DeleteWithMimeType {
         @Test
         void shouldReturn404() throws Exception {
-            mvc.perform(delete(url).contextPath(contextPath).accept("text/plain")).andExpect(status().isNotFound());
+            mvc.perform(delete(url).contextPath(contextPath).accept(MediaType.TEXT_PLAIN_VALUE)).andExpect(status().isNotFound());
         }
     }
 
@@ -125,7 +126,7 @@ public class ContentTests {
             String content = "This is Spring Content!";
 
             mvc.perform(multipart(url)
-                    .file(new MockMultipartFile("file", "表单ID及字段.txt", "text/plain", content.getBytes(StandardCharsets.UTF_8)))
+                    .file(new MockMultipartFile("file", "表单ID及字段.txt", MediaType.TEXT_PLAIN_VALUE, content.getBytes(StandardCharsets.UTF_8)))
                     .contextPath(contextPath)
                 )
                 .andExpect(status().isCreated());
@@ -134,7 +135,7 @@ public class ContentTests {
             assertThat(fetched.isPresent()).isTrue();
             assertThat(fetched.get().getContentId()).isNotNull();
             assertThat(fetched.get().getOriginalFileName()).isEqualTo("表单ID及字段.txt");
-            assertThat(fetched.get().getMimeType()).isEqualTo("text/plain");
+            assertThat(fetched.get().getMimeType()).isEqualTo(MediaType.TEXT_PLAIN_VALUE);
             assertThat(fetched.get().getLen()).isEqualTo(Long.valueOf(content.length()));
         }
     }
@@ -149,7 +150,7 @@ public class ContentTests {
             void setUp() {
                 String content = "Hello Spring Content World!";
                 entity = store.setContent(entity, new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8)));
-                entity.setMimeType("text/plain");
+                entity.setMimeType(MediaType.TEXT_PLAIN_VALUE);
                 entity.setOriginalFileName("表单ID及字段.txt");
                 entity = repository.save(entity);
             }
@@ -161,7 +162,7 @@ public class ContentTests {
                 MockHttpServletResponse response = mvc
                     .perform(get(url)
                         .contextPath(contextPath)
-                        .accept("text/plain"))
+                        .accept(MediaType.TEXT_PLAIN_VALUE))
                     .andExpect(status().isOk()).andReturn().getResponse();
 
                 assertThat(response).isNotNull();
@@ -178,7 +179,7 @@ public class ContentTests {
             void setUp() {
                 String content = "Hello Spring Content World!";
                 entity = store.setContent(entity, new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8)));
-                entity.setMimeType("text/plain");
+                entity.setMimeType(MediaType.TEXT_PLAIN_VALUE);
                 entity.setOriginalFileName("表单ID及字段.txt");
                 entity = repository.save(entity);
             }
@@ -204,7 +205,7 @@ public class ContentTests {
             void setUp() {
                 String content = "Hello Spring Content World!";
                 entity = store.setContent(entity, new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8)));
-                entity.setMimeType("text/plain");
+                entity.setMimeType(MediaType.TEXT_PLAIN_VALUE);
                 entity.setOriginalFileName("表单ID及字段.txt");
                 entity = repository.save(entity);
             }
@@ -214,13 +215,13 @@ public class ContentTests {
                 MockHttpServletResponse response = mvc
                     .perform(get(url)
                         .contextPath(contextPath)
-                        .accept("text/html"))
+                        .accept(MediaType.TEXT_HTML_VALUE))
                     .andExpect(status().isOk()).andReturn()
                     .getResponse();
 
                 assertThat(response).isNotNull();
                 assertThat(response.getContentAsString()).isEqualTo(TestSupportData.SAMPLE_REST_HTML_RENDITION_BODY);
-                assertThat(response.getContentType()).isEqualTo("text/html");
+                assertThat(response.getContentType()).isEqualTo(MediaType.TEXT_HTML_VALUE);
             }
         }
 
@@ -231,13 +232,13 @@ public class ContentTests {
             void setUp() {
                 String content = "Hello Spring Content World!";
                 entity = store.setContent(entity, new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8)));
-                entity.setMimeType("text/plain");
+                entity.setMimeType(MediaType.TEXT_PLAIN_VALUE);
                 entity.setOriginalFileName("表单ID及字段.txt");
                 entity = repository.save(entity);
 
                 entity = store.setContent(entity,
                     new ByteArrayInputStream("<html><body>original content</body></html>".getBytes(StandardCharsets.UTF_8)));
-                entity.setMimeType("text/html");
+                entity.setMimeType(MediaType.TEXT_HTML_VALUE);
                 entity = repository.save(entity);
             }
 
@@ -246,13 +247,13 @@ public class ContentTests {
                 MockHttpServletResponse response = mvc
                     .perform(get(url)
                         .contextPath(contextPath)
-                        .accept("text/html"))
+                        .accept(MediaType.TEXT_HTML_VALUE))
                     .andExpect(status().isOk()).andReturn()
                     .getResponse();
 
                 assertThat(response).isNotNull();
                 assertThat(response.getContentAsString()).isEqualTo("<html><body>original content</body></html>");
-                assertThat(response.getContentType()).isEqualTo("text/html");
+                assertThat(response.getContentType()).isEqualTo(MediaType.TEXT_HTML_VALUE);
             }
         }
 
@@ -263,7 +264,7 @@ public class ContentTests {
             void setUp() {
                 String content = "Hello Spring Content World!";
                 entity = store.setContent(entity, new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8)));
-                entity.setMimeType("text/plain");
+                entity.setMimeType(MediaType.TEXT_PLAIN_VALUE);
                 entity.setOriginalFileName("表单ID及字段.txt");
                 entity = repository.save(entity);
             }
@@ -272,13 +273,13 @@ public class ContentTests {
             void shouldReturnOriginalContentAnd200() throws Exception {
                 MockHttpServletResponse response = mvc.perform(get(url)
                         .contextPath(contextPath)
-                        .accept("text/xml", "text/plain"))
+                        .accept(MediaType.TEXT_XML_VALUE, MediaType.TEXT_PLAIN_VALUE))
                     .andExpect(status().isOk()).andReturn()
                     .getResponse();
 
                 assertThat(response).isNotNull();
                 assertThat(response.getContentAsString()).isEqualTo("Hello Spring Content World!");
-                assertThat(response.getContentType()).isEqualTo("text/plain");
+                assertThat(response.getContentType()).isEqualTo(MediaType.TEXT_PLAIN_VALUE);
             }
         }
 
@@ -289,7 +290,7 @@ public class ContentTests {
             void setUp() {
                 String content = "Hello Spring Content World!";
                 entity = store.setContent(entity, new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8)));
-                entity.setMimeType("text/plain");
+                entity.setMimeType(MediaType.TEXT_PLAIN_VALUE);
                 entity.setOriginalFileName("表单ID及字段.txt");
                 entity = repository.save(entity);
             }
@@ -298,13 +299,13 @@ public class ContentTests {
             void shouldReturnOriginalContentAnd200() throws Exception {
                 MockHttpServletResponse response = mvc.perform(get(url)
                         .contextPath(contextPath)
-                        .accept("text/xml", "text/html", "*/*"))
+                        .accept(MediaType.TEXT_XML_VALUE, MediaType.TEXT_HTML_VALUE, MediaType.ALL_VALUE))
                     .andExpect(status().isOk()).andReturn()
                     .getResponse();
 
                 assertThat(response).isNotNull();
                 assertThat(response.getContentAsString()).isEqualTo(TestSupportData.SAMPLE_REST_HTML_RENDITION_BODY);
-                assertThat(response.getContentType()).isEqualTo("text/html");
+                assertThat(response.getContentType()).isEqualTo(MediaType.TEXT_HTML_VALUE);
             }
         }
 
@@ -315,7 +316,7 @@ public class ContentTests {
             void setUp() {
                 String content = "Hello Spring Content World!";
                 entity = store.setContent(entity, new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8)));
-                entity.setMimeType("text/plain");
+                entity.setMimeType(MediaType.TEXT_PLAIN_VALUE);
                 entity.setOriginalFileName("表单ID及字段.txt");
                 entity = repository.save(entity);
             }
@@ -324,13 +325,13 @@ public class ContentTests {
             void shouldReturnOriginalContentAnd200() throws Exception {
                 MockHttpServletResponse response = mvc.perform(get(url)
                         .contextPath(contextPath)
-                        .accept("*/*"))
+                        .accept(MediaType.ALL_VALUE))
                     .andExpect(status().isOk()).andReturn()
                     .getResponse();
 
                 assertThat(response).isNotNull();
                 assertThat(response.getContentAsString()).isEqualTo("Hello Spring Content World!");
-                assertThat(response.getContentType()).isEqualTo("text/plain");
+                assertThat(response.getContentType()).isEqualTo(MediaType.TEXT_PLAIN_VALUE);
             }
         }
 
@@ -341,7 +342,7 @@ public class ContentTests {
             void setUp() {
                 String content = "Hello Spring Content World!";
                 entity = store.setContent(entity, new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8)));
-                entity.setMimeType("text/plain");
+                entity.setMimeType(MediaType.TEXT_PLAIN_VALUE);
                 entity.setOriginalFileName("表单ID及字段.txt");
                 entity = repository.save(entity);
             }
@@ -367,7 +368,7 @@ public class ContentTests {
             void setUp() {
                 String content = "Hello Spring Content World!";
                 entity = store.setContent(entity, new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8)));
-                entity.setMimeType("text/plain");
+                entity.setMimeType(MediaType.TEXT_PLAIN_VALUE);
                 entity.setOriginalFileName("表单ID及字段.txt");
                 entity = repository.save(entity);
 
@@ -379,7 +380,7 @@ public class ContentTests {
             void shouldReturnOriginalContentAnd200() throws Exception {
                 MockHttpServletResponse response = mvc.perform(get(url)
                         .contextPath(contextPath)
-                        .accept("text/plain"))
+                        .accept(MediaType.TEXT_PLAIN_VALUE))
                     .andExpect(status().isOk()).andReturn()
                     .getResponse();
 
@@ -396,7 +397,7 @@ public class ContentTests {
             void setUp() {
                 String content = "Hello Spring Content World!";
                 entity = store.setContent(entity, new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8)));
-                entity.setMimeType("text/plain");
+                entity.setMimeType(MediaType.TEXT_PLAIN_VALUE);
                 entity.setOriginalFileName("表单ID及字段.txt");
                 entity = repository.save(entity);
             }
@@ -417,7 +418,7 @@ public class ContentTests {
             void setUp() {
                 String content = "Hello Spring Content World!";
                 entity = store.setContent(entity, new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8)));
-                entity.setMimeType("text/plain");
+                entity.setMimeType(MediaType.TEXT_PLAIN_VALUE);
                 entity.setOriginalFileName("表单ID及字段.txt");
                 entity = repository.save(entity);
             }
@@ -427,7 +428,7 @@ public class ContentTests {
                 MockHttpServletResponse response = mvc
                     .perform(get(url)
                         .contextPath(contextPath)
-                        .accept("text/plain")
+                        .accept(MediaType.TEXT_PLAIN_VALUE)
                         .header("range", "bytes=6-19"))
                     .andExpect(status().isPartialContent()).andReturn()
                     .getResponse();
@@ -444,7 +445,7 @@ public class ContentTests {
             void setUp() {
                 String content = "Hello Spring Content World!";
                 entity = store.setContent(entity, new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8)));
-                entity.setMimeType("text/plain");
+                entity.setMimeType(MediaType.TEXT_PLAIN_VALUE);
                 entity.setOriginalFileName("表单ID及字段.txt");
                 entity = repository.save(entity);
             }
@@ -454,7 +455,7 @@ public class ContentTests {
                 mvc.perform(put(url)
                         .contextPath(contextPath)
                         .content("Hello Modified Spring Content World!")
-                        .contentType("text/plain"))
+                        .contentType(MediaType.TEXT_PLAIN_VALUE))
                     .andExpect(status().isOk());
 
                 assertThat(IOUtils.toString(store.getContent(entity), StandardCharsets.UTF_8))
@@ -469,7 +470,7 @@ public class ContentTests {
             void setUp() {
                 String content = "Hello Spring Content World!";
                 entity = store.setContent(entity, new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8)));
-                entity.setMimeType("text/plain");
+                entity.setMimeType(MediaType.TEXT_PLAIN_VALUE);
                 entity.setOriginalFileName("表单ID及字段.txt");
                 entity = repository.save(entity);
             }
@@ -481,7 +482,7 @@ public class ContentTests {
                 mvc.perform(multipart(url)
                         .file(new MockMultipartFile("file",
                             "tests-file-modified.txt",
-                            "text/plain", content.getBytes(StandardCharsets.UTF_8)))
+                            MediaType.TEXT_PLAIN_VALUE, content.getBytes(StandardCharsets.UTF_8)))
                         .contextPath(contextPath)
                     )
                     .andExpect(status().isOk());
@@ -490,7 +491,7 @@ public class ContentTests {
                 assertThat(fetched.isPresent()).isTrue();
                 assertThat(fetched.get().getContentId()).isNotNull();
                 assertThat(fetched.get().getOriginalFileName()).isEqualTo("tests-file-modified.txt");
-                assertThat(fetched.get().getMimeType()).isEqualTo("text/plain");
+                assertThat(fetched.get().getMimeType()).isEqualTo(MediaType.TEXT_PLAIN_VALUE);
                 assertThat(fetched.get().getLen()).isEqualTo(Long.valueOf(content.length()));
             }
         }
@@ -502,7 +503,7 @@ public class ContentTests {
             void setUp() {
                 String content = "Hello Spring Content World!";
                 entity = store.setContent(entity, new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8)));
-                entity.setMimeType("text/plain");
+                entity.setMimeType(MediaType.TEXT_PLAIN_VALUE);
                 entity.setOriginalFileName("表单ID及字段.txt");
                 entity = repository.save(entity);
             }
@@ -524,7 +525,7 @@ public class ContentTests {
             void setUp() {
                 String content = "Hello Spring Content World!";
                 entity = store.setContent(entity, new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8)));
-                entity.setMimeType("text/plain");
+                entity.setMimeType(MediaType.TEXT_PLAIN_VALUE);
                 entity.setOriginalFileName("表单ID及字段.txt");
                 entity = repository.save(entity);
             }
@@ -536,7 +537,7 @@ public class ContentTests {
                 mvc.perform(multipart(HttpMethod.PUT, url)
                         .file(new MockMultipartFile("file",
                             "tests-file-modified.txt",
-                            "text/plain", content.getBytes(StandardCharsets.UTF_8)))
+                            MediaType.TEXT_PLAIN_VALUE, content.getBytes(StandardCharsets.UTF_8)))
                         .contextPath(contextPath)
                     )
                     .andExpect(status().isOk());
@@ -545,7 +546,7 @@ public class ContentTests {
                 assertThat(fetched.isPresent()).isTrue();
                 assertThat(fetched.get().getContentId()).isNotNull();
                 assertThat(fetched.get().getOriginalFileName()).isEqualTo("tests-file-modified.txt");
-                assertThat(fetched.get().getMimeType()).isEqualTo("text/plain");
+                assertThat(fetched.get().getMimeType()).isEqualTo(MediaType.TEXT_PLAIN_VALUE);
                 assertThat(fetched.get().getLen()).isEqualTo(Long.valueOf(content.length()));
             }
         }
@@ -557,7 +558,7 @@ public class ContentTests {
             void setUp() {
                 String content = "Hello Spring Content World!";
                 entity = store.setContent(entity, new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8)));
-                entity.setMimeType("text/plain");
+                entity.setMimeType(MediaType.TEXT_PLAIN_VALUE);
                 entity.setOriginalFileName("表单ID及字段.txt");
                 entity = repository.save(entity);
             }
@@ -565,7 +566,7 @@ public class ContentTests {
             @Test
             void shouldDeleteContentAttributesAndReturn204() throws Exception {
                 mvc.perform(delete(url)
-                        .contentType("text/plain")
+                        .contentType(MediaType.TEXT_PLAIN_VALUE)
                         .contextPath(contextPath)
                     )
                     .andExpect(status().isNoContent());

@@ -1,5 +1,6 @@
 package internal.org.springframework.content.rest.links;
 
+import org.springframework.http.MediaType;
 import internal.org.springframework.content.rest.support.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -88,7 +89,7 @@ public class ContentLinksIT {
                 AuditedNestedContentEntityRepository repository2 = context.getBean(AuditedNestedContentEntityRepository.class);
                 AuditedNestedContentEntityStore store2 = context.getBean(AuditedNestedContentEntityStore.class);
                 AuditedNestedContentEntity testEntity2 = new AuditedNestedContentEntity();
-                testEntity2.getChild().setMimeType("text/plain");
+                testEntity2.getChild().setMimeType(MediaType.TEXT_PLAIN_VALUE);
                 store2.setContent(testEntity2, PropertyPath.from("child"), TestSupportData.sampleTextStream());
                 testEntity2 = repository2.save(testEntity2);
                 this.setMvc(mvc);
@@ -117,10 +118,10 @@ public class ContentLinksIT {
                 EmbeddedDualContentEntityStore store10 = context.getBean(EmbeddedDualContentEntityStore.class);
                 EmbeddedDualContentEntity testEntity10 = new EmbeddedDualContentEntity();
                 store10.setContent(testEntity10, PropertyPath.from("child/content"), TestSupportData.sampleTextStream());
-                testEntity10.getChild().setContentMimeType("text/plain");
+                testEntity10.getChild().setContentMimeType(MediaType.TEXT_PLAIN_VALUE);
                 testEntity10.getChild().setContentFileName("test");
                 store10.setContent(testEntity10, PropertyPath.from("child/preview"), TestSupportData.sampleTextStream());
-                testEntity10.getChild().setPreviewMimeType("text/plain");
+                testEntity10.getChild().setPreviewMimeType(MediaType.TEXT_PLAIN_VALUE);
                 testEntity10 = repository10.save(testEntity10);
                 this.setMvc(mvc);
                 this.setUrl("/api/embeddedDualContentEntities/" + testEntity10.getId());

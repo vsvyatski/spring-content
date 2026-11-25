@@ -1,5 +1,6 @@
 package it.internal.org.springframework.content.rest.controllers;
 
+import org.springframework.http.MediaType;
 import internal.org.springframework.content.rest.support.EmbeddedDualContentEntity;
 import internal.org.springframework.content.rest.support.EmbeddedDualContentEntityRepository;
 import internal.org.springframework.content.rest.support.EmbeddedDualContentEntityStore;
@@ -142,14 +143,14 @@ public class NestedContentPropertiesRestEndpointsIT {
                         mvc.perform(
                                 put("/embeddedDualContentEntities/" + testEntity10.getId() + "/child/content")
                                     .content("Hello New Spring Content World!")
-                                    .contentType("text/plain"))
+                                    .contentType(MediaType.TEXT_PLAIN_VALUE))
                             .andExpect(status().is2xxSuccessful());
 
                         Optional<EmbeddedDualContentEntity> fetched = repository.findById(testEntity10.getId());
                         assertThat(fetched.isPresent()).isTrue();
                         assertThat(fetched.get().getChild().contentId).isNotNull();
                         assertThat(fetched.get().getChild().contentLen).isEqualTo(31L);
-                        assertThat(fetched.get().getChild().contentMimeType).isEqualTo("text/plain");
+                        assertThat(fetched.get().getChild().contentMimeType).isEqualTo(MediaType.TEXT_PLAIN_VALUE);
                         try (InputStream actual = store.getResource(fetched.get(), PropertyPath.from("child/content")).getInputStream()) {
                             IOUtils.contentEquals(actual, new ByteArrayInputStream("Hello New Spring Content World!".getBytes()));
                         }
@@ -157,14 +158,14 @@ public class NestedContentPropertiesRestEndpointsIT {
                         mvc.perform(
                                 put("/embeddedDualContentEntities/" + testEntity10.getId() + "/child/preview")
                                     .content("Hello New Spring Content Preview World!")
-                                    .contentType("text/plain"))
+                                    .contentType(MediaType.TEXT_PLAIN_VALUE))
                             .andExpect(status().is2xxSuccessful());
 
                         fetched = repository.findById(testEntity10.getId());
                         assertThat(fetched.isPresent()).isTrue();
                         assertThat(fetched.get().getChild().getPreviewId()).isNotNull();
                         assertThat(fetched.get().getChild().getPreviewLen()).isEqualTo(39L);
-                        assertThat(fetched.get().getChild().getPreviewMimeType()).isEqualTo("text/plain");
+                        assertThat(fetched.get().getChild().getPreviewMimeType()).isEqualTo(MediaType.TEXT_PLAIN_VALUE);
                         try (InputStream actual = store.getResource(fetched.get(), PropertyPath.from("child/preview")).getInputStream()) {
                             IOUtils.contentEquals(actual, new ByteArrayInputStream("Hello New Spring Content Preview World!".getBytes()));
                         }
@@ -187,14 +188,14 @@ public class NestedContentPropertiesRestEndpointsIT {
                         mvc.perform(
                                 put("/embeddedDualContentEntities/" + testEntity10.getId() + "/child/content")
                                     .content(content)
-                                    .contentType("application/json"))
+                                    .contentType(MediaType.APPLICATION_JSON_VALUE))
                             .andExpect(status().isCreated());
 
                         Optional<EmbeddedDualContentEntity> fetched = repository.findById(testEntity10.getId());
                         assertThat(fetched.isPresent()).isTrue();
                         assertThat(fetched.get().getChild().getContentId()).isNotNull();
                         assertThat(fetched.get().getChild().getContentLen()).isEqualTo(45L);
-                        assertThat(fetched.get().getChild().getContentMimeType()).isEqualTo("application/json");
+                        assertThat(fetched.get().getChild().getContentMimeType()).isEqualTo(MediaType.APPLICATION_JSON_VALUE);
                         try (InputStream actual = store.getResource(fetched.get(), PropertyPath.from("child/content")).getInputStream()) {
                             IOUtils.contentEquals(actual, new ByteArrayInputStream(content.getBytes()));
                         }
@@ -215,7 +216,7 @@ public class NestedContentPropertiesRestEndpointsIT {
                         testEntity10 = repository.save(new EmbeddedDualContentEntity());
 
                         String content = TestSupportData.SAMPLE_TEXT_PAYLOAD;
-                        testEntity10.getChild().contentMimeType = "text/plain";
+                        testEntity10.getChild().contentMimeType = MediaType.TEXT_PLAIN_VALUE;
                         UUID contentId = UUID.randomUUID();
                         store.associate(testEntity10, PropertyPath.from("child/content"), contentId);
                         WritableResource r = (WritableResource) store.getResource(testEntity10, PropertyPath.from("child/content"));
@@ -229,7 +230,7 @@ public class NestedContentPropertiesRestEndpointsIT {
                     void shouldReturnContent() throws Exception {
                         MockHttpServletResponse response = mvc
                             .perform(get("/embeddedDualContentEntities/" + testEntity10.getId() + "/child/content")
-                                .accept("text/plain"))
+                                .accept(MediaType.TEXT_PLAIN_VALUE))
                             .andExpect(status().isOk())
                             .andExpect(header().string("etag", is("\"1\"")))
                             .andExpect(header().string("last-modified", LastModifiedDateTests
@@ -251,7 +252,7 @@ public class NestedContentPropertiesRestEndpointsIT {
                         testEntity10 = repository.save(new EmbeddedDualContentEntity());
 
                         String content = TestSupportData.SAMPLE_TEXT_PAYLOAD;
-                        testEntity10.getChild().contentMimeType = "text/plain";
+                        testEntity10.getChild().contentMimeType = MediaType.TEXT_PLAIN_VALUE;
                         UUID contentId = UUID.randomUUID();
                         store.associate(testEntity10, PropertyPath.from("child/content"), contentId);
                         WritableResource r = (WritableResource) store.getResource(testEntity10, PropertyPath.from("child/content"));
@@ -267,7 +268,7 @@ public class NestedContentPropertiesRestEndpointsIT {
                             .perform(get(
                                 "/embeddedDualContentEntities/" + testEntity10.getId()
                                     + "/child/content")
-                                .accept("text/html"))
+                                .accept(MediaType.TEXT_HTML_VALUE))
                             .andExpect(status().isOk()).andReturn()
                             .getResponse();
 
@@ -286,7 +287,7 @@ public class NestedContentPropertiesRestEndpointsIT {
                         testEntity10 = repository.save(new EmbeddedDualContentEntity());
 
                         String content = TestSupportData.SAMPLE_TEXT_PAYLOAD;
-                        testEntity10.getChild().contentMimeType = "text/plain";
+                        testEntity10.getChild().contentMimeType = MediaType.TEXT_PLAIN_VALUE;
                         UUID contentId = UUID.randomUUID();
                         store.associate(testEntity10, PropertyPath.from("child/content"), contentId);
                         WritableResource r = (WritableResource) store.getResource(testEntity10, PropertyPath.from("child/content"));
@@ -302,8 +303,8 @@ public class NestedContentPropertiesRestEndpointsIT {
                             .perform(get("/embeddedDualContentEntities/"
                                 + testEntity10.getId()
                                 + "/child/content").accept(
-                                "text/xml",
-                                "text/plain"))
+                                MediaType.TEXT_XML_VALUE,
+                                MediaType.TEXT_PLAIN_VALUE))
                             .andExpect(status().isOk()).andReturn()
                             .getResponse();
 
@@ -322,7 +323,7 @@ public class NestedContentPropertiesRestEndpointsIT {
                         testEntity10 = repository.save(new EmbeddedDualContentEntity());
 
                         String content = TestSupportData.SAMPLE_TEXT_PAYLOAD;
-                        testEntity10.getChild().contentMimeType = "text/plain";
+                        testEntity10.getChild().contentMimeType = MediaType.TEXT_PLAIN_VALUE;
                         UUID contentId = UUID.randomUUID();
                         store.associate(testEntity10, PropertyPath.from("child/content"), contentId);
                         WritableResource r = (WritableResource) store.getResource(testEntity10, PropertyPath.from("child/content"));
@@ -337,7 +338,7 @@ public class NestedContentPropertiesRestEndpointsIT {
                         mvc.perform(
                                 put("/embeddedDualContentEntities/" + testEntity10.getId() + "/child/content")
                                     .content("Hello New Spring Content World!")
-                                    .contentType("text/plain"))
+                                    .contentType(MediaType.TEXT_PLAIN_VALUE))
                             .andExpect(status().is2xxSuccessful());
 
                         Optional<EmbeddedDualContentEntity> fetched = repository
@@ -345,7 +346,7 @@ public class NestedContentPropertiesRestEndpointsIT {
                         assertThat(fetched.isPresent()).isTrue();
                         assertThat(fetched.get().getChild().contentId).isNotNull();
                         assertThat(fetched.get().getChild().contentLen).isEqualTo(31L);
-                        assertThat(fetched.get().getChild().contentMimeType).isEqualTo("text/plain");
+                        assertThat(fetched.get().getChild().contentMimeType).isEqualTo(MediaType.TEXT_PLAIN_VALUE);
                     }
                 }
 
@@ -359,7 +360,7 @@ public class NestedContentPropertiesRestEndpointsIT {
                         testEntity10 = repository.save(new EmbeddedDualContentEntity());
 
                         String content = TestSupportData.SAMPLE_TEXT_PAYLOAD;
-                        testEntity10.getChild().contentMimeType = "text/plain";
+                        testEntity10.getChild().contentMimeType = MediaType.TEXT_PLAIN_VALUE;
                         UUID contentId = UUID.randomUUID();
                         store.associate(testEntity10, PropertyPath.from("child/content"), contentId);
                         WritableResource r = (WritableResource) store.getResource(testEntity10, PropertyPath.from("child/content"));
@@ -399,8 +400,8 @@ public class NestedContentPropertiesRestEndpointsIT {
                 String content = "This is some new content";
                 String previewContent = "This is some new preview content";
 
-                MockMultipartFile file1 = new MockMultipartFile("child/content", "filename.txt", "text/plain", content.getBytes());
-                MockMultipartFile file2 = new MockMultipartFile("child/preview", "preview.txt", "text/plain", previewContent.getBytes());
+                MockMultipartFile file1 = new MockMultipartFile("child/content", "filename.txt", MediaType.TEXT_PLAIN_VALUE, content.getBytes());
+                MockMultipartFile file2 = new MockMultipartFile("child/preview", "preview.txt", MediaType.TEXT_PLAIN_VALUE, previewContent.getBytes());
 
                 // POST the new content
                 MockHttpServletResponse response = mvc.perform(multipart("/embeddedDualContentEntities")
@@ -414,14 +415,14 @@ public class NestedContentPropertiesRestEndpointsIT {
 
                 // assert that it now exists
                 response = mvc.perform(get(location + "/child/content")
-                        .accept("text/plain"))
+                        .accept(MediaType.TEXT_PLAIN_VALUE))
                     .andExpect(status().isOk())
                     .andReturn().getResponse();
 
                 assertThat(response.getContentAsString()).isEqualTo(content);
 
                 response = mvc.perform(get(location + "/child/preview")
-                        .accept("text/plain"))
+                        .accept(MediaType.TEXT_PLAIN_VALUE))
                     .andExpect(status().isOk())
                     .andReturn().getResponse();
 

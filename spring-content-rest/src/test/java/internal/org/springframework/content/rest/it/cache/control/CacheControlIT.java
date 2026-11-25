@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.content.fs.store.FileSystemContentStore;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -39,11 +40,11 @@ public class CacheControlIT {
         UuidSingleContentEntity entity = new UuidSingleContentEntity();
         entity = repo.save(entity);
         entity = store.setContent(entity, new ByteArrayInputStream("some content".getBytes()));
-        entity.setMimeType("text/plain");
+        entity.setMimeType(MediaType.TEXT_PLAIN_VALUE);
         entity = repo.save(entity);
 
         given()
-            .accept("text/plain")
+            .accept(MediaType.TEXT_PLAIN_VALUE)
             .when()
             .get("/uuidSingleContentEntities/" + entity.getId())
             .then()
@@ -56,11 +57,11 @@ public class CacheControlIT {
         UuidSingleContentEntity entity = new UuidSingleContentEntity();
         entity = repo.save(entity);
         entity = store.setContent(entity, new ByteArrayInputStream("some content".getBytes()));
-        entity.setMimeType("text/plain");
+        entity.setMimeType(MediaType.TEXT_PLAIN_VALUE);
         entity = repo.save(entity);
 
         given()
-            .accept("text/plain")
+            .accept(MediaType.TEXT_PLAIN_VALUE)
             .when()
             .get("/uuidSingleContentEntities/" + entity.getId() + "/content")
             .then()

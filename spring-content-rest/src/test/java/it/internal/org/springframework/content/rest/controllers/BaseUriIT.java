@@ -1,5 +1,6 @@
 package it.internal.org.springframework.content.rest.controllers;
 
+import org.springframework.http.MediaType;
 import internal.org.springframework.content.rest.support.*;
 import it.internal.org.springframework.content.rest.controllers.support.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -136,7 +137,7 @@ public class BaseUriIT {
                     mvc = MockMvcBuilders.webAppContextSetup(context).build();
                     testEntity4 = new OneToOneLinkedContentEntity();
                     testEntity4 = store4.setContent(testEntity4, TestSupportData.sampleTextStream());
-                    testEntity4.mimeType = "text/plain";
+                    testEntity4.mimeType = MediaType.TEXT_PLAIN_VALUE;
                     testEntity4 = repo4.save(testEntity4);
                     String url = "/contentApi/oneToOneLinkedContentEntities/" + testEntity4.getId();
                     this.setEntity(testEntity4);
@@ -159,7 +160,7 @@ public class BaseUriIT {
                     String content = TestSupportData.SAMPLE_LAST_MODIFIED_DATE_PAYLOAD;
                     testEntity4 = new OneToOneLinkedContentEntity();
                     testEntity4 = store4.setContent(testEntity4, new ByteArrayInputStream(content.getBytes()));
-                    testEntity4.mimeType = "text/plain";
+                    testEntity4.mimeType = MediaType.TEXT_PLAIN_VALUE;
                     testEntity4 = repo4.save(testEntity4);
                     String url = "/contentApi/oneToOneLinkedContentEntities/" + testEntity4.getId();
                     this.setMvc(mvc);

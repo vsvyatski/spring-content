@@ -1,5 +1,6 @@
 package it.rest.versioning;
 
+import org.springframework.http.MediaType;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import io.restassured.path.json.JsonPath;
 import org.apache.http.HttpStatus;
@@ -97,7 +98,7 @@ public class LockingAndVersioningRestIT {
 
                 given()
                     .auth().with(SecurityMockMvcRequestPostProcessors.user("paul123").password("password"))
-                    .header("accept", "application/json")
+                    .header("accept", MediaType.APPLICATION_JSON_VALUE)
                     .put("/versionedDocuments/" + doc.getId() + "/lock")
                     .then()
                     .statusCode(HttpStatus.SC_OK);
@@ -115,7 +116,7 @@ public class LockingAndVersioningRestIT {
                 JsonPath response =
                     given()
                         .auth().with(SecurityMockMvcRequestPostProcessors.user("paul123").password("password"))
-                        .contentType("application/json")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .body("{\"number\":\"1.1\",\"label\":\"some minor changes\"}".getBytes())
                         .put("/versionedDocuments/" + doc.getId() + "/version")
                         .then()

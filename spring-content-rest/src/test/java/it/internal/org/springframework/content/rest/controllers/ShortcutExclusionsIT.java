@@ -20,6 +20,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguration;
+import internal.org.springframework.content.rest.support.RestTestMediaTypes;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
@@ -67,7 +68,7 @@ public class ShortcutExclusionsIT {
         @Bean
         public ContentRestConfigurer contentRestConfigurer() {
 
-            return config -> config.shortcutExclusions().exclude("GET", MediaType.parseMediaType("*/*"));
+            return config -> config.shortcutExclusions().exclude("GET", MediaType.ALL);
         }
 
         @Bean
@@ -103,13 +104,13 @@ public class ShortcutExclusionsIT {
             void shouldReturnEntity() throws Exception {
                 MockHttpServletResponse response = mvc
                     .perform(get("/jsonMappedContentEntities/" + testEntity.getId())
-                        .accept("*/*"))
+                        .accept(MediaType.ALL_VALUE))
                     .andExpect(status().isOk())
                     .andReturn().getResponse();
 
                 RepresentationFactory representationFactory = new StandardRepresentationFactory();
                 ReadableRepresentation halResponse = representationFactory
-                    .readRepresentation("application/hal+json",
+                    .readRepresentation(RestTestMediaTypes.APPLICATION_HAL_JSON_VALUE,
                         new StringReader(response.getContentAsString()));
                 assertThat(halResponse.getLinks().size()).isGreaterThan(2);
                 assertThat(halResponse.getLinksByRel("testEntity3")).isNotNull();

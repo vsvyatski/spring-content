@@ -10,6 +10,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.content.commons.property.PropertyPath;
+import org.springframework.http.MediaType;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.io.ByteArrayInputStream;
@@ -72,7 +73,7 @@ public abstract class AbstractRestIT {
         String newContent = "This is some new content";
 
         given()
-            .contentType("text/plain")
+            .contentType(MediaType.TEXT_PLAIN_VALUE)
             .body(newContent.getBytes())
             .when()
             .post("/files/" + existingClaim.getId() + "/child")
@@ -80,12 +81,12 @@ public abstract class AbstractRestIT {
             .statusCode(HttpStatus.SC_CREATED);
 
         var response1 = given()
-            .header("accept", "text/plain")
+            .header("accept", MediaType.TEXT_PLAIN_VALUE)
             .get("/files/" + existingClaim.getId() + "/child")
             .then()
             .statusCode(HttpStatus.SC_OK)
             .extract().response();
-        assertThat(response1.getContentType()).startsWith("text/plain");
+        assertThat(response1.getContentType()).startsWith(MediaType.TEXT_PLAIN_VALUE);
         assertThat(response1.asString()).isEqualTo(newContent);
     }
 
@@ -93,7 +94,7 @@ public abstract class AbstractRestIT {
     @DisplayName("Given that claim has existing content, should return content with 200 OK")
     void shouldReturnContentWith200OK() {
         AuditedNestedContentEntity existingClaim = newClaim();
-        existingClaim.getChild().setMimeType("text/plain");
+        existingClaim.getChild().setMimeType(MediaType.TEXT_PLAIN_VALUE);
         claimFormStore.setContent(
             existingClaim,
             PropertyPath.from("child"),
@@ -101,12 +102,12 @@ public abstract class AbstractRestIT {
         claimRepo.save(existingClaim);
 
         var response2 = given()
-            .header("accept", "text/plain")
+            .header("accept", MediaType.TEXT_PLAIN_VALUE)
             .get("/files/" + existingClaim.getId() + "/child")
             .then()
             .statusCode(HttpStatus.SC_OK)
             .extract().response();
-        assertThat(response2.getContentType()).startsWith("text/plain");
+        assertThat(response2.getContentType()).startsWith(MediaType.TEXT_PLAIN_VALUE);
         assertThat(response2.asString()).isEqualTo("This is plain text content!");
     }
 
@@ -114,7 +115,7 @@ public abstract class AbstractRestIT {
     @DisplayName("Given that claim has existing content, should be postable with new content with 200 OK")
     void shouldBePostableWithNewContentWith200OkWhenContentExists() {
         AuditedNestedContentEntity existingClaim = newClaim();
-        existingClaim.getChild().setMimeType("text/plain");
+        existingClaim.getChild().setMimeType(MediaType.TEXT_PLAIN_VALUE);
         claimFormStore.setContent(
             existingClaim,
             PropertyPath.from("child"),
@@ -124,7 +125,7 @@ public abstract class AbstractRestIT {
         String newContent = "This is new content";
 
         given()
-            .contentType("text/plain")
+            .contentType(MediaType.TEXT_PLAIN_VALUE)
             .body(newContent.getBytes())
             .when()
             .post("/files/" + existingClaim.getId() + "/child")
@@ -132,12 +133,12 @@ public abstract class AbstractRestIT {
             .statusCode(HttpStatus.SC_OK);
 
         var response3 = given()
-            .header("accept", "text/plain")
+            .header("accept", MediaType.TEXT_PLAIN_VALUE)
             .get("/files/" + existingClaim.getId() + "/child")
             .then()
             .statusCode(HttpStatus.SC_OK)
             .extract().response();
-        assertThat(response3.getContentType()).startsWith("text/plain");
+        assertThat(response3.getContentType()).startsWith(MediaType.TEXT_PLAIN_VALUE);
         assertThat(response3.asString()).isEqualTo(newContent);
     }
 
@@ -145,7 +146,7 @@ public abstract class AbstractRestIT {
     @DisplayName("Given that claim has existing content, should be deletable with 204 No Content")
     void shouldBeDeletableWith204NoContent() {
         AuditedNestedContentEntity existingClaim = newClaim();
-        existingClaim.getChild().setMimeType("text/plain");
+        existingClaim.getChild().setMimeType(MediaType.TEXT_PLAIN_VALUE);
         claimFormStore.setContent(
             existingClaim,
             PropertyPath.from("child"),

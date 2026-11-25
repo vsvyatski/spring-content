@@ -1,5 +1,6 @@
 package internal.org.springframework.content.rest.store.resolver;
 
+import org.springframework.http.MediaType;
 import internal.org.springframework.content.rest.scoped.store.resolver.StoreResolverEntityFsStore;
 import internal.org.springframework.content.rest.scoped.store.resolver.StoreResolverEntityJpaStore;
 import internal.org.springframework.content.rest.scoped.store.resolver.StoreResolverEntityRepository;
@@ -63,7 +64,7 @@ public class StoreResolverRestConfigurationIT {
                 String newContent = "This is some new content";
 
                 given()
-                    .contentType("text/plain")
+                    .contentType(MediaType.TEXT_PLAIN_VALUE)
                     .body(newContent.getBytes())
                     .when()
                     .post("/storeResolverEntities/" + tEntity.getId())

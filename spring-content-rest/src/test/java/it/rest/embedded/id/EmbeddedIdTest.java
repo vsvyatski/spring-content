@@ -1,5 +1,6 @@
 package it.rest.embedded.id;
 
+import org.springframework.http.MediaType;
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
@@ -71,7 +72,7 @@ public class EmbeddedIdTest {
 
         @MimeType
         @Column(name = "mime_type")
-        private String mimeType = "text/plain";
+        private String mimeType = MediaType.TEXT_PLAIN_VALUE;
 
         public TestEntityId getId() {
             return id;
@@ -156,7 +157,7 @@ public class EmbeddedIdTest {
             MockHttpServletResponse response =
                 mvc.perform(
                         get("/uuidSingleContentEntities/" + entity.getId()).
-                            accept("text/plain")).
+                            accept(MediaType.TEXT_PLAIN_VALUE)).
                     andExpect(status().isOk()).
                     andReturn().getResponse();
 

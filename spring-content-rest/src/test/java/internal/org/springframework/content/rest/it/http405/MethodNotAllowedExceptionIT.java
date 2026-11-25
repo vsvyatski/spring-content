@@ -10,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -51,7 +52,7 @@ public class MethodNotAllowedExceptionIT {
             entity = repo.save(entity);
 
             given()
-                .accept("text/plain")
+                .accept(MediaType.TEXT_PLAIN_VALUE)
                 .when()
                 .get("/unexportedStoreMethodsEntities/" + entity.getId())
                 .then()
@@ -73,7 +74,7 @@ public class MethodNotAllowedExceptionIT {
             entity = repo.save(entity);
 
             given()
-                .contentType("text/plain")
+                .contentType(MediaType.TEXT_PLAIN_VALUE)
                 .body("some content".getBytes())
                 .when()
                 .post("/unexportedStoreMethodsEntities/" + entity.getId())
@@ -97,7 +98,7 @@ public class MethodNotAllowedExceptionIT {
             entity = repo.save(entity);
 
             given()
-                .accept("text/plain")
+                .accept(MediaType.TEXT_PLAIN_VALUE)
                 .when()
                 .delete("/unexportedStoreMethodsEntities/" + entity.getId())
                 .then()
@@ -120,14 +121,14 @@ public class MethodNotAllowedExceptionIT {
             entity = repo2.save(entity);
 
             given()
-                .accept("text/plain")
+                .accept(MediaType.TEXT_PLAIN_VALUE)
                 .when()
                 .get("/unexportedContentPropertyEntities/" + entity.getId() + "/content")
                 .then()
                 .statusCode(405);
 
             given()
-                .contentType("text/plain")
+                .contentType(MediaType.TEXT_PLAIN_VALUE)
                 .body("some content".getBytes())
                 .when()
                 .post("/unexportedContentPropertyEntities/" + entity.getId() + "/content")
@@ -135,7 +136,7 @@ public class MethodNotAllowedExceptionIT {
                 .statusCode(405);
 
             given()
-                .accept("text/plain")
+                .accept(MediaType.TEXT_PLAIN_VALUE)
                 .when()
                 .delete("/unexportedContentPropertyEntities/" + entity.getId() + "/content")
                 .then()
