@@ -10,10 +10,6 @@
     <version>${revision}</version>
   </parent>
 
-  <properties>
-    <docx4j.version>17.3.6</docx4j.version>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>io.github.vsvyatski</groupId>
@@ -45,13 +41,13 @@
     <dependency>
       <groupId>org.jsoup</groupId>
       <artifactId>jsoup</artifactId>
-      <version>1.22.1</version>
+      <version>${jsoup.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.pdfbox</groupId>
       <artifactId>pdfbox</artifactId>
-      <version>3.0.8</version>
+      <version>${pdfbox.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

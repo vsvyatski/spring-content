@@ -34,7 +34,7 @@
     <dependency>
       <groupId>org.springframework.vault</groupId>
       <artifactId>spring-vault-core</artifactId>
-      <version>4.1.1</version>
+      <version>${spring-vault-core.version}</version>
     </dependency>
     <!-- Test Dependencies -->
     <dependency>
@@ -97,7 +97,7 @@
     <dependency>
       <groupId>io.rest-assured</groupId>
       <artifactId>spring-mock-mvc</artifactId>
-      <version>5.5.7</version>
+      <version>${rest-assured.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -113,7 +113,7 @@
     <dependency>
       <groupId>io.awspring.cloud</groupId>
       <artifactId>spring-cloud-aws-context</artifactId>
-      <version>2.4.4</version>
+      <version>${spring-cloud-aws-context.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

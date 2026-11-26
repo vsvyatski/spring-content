@@ -32,12 +32,12 @@
     <dependency>
       <groupId>com.google.cloud</groupId>
       <artifactId>spring-cloud-gcp-storage</artifactId>
-      <version>6.2.3</version>
+      <version>${spring-cloud-gcp.version}</version>
     </dependency>
     <dependency>
       <groupId>com.google.cloud</groupId>
       <artifactId>google-cloud-storage</artifactId>
-      <version>2.56.0</version>
+      <version>${google-cloud-storage.version}</version>
     </dependency>
     <dependency>
       <groupId>jakarta.persistence</groupId>
@@ -54,7 +54,6 @@
     </dependency>
 
     <!-- Test Dependencies -->
-
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
@@ -84,7 +83,7 @@
     <dependency>
       <groupId>com.google.cloud</groupId>
       <artifactId>spring-cloud-gcp-core</artifactId>
-      <version>6.2.3</version>
+      <version>${spring-cloud-gcp.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -95,7 +94,7 @@
     <dependency>
       <groupId>com.google.cloud</groupId>
       <artifactId>google-cloud-nio</artifactId>
-      <version>0.128.3</version>
+      <version>${google-cloud-nio.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
