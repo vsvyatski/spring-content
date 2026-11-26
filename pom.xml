@@ -50,14 +50,13 @@
     <revision>4.1.0-SNAPSHOT</revision>
     <spring-content.version>${project.version}</spring-content.version>
 
-    <!-- Platform BOMs -->
+    <!-- Platform BOMs (Boot 4.1.x / Spring Cloud 2025.1 Oakwood; 2026.x needs Boot 4.2) -->
     <spring-boot.version>4.1.3</spring-boot.version>
-    <spring-cloud.version>2025.1.1</spring-cloud.version>
+    <spring-cloud.version>2025.1.5</spring-cloud.version>
     <testcontainers.version>2.0.5</testcontainers.version>
+    <spring-cloud-aws.version>4.2.1</spring-cloud-aws.version>
     <spring-cloud-azure.version>7.4.0</spring-cloud-azure.version>
     <spring-cloud-gcp.version>8.3.1</spring-cloud-gcp.version>
-    <spring-cloud-aws.version>4.2.1</spring-cloud-aws.version>
-    <awssdk.version>2.57.0</awssdk.version>
 
     <!-- Dependencies -->
     <commons-io.version>2.22.0</commons-io.version>
@@ -106,9 +105,9 @@
         <scope>import</scope>
       </dependency>
       <dependency>
-        <groupId>software.amazon.awssdk</groupId>
-        <artifactId>bom</artifactId>
-        <version>${awssdk.version}</version>
+        <groupId>io.awspring.cloud</groupId>
+        <artifactId>spring-cloud-aws-dependencies</artifactId>
+        <version>${spring-cloud-aws.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>

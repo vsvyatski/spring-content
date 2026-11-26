@@ -10,7 +10,10 @@ renditions, encryption, and locking/versioning.
 
 - Group ID: `io.github.vsvyatski`
 - Current version: `${revision}` in POMs (default `4.1.0-SNAPSHOT` in root `pom.xml` and `.mvn/maven.config`)
-- Java 17, Spring Boot 4.x (`spring-boot-dependencies` BOM), Jakarta Persistence 3.2
+- Java 17, Jakarta Persistence 3.2
+- **Platform BOMs (root `pom.xml`):** Spring Boot **4.1.3**, Spring Cloud **2025.1.5** (Oakwood, for Boot 4.0/4.1),
+  Testcontainers **2.0.5**, Spring Cloud AWS **4.2.1**. **Spring Cloud 2026.x** targets Boot **4.2+** — do not bump
+  Cloud to 2026 until Boot is on 4.2. GCP/Azure AWS module BOM imports: `spring-cloud-gcp.version`, `spring-cloud-azure.version`.
 - License: Apache 2.0
 - Fork of Paul Warren’s project; this tree targets Spring Boot 4 compatibility
 

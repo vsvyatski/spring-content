@@ -10,3 +10,6 @@ updates:
       - dependency-name: org.springframework.boot:spring-boot-dependencies
         versions:
           - ">= 4.2.0"
+      - dependency-name: org.springframework.cloud:spring-cloud-dependencies
+        versions:
+          - ">= 2026.0.0"
