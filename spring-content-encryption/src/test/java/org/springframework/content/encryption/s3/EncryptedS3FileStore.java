@@ -11,5 +11,5 @@ import java.util.UUID;
  *
  * @author Vladimir Svyatski
  */
-public interface EncryptedS3FileStore extends S3ContentStore<FsFile, UUID>, EncryptingContentStore<FsFile, UUID> {
+public interface EncryptedS3FileStore extends S3ContentStore<FsFile, UUID>, EncryptingContentStore<FsFile> {
 }

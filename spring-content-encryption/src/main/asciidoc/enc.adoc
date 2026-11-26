@@ -104,7 +104,7 @@ Lastly, the Store is decorated with the interface `EncryptingContentStore`.
 ====
 [source, java]
 ----
-public interface FileContentStore extends ContentStore<File, UUID>, EncryptingContentStore<File, UUID> {}
+public interface FileContentStore extends ContentStore<File, UUID>, EncryptingContentStore<File> {}
 ----
 ====
 

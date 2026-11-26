@@ -12,5 +12,5 @@ import java.util.UUID;
  * @author Vladimir Svyatski
  */
 public interface EncryptedFsFileStore
-    extends FileSystemContentStore<FsFile, UUID>, EncryptingContentStore<FsFile, UUID> {
+    extends FileSystemContentStore<FsFile, UUID>, EncryptingContentStore<FsFile> {
 }
