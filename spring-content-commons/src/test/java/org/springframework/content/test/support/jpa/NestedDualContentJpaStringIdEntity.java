@@ -59,6 +59,7 @@ public class NestedDualContentJpaStringIdEntity {
         return claimForm;
     }
 
+    @SuppressWarnings("unused") // JPA embeddable replacement via BeanWrapper
     public void setClaimForm(NestedDualContentJpaEmbeddable claimForm) {
         this.claimForm = claimForm;
     }
