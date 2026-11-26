@@ -19,6 +19,7 @@ import org.springframework.content.commons.store.StoreAccessException;
 import org.springframework.content.commons.store.StoreEntityValidation;
 import org.springframework.content.commons.store.UnsetContentParams;
 import org.springframework.content.commons.utils.BeanUtils;
+import org.springframework.content.commons.utils.DomainObjectUtils;
 import org.springframework.content.commons.utils.ContentStoreGetContentSupport;
 import org.springframework.content.jpa.io.BlobResource;
 import org.springframework.core.convert.ConversionService;
@@ -31,7 +32,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import java.io.*;
-import java.lang.annotation.Annotation;
 
 import static java.lang.String.format;
 
@@ -104,16 +104,7 @@ public class DefaultJpaStoreImpl<S, SID extends Serializable>
             throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.name()));
         }
 
-        property.setContentId(entity, null, descriptor -> {
-            for (Annotation annotation : descriptor.getAnnotations()) {
-                String canonicalName = annotation.annotationType().getCanonicalName();
-                if ("jakarta.persistence.Id".equals(canonicalName)
-                    || "org.springframework.data.annotation.Id".equals(canonicalName)) {
-                    return false;
-                }
-            }
-            return true;
-        });
+        property.setContentId(entity, null, DomainObjectUtils::contentIdPropertyMayBeCleared);
     }
 
     @Override
@@ -125,16 +116,7 @@ public class DefaultJpaStoreImpl<S, SID extends Serializable>
     @Override
     public void unassociate(@NonNull S entity) {
         StoreEntityValidation.requireEntity(entity);
-        BeanUtils.setFieldWithAnnotationConditionally(entity, ContentId.class, null, field -> {
-            for (Annotation annotation : field.getAnnotations()) {
-                String canonicalName = annotation.annotationType().getCanonicalName();
-                if ("jakarta.persistence.Id".equals(canonicalName)
-                    || "org.springframework.data.annotation.Id".equals(canonicalName)) {
-                    return false;
-                }
-            }
-            return true;
-        });
+        BeanUtils.setFieldWithAnnotationConditionally(entity, ContentId.class, null, DomainObjectUtils::contentIdFieldMayBeCleared);
     }
 
     @Override

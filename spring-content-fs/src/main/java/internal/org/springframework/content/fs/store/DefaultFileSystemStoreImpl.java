@@ -15,6 +15,7 @@ import org.springframework.content.commons.store.*;
 import org.springframework.content.commons.store.StoreEntityValidation;
 import org.springframework.content.commons.store.UnsetContentParams.Disposition;
 import org.springframework.content.commons.utils.BeanUtils;
+import org.springframework.content.commons.utils.DomainObjectUtils;
 import org.springframework.content.commons.utils.ContentStoreGetContentSupport;
 import org.springframework.content.commons.utils.FileService;
 import org.springframework.content.commons.utils.PlacementService;
@@ -26,7 +27,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import java.io.*;
-import java.lang.annotation.Annotation;
 
 import static java.lang.String.format;
 
@@ -119,31 +119,13 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable> implements 
     public void unassociate(@NonNull S entity) {
         StoreEntityValidation.requireEntity(entity);
         BeanUtils.setFieldWithAnnotationConditionally(entity, ContentId.class, null,
-            field -> {
-                for (Annotation annotation : field.getAnnotations()) {
-                    String canonicalName = annotation.annotationType().getCanonicalName();
-                    if ("org.springframework.data.annotation.Id".equals(canonicalName)
-                        || "jakarta.persistence.Id".equals(canonicalName)) {
-                        return false;
-                    }
-                }
-                return true;
-            });
+            DomainObjectUtils::contentIdFieldMayBeCleared);
     }
 
     @Override
     public void unassociate(@NonNull S entity, PropertyPath propertyPath) {
         StoreEntityValidation.requireEntity(entity);
-        setContentId(entity, propertyPath, null, descriptor -> {
-            for (Annotation annotation : descriptor.getAnnotations()) {
-                String canonicalName = annotation.annotationType().getCanonicalName();
-                if ("org.springframework.data.annotation.Id".equals(canonicalName)
-                    || "jakarta.persistence.Id".equals(canonicalName)) {
-                    return false;
-                }
-            }
-            return true;
-        });
+        setContentId(entity, propertyPath, null, DomainObjectUtils::contentIdPropertyMayBeCleared);
     }
 
     @Override

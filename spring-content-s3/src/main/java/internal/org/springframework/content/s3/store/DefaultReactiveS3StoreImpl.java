@@ -12,6 +12,7 @@ import org.springframework.content.commons.store.ReactiveContentStore;
 import org.springframework.content.commons.store.StoreAccessException;
 import org.springframework.content.commons.store.StoreEntityValidation;
 import org.springframework.content.commons.utils.BeanUtils;
+import org.springframework.content.commons.utils.DomainObjectUtils;
 import org.springframework.content.commons.utils.PlacementService;
 import org.springframework.content.s3.S3ObjectId;
 import org.springframework.context.ApplicationContext;
@@ -28,7 +29,6 @@ import software.amazon.awssdk.services.s3.S3AsyncClient;
 import software.amazon.awssdk.services.s3.model.*;
 
 import java.io.Serializable;
-import java.lang.annotation.Annotation;
 import java.nio.ByteBuffer;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -169,16 +169,7 @@ public class DefaultReactiveS3StoreImpl<S, SID extends Serializable> implements 
 
         return Mono.fromFuture(future)
             .map((response) -> {
-                property.setContentId(entity, null, descriptor -> {
-                    for (Annotation annotation : descriptor.getAnnotations()) {
-                        String canonicalName = annotation.annotationType().getCanonicalName();
-                        if ("jakarta.persistence.Id".equals(canonicalName)
-                            || "org.springframework.data.annotation.Id".equals(canonicalName)) {
-                            return false;
-                        }
-                    }
-                    return true;
-                });
+                property.setContentId(entity, null, DomainObjectUtils::contentIdPropertyMayBeCleared);
                 property.setContentLength(entity,
                     BeanUtils.getDefaultValueForType(property.getContentLengthType().getType()));
                 return entity;

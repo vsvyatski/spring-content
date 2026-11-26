@@ -15,6 +15,7 @@ import org.springframework.content.commons.store.GetResourceParams;
 import org.springframework.content.commons.store.StoreAccessException;
 import org.springframework.content.commons.store.StoreEntityValidation;
 import org.springframework.content.commons.utils.BeanUtils;
+import org.springframework.content.commons.utils.DomainObjectUtils;
 import org.springframework.content.commons.utils.ContentStoreGetContentSupport;
 import org.springframework.content.commons.utils.PlacementService;
 import org.springframework.core.convert.TypeDescriptor;
@@ -26,7 +27,6 @@ import org.springframework.util.Assert;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.lang.annotation.Annotation;
 import java.util.UUID;
 
 import static java.lang.String.format;
@@ -146,16 +146,7 @@ public class DefaultMongoStoreImpl<S, SID extends Serializable>
     @Override
     public void unassociate(@NonNull S entity) {
         StoreEntityValidation.requireEntity(entity);
-        BeanUtils.setFieldWithAnnotationConditionally(entity, ContentId.class, null, field -> {
-            for (Annotation annotation : field.getAnnotations()) {
-                String canonicalName = annotation.annotationType().getCanonicalName();
-                if ("jakarta.persistence.Id".equals(canonicalName)
-                    || "org.springframework.data.annotation.Id".equals(canonicalName)) {
-                    return false;
-                }
-            }
-            return true;
-        });
+        BeanUtils.setFieldWithAnnotationConditionally(entity, ContentId.class, null, DomainObjectUtils::contentIdFieldMayBeCleared);
     }
 
     @Override
@@ -166,16 +157,7 @@ public class DefaultMongoStoreImpl<S, SID extends Serializable>
             throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.name()));
         }
 
-        property.setContentId(entity, null, descriptor -> {
-            for (Annotation annotation : descriptor.getAnnotations()) {
-                String canonicalName = annotation.annotationType().getCanonicalName();
-                if ("jakarta.persistence.Id".equals(canonicalName)
-                    || "org.springframework.data.annotation.Id".equals(canonicalName)) {
-                    return false;
-                }
-            }
-            return true;
-        });
+        property.setContentId(entity, null, DomainObjectUtils::contentIdPropertyMayBeCleared);
     }
 
     @Override
@@ -356,16 +338,8 @@ public class DefaultMongoStoreImpl<S, SID extends Serializable>
                 gridFs.delete(query(whereFilename().is(gridFsFilename(resource))));
 
                 // reset content fields
-                BeanUtils.setFieldWithAnnotationConditionally(property, ContentId.class, null, field -> {
-                    for (Annotation annotation : field.getAnnotations()) {
-                        String canonicalName = annotation.annotationType().getCanonicalName();
-                        if ("jakarta.persistence.Id".equals(canonicalName)
-                            || "org.springframework.data.annotation.Id".equals(canonicalName)) {
-                            return false;
-                        }
-                    }
-                    return true;
-                });
+                BeanUtils.setFieldWithAnnotationConditionally(property, ContentId.class, null,
+                    DomainObjectUtils::contentIdFieldMayBeCleared);
                 Class<?> contentLenType = BeanUtils.getFieldWithAnnotationType(property, ContentLength.class);
                 if (contentLenType != null) {
                     BeanUtils.setFieldWithAnnotation(property, ContentLength.class, BeanUtils.getDefaultValueForType(contentLenType));
@@ -406,16 +380,7 @@ public class DefaultMongoStoreImpl<S, SID extends Serializable>
             }
 
             // reset content fields
-            property.setContentId(entity, null, descriptor -> {
-                for (Annotation annotation : descriptor.getAnnotations()) {
-                    String canonicalName = annotation.annotationType().getCanonicalName();
-                    if ("jakarta.persistence.Id".equals(canonicalName)
-                        || "org.springframework.data.annotation.Id".equals(canonicalName)) {
-                        return false;
-                    }
-                }
-                return true;
-            });
+            property.setContentId(entity, null, DomainObjectUtils::contentIdPropertyMayBeCleared);
             property.setContentLength(entity, BeanUtils.getDefaultValueForType(property.getContentLengthType().getType()));
         } catch (Exception ase) {
             logger.error(format("Unexpected error unsetting content for entity %s", entity), ase);

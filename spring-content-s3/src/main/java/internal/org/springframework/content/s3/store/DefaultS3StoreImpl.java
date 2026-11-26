@@ -21,6 +21,7 @@ import org.springframework.content.commons.store.StoreAccessException;
 import org.springframework.content.commons.store.StoreEntityValidation;
 import org.springframework.content.commons.utils.BeanUtils;
 import org.springframework.content.commons.utils.ContentStoreGetContentSupport;
+import org.springframework.content.commons.utils.DomainObjectUtils;
 import org.springframework.content.commons.utils.PlacementService;
 import org.springframework.content.s3.S3ObjectId;
 import org.springframework.content.s3.config.MultiTenantS3ClientProvider;
@@ -38,7 +39,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
-import java.lang.annotation.Annotation;
 import java.util.UUID;
 
 import static java.lang.String.format;
@@ -204,16 +204,7 @@ public class DefaultS3StoreImpl<S, SID extends Serializable> implements ContentS
     @Override
     public void unassociate(@NonNull Object entity) {
         StoreEntityValidation.requireEntity(entity);
-        BeanUtils.setFieldWithAnnotationConditionally(entity, ContentId.class, null, field -> {
-            for (Annotation annotation : field.getAnnotations()) {
-                String canonicalName = annotation.annotationType().getCanonicalName();
-                if ("jakarta.persistence.Id".equals(canonicalName)
-                    || "org.springframework.data.annotation.Id".equals(canonicalName)) {
-                    return false;
-                }
-            }
-            return true;
-        });
+        BeanUtils.setFieldWithAnnotationConditionally(entity, ContentId.class, null, DomainObjectUtils::contentIdFieldMayBeCleared);
     }
 
     @Override
@@ -225,16 +216,7 @@ public class DefaultS3StoreImpl<S, SID extends Serializable> implements ContentS
             throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.name()));
         }
 
-        property.setContentId(entity, null, descriptor -> {
-            for (Annotation annotation : descriptor.getAnnotations()) {
-                String canonicalName = annotation.annotationType().getCanonicalName();
-                if ("jakarta.persistence.Id".equals(canonicalName)
-                    || "org.springframework.data.annotation.Id".equals(canonicalName)) {
-                    return false;
-                }
-            }
-            return true;
-        });
+        property.setContentId(entity, null, DomainObjectUtils::contentIdPropertyMayBeCleared);
     }
 
     private void setResourceContentTypeFromMimeType(S entity, ContentProperty property, Resource resource) {
@@ -415,19 +397,10 @@ public class DefaultS3StoreImpl<S, SID extends Serializable> implements ContentS
     @Override
     public S unsetContent(@NonNull S entity) {
         StoreEntityValidation.requireEntity(entity);
-        deleteIfExists(entity);
+        deleteIfExists(entity, null);
 
         // reset content fields
-        BeanUtils.setFieldWithAnnotationConditionally(entity, ContentId.class, null, field -> {
-            for (Annotation annotation : field.getAnnotations()) {
-                String canonicalName = annotation.annotationType().getCanonicalName();
-                if ("jakarta.persistence.Id".equals(canonicalName)
-                    || "org.springframework.data.annotation.Id".equals(canonicalName)) {
-                    return false;
-                }
-            }
-            return true;
-        });
+        BeanUtils.setFieldWithAnnotationConditionally(entity, ContentId.class, null, DomainObjectUtils::contentIdFieldMayBeCleared);
         Class<?> contentLenType = BeanUtils.getFieldWithAnnotationType(entity, ContentLength.class);
         if (contentLenType != null) {
             BeanUtils.setFieldWithAnnotation(entity, ContentLength.class, BeanUtils.getDefaultValueForType(contentLenType));
@@ -460,16 +433,7 @@ public class DefaultS3StoreImpl<S, SID extends Serializable> implements ContentS
         }
 
         // reset content fields
-        property.setContentId(entity, null, descriptor -> {
-            for (Annotation annotation : descriptor.getAnnotations()) {
-                String canonicalName = annotation.annotationType().getCanonicalName();
-                if ("jakarta.persistence.Id".equals(canonicalName)
-                    || "org.springframework.data.annotation.Id".equals(canonicalName)) {
-                    return false;
-                }
-            }
-            return true;
-        });
+        property.setContentId(entity, null, DomainObjectUtils::contentIdPropertyMayBeCleared);
         property.setContentLength(entity, BeanUtils.getDefaultValueForType(property.getContentLengthType().getType()));
 
         return entity;
@@ -481,23 +445,11 @@ public class DefaultS3StoreImpl<S, SID extends Serializable> implements ContentS
         return format("s3://%s/%s", bucket, locationToUse);
     }
 
-    private void deleteIfExists(S entity) {
-        Resource resource = this.getResource(entity);
-        if (resource != null && resource.exists() && resource instanceof DeletableResource) {
-
-            try {
-                ((DeletableResource) resource).delete();
-            } catch (Exception e) {
-                logger.error(format("Unexpected error unsetting content for entity %s", entity));
-                throw new StoreAccessException(format("Unsetting content for entity %s", entity), e);
-            }
-        }
-    }
-
     private void deleteIfExists(S entity, Resource resource) {
-        if (resource != null && resource.exists() && resource instanceof DeletableResource) {
+        Resource resourceToDelete = resource != null ? resource : this.getResource(entity);
+        if (resourceToDelete != null && resourceToDelete.exists() && resourceToDelete instanceof DeletableResource) {
             try {
-                ((DeletableResource) resource).delete();
+                ((DeletableResource) resourceToDelete).delete();
             } catch (Exception e) {
                 logger.error(format("Unexpected error unsetting content for entity %s", entity));
                 throw new StoreAccessException(format("Unsetting content for entity %s", entity), e);

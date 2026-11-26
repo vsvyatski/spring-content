@@ -15,13 +15,10 @@ import org.springframework.content.commons.io.DeletableResource;
 import org.springframework.content.commons.mappingcontext.ContentProperty;
 import org.springframework.content.commons.mappingcontext.MappingContext;
 import org.springframework.content.commons.property.PropertyPath;
-import org.springframework.content.commons.store.ContentStore;
-import org.springframework.content.commons.store.GetResourceParams;
-import org.springframework.content.commons.store.StoreAccessException;
-import org.springframework.content.commons.store.StoreEntityValidation;
-import org.springframework.content.commons.store.UnsetContentParams;
+import org.springframework.content.commons.store.*;
 import org.springframework.content.commons.utils.BeanUtils;
 import org.springframework.content.commons.utils.ContentStoreGetContentSupport;
+import org.springframework.content.commons.utils.DomainObjectUtils;
 import org.springframework.content.commons.utils.PlacementService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.convert.TypeDescriptor;
@@ -35,7 +32,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
-import java.lang.annotation.Annotation;
 import java.util.UUID;
 
 import static java.lang.String.format;
@@ -189,16 +185,7 @@ public class DefaultAzureStorageImpl<S, SID extends Serializable>
     @Override
     public void unassociate(@NonNull Object entity) {
         StoreEntityValidation.requireEntity(entity);
-        BeanUtils.setFieldWithAnnotationConditionally(entity, ContentId.class, null, field -> {
-            for (Annotation annotation : field.getAnnotations()) {
-                String canonicalName = annotation.annotationType().getCanonicalName();
-                if ("jakarta.persistence.Id".equals(canonicalName)
-                    || "org.springframework.data.annotation.Id".equals(canonicalName)) {
-                    return false;
-                }
-            }
-            return true;
-        });
+        BeanUtils.setFieldWithAnnotationConditionally(entity, ContentId.class, null, DomainObjectUtils::contentIdFieldMayBeCleared);
     }
 
     @Override
@@ -209,16 +196,7 @@ public class DefaultAzureStorageImpl<S, SID extends Serializable>
             throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.name()));
         }
 
-        property.setContentId(entity, null, descriptor -> {
-            for (Annotation annotation : descriptor.getAnnotations()) {
-                String canonicalName = annotation.annotationType().getCanonicalName();
-                if ("jakarta.persistence.Id".equals(canonicalName)
-                    || "org.springframework.data.annotation.Id".equals(canonicalName)) {
-                    return false;
-                }
-            }
-            return true;
-        });
+        property.setContentId(entity, null, DomainObjectUtils::contentIdPropertyMayBeCleared);
     }
 
     @Transactional
@@ -389,16 +367,7 @@ public class DefaultAzureStorageImpl<S, SID extends Serializable>
         }
 
         // reset content fields
-        BeanUtils.setFieldWithAnnotationConditionally(entity, ContentId.class, null, field -> {
-            for (Annotation annotation : field.getAnnotations()) {
-                String canonicalName = annotation.annotationType().getCanonicalName();
-                if ("jakarta.persistence.Id".equals(canonicalName)
-                    || "org.springframework.data.annotation.Id".equals(canonicalName)) {
-                    return false;
-                }
-            }
-            return true;
-        });
+        BeanUtils.setFieldWithAnnotationConditionally(entity, ContentId.class, null, DomainObjectUtils::contentIdFieldMayBeCleared);
 
         Class<?> contentLenType = BeanUtils.getFieldWithAnnotationType(entity, ContentLength.class);
         if (contentLenType != null) {
@@ -437,17 +406,7 @@ public class DefaultAzureStorageImpl<S, SID extends Serializable>
 
         // reset content fields
         if (resource != null) {
-            property.setContentId(entity, null, descriptor -> {
-                for (Annotation annotation : descriptor.getAnnotations()) {
-                    String canonicalName = annotation.annotationType().getCanonicalName();
-                    if ("jakarta.persistence.Id".equals(canonicalName)
-                        || "org.springframework.data.annotation.Id".equals(canonicalName)) {
-                        return false;
-                    }
-                }
-                return true;
-            });
-
+            property.setContentId(entity, null, DomainObjectUtils::contentIdPropertyMayBeCleared);
             property.setContentLength(entity, BeanUtils.getDefaultValueForType(property.getContentLengthType().getType()));
         }
 
