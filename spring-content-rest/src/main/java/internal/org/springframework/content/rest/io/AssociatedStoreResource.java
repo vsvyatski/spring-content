@@ -12,4 +12,10 @@ public interface AssociatedStoreResource<S> extends WritableResource, StoreResou
     PropertyPath getPropertyPath();
 
     ContentProperty getContentProperty();
+
+    /**
+     * Whether the entity carries a content id for this property (metadata association), regardless of whether bytes
+     * exist in storage.
+     */
+    boolean isAssociated();
 }

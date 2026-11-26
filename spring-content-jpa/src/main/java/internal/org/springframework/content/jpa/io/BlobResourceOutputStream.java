@@ -51,54 +51,65 @@ public class BlobResourceOutputStream extends OutputStream {
         os.write(b);
     }
 
-    protected OutputStream initializeStream() {
+    protected OutputStream initializeStream() throws IOException {
         final Object rid = blobResource.getId();
         con = DataSourceUtils.getConnection(dataSource());
 
-        String sql = "SELECT id, content FROM BLOBS WHERE id=?";
+        String sql = "SELECT id FROM BLOBS WHERE id=?";
         try {
-            ps = con.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            ps = con.prepareStatement(sql);
             ps.setString(1, rid.toString());
             rs = ps.executeQuery();
-
-            if (!rs.next()) {
-                insert = true;
-                rs.moveToInsertRow();
-            }
+            insert = !rs.next();
 
             blob = ps.getConnection().createBlob();
             return blob.setBinaryStream(1L);
-
         } catch (SQLException e) {
             logger.error(format("initializing stream for blob resource %s", rid), e);
+            throw new IOException(format("initializing stream for blob resource %s", rid), e);
         }
-
-        return null;
     }
 
     @Override
     public void close() throws IOException {
         IOUtils.closeQuietly(os);
 
-        try {
-            rs.updateString(1, blobResource.getId().toString());
-            rs.updateBlob(2, blob);
+        if (blob == null || con == null) {
+            return;
+        }
 
-            if (!insert) {
-                rs.updateRow();
+        final Object rid = blobResource.getId();
+        try {
+            if (rs != null) {
+                rs.close();
+            }
+            if (ps != null) {
+                ps.close();
+            }
+
+            if (insert) {
+                try (PreparedStatement insertStmt =
+                         con.prepareStatement("INSERT INTO BLOBS (id, content) VALUES (?, ?)")) {
+                    insertStmt.setString(1, rid.toString());
+                    insertStmt.setBlob(2, blob);
+                    insertStmt.executeUpdate();
+                }
             } else {
-                rs.insertRow();
+                try (PreparedStatement updateStmt =
+                         con.prepareStatement("UPDATE BLOBS SET content = ? WHERE id = ?")) {
+                    updateStmt.setBlob(1, blob);
+                    updateStmt.setString(2, rid.toString());
+                    int updated = updateStmt.executeUpdate();
+                    if (updated != 1) {
+                        throw new IOException(
+                            format("Expected 1 row updated for blob resource %s, got %d", rid, updated));
+                    }
+                }
             }
         } catch (SQLException e) {
-            logger.error(format("closing stream for blob resource %s", blobResource.getId()), e);
+            throw new IOException(format("closing stream for blob resource %s", rid), e);
         } finally {
-            try {
-                rs.close();
-                ps.close();
-                DataSourceUtils.releaseConnection(con, dataSource());
-            } catch (SQLException e) {
-                logger.error(format("closing resources for blob resource %s", blobResource.getId()), e);
-            }
+            DataSourceUtils.releaseConnection(con, dataSource());
         }
 
         super.close();

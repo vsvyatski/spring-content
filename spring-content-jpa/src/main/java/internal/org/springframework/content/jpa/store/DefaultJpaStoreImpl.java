@@ -135,19 +135,7 @@ public class DefaultJpaStoreImpl<S, SID extends Serializable>
             return null;
         }
         Resource resource = loader.getResource(id.toString());
-        try {
-            if (resource.exists()) {
-                try {
-                    return resource.getInputStream();
-                } catch (FileNotFoundException e) {
-                    return null;
-                }
-            }
-        } catch (IOException e) {
-            logger.error(format("Unexpected error getting content for entity %s", entity), e);
-            throw new StoreAccessException(format("Getting content for entity %s", entity), e);
-        }
-        return null;
+        return openContentStream(entity, propertyPathLabel(null), id, resource);
     }
 
     @Override
@@ -162,19 +150,33 @@ public class DefaultJpaStoreImpl<S, SID extends Serializable>
             return null;
         }
         Resource resource = loader.getResource(id.toString());
+        return openContentStream(entity, propertyPathLabel(propertyPath), id, resource);
+    }
+
+    private static String propertyPathLabel(PropertyPath propertyPath) {
+        return propertyPath == null ? "content" : propertyPath.toString();
+    }
+
+    private InputStream openContentStream(S entity, String contentPropertyLabel, Object contentId, Resource resource) {
         try {
-            if (resource.exists()) {
-                try {
-                    return resource.getInputStream();
-                } catch (FileNotFoundException e) {
-                    return null;
-                }
+            if (!resource.exists()) {
+                logger.warn(format(
+                    "Content id %s on entity %s (%s) has no backing blob resource",
+                    contentId, entity, contentPropertyLabel));
+                return null;
+            }
+            try {
+                return resource.getInputStream();
+            } catch (FileNotFoundException e) {
+                logger.warn(format(
+                    "Content id %s on entity %s (%s) is present in metadata but blob bytes are missing",
+                    contentId, entity, contentPropertyLabel), e);
+                return null;
             }
         } catch (IOException e) {
             logger.error(format("Unexpected error getting content for entity %s", entity), e);
             throw new StoreAccessException(format("Getting content for entity %s", entity), e);
         }
-        return null;
     }
 
     @Transactional

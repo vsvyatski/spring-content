@@ -28,8 +28,7 @@ import java.lang.annotation.Annotation;
 import static java.lang.String.format;
 
 @Transactional(readOnly = true)
-public class DefaultFileSystemStoreImpl<S, SID extends Serializable>
-    implements ContentStore<S, SID> {
+public class DefaultFileSystemStoreImpl<S, SID extends Serializable> implements ContentStore<S, SID> {
 
     private static final Log logger = LogFactory.getLog(DefaultFileSystemStoreImpl.class);
 
@@ -282,41 +281,53 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable>
     @Override
     @Transactional
     public InputStream getContent(S entity) {
-        if (entity == null)
+        if (entity == null) {
             return null;
-
-        Resource resource = getResource(entity);
-
-        try {
-            if (resource != null && resource.exists()) {
-                return resource.getInputStream();
-            }
-        } catch (IOException e) {
-            logger.error(format("Unexpected error getting content for entity %s", entity), e);
-            throw new StoreAccessException(format("Getting content for entity %s", entity), e);
         }
 
-        return null;
+        Object contentId = BeanUtils.getFieldWithAnnotation(entity, ContentId.class);
+        if (contentId == null) {
+            return null;
+        }
+
+        Resource resource = getResource(entity);
+        return openContentStream(entity, "content", contentId, resource);
     }
 
     @Transactional
     @Override
     public InputStream getContent(S property, PropertyPath propertyPath) {
-        if (property == null)
+        if (property == null) {
             return null;
-
-        Resource resource = getResource(property, propertyPath);
-
-        try {
-            if (resource != null && resource.exists()) {
-                return resource.getInputStream();
-            }
-        } catch (IOException e) {
-            logger.error(format("Unexpected error getting content for entity %s", property), e);
-            throw new StoreAccessException(format("Getting content for entity %s", property), e);
         }
 
-        return null;
+        ContentProperty contentProperty =
+            this.mappingContext.getContentProperty(property.getClass(), propertyPath.name());
+        if (contentProperty == null) {
+            throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.name()));
+        }
+        Object contentId = contentProperty.getContentId(property);
+        if (contentId == null) {
+            return null;
+        }
+
+        Resource resource = getResource(property, propertyPath);
+        return openContentStream(property, propertyPath.toString(), contentId, resource);
+    }
+
+    private InputStream openContentStream(S entity, String contentPropertyLabel, Object contentId, Resource resource) {
+        try {
+            if (resource == null || !resource.exists()) {
+                logger.warn(format(
+                    "Content id %s on entity %s (%s) has no backing file resource",
+                    contentId, entity, contentPropertyLabel));
+                return null;
+            }
+            return resource.getInputStream();
+        } catch (IOException e) {
+            logger.error(format("Unexpected error getting content for entity %s", entity), e);
+            throw new StoreAccessException(format("Getting content for entity %s", entity), e);
+        }
     }
 
     @Override

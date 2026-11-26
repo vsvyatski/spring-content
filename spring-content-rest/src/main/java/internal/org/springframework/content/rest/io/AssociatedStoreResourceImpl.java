@@ -153,8 +153,17 @@ public class AssociatedStoreResourceImpl<S> implements HttpResource, AssociatedS
     }
 
     @Override
+    public boolean isAssociated() {
+        Object contentId = contentProperty.getContentId(entity);
+        return contentId != null && StringUtils.hasText(contentId.toString());
+    }
+
+    @Override
     public boolean exists() {
-        return contentProperty.getContentId(entity) != null;
+        if (!isAssociated()) {
+            return false;
+        }
+        return original.exists();
     }
 
     @Override
@@ -226,7 +235,6 @@ public class AssociatedStoreResourceImpl<S> implements HttpResource, AssociatedS
     public @NonNull WritableByteChannel writableChannel() throws IOException {
         return ((WritableResource) original).writableChannel();
     }
-
 
     @Override
     public void delete() throws IOException {
