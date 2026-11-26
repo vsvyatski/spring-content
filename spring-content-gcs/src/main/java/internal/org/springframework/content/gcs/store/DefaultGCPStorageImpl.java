@@ -16,12 +16,7 @@ import org.springframework.content.commons.io.DeletableResource;
 import org.springframework.content.commons.mappingcontext.ContentProperty;
 import org.springframework.content.commons.mappingcontext.MappingContext;
 import org.springframework.content.commons.property.PropertyPath;
-import org.springframework.content.commons.store.ContentStore;
-import org.springframework.content.commons.store.GetResourceParams;
-import org.springframework.content.commons.store.SetContentParams;
-import org.springframework.content.commons.store.UnsetContentParams;
-import org.springframework.content.commons.store.StoreAccessException;
-import org.springframework.content.commons.store.StoreEntityValidation;
+import org.springframework.content.commons.store.*;
 import org.springframework.content.commons.utils.BeanUtils;
 import org.springframework.content.commons.utils.ContentStoreGetContentSupport;
 import org.springframework.content.commons.utils.DomainObjectUtils;
@@ -257,7 +252,7 @@ public class DefaultGCPStorageImpl<S, SID extends Serializable> implements Conte
 
     @Override
     public S setContent(@NonNull S entity, @NonNull PropertyPath propertyPath, InputStream content,
-            @NonNull SetContentParams params) {
+                        @NonNull SetContentParams params) {
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requirePropertyPath(propertyPath);
         StoreEntityValidation.requireSetContentParams(params);
@@ -398,12 +393,10 @@ public class DefaultGCPStorageImpl<S, SID extends Serializable> implements Conte
         }
 
         Resource resource = this.getResource(entity, propertyPath);
-        if (resource != null && params.disposition().equals(UnsetContentParams.Disposition.Remove)) {
-            deleteIfExists(entity, resource);
-        }
-
-        // reset content fields
         if (resource != null) {
+            if (params.disposition().equals(UnsetContentParams.Disposition.Remove)) deleteIfExists(entity, resource);
+
+            // reset content fields
             property.setContentId(entity, null, DomainObjectUtils::contentIdPropertyMayBeCleared);
             property.setContentLength(entity, BeanUtils.getDefaultValueForType(property.getContentLengthType().getType()));
         }

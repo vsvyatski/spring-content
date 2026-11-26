@@ -400,12 +400,10 @@ public class DefaultAzureStorageImpl<S, SID extends Serializable>
         }
 
         Resource resource = this.getResource(entity, propertyPath);
-        if (resource != null && params.disposition().equals(UnsetContentParams.Disposition.Remove)) {
-            deleteIfExists(entity, resource);
-        }
-
-        // reset content fields
         if (resource != null) {
+            if(params.disposition().equals(UnsetContentParams.Disposition.Remove)) deleteIfExists(entity, resource);
+
+            // reset content fields
             property.setContentId(entity, null, DomainObjectUtils::contentIdPropertyMayBeCleared);
             property.setContentLength(entity, BeanUtils.getDefaultValueForType(property.getContentLengthType().getType()));
         }

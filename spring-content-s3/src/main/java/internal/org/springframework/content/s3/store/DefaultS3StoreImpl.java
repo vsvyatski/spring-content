@@ -15,12 +15,7 @@ import org.springframework.content.commons.io.DeletableResource;
 import org.springframework.content.commons.mappingcontext.ContentProperty;
 import org.springframework.content.commons.mappingcontext.MappingContext;
 import org.springframework.content.commons.property.PropertyPath;
-import org.springframework.content.commons.store.ContentStore;
-import org.springframework.content.commons.store.GetResourceParams;
-import org.springframework.content.commons.store.SetContentParams;
-import org.springframework.content.commons.store.UnsetContentParams;
-import org.springframework.content.commons.store.StoreAccessException;
-import org.springframework.content.commons.store.StoreEntityValidation;
+import org.springframework.content.commons.store.*;
 import org.springframework.content.commons.utils.BeanUtils;
 import org.springframework.content.commons.utils.ContentStoreGetContentSupport;
 import org.springframework.content.commons.utils.DomainObjectUtils;
@@ -295,12 +290,12 @@ public class DefaultS3StoreImpl<S, SID extends Serializable> implements ContentS
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requirePropertyPath(propertyPath);
         return this.setContent(entity, propertyPath, content,
-            new org.springframework.content.commons.store.SetContentParams(contentLen, true, org.springframework.content.commons.store.SetContentParams.ContentDisposition.Overwrite));
+            new SetContentParams(contentLen, true, SetContentParams.ContentDisposition.Overwrite));
     }
 
     @Override
     public S setContent(@NonNull S entity, @NonNull PropertyPath propertyPath, InputStream content,
-            @NonNull SetContentParams params) {
+                        @NonNull SetContentParams params) {
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requirePropertyPath(propertyPath);
         StoreEntityValidation.requireSetContentParams(params);
@@ -310,8 +305,7 @@ public class DefaultS3StoreImpl<S, SID extends Serializable> implements ContentS
         }
 
         Object contentId = property.getContentId(entity);
-        if (contentId == null || params.disposition()
-            .equals(org.springframework.content.commons.store.SetContentParams.ContentDisposition.CreateNew)) {
+        if (contentId == null || params.disposition().equals(SetContentParams.ContentDisposition.CreateNew)) {
 
             Serializable newId = UUID.randomUUID().toString();
             Object convertedId = placementService.convert(
@@ -428,7 +422,7 @@ public class DefaultS3StoreImpl<S, SID extends Serializable> implements ContentS
     public S unsetContent(@NonNull S entity, @NonNull PropertyPath propertyPath) {
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requirePropertyPath(propertyPath);
-        return this.unsetContent(entity, propertyPath, new org.springframework.content.commons.store.UnsetContentParams(org.springframework.content.commons.store.UnsetContentParams.Disposition.Remove));
+        return this.unsetContent(entity, propertyPath, new UnsetContentParams(UnsetContentParams.Disposition.Remove));
     }
 
 
@@ -444,14 +438,15 @@ public class DefaultS3StoreImpl<S, SID extends Serializable> implements ContentS
         }
 
         Resource resource = this.getResource(entity, propertyPath);
+        if (resource != null) {
+            if (params.disposition().equals(UnsetContentParams.Disposition.Remove)) {
+                deleteIfExists(entity, resource);
+            }
 
-        if (params.disposition().equals(org.springframework.content.commons.store.UnsetContentParams.Disposition.Remove)) {
-            deleteIfExists(entity, resource);
+            // reset content fields
+            property.setContentId(entity, null, DomainObjectUtils::contentIdPropertyMayBeCleared);
+            property.setContentLength(entity, BeanUtils.getDefaultValueForType(property.getContentLengthType().getType()));
         }
-
-        // reset content fields
-        property.setContentId(entity, null, DomainObjectUtils::contentIdPropertyMayBeCleared);
-        property.setContentLength(entity, BeanUtils.getDefaultValueForType(property.getContentLengthType().getType()));
 
         return entity;
     }

@@ -324,11 +324,9 @@ public class DefaultJpaStoreImpl<S, SID extends Serializable> implements Content
         }
 
         Resource resource = this.getResource(entity, propertyPath);
-        if (resource != null && params.disposition().equals(UnsetContentParams.Disposition.Remove)) {
-            deleteIfExists(entity, resource);
-        }
-
         if (resource != null) {
+            if(params.disposition().equals(UnsetContentParams.Disposition.Remove)) deleteIfExists(entity, resource);
+
             unassociate(entity, propertyPath);
             property.setContentLength(entity, BeanUtils.getDefaultValueForType(property.getContentLengthType().getType()));
             reassignEmbeddableForPersistence(entity, property);
