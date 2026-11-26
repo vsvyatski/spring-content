@@ -9,9 +9,9 @@ import java.nio.ByteBuffer;
 
 public interface ReactiveContentStore<S> {
 
-    Mono<S> setContent(@NonNull S entity, PropertyPath path, long contentLen, Flux<ByteBuffer> buffer);
+    Mono<S> setContent(@NonNull S entity, @NonNull PropertyPath path, long contentLen, Flux<ByteBuffer> buffer);
 
-    Flux<ByteBuffer> getContent(@NonNull S entity, PropertyPath path);
+    Flux<ByteBuffer> getContent(@NonNull S entity, @NonNull PropertyPath path);
 
-    Mono<S> unsetContent(@NonNull S entity, PropertyPath propertyPath);
+    Mono<S> unsetContent(@NonNull S entity, @NonNull PropertyPath propertyPath);
 }

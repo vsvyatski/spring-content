@@ -79,14 +79,17 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable> implements 
     }
 
     @Override
-    public Resource getResource(@NonNull S entity, PropertyPath propertyPath) {
+    public Resource getResource(@NonNull S entity, @NonNull PropertyPath propertyPath) {
         StoreEntityValidation.requireEntity(entity);
+        StoreEntityValidation.requirePropertyPath(propertyPath);
         return this.getResource(entity, propertyPath, new GetResourceParams(null));
     }
 
     @Override
-    public Resource getResource(@NonNull S entity, PropertyPath propertyPath, GetResourceParams params) {
+    public Resource getResource(@NonNull S entity, @NonNull PropertyPath propertyPath, @NonNull GetResourceParams params) {
         StoreEntityValidation.requireEntity(entity);
+        StoreEntityValidation.requirePropertyPath(propertyPath);
+        StoreEntityValidation.requireGetResourceParams(params);
         ContentProperty contentProperty = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.name());
         if (contentProperty == null) {
             throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.name()));
@@ -110,8 +113,9 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable> implements 
     }
 
     @Override
-    public void associate(@NonNull S entity, PropertyPath propertyPath, SID id) {
+    public void associate(@NonNull S entity, @NonNull PropertyPath propertyPath, SID id) {
         StoreEntityValidation.requireEntity(entity);
+        StoreEntityValidation.requirePropertyPath(propertyPath);
         setContentId(entity, propertyPath, id, null);
     }
 
@@ -123,8 +127,9 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable> implements 
     }
 
     @Override
-    public void unassociate(@NonNull S entity, PropertyPath propertyPath) {
+    public void unassociate(@NonNull S entity, @NonNull PropertyPath propertyPath) {
         StoreEntityValidation.requireEntity(entity);
+        StoreEntityValidation.requirePropertyPath(propertyPath);
         setContentId(entity, propertyPath, null, DomainObjectUtils::contentIdPropertyMayBeCleared);
     }
 
@@ -179,22 +184,26 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable> implements 
 
     @Transactional
     @Override
-    public S setContent(@NonNull S property, PropertyPath propertyPath, InputStream content) {
+    public S setContent(@NonNull S property, @NonNull PropertyPath propertyPath, InputStream content) {
         StoreEntityValidation.requireEntity(property);
+        StoreEntityValidation.requirePropertyPath(propertyPath);
         return this.setContent(property, propertyPath, content, -1L);
     }
 
     @Transactional
     @Override
-    public S setContent(@NonNull S property, PropertyPath propertyPath, InputStream content, long contentLen) {
+    public S setContent(@NonNull S property, @NonNull PropertyPath propertyPath, InputStream content, long contentLen) {
         StoreEntityValidation.requireEntity(property);
+        StoreEntityValidation.requirePropertyPath(propertyPath);
         return this.setContent(property, propertyPath, content, new SetContentParams(contentLen, true, SetContentParams.ContentDisposition.Overwrite));
     }
 
     @Transactional
     @Override
-    public S setContent(@NonNull S property, PropertyPath propertyPath, InputStream content, SetContentParams params) {
+    public S setContent(@NonNull S property, @NonNull PropertyPath propertyPath, InputStream content, @NonNull SetContentParams params) {
         StoreEntityValidation.requireEntity(property);
+        StoreEntityValidation.requirePropertyPath(propertyPath);
+        StoreEntityValidation.requireSetContentParams(params);
         ContentProperty contentProperty = this.mappingContext
             .getContentProperty(property.getClass(), propertyPath.name());
         if (contentProperty == null) {
@@ -265,8 +274,9 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable> implements 
 
     @Transactional
     @Override
-    public S setContent(@NonNull S property, PropertyPath propertyPath, Resource resourceContent) {
+    public S setContent(@NonNull S property, @NonNull PropertyPath propertyPath, Resource resourceContent) {
         StoreEntityValidation.requireEntity(property);
+        StoreEntityValidation.requirePropertyPath(propertyPath);
         try {
             return this.setContent(property, propertyPath, resourceContent.getInputStream());
         } catch (IOException e) {
@@ -291,8 +301,9 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable> implements 
 
     @Transactional
     @Override
-    public InputStream getContent(@NonNull S property, PropertyPath propertyPath) {
+    public InputStream getContent(@NonNull S property, @NonNull PropertyPath propertyPath) {
         StoreEntityValidation.requireEntity(property);
+        StoreEntityValidation.requirePropertyPath(propertyPath);
         ContentProperty contentProperty =
             this.mappingContext.getContentProperty(property.getClass(), propertyPath.name());
         if (contentProperty == null) {
@@ -336,15 +347,18 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable> implements 
 
     @Transactional
     @Override
-    public S unsetContent(@NonNull S entity, PropertyPath propertyPath) {
+    public S unsetContent(@NonNull S entity, @NonNull PropertyPath propertyPath) {
         StoreEntityValidation.requireEntity(entity);
+        StoreEntityValidation.requirePropertyPath(propertyPath);
         return unsetContent(entity, propertyPath, new UnsetContentParams(Disposition.Remove));
     }
 
     @Transactional
     @Override
-    public S unsetContent(@NonNull S entity, PropertyPath propertyPath, UnsetContentParams params) {
+    public S unsetContent(@NonNull S entity, @NonNull PropertyPath propertyPath, @NonNull UnsetContentParams params) {
         StoreEntityValidation.requireEntity(entity);
+        StoreEntityValidation.requirePropertyPath(propertyPath);
+        StoreEntityValidation.requireUnsetContentParams(params);
         ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.name());
         if (property == null) {
             throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.name()));
@@ -381,7 +395,7 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable> implements 
         return contentId.toString();
     }
 
-    private void setContentId(S entity, PropertyPath propertyPath, SID contentId,
+    private void setContentId(S entity, @NonNull PropertyPath propertyPath, SID contentId,
                               org.springframework.content.commons.mappingcontext.Condition condition) {
         StoreEntityValidation.requireEntity(entity);
         Assert.notNull(propertyPath, "propertyPath must not be null");

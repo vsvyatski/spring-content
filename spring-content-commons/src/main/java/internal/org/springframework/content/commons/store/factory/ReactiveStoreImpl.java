@@ -18,20 +18,24 @@ public class ReactiveStoreImpl implements ReactiveContentStore<Object> {
     }
 
     @Override
-    public Mono<Object> setContent(@NonNull Object entity, PropertyPath path, long contentLen, Flux<ByteBuffer> buffer) {
+    public Mono<Object> setContent(@NonNull Object entity, @NonNull PropertyPath path, long contentLen,
+            Flux<ByteBuffer> buffer) {
         StoreEntityValidation.requireEntity(entity);
+        StoreEntityValidation.requirePropertyPath(path);
         return delegate.setContent(entity, path, contentLen, buffer);
     }
 
     @Override
-    public Flux<ByteBuffer> getContent(@NonNull Object entity, PropertyPath path) {
+    public Flux<ByteBuffer> getContent(@NonNull Object entity, @NonNull PropertyPath path) {
         StoreEntityValidation.requireEntity(entity);
+        StoreEntityValidation.requirePropertyPath(path);
         return delegate.getContent(entity, path);
     }
 
     @Override
-    public Mono<Object> unsetContent(@NonNull Object entity, PropertyPath propertyPath) {
+    public Mono<Object> unsetContent(@NonNull Object entity, @NonNull PropertyPath propertyPath) {
         StoreEntityValidation.requireEntity(entity);
+        StoreEntityValidation.requirePropertyPath(propertyPath);
         return delegate.unsetContent(entity, propertyPath);
     }
 }

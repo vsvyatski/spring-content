@@ -15,30 +15,31 @@ public interface ContentStore<S, SID extends Serializable> extends AssociativeSt
     S setContent(@NonNull S entity, InputStream content);
 
     @LockParticipant
-    S setContent(@NonNull S entity, PropertyPath propertyPath, InputStream content);
+    S setContent(@NonNull S entity, @NonNull PropertyPath propertyPath, InputStream content);
 
     @LockParticipant
-    S setContent(@NonNull S entity, PropertyPath propertyPath, InputStream content, long contentLen);
+    S setContent(@NonNull S entity, @NonNull PropertyPath propertyPath, InputStream content, long contentLen);
 
     @LockParticipant
-    S setContent(@NonNull S entity, PropertyPath propertyPath, InputStream content, SetContentParams params);
+    S setContent(@NonNull S entity, @NonNull PropertyPath propertyPath, InputStream content,
+        @NonNull SetContentParams params);
 
     @LockParticipant
     S setContent(@NonNull S entity, Resource resourceContent);
 
     @LockParticipant
-    S setContent(@NonNull S entity, PropertyPath propertyPath, Resource resourceContent);
+    S setContent(@NonNull S entity, @NonNull PropertyPath propertyPath, Resource resourceContent);
 
     @LockParticipant
     S unsetContent(@NonNull S entity);
 
     @LockParticipant
-    S unsetContent(@NonNull S entity, PropertyPath propertyPath);
+    S unsetContent(@NonNull S entity, @NonNull PropertyPath propertyPath);
 
     @LockParticipant
-    S unsetContent(@NonNull S entity, PropertyPath propertyPath, UnsetContentParams params);
+    S unsetContent(@NonNull S entity, @NonNull PropertyPath propertyPath, @NonNull UnsetContentParams params);
 
     InputStream getContent(@NonNull S entity) throws IOException;
 
-    InputStream getContent(@NonNull S entity, PropertyPath propertyPath) throws IOException;
+    InputStream getContent(@NonNull S entity, @NonNull PropertyPath propertyPath) throws IOException;
 }

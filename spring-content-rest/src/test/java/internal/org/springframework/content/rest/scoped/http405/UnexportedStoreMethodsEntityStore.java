@@ -18,25 +18,25 @@ public interface UnexportedStoreMethodsEntityStore extends FileSystemContentStor
 
     @RestResource(exported = false)
     @Override
-    InputStream getContent(@NonNull UnexportedStoreMethodsEntity property, PropertyPath path);
+    InputStream getContent(@NonNull UnexportedStoreMethodsEntity property, @NonNull PropertyPath path);
 
     @RestResource(exported = false)
     @Override
     UnexportedStoreMethodsEntity setContent(@NonNull UnexportedStoreMethodsEntity property,
-                                            PropertyPath path, InputStream content);
+                                            @NonNull PropertyPath path, InputStream content);
 
     @RestResource(exported = false)
     @Override
     UnexportedStoreMethodsEntity setContent(@NonNull UnexportedStoreMethodsEntity property,
-                                            PropertyPath path, InputStream content, SetContentParams params);
+                                            @NonNull PropertyPath path, InputStream content, @NonNull SetContentParams params);
 
     @RestResource(exported = false)
     @Override
     UnexportedStoreMethodsEntity setContent(@NonNull UnexportedStoreMethodsEntity property,
-                                            PropertyPath path, Resource resourceContent);
+                                            @NonNull PropertyPath path, Resource resourceContent);
 
     @RestResource(exported = false)
     @Override
     UnexportedStoreMethodsEntity unsetContent(@NonNull UnexportedStoreMethodsEntity property,
-                                              PropertyPath path, UnsetContentParams params);
+                                              @NonNull PropertyPath path, @NonNull UnsetContentParams params);
 }

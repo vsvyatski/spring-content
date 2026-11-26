@@ -17,6 +17,8 @@ import org.springframework.content.commons.mappingcontext.MappingContext;
 import org.springframework.content.commons.property.PropertyPath;
 import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.commons.store.GetResourceParams;
+import org.springframework.content.commons.store.SetContentParams;
+import org.springframework.content.commons.store.UnsetContentParams;
 import org.springframework.content.commons.store.StoreAccessException;
 import org.springframework.content.commons.store.StoreEntityValidation;
 import org.springframework.content.commons.utils.BeanUtils;
@@ -109,14 +111,17 @@ public class DefaultS3StoreImpl<S, SID extends Serializable> implements ContentS
     }
 
     @Override
-    public Resource getResource(@NonNull S entity, PropertyPath propertyPath) {
+    public Resource getResource(@NonNull S entity, @NonNull PropertyPath propertyPath) {
         StoreEntityValidation.requireEntity(entity);
+        StoreEntityValidation.requirePropertyPath(propertyPath);
         return this.getResource(entity, propertyPath, new GetResourceParams(null));
     }
 
     @Override
-    public Resource getResource(@NonNull S entity, PropertyPath propertyPath, GetResourceParams params) {
+    public Resource getResource(@NonNull S entity, @NonNull PropertyPath propertyPath, @NonNull GetResourceParams params) {
         StoreEntityValidation.requireEntity(entity);
+        StoreEntityValidation.requirePropertyPath(propertyPath);
+        StoreEntityValidation.requireGetResourceParams(params);
         ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.name());
         if (property == null) {
             throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.name()));
@@ -144,7 +149,7 @@ public class DefaultS3StoreImpl<S, SID extends Serializable> implements ContentS
         return this.getResource(contentId);
     }
 
-    protected Resource getResourceInternal(S3ObjectId id, GetResourceParams params) {
+    protected Resource getResourceInternal(S3ObjectId id, @NonNull GetResourceParams params) {
         String bucket = id.getBucket();
 
         String location;
@@ -160,7 +165,7 @@ public class DefaultS3StoreImpl<S, SID extends Serializable> implements ContentS
         return newS3StoreResource(bucket, location, params);
     }
 
-    private S3StoreResource newS3StoreResource(String bucket, String location, GetResourceParams params) {
+    private S3StoreResource newS3StoreResource(String bucket, String location, @NonNull GetResourceParams params) {
         S3Client clientToUse = client;
         ResourceLoader loaderToUse = loader;
         if (clientProvider != null) {
@@ -190,8 +195,9 @@ public class DefaultS3StoreImpl<S, SID extends Serializable> implements ContentS
     }
 
     @Override
-    public void associate(@NonNull S entity, PropertyPath propertyPath, SID id) {
+    public void associate(@NonNull S entity, @NonNull PropertyPath propertyPath, SID id) {
         StoreEntityValidation.requireEntity(entity);
+        StoreEntityValidation.requirePropertyPath(propertyPath);
 
         ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.name());
         if (property == null) {
@@ -208,8 +214,9 @@ public class DefaultS3StoreImpl<S, SID extends Serializable> implements ContentS
     }
 
     @Override
-    public void unassociate(@NonNull S entity, PropertyPath propertyPath) {
+    public void unassociate(@NonNull S entity, @NonNull PropertyPath propertyPath) {
         StoreEntityValidation.requireEntity(entity);
+        StoreEntityValidation.requirePropertyPath(propertyPath);
 
         ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.name());
         if (property == null) {
@@ -276,22 +283,27 @@ public class DefaultS3StoreImpl<S, SID extends Serializable> implements ContentS
 
     @Transactional
     @Override
-    public S setContent(@NonNull S entity, PropertyPath propertyPath, InputStream content) {
+    public S setContent(@NonNull S entity, @NonNull PropertyPath propertyPath, InputStream content) {
         StoreEntityValidation.requireEntity(entity);
+        StoreEntityValidation.requirePropertyPath(propertyPath);
         return this.setContent(entity, propertyPath, content, -1L);
     }
 
     @Transactional
     @Override
-    public S setContent(@NonNull S entity, PropertyPath propertyPath, InputStream content, long contentLen) {
+    public S setContent(@NonNull S entity, @NonNull PropertyPath propertyPath, InputStream content, long contentLen) {
         StoreEntityValidation.requireEntity(entity);
+        StoreEntityValidation.requirePropertyPath(propertyPath);
         return this.setContent(entity, propertyPath, content,
             new org.springframework.content.commons.store.SetContentParams(contentLen, true, org.springframework.content.commons.store.SetContentParams.ContentDisposition.Overwrite));
     }
 
     @Override
-    public S setContent(@NonNull S entity, PropertyPath propertyPath, InputStream content, org.springframework.content.commons.store.SetContentParams params) {
+    public S setContent(@NonNull S entity, @NonNull PropertyPath propertyPath, InputStream content,
+            @NonNull SetContentParams params) {
         StoreEntityValidation.requireEntity(entity);
+        StoreEntityValidation.requirePropertyPath(propertyPath);
+        StoreEntityValidation.requireSetContentParams(params);
         ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.name());
         if (property == null) {
             throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.name()));
@@ -350,8 +362,9 @@ public class DefaultS3StoreImpl<S, SID extends Serializable> implements ContentS
     }
 
     @Override
-    public S setContent(@NonNull S entity, PropertyPath propertyPath, Resource resourceContent) {
+    public S setContent(@NonNull S entity, @NonNull PropertyPath propertyPath, Resource resourceContent) {
         StoreEntityValidation.requireEntity(entity);
+        StoreEntityValidation.requirePropertyPath(propertyPath);
         try {
             return setContent(entity, propertyPath, resourceContent.getInputStream());
         } catch (IOException e) {
@@ -376,8 +389,9 @@ public class DefaultS3StoreImpl<S, SID extends Serializable> implements ContentS
 
     @Transactional
     @Override
-    public InputStream getContent(@NonNull S entity, PropertyPath propertyPath) {
+    public InputStream getContent(@NonNull S entity, @NonNull PropertyPath propertyPath) {
         StoreEntityValidation.requireEntity(entity);
+        StoreEntityValidation.requirePropertyPath(propertyPath);
         ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.name());
         if (property == null) {
             throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.name()));
@@ -411,16 +425,19 @@ public class DefaultS3StoreImpl<S, SID extends Serializable> implements ContentS
 
     @Transactional
     @Override
-    public S unsetContent(@NonNull S entity, PropertyPath propertyPath) {
+    public S unsetContent(@NonNull S entity, @NonNull PropertyPath propertyPath) {
         StoreEntityValidation.requireEntity(entity);
+        StoreEntityValidation.requirePropertyPath(propertyPath);
         return this.unsetContent(entity, propertyPath, new org.springframework.content.commons.store.UnsetContentParams(org.springframework.content.commons.store.UnsetContentParams.Disposition.Remove));
     }
 
 
     @Transactional
     @Override
-    public S unsetContent(@NonNull S entity, PropertyPath propertyPath, org.springframework.content.commons.store.UnsetContentParams params) {
+    public S unsetContent(@NonNull S entity, @NonNull PropertyPath propertyPath, @NonNull UnsetContentParams params) {
         StoreEntityValidation.requireEntity(entity);
+        StoreEntityValidation.requirePropertyPath(propertyPath);
+        StoreEntityValidation.requireUnsetContentParams(params);
         ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.name());
         if (property == null) {
             throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.name()));

@@ -16,5 +16,5 @@ public interface LinkRelDualContentRenditionEntityStore
 
     @RestResource(exported = false, paths = {"rendition"})
     @Override
-    InputStream getContent(@NonNull DualContentRenditionEntity entity, PropertyPath propertyPath);
+    InputStream getContent(@NonNull DualContentRenditionEntity entity, @NonNull PropertyPath propertyPath);
 }

@@ -1,12 +1,16 @@
 package internal.org.springframework.content.commons.store.factory;
 
 import org.jspecify.annotations.NonNull;
+import org.springframework.content.commons.property.PropertyPath;
+import org.springframework.content.commons.store.GetResourceParams;
+import org.springframework.content.commons.store.SetContentParams;
 import org.springframework.content.commons.store.StoreEntityValidation;
+import org.springframework.content.commons.store.UnsetContentParams;
 
 import java.lang.reflect.Method;
 
 /**
- * Detects store methods whose first parameter is a non-null entity argument.
+ * Detects store methods whose arguments are validated at the proxy boundary.
  *
  * @author Vladimir Svyatski
  */
@@ -29,12 +33,29 @@ final class StoreEntityArguments {
         };
     }
 
-    static void requireEntityArgumentIfApplicable(Method method, Object[] args) {
-        if (args.length == 0 || args[0] != null) {
+    static void requireStoreArgumentsIfApplicable(Method method, Object[] args) {
+        if (args.length == 0) {
             return;
         }
-        if (requiresNonNullEntity(method)) {
+        if (args[0] == null && requiresNonNullEntity(method)) {
             StoreEntityValidation.requireEntity(args[0]);
+        }
+        Class<?>[] parameterTypes = method.getParameterTypes();
+        for (int i = 0; i < parameterTypes.length && i < args.length; i++) {
+            Object arg = args[i];
+            if (arg != null) {
+                continue;
+            }
+            Class<?> parameterType = parameterTypes[i];
+            if (parameterType == PropertyPath.class) {
+                StoreEntityValidation.requirePropertyPath(null);
+            } else if (parameterType == GetResourceParams.class) {
+                StoreEntityValidation.requireGetResourceParams(null);
+            } else if (parameterType == SetContentParams.class) {
+                StoreEntityValidation.requireSetContentParams(null);
+            } else if (parameterType == UnsetContentParams.class) {
+                StoreEntityValidation.requireUnsetContentParams(null);
+            }
         }
     }
 

@@ -18,6 +18,8 @@ import org.springframework.content.commons.mappingcontext.MappingContext;
 import org.springframework.content.commons.property.PropertyPath;
 import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.commons.store.GetResourceParams;
+import org.springframework.content.commons.store.SetContentParams;
+import org.springframework.content.commons.store.UnsetContentParams;
 import org.springframework.content.commons.store.StoreAccessException;
 import org.springframework.content.commons.store.StoreEntityValidation;
 import org.springframework.content.commons.utils.BeanUtils;
@@ -102,14 +104,17 @@ public class DefaultGCPStorageImpl<S, SID extends Serializable> implements Conte
     }
 
     @Override
-    public Resource getResource(@NonNull S entity, PropertyPath propertyPath) {
+    public Resource getResource(@NonNull S entity, @NonNull PropertyPath propertyPath) {
         StoreEntityValidation.requireEntity(entity);
+        StoreEntityValidation.requirePropertyPath(propertyPath);
         return this.getResource(entity, propertyPath, new GetResourceParams(null));
     }
 
     @Override
-    public Resource getResource(@NonNull S entity, PropertyPath propertyPath, GetResourceParams params) {
+    public Resource getResource(@NonNull S entity, @NonNull PropertyPath propertyPath, @NonNull GetResourceParams params) {
         StoreEntityValidation.requireEntity(entity);
+        StoreEntityValidation.requirePropertyPath(propertyPath);
+        StoreEntityValidation.requireGetResourceParams(params);
         ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.name());
         if (property == null) {
             throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.name()));
@@ -161,8 +166,9 @@ public class DefaultGCPStorageImpl<S, SID extends Serializable> implements Conte
     }
 
     @Override
-    public void associate(@NonNull S entity, PropertyPath propertyPath, SID id) {
+    public void associate(@NonNull S entity, @NonNull PropertyPath propertyPath, SID id) {
         StoreEntityValidation.requireEntity(entity);
+        StoreEntityValidation.requirePropertyPath(propertyPath);
 
         ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.name());
         if (property == null) {
@@ -173,8 +179,9 @@ public class DefaultGCPStorageImpl<S, SID extends Serializable> implements Conte
     }
 
     @Override
-    public void unassociate(@NonNull S entity, PropertyPath propertyPath) {
+    public void unassociate(@NonNull S entity, @NonNull PropertyPath propertyPath) {
         StoreEntityValidation.requireEntity(entity);
+        StoreEntityValidation.requirePropertyPath(propertyPath);
 
         ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.name());
         if (property == null) {
@@ -233,22 +240,27 @@ public class DefaultGCPStorageImpl<S, SID extends Serializable> implements Conte
 
     @Transactional
     @Override
-    public S setContent(@NonNull S entity, PropertyPath propertyPath, InputStream content) {
+    public S setContent(@NonNull S entity, @NonNull PropertyPath propertyPath, InputStream content) {
         StoreEntityValidation.requireEntity(entity);
+        StoreEntityValidation.requirePropertyPath(propertyPath);
         return this.setContent(entity, propertyPath, content, -1L);
     }
 
     @Transactional
     @Override
-    public S setContent(@NonNull S entity, PropertyPath propertyPath, InputStream content, long contentLen) {
+    public S setContent(@NonNull S entity, @NonNull PropertyPath propertyPath, InputStream content, long contentLen) {
         StoreEntityValidation.requireEntity(entity);
+        StoreEntityValidation.requirePropertyPath(propertyPath);
         return this.setContent(entity, propertyPath, content,
             new org.springframework.content.commons.store.SetContentParams(contentLen, true, org.springframework.content.commons.store.SetContentParams.ContentDisposition.Overwrite));
     }
 
     @Override
-    public S setContent(@NonNull S entity, PropertyPath propertyPath, InputStream content, org.springframework.content.commons.store.SetContentParams params) {
+    public S setContent(@NonNull S entity, @NonNull PropertyPath propertyPath, InputStream content,
+            @NonNull SetContentParams params) {
         StoreEntityValidation.requireEntity(entity);
+        StoreEntityValidation.requirePropertyPath(propertyPath);
+        StoreEntityValidation.requireSetContentParams(params);
         ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.name());
         if (property == null) {
             throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.name()));
@@ -305,8 +317,9 @@ public class DefaultGCPStorageImpl<S, SID extends Serializable> implements Conte
     }
 
     @Override
-    public S setContent(@NonNull S property, PropertyPath propertyPath, Resource resourceContent) {
+    public S setContent(@NonNull S property, @NonNull PropertyPath propertyPath, Resource resourceContent) {
         StoreEntityValidation.requireEntity(property);
+        StoreEntityValidation.requirePropertyPath(propertyPath);
         try {
             return setContent(property, propertyPath, resourceContent.getInputStream());
         } catch (IOException e) {
@@ -331,8 +344,9 @@ public class DefaultGCPStorageImpl<S, SID extends Serializable> implements Conte
 
     @Transactional
     @Override
-    public InputStream getContent(@NonNull S entity, PropertyPath propertyPath) {
+    public InputStream getContent(@NonNull S entity, @NonNull PropertyPath propertyPath) {
         StoreEntityValidation.requireEntity(entity);
+        StoreEntityValidation.requirePropertyPath(propertyPath);
         ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.name());
         if (property == null) {
             throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.name()));
@@ -352,7 +366,7 @@ public class DefaultGCPStorageImpl<S, SID extends Serializable> implements Conte
     @Override
     public S unsetContent(@NonNull S entity) {
         StoreEntityValidation.requireEntity(entity);
-        deleteIfExists(entity);
+        deleteIfExists(entity, null);
 
         // reset content fields
         BeanUtils.setFieldWithAnnotationConditionally(entity, ContentId.class, null, DomainObjectUtils::contentIdFieldMayBeCleared);
@@ -367,28 +381,25 @@ public class DefaultGCPStorageImpl<S, SID extends Serializable> implements Conte
 
     @Transactional
     @Override
-    public S unsetContent(@NonNull S entity, PropertyPath propertyPath) {
+    public S unsetContent(@NonNull S entity, @NonNull PropertyPath propertyPath) {
         StoreEntityValidation.requireEntity(entity);
-        return this.unsetContent(entity, propertyPath, new org.springframework.content.commons.store.UnsetContentParams(org.springframework.content.commons.store.UnsetContentParams.Disposition.Remove));
+        StoreEntityValidation.requirePropertyPath(propertyPath);
+        return this.unsetContent(entity, propertyPath, new UnsetContentParams(UnsetContentParams.Disposition.Remove));
     }
 
     @Override
-    public S unsetContent(@NonNull S entity, PropertyPath propertyPath, org.springframework.content.commons.store.UnsetContentParams params) {
+    public S unsetContent(@NonNull S entity, @NonNull PropertyPath propertyPath, @NonNull UnsetContentParams params) {
         StoreEntityValidation.requireEntity(entity);
+        StoreEntityValidation.requirePropertyPath(propertyPath);
+        StoreEntityValidation.requireUnsetContentParams(params);
         ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.name());
         if (property == null) {
             throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.name()));
         }
 
         Resource resource = this.getResource(entity, propertyPath);
-        if (resource != null && resource.exists() && resource instanceof DeletableResource && params.disposition().equals(org.springframework.content.commons.store.UnsetContentParams.Disposition.Remove)) {
-
-            try {
-                ((DeletableResource) resource).delete();
-            } catch (Exception e) {
-                logger.error(format("Unexpected error unsetting content for entity %s", entity));
-                throw new StoreAccessException(format("Unsetting content for entity %s", entity), e);
-            }
+        if (resource != null && params.disposition().equals(UnsetContentParams.Disposition.Remove)) {
+            deleteIfExists(entity, resource);
         }
 
         // reset content fields
@@ -411,12 +422,11 @@ public class DefaultGCPStorageImpl<S, SID extends Serializable> implements Conte
         return format("gs://%s/%s", bucket, locationToUse);
     }
 
-    private void deleteIfExists(S entity) {
-        Resource resource = this.getResource(entity);
-        if (resource != null && resource.exists() && resource instanceof DeletableResource) {
-
+    private void deleteIfExists(S entity, Resource resource) {
+        Resource resourceToDelete = resource != null ? resource : this.getResource(entity);
+        if (resourceToDelete != null && resourceToDelete.exists() && resourceToDelete instanceof DeletableResource) {
             try {
-                ((DeletableResource) resource).delete();
+                ((DeletableResource) resourceToDelete).delete();
             } catch (Exception e) {
                 logger.error(format("Unexpected error unsetting content for entity %s", entity));
                 throw new StoreAccessException(format("Unsetting content for entity %s", entity), e);

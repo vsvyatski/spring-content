@@ -23,7 +23,7 @@ public interface AssociativeStore<S, SID extends Serializable> extends Store<SID
      * @param propertyPath the property path of the associated resource
      * @return resource
      */
-    Resource getResource(@NonNull S entity, PropertyPath propertyPath);
+    Resource getResource(@NonNull S entity, @NonNull PropertyPath propertyPath);
 
     /**
      * Returns the resource associated with the given property for entity, or null if no association exists
@@ -33,7 +33,7 @@ public interface AssociativeStore<S, SID extends Serializable> extends Store<SID
      * @param params       parameters customizing how the resource is fetched and returned
      * @return resource
      */
-    Resource getResource(@NonNull S entity, PropertyPath propertyPath, GetResourceParams params);
+    Resource getResource(@NonNull S entity, @NonNull PropertyPath propertyPath, @NonNull GetResourceParams params);
 
     /**
      * Associates the resource (identified by id) with entity.
@@ -50,7 +50,7 @@ public interface AssociativeStore<S, SID extends Serializable> extends Store<SID
      * @param propertyPath the property path to associate the resource to
      * @param id           the id of the resource to be associated
      */
-    void associate(@NonNull S entity, PropertyPath propertyPath, SID id);
+    void associate(@NonNull S entity, @NonNull PropertyPath propertyPath, SID id);
 
     /**
      * Unassociates the resource from entity
@@ -65,5 +65,5 @@ public interface AssociativeStore<S, SID extends Serializable> extends Store<SID
      * @param entity       the target of the un-association
      * @param propertyPath the property path to unassociate the resource from
      */
-    void unassociate(@NonNull S entity, PropertyPath propertyPath);
+    void unassociate(@NonNull S entity, @NonNull PropertyPath propertyPath);
 }

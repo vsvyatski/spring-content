@@ -53,7 +53,7 @@ public class DefaultReactiveS3StoreImpl<S, SID extends Serializable> implements 
     }
 
     @SuppressWarnings("unchecked")
-    private S3ObjectId getS3ObjectId(S entity, PropertyPath path, ContentProperty property) {
+    private S3ObjectId getS3ObjectId(S entity, @NonNull PropertyPath path, ContentProperty property) {
         TypeDescriptor contentPropertyInfoType = ContentPropertyInfoTypeDescriptor.withGenerics(entity, property);
         if (!placementService.canConvert(contentPropertyInfoType, TypeDescriptor.valueOf(S3ObjectId.class))) {
             throw new IllegalStateException(String.format("Unable to convert %s to an S3ObjectId", contentPropertyInfoType));
@@ -66,8 +66,9 @@ public class DefaultReactiveS3StoreImpl<S, SID extends Serializable> implements 
 
     @Transactional
     @Override
-    public Mono<S> setContent(@NonNull S entity, PropertyPath path, long contentLen, Flux<ByteBuffer> buffer) {
+    public Mono<S> setContent(@NonNull S entity, @NonNull PropertyPath path, long contentLen, Flux<ByteBuffer> buffer) {
         StoreEntityValidation.requireEntity(entity);
+        StoreEntityValidation.requirePropertyPath(path);
 
         ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), path.name());
         if (property == null) {
@@ -119,8 +120,9 @@ public class DefaultReactiveS3StoreImpl<S, SID extends Serializable> implements 
     }
 
     @Override
-    public Flux<ByteBuffer> getContent(@NonNull S entity, PropertyPath path) {
+    public Flux<ByteBuffer> getContent(@NonNull S entity, @NonNull PropertyPath path) {
         StoreEntityValidation.requireEntity(entity);
+        StoreEntityValidation.requirePropertyPath(path);
 
         ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), path.name());
         if (property == null) {
@@ -146,8 +148,9 @@ public class DefaultReactiveS3StoreImpl<S, SID extends Serializable> implements 
 
     @Transactional
     @Override
-    public Mono<S> unsetContent(@NonNull S entity, PropertyPath propertyPath) {
+    public Mono<S> unsetContent(@NonNull S entity, @NonNull PropertyPath propertyPath) {
         StoreEntityValidation.requireEntity(entity);
+        StoreEntityValidation.requirePropertyPath(propertyPath);
 
         ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.name());
         if (property == null) {

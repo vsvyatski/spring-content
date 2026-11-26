@@ -68,17 +68,17 @@ public class InMemoryTypeSupportContentStore<S extends TypeSupportIdGenerator<SI
     }
 
     @Override
-    public S setContent(@NonNull S entity, PropertyPath propertyPath, InputStream content) {
+    public S setContent(@NonNull S entity, @NonNull PropertyPath propertyPath, InputStream content) {
         throw new UnsupportedOperationException(NOT_SUPPORTED);
     }
 
     @Override
-    public S setContent(@NonNull S entity, PropertyPath propertyPath, InputStream content, long contentLen) {
+    public S setContent(@NonNull S entity, @NonNull PropertyPath propertyPath, InputStream content, long contentLen) {
         throw new UnsupportedOperationException(NOT_SUPPORTED);
     }
 
     @Override
-    public S setContent(@NonNull S entity, PropertyPath propertyPath, InputStream content, SetContentParams params) {
+    public S setContent(@NonNull S entity, @NonNull PropertyPath propertyPath, InputStream content, @NonNull SetContentParams params) {
         throw new UnsupportedOperationException(NOT_SUPPORTED);
     }
 
@@ -88,22 +88,22 @@ public class InMemoryTypeSupportContentStore<S extends TypeSupportIdGenerator<SI
     }
 
     @Override
-    public S setContent(@NonNull S entity, PropertyPath propertyPath, Resource resourceContent) {
+    public S setContent(@NonNull S entity, @NonNull PropertyPath propertyPath, Resource resourceContent) {
         throw new UnsupportedOperationException(NOT_SUPPORTED);
     }
 
     @Override
-    public S unsetContent(@NonNull S entity, PropertyPath propertyPath) {
+    public S unsetContent(@NonNull S entity, @NonNull PropertyPath propertyPath) {
         throw new UnsupportedOperationException(NOT_SUPPORTED);
     }
 
     @Override
-    public S unsetContent(@NonNull S entity, PropertyPath propertyPath, UnsetContentParams params) {
+    public S unsetContent(@NonNull S entity, @NonNull PropertyPath propertyPath, @NonNull UnsetContentParams params) {
         throw new UnsupportedOperationException(NOT_SUPPORTED);
     }
 
     @Override
-    public InputStream getContent(@NonNull S entity, PropertyPath propertyPath) {
+    public InputStream getContent(@NonNull S entity, @NonNull PropertyPath propertyPath) {
         throw new UnsupportedOperationException(NOT_SUPPORTED);
     }
 
@@ -113,12 +113,12 @@ public class InMemoryTypeSupportContentStore<S extends TypeSupportIdGenerator<SI
     }
 
     @Override
-    public Resource getResource(@NonNull S entity, PropertyPath propertyPath) {
+    public Resource getResource(@NonNull S entity, @NonNull PropertyPath propertyPath) {
         throw new UnsupportedOperationException(NOT_SUPPORTED);
     }
 
     @Override
-    public Resource getResource(@NonNull S entity, PropertyPath propertyPath, GetResourceParams params) {
+    public Resource getResource(@NonNull S entity, @NonNull PropertyPath propertyPath, @NonNull GetResourceParams params) {
         throw new UnsupportedOperationException(NOT_SUPPORTED);
     }
 
@@ -128,7 +128,7 @@ public class InMemoryTypeSupportContentStore<S extends TypeSupportIdGenerator<SI
     }
 
     @Override
-    public void associate(@NonNull S entity, PropertyPath propertyPath, SID id) {
+    public void associate(@NonNull S entity, @NonNull PropertyPath propertyPath, SID id) {
         throw new UnsupportedOperationException(NOT_SUPPORTED);
     }
 
@@ -138,7 +138,7 @@ public class InMemoryTypeSupportContentStore<S extends TypeSupportIdGenerator<SI
     }
 
     @Override
-    public void unassociate(@NonNull S entity, PropertyPath propertyPath) {
+    public void unassociate(@NonNull S entity, @NonNull PropertyPath propertyPath) {
         throw new UnsupportedOperationException(NOT_SUPPORTED);
     }
 

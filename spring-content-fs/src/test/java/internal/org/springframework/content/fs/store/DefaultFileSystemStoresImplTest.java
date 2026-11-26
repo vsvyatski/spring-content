@@ -1302,6 +1302,28 @@ public class DefaultFileSystemStoresImplTest {
         }
 
         @Test
+        void getResourceWithPropertyPathRejectsNullPropertyPath() {
+            assertThatThrownBy(() -> store.getResource(new SingleContentFields(), null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage(StoreEntityValidation.PROPERTY_PATH_MUST_NOT_BE_NULL);
+        }
+
+        @Test
+        void getResourceWithParamsRejectsNullGetResourceParams() {
+            assertThatThrownBy(() -> store.getResource(
+                new SingleContentFields(), PropertyPath.from("content"), null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage(StoreEntityValidation.GET_RESOURCE_PARAMS_MUST_NOT_BE_NULL);
+        }
+
+        @Test
+        void associateWithPropertyPathRejectsNullPropertyPath() {
+            assertThatThrownBy(() -> store.associate(new SingleContentFields(), null, SAMPLE_CONTENT_ID))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage(StoreEntityValidation.PROPERTY_PATH_MUST_NOT_BE_NULL);
+        }
+
+        @Test
         void associateRejectsNullEntity() {
             assertNullEntityRejected(() -> store.associate(null, SAMPLE_CONTENT_ID));
         }

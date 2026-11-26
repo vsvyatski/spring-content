@@ -48,23 +48,28 @@ public class StoreImpl implements ContentStore<Object, Serializable> {
     }
 
     @Override
-    public Object setContent(@NonNull Object entity, PropertyPath propertyPath, InputStream content) {
+    public Object setContent(@NonNull Object entity, @NonNull PropertyPath propertyPath, InputStream content) {
         StoreEntityValidation.requireEntity(entity);
+        StoreEntityValidation.requirePropertyPath(propertyPath);
         return this.internalSetContent(entity, propertyPath, content,
             (actualContent) -> delegate.setContent(entity, propertyPath, actualContent));
     }
 
     @Override
-    public Object setContent(@NonNull Object entity, PropertyPath propertyPath, InputStream content, long contentLen) {
+    public Object setContent(@NonNull Object entity, @NonNull PropertyPath propertyPath, InputStream content,
+            long contentLen) {
         StoreEntityValidation.requireEntity(entity);
+        StoreEntityValidation.requirePropertyPath(propertyPath);
         return this.internalSetContent(entity, propertyPath, content,
             (actualContent) -> delegate.setContent(entity, propertyPath, actualContent, contentLen));
     }
 
     @Override
-    public Object setContent(@NonNull Object entity, PropertyPath propertyPath, InputStream content,
-                             SetContentParams params) {
+    public Object setContent(@NonNull Object entity, @NonNull PropertyPath propertyPath, InputStream content,
+            @NonNull SetContentParams params) {
         StoreEntityValidation.requireEntity(entity);
+        StoreEntityValidation.requirePropertyPath(propertyPath);
+        StoreEntityValidation.requireSetContentParams(params);
         return this.internalSetContent(entity, propertyPath, content,
             (actualContent) -> delegate.setContent(entity, propertyPath, actualContent, params));
     }
@@ -121,8 +126,9 @@ public class StoreImpl implements ContentStore<Object, Serializable> {
     }
 
     @Override
-    public Object setContent(@NonNull Object entity, PropertyPath propertyPath, Resource resourceContent) {
+    public Object setContent(@NonNull Object entity, @NonNull PropertyPath propertyPath, Resource resourceContent) {
         StoreEntityValidation.requireEntity(entity);
+        StoreEntityValidation.requirePropertyPath(propertyPath);
         return this.internalSetContent(entity, propertyPath, resourceContent,
             () -> delegate.setContent(entity, propertyPath, resourceContent));
     }
@@ -148,14 +154,18 @@ public class StoreImpl implements ContentStore<Object, Serializable> {
     }
 
     @Override
-    public Object unsetContent(@NonNull Object entity, PropertyPath propertyPath) {
+    public Object unsetContent(@NonNull Object entity, @NonNull PropertyPath propertyPath) {
         StoreEntityValidation.requireEntity(entity);
+        StoreEntityValidation.requirePropertyPath(propertyPath);
         return this.internalUnsetContent(entity, propertyPath, () -> delegate.unsetContent(entity, propertyPath));
     }
 
     @Override
-    public Object unsetContent(@NonNull Object entity, PropertyPath propertyPath, UnsetContentParams params) {
+    public Object unsetContent(@NonNull Object entity, @NonNull PropertyPath propertyPath,
+            @NonNull UnsetContentParams params) {
         StoreEntityValidation.requireEntity(entity);
+        StoreEntityValidation.requirePropertyPath(propertyPath);
+        StoreEntityValidation.requireUnsetContentParams(params);
         return this.internalUnsetContent(entity, propertyPath,
             () -> delegate.unsetContent(entity, propertyPath, params));
     }
@@ -180,8 +190,9 @@ public class StoreImpl implements ContentStore<Object, Serializable> {
     }
 
     @Override
-    public InputStream getContent(@NonNull Object entity, PropertyPath propertyPath) throws IOException {
+    public InputStream getContent(@NonNull Object entity, @NonNull PropertyPath propertyPath) throws IOException {
         StoreEntityValidation.requireEntity(entity);
+        StoreEntityValidation.requirePropertyPath(propertyPath);
         return this.internalGetContent(entity, propertyPath, () -> delegate.getContent(entity, propertyPath));
     }
 
@@ -217,14 +228,18 @@ public class StoreImpl implements ContentStore<Object, Serializable> {
     }
 
     @Override
-    public Resource getResource(@NonNull Object entity, PropertyPath propertyPath) {
+    public Resource getResource(@NonNull Object entity, @NonNull PropertyPath propertyPath) {
         StoreEntityValidation.requireEntity(entity);
+        StoreEntityValidation.requirePropertyPath(propertyPath);
         return this.internalGetResource(entity, propertyPath, () -> delegate.getResource(entity, propertyPath));
     }
 
     @Override
-    public Resource getResource(@NonNull Object entity, PropertyPath propertyPath, GetResourceParams params) {
+    public Resource getResource(@NonNull Object entity, @NonNull PropertyPath propertyPath,
+            @NonNull GetResourceParams params) {
         StoreEntityValidation.requireEntity(entity);
+        StoreEntityValidation.requirePropertyPath(propertyPath);
+        StoreEntityValidation.requireGetResourceParams(params);
         return this.internalGetResource(entity, propertyPath,
             () -> delegate.getResource(entity, propertyPath, params));
     }
@@ -275,8 +290,9 @@ public class StoreImpl implements ContentStore<Object, Serializable> {
     }
 
     @Override
-    public void associate(@NonNull Object entity, PropertyPath propertyPath, Serializable id) {
+    public void associate(@NonNull Object entity, @NonNull PropertyPath propertyPath, Serializable id) {
         StoreEntityValidation.requireEntity(entity);
+        StoreEntityValidation.requirePropertyPath(propertyPath);
         BeforeAssociateEvent before = new BeforeAssociateEvent(entity, propertyPath, delegate);
         publisher.publishEvent(before);
 
@@ -299,8 +315,9 @@ public class StoreImpl implements ContentStore<Object, Serializable> {
     }
 
     @Override
-    public void unassociate(@NonNull Object entity, PropertyPath propertyPath) {
+    public void unassociate(@NonNull Object entity, @NonNull PropertyPath propertyPath) {
         StoreEntityValidation.requireEntity(entity);
+        StoreEntityValidation.requirePropertyPath(propertyPath);
         BeforeUnassociateEvent before = new BeforeUnassociateEvent(entity, propertyPath, delegate);
         publisher.publishEvent(before);
 
