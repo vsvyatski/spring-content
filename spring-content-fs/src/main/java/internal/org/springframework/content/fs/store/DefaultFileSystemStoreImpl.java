@@ -12,13 +12,8 @@ import org.springframework.content.commons.mappingcontext.ContentProperty;
 import org.springframework.content.commons.mappingcontext.MappingContext;
 import org.springframework.content.commons.property.PropertyPath;
 import org.springframework.content.commons.store.*;
-import org.springframework.content.commons.store.StoreEntityValidation;
 import org.springframework.content.commons.store.UnsetContentParams.Disposition;
-import org.springframework.content.commons.utils.BeanUtils;
-import org.springframework.content.commons.utils.DomainObjectUtils;
-import org.springframework.content.commons.utils.ContentStoreGetContentSupport;
-import org.springframework.content.commons.utils.FileService;
-import org.springframework.content.commons.utils.PlacementService;
+import org.springframework.content.commons.utils.*;
 import org.springframework.content.fs.io.FileSystemResourceLoader;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.io.Resource;
@@ -323,15 +318,7 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable> implements 
     @Transactional
     public S unsetContent(@NonNull S entity) {
         StoreEntityValidation.requireEntity(entity);
-        Resource resource = getResource(entity);
-
-        if (resource != null && resource.exists() && resource instanceof DeletableResource) {
-            try {
-                ((DeletableResource) resource).delete();
-            } catch (IOException e) {
-                logger.warn(format("Unable to get file for resource %s", resource));
-            }
-        }
+        deleteIfExists(entity, null);
 
         // reset content fields
         unassociate(entity);
@@ -365,23 +352,27 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable> implements 
         }
 
         Resource resource = getResource(entity, propertyPath);
-
-        if (resource != null && resource.exists() && resource instanceof DeletableResource && params.disposition().equals(Disposition.Remove)) {
-            try {
-                ((DeletableResource) resource).delete();
-            } catch (IOException e) {
-                logger.warn(format("Unable to get file for resource %s", resource));
-            }
-        }
-
-        // reset content fields
         if (resource != null) {
-            unassociate(entity, propertyPath);
+            if (params.disposition().equals(Disposition.Remove)) deleteIfExists(entity, resource);
 
+            // reset content fields
+            unassociate(entity, propertyPath);
             property.setContentLength(entity,
                 BeanUtils.getDefaultValueForType(property.getContentLengthType().getType()));
         }
+
         return entity;
+    }
+
+    private void deleteIfExists(S entity, Resource resource) {
+        Resource resourceToDelete = resource != null ? resource : getResource(entity);
+        if (resourceToDelete != null && resourceToDelete.exists() && resourceToDelete instanceof DeletableResource) {
+            try {
+                ((DeletableResource) resourceToDelete).delete();
+            } catch (IOException e) {
+                logger.warn(format("Unable to get file for resource %s", resourceToDelete));
+            }
+        }
     }
 
     private Object convertToExternalContentIdType(S property, Object contentId) {
