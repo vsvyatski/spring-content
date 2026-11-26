@@ -12,7 +12,6 @@ import java.util.Collections;
  * {@code StoreFragmentDetector} (name must be {@code SearchableImpl}). Fulltext calls are mocked via
  * {@code ReflectionService} in {@code ContentSearchRestControllerIT}.
  */
-@SuppressWarnings("unused") // classpath / StoreFragmentDetector *Impl naming
 public class SearchableImpl implements Searchable<Object> {
 
     @Override
