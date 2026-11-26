@@ -77,6 +77,13 @@ class StoreEntityValidationTest {
             StoreEntityValidation.CONTENT_MUST_NOT_BE_NULL);
     }
 
+    @Test
+    @DisplayName("requireContentBuffer throws when null")
+    void rejectsNullContentBuffer() {
+        assertRejectsNullArg(StoreEntityValidation::requireContentBuffer,
+            StoreEntityValidation.CONTENT_MUST_NOT_BE_NULL);
+    }
+
     private static <T> void assertRejectsNullArg(ValidationCall<T> call, String expectedMessage) {
         T value = nullReference();
         assertThatThrownBy(() -> call.validate(value))

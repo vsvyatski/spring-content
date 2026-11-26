@@ -3,7 +3,8 @@ package internal.org.springframework.content.s3.store;
 import internal.org.springframework.content.commons.utils.ContentPropertyInfoTypeDescriptor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.springframework.content.commons.config.ContentPropertyInfo;
 import org.springframework.content.commons.mappingcontext.ContentProperty;
 import org.springframework.content.commons.mappingcontext.MappingContext;
@@ -33,6 +34,7 @@ import java.nio.ByteBuffer;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
+@NullMarked
 @Transactional
 public class DefaultReactiveS3StoreImpl<S, SID extends Serializable> implements ReactiveContentStore<S> {
 
@@ -42,7 +44,8 @@ public class DefaultReactiveS3StoreImpl<S, SID extends Serializable> implements 
     private final PlacementService placementService;
     private final S3AsyncClient asyncClient;
 
-    public DefaultReactiveS3StoreImpl(ApplicationContext context, ResourceLoader loader, MappingContext mappingContext,
+    public DefaultReactiveS3StoreImpl(ApplicationContext context, ResourceLoader loader,
+                                      @Nullable MappingContext mappingContext,
                                       PlacementService placementService, S3AsyncClient asyncClient) {
         Assert.notNull(context, "context must be specified");
         Assert.notNull(loader, "loader must be specified");
@@ -52,23 +55,28 @@ public class DefaultReactiveS3StoreImpl<S, SID extends Serializable> implements 
         this.mappingContext = mappingContext != null ? mappingContext : new MappingContext("/", ".");
     }
 
-    @SuppressWarnings("unchecked")
-    private S3ObjectId getS3ObjectId(S entity, @NonNull PropertyPath path, ContentProperty property) {
+    private S3ObjectId getS3ObjectId(S entity, PropertyPath path, ContentProperty property) {
         TypeDescriptor contentPropertyInfoType = ContentPropertyInfoTypeDescriptor.withGenerics(entity, property);
         if (!placementService.canConvert(contentPropertyInfoType, TypeDescriptor.valueOf(S3ObjectId.class))) {
             throw new IllegalStateException(String.format("Unable to convert %s to an S3ObjectId", contentPropertyInfoType));
         }
+        @SuppressWarnings("unchecked")
         ContentPropertyInfo<S, SID> contentPropertyInfo =
             new ContentPropertyInfo<>(entity, (SID) property.getContentId(entity), path, property);
-        return (S3ObjectId) placementService.convert(contentPropertyInfo, contentPropertyInfoType,
+        S3ObjectId s3ObjectId = (S3ObjectId) placementService.convert(contentPropertyInfo, contentPropertyInfoType,
             TypeDescriptor.valueOf(S3ObjectId.class));
+        if (s3ObjectId == null) {
+            throw new StoreAccessException(String.format("Unable to convert %s to S3ObjectId", contentPropertyInfoType));
+        }
+        return s3ObjectId;
     }
 
     @Transactional
     @Override
-    public Mono<S> setContent(@NonNull S entity, @NonNull PropertyPath path, long contentLen, Flux<ByteBuffer> buffer) {
+    public Mono<S> setContent(S entity, PropertyPath path, long contentLen, Flux<ByteBuffer> buffer) {
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requirePropertyPath(path);
+        StoreEntityValidation.requireContentBuffer(buffer);
 
         ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), path.name());
         if (property == null) {
@@ -120,7 +128,7 @@ public class DefaultReactiveS3StoreImpl<S, SID extends Serializable> implements 
     }
 
     @Override
-    public Flux<ByteBuffer> getContent(@NonNull S entity, @NonNull PropertyPath path) {
+    public @Nullable Flux<ByteBuffer> getContent(S entity, PropertyPath path) {
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requirePropertyPath(path);
 
@@ -130,7 +138,7 @@ public class DefaultReactiveS3StoreImpl<S, SID extends Serializable> implements 
         }
 
         if (property.getContentId(entity) == null) {
-            return Flux.empty();
+            return null;
         }
 
         S3ObjectId s3ObjectId = getS3ObjectId(entity, path, property);
@@ -148,7 +156,7 @@ public class DefaultReactiveS3StoreImpl<S, SID extends Serializable> implements 
 
     @Transactional
     @Override
-    public Mono<S> unsetContent(@NonNull S entity, @NonNull PropertyPath propertyPath) {
+    public Mono<S> unsetContent(S entity, PropertyPath propertyPath) {
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requirePropertyPath(propertyPath);
 
@@ -170,12 +178,11 @@ public class DefaultReactiveS3StoreImpl<S, SID extends Serializable> implements 
 
         CompletableFuture<DeleteObjectResponse> future = asyncClient.deleteObject(deleteRequest);
 
-        return Mono.fromFuture(future)
-            .map((response) -> {
-                property.setContentId(entity, null, DomainObjectUtils::contentIdPropertyMayBeCleared);
-                property.setContentLength(entity,
-                    BeanUtils.getDefaultValueForType(property.getContentLengthType().getType()));
-                return entity;
-            });
+        return Mono.fromFuture(future).map((response) -> {
+            property.setContentId(entity, null, DomainObjectUtils::contentIdPropertyMayBeCleared);
+            property.setContentLength(entity,
+                BeanUtils.getDefaultValueForType(property.getContentLengthType().getType()));
+            return entity;
+        });
     }
 }

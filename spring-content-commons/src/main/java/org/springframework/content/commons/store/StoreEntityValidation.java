@@ -4,9 +4,11 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.content.commons.property.PropertyPath;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
+import reactor.core.publisher.Flux;
 
 import java.io.InputStream;
 import java.io.Serializable;
+import java.nio.ByteBuffer;
 
 /**
  * Validates content-store entity arguments at API boundaries.
@@ -58,6 +60,10 @@ public final class StoreEntityValidation {
 
     public static void requireContentInputStream(@Nullable InputStream content) {
         Assert.notNull(content, CONTENT_MUST_NOT_BE_NULL);
+    }
+
+    public static void requireContentBuffer(@Nullable Flux<ByteBuffer> buffer) {
+        Assert.notNull(buffer, CONTENT_MUST_NOT_BE_NULL);
     }
 
     public static void requireContentResource(@Nullable Resource resourceContent) {
