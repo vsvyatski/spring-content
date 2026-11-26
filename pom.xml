@@ -77,7 +77,6 @@
     <pdfbox.version>3.0.8</pdfbox.version>
     <pdfbox-tools.version>2.0.35</pdfbox-tools.version>
     <rest-assured.version>5.5.7</rest-assured.version>
-    <surefire.mockitoAgent>-Xshare:off</surefire.mockitoAgent>
 
     <!--suppress UnresolvedMavenProperty -->
     <docs.output.dir>../target/generated-docs/refs/${env.BUILD_TYPE}/</docs.output.dir>
@@ -208,10 +207,23 @@
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>3.8.1</version>
+        <executions>
+          <execution>
+            <id>mockito-agent-path</id>
+            <goals>
+              <goal>properties</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>3.6.1</version>
         <configuration>
-          <argLine>${surefire.mockitoAgent}</argLine>
+          <argLine>-javaagent:@{org.mockito:mockito-core:jar} -Xshare:off</argLine>
         </configuration>
       </plugin>
       <plugin>
@@ -281,7 +293,7 @@
             <version>3.6.1</version>
             <configuration>
               <!--suppress UnresolvedMavenProperty -->
-              <argLine>${surefireArgLine} ${surefire.mockitoAgent}</argLine>
+              <argLine>${surefireArgLine} -javaagent:@{org.mockito:mockito-core:jar} -Xshare:off</argLine>
               <skipTests>true</skipTests>
             </configuration>
             <executions>
