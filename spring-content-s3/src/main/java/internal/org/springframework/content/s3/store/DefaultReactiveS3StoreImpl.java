@@ -10,6 +10,7 @@ import org.springframework.content.commons.mappingcontext.MappingContext;
 import org.springframework.content.commons.property.PropertyPath;
 import org.springframework.content.commons.store.ReactiveContentStore;
 import org.springframework.content.commons.store.StoreAccessException;
+import org.springframework.content.commons.store.StoreEntityValidation;
 import org.springframework.content.commons.utils.BeanUtils;
 import org.springframework.content.commons.utils.PlacementService;
 import org.springframework.content.s3.S3ObjectId;
@@ -66,6 +67,7 @@ public class DefaultReactiveS3StoreImpl<S, SID extends Serializable> implements 
     @Transactional
     @Override
     public Mono<S> setContent(@NonNull S entity, PropertyPath path, long contentLen, Flux<ByteBuffer> buffer) {
+        StoreEntityValidation.requireEntity(entity);
 
         ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), path.name());
         if (property == null) {
@@ -118,6 +120,8 @@ public class DefaultReactiveS3StoreImpl<S, SID extends Serializable> implements 
 
     @Override
     public Flux<ByteBuffer> getContent(@NonNull S entity, PropertyPath path) {
+        StoreEntityValidation.requireEntity(entity);
+
         ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), path.name());
         if (property == null) {
             throw new StoreAccessException(String.format("Content property %s does not exist", path.name()));
@@ -143,6 +147,8 @@ public class DefaultReactiveS3StoreImpl<S, SID extends Serializable> implements 
     @Transactional
     @Override
     public Mono<S> unsetContent(@NonNull S entity, PropertyPath propertyPath) {
+        StoreEntityValidation.requireEntity(entity);
+
         ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.name());
         if (property == null) {
             throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.name()));

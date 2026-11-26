@@ -12,6 +12,7 @@ import org.springframework.content.commons.mappingcontext.ContentProperty;
 import org.springframework.content.commons.mappingcontext.MappingContext;
 import org.springframework.content.commons.property.PropertyPath;
 import org.springframework.content.commons.store.*;
+import org.springframework.content.commons.store.StoreEntityValidation;
 import org.springframework.content.commons.store.UnsetContentParams.Disposition;
 import org.springframework.content.commons.utils.BeanUtils;
 import org.springframework.content.commons.utils.ContentStoreGetContentSupport;
@@ -59,6 +60,7 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable> implements 
 
     @Override
     public Resource getResource(@NonNull S entity) {
+        StoreEntityValidation.requireEntity(entity);
         if (placer.canConvert(entity.getClass(), String.class)) {
             String location = placer.convert(entity, String.class);
             assert location != null;
@@ -78,11 +80,13 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable> implements 
 
     @Override
     public Resource getResource(@NonNull S entity, PropertyPath propertyPath) {
+        StoreEntityValidation.requireEntity(entity);
         return this.getResource(entity, propertyPath, new GetResourceParams(null));
     }
 
     @Override
     public Resource getResource(@NonNull S entity, PropertyPath propertyPath, GetResourceParams params) {
+        StoreEntityValidation.requireEntity(entity);
         ContentProperty contentProperty = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.name());
         if (contentProperty == null) {
             throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.name()));
@@ -101,16 +105,19 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable> implements 
 
     @Override
     public void associate(@NonNull S entity, SID id) {
+        StoreEntityValidation.requireEntity(entity);
         BeanUtils.setFieldWithAnnotation(entity, ContentId.class, id.toString());
     }
 
     @Override
     public void associate(@NonNull S entity, PropertyPath propertyPath, SID id) {
+        StoreEntityValidation.requireEntity(entity);
         setContentId(entity, propertyPath, id, null);
     }
 
     @Override
     public void unassociate(@NonNull S entity) {
+        StoreEntityValidation.requireEntity(entity);
         BeanUtils.setFieldWithAnnotationConditionally(entity, ContentId.class, null,
             field -> {
                 for (Annotation annotation : field.getAnnotations()) {
@@ -126,6 +133,7 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable> implements 
 
     @Override
     public void unassociate(@NonNull S entity, PropertyPath propertyPath) {
+        StoreEntityValidation.requireEntity(entity);
         setContentId(entity, propertyPath, null, descriptor -> {
             for (Annotation annotation : descriptor.getAnnotations()) {
                 String canonicalName = annotation.annotationType().getCanonicalName();
@@ -141,6 +149,7 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable> implements 
     @Override
     @Transactional
     public S setContent(@NonNull S entity, InputStream content) {
+        StoreEntityValidation.requireEntity(entity);
         Object contentId = BeanUtils.getFieldWithAnnotation(entity, ContentId.class);
         if (contentId == null) {
 
@@ -189,18 +198,21 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable> implements 
     @Transactional
     @Override
     public S setContent(@NonNull S property, PropertyPath propertyPath, InputStream content) {
+        StoreEntityValidation.requireEntity(property);
         return this.setContent(property, propertyPath, content, -1L);
     }
 
     @Transactional
     @Override
     public S setContent(@NonNull S property, PropertyPath propertyPath, InputStream content, long contentLen) {
+        StoreEntityValidation.requireEntity(property);
         return this.setContent(property, propertyPath, content, new SetContentParams(contentLen, true, SetContentParams.ContentDisposition.Overwrite));
     }
 
     @Transactional
     @Override
     public S setContent(@NonNull S property, PropertyPath propertyPath, InputStream content, SetContentParams params) {
+        StoreEntityValidation.requireEntity(property);
         ContentProperty contentProperty = this.mappingContext
             .getContentProperty(property.getClass(), propertyPath.name());
         if (contentProperty == null) {
@@ -260,6 +272,7 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable> implements 
     @Transactional
     @Override
     public S setContent(@NonNull S property, Resource resourceContent) {
+        StoreEntityValidation.requireEntity(property);
         try {
             return this.setContent(property, resourceContent.getInputStream());
         } catch (IOException e) {
@@ -271,6 +284,7 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable> implements 
     @Transactional
     @Override
     public S setContent(@NonNull S property, PropertyPath propertyPath, Resource resourceContent) {
+        StoreEntityValidation.requireEntity(property);
         try {
             return this.setContent(property, propertyPath, resourceContent.getInputStream());
         } catch (IOException e) {
@@ -282,6 +296,7 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable> implements 
     @Override
     @Transactional
     public InputStream getContent(@NonNull S entity) {
+        StoreEntityValidation.requireEntity(entity);
         Object contentId = BeanUtils.getFieldWithAnnotation(entity, ContentId.class);
         if (contentId == null) {
             return null;
@@ -295,6 +310,7 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable> implements 
     @Transactional
     @Override
     public InputStream getContent(@NonNull S property, PropertyPath propertyPath) {
+        StoreEntityValidation.requireEntity(property);
         ContentProperty contentProperty =
             this.mappingContext.getContentProperty(property.getClass(), propertyPath.name());
         if (contentProperty == null) {
@@ -313,6 +329,7 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable> implements 
     @Override
     @Transactional
     public S unsetContent(@NonNull S entity) {
+        StoreEntityValidation.requireEntity(entity);
         Resource resource = getResource(entity);
 
         if (resource != null && resource.exists() && resource instanceof DeletableResource) {
@@ -338,12 +355,14 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable> implements 
     @Transactional
     @Override
     public S unsetContent(@NonNull S entity, PropertyPath propertyPath) {
+        StoreEntityValidation.requireEntity(entity);
         return unsetContent(entity, propertyPath, new UnsetContentParams(Disposition.Remove));
     }
 
     @Transactional
     @Override
     public S unsetContent(@NonNull S entity, PropertyPath propertyPath, UnsetContentParams params) {
+        StoreEntityValidation.requireEntity(entity);
         ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.name());
         if (property == null) {
             throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.name()));
@@ -382,7 +401,7 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable> implements 
 
     private void setContentId(S entity, PropertyPath propertyPath, SID contentId,
                               org.springframework.content.commons.mappingcontext.Condition condition) {
-        Assert.notNull(entity, "entity must not be null");
+        StoreEntityValidation.requireEntity(entity);
         Assert.notNull(propertyPath, "propertyPath must not be null");
 
         ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.name());

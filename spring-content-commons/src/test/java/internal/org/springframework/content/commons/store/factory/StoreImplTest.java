@@ -84,6 +84,14 @@ public class StoreImplTest {
                     .isInstanceOf(StoreAccessException.class)
                     .hasMessage("missing property");
             }
+
+            @Test
+            @SuppressWarnings("DataFlowIssue")
+            void shouldRejectNullEntity() {
+                assertThatThrownBy(() -> stores.getContent(null))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage(org.springframework.content.commons.store.StoreEntityValidation.ENTITY_MUST_NOT_BE_NULL);
+            }
         }
     }
 }

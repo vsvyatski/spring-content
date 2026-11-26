@@ -10,6 +10,7 @@ import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.commons.store.GetResourceParams;
 import org.springframework.content.commons.store.Store;
 import org.springframework.content.commons.store.StoreAccessException;
+import org.springframework.content.commons.store.StoreEntityValidation;
 import org.springframework.content.encryption.config.EncryptingContentStoreConfigurer;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -48,11 +49,10 @@ public class EncryptingContentStoreImpl<S, SID extends Serializable> implements
 
     @Override
     public S setContent(@NonNull S entity, PropertyPath propertyPath, InputStream content) {
-        Assert.notNull(storeDelegate, "store not set");
-        Assert.notNull(cryptoService, "cryptoService not set");
-
-        return cryptoService.encrypt(entity, propertyPath, content,
-            (e, s) -> storeDelegate.setContent(e, propertyPath, s));
+        StoreEntityValidation.requireEntity(entity);
+        Assert.notNull(propertyPath, "propertyPath must not be null");
+        return requireCryptoService().encrypt(entity, propertyPath, content,
+            (e, s) -> requireStoreDelegate().setContent(e, propertyPath, s));
     }
 
     @Override
@@ -63,11 +63,10 @@ public class EncryptingContentStoreImpl<S, SID extends Serializable> implements
 
     @Override
     public S setContent(@NonNull S entity, PropertyPath propertyPath, InputStream content, org.springframework.content.commons.store.SetContentParams params) {
-        Assert.notNull(storeDelegate, "store not set");
-        Assert.notNull(cryptoService, "cryptoService not set");
-
-        return cryptoService.encrypt(entity, propertyPath, content,
-            (e, s) -> storeDelegate.setContent(e, propertyPath, s, params));
+        StoreEntityValidation.requireEntity(entity);
+        Assert.notNull(propertyPath, "propertyPath must not be null");
+        return requireCryptoService().encrypt(entity, propertyPath, content,
+            (e, s) -> requireStoreDelegate().setContent(e, propertyPath, s, params));
     }
 
     @Override
@@ -77,15 +76,13 @@ public class EncryptingContentStoreImpl<S, SID extends Serializable> implements
 
     @Override
     public S setContent(@NonNull S entity, PropertyPath propertyPath, Resource resource) {
-        Assert.notNull(entity, "entity not set");
-        Assert.notNull(propertyPath, "propertyPath not set");
-        Assert.notNull(resource, "resource not set");
-        Assert.notNull(storeDelegate, "store not set");
-        Assert.notNull(cryptoService, "cryptoService not set");
+        StoreEntityValidation.requireEntity(entity);
+        Assert.notNull(propertyPath, "propertyPath must not be null");
+        Assert.notNull(resource, "resource must not be null");
 
         try {
-            return cryptoService.encrypt(entity, propertyPath, resource.getInputStream(),
-                (e, s) -> storeDelegate.setContent(e, propertyPath, new InputStreamResource(s)));
+            return requireCryptoService().encrypt(entity, propertyPath, resource.getInputStream(),
+                (e, s) -> requireStoreDelegate().setContent(e, propertyPath, new InputStreamResource(s)));
         } catch (IOException e) {
             throw new StoreAccessException("error encrypting resource", e);
         }
@@ -104,19 +101,17 @@ public class EncryptingContentStoreImpl<S, SID extends Serializable> implements
 
     @Override
     public S unsetContent(@NonNull S entity, PropertyPath propertyPath, org.springframework.content.commons.store.UnsetContentParams params) {
-        Assert.notNull(entity, "entity not set");
-        Assert.notNull(propertyPath, "propertyPath not set");
-        Assert.notNull(storeDelegate, "store not set");
-        Assert.notNull(cryptoService, "cryptoService not set");
+        StoreEntityValidation.requireEntity(entity);
+        Assert.notNull(propertyPath, "propertyPath must not be null");
 
         ContentProperty contentProperty = mappingContext.getContentProperty(entity.getClass(), propertyPath.name());
         if (contentProperty == null) {
             throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.name()));
         }
 
-        var newEntity = cryptoService.clearKeys(entity, propertyPath);
+        var newEntity = requireCryptoService().clearKeys(entity, propertyPath);
 
-        return storeDelegate.unsetContent(newEntity, propertyPath, params);
+        return requireStoreDelegate().unsetContent(newEntity, propertyPath, params);
     }
 
     @Override
@@ -126,12 +121,11 @@ public class EncryptingContentStoreImpl<S, SID extends Serializable> implements
 
     @Override
     public InputStream getContent(@NonNull S entity, PropertyPath propertyPath) throws IOException {
-        Assert.notNull(entity, "entity not set");
-        Assert.notNull(propertyPath, "propertyPath not set");
-        Assert.notNull(storeDelegate, "store not set");
-        Assert.notNull(cryptoService, "cryptoService not set");
+        StoreEntityValidation.requireEntity(entity);
+        Assert.notNull(propertyPath, "propertyPath must not be null");
 
-        return cryptoService.decrypt(entity, propertyPath, null, () -> storeDelegate.getResource(entity, propertyPath))
+        return requireCryptoService()
+            .decrypt(entity, propertyPath, null, () -> requireStoreDelegate().getResource(entity, propertyPath))
             .getInputStream();
     }
 
@@ -142,23 +136,20 @@ public class EncryptingContentStoreImpl<S, SID extends Serializable> implements
 
     @Override
     public Resource getResource(@NonNull S entity, PropertyPath propertyPath) {
-        Assert.notNull(entity, "entity not set");
-        Assert.notNull(propertyPath, "propertyPath not set");
-        Assert.notNull(storeDelegate, "store not set");
-        Assert.notNull(cryptoService, "cryptoService not set");
+        StoreEntityValidation.requireEntity(entity);
+        Assert.notNull(propertyPath, "propertyPath must not be null");
 
-        return cryptoService.decrypt(entity, propertyPath, null, () -> storeDelegate.getResource(entity, propertyPath));
+        return requireCryptoService()
+            .decrypt(entity, propertyPath, null, () -> requireStoreDelegate().getResource(entity, propertyPath));
     }
 
     @Override
     public Resource getResource(@NonNull S entity, PropertyPath propertyPath, GetResourceParams params) {
-        Assert.notNull(entity, "entity not set");
-        Assert.notNull(propertyPath, "propertyPath not set");
-        Assert.notNull(storeDelegate, "store not set");
-        Assert.notNull(cryptoService, "cryptoService not set");
+        StoreEntityValidation.requireEntity(entity);
+        Assert.notNull(propertyPath, "propertyPath must not be null");
 
-        return cryptoService.decrypt(entity, propertyPath, params,
-            () -> storeDelegate.getResource(entity, propertyPath));
+        return requireCryptoService()
+            .decrypt(entity, propertyPath, params, () -> requireStoreDelegate().getResource(entity, propertyPath));
     }
 
     @Override
@@ -239,5 +230,19 @@ public class EncryptingContentStoreImpl<S, SID extends Serializable> implements
     private static <T> void applyConfigurer(EncryptingContentStoreConfigurer<?> configurer,
                                             EncryptingContentStoreConfigurationImpl<T> config) {
         ((EncryptingContentStoreConfigurer<T>) configurer).configure(config);
+    }
+
+    private ContentStore<S, SID> requireStoreDelegate() {
+        if (storeDelegate == null) {
+            throw new IllegalStateException("store not set");
+        }
+        return storeDelegate;
+    }
+
+    private ContentCryptoService<S, ?> requireCryptoService() {
+        if (cryptoService == null) {
+            throw new IllegalStateException("cryptoService not set");
+        }
+        return cryptoService;
     }
 }

@@ -8,7 +8,9 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.springframework.content.commons.io.DeletableResource;
+import org.springframework.content.commons.property.PropertyPath;
 import org.springframework.content.commons.store.StoreAccessException;
+import org.springframework.content.commons.store.StoreEntityValidation;
 import org.springframework.content.commons.utils.FileService;
 import org.springframework.content.commons.utils.PlacementService;
 import org.springframework.content.commons.utils.PlacementServiceImpl;
@@ -25,6 +27,7 @@ import org.springframework.core.io.WritableResource;
 import java.io.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.AdditionalMatchers.not;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -1259,6 +1262,69 @@ public class DefaultFileSystemStoresImplTest {
                     }
                 }
             }
+        }
+    }
+
+    @Nested
+    @DisplayName("Given a null entity on the store implementation")
+    @SuppressWarnings("DataFlowIssue")
+    class NullEntityOnDirectImpl {
+
+        private DefaultFileSystemStoreImpl<SingleContentFields, String> store;
+
+        @BeforeEach
+        void setUp() {
+            store = new DefaultFileSystemStoreImpl<>(
+                mock(FileSystemResourceLoader.class),
+                null,
+                new PlacementServiceImpl(),
+                mock(FileService.class));
+        }
+
+        @Test
+        void getContentRejectsNullEntity() {
+            assertNullEntityRejected(() -> store.getContent(null));
+        }
+
+        @Test
+        void setContentRejectsNullEntity() {
+            assertNullEntityRejected(() -> store.setContent(null, InputStream.nullInputStream()));
+        }
+
+        @Test
+        void getResourceRejectsNullEntity() {
+            assertNullEntityRejected(() -> store.getResource((SingleContentFields) null));
+        }
+
+        @Test
+        void getResourceWithPropertyPathRejectsNullEntity() {
+            assertNullEntityRejected(() -> store.getResource(null, PropertyPath.from("content")));
+        }
+
+        @Test
+        void associateRejectsNullEntity() {
+            assertNullEntityRejected(() -> store.associate(null, SAMPLE_CONTENT_ID));
+        }
+
+        @Test
+        void unassociateRejectsNullEntity() {
+            assertNullEntityRejected(() -> store.unassociate(null));
+        }
+
+        @Test
+        void unassociateWithPropertyPathRejectsNullEntity() {
+            assertNullEntityRejected(() -> store.unassociate(null, PropertyPath.from("content")));
+        }
+
+        @Test
+        void unsetContentRejectsNullEntity() {
+            assertNullEntityRejected(() -> store.unsetContent(null));
+        }
+
+        private static void assertNullEntityRejected(org.assertj.core.api.ThrowableAssert.ThrowingCallable call) {
+            assertThatThrownBy(call)
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage(StoreEntityValidation.ENTITY_MUST_NOT_BE_NULL);
         }
     }
 }

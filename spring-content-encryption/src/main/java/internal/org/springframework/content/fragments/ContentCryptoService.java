@@ -6,6 +6,7 @@ import org.springframework.content.commons.mappingcontext.MappingContext;
 import org.springframework.content.commons.property.PropertyPath;
 import org.springframework.content.commons.store.GetResourceParams;
 import org.springframework.content.commons.store.StoreAccessException;
+import org.springframework.content.commons.store.StoreEntityValidation;
 import org.springframework.content.encryption.engine.ContentEncryptionEngine;
 import org.springframework.content.encryption.engine.ContentEncryptionEngine.EncryptionParameters;
 import org.springframework.content.encryption.engine.ContentEncryptionEngine.InputStreamRequestParameters;
@@ -84,9 +85,9 @@ class ContentCryptoService<S, DEK extends StoredDataEncryptionKey> {
     }
 
     public S encrypt(S entity, PropertyPath propertyPath, InputStream plainText, BiFunction<S, InputStream, S> contentSetter) {
-        Assert.notNull(entity, "entity not set");
-        Assert.notNull(propertyPath, "propertyPath not set");
-        Assert.notNull(plainText, "plainText not set");
+        StoreEntityValidation.requireEntity(entity);
+        Assert.notNull(propertyPath, "propertyPath must not be null");
+        Assert.notNull(plainText, "plainText must not be null");
 
         var contentProperty = resolveContentPropertyRequired(entity, propertyPath);
 
@@ -104,8 +105,8 @@ class ContentCryptoService<S, DEK extends StoredDataEncryptionKey> {
     }
 
     public Resource decrypt(S entity, PropertyPath propertyPath, GetResourceParams getResourceParams, Supplier<Resource> contentGetter) {
-        Assert.notNull(entity, "entity not set");
-        Assert.notNull(propertyPath, "propertyPath not set");
+        StoreEntityValidation.requireEntity(entity);
+        Assert.notNull(propertyPath, "propertyPath must not be null");
 
         var contentProperty = resolveContentPropertyRequired(entity, propertyPath);
 

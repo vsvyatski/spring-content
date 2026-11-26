@@ -4,8 +4,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.NullValueInNestedPathException;
+import org.springframework.content.commons.store.StoreEntityValidation;
 import org.springframework.core.convert.TypeDescriptor;
-import org.springframework.util.Assert;
 
 import java.util.Objects;
 
@@ -113,13 +113,13 @@ public class ContentProperty {
 
     public TypeDescriptor getContentIdType(Object entity) {
         // WTF is this method meant for? Originally the "entity" parameter was not used here.
-        Assert.notNull(entity, "entity is null");
-        Assert.notNull(this.contentIdType, "content id property type must be set");
+        StoreEntityValidation.requireEntity(entity);
+        requireContentIdType();
         return this.contentIdType;
     }
 
     public TypeDescriptor getContentIdType() {
-        Assert.notNull(this.contentIdType, "content id property type must be set");
+        requireContentIdType();
         return this.contentIdType;
     }
 
@@ -150,7 +150,9 @@ public class ContentProperty {
     }
 
     public TypeDescriptor getContentLengthType() {
-        Assert.notNull(this.contentLengthType, "content length property type must be set");
+        if (this.contentLengthType == null) {
+            throw new IllegalStateException("content length property type must be set");
+        }
         return this.contentLengthType;
     }
 
@@ -234,5 +236,11 @@ public class ContentProperty {
     public int hashCode() {
         return Objects.hash(contentPropertyPath, contentIdPropertyPath, contentIdType, contentLengthPropertyPath,
             contentLengthType, mimeTypePropertyPath, originalFileNamePropertyPath);
+    }
+
+    private void requireContentIdType() {
+        if (this.contentIdType == null) {
+            throw new IllegalStateException("content id property type must be set");
+        }
     }
 }

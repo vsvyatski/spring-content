@@ -703,6 +703,22 @@ public class StoreMethodInterceptorTest {
     }
 
     @Nested
+    @DisplayName("When the entity argument is null")
+    class NullEntity {
+        @Test
+        void setContentThrowsIllegalArgumentException() {
+            publisher = mock(ApplicationEventPublisher.class);
+            store = CommonsTestStores.mockContentStore();
+            invocation = new TestMethodInvocation(store, setContentMethod, null,
+                new ByteArrayInputStream("test".getBytes()));
+            attachInterceptor(store, publisher);
+            invokeInterceptor();
+            assertThat(e).isInstanceOf(IllegalArgumentException.class)
+                .hasMessage(org.springframework.content.commons.store.StoreEntityValidation.ENTITY_MUST_NOT_BE_NULL);
+        }
+    }
+
+    @Nested
     @DisplayName("getMethod")
     class GetMethod {
         @Test

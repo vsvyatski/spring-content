@@ -65,6 +65,9 @@ public class StoreMethodInterceptor implements MethodInterceptor {
                 ReflectionUtils.invokeMethod(setContentStoreMethod, f.getImplementation(), invocation.getThis());
             }
 
+            StoreEntityArguments.requireEntityArgumentIfApplicable(
+                invocation.getMethod(), invocation.getArguments());
+
             try {
                 return getMethod(invocation.getMethod(), f)
                     .invoke(fragment.get().getImplementation(), invocation.getArguments());
