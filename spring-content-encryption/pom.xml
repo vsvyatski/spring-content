@@ -108,11 +108,5 @@
       <artifactId>testcontainers-localstack</artifactId>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>io.awspring.cloud</groupId>
-      <artifactId>spring-cloud-aws-context</artifactId>
-      <version>${spring-cloud-aws-context.version}</version>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 </project>
