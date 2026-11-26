@@ -40,7 +40,8 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 /**
- * {@link Searchable} store fragment for Solr.
+ * {@link Searchable} store fragment for Solr. Wired through {@link ContentStoreAware}; not a {@code @NullMarked}
+ * {@link ContentStore} wrapper.
  *
  * @author Vladimir Svyatski
  */

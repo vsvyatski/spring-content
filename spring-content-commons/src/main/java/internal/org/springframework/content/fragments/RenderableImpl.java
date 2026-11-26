@@ -4,6 +4,7 @@ import internal.org.springframework.content.commons.renditions.RenditionServiceI
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.content.commons.annotations.MimeType;
 import org.springframework.content.commons.fragments.ContentStoreAware;
 import org.springframework.content.commons.mappingcontext.ContentProperty;
 import org.springframework.content.commons.mappingcontext.MappingContext;
@@ -12,8 +13,10 @@ import org.springframework.content.commons.renditions.Renderable;
 import org.springframework.content.commons.renditions.RenditionProvider;
 import org.springframework.content.commons.renditions.RenditionService;
 import org.springframework.content.commons.store.ContentStore;
+import org.springframework.content.commons.store.StoreEntityValidation;
 import org.springframework.content.commons.utils.BeanUtils;
 import org.springframework.core.io.Resource;
+import org.springframework.util.Assert;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,13 +25,20 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * {@link Renderable} store fragment. Wired through {@link ContentStoreAware}; not a {@code @NullMarked}
+ * {@link ContentStore} wrapper.
+ *
+ * @author Vladimir Svyatski
+ */
 public class RenderableImpl implements Renderable<Object>, ContentStoreAware {
 
     private static final Log LOGGER = LogFactory.getLog(RenderableImpl.class);
+
     private final MappingContext mappingContext;
     private final List<RenditionProvider> providers = new ArrayList<>();
     private ContentStore<Object, Serializable> store;
-    private RenditionService renditionService = null;
+    private RenditionService renditionService;
 
     public RenderableImpl() {
         this.mappingContext = new MappingContext("/", ".");
@@ -52,6 +62,11 @@ public class RenderableImpl implements Renderable<Object>, ContentStoreAware {
         this.store = store;
     }
 
+    @Autowired(required = false)
+    public void setRenditionService(RenditionService renditionService) {
+        this.renditionService = renditionService;
+    }
+
     public RenditionService getRenditionService() {
         if (this.renditionService == null) {
             this.renditionService = new RenditionServiceImpl(providers.toArray(new RenditionProvider[0]));
@@ -59,92 +74,97 @@ public class RenderableImpl implements Renderable<Object>, ContentStoreAware {
         return this.renditionService;
     }
 
-    @Autowired(required = false)
-    public void setRenditionService(RenditionService renditionService) {
-        this.renditionService = renditionService;
-    }
-
     @Override
     public InputStream getRendition(Object entity, String mimeType) {
-        String fromMimeType = null;
-        fromMimeType = (String) BeanUtils.getFieldWithAnnotation(entity, org.springframework.content.commons.annotations.MimeType.class);
+        StoreEntityValidation.requireEntity(entity);
+        Assert.notNull(mimeType, "mimeType must not be null");
+
+        String fromMimeType = (String) BeanUtils.getFieldWithAnnotation(entity, MimeType.class);
         if (fromMimeType == null) {
             return null;
         }
 
-        if (this.getRenditionService().canConvert(fromMimeType, mimeType)) {
-            InputStream content = null;
-            try {
-                if (store != null) {
-                    content = store.getContent(entity);
-                }
+        if (!getRenditionService().canConvert(fromMimeType, mimeType)) {
+            return null;
+        }
+
+        try {
+            if (store != null) {
+                InputStream content = store.getContent(entity);
                 if (content != null) {
-                    return this.getRenditionService().convert(fromMimeType, content, mimeType);
+                    return getRenditionService().convert(fromMimeType, content, mimeType);
                 }
-            } catch (IOException | RuntimeException e) {
-                LOGGER.error(String.format("Failed to get rendition from %s to %s", fromMimeType, mimeType), e);
             }
+        } catch (IOException | RuntimeException e) {
+            LOGGER.error(String.format("Failed to get rendition from %s to %s", fromMimeType, mimeType), e);
         }
         return null;
     }
 
     @Override
     public InputStream getRendition(Object entity, PropertyPath propertyPath, String mimeType) {
+        StoreEntityValidation.requireEntity(entity);
+        StoreEntityValidation.requirePropertyPath(propertyPath);
+        Assert.notNull(mimeType, "mimeType must not be null");
 
-        Object fromMimeType;
-
-        ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.name());
+        ContentProperty property = mappingContext.getContentProperty(entity.getClass(), propertyPath.name());
         if (property == null) {
             return null;
         }
 
-        fromMimeType = property.getMimeType(entity);
-
+        Object fromMimeType = property.getMimeType(entity);
         if (fromMimeType == null) {
             return null;
         }
 
-        if (this.getRenditionService().canConvert(fromMimeType.toString(), mimeType)) {
-            try {
-                Resource r = null;
-                if (store != null) {
-                    r = store.getResource(entity, propertyPath);
-                }
-                if (r != null) {
-                    try (InputStream content = r.getInputStream()) {
-                        return this.getRenditionService().convert(fromMimeType.toString(), content, mimeType);
+        if (!getRenditionService().canConvert(fromMimeType.toString(), mimeType)) {
+            return null;
+        }
+
+        try {
+            if (store != null) {
+                Resource resource = store.getResource(entity, propertyPath);
+                if (resource != null) {
+                    try (InputStream content = resource.getInputStream()) {
+                        return getRenditionService().convert(fromMimeType.toString(), content, mimeType);
                     }
                 }
-            } catch (IOException | RuntimeException e) {
-                LOGGER.error(String.format("Failed to get rendition from %s to %s", fromMimeType, mimeType), e);
             }
+        } catch (IOException | RuntimeException e) {
+            LOGGER.error(String.format("Failed to get rendition from %s to %s", fromMimeType, mimeType), e);
         }
         return null;
     }
 
     @Override
     public boolean hasRendition(Object entity, String mimeType) {
+        StoreEntityValidation.requireEntity(entity);
+        Assert.notNull(mimeType, "mimeType must not be null");
 
-        String fromMimeType = (String) BeanUtils
-            .getFieldWithAnnotation(entity, org.springframework.content.commons.annotations.MimeType.class);
+        String fromMimeType = (String) BeanUtils.getFieldWithAnnotation(entity, MimeType.class);
         if (fromMimeType == null) {
             return false;
         }
 
-        return this.getRenditionService().canConvert(fromMimeType, mimeType);
+        return getRenditionService().canConvert(fromMimeType, mimeType);
     }
 
     @Override
     public boolean hasRendition(Object entity, PropertyPath propertyPath, String mimeType) {
+        StoreEntityValidation.requireEntity(entity);
+        StoreEntityValidation.requirePropertyPath(propertyPath);
+        Assert.notNull(mimeType, "mimeType must not be null");
 
-        ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.name());
-        // todo: property == null
+        ContentProperty property = mappingContext.getContentProperty(entity.getClass(), propertyPath.name());
+        if (property == null) {
+            return false;
+        }
 
         Object fromMimeType = property.getMimeType(entity);
         if (fromMimeType == null) {
             return false;
         }
 
-        return this.getRenditionService().canConvert(fromMimeType.toString(), mimeType);
+        return getRenditionService().canConvert(fromMimeType.toString(), mimeType);
     }
 }

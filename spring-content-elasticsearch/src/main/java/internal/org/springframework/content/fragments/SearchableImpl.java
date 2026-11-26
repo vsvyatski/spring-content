@@ -43,7 +43,8 @@ import java.util.function.Consumer;
 import static java.lang.String.format;
 
 /**
- * {@link Searchable} store fragment for Elasticsearch.
+ * {@link Searchable} store fragment for Elasticsearch. Wired through {@link ContentStoreAware}; not a {@code @NullMarked}
+ * {@link ContentStore} wrapper.
  *
  * @author Vladimir Svyatski
  */
