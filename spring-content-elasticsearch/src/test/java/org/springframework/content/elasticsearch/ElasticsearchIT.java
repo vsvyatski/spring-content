@@ -5,15 +5,20 @@ import co.elastic.clients.elasticsearch._types.ElasticsearchException;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.*;
 import org.springframework.content.commons.search.IndexService;
-import org.springframework.content.test.support.fulltext.*;
+import org.springframework.content.test.support.fulltext.FulltextJpaUuidDocumentEntity;
+import org.springframework.content.test.support.fulltext.FulltextJpaUuidDocumentRepository;
+import org.springframework.content.test.support.fulltext.FulltextJpaUuidDocumentSearchableStore;
+import org.springframework.content.test.support.fulltext.FulltextSearchResult;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.data.domain.PageRequest;
+import org.testcontainers.elasticsearch.ElasticsearchContainer;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.UUID;
 
 import static java.lang.String.format;
@@ -24,7 +29,7 @@ public class ElasticsearchIT {
     private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
     private FulltextJpaUuidDocumentRepository repo;
-    private FulltextJpaUuidDocumentStore store;
+    private FulltextJpaUuidDocumentSearchableStore store;
     private FulltextJpaUuidDocumentSearchableStore searchableStore;
 
     private ElasticsearchClient client;
@@ -39,6 +44,15 @@ public class ElasticsearchIT {
         return (IndexService<FulltextJpaUuidDocumentEntity>) context.getBean(IndexService.class);
     }
 
+    private static InputStream testResource(String path) {
+        return Objects.requireNonNull(ElasticsearchIT.class.getResourceAsStream(path),
+            () -> "Missing classpath test resource: " + path);
+    }
+
+    private static String contentIdString(FulltextJpaUuidDocumentEntity entity) {
+        return Objects.requireNonNull(entity.getContentId(), "contentId").toString();
+    }
+
     @Nested
     class GlobalIndexingStrategyScenarios {
 
@@ -50,7 +64,7 @@ public class ElasticsearchIT {
             context.refresh();
 
             repo = context.getBean(FulltextJpaUuidDocumentRepository.class);
-            store = context.getBean(FulltextJpaUuidDocumentStore.class);
+            store = context.getBean(FulltextJpaUuidDocumentSearchableStore.class);
             client = context.getBean(ElasticsearchClient.class);
             context.getBean(GlobalIndexingStrategy.class).setup();
             indexName = context.getBean(GlobalIndexingStrategy.class).indexName();
@@ -93,19 +107,19 @@ public class ElasticsearchIT {
             doc1 = new FulltextJpaUuidDocumentEntity();
             doc1.setTitle("doc 1");
             doc1.setAuthor("author@email.com");
-            store.setContent(doc1, ElasticsearchIT.class.getResourceAsStream("/one.docx"));
+            store.setContent(doc1, testResource("/one.docx"));
             doc1 = repo.save(doc1);
 
             doc2 = new FulltextJpaUuidDocumentEntity();
             doc2.setTitle("doc 2");
             doc2.setAuthor("author@email.com");
-            store.setContent(doc2, ElasticsearchIT.class.getResourceAsStream("/two.rtf"));
+            store.setContent(doc2, testResource("/two.rtf"));
             doc2 = repo.save(doc2);
 
-            var res = client.get(g -> g.index(indexName).id(doc1.getContentId().toString()), Void.class);
+            var res = client.get(g -> g.index(indexName).id(contentIdString(doc1)), Void.class);
             assertThat(res.found()).isTrue();
 
-            res = client.get(g -> g.index(indexName).id(doc2.getContentId().toString()), Void.class);
+            res = client.get(g -> g.index(indexName).id(contentIdString(doc2)), Void.class);
             assertThat(res.found()).isTrue();
         }
 
@@ -114,13 +128,13 @@ public class ElasticsearchIT {
             doc1 = new FulltextJpaUuidDocumentEntity();
             doc1.setTitle("doc 1");
             doc1.setAuthor("author@email.com");
-            store.setContent(doc1, ElasticsearchIT.class.getResourceAsStream("/one.docx"));
+            store.setContent(doc1, testResource("/one.docx"));
             doc1 = repo.save(doc1);
 
             doc2 = new FulltextJpaUuidDocumentEntity();
             doc2.setTitle("doc 2");
             doc2.setAuthor("author@email.com");
-            store.setContent(doc2, ElasticsearchIT.class.getResourceAsStream("/two.rtf"));
+            store.setContent(doc2, testResource("/two.rtf"));
             doc2 = repo.save(doc2);
             IndexService<FulltextJpaUuidDocumentEntity> indexer = indexService(context);
             indexer.index(doc1, new ByteArrayInputStream("customized index".getBytes()));
@@ -129,7 +143,8 @@ public class ElasticsearchIT {
             assertThat(resp.acknowledged()).isTrue();
 
             String statusUrl = format("%s/_cat/indices/%s?h=status", ElasticsearchTestContainer.getUrl(), indexName);
-            Process process = new ProcessBuilder("curl", "-X", "GET", statusUrl).start();
+            String elasticUser = format("elastic:%s", ElasticsearchContainer.ELASTICSEARCH_DEFAULT_PASSWORD);
+            Process process = new ProcessBuilder("curl", "-k", "-u", elasticUser, "-X", "GET", statusUrl).start();
 
             InputStream inputStream = process.getInputStream();
             process.waitFor();
@@ -143,36 +158,40 @@ public class ElasticsearchIT {
             doc1 = new FulltextJpaUuidDocumentEntity();
             doc1.setTitle("doc 1");
             doc1.setAuthor("author@email.com");
-            store.setContent(doc1, ElasticsearchIT.class.getResourceAsStream("/one.docx"));
+            store.setContent(doc1, testResource("/one.docx"));
             doc1 = repo.save(doc1);
 
             doc2 = new FulltextJpaUuidDocumentEntity();
             doc2.setTitle("doc 2");
             doc2.setAuthor("author@email.com");
-            store.setContent(doc2, ElasticsearchIT.class.getResourceAsStream("/two.rtf"));
+            store.setContent(doc2, testResource("/two.rtf"));
             doc2 = repo.save(doc2);
 
             org.awaitility.Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
                 var result = store.search("one");
-                assertThat(result).contains(doc1.getContentId());
-                assertThat(result).doesNotContain(doc2.getContentId());
+                assertThat(result).extracting(FulltextSearchResult::getContentId)
+                    .contains(doc1.getContentId())
+                    .doesNotContain(doc2.getContentId());
             });
 
             org.awaitility.Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
                 var result = store.search("two");
-                assertThat(result).doesNotContain(doc1.getContentId());
-                assertThat(result).contains(doc2.getContentId());
+                assertThat(result).extracting(FulltextSearchResult::getContentId)
+                    .doesNotContain(doc1.getContentId())
+                    .contains(doc2.getContentId());
             });
 
             org.awaitility.Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
                 var result = store.search("one two");
-                assertThat(result).contains(doc1.getContentId(), doc2.getContentId());
+                assertThat(result).extracting(FulltextSearchResult::getContentId)
+                    .contains(doc1.getContentId(), doc2.getContentId());
             });
 
             org.awaitility.Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
                 var result = store.search("+document +one -two");
-                assertThat(result).contains(doc1.getContentId());
-                assertThat(result).doesNotContain(doc2.getContentId());
+                assertThat(result).extracting(FulltextSearchResult::getContentId)
+                    .contains(doc1.getContentId())
+                    .doesNotContain(doc2.getContentId());
             });
         }
 
@@ -181,25 +200,25 @@ public class ElasticsearchIT {
             doc1 = new FulltextJpaUuidDocumentEntity();
             doc1.setTitle("doc 1");
             doc1.setAuthor("author@email.com");
-            store.setContent(doc1, ElasticsearchIT.class.getResourceAsStream("/one.docx"));
+            store.setContent(doc1, testResource("/one.docx"));
             doc1 = repo.save(doc1);
 
             doc2 = new FulltextJpaUuidDocumentEntity();
             doc2.setTitle("doc 2");
             doc2.setAuthor("author@email.com");
-            store.setContent(doc2, ElasticsearchIT.class.getResourceAsStream("/two.rtf"));
+            store.setContent(doc2, testResource("/two.rtf"));
             doc2 = repo.save(doc2);
 
             doc1 = new FulltextJpaUuidDocumentEntity();
             doc1.setTitle("doc 1");
             doc1.setAuthor("author@email.com");
             doc1.setMimeType("image/png");
-            doc1 = store.setContent(doc1, ElasticsearchIT.class.getResourceAsStream("/image.png"));
+            doc1 = store.setContent(doc1, testResource("/image.png"));
             doc1 = repo.save(doc1);
 
             org.awaitility.Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
                 var result = store.search("wisdom");
-                assertThat(result).contains(doc1.getContentId());
+                assertThat(result).extracting(FulltextSearchResult::getContentId).contains(doc1.getContentId());
             });
         }
 
@@ -208,20 +227,20 @@ public class ElasticsearchIT {
             doc1 = new FulltextJpaUuidDocumentEntity();
             doc1.setTitle("doc 1");
             doc1.setAuthor("author@email.com");
-            store.setContent(doc1, ElasticsearchIT.class.getResourceAsStream("/one.docx"));
+            store.setContent(doc1, testResource("/one.docx"));
             doc1 = repo.save(doc1);
 
             doc2 = new FulltextJpaUuidDocumentEntity();
             doc2.setTitle("doc 2");
             doc2.setAuthor("author@email.com");
-            store.setContent(doc2, ElasticsearchIT.class.getResourceAsStream("/two.rtf"));
+            store.setContent(doc2, testResource("/two.rtf"));
             doc2 = repo.save(doc2);
 
-            id1 = doc1.getContentId();
+            id1 = Objects.requireNonNull(doc1.getContentId(), "contentId");
             store.unsetContent(doc1);
             repo.delete(doc1);
 
-            id2 = doc2.getContentId();
+            id2 = Objects.requireNonNull(doc2.getContentId(), "contentId");
             store.unsetContent(doc2);
             repo.delete(doc2);
 
@@ -246,13 +265,13 @@ public class ElasticsearchIT {
             context.refresh();
 
             repo = context.getBean(FulltextJpaUuidDocumentRepository.class);
-            store = context.getBean(FulltextJpaUuidDocumentStore.class);
+            store = context.getBean(FulltextJpaUuidDocumentSearchableStore.class);
             client = context.getBean(ElasticsearchClient.class);
 
             for (int i = 0; i < 10; i++) {
                 FulltextJpaUuidDocumentEntity doc = new FulltextJpaUuidDocumentEntity();
                 doc.setTitle(format("doc %s", i));
-                doc = store.setContent(doc, this.getClass().getResourceAsStream("/one.docx"));
+                doc = store.setContent(doc, testResource("/one.docx"));
                 repo.save(doc);
             }
         }
@@ -313,19 +332,19 @@ public class ElasticsearchIT {
             context.refresh();
 
             repo = context.getBean(FulltextJpaUuidDocumentRepository.class);
-            store = context.getBean(FulltextJpaUuidDocumentStore.class);
+            store = context.getBean(FulltextJpaUuidDocumentSearchableStore.class);
             client = context.getBean(ElasticsearchClient.class);
 
             doc1 = new FulltextJpaUuidDocumentEntity();
             doc1.setTitle("doc 1");
             doc1.setAuthor("Buck Rogers");
-            doc1 = store.setContent(doc1, this.getClass().getResourceAsStream("/one.docx"));
+            doc1 = store.setContent(doc1, testResource("/one.docx"));
             repo.save(doc1);
 
             doc2 = new FulltextJpaUuidDocumentEntity();
             doc2.setTitle("doc 2");
             doc2.setAuthor("Wilma Deering");
-            doc2 = store.setContent(doc2, this.getClass().getResourceAsStream("/one.docx"));
+            doc2 = store.setContent(doc2, testResource("/one.docx"));
             repo.save(doc2);
         }
 
@@ -340,7 +359,8 @@ public class ElasticsearchIT {
 
         @Test
         void shouldReturnSpecifiedAttributes() {
-            org.awaitility.Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> assertThat(store.search("one", PageRequest.of(0, 10)))
+            org.awaitility.Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> assertThat(
+                store.search("one", PageRequest.of(0, 10)).map(FulltextSearchResult::getContentId))
                 .contains(doc1.getContentId())
                 .doesNotContain(doc2.getContentId()));
         }
@@ -362,7 +382,7 @@ public class ElasticsearchIT {
             doc1 = new FulltextJpaUuidDocumentEntity();
             doc1.setTitle("A document about one");
             doc1.setAuthor("Buck Rogers");
-            doc1 = searchableStore.setContent(doc1, this.getClass().getResourceAsStream("/one.docx"));
+            doc1 = searchableStore.setContent(doc1, testResource("/one.docx"));
             repo.save(doc1);
         }
 

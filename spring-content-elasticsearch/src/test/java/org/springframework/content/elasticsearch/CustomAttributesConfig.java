@@ -9,6 +9,7 @@ import org.springframework.content.test.support.TestSupportPackages;
 import org.springframework.content.test.support.fulltext.FulltextJpaUuidDocumentEntity;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.io.Resource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -27,6 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
+@PropertySource("classpath:spring-content-it-jpa-default.properties")
 @EnableElasticsearchFulltextIndexing
 @EnableJpaRepositories(basePackages = TestSupportPackages.FULLTEXT)
 @EnableJpaStores(basePackages = TestSupportPackages.FULLTEXT)
