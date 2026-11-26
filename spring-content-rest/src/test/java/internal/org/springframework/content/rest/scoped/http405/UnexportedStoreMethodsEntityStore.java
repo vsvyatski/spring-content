@@ -1,6 +1,6 @@
 package internal.org.springframework.content.rest.scoped.http405;
 
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
 import org.springframework.content.commons.property.PropertyPath;
 import org.springframework.content.commons.store.SetContentParams;
 import org.springframework.content.commons.store.UnsetContentParams;
@@ -14,29 +14,30 @@ import java.util.UUID;
 /**
  * @author Vladimir Svyatski
  */
+@NullMarked
 public interface UnexportedStoreMethodsEntityStore extends FileSystemContentStore<UnexportedStoreMethodsEntity, UUID> {
 
     @RestResource(exported = false)
     @Override
-    InputStream getContent(@NonNull UnexportedStoreMethodsEntity property, @NonNull PropertyPath path);
+    InputStream getContent(UnexportedStoreMethodsEntity property, PropertyPath path);
 
     @RestResource(exported = false)
     @Override
-    UnexportedStoreMethodsEntity setContent(@NonNull UnexportedStoreMethodsEntity property,
-                                            @NonNull PropertyPath path, InputStream content);
+    UnexportedStoreMethodsEntity setContent(UnexportedStoreMethodsEntity property,
+                                            PropertyPath path, InputStream content);
 
     @RestResource(exported = false)
     @Override
-    UnexportedStoreMethodsEntity setContent(@NonNull UnexportedStoreMethodsEntity property,
-                                            @NonNull PropertyPath path, InputStream content, @NonNull SetContentParams params);
+    UnexportedStoreMethodsEntity setContent(UnexportedStoreMethodsEntity property,
+                                            PropertyPath path, InputStream content, SetContentParams params);
 
     @RestResource(exported = false)
     @Override
-    UnexportedStoreMethodsEntity setContent(@NonNull UnexportedStoreMethodsEntity property,
-                                            @NonNull PropertyPath path, Resource resourceContent);
+    UnexportedStoreMethodsEntity setContent(UnexportedStoreMethodsEntity property,
+                                            PropertyPath path, Resource resourceContent);
 
     @RestResource(exported = false)
     @Override
-    UnexportedStoreMethodsEntity unsetContent(@NonNull UnexportedStoreMethodsEntity property,
-                                              @NonNull PropertyPath path, @NonNull UnsetContentParams params);
+    UnexportedStoreMethodsEntity unsetContent(UnexportedStoreMethodsEntity property,
+                                              PropertyPath path, UnsetContentParams params);
 }

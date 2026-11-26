@@ -6,7 +6,8 @@ import internal.org.springframework.content.commons.utils.ContentPropertyInfoTyp
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.springframework.content.azure.config.BlobId;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.annotations.ContentLength;
@@ -36,9 +37,9 @@ import java.util.UUID;
 
 import static java.lang.String.format;
 
+@NullMarked
 @Transactional
-public class DefaultAzureStorageImpl<S, SID extends Serializable>
-    implements ContentStore<S, SID> {
+public class DefaultAzureStorageImpl<S, SID extends Serializable> implements ContentStore<S, SID> {
 
     private static final Log logger = LogFactory.getLog(DefaultAzureStorageImpl.class);
 
@@ -46,9 +47,11 @@ public class DefaultAzureStorageImpl<S, SID extends Serializable>
     private final PlacementService placementService;
     private final BlobServiceClient client;
 
-    private MappingContext mappingContext;
+    private final MappingContext mappingContext;
 
-    public DefaultAzureStorageImpl(ApplicationContext context, ResourceLoader loader, MappingContext mappingContext, PlacementService placementService, BlobServiceClient client) {
+    public DefaultAzureStorageImpl(ApplicationContext context, ResourceLoader loader,
+                                   @Nullable MappingContext mappingContext,
+                                   PlacementService placementService, BlobServiceClient client) {
         Assert.notNull(context, "context must be specified");
         Assert.notNull(loader, "loader must be specified");
         Assert.notNull(placementService, "placementService must be specified");
@@ -56,10 +59,7 @@ public class DefaultAzureStorageImpl<S, SID extends Serializable>
         this.loader = loader;
         this.placementService = placementService;
         this.client = client;
-        this.mappingContext = mappingContext;
-        if (this.mappingContext == null) {
-            this.mappingContext = new MappingContext("/", ".");
-        }
+        this.mappingContext = mappingContext != null ? mappingContext : new MappingContext("/", ".");
     }
 
     private static String makeAbsolute(String bucket, String location) {
@@ -74,8 +74,8 @@ public class DefaultAzureStorageImpl<S, SID extends Serializable>
     }
 
     @Override
-    public Resource getResource(SID id) {
-        if (id == null) return null;
+    public @Nullable Resource getResource(SID id) {
+        StoreEntityValidation.requireContentId(id);
 
         if (!(id instanceof BlobId)) {
             BlobId blobId;
@@ -92,7 +92,7 @@ public class DefaultAzureStorageImpl<S, SID extends Serializable>
     }
 
     @Override
-    public Resource getResource(@NonNull S entity) {
+    public @Nullable Resource getResource(S entity) {
         StoreEntityValidation.requireEntity(entity);
         BlobId blobId;
         if (placementService.canConvert(entity.getClass(), BlobId.class)) {
@@ -112,14 +112,14 @@ public class DefaultAzureStorageImpl<S, SID extends Serializable>
     }
 
     @Override
-    public Resource getResource(@NonNull S entity, @NonNull PropertyPath propertyPath) {
+    public @Nullable Resource getResource(S entity, PropertyPath propertyPath) {
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requirePropertyPath(propertyPath);
         return this.getResource(entity, propertyPath, new GetResourceParams(null));
     }
 
     @Override
-    public Resource getResource(@NonNull S entity, @NonNull PropertyPath propertyPath, @NonNull GetResourceParams params /*azure resources are not yet rangeable*/) {
+    public @Nullable Resource getResource(S entity, PropertyPath propertyPath, GetResourceParams params) {
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requirePropertyPath(propertyPath);
         StoreEntityValidation.requireGetResourceParams(params);
@@ -169,15 +169,17 @@ public class DefaultAzureStorageImpl<S, SID extends Serializable>
     }
 
     @Override
-    public void associate(@NonNull Object entity, Serializable id) {
+    public void associate(Object entity, Serializable id) {
         StoreEntityValidation.requireEntity(entity);
+        StoreEntityValidation.requireContentId(id);
         BeanUtils.setFieldWithAnnotation(entity, ContentId.class, id);
     }
 
     @Override
-    public void associate(@NonNull S entity, @NonNull PropertyPath propertyPath, SID id) {
+    public void associate(S entity, PropertyPath propertyPath, SID id) {
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requirePropertyPath(propertyPath);
+        StoreEntityValidation.requireContentId(id);
         ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.name());
         if (property == null) {
             throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.name()));
@@ -187,13 +189,13 @@ public class DefaultAzureStorageImpl<S, SID extends Serializable>
     }
 
     @Override
-    public void unassociate(@NonNull Object entity) {
+    public void unassociate(Object entity) {
         StoreEntityValidation.requireEntity(entity);
         BeanUtils.setFieldWithAnnotationConditionally(entity, ContentId.class, null, DomainObjectUtils::contentIdFieldMayBeCleared);
     }
 
     @Override
-    public void unassociate(@NonNull S entity, @NonNull PropertyPath propertyPath) {
+    public void unassociate(S entity, PropertyPath propertyPath) {
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requirePropertyPath(propertyPath);
         ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.name());
@@ -206,8 +208,9 @@ public class DefaultAzureStorageImpl<S, SID extends Serializable>
 
     @Transactional
     @Override
-    public S setContent(@NonNull S entity, InputStream content) {
+    public S setContent(S entity, InputStream content) {
         StoreEntityValidation.requireEntity(entity);
+        StoreEntityValidation.requireContentInputStream(content);
         Object contentId = BeanUtils.getFieldWithAnnotation(entity, ContentId.class);
         if (contentId == null) {
             Serializable newId = UUID.randomUUID().toString();
@@ -243,7 +246,7 @@ public class DefaultAzureStorageImpl<S, SID extends Serializable>
 
     @Transactional
     @Override
-    public S setContent(@NonNull S entity, @NonNull PropertyPath propertyPath, InputStream content) {
+    public S setContent(S entity, PropertyPath propertyPath, InputStream content) {
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requirePropertyPath(propertyPath);
         return this.setContent(entity, propertyPath, content, -1L);
@@ -251,18 +254,18 @@ public class DefaultAzureStorageImpl<S, SID extends Serializable>
 
     @Transactional
     @Override
-    public S setContent(@NonNull S entity, @NonNull PropertyPath propertyPath, InputStream content, long contentLen) {
+    public S setContent(S entity, PropertyPath propertyPath, InputStream content, long contentLen) {
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requirePropertyPath(propertyPath);
         return this.setContent(entity, propertyPath, content, new SetContentParams(contentLen, true, SetContentParams.ContentDisposition.Overwrite));
     }
 
     @Override
-    public S setContent(@NonNull S entity, @NonNull PropertyPath propertyPath, InputStream content,
-                        @NonNull SetContentParams params) {
+    public S setContent(S entity, PropertyPath propertyPath, InputStream content, SetContentParams params) {
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requirePropertyPath(propertyPath);
         StoreEntityValidation.requireSetContentParams(params);
+        StoreEntityValidation.requireContentInputStream(content);
         ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.name());
         if (property == null) {
             throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.name()));
@@ -307,8 +310,9 @@ public class DefaultAzureStorageImpl<S, SID extends Serializable>
     }
 
     @Override
-    public S setContent(@NonNull S property, Resource resourceContent) {
+    public S setContent(S property, Resource resourceContent) {
         StoreEntityValidation.requireEntity(property);
+        StoreEntityValidation.requireContentResource(resourceContent);
         try {
             return setContent(property, resourceContent.getInputStream());
         } catch (IOException e) {
@@ -318,9 +322,10 @@ public class DefaultAzureStorageImpl<S, SID extends Serializable>
     }
 
     @Override
-    public S setContent(@NonNull S property, @NonNull PropertyPath propertyPath, Resource resourceContent) {
+    public S setContent(S property, PropertyPath propertyPath, Resource resourceContent) {
         StoreEntityValidation.requireEntity(property);
         StoreEntityValidation.requirePropertyPath(propertyPath);
+        StoreEntityValidation.requireContentResource(resourceContent);
         try {
             return setContent(property, propertyPath, resourceContent.getInputStream());
         } catch (IOException e) {
@@ -331,7 +336,7 @@ public class DefaultAzureStorageImpl<S, SID extends Serializable>
 
     @Transactional
     @Override
-    public InputStream getContent(@NonNull S entity) {
+    public @Nullable InputStream getContent(S entity) {
         StoreEntityValidation.requireEntity(entity);
         Object contentId = BeanUtils.getFieldWithAnnotation(entity, ContentId.class);
         if (contentId == null) {
@@ -345,7 +350,7 @@ public class DefaultAzureStorageImpl<S, SID extends Serializable>
 
     @Transactional
     @Override
-    public InputStream getContent(@NonNull S entity, @NonNull PropertyPath propertyPath) {
+    public @Nullable InputStream getContent(S entity, PropertyPath propertyPath) {
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requirePropertyPath(propertyPath);
         ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.name());
@@ -365,7 +370,7 @@ public class DefaultAzureStorageImpl<S, SID extends Serializable>
 
     @Transactional
     @Override
-    public S unsetContent(@NonNull S entity) {
+    public S unsetContent(S entity) {
         StoreEntityValidation.requireEntity(entity);
         deleteIfExists(entity, null);
 
@@ -382,7 +387,7 @@ public class DefaultAzureStorageImpl<S, SID extends Serializable>
 
     @Transactional
     @Override
-    public S unsetContent(@NonNull S entity, @NonNull PropertyPath propertyPath) {
+    public S unsetContent(S entity, PropertyPath propertyPath) {
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requirePropertyPath(propertyPath);
         return this.unsetContent(entity, propertyPath, new UnsetContentParams(UnsetContentParams.Disposition.Remove));
@@ -390,7 +395,7 @@ public class DefaultAzureStorageImpl<S, SID extends Serializable>
 
     @Transactional
     @Override
-    public S unsetContent(@NonNull S entity, @NonNull PropertyPath propertyPath, @NonNull UnsetContentParams params) {
+    public S unsetContent(S entity, PropertyPath propertyPath, UnsetContentParams params) {
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requirePropertyPath(propertyPath);
         StoreEntityValidation.requireUnsetContentParams(params);
@@ -401,7 +406,7 @@ public class DefaultAzureStorageImpl<S, SID extends Serializable>
 
         Resource resource = this.getResource(entity, propertyPath);
         if (resource != null) {
-            if(params.disposition().equals(UnsetContentParams.Disposition.Remove)) deleteIfExists(entity, resource);
+            if (params.disposition().equals(UnsetContentParams.Disposition.Remove)) deleteIfExists(entity, resource);
 
             // reset content fields
             property.setContentId(entity, null, DomainObjectUtils::contentIdPropertyMayBeCleared);
@@ -411,7 +416,7 @@ public class DefaultAzureStorageImpl<S, SID extends Serializable>
         return entity;
     }
 
-    private void deleteIfExists(S entity, Resource resource) {
+    private void deleteIfExists(S entity, @Nullable Resource resource) {
         Resource resourceToDelete = resource != null ? resource : this.getResource(entity);
         if (resourceToDelete != null && resourceToDelete.exists() && resourceToDelete instanceof DeletableResource) {
             try {
