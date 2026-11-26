@@ -68,7 +68,6 @@
     <poi-ooxml.version>5.5.1</poi-ooxml.version>
     <solr-solrj.version>10.1.0</solr-solrj.version>
     <spring-cloud-aws-context.version>2.4.4</spring-cloud-aws-context.version>
-    <spring-vault-core.version>4.1.1</spring-vault-core.version>
     <uuid-creator.version>6.1.1</uuid-creator.version>
 
     <!-- Test dependencies -->
