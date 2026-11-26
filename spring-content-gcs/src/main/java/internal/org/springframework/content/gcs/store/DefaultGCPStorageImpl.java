@@ -8,7 +8,8 @@ import internal.org.springframework.content.gcs.io.GCSResource;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.config.ContentPropertyInfo;
@@ -36,6 +37,7 @@ import java.io.Serializable;
 
 import static java.lang.String.format;
 
+@NullMarked
 @Transactional
 public class DefaultGCPStorageImpl<S, SID extends Serializable> implements ContentStore<S, SID> {
 
@@ -45,26 +47,24 @@ public class DefaultGCPStorageImpl<S, SID extends Serializable> implements Conte
     private final PlacementService placementService;
     private final Storage client;
 
-    private MappingContext mappingContext;
+    private final MappingContext mappingContext;
 
-    public DefaultGCPStorageImpl(ApplicationContext context, ResourceLoader loader, MappingContext mappingContext, PlacementService placementService, Storage client2) {
+    public DefaultGCPStorageImpl(ApplicationContext context, ResourceLoader loader,
+                                 @Nullable MappingContext mappingContext,
+                                 PlacementService placementService, Storage client) {
         Assert.notNull(context, "context must be specified");
         Assert.notNull(loader, "loader must be specified");
         Assert.notNull(placementService, "placementService must be specified");
-        Assert.notNull(client2, "client must be specified");
+        Assert.notNull(client, "client must be specified");
         this.loader = loader;
         this.placementService = placementService;
-        this.client = client2;
-        this.mappingContext = mappingContext;
-        if (this.mappingContext == null) {
-            this.mappingContext = new MappingContext("/", ".");
-        }
+        this.client = client;
+        this.mappingContext = mappingContext != null ? mappingContext : new MappingContext("/", ".");
     }
 
     @Override
-    public Resource getResource(SID id) {
-        if (id == null)
-            return null;
+    public @Nullable Resource getResource(SID id) {
+        StoreEntityValidation.requireContentId(id);
 
         if (!(id instanceof BlobId)) {
             if (placementService.canConvert(id.getClass(), BlobId.class)) {
@@ -80,7 +80,7 @@ public class DefaultGCPStorageImpl<S, SID extends Serializable> implements Conte
     }
 
     @Override
-    public Resource getResource(@NonNull S entity) {
+    public @Nullable Resource getResource(S entity) {
         StoreEntityValidation.requireEntity(entity);
         if (placementService.canConvert(entity.getClass(), BlobId.class)) {
             BlobId blobId = placementService.convert(entity, BlobId.class);
@@ -99,14 +99,14 @@ public class DefaultGCPStorageImpl<S, SID extends Serializable> implements Conte
     }
 
     @Override
-    public Resource getResource(@NonNull S entity, @NonNull PropertyPath propertyPath) {
+    public @Nullable Resource getResource(S entity, PropertyPath propertyPath) {
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requirePropertyPath(propertyPath);
         return this.getResource(entity, propertyPath, new GetResourceParams(null));
     }
 
     @Override
-    public Resource getResource(@NonNull S entity, @NonNull PropertyPath propertyPath, @NonNull GetResourceParams params) {
+    public @Nullable Resource getResource(S entity, PropertyPath propertyPath, GetResourceParams params) {
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requirePropertyPath(propertyPath);
         StoreEntityValidation.requireGetResourceParams(params);
@@ -155,15 +155,17 @@ public class DefaultGCPStorageImpl<S, SID extends Serializable> implements Conte
     }
 
     @Override
-    public void associate(@NonNull Object entity, Serializable id) {
+    public void associate(Object entity, Serializable id) {
         StoreEntityValidation.requireEntity(entity);
+        StoreEntityValidation.requireContentId(id);
         BeanUtils.setFieldWithAnnotation(entity, ContentId.class, id);
     }
 
     @Override
-    public void associate(@NonNull S entity, @NonNull PropertyPath propertyPath, SID id) {
+    public void associate(S entity, PropertyPath propertyPath, SID id) {
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requirePropertyPath(propertyPath);
+        StoreEntityValidation.requireContentId(id);
 
         ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.name());
         if (property == null) {
@@ -174,7 +176,7 @@ public class DefaultGCPStorageImpl<S, SID extends Serializable> implements Conte
     }
 
     @Override
-    public void unassociate(@NonNull S entity, @NonNull PropertyPath propertyPath) {
+    public void unassociate(S entity, PropertyPath propertyPath) {
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requirePropertyPath(propertyPath);
 
@@ -187,7 +189,7 @@ public class DefaultGCPStorageImpl<S, SID extends Serializable> implements Conte
     }
 
     @Override
-    public void unassociate(@NonNull Object entity) {
+    public void unassociate(Object entity) {
         StoreEntityValidation.requireEntity(entity);
         BeanUtils.setFieldWithAnnotationConditionally(entity, ContentId.class, null,
             DomainObjectUtils::contentIdFieldMayBeCleared);
@@ -195,8 +197,9 @@ public class DefaultGCPStorageImpl<S, SID extends Serializable> implements Conte
 
     @Transactional
     @Override
-    public S setContent(@NonNull S entity, InputStream content) {
+    public S setContent(S entity, InputStream content) {
         StoreEntityValidation.requireEntity(entity);
+        StoreEntityValidation.requireContentInputStream(content);
 
         Object contentId = BeanUtils.getFieldWithAnnotation(entity, ContentId.class);
         if (contentId == null) {
@@ -235,7 +238,7 @@ public class DefaultGCPStorageImpl<S, SID extends Serializable> implements Conte
 
     @Transactional
     @Override
-    public S setContent(@NonNull S entity, @NonNull PropertyPath propertyPath, InputStream content) {
+    public S setContent(S entity, PropertyPath propertyPath, InputStream content) {
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requirePropertyPath(propertyPath);
         return this.setContent(entity, propertyPath, content, -1L);
@@ -243,7 +246,7 @@ public class DefaultGCPStorageImpl<S, SID extends Serializable> implements Conte
 
     @Transactional
     @Override
-    public S setContent(@NonNull S entity, @NonNull PropertyPath propertyPath, InputStream content, long contentLen) {
+    public S setContent(S entity, PropertyPath propertyPath, InputStream content, long contentLen) {
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requirePropertyPath(propertyPath);
         return this.setContent(entity, propertyPath, content,
@@ -251,11 +254,11 @@ public class DefaultGCPStorageImpl<S, SID extends Serializable> implements Conte
     }
 
     @Override
-    public S setContent(@NonNull S entity, @NonNull PropertyPath propertyPath, InputStream content,
-                        @NonNull SetContentParams params) {
+    public S setContent(S entity, PropertyPath propertyPath, InputStream content, SetContentParams params) {
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requirePropertyPath(propertyPath);
         StoreEntityValidation.requireSetContentParams(params);
+        StoreEntityValidation.requireContentInputStream(content);
         ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.name());
         if (property == null) {
             throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.name()));
@@ -301,8 +304,9 @@ public class DefaultGCPStorageImpl<S, SID extends Serializable> implements Conte
     }
 
     @Override
-    public S setContent(@NonNull S property, Resource resourceContent) {
+    public S setContent(S property, Resource resourceContent) {
         StoreEntityValidation.requireEntity(property);
+        StoreEntityValidation.requireContentResource(resourceContent);
         try {
             return setContent(property, resourceContent.getInputStream());
         } catch (IOException e) {
@@ -312,9 +316,10 @@ public class DefaultGCPStorageImpl<S, SID extends Serializable> implements Conte
     }
 
     @Override
-    public S setContent(@NonNull S property, @NonNull PropertyPath propertyPath, Resource resourceContent) {
+    public S setContent(S property, PropertyPath propertyPath, Resource resourceContent) {
         StoreEntityValidation.requireEntity(property);
         StoreEntityValidation.requirePropertyPath(propertyPath);
+        StoreEntityValidation.requireContentResource(resourceContent);
         try {
             return setContent(property, propertyPath, resourceContent.getInputStream());
         } catch (IOException e) {
@@ -325,7 +330,7 @@ public class DefaultGCPStorageImpl<S, SID extends Serializable> implements Conte
 
     @Transactional
     @Override
-    public InputStream getContent(@NonNull S entity) {
+    public @Nullable InputStream getContent(S entity) {
         StoreEntityValidation.requireEntity(entity);
         Object contentId = BeanUtils.getFieldWithAnnotation(entity, ContentId.class);
         if (contentId == null) {
@@ -339,7 +344,7 @@ public class DefaultGCPStorageImpl<S, SID extends Serializable> implements Conte
 
     @Transactional
     @Override
-    public InputStream getContent(@NonNull S entity, @NonNull PropertyPath propertyPath) {
+    public @Nullable InputStream getContent(S entity, PropertyPath propertyPath) {
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requirePropertyPath(propertyPath);
         ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.name());
@@ -359,7 +364,7 @@ public class DefaultGCPStorageImpl<S, SID extends Serializable> implements Conte
 
     @Transactional
     @Override
-    public S unsetContent(@NonNull S entity) {
+    public S unsetContent(S entity) {
         StoreEntityValidation.requireEntity(entity);
         deleteIfExists(entity, null);
 
@@ -376,14 +381,14 @@ public class DefaultGCPStorageImpl<S, SID extends Serializable> implements Conte
 
     @Transactional
     @Override
-    public S unsetContent(@NonNull S entity, @NonNull PropertyPath propertyPath) {
+    public S unsetContent(S entity, PropertyPath propertyPath) {
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requirePropertyPath(propertyPath);
         return this.unsetContent(entity, propertyPath, new UnsetContentParams(UnsetContentParams.Disposition.Remove));
     }
 
     @Override
-    public S unsetContent(@NonNull S entity, @NonNull PropertyPath propertyPath, @NonNull UnsetContentParams params) {
+    public S unsetContent(S entity, PropertyPath propertyPath, UnsetContentParams params) {
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requirePropertyPath(propertyPath);
         StoreEntityValidation.requireUnsetContentParams(params);
@@ -415,7 +420,7 @@ public class DefaultGCPStorageImpl<S, SID extends Serializable> implements Conte
         return format("gs://%s/%s", bucket, locationToUse);
     }
 
-    private void deleteIfExists(S entity, Resource resource) {
+    private void deleteIfExists(S entity, @Nullable Resource resource) {
         Resource resourceToDelete = resource != null ? resource : this.getResource(entity);
         if (resourceToDelete != null && resourceToDelete.exists() && resourceToDelete instanceof DeletableResource) {
             try {

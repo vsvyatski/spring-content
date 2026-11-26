@@ -4,7 +4,8 @@ import com.github.f4b6a3.uuid.UuidCreator;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.io.DeletableResource;
@@ -26,6 +27,7 @@ import java.io.*;
 
 import static java.lang.String.format;
 
+@NullMarked
 @Transactional(readOnly = true)
 public class DefaultFileSystemStoreImpl<S, SID extends Serializable> implements ContentStore<S, SID> {
 
@@ -34,28 +36,26 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable> implements 
     private final FileSystemResourceLoader loader;
     private final PlacementService placer;
     private final FileService fileService;
-    private MappingContext mappingContext;
+    private final MappingContext mappingContext;
 
-    public DefaultFileSystemStoreImpl(FileSystemResourceLoader loader, MappingContext mappingContext,
+    public DefaultFileSystemStoreImpl(FileSystemResourceLoader loader, @Nullable MappingContext mappingContext,
                                       PlacementService conversion, FileService fileService) {
         this.loader = loader;
         this.placer = conversion;
         this.fileService = fileService;
-        this.mappingContext = mappingContext;
-        if (this.mappingContext == null) {
-            this.mappingContext = new MappingContext("/", ".");
-        }
+        this.mappingContext = mappingContext != null ? mappingContext : new MappingContext("/", ".");
     }
 
     @Override
-    public Resource getResource(SID id) {
+    public @Nullable Resource getResource(SID id) {
+        StoreEntityValidation.requireContentId(id);
         String location = placer.convert(id, String.class);
         assert location != null;
         return loader.getResource(location);
     }
 
     @Override
-    public Resource getResource(@NonNull S entity) {
+    public @Nullable Resource getResource(S entity) {
         StoreEntityValidation.requireEntity(entity);
         if (placer.canConvert(entity.getClass(), String.class)) {
             String location = placer.convert(entity, String.class);
@@ -75,14 +75,14 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable> implements 
     }
 
     @Override
-    public Resource getResource(@NonNull S entity, @NonNull PropertyPath propertyPath) {
+    public @Nullable Resource getResource(S entity, PropertyPath propertyPath) {
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requirePropertyPath(propertyPath);
         return this.getResource(entity, propertyPath, new GetResourceParams(null));
     }
 
     @Override
-    public Resource getResource(@NonNull S entity, @NonNull PropertyPath propertyPath, @NonNull GetResourceParams params) {
+    public @Nullable Resource getResource(S entity, PropertyPath propertyPath, GetResourceParams params) {
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requirePropertyPath(propertyPath);
         StoreEntityValidation.requireGetResourceParams(params);
@@ -103,27 +103,29 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable> implements 
     }
 
     @Override
-    public void associate(@NonNull S entity, SID id) {
+    public void associate(S entity, SID id) {
         StoreEntityValidation.requireEntity(entity);
+        StoreEntityValidation.requireContentId(id);
         BeanUtils.setFieldWithAnnotation(entity, ContentId.class, id.toString());
     }
 
     @Override
-    public void associate(@NonNull S entity, @NonNull PropertyPath propertyPath, SID id) {
+    public void associate(S entity, PropertyPath propertyPath, SID id) {
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requirePropertyPath(propertyPath);
+        StoreEntityValidation.requireContentId(id);
         setContentId(entity, propertyPath, id, null);
     }
 
     @Override
-    public void unassociate(@NonNull S entity) {
+    public void unassociate(S entity) {
         StoreEntityValidation.requireEntity(entity);
         BeanUtils.setFieldWithAnnotationConditionally(entity, ContentId.class, null,
             DomainObjectUtils::contentIdFieldMayBeCleared);
     }
 
     @Override
-    public void unassociate(@NonNull S entity, @NonNull PropertyPath propertyPath) {
+    public void unassociate(S entity, PropertyPath propertyPath) {
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requirePropertyPath(propertyPath);
         setContentId(entity, propertyPath, null, DomainObjectUtils::contentIdPropertyMayBeCleared);
@@ -131,15 +133,13 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable> implements 
 
     @Override
     @Transactional
-    public S setContent(@NonNull S entity, InputStream content) {
+    public S setContent(S entity, InputStream content) {
         StoreEntityValidation.requireEntity(entity);
+        StoreEntityValidation.requireContentInputStream(content);
         Object contentId = BeanUtils.getFieldWithAnnotation(entity, ContentId.class);
         if (contentId == null) {
-
             Serializable newId = UuidCreator.getTimeOrdered().toString();
-
             Object convertedId = convertToExternalContentIdType(entity, newId);
-
             BeanUtils.setFieldWithAnnotation(entity, ContentId.class, convertedId);
         }
 
@@ -180,7 +180,7 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable> implements 
 
     @Transactional
     @Override
-    public S setContent(@NonNull S property, @NonNull PropertyPath propertyPath, InputStream content) {
+    public S setContent(S property, PropertyPath propertyPath, InputStream content) {
         StoreEntityValidation.requireEntity(property);
         StoreEntityValidation.requirePropertyPath(propertyPath);
         return this.setContent(property, propertyPath, content, -1L);
@@ -188,7 +188,7 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable> implements 
 
     @Transactional
     @Override
-    public S setContent(@NonNull S property, @NonNull PropertyPath propertyPath, InputStream content, long contentLen) {
+    public S setContent(S property, PropertyPath propertyPath, InputStream content, long contentLen) {
         StoreEntityValidation.requireEntity(property);
         StoreEntityValidation.requirePropertyPath(propertyPath);
         return this.setContent(property, propertyPath, content, new SetContentParams(contentLen, true, SetContentParams.ContentDisposition.Overwrite));
@@ -196,10 +196,11 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable> implements 
 
     @Transactional
     @Override
-    public S setContent(@NonNull S property, @NonNull PropertyPath propertyPath, InputStream content, @NonNull SetContentParams params) {
+    public S setContent(S property, PropertyPath propertyPath, InputStream content, SetContentParams params) {
         StoreEntityValidation.requireEntity(property);
         StoreEntityValidation.requirePropertyPath(propertyPath);
         StoreEntityValidation.requireSetContentParams(params);
+        StoreEntityValidation.requireContentInputStream(content);
         ContentProperty contentProperty = this.mappingContext
             .getContentProperty(property.getClass(), propertyPath.name());
         if (contentProperty == null) {
@@ -212,10 +213,9 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable> implements 
 
             Serializable newId = UuidCreator.getTimeOrdered().toString();
 
-            Object convertedId = placer.convert(
-                newId,
-                TypeDescriptor.forObject(newId),
+            Object convertedId = placer.convert(newId, TypeDescriptor.forObject(newId),
                 contentProperty.getContentIdType(property));
+            assert convertedId != null;
 
             contentProperty.setContentId(property, convertedId, null);
         }
@@ -258,8 +258,9 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable> implements 
 
     @Transactional
     @Override
-    public S setContent(@NonNull S property, Resource resourceContent) {
+    public S setContent(S property, Resource resourceContent) {
         StoreEntityValidation.requireEntity(property);
+        StoreEntityValidation.requireContentResource(resourceContent);
         try {
             return this.setContent(property, resourceContent.getInputStream());
         } catch (IOException e) {
@@ -270,9 +271,10 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable> implements 
 
     @Transactional
     @Override
-    public S setContent(@NonNull S property, @NonNull PropertyPath propertyPath, Resource resourceContent) {
+    public S setContent(S property, PropertyPath propertyPath, Resource resourceContent) {
         StoreEntityValidation.requireEntity(property);
         StoreEntityValidation.requirePropertyPath(propertyPath);
+        StoreEntityValidation.requireContentResource(resourceContent);
         try {
             return this.setContent(property, propertyPath, resourceContent.getInputStream());
         } catch (IOException e) {
@@ -283,7 +285,7 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable> implements 
 
     @Override
     @Transactional
-    public InputStream getContent(@NonNull S entity) {
+    public @Nullable InputStream getContent(S entity) {
         StoreEntityValidation.requireEntity(entity);
         Object contentId = BeanUtils.getFieldWithAnnotation(entity, ContentId.class);
         if (contentId == null) {
@@ -297,7 +299,7 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable> implements 
 
     @Transactional
     @Override
-    public InputStream getContent(@NonNull S property, @NonNull PropertyPath propertyPath) {
+    public @Nullable InputStream getContent(S property, PropertyPath propertyPath) {
         StoreEntityValidation.requireEntity(property);
         StoreEntityValidation.requirePropertyPath(propertyPath);
         ContentProperty contentProperty =
@@ -317,7 +319,7 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable> implements 
 
     @Override
     @Transactional
-    public S unsetContent(@NonNull S entity) {
+    public S unsetContent(S entity) {
         StoreEntityValidation.requireEntity(entity);
         deleteIfExists(entity, null);
 
@@ -335,7 +337,7 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable> implements 
 
     @Transactional
     @Override
-    public S unsetContent(@NonNull S entity, @NonNull PropertyPath propertyPath) {
+    public S unsetContent(S entity, PropertyPath propertyPath) {
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requirePropertyPath(propertyPath);
         return unsetContent(entity, propertyPath, new UnsetContentParams(Disposition.Remove));
@@ -343,7 +345,7 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable> implements 
 
     @Transactional
     @Override
-    public S unsetContent(@NonNull S entity, @NonNull PropertyPath propertyPath, @NonNull UnsetContentParams params) {
+    public S unsetContent(S entity, PropertyPath propertyPath, UnsetContentParams params) {
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requirePropertyPath(propertyPath);
         StoreEntityValidation.requireUnsetContentParams(params);
@@ -365,7 +367,7 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable> implements 
         return entity;
     }
 
-    private void deleteIfExists(S entity, Resource resource) {
+    private void deleteIfExists(S entity, @Nullable Resource resource) {
         Resource resourceToDelete = resource != null ? resource : getResource(entity);
         if (resourceToDelete != null && resourceToDelete.exists() && resourceToDelete instanceof DeletableResource) {
             try {
@@ -378,17 +380,17 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable> implements 
 
     private Object convertToExternalContentIdType(S property, Object contentId) {
         if (placer.canConvert(TypeDescriptor.forObject(contentId),
-            TypeDescriptor.valueOf(BeanUtils.getFieldWithAnnotationType(property,
-                ContentId.class)))) {
-            contentId = placer.convert(contentId, TypeDescriptor.forObject(contentId),
+            TypeDescriptor.valueOf(BeanUtils.getFieldWithAnnotationType(property, ContentId.class)))) {
+            Object converted = placer.convert(contentId, TypeDescriptor.forObject(contentId),
                 TypeDescriptor.valueOf(BeanUtils.getFieldWithAnnotationType(property, ContentId.class)));
-            return contentId;
+            assert converted != null;
+            return converted;
         }
         return contentId.toString();
     }
 
-    private void setContentId(S entity, @NonNull PropertyPath propertyPath, SID contentId,
-                              Condition condition) {
+    private void setContentId(S entity, PropertyPath propertyPath, @Nullable SID contentId,
+                              @Nullable Condition condition) {
         StoreEntityValidation.requireEntity(entity);
         Assert.notNull(propertyPath, "propertyPath must not be null");
 
