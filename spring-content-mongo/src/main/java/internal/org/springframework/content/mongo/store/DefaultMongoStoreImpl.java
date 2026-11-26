@@ -4,7 +4,8 @@ import internal.org.springframework.content.mongo.io.GridFsStoreResource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bson.types.ObjectId;
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.mappingcontext.ContentProperty;
@@ -12,8 +13,8 @@ import org.springframework.content.commons.mappingcontext.MappingContext;
 import org.springframework.content.commons.property.PropertyPath;
 import org.springframework.content.commons.store.*;
 import org.springframework.content.commons.utils.BeanUtils;
-import org.springframework.content.commons.utils.DomainObjectUtils;
 import org.springframework.content.commons.utils.ContentStoreGetContentSupport;
+import org.springframework.content.commons.utils.DomainObjectUtils;
 import org.springframework.content.commons.utils.PlacementService;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.io.Resource;
@@ -30,34 +31,30 @@ import static java.lang.String.format;
 import static org.springframework.data.mongodb.core.query.Query.query;
 import static org.springframework.data.mongodb.gridfs.GridFsCriteria.whereFilename;
 
-public class DefaultMongoStoreImpl<S, SID extends Serializable>
-    implements ContentStore<S, SID> {
+@NullMarked
+public class DefaultMongoStoreImpl<S, SID extends Serializable> implements ContentStore<S, SID> {
 
     private static final Log logger = LogFactory.getLog(DefaultMongoStoreImpl.class);
 
     private final GridFsTemplate gridFs;
     private final PlacementService placer;
 
-    private MappingContext mappingContext;
+    private final MappingContext mappingContext;
 
-    public DefaultMongoStoreImpl(GridFsTemplate template, MappingContext mappingContext, PlacementService placer) {
+    public DefaultMongoStoreImpl(GridFsTemplate template, @Nullable MappingContext mappingContext,
+                                 PlacementService placer) {
         Assert.notNull(template, "template cannot be null");
         Assert.notNull(placer, "placer cannot be null");
 
         this.gridFs = template;
         this.placer = placer;
 
-        this.mappingContext = mappingContext;
-        if (this.mappingContext == null) {
-            this.mappingContext = new MappingContext("/", ".");
-        }
+        this.mappingContext = mappingContext != null ? mappingContext : new MappingContext("/", ".");
     }
 
     @Override
-    public Resource getResource(SID id) {
-        if (id == null) {
-            return null;
-        }
+    public @Nullable Resource getResource(SID id) {
+        StoreEntityValidation.requireContentId(id);
 
         String location = placer.convert(id, String.class);
         assert location != null;
@@ -65,7 +62,7 @@ public class DefaultMongoStoreImpl<S, SID extends Serializable>
     }
 
     @Override
-    public Resource getResource(@NonNull S entity) {
+    public @Nullable Resource getResource(S entity) {
         StoreEntityValidation.requireEntity(entity);
 
         ObjectId objectId;
@@ -88,14 +85,14 @@ public class DefaultMongoStoreImpl<S, SID extends Serializable>
     }
 
     @Override
-    public Resource getResource(@NonNull S entity, @NonNull PropertyPath propertyPath) {
+    public @Nullable Resource getResource(S entity, PropertyPath propertyPath) {
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requirePropertyPath(propertyPath);
         return this.getResource(entity, propertyPath, new GetResourceParams(null));
     }
 
     @Override
-    public Resource getResource(@NonNull S entity, @NonNull PropertyPath propertyPath, @NonNull GetResourceParams params) {
+    public @Nullable Resource getResource(S entity, PropertyPath propertyPath, GetResourceParams params) {
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requirePropertyPath(propertyPath);
         StoreEntityValidation.requireGetResourceParams(params);
@@ -124,16 +121,18 @@ public class DefaultMongoStoreImpl<S, SID extends Serializable>
     }
 
     @Override
-    public void associate(@NonNull S entity, SID id) {
+    public void associate(S entity, SID id) {
         StoreEntityValidation.requireEntity(entity);
+        StoreEntityValidation.requireContentId(id);
         Object convertedId = convertToExternalContentIdType(entity, id);
         BeanUtils.setFieldWithAnnotation(entity, ContentId.class, convertedId.toString());
     }
 
     @Override
-    public void associate(@NonNull S entity, @NonNull PropertyPath propertyPath, SID id) {
+    public void associate(S entity, PropertyPath propertyPath, SID id) {
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requirePropertyPath(propertyPath);
+        StoreEntityValidation.requireContentId(id);
 
         ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.name());
         if (property == null) {
@@ -145,13 +144,13 @@ public class DefaultMongoStoreImpl<S, SID extends Serializable>
     }
 
     @Override
-    public void unassociate(@NonNull S entity) {
+    public void unassociate(S entity) {
         StoreEntityValidation.requireEntity(entity);
         BeanUtils.setFieldWithAnnotationConditionally(entity, ContentId.class, null, DomainObjectUtils::contentIdFieldMayBeCleared);
     }
 
     @Override
-    public void unassociate(@NonNull S entity, @NonNull PropertyPath propertyPath) {
+    public void unassociate(S entity, PropertyPath propertyPath) {
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requirePropertyPath(propertyPath);
         ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.name());
@@ -164,8 +163,9 @@ public class DefaultMongoStoreImpl<S, SID extends Serializable>
 
     @Override
     @Transactional
-    public S setContent(@NonNull S entity, InputStream content) {
+    public S setContent(S entity, InputStream content) {
         StoreEntityValidation.requireEntity(entity);
+        StoreEntityValidation.requireContentInputStream(content);
         Object contentId = BeanUtils.getFieldWithAnnotation(entity, ContentId.class);
         if (contentId == null) {
             Serializable newId = UUID.randomUUID().toString();
@@ -204,7 +204,7 @@ public class DefaultMongoStoreImpl<S, SID extends Serializable>
 
     @Transactional
     @Override
-    public S setContent(@NonNull S entity, @NonNull PropertyPath propertyPath, InputStream content) {
+    public S setContent(S entity, PropertyPath propertyPath, InputStream content) {
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requirePropertyPath(propertyPath);
         return this.setContent(entity, propertyPath, content, -1L);
@@ -212,18 +212,19 @@ public class DefaultMongoStoreImpl<S, SID extends Serializable>
 
     @Transactional
     @Override
-    public S setContent(@NonNull S entity, @NonNull PropertyPath propertyPath, InputStream content, long contentLen) {
+    public S setContent(S entity, PropertyPath propertyPath, InputStream content, long contentLen) {
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requirePropertyPath(propertyPath);
         return this.setContent(entity, propertyPath, content, new SetContentParams(contentLen, true, SetContentParams.ContentDisposition.Overwrite));
     }
 
     @Override
-    public S setContent(@NonNull S entity, @NonNull PropertyPath propertyPath, InputStream content,
-            @NonNull SetContentParams params) {
+    public S setContent(S entity, PropertyPath propertyPath, InputStream content,
+                        SetContentParams params) {
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requirePropertyPath(propertyPath);
         StoreEntityValidation.requireSetContentParams(params);
+        StoreEntityValidation.requireContentInputStream(content);
         ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.name());
         if (property == null) {
             throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.name()));
@@ -271,8 +272,9 @@ public class DefaultMongoStoreImpl<S, SID extends Serializable>
 
     @Override
     @Transactional
-    public S setContent(@NonNull S property, Resource resourceContent) {
+    public S setContent(S property, Resource resourceContent) {
         StoreEntityValidation.requireEntity(property);
+        StoreEntityValidation.requireContentResource(resourceContent);
         try {
             return setContent(property, resourceContent.getInputStream());
         } catch (IOException e) {
@@ -283,9 +285,10 @@ public class DefaultMongoStoreImpl<S, SID extends Serializable>
 
     @Transactional
     @Override
-    public S setContent(@NonNull S entity, @NonNull PropertyPath propertyPath, Resource resourceContent) {
+    public S setContent(S entity, PropertyPath propertyPath, Resource resourceContent) {
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requirePropertyPath(propertyPath);
+        StoreEntityValidation.requireContentResource(resourceContent);
         try {
             return setContent(entity, propertyPath, resourceContent.getInputStream());
         } catch (IOException e) {
@@ -296,7 +299,7 @@ public class DefaultMongoStoreImpl<S, SID extends Serializable>
 
     @Override
     @Transactional
-    public InputStream getContent(@NonNull S entity) {
+    public @Nullable InputStream getContent(S entity) {
         StoreEntityValidation.requireEntity(entity);
         Object contentId = BeanUtils.getFieldWithAnnotation(entity, ContentId.class);
         if (contentId == null) return null;
@@ -310,7 +313,7 @@ public class DefaultMongoStoreImpl<S, SID extends Serializable>
 
     @Transactional
     @Override
-    public InputStream getContent(@NonNull S entity, @NonNull PropertyPath propertyPath) {
+    public @Nullable InputStream getContent(S entity, PropertyPath propertyPath) {
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requirePropertyPath(propertyPath);
         ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.name());
@@ -332,7 +335,7 @@ public class DefaultMongoStoreImpl<S, SID extends Serializable>
 
     @Override
     @Transactional
-    public S unsetContent(@NonNull S property) {
+    public S unsetContent(S property) {
         StoreEntityValidation.requireEntity(property);
         Object contentId = BeanUtils.getFieldWithAnnotation(property, ContentId.class);
         if (contentId == null) return property;
@@ -361,14 +364,14 @@ public class DefaultMongoStoreImpl<S, SID extends Serializable>
     }
 
     @Override
-    public S unsetContent(@NonNull S entity, @NonNull PropertyPath propertyPath) {
+    public S unsetContent(S entity, PropertyPath propertyPath) {
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requirePropertyPath(propertyPath);
         return this.unsetContent(entity, propertyPath, new UnsetContentParams(UnsetContentParams.Disposition.Remove));
     }
 
     @Override
-    public S unsetContent(@NonNull S entity, @NonNull PropertyPath propertyPath, @NonNull UnsetContentParams params) {
+    public S unsetContent(S entity, PropertyPath propertyPath, UnsetContentParams params) {
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requirePropertyPath(propertyPath);
         StoreEntityValidation.requireUnsetContentParams(params);
@@ -409,19 +412,21 @@ public class DefaultMongoStoreImpl<S, SID extends Serializable>
     protected Object convertToExternalContentIdType(S property, Object contentId) {
         if (placer.canConvert(TypeDescriptor.forObject(contentId),
             TypeDescriptor.valueOf(BeanUtils.getFieldWithAnnotationType(property, ContentId.class)))) {
-            contentId = placer.convert(contentId, TypeDescriptor.forObject(contentId),
+            Object converted = placer.convert(contentId, TypeDescriptor.forObject(contentId),
                 TypeDescriptor.valueOf(BeanUtils.getFieldWithAnnotationType(property,
                     ContentId.class)));
-            return contentId;
+            assert converted != null;
+            return converted;
         }
         return contentId.toString();
     }
 
     private Object convertToExternalContentIdType(Object contentId, TypeDescriptor contentIdType) {
         if (placer.canConvert(TypeDescriptor.forObject(contentId), contentIdType)) {
-            contentId = placer.convert(contentId, TypeDescriptor.forObject(contentId),
+            Object converted = placer.convert(contentId, TypeDescriptor.forObject(contentId),
                 contentIdType);
-            return contentId;
+            assert converted != null;
+            return converted;
         }
         return contentId.toString();
     }
