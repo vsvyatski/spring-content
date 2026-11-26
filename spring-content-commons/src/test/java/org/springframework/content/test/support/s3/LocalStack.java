@@ -1,4 +1,4 @@
-package internal.org.springframework.content.s3.it;
+package org.springframework.content.test.support.s3;
 
 import org.testcontainers.localstack.LocalStackContainer;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
@@ -7,7 +7,7 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 
 /**
- * Shared LocalStack Testcontainers instance for S3 ITs.
+ * Shared LocalStack Testcontainers instance for S3 integration tests.
  *
  * @author Vladimir Svyatski
  */

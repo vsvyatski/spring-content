@@ -1,7 +1,7 @@
 package internal.org.springframework.content.s3.config;
 
 import internal.org.springframework.content.s3.io.S3StoreResource;
-import internal.org.springframework.content.s3.it.LocalStack;
+import org.springframework.content.test.support.s3.LocalStack;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -20,7 +20,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
 import software.amazon.awssdk.services.s3.S3Client;
 
-import java.net.URISyntaxException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -84,7 +83,7 @@ public class EnableS3StoresTest {
         private Environment env;
 
         @Bean
-        public S3Client client() throws URISyntaxException {
+        public S3Client client() {
             return LocalStack.getAmazonS3Client();
         }
     }
@@ -182,10 +181,9 @@ public class EnableS3StoresTest {
                 SingleContentFields entity = new SingleContentFields();
                 entity.setContentId("12345");
                 Resource r = repo.getResource(entity);
+                assertThat(r).isInstanceOf(S3StoreResource.class);
                 assertThat(((S3StoreResource) r).getClient()).isEqualTo(client);
             }
         }
     }
-
 }
-

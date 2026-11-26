@@ -15,6 +15,7 @@ import org.springframework.content.test.support.AbstractEntityConverterBucketIT;
 import org.springframework.content.test.support.EmbeddedJpa;
 import org.springframework.content.test.support.FakeEntity;
 import org.springframework.content.test.support.TestSupportPackages;
+import org.springframework.content.test.support.s3.LocalStack;
 import org.springframework.content.test.support.jpa.DualContentJpaLongIdMimeEntity;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,7 +31,6 @@ import software.amazon.awssdk.services.s3.model.*;
 
 import javax.sql.DataSource;
 import java.io.Serializable;
-import java.net.URISyntaxException;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -103,7 +103,7 @@ public class S3StoreWithEntityConverterIT extends AbstractEntityConverterBucketI
     public static class TestConfig {
 
         @Bean
-        public S3Client client() throws URISyntaxException {
+        public S3Client client() {
             s3ClientSpy = spy(LocalStack.getAmazonS3Client());
             return s3ClientSpy;
         }

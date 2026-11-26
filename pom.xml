@@ -57,6 +57,7 @@
     <spring-cloud-azure.version>7.4.0</spring-cloud-azure.version>
     <spring-cloud-gcp.version>8.3.1</spring-cloud-gcp.version>
     <spring-cloud-aws.version>4.2.1</spring-cloud-aws.version>
+    <awssdk.version>2.57.0</awssdk.version>
 
     <!-- Dependencies -->
     <commons-io.version>2.22.0</commons-io.version>
@@ -101,6 +102,13 @@
         <groupId>org.testcontainers</groupId>
         <artifactId>testcontainers-bom</artifactId>
         <version>${testcontainers.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>software.amazon.awssdk</groupId>
+        <artifactId>bom</artifactId>
+        <version>${awssdk.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>

@@ -7,7 +7,7 @@ import org.jspecify.annotations.NonNull;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.content.encryption.LocalStack;
+import org.springframework.content.test.support.s3.LocalStack;
 import org.springframework.content.encryption.VaultContainerSupport;
 import org.springframework.content.encryption.config.EncryptingContentStoreConfigurer;
 import org.springframework.content.encryption.engine.ContentEncryptionEngine.EncryptionParameters;
@@ -26,7 +26,6 @@ import org.springframework.vault.client.VaultEndpoint;
 import org.springframework.vault.config.AbstractVaultConfiguration;
 import software.amazon.awssdk.services.s3.S3Client;
 
-import java.net.URISyntaxException;
 import java.util.List;
 
 @SpringBootApplication(exclude = {FileSystemContentAutoConfiguration.class})
@@ -59,7 +58,7 @@ public class Application {
         }
 
         @Bean
-        public S3Client amazonS3() throws URISyntaxException {
+        public S3Client amazonS3() {
             return LocalStack.getAmazonS3Client();
         }
 

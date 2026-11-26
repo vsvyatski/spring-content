@@ -8,9 +8,8 @@ import org.springframework.content.test.support.TestSupportPackages;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.content.test.support.s3.LocalStack;
 import software.amazon.awssdk.services.s3.S3Client;
-
-import java.net.URISyntaxException;
 
 @SpringBootApplication(scanBasePackages = {"internal.org.springframework.content.s3.it", TestSupportPackages.JPA})
 @EntityScan(basePackages = TestSupportPackages.JPA)
@@ -27,7 +26,7 @@ public class Application {
     public static class AppConfig {
 
         @Bean
-        public S3Client amazonS3() throws URISyntaxException {
+        public S3Client amazonS3() {
             return LocalStack.getAmazonS3Client();
         }
     }
