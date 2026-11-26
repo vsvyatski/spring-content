@@ -13,6 +13,7 @@ import org.springframework.content.commons.property.PropertyPath;
 import org.springframework.content.commons.store.*;
 import org.springframework.content.commons.store.UnsetContentParams.Disposition;
 import org.springframework.content.commons.utils.BeanUtils;
+import org.springframework.content.commons.utils.ContentStoreGetContentSupport;
 import org.springframework.content.commons.utils.FileService;
 import org.springframework.content.commons.utils.PlacementService;
 import org.springframework.content.fs.io.FileSystemResourceLoader;
@@ -199,7 +200,6 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable> implements 
     @Transactional
     @Override
     public S setContent(S property, PropertyPath propertyPath, InputStream content, SetContentParams params) {
-
         ContentProperty contentProperty = this.mappingContext
             .getContentProperty(property.getClass(), propertyPath.name());
         if (contentProperty == null) {
@@ -291,7 +291,8 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable> implements 
         }
 
         Resource resource = getResource(entity);
-        return openContentStream(entity, "content", contentId, resource);
+        return ContentStoreGetContentSupport.openContentStream(
+            entity, ContentStoreGetContentSupport.propertyPathLabel(null), contentId, resource, "file resource");
     }
 
     @Transactional
@@ -312,29 +313,14 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable> implements 
         }
 
         Resource resource = getResource(property, propertyPath);
-        return openContentStream(property, propertyPath.toString(), contentId, resource);
-    }
-
-    private InputStream openContentStream(S entity, String contentPropertyLabel, Object contentId, Resource resource) {
-        try {
-            if (resource == null || !resource.exists()) {
-                logger.warn(format(
-                    "Content id %s on entity %s (%s) has no backing file resource",
-                    contentId, entity, contentPropertyLabel));
-                return null;
-            }
-            return resource.getInputStream();
-        } catch (IOException e) {
-            logger.error(format("Unexpected error getting content for entity %s", entity), e);
-            throw new StoreAccessException(format("Getting content for entity %s", entity), e);
-        }
+        return ContentStoreGetContentSupport.openContentStream(
+            property, ContentStoreGetContentSupport.propertyPathLabel(propertyPath), contentId, resource, "file resource");
     }
 
     @Override
     @Transactional
     public S unsetContent(S entity) {
-        if (entity == null)
-            return null;
+        if (entity == null) return null;
 
         Resource resource = getResource(entity);
 

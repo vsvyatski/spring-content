@@ -11,7 +11,6 @@ import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.annotations.MimeType;
 import org.springframework.content.commons.config.ContentPropertyInfo;
 import org.springframework.content.commons.io.DeletableResource;
-import org.springframework.content.commons.io.RangeableResource;
 import org.springframework.content.commons.mappingcontext.ContentProperty;
 import org.springframework.content.commons.mappingcontext.MappingContext;
 import org.springframework.content.commons.property.PropertyPath;
@@ -19,7 +18,7 @@ import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.commons.store.GetResourceParams;
 import org.springframework.content.commons.store.StoreAccessException;
 import org.springframework.content.commons.utils.BeanUtils;
-import org.springframework.content.commons.utils.Condition;
+import org.springframework.content.commons.utils.ContentStoreGetContentSupport;
 import org.springframework.content.commons.utils.PlacementService;
 import org.springframework.content.s3.S3ObjectId;
 import org.springframework.content.s3.config.MultiTenantS3ClientProvider;
@@ -38,31 +37,27 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
 import java.util.UUID;
 
 import static java.lang.String.format;
 
 @Transactional
-public class DefaultS3StoreImpl<S, SID extends Serializable>
-    implements ContentStore<S, SID> {
+public class DefaultS3StoreImpl<S, SID extends Serializable> implements ContentStore<S, SID> {
 
-    private static Log logger = LogFactory.getLog(DefaultS3StoreImpl.class);
+    private static final Log logger = LogFactory.getLog(DefaultS3StoreImpl.class);
 
-    private ApplicationContext context;
-    private ResourceLoader loader;
-    private PlacementService placementService;
-    private S3Client client;
-    private MultiTenantS3ClientProvider clientProvider;
+    private final ResourceLoader loader;
+    private final PlacementService placementService;
+    private final S3Client client;
+    private final MultiTenantS3ClientProvider clientProvider;
 
-    private MappingContext mappingContext/* = new MappingContext("/", ".")*/;
+    private MappingContext mappingContext;
 
     public DefaultS3StoreImpl(ApplicationContext context, ResourceLoader loader, MappingContext mappingContext, PlacementService placementService, S3Client client, MultiTenantS3ClientProvider provider) {
         Assert.notNull(context, "context must be specified");
         Assert.notNull(loader, "loader must be specified");
         Assert.notNull(placementService, "placementService must be specified");
         Assert.notNull(client, "client must be specified");
-        this.context = context;
         this.loader = loader;
         this.placementService = placementService;
         this.client = client;
@@ -75,13 +70,15 @@ public class DefaultS3StoreImpl<S, SID extends Serializable>
 
     @Override
     public Resource getResource(SID id) {
-        if (id == null)
-            return null;
+        if (id == null) return null;
 
-        if (id instanceof S3ObjectId == false) {
-            S3ObjectId s3ObjectId = null;
+        if (!(id instanceof S3ObjectId)) {
+            S3ObjectId s3ObjectId;
             if (placementService.canConvert(id.getClass(), S3ObjectId.class)) {
                 s3ObjectId = placementService.convert(id, S3ObjectId.class);
+                if (s3ObjectId == null) {
+                    throw new StoreAccessException(format("Unable to convert from %s to S3ObjectId", id));
+                }
                 return this.getResourceInternal(s3ObjectId, new GetResourceParams(null));
             }
 
@@ -93,22 +90,20 @@ public class DefaultS3StoreImpl<S, SID extends Serializable>
 
     @Override
     public Resource getResource(S entity) {
-        if (entity == null)
-            return null;
+        if (entity == null) return null;
 
-        SID contentId = (SID) BeanUtils.getFieldWithAnnotation(entity, ContentId.class);
-        if (contentId == null)
-            return null;
-
-        S3ObjectId s3ObjectId = null;
         if (placementService.canConvert(entity.getClass(), S3ObjectId.class)) {
-            s3ObjectId = placementService.convert(entity, S3ObjectId.class);
-
+            S3ObjectId s3ObjectId = placementService.convert(entity, S3ObjectId.class);
             if (s3ObjectId != null) {
                 return this.getResourceInternal(s3ObjectId, new GetResourceParams(null));
             }
         }
 
+        @SuppressWarnings("unchecked")
+        SID contentId = (SID) BeanUtils.getFieldWithAnnotation(entity, ContentId.class);
+        if (contentId == null) {
+            return null;
+        }
         return this.getResource(contentId);
     }
 
@@ -119,63 +114,73 @@ public class DefaultS3StoreImpl<S, SID extends Serializable>
 
     @Override
     public Resource getResource(S entity, PropertyPath propertyPath, GetResourceParams params) {
+        if (entity == null) {
+            return null;
+        }
+
         ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.name());
         if (property == null) {
             throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.name()));
         }
 
-        if (entity == null)
+        Object rawContentId = property.getContentId(entity);
+        if (rawContentId == null) {
             return null;
-
-        if (property.getContentId(entity) == null)
-            return null;
-
-        S3ObjectId s3ObjectId = null;
-        TypeDescriptor contentPropertyInfoType = ContentPropertyInfoTypeDescriptor.withGenerics(entity, property);
-        if (placementService.canConvert(contentPropertyInfoType, TypeDescriptor.valueOf(S3ObjectId.class))) {
-            ContentPropertyInfo<S, SID> contentPropertyInfo = new ContentPropertyInfo<>(entity,
-                (SID) property.getContentId(entity), propertyPath, property);
-            s3ObjectId = (S3ObjectId) placementService.convert(contentPropertyInfo, contentPropertyInfoType, TypeDescriptor.valueOf(S3ObjectId.class));
-            Resource r = this.getResourceInternal(s3ObjectId, params);
-            return r;
         }
 
-        SID contentId = (SID) property.getContentId(entity);
+        TypeDescriptor contentPropertyInfoType = ContentPropertyInfoTypeDescriptor.withGenerics(entity, property);
+        if (placementService.canConvert(contentPropertyInfoType, TypeDescriptor.valueOf(S3ObjectId.class))) {
+            @SuppressWarnings("unchecked")
+            ContentPropertyInfo<S, SID> contentPropertyInfo =
+                new ContentPropertyInfo<>(entity, (SID) rawContentId, propertyPath, property);
+            S3ObjectId s3ObjectId = (S3ObjectId) placementService.convert(contentPropertyInfo, contentPropertyInfoType,
+                TypeDescriptor.valueOf(S3ObjectId.class));
+            if (s3ObjectId != null) {
+                return this.getResourceInternal(s3ObjectId, params);
+            }
+        }
+
+        @SuppressWarnings("unchecked")
+        SID contentId = (SID) rawContentId;
         return this.getResource(contentId);
     }
 
     protected Resource getResourceInternal(S3ObjectId id, GetResourceParams params) {
         String bucket = id.getBucket();
 
-        String location = null;
+        String location;
         if (placementService.canConvert(S3ObjectId.class, String.class)) {
             location = placementService.convert(id, String.class);
-            location = absolutify(bucket, location);
         } else {
             Object objectId = id.getKey();
             location = placementService.convert(objectId, String.class);
-            location = absolutify(bucket, location);
         }
+        assert location != null;
+        location = makeAbsolute(bucket, location);
 
+        return newS3StoreResource(bucket, location, params);
+    }
+
+    private S3StoreResource newS3StoreResource(String bucket, String location, GetResourceParams params) {
         S3Client clientToUse = client;
         ResourceLoader loaderToUse = loader;
         if (clientProvider != null) {
-            S3Client client = clientProvider.getS3Client();
-            if (client != null) {
-                SimpleStorageProtocolResolver s3Protocol = new SimpleStorageProtocolResolver(client);
+            S3Client tenantClient = clientProvider.getS3Client();
+            if (tenantClient != null) {
+                SimpleStorageProtocolResolver s3Protocol = new SimpleStorageProtocolResolver(tenantClient);
                 s3Protocol.afterPropertiesSet();
 
-                DefaultResourceLoader loader = new DefaultResourceLoader();
-                loader.addProtocolResolver(s3Protocol);
+                DefaultResourceLoader tenantLoader = new DefaultResourceLoader();
+                tenantLoader.addProtocolResolver(s3Protocol);
 
-                clientToUse = client;
-                loaderToUse = loader;
+                clientToUse = tenantClient;
+                loaderToUse = tenantLoader;
             }
         }
 
         Resource resource = loaderToUse.getResource(location);
         S3StoreResource s3Resource = new S3StoreResource(clientToUse, bucket, resource);
-        ((RangeableResource) s3Resource).setRange(params.range());
+        s3Resource.setRange(params.range());
         return s3Resource;
     }
 
@@ -197,22 +202,16 @@ public class DefaultS3StoreImpl<S, SID extends Serializable>
 
     @Override
     public void unassociate(Object entity) {
-        BeanUtils.setFieldWithAnnotationConditionally(entity, ContentId.class, null,
-            new Condition() {
-                @Override
-                public boolean matches(Field field) {
-                    for (Annotation annotation : field.getAnnotations()) {
-                        if ("jakarta.persistence.Id".equals(
-                            annotation.annotationType().getCanonicalName())
-                            || "org.springframework.data.annotation.Id"
-                            .equals(annotation.annotationType()
-                                .getCanonicalName())) {
-                            return false;
-                        }
-                    }
-                    return true;
+        BeanUtils.setFieldWithAnnotationConditionally(entity, ContentId.class, null, field -> {
+            for (Annotation annotation : field.getAnnotations()) {
+                String canonicalName = annotation.annotationType().getCanonicalName();
+                if ("jakarta.persistence.Id".equals(canonicalName)
+                    || "org.springframework.data.annotation.Id".equals(canonicalName)) {
+                    return false;
                 }
-            });
+            }
+            return true;
+        });
     }
 
     @Override
@@ -223,25 +222,20 @@ public class DefaultS3StoreImpl<S, SID extends Serializable>
             throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.name()));
         }
 
-        property.setContentId(entity, null, new org.springframework.content.commons.mappingcontext.Condition() {
-            @Override
-            public boolean matches(TypeDescriptor descriptor) {
-                for (Annotation annotation : descriptor.getAnnotations()) {
-                    if ("jakarta.persistence.Id".equals(
-                        annotation.annotationType().getCanonicalName())
-                        || "org.springframework.data.annotation.Id"
-                        .equals(annotation.annotationType()
-                            .getCanonicalName())) {
-                        return false;
-                    }
+        property.setContentId(entity, null, descriptor -> {
+            for (Annotation annotation : descriptor.getAnnotations()) {
+                String canonicalName = annotation.annotationType().getCanonicalName();
+                if ("jakarta.persistence.Id".equals(canonicalName)
+                    || "org.springframework.data.annotation.Id".equals(canonicalName)) {
+                    return false;
                 }
-                return true;
             }
+            return true;
         });
     }
 
     private void setResourceContentTypeFromMimeType(S entity, ContentProperty property, Resource resource) {
-        if (resource instanceof S3StoreResource) {
+        if (resource instanceof S3StoreResource s3StoreResource) {
             Object mimeType;
             if (property == null) {
                 mimeType = BeanUtils.getFieldWithAnnotation(entity, MimeType.class);
@@ -250,9 +244,7 @@ public class DefaultS3StoreImpl<S, SID extends Serializable>
             }
 
             if (mimeType != null) {
-                String strMimeType = mimeType.toString();
-                S3StoreResource s3StoreResource = (S3StoreResource) resource;
-                s3StoreResource.setContentType(strMimeType);
+                s3StoreResource.setContentType(mimeType.toString());
             }
         }
     }
@@ -263,9 +255,7 @@ public class DefaultS3StoreImpl<S, SID extends Serializable>
 
         Object contentId = BeanUtils.getFieldWithAnnotation(entity, ContentId.class);
         if (contentId == null) {
-
             Serializable newId = UUID.randomUUID().toString();
-
             Object convertedId = placementService.convert(
                 newId,
                 TypeDescriptor.forObject(newId),
@@ -319,10 +309,10 @@ public class DefaultS3StoreImpl<S, SID extends Serializable>
         }
 
         Object contentId = property.getContentId(entity);
-        if (contentId == null || params.disposition().equals(org.springframework.content.commons.store.SetContentParams.ContentDisposition.CreateNew)) {
+        if (contentId == null || params.disposition()
+            .equals(org.springframework.content.commons.store.SetContentParams.ContentDisposition.CreateNew)) {
 
             Serializable newId = UUID.randomUUID().toString();
-
             Object convertedId = placementService.convert(
                 newId,
                 TypeDescriptor.forObject(newId),
@@ -382,69 +372,62 @@ public class DefaultS3StoreImpl<S, SID extends Serializable>
     @Transactional
     @Override
     public InputStream getContent(S entity) {
-        if (entity == null)
+        if (entity == null) {
             return null;
-
-        Resource resource = this.getResource(entity);
-
-        try {
-            if (resource != null && resource.exists()) {
-                return resource.getInputStream();
-            }
-        } catch (IOException e) {
-            logger.error(format("Unexpected error getting content for entity %s", entity), e);
-            throw new StoreAccessException(format("Getting content for entity %s", entity), e);
         }
 
-        return null;
+        Object contentId = BeanUtils.getFieldWithAnnotation(entity, ContentId.class);
+        if (contentId == null) {
+            return null;
+        }
+
+        Resource resource = this.getResource(entity);
+        return ContentStoreGetContentSupport.openContentStream(
+            entity, ContentStoreGetContentSupport.propertyPathLabel(null), contentId, resource, "S3 object");
     }
 
     @Transactional
     @Override
     public InputStream getContent(S entity, PropertyPath propertyPath) {
-
-        if (entity == null)
+        if (entity == null) {
             return null;
-
-        Resource resource = this.getResource(entity, propertyPath);
-
-        try {
-            if (resource != null && resource.exists()) {
-                return resource.getInputStream();
-            }
-        } catch (IOException e) {
-            logger.error(format("Unexpected error getting content for entity %s", entity), e);
-            throw new StoreAccessException(format("Getting content for entity %s", entity), e);
         }
 
-        return null;
+        ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.name());
+        if (property == null) {
+            throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.name()));
+        }
+
+        Object contentId = property.getContentId(entity);
+        if (contentId == null) {
+            return null;
+        }
+
+        Resource resource = this.getResource(entity, propertyPath);
+        return ContentStoreGetContentSupport.openContentStream(
+            entity, ContentStoreGetContentSupport.propertyPathLabel(propertyPath), contentId, resource, "S3 object");
     }
 
     @Transactional
     @Override
     public S unsetContent(S entity) {
-        if (entity == null)
-            return entity;
+        if (entity == null) {
+            return null;
+        }
 
         deleteIfExists(entity);
 
         // reset content fields
-        BeanUtils.setFieldWithAnnotationConditionally(entity, ContentId.class, null,
-            new Condition() {
-                @Override
-                public boolean matches(Field field) {
-                    for (Annotation annotation : field.getAnnotations()) {
-                        if ("jakarta.persistence.Id".equals(
-                            annotation.annotationType().getCanonicalName())
-                            || "org.springframework.data.annotation.Id"
-                            .equals(annotation.annotationType()
-                                .getCanonicalName())) {
-                            return false;
-                        }
-                    }
-                    return true;
+        BeanUtils.setFieldWithAnnotationConditionally(entity, ContentId.class, null, field -> {
+            for (Annotation annotation : field.getAnnotations()) {
+                String canonicalName = annotation.annotationType().getCanonicalName();
+                if ("jakarta.persistence.Id".equals(canonicalName)
+                    || "org.springframework.data.annotation.Id".equals(canonicalName)) {
+                    return false;
                 }
-            });
+            }
+            return true;
+        });
         Class<?> contentLenType = BeanUtils.getFieldWithAnnotationType(entity, ContentLength.class);
         if (contentLenType != null) {
             BeanUtils.setFieldWithAnnotation(entity, ContentLength.class, BeanUtils.getDefaultValueForType(contentLenType));
@@ -463,13 +446,14 @@ public class DefaultS3StoreImpl<S, SID extends Serializable>
     @Transactional
     @Override
     public S unsetContent(S entity, PropertyPath propertyPath, org.springframework.content.commons.store.UnsetContentParams params) {
+        if (entity == null) {
+            return null;
+        }
+
         ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.name());
         if (property == null) {
             throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.name()));
         }
-
-        if (entity == null)
-            return entity;
 
         Resource resource = this.getResource(entity, propertyPath);
 
@@ -478,41 +462,28 @@ public class DefaultS3StoreImpl<S, SID extends Serializable>
         }
 
         // reset content fields
-        if (resource != null) {
-            property.setContentId(entity, null, new org.springframework.content.commons.mappingcontext.Condition() {
-                @Override
-                public boolean matches(TypeDescriptor descriptor) {
-                    for (Annotation annotation : descriptor.getAnnotations()) {
-                        if ("jakarta.persistence.Id".equals(
-                            annotation.annotationType().getCanonicalName())
-                            || "org.springframework.data.annotation.Id"
-                            .equals(annotation.annotationType()
-                                .getCanonicalName())) {
-                            return false;
-                        }
-                    }
-                    return true;
+        property.setContentId(entity, null, descriptor -> {
+            for (Annotation annotation : descriptor.getAnnotations()) {
+                String canonicalName = annotation.annotationType().getCanonicalName();
+                if ("jakarta.persistence.Id".equals(canonicalName)
+                    || "org.springframework.data.annotation.Id".equals(canonicalName)) {
+                    return false;
                 }
-            });
-            property.setContentLength(entity, BeanUtils.getDefaultValueForType(property.getContentLengthType().getType()));
-        }
+            }
+            return true;
+        });
+        property.setContentLength(entity, BeanUtils.getDefaultValueForType(property.getContentLengthType().getType()));
 
         return entity;
     }
 
-    private String absolutify(String bucket, String location) {
-        String locationToUse = null;
-        Assert.state(location.startsWith("s3://") == false, "only s3:// supported");
-        if (location.startsWith("/")) {
-            locationToUse = location.substring(1);
-        } else {
-            locationToUse = location;
-        }
+    private static String makeAbsolute(String bucket, String location) {
+        Assert.state(!location.startsWith("s3://"), "only s3:// supported");
+        String locationToUse = location.startsWith("/") ? location.substring(1) : location;
         return format("s3://%s/%s", bucket, locationToUse);
     }
 
     private void deleteIfExists(S entity) {
-
         Resource resource = this.getResource(entity);
         if (resource != null && resource.exists() && resource instanceof DeletableResource) {
 

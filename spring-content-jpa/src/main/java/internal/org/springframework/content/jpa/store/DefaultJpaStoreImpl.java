@@ -17,6 +17,7 @@ import org.springframework.content.commons.store.GetResourceParams;
 import org.springframework.content.commons.store.StoreAccessException;
 import org.springframework.content.commons.store.UnsetContentParams;
 import org.springframework.content.commons.utils.BeanUtils;
+import org.springframework.content.commons.utils.ContentStoreGetContentSupport;
 import org.springframework.content.jpa.io.BlobResource;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
@@ -91,7 +92,6 @@ public class DefaultJpaStoreImpl<S, SID extends Serializable>
 
     @Override
     public void unassociate(S entity, PropertyPath propertyPath) {
-
         ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.name());
         if (property == null) {
             throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.name()));
@@ -135,12 +135,12 @@ public class DefaultJpaStoreImpl<S, SID extends Serializable>
             return null;
         }
         Resource resource = loader.getResource(id.toString());
-        return openContentStream(entity, propertyPathLabel(null), id, resource);
+        return ContentStoreGetContentSupport.openContentStream(
+            entity, ContentStoreGetContentSupport.propertyPathLabel(null), id, resource, "blob resource");
     }
 
     @Override
     public InputStream getContent(S entity, PropertyPath propertyPath) {
-
         ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.name());
         if (property == null) {
             throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.name()));
@@ -150,39 +150,13 @@ public class DefaultJpaStoreImpl<S, SID extends Serializable>
             return null;
         }
         Resource resource = loader.getResource(id.toString());
-        return openContentStream(entity, propertyPathLabel(propertyPath), id, resource);
-    }
-
-    private static String propertyPathLabel(PropertyPath propertyPath) {
-        return propertyPath == null ? "content" : propertyPath.toString();
-    }
-
-    private InputStream openContentStream(S entity, String contentPropertyLabel, Object contentId, Resource resource) {
-        try {
-            if (!resource.exists()) {
-                logger.warn(format(
-                    "Content id %s on entity %s (%s) has no backing blob resource",
-                    contentId, entity, contentPropertyLabel));
-                return null;
-            }
-            try {
-                return resource.getInputStream();
-            } catch (FileNotFoundException e) {
-                logger.warn(format(
-                    "Content id %s on entity %s (%s) is present in metadata but blob bytes are missing",
-                    contentId, entity, contentPropertyLabel), e);
-                return null;
-            }
-        } catch (IOException e) {
-            logger.error(format("Unexpected error getting content for entity %s", entity), e);
-            throw new StoreAccessException(format("Getting content for entity %s", entity), e);
-        }
+        return ContentStoreGetContentSupport.openContentStream(
+            entity, ContentStoreGetContentSupport.propertyPathLabel(propertyPath), id, resource, "blob resource");
     }
 
     @Transactional
     @Override
     public S setContent(S entity, InputStream content) {
-
         Object contentId = BeanUtils.getFieldWithAnnotation(entity, ContentId.class);
         if (contentId == null) {
 
@@ -388,7 +362,6 @@ public class DefaultJpaStoreImpl<S, SID extends Serializable>
     }
 
     private SID getContentId(S entity, PropertyPath propertyPath) {
-
         Assert.notNull(entity, "entity must not be null");
         Assert.notNull(propertyPath, "propertyPath must not be null");
 
@@ -401,7 +374,6 @@ public class DefaultJpaStoreImpl<S, SID extends Serializable>
     }
 
     private void setContentId(S entity, PropertyPath propertyPath, SID contentId) {
-
         Assert.notNull(entity, "entity must not be null");
         Assert.notNull(propertyPath, "propertyPath must not be null");
 

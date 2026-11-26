@@ -13,7 +13,7 @@ import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.commons.store.GetResourceParams;
 import org.springframework.content.commons.store.StoreAccessException;
 import org.springframework.content.commons.utils.BeanUtils;
-import org.springframework.content.commons.utils.Condition;
+import org.springframework.content.commons.utils.ContentStoreGetContentSupport;
 import org.springframework.content.commons.utils.PlacementService;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.io.Resource;
@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
 import java.util.UUID;
 
 import static java.lang.String.format;
@@ -35,21 +34,20 @@ import static org.springframework.data.mongodb.gridfs.GridFsCriteria.whereFilena
 public class DefaultMongoStoreImpl<S, SID extends Serializable>
     implements ContentStore<S, SID> {
 
-    private static Log logger = LogFactory.getLog(DefaultMongoStoreImpl.class);
+    private static final Log logger = LogFactory.getLog(DefaultMongoStoreImpl.class);
 
-    private GridFsTemplate gridFs;
-    private PlacementService placer;
+    private final GridFsTemplate gridFs;
+    private final PlacementService placer;
 
     private MappingContext mappingContext;
 
-    public DefaultMongoStoreImpl(GridFsTemplate gridFs, MappingContext mappingContext, PlacementService placer) {
-        Assert.notNull(gridFs, "gridFs cannot be null");
+    public DefaultMongoStoreImpl(GridFsTemplate template, MappingContext mappingContext, PlacementService placer) {
+        Assert.notNull(template, "template cannot be null");
         Assert.notNull(placer, "placer cannot be null");
 
-        this.gridFs = gridFs;
+        this.gridFs = template;
         this.placer = placer;
 
-        this.mappingContext = mappingContext;
         this.mappingContext = mappingContext;
         if (this.mappingContext == null) {
             this.mappingContext = new MappingContext("/", ".");
@@ -63,24 +61,26 @@ public class DefaultMongoStoreImpl<S, SID extends Serializable>
         }
 
         String location = placer.convert(id, String.class);
+        assert location != null;
         return new GridFsStoreResource(location, gridFs);
     }
 
     @Override
     public Resource getResource(S entity) {
-        if (entity == null)
-            return null;
+        if (entity == null) return null;
 
-        ObjectId objectId = null;
+        ObjectId objectId;
         if (placer.canConvert(entity.getClass(), ObjectId.class)) {
             objectId = placer.convert(entity, ObjectId.class);
 
             if (objectId != null) {
                 String location = placer.convert(objectId, String.class);
+                assert location != null;
                 return new GridFsStoreResource(location, gridFs);
             }
         }
 
+        @SuppressWarnings("unchecked")
         SID contentId = (SID) BeanUtils.getFieldWithAnnotation(entity, ContentId.class);
         if (contentId == null) {
             return null;
@@ -95,15 +95,14 @@ public class DefaultMongoStoreImpl<S, SID extends Serializable>
 
     @Override
     public Resource getResource(S entity, PropertyPath propertyPath, GetResourceParams params) {
-        if (entity == null)
-            return null;
+        if (entity == null) return null;
 
-        ObjectId objectId = null;
         if (placer.canConvert(entity.getClass(), ObjectId.class)) {
-            objectId = placer.convert(entity, ObjectId.class);
+            ObjectId objectId = placer.convert(entity, ObjectId.class);
 
             if (objectId != null) {
                 String location = placer.convert(objectId, String.class);
+                assert location != null;
                 return new GridFsStoreResource(location, gridFs);
             }
         }
@@ -113,6 +112,7 @@ public class DefaultMongoStoreImpl<S, SID extends Serializable>
             throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.name()));
         }
 
+        @SuppressWarnings("unchecked")
         SID contentId = (SID) property.getContentId(entity);
         if (contentId == null) {
             return null;
@@ -122,10 +122,8 @@ public class DefaultMongoStoreImpl<S, SID extends Serializable>
 
     @Override
     public void associate(S entity, SID id) {
-        Resource resource = this.getResource(id);
         Object convertedId = convertToExternalContentIdType(entity, id);
-        BeanUtils.setFieldWithAnnotation(entity, ContentId.class,
-            convertedId.toString());
+        BeanUtils.setFieldWithAnnotation(entity, ContentId.class, convertedId.toString());
     }
 
     @Override
@@ -136,68 +134,50 @@ public class DefaultMongoStoreImpl<S, SID extends Serializable>
             throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.name()));
         }
 
-        Resource resource = this.getResource(id);
-
         Object convertedId = convertToExternalContentIdType(id, property.getContentIdType(entity));
         property.setContentId(entity, convertedId, null);
     }
 
     @Override
     public void unassociate(S entity) {
-        BeanUtils.setFieldWithAnnotationConditionally(entity, ContentId.class, null,
-            new Condition() {
-                @Override
-                public boolean matches(Field field) {
-                    for (Annotation annotation : field.getAnnotations()) {
-                        if ("jakarta.persistence.Id".equals(
-                            annotation.annotationType().getCanonicalName())
-                            || "org.springframework.data.annotation.Id"
-                            .equals(annotation.annotationType()
-                                .getCanonicalName())) {
-                            return false;
-                        }
-                    }
-                    return true;
+        BeanUtils.setFieldWithAnnotationConditionally(entity, ContentId.class, null, field -> {
+            for (Annotation annotation : field.getAnnotations()) {
+                String canonicalName = annotation.annotationType().getCanonicalName();
+                if ("jakarta.persistence.Id".equals(canonicalName)
+                    || "org.springframework.data.annotation.Id".equals(canonicalName)) {
+                    return false;
                 }
-            });
+            }
+            return true;
+        });
     }
 
     @Override
     public void unassociate(S entity, PropertyPath propertyPath) {
-
         ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.name());
         if (property == null) {
             throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.name()));
         }
 
-        property.setContentId(entity, null, new org.springframework.content.commons.mappingcontext.Condition() {
-            @Override
-            public boolean matches(TypeDescriptor descriptor) {
-                for (Annotation annotation : descriptor.getAnnotations()) {
-                    if ("jakarta.persistence.Id".equals(
-                        annotation.annotationType().getCanonicalName())
-                        || "org.springframework.data.annotation.Id"
-                        .equals(annotation.annotationType()
-                            .getCanonicalName())) {
-                        return false;
-                    }
+        property.setContentId(entity, null, descriptor -> {
+            for (Annotation annotation : descriptor.getAnnotations()) {
+                String canonicalName = annotation.annotationType().getCanonicalName();
+                if ("jakarta.persistence.Id".equals(canonicalName)
+                    || "org.springframework.data.annotation.Id".equals(canonicalName)) {
+                    return false;
                 }
-                return true;
             }
+            return true;
         });
     }
 
     @Override
     @Transactional
     public S setContent(S entity, InputStream content) {
-
         Object contentId = BeanUtils.getFieldWithAnnotation(entity, ContentId.class);
         if (contentId == null) {
-
             Serializable newId = UUID.randomUUID().toString();
-
             Object convertedId = convertToExternalContentIdType(entity, newId);
-
             BeanUtils.setFieldWithAnnotation(entity, ContentId.class, convertedId);
         }
 
@@ -206,13 +186,14 @@ public class DefaultMongoStoreImpl<S, SID extends Serializable>
             return entity;
         }
 
+        String filename = gridFsFilename(resource);
         if (resource.exists()) {
-            gridFs.delete(query(whereFilename().is(resource.getFilename())));
+            gridFs.delete(query(whereFilename().is(filename)));
         }
 
         try {
-            gridFs.store(content, resource.getFilename());
-            resource = gridFs.getResource(resource.getFilename());
+            gridFs.store(content, filename);
+            resource = gridFs.getResource(filename);
         } catch (Exception e) {
             logger.error(format("Unexpected error setting content for entity  %s", entity), e);
             throw new StoreAccessException(format("Setting content for entity %s", entity), e);
@@ -249,12 +230,11 @@ public class DefaultMongoStoreImpl<S, SID extends Serializable>
         }
 
         Object contentId = property.getContentId(entity);
-        if (contentId == null || params.disposition().equals(org.springframework.content.commons.store.SetContentParams.ContentDisposition.CreateNew)) {
+        if (contentId == null || params.disposition()
+            .equals(org.springframework.content.commons.store.SetContentParams.ContentDisposition.CreateNew)) {
 
             Serializable newId = UUID.randomUUID().toString();
-
             Object convertedId = convertToExternalContentIdType(newId, property.getContentIdType(entity));
-
             property.setContentId(entity, convertedId, null);
         }
 
@@ -263,13 +243,14 @@ public class DefaultMongoStoreImpl<S, SID extends Serializable>
             return entity;
         }
 
+        String filename = gridFsFilename(resource);
         if (resource.exists()) {
-            gridFs.delete(query(whereFilename().is(resource.getFilename())));
+            gridFs.delete(query(whereFilename().is(filename)));
         }
 
         try {
-            gridFs.store(content, resource.getFilename());
-            resource = gridFs.getResource(resource.getFilename());
+            gridFs.store(content, filename);
+            resource = gridFs.getResource(filename);
         } catch (Exception e) {
             logger.error(format("Unexpected error setting content for entity  %s", entity), e);
             throw new StoreAccessException(format("Setting content for entity %s", entity), e);
@@ -320,80 +301,62 @@ public class DefaultMongoStoreImpl<S, SID extends Serializable>
             return null;
 
         String location = placer.convert(contentId, String.class);
+        assert location != null;
         Resource resource = gridFs.getResource(location);
-        try {
-            if (resource != null && resource.exists()) {
-                return resource.getInputStream();
-            }
-        } catch (IOException e) {
-            logger.error(format("Unexpected error getting content for entityt %s", entity), e);
-            throw new StoreAccessException(format("Getting content for entity %s", entity), e);
-        }
-        return null;
+        return ContentStoreGetContentSupport.openContentStream(
+            entity, ContentStoreGetContentSupport.propertyPathLabel(null), contentId, resource, "GridFS resource");
     }
 
     @Transactional
     @Override
     public InputStream getContent(S entity, PropertyPath propertyPath) {
+        if (entity == null) {
+            return null;
+        }
 
         ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.name());
         if (property == null) {
             throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.name()));
         }
 
-        if (entity == null)
-            return null;
-
         Object contentId = property.getContentId(entity);
-        if (contentId == null)
+        if (contentId == null) {
             return null;
+        }
 
         String location = placer.convert(contentId, String.class);
+        assert location != null;
         Resource resource = gridFs.getResource(location);
-        try {
-            if (resource != null && resource.exists()) {
-                return resource.getInputStream();
-            }
-        } catch (IOException e) {
-            logger.error(format("Unexpected error getting content for entityt %s", entity), e);
-            throw new StoreAccessException(format("Getting content for entity %s", entity), e);
-        }
-        return null;
+        return ContentStoreGetContentSupport.openContentStream(
+            entity, ContentStoreGetContentSupport.propertyPathLabel(propertyPath), contentId, resource, "GridFS resource");
     }
 
     @Override
     @Transactional
     public S unsetContent(S property) {
-        if (property == null)
-            return property;
+        if (property == null) return null;
         Object contentId = BeanUtils.getFieldWithAnnotation(property, ContentId.class);
         if (contentId == null)
             return property;
 
         try {
             String location = placer.convert(contentId, String.class);
+            assert location != null;
             Resource resource = gridFs.getResource(location);
-            if (resource != null && resource.exists()) {
-                gridFs.delete(query(whereFilename().is(resource.getFilename())));
+            if (resource.exists()) {
+                gridFs.delete(query(whereFilename().is(gridFsFilename(resource))));
 
                 // reset content fields
-                BeanUtils.setFieldWithAnnotationConditionally(property, ContentId.class,
-                    null, new Condition() {
-                        @Override
-                        public boolean matches(Field field) {
-                            for (Annotation annotation : field.getAnnotations()) {
-                                if ("jakarta.persistence.Id"
-                                    .equals(annotation.annotationType()
-                                        .getCanonicalName())
-                                    || "org.springframework.data.annotation.Id"
-                                    .equals(annotation.annotationType()
-                                        .getCanonicalName())) {
-                                    return false;
-                                }
-                            }
-                            return true;
+                BeanUtils.setFieldWithAnnotationConditionally(property, ContentId.class, null, field -> {
+                    for (Annotation annotation : field.getAnnotations()) {
+                        String canonicalName = annotation.annotationType().getCanonicalName();
+                        if ("jakarta.persistence.Id".equals(canonicalName)
+                            || "org.springframework.data.annotation.Id".equals(canonicalName)) {
+                            return false;
                         }
-                    });
+                    }
+                    return true;
+                });
                 Class<?> contentLenType = BeanUtils.getFieldWithAnnotationType(property, ContentLength.class);
                 if (contentLenType != null) {
                     BeanUtils.setFieldWithAnnotation(property, ContentLength.class, BeanUtils.getDefaultValueForType(contentLenType));
@@ -414,13 +377,14 @@ public class DefaultMongoStoreImpl<S, SID extends Serializable>
 
     @Override
     public S unsetContent(S entity, PropertyPath propertyPath, org.springframework.content.commons.store.UnsetContentParams params) {
+        if (entity == null) {
+            return null;
+        }
+
         ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.name());
         if (property == null) {
             throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.name()));
         }
-
-        if (entity == null)
-            return entity;
 
         Object contentId = property.getContentId(entity);
         if (contentId == null)
@@ -428,26 +392,22 @@ public class DefaultMongoStoreImpl<S, SID extends Serializable>
 
         try {
             String location = placer.convert(contentId, String.class);
+            assert location != null;
             Resource resource = gridFs.getResource(location);
-            if (resource != null && resource.exists() && params.disposition().equals(org.springframework.content.commons.store.UnsetContentParams.Disposition.Remove)) {
-                gridFs.delete(query(whereFilename().is(resource.getFilename())));
+            if (resource.exists() && params.disposition().equals(org.springframework.content.commons.store.UnsetContentParams.Disposition.Remove)) {
+                gridFs.delete(query(whereFilename().is(gridFsFilename(resource))));
             }
 
             // reset content fields
-            property.setContentId(entity, null, new org.springframework.content.commons.mappingcontext.Condition() {
-                @Override
-                public boolean matches(TypeDescriptor descriptor) {
-                    for (Annotation annotation : descriptor.getAnnotations()) {
-                        if ("jakarta.persistence.Id".equals(
-                            annotation.annotationType().getCanonicalName())
-                            || "org.springframework.data.annotation.Id"
-                            .equals(annotation.annotationType()
-                                .getCanonicalName())) {
-                            return false;
-                        }
+            property.setContentId(entity, null, descriptor -> {
+                for (Annotation annotation : descriptor.getAnnotations()) {
+                    String canonicalName = annotation.annotationType().getCanonicalName();
+                    if ("jakarta.persistence.Id".equals(canonicalName)
+                        || "org.springframework.data.annotation.Id".equals(canonicalName)) {
+                        return false;
                     }
-                    return true;
                 }
+                return true;
             });
             property.setContentLength(entity, BeanUtils.getDefaultValueForType(property.getContentLengthType().getType()));
         } catch (Exception ase) {
@@ -458,10 +418,15 @@ public class DefaultMongoStoreImpl<S, SID extends Serializable>
         return entity;
     }
 
+    private static String gridFsFilename(Resource resource) {
+        String filename = resource.getFilename();
+        assert filename != null;
+        return filename;
+    }
+
     protected Object convertToExternalContentIdType(S property, Object contentId) {
         if (placer.canConvert(TypeDescriptor.forObject(contentId),
-            TypeDescriptor.valueOf(BeanUtils.getFieldWithAnnotationType(property,
-                ContentId.class)))) {
+            TypeDescriptor.valueOf(BeanUtils.getFieldWithAnnotationType(property, ContentId.class)))) {
             contentId = placer.convert(contentId, TypeDescriptor.forObject(contentId),
                 TypeDescriptor.valueOf(BeanUtils.getFieldWithAnnotationType(property,
                     ContentId.class)));
@@ -471,8 +436,7 @@ public class DefaultMongoStoreImpl<S, SID extends Serializable>
     }
 
     private Object convertToExternalContentIdType(Object contentId, TypeDescriptor contentIdType) {
-        if (placer.canConvert(TypeDescriptor.forObject(contentId),
-            contentIdType)) {
+        if (placer.canConvert(TypeDescriptor.forObject(contentId), contentIdType)) {
             contentId = placer.convert(contentId, TypeDescriptor.forObject(contentId),
                 contentIdType);
             return contentId;

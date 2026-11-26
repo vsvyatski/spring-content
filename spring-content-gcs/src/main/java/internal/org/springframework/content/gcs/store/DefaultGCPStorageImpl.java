@@ -19,7 +19,7 @@ import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.commons.store.GetResourceParams;
 import org.springframework.content.commons.store.StoreAccessException;
 import org.springframework.content.commons.utils.BeanUtils;
-import org.springframework.content.commons.utils.Condition;
+import org.springframework.content.commons.utils.ContentStoreGetContentSupport;
 import org.springframework.content.commons.utils.PlacementService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.convert.TypeDescriptor;
@@ -34,8 +34,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-
 import static java.lang.String.format;
 
 @Transactional
@@ -95,7 +93,11 @@ public class DefaultGCPStorageImpl<S, SID extends Serializable>
             }
         }
 
+        @SuppressWarnings("unchecked")
         SID contentId = (SID) BeanUtils.getFieldWithAnnotation(entity, ContentId.class);
+        if (contentId == null) {
+            return null;
+        }
         return this.getResource(contentId);
     }
 
@@ -106,26 +108,34 @@ public class DefaultGCPStorageImpl<S, SID extends Serializable>
 
     @Override
     public Resource getResource(S entity, PropertyPath propertyPath, GetResourceParams params) {
+        if (entity == null) {
+            return null;
+        }
+
         ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.name());
         if (property == null) {
             throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.name()));
         }
 
-        if (entity == null)
-            return null;
-
+        Object rawContentId = property.getContentId(entity);
         TypeDescriptor contentPropertyInfoType = ContentPropertyInfoTypeDescriptor.withGenerics(entity, property);
         if (placementService.canConvert(contentPropertyInfoType, TypeDescriptor.valueOf(BlobId.class))) {
-            ContentPropertyInfo<S, SID> contentPropertyInfo = new ContentPropertyInfo<>(entity,
-                (SID) property.getContentId(entity), propertyPath, property);
-            BlobId blobId = (BlobId) placementService.convert(contentPropertyInfo, contentPropertyInfoType, TypeDescriptor.valueOf(BlobId.class));
+            @SuppressWarnings("unchecked")
+            ContentPropertyInfo<S, SID> contentPropertyInfo =
+                new ContentPropertyInfo<>(entity, (SID) rawContentId, propertyPath, property);
+            BlobId blobId = (BlobId) placementService.convert(contentPropertyInfo, contentPropertyInfoType,
+                TypeDescriptor.valueOf(BlobId.class));
 
             if (blobId != null) {
                 return this.getResourceInternal(blobId);
             }
         }
 
-        SID contentId = (SID) property.getContentId(entity);
+        if (rawContentId == null) {
+            return null;
+        }
+        @SuppressWarnings("unchecked")
+        SID contentId = (SID) rawContentId;
         return this.getResource(contentId);
     }
 
@@ -140,7 +150,7 @@ public class DefaultGCPStorageImpl<S, SID extends Serializable>
             location = placementService.convert(objectId, String.class);
         }
         assert location != null;
-        location = absolutify(bucket, location);
+        location = makeAbsolute(bucket, location);
 
         Resource resource = loader.getResource(location);
         return new GCSResource(client, bucket, resource);
@@ -170,17 +180,15 @@ public class DefaultGCPStorageImpl<S, SID extends Serializable>
             throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.name()));
         }
 
-        property.setContentId(entity, null, new org.springframework.content.commons.mappingcontext.Condition() {
-            @Override
-            public boolean matches(TypeDescriptor descriptor) {
-                for (Annotation annotation : descriptor.getAnnotations()) {
-                    if ("jakarta.persistence.Id".equals(annotation.annotationType().getCanonicalName())
-                        || "org.springframework.data.annotation.Id".equals(annotation.annotationType().getCanonicalName())) {
-                        return false;
-                    }
+        property.setContentId(entity, null, descriptor -> {
+            for (Annotation annotation : descriptor.getAnnotations()) {
+                String canonicalName = annotation.annotationType().getCanonicalName();
+                if ("jakarta.persistence.Id".equals(canonicalName)
+                    || "org.springframework.data.annotation.Id".equals(canonicalName)) {
+                    return false;
                 }
-                return true;
             }
+            return true;
         });
     }
 
@@ -319,47 +327,40 @@ public class DefaultGCPStorageImpl<S, SID extends Serializable>
     @Transactional
     @Override
     public InputStream getContent(S entity) {
-        if (entity == null)
+        if (entity == null) {
             return null;
-
-        Resource resource = this.getResource(entity);
-
-        try {
-            if (resource != null && resource.exists()) {
-                return resource.getInputStream();
-            }
-        } catch (IOException e) {
-            logger.error(format("Unexpected error getting content for entity %s", entity), e);
-            throw new StoreAccessException(format("Getting content for entity %s", entity), e);
         }
 
-        return null;
+        Object contentId = BeanUtils.getFieldWithAnnotation(entity, ContentId.class);
+        if (contentId == null) {
+            return null;
+        }
+
+        Resource resource = this.getResource(entity);
+        return ContentStoreGetContentSupport.openContentStream(
+            entity, ContentStoreGetContentSupport.propertyPathLabel(null), contentId, resource, "GCS object");
     }
 
     @Transactional
     @Override
     public InputStream getContent(S entity, PropertyPath propertyPath) {
+        if (entity == null) {
+            return null;
+        }
 
         ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.name());
         if (property == null) {
             throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.name()));
         }
 
-        if (entity == null)
+        Object contentId = property.getContentId(entity);
+        if (contentId == null) {
             return null;
-
-        Resource resource = this.getResource(entity, propertyPath);
-
-        try {
-            if (resource != null && resource.exists()) {
-                return resource.getInputStream();
-            }
-        } catch (IOException e) {
-            logger.error(format("Unexpected error getting content for entity %s", entity), e);
-            throw new StoreAccessException(format("Getting content for entity %s", entity), e);
         }
 
-        return null;
+        Resource resource = this.getResource(entity, propertyPath);
+        return ContentStoreGetContentSupport.openContentStream(
+            entity, ContentStoreGetContentSupport.propertyPathLabel(propertyPath), contentId, resource, "GCS object");
     }
 
     @Transactional
@@ -371,22 +372,16 @@ public class DefaultGCPStorageImpl<S, SID extends Serializable>
         deleteIfExists(entity);
 
         // reset content fields
-        BeanUtils.setFieldWithAnnotationConditionally(entity, ContentId.class, null,
-            new Condition() {
-                @Override
-                public boolean matches(Field field) {
-                    for (Annotation annotation : field.getAnnotations()) {
-                        if ("jakarta.persistence.Id".equals(
-                            annotation.annotationType().getCanonicalName())
-                            || "org.springframework.data.annotation.Id"
-                            .equals(annotation.annotationType()
-                                .getCanonicalName())) {
-                            return false;
-                        }
-                    }
-                    return true;
+        BeanUtils.setFieldWithAnnotationConditionally(entity, ContentId.class, null, field -> {
+            for (Annotation annotation : field.getAnnotations()) {
+                String canonicalName = annotation.annotationType().getCanonicalName();
+                if ("jakarta.persistence.Id".equals(canonicalName)
+                    || "org.springframework.data.annotation.Id".equals(canonicalName)) {
+                    return false;
                 }
-            });
+            }
+            return true;
+        });
 
         Class<?> contentLenType = BeanUtils.getFieldWithAnnotationType(entity, ContentLength.class);
         if (contentLenType != null) {
@@ -404,13 +399,14 @@ public class DefaultGCPStorageImpl<S, SID extends Serializable>
 
     @Override
     public S unsetContent(S entity, PropertyPath propertyPath, org.springframework.content.commons.store.UnsetContentParams params) {
+        if (entity == null) {
+            return null;
+        }
+
         ContentProperty property = this.mappingContext.getContentProperty(entity.getClass(), propertyPath.name());
         if (property == null) {
             throw new StoreAccessException(String.format("Content property %s does not exist", propertyPath.name()));
         }
-
-        if (entity == null)
-            return entity;
 
         Resource resource = this.getResource(entity, propertyPath);
         if (resource != null && resource.exists() && resource instanceof DeletableResource && params.disposition().equals(org.springframework.content.commons.store.UnsetContentParams.Disposition.Remove)) {
@@ -425,20 +421,15 @@ public class DefaultGCPStorageImpl<S, SID extends Serializable>
 
         // reset content fields
         if (resource != null) {
-            property.setContentId(entity, null, new org.springframework.content.commons.mappingcontext.Condition() {
-                @Override
-                public boolean matches(TypeDescriptor descriptor) {
-                    for (Annotation annotation : descriptor.getAnnotations()) {
-                        if ("jakarta.persistence.Id".equals(
-                            annotation.annotationType().getCanonicalName())
-                            || "org.springframework.data.annotation.Id"
-                            .equals(annotation.annotationType()
-                                .getCanonicalName())) {
-                            return false;
-                        }
+            property.setContentId(entity, null, descriptor -> {
+                for (Annotation annotation : descriptor.getAnnotations()) {
+                    String canonicalName = annotation.annotationType().getCanonicalName();
+                    if ("jakarta.persistence.Id".equals(canonicalName)
+                        || "org.springframework.data.annotation.Id".equals(canonicalName)) {
+                        return false;
                     }
-                    return true;
                 }
+                return true;
             });
             property.setContentLength(entity, BeanUtils.getDefaultValueForType(property.getContentLengthType().getType()));
         }
@@ -446,8 +437,8 @@ public class DefaultGCPStorageImpl<S, SID extends Serializable>
         return entity;
     }
 
-    private String absolutify(String bucket, String location) {
-        String locationToUse = null;
+    private static String makeAbsolute(String bucket, String location) {
+        String locationToUse;
         Assert.state(!location.startsWith("gs://"), "Only gs:// locations supported");
         if (location.startsWith("/")) {
             locationToUse = location.substring(1);
