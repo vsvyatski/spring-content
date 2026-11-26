@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.NullValueInNestedPathException;
+import org.jspecify.annotations.Nullable;
 import org.springframework.content.commons.store.StoreEntityValidation;
 import org.springframework.core.convert.TypeDescriptor;
 
@@ -94,7 +95,7 @@ public class ContentProperty {
         }
     }
 
-    public void setContentId(Object entity, Object value, Condition condition) {
+    public void setContentId(Object entity, @Nullable Object value, @Nullable Condition condition) {
         if (contentIdPropertyPath == null) {
             return;
         }

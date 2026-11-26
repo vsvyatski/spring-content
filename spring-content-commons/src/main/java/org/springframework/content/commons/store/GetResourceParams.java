@@ -1,4 +1,6 @@
 package org.springframework.content.commons.store;
 
-public record GetResourceParams(String range) {
+import org.jspecify.annotations.Nullable;
+
+public record GetResourceParams(@Nullable String range) {
 }

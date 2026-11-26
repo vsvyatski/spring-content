@@ -6,7 +6,9 @@ import org.springframework.content.commons.store.GetResourceParams;
 import org.springframework.content.commons.store.SetContentParams;
 import org.springframework.content.commons.store.StoreEntityValidation;
 import org.springframework.content.commons.store.UnsetContentParams;
+import org.springframework.core.io.Resource;
 
+import java.io.InputStream;
 import java.lang.reflect.Method;
 
 /**
@@ -55,7 +57,14 @@ final class StoreEntityArguments {
                 StoreEntityValidation.requireSetContentParams(null);
             } else if (parameterType == UnsetContentParams.class) {
                 StoreEntityValidation.requireUnsetContentParams(null);
+            } else if (parameterType == InputStream.class) {
+                StoreEntityValidation.requireContentInputStream(null);
+            } else if (parameterType == Resource.class) {
+                StoreEntityValidation.requireContentResource(null);
             }
+        }
+        if ("associate".equals(method.getName()) && args[args.length - 1] == null) {
+            StoreEntityValidation.requireContentId(null);
         }
     }
 

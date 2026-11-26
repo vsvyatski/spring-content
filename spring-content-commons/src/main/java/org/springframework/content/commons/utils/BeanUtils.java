@@ -1,5 +1,6 @@
 package org.springframework.content.commons.utils;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.BeansException;
@@ -149,39 +150,6 @@ public final class BeanUtils {
         return null;
     }
 
-    public static Object[] getFieldsWithAnnotation(Object domainObj, Class<? extends Annotation> annotationClass) {
-
-        List<Field> fields = new ArrayList<>();
-        List<Object> values = new ArrayList<>();
-
-        PropertyDescriptor[] descriptors = new BeanWrapperImpl(domainObj).getPropertyDescriptors();
-        for (PropertyDescriptor descriptor : descriptors) {
-            Field candidate = getField(domainObj.getClass(), descriptor.getName());
-            if (candidate != null) {
-                if (candidate.getAnnotation(annotationClass) != null) {
-                    try {
-                        values.add(candidate.get(domainObj));
-                        fields.add(candidate);
-                    } catch (IllegalAccessException ignored) {
-                    }
-                }
-            }
-        }
-
-        for (Field field : getAllFields(domainObj.getClass())) {
-            if (field.getAnnotation(annotationClass) != null) {
-                if (!fields.contains(field)) {
-                    try {
-                        values.add(field.get(domainObj));
-                        fields.add(field);
-                    } catch (IllegalAccessException ignored) {
-                    }
-                }
-            }
-        }
-        return values.toArray();
-    }
-
     /**
      * Sets object's field annotated with annotationClass to value.
      *
@@ -190,7 +158,7 @@ public final class BeanUtils {
      * @param value           the value to set
      */
     public static void setFieldWithAnnotation(Object domainObj,
-                                              Class<? extends Annotation> annotationClass, Object value) {
+                                              Class<? extends Annotation> annotationClass, @Nullable Object value) {
         setFieldWithAnnotationConditionally(domainObj, annotationClass, value,
             MATCHING_CONDITION);
     }
@@ -205,12 +173,12 @@ public final class BeanUtils {
      * @param condition       the condition that must be satisfied to allow the match
      */
     public static void setFieldWithAnnotationConditionally(Object domainObj,
-                                                           Class<? extends Annotation> annotationClass, Object value,
-                                                           Condition condition) {
+                                                           Class<? extends Annotation> annotationClass,
+                                                           @Nullable Object value, @Nullable Condition condition) {
 
         Field field = findFieldWithAnnotation(domainObj, annotationClass);
         if (field != null && field.getAnnotation(annotationClass) != null
-            && condition.matches(field)) {
+            && (condition == null || condition.matches(field))) {
             try {
                 PropertyDescriptor descriptor = org.springframework.beans.BeanUtils
                     .getPropertyDescriptor(domainObj.getClass(), field.getName());
