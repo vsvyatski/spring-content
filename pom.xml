@@ -73,6 +73,7 @@
     <uuid-creator.version>6.1.1</uuid-creator.version>
 
     <!-- Test dependencies -->
+    <google-cloud-nio.version>0.128.3</google-cloud-nio.version>
     <jsoup.version>1.22.1</jsoup.version>
     <mockito.version>5.24.0</mockito.version>
     <mongodb-driver-legacy.version>5.5.1</mongodb-driver-legacy.version>

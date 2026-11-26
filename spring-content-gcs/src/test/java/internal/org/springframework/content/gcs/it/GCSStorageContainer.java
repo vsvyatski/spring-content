@@ -1,7 +1,7 @@
 package internal.org.springframework.content.gcs.it;
 
 import com.google.cloud.storage.Storage;
-import internal.org.springframework.content.gcs.it.support.InMemoryStorage;
+import com.google.cloud.storage.contrib.nio.testing.LocalStorageHelper;
 
 /**
  * Shared in-memory GCS {@link Storage} for module integration tests (no Docker).
@@ -10,7 +10,7 @@ import internal.org.springframework.content.gcs.it.support.InMemoryStorage;
  */
 public final class GCSStorageContainer {
 
-    private static final Storage STORAGE = InMemoryStorage.getOptions().getService();
+    private static final Storage STORAGE = LocalStorageHelper.getOptions().getService();
 
     private GCSStorageContainer() {
     }
