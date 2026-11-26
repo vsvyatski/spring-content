@@ -76,7 +76,6 @@
     <google-cloud-nio.version>0.140.0</google-cloud-nio.version>
     <jsoup.version>1.22.1</jsoup.version>
     <mockito.version>5.24.0</mockito.version>
-    <mongodb-driver-legacy.version>5.5.1</mongodb-driver-legacy.version>
     <pdfbox.version>3.0.8</pdfbox.version>
     <pdfbox-tools.version>2.0.35</pdfbox-tools.version>
     <rest-assured.version>5.5.7</rest-assured.version>
