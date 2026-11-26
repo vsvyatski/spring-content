@@ -55,7 +55,7 @@
     <spring-cloud.version>2025.1.1</spring-cloud.version>
     <testcontainers.version>2.0.5</testcontainers.version>
     <spring-cloud-azure.version>7.4.0</spring-cloud-azure.version>
-    <spring-cloud-gcp.version>6.2.3</spring-cloud-gcp.version>
+    <spring-cloud-gcp.version>8.3.1</spring-cloud-gcp.version>
 
     <!-- Dependencies -->
     <aws-sdk-s3.version>2.57.11</aws-sdk-s3.version>
@@ -73,7 +73,7 @@
     <uuid-creator.version>6.1.1</uuid-creator.version>
 
     <!-- Test dependencies -->
-    <google-cloud-nio.version>0.128.3</google-cloud-nio.version>
+    <google-cloud-nio.version>0.140.0</google-cloud-nio.version>
     <jsoup.version>1.22.1</jsoup.version>
     <mockito.version>5.24.0</mockito.version>
     <mongodb-driver-legacy.version>5.5.1</mongodb-driver-legacy.version>
