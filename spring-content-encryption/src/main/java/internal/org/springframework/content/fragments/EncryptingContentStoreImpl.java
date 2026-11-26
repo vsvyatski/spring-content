@@ -1,22 +1,16 @@
 package internal.org.springframework.content.fragments;
 
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.content.commons.fragments.ContentStoreAware;
 import org.springframework.content.commons.mappingcontext.ContentProperty;
 import org.springframework.content.commons.mappingcontext.MappingContext;
 import org.springframework.content.commons.property.PropertyPath;
-import org.springframework.content.commons.store.ContentStore;
-import org.springframework.content.commons.store.GetResourceParams;
-import org.springframework.content.commons.store.SetContentParams;
-import org.springframework.content.commons.store.Store;
-import org.springframework.content.commons.store.UnsetContentParams;
-import org.springframework.content.commons.store.StoreAccessException;
-import org.springframework.content.commons.store.StoreEntityValidation;
+import org.springframework.content.commons.store.*;
 import org.springframework.content.encryption.config.EncryptingContentStoreConfigurer;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
-import org.springframework.util.Assert;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,62 +21,63 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+@NullMarked
 public class EncryptingContentStoreImpl<S, SID extends Serializable>
     implements ContentStore<S, SID>, ContentStoreAware {
 
     private final MappingContext mappingContext;
     private final List<EncryptingContentStoreConfigurer<?>> configurers;
-    private ContentCryptoService<S, ?> cryptoService;
-    private ContentStore<S, SID> storeDelegate;
+    private @Nullable ContentCryptoService<S, ?> cryptoService;
+    private @Nullable ContentStore<S, SID> storeDelegate;
 
     @Autowired
     public EncryptingContentStoreImpl(
-        @Autowired(required = false) MappingContext mappingContext,
-        List<EncryptingContentStoreConfigurer<?>> configurers
-    ) {
-        this.mappingContext = Optional.ofNullable(mappingContext).orElseGet(() -> new MappingContext("/", "."));
-        this.configurers = configurers;
+        @Autowired(required = false) @Nullable MappingContext mappingContext,
+        @Autowired(required = false) @Nullable List<EncryptingContentStoreConfigurer<?>> configurers) {
+        this.mappingContext = mappingContext != null ? mappingContext : new MappingContext("/", ".");
+        this.configurers = configurers != null ? configurers : List.of();
     }
 
     @Override
-    public S setContent(@NonNull S o, InputStream inputStream) {
+    public S setContent(S o, InputStream inputStream) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public S setContent(@NonNull S entity, @NonNull PropertyPath propertyPath, InputStream content) {
+    public S setContent(S entity, PropertyPath propertyPath, InputStream content) {
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requirePropertyPath(propertyPath);
+        StoreEntityValidation.requireContentInputStream(content);
         return requireCryptoService().encrypt(entity, propertyPath, content,
             (e, s) -> requireStoreDelegate().setContent(e, propertyPath, s));
     }
 
     @Override
-    public S setContent(@NonNull S entity, @NonNull PropertyPath propertyPath, InputStream inputStream, long l) {
+    public S setContent(S entity, PropertyPath propertyPath, InputStream inputStream, long l) {
         return this.setContent(entity, propertyPath, inputStream,
             new SetContentParams(l, true, SetContentParams.ContentDisposition.Overwrite));
     }
 
     @Override
-    public S setContent(@NonNull S entity, @NonNull PropertyPath propertyPath, InputStream content,
-            @NonNull SetContentParams params) {
+    public S setContent(S entity, PropertyPath propertyPath, InputStream content, SetContentParams params) {
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requirePropertyPath(propertyPath);
         StoreEntityValidation.requireSetContentParams(params);
+        StoreEntityValidation.requireContentInputStream(content);
         return requireCryptoService().encrypt(entity, propertyPath, content,
             (e, s) -> requireStoreDelegate().setContent(e, propertyPath, s, params));
     }
 
     @Override
-    public S setContent(@NonNull S entity, Resource resource) {
+    public S setContent(S entity, Resource resource) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public S setContent(@NonNull S entity, @NonNull PropertyPath propertyPath, Resource resource) {
+    public S setContent(S entity, PropertyPath propertyPath, Resource resource) {
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requirePropertyPath(propertyPath);
-        Assert.notNull(resource, "resource must not be null");
+        StoreEntityValidation.requireContentResource(resource);
 
         try {
             return requireCryptoService().encrypt(entity, propertyPath, resource.getInputStream(),
@@ -93,19 +88,18 @@ public class EncryptingContentStoreImpl<S, SID extends Serializable>
     }
 
     @Override
-    public S unsetContent(@NonNull S entity) {
+    public S unsetContent(S entity) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public S unsetContent(@NonNull S entity, @NonNull PropertyPath propertyPath) {
+    public S unsetContent(S entity, PropertyPath propertyPath) {
         return unsetContent(entity, propertyPath,
             new UnsetContentParams(UnsetContentParams.Disposition.Remove));
     }
 
     @Override
-    public S unsetContent(@NonNull S entity, @NonNull PropertyPath propertyPath,
-            @NonNull UnsetContentParams params) {
+    public S unsetContent(S entity, PropertyPath propertyPath, UnsetContentParams params) {
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requirePropertyPath(propertyPath);
         StoreEntityValidation.requireUnsetContentParams(params);
@@ -121,12 +115,12 @@ public class EncryptingContentStoreImpl<S, SID extends Serializable>
     }
 
     @Override
-    public InputStream getContent(@NonNull S entity) {
+    public @Nullable InputStream getContent(S entity) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public InputStream getContent(@NonNull S entity, @NonNull PropertyPath propertyPath) throws IOException {
+    public @Nullable InputStream getContent(S entity, PropertyPath propertyPath) throws IOException {
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requirePropertyPath(propertyPath);
 
@@ -136,12 +130,12 @@ public class EncryptingContentStoreImpl<S, SID extends Serializable>
     }
 
     @Override
-    public Resource getResource(@NonNull S entity) {
+    public @Nullable Resource getResource(S entity) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Resource getResource(@NonNull S entity, @NonNull PropertyPath propertyPath) {
+    public @Nullable Resource getResource(S entity, PropertyPath propertyPath) {
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requirePropertyPath(propertyPath);
 
@@ -150,7 +144,7 @@ public class EncryptingContentStoreImpl<S, SID extends Serializable>
     }
 
     @Override
-    public Resource getResource(@NonNull S entity, @NonNull PropertyPath propertyPath, @NonNull GetResourceParams params) {
+    public @Nullable Resource getResource(S entity, PropertyPath propertyPath, GetResourceParams params) {
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requirePropertyPath(propertyPath);
         StoreEntityValidation.requireGetResourceParams(params);
@@ -160,27 +154,27 @@ public class EncryptingContentStoreImpl<S, SID extends Serializable>
     }
 
     @Override
-    public void associate(@NonNull S entity, SID serializable) {
+    public void associate(S entity, SID serializable) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void associate(@NonNull S entity, @NonNull PropertyPath propertyPath, SID serializable) {
+    public void associate(S entity, PropertyPath propertyPath, SID serializable) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void unassociate(@NonNull S entity) {
+    public void unassociate(S entity) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void unassociate(@NonNull S entity, @NonNull PropertyPath propertyPath) {
+    public void unassociate(S entity, PropertyPath propertyPath) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Resource getResource(SID id) {
+    public @Nullable Resource getResource(SID id) {
         throw new UnsupportedOperationException();
     }
 
@@ -209,10 +203,6 @@ public class EncryptingContentStoreImpl<S, SID extends Serializable>
     }
 
     private void configure(Class<? extends Store<?>> storeInterfaceClass) {
-        if (configurers == null) {
-            return;
-        }
-
         EncryptingContentStoreConfigurationImpl<S> config = new EncryptingContentStoreConfigurationImpl<>();
         for (EncryptingContentStoreConfigurer<?> configurer : configurers) {
             Optional<Type> storeConfigurerType = Arrays.stream(configurer.getClass().getGenericInterfaces()).findFirst();
