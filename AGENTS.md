@@ -228,6 +228,8 @@ When changing a store implementation, run that module’s `*Test` and, if behavi
 - New `.java` files: Apache 2.0 header (copy from a neighboring file), class Javadoc with `@author`. Substantial edits:
   add `@author`.
 - Prefer existing utilities: `BeanUtils`, `PlacementService`, `MappingContext`, `PropertyPath`, Commons IO.
+- Use imports and simple type names in Java; avoid inline fully qualified names unless two simple names clash or a
+  framework literal requires the full string (see `.cursor/rules/java-imports.mdc`).
 - Store mutators that change content are `@LockParticipant` so versioning/locking still applies.
 - Do not add new public APIs in `internal.*`. Do not break binary compatibility of public store interfaces without
   deprecation.

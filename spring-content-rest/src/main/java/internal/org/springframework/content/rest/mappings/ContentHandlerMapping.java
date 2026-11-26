@@ -33,20 +33,20 @@ public class ContentHandlerMapping extends StoreAwareHandlerMapping {
 
     private static final MediaType HAL_JSON = MediaType.parseMediaType("application/hal+json");
     private final ContentPropertyToRequestMappingContext requestMappingContext;
-    private Exclusions exclusions = null;
+    private Exclusions exclusions;
     private final Stores contentStores;
-    private EntityResolvers entityResolvers = null;
+    private final EntityResolvers entityResolvers;
 
     public ContentHandlerMapping(Stores contentStores, EntityResolvers entityResolvers, ContentPropertyToRequestMappingContext requestMappingContext, RestConfiguration config) {
         super(config);
-        initExclusions(exclusions, config);
         this.contentStores = contentStores;
         this.entityResolvers = entityResolvers;
         this.requestMappingContext = requestMappingContext;
+        initExclusions(config);
         setOrder(Ordered.LOWEST_PRECEDENCE - 200);
     }
 
-    private void initExclusions(Exclusions exclusions, RestConfiguration config) {
+    private void initExclusions(RestConfiguration config) {
         this.exclusions = config.shortcutExclusions();
         if (this.exclusions.isEmpty()) {
             this.exclusions
@@ -104,11 +104,9 @@ public class ContentHandlerMapping extends StoreAwareHandlerMapping {
                     if (entityResolvers.hasPropertyFor(resolvedStoreLookupPath)) {
                         return super.lookupHandlerMethod(lookupPath, request);
                     }
-                } else if (this.getConfiguration().shortcutLinks()) {
+                } else if (this.getConfiguration().shortcutLinks() && !isExcludedShortcutContentPropertyRequest(request)) {
                     // for backward compatibility
-                    if (info2 != null && !isExcludedShortcutContentPropertyRequest(request)) {
-                        return super.lookupHandlerMethod(lookupPath, request);
-                    }
+                    return super.lookupHandlerMethod(lookupPath, request);
                 }
             }
         }
@@ -174,8 +172,7 @@ public class ContentHandlerMapping extends StoreAwareHandlerMapping {
     }
 
     private boolean isFullyQualifiedContentPropertyRequest(String[] path, StoreInfo info2) {
-        return (AssociativeStore.class.isAssignableFrom(info2.getInterface()) ||
-            org.springframework.content.commons.store.AssociativeStore.class.isAssignableFrom(info2.getInterface())) && path.length >= 4;
+        return AssociativeStore.class.isAssignableFrom(info2.getInterface()) && path.length >= 4;
     }
 
     @Override
@@ -192,7 +189,7 @@ public class ContentHandlerMapping extends StoreAwareHandlerMapping {
         StoreType typeAnnotation = AnnotationUtils.findAnnotation(method,
             StoreType.class);
         if (typeAnnotation != null) {
-            return new StoreCondition(typeAnnotation, this.contentStores, method, this.getConfiguration().getBaseUri());
+            return new StoreCondition(typeAnnotation, this.contentStores, this.getConfiguration().getBaseUri());
         }
         return null;
     }
@@ -200,21 +197,24 @@ public class ContentHandlerMapping extends StoreAwareHandlerMapping {
     @Target(ElementType.METHOD)
     @Retention(RetentionPolicy.RUNTIME)
     @Documented
-    public static @interface StoreType {
-        String value() default "store";
+    public @interface StoreType {
+
+        String STORE = "store";
+
+        String CONTENT_STORE = "contentStore";
+
+        String value() default STORE;
     }
 
     public static class StoreCondition implements RequestCondition<StoreCondition> {
 
-        private String storeType = "store";
+        private final String storeType;
         private final Stores stores;
-        private final Method method;
         private final URI baseUri;
 
-        public StoreCondition(StoreType typeAnnotation, Stores stores, Method method, URI baseUri) {
-            storeType = typeAnnotation.value();
+        public StoreCondition(StoreType typeAnnotation, Stores stores, URI baseUri) {
+            this.storeType = typeAnnotation.value();
             this.stores = stores;
-            this.method = method;
             this.baseUri = baseUri;
         }
 
@@ -225,69 +225,61 @@ public class ContentHandlerMapping extends StoreAwareHandlerMapping {
 
         @Override
         public StoreCondition getMatchingCondition(@NonNull HttpServletRequest request) {
-            String path = new UrlPathHelper().getPathWithinApplication(request);
-
-            String storeLookupPath = StoreUtils.storeLookupPath(path, baseUri);
-
-            String[] segments = storeLookupPath.split("/");
-            if (segments.length < 3) {
-                return null;
-            }
-            StoreInfo info = stores.getStore(Store.class, StoreUtils.withStorePath(segments[1]));
-            if (info != null
-                && ((Store.class.isAssignableFrom(info.getInterface())
-                || org.springframework.content.commons.store.Store.class.isAssignableFrom(info.getInterface()))
-                && "store".equals(storeType))
-                || ((ContentStore.class.isAssignableFrom(info.getInterface())
-                || org.springframework.content.commons.store.ContentStore.class.isAssignableFrom(info.getInterface()))
-                && "contentstore".equals(storeType))
-            ) {
-                return this;
-            }
-
-            return null;
+            return isMappingForRequest(request) ? this : null;
         }
 
         @Override
         public int compareTo(@NonNull StoreCondition other, @NonNull HttpServletRequest request) {
-            if (this.isMappingForRequest(request) && !other.isMappingForRequest(request))
+            boolean thisMatches = isMappingForRequest(request);
+            boolean otherMatches = other.isMappingForRequest(request);
+            if (thisMatches && !otherMatches) {
                 return 1;
-            else if (!this.isMappingForRequest(request) && other.isMappingForRequest(request))
+            }
+            if (!thisMatches && otherMatches) {
                 return -1;
-            else {
-                String path = new UrlPathHelper().getPathWithinApplication(request);
-                String storeLookupPath = StoreUtils.storeLookupPath(path, baseUri);
-
-                String filename = FilenameUtils.getName(storeLookupPath);
-                String extension = FilenameUtils.getExtension(filename);
-                if (extension != null && "store".equals(storeType)) {
-                    return -1;
-                } else if (extension != null && "contentstore".equals(storeType)) {
-                    return 1;
-                }
+            }
+            String storeLookupPath = storeLookupPath(request);
+            if (storeLookupPath == null) {
                 return 0;
             }
+            String extension = FilenameUtils.getExtension(FilenameUtils.getName(storeLookupPath));
+            if (extension.isEmpty()) {
+                return 0;
+            }
+            if (StoreType.STORE.equals(storeType)) {
+                return -1;
+            }
+            if (StoreType.CONTENT_STORE.equals(storeType)) {
+                return 1;
+            }
+            return 0;
         }
 
         public boolean isMappingForRequest(HttpServletRequest request) {
-            String path = new UrlPathHelper().getPathWithinApplication(request);
-            String storeLookupPath = StoreUtils.storeLookupPath(path, baseUri);
-
+            String storeLookupPath = storeLookupPath(request);
+            if (storeLookupPath == null) {
+                return false;
+            }
             String[] segments = storeLookupPath.split("/");
             if (segments.length < 3) {
                 return false;
             }
             StoreInfo info = stores.getStore(Store.class, StoreUtils.withStorePath(segments[1]));
-            if (info != null
-                && ((Store.class.isAssignableFrom(info.getInterface())
-                || org.springframework.content.commons.store.Store.class.isAssignableFrom(info.getInterface()))
-                && "store".equals(storeType))
-                || ((ContentStore.class.isAssignableFrom(info.getInterface())
-                || org.springframework.content.commons.store.ContentStore.class.isAssignableFrom(info.getInterface()))
-                && "contentstore".equals(storeType))) {
-                return true;
+            return matchesStoreInterface(info);
+        }
+
+        private String storeLookupPath(HttpServletRequest request) {
+            String path = new UrlPathHelper().getPathWithinApplication(request);
+            return StoreUtils.storeLookupPath(path, baseUri);
+        }
+
+        private boolean matchesStoreInterface(StoreInfo info) {
+            if (info == null) {
+                return false;
             }
-            return false;
+            Class<?> storeInterface = info.getInterface();
+            return (Store.class.isAssignableFrom(storeInterface) && StoreType.STORE.equals(storeType))
+                || (ContentStore.class.isAssignableFrom(storeInterface) && StoreType.CONTENT_STORE.equals(storeType));
         }
     }
 }

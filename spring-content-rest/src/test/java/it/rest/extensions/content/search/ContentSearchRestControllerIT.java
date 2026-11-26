@@ -776,7 +776,9 @@ public class ContentSearchRestControllerIT {
 
             List<SearchSeparateContentIdEntity> entities = new ArrayList<>();
 
-            CrudRepository<?, ?> repoSpy = mock(CrudRepository.class, AdditionalAnswers.delegatesTo(entityWithSeparateRepository));
+            @SuppressWarnings("unchecked")
+            CrudRepository<SearchSeparateContentIdEntity, String> repoSpy = mock(CrudRepository.class,
+                AdditionalAnswers.delegatesTo(entityWithSeparateRepository));
 
             ContentSearchRestController.fetchEntitiesInBatches(repoSpy, ids, entities);
 

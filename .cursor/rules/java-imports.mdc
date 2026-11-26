@@ -1,0 +1,22 @@
+---
+description: Prefer imports over inline fully qualified Java type names
+globs: "**/*.java"
+alwaysApply: false
+---
+
+# Java imports
+
+Use **imports and simple type names** in method bodies, parameters, and `extends`/`implements` clauses.
+
+**Do not** spell out `org.springframework.content…` or other package paths in code when a normal import works.
+
+**Keep a fully qualified name only when:**
+
+- Two types share the same simple name in one file (e.g. `jakarta.persistence.Id` and
+  `org.springframework.data.annotation.Id` — qualify one of them).
+- The name is a string constant, annotation attribute, or framework literal that must stay qualified (e.g.
+  `@MethodSource("fully.qualified.Class#method")`, package scan strings).
+- Javadoc `{@link …}` or `@see` when linking to external types.
+
+Match neighboring style: `import org.springframework.content.commons.store.*` or explicit imports, not long inline
+references.

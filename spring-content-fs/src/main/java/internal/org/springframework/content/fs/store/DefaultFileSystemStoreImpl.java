@@ -8,6 +8,7 @@ import org.jspecify.annotations.NonNull;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.io.DeletableResource;
+import org.springframework.content.commons.mappingcontext.Condition;
 import org.springframework.content.commons.mappingcontext.ContentProperty;
 import org.springframework.content.commons.mappingcontext.MappingContext;
 import org.springframework.content.commons.property.PropertyPath;
@@ -207,7 +208,7 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable> implements 
 
         Object contentId = contentProperty.getContentId(property);
         if (contentId == null || params.disposition()
-            .equals(org.springframework.content.commons.store.SetContentParams.ContentDisposition.CreateNew)) {
+            .equals(SetContentParams.ContentDisposition.CreateNew)) {
 
             Serializable newId = UuidCreator.getTimeOrdered().toString();
 
@@ -387,7 +388,7 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable> implements 
     }
 
     private void setContentId(S entity, @NonNull PropertyPath propertyPath, SID contentId,
-                              org.springframework.content.commons.mappingcontext.Condition condition) {
+                              Condition condition) {
         StoreEntityValidation.requireEntity(entity);
         Assert.notNull(propertyPath, "propertyPath must not be null");
 

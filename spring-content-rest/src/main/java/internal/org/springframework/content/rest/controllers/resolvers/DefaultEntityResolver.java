@@ -5,6 +5,7 @@ import internal.org.springframework.content.rest.utils.RepositoryUtils;
 import internal.org.springframework.content.rest.utils.StoreUtils;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.content.commons.mappingcontext.ContentProperty;
@@ -21,6 +22,9 @@ import org.springframework.data.querydsl.binding.QuerydslPredicate;
 import org.springframework.data.repository.core.RepositoryInformation;
 import org.springframework.data.repository.support.Repositories;
 import org.springframework.data.repository.support.RepositoryInvoker;
+import org.springframework.data.rest.webmvc.BaseUri;
+import org.springframework.data.rest.webmvc.RootResourceInformation;
+import org.springframework.data.rest.webmvc.config.RootResourceInformationHandlerMethodArgumentResolver;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -28,17 +32,15 @@ import org.springframework.util.AntPathMatcher;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
-import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
 import java.security.Principal;
 import java.util.*;
@@ -49,17 +51,19 @@ public class DefaultEntityResolver implements EntityResolver {
 
     static {
         try {
-            ROOT_RESOURCE_INFORMATION_CLASS_PRESENT = DefaultEntityResolver.class.getClassLoader().loadClass("org.springframework.data.rest.webmvc.config.RootResourceInformationHandlerMethodArgumentResolver") != null;
-        } catch (ClassNotFoundException e) {
+            ROOT_RESOURCE_INFORMATION_CLASS_PRESENT = DefaultEntityResolver.class.getClassLoader().loadClass(
+                "org.springframework.data.rest.webmvc.config.RootResourceInformationHandlerMethodArgumentResolver"
+            ) != null;
+        } catch (ClassNotFoundException ignored) {
         }
     }
 
-    private ApplicationContext context;
-    private Repositories repositories;
-    private Stores stores;
-    private ConversionService converters;
-    private String mapping;
-    private MappingContext mappingContext;
+    private final ApplicationContext context;
+    private final Repositories repositories;
+    private final Stores stores;
+    private final ConversionService converters;
+    private final String mapping;
+    private final MappingContext mappingContext;
 
     public DefaultEntityResolver(ApplicationContext context, Repositories repositories, Stores stores, ConversionService converters, String mapping, MappingContext mappingContext) {
         this.context = context;
@@ -70,8 +74,8 @@ public class DefaultEntityResolver implements EntityResolver {
         this.mappingContext = mappingContext;
     }
 
-    public static NativeWebRequest nativeWebRequestForGetItemResource(String pathInfo) {
-        return new GetItemResourceNativeWebRequest(pathInfo);
+    public static NativeWebRequest nativeWebRequestForGetItemResource(String requestUri) {
+        return new ServletWebRequest(new GetItemResourceHttpServletRequest(requestUri));
     }
 
     @Override
@@ -95,7 +99,7 @@ public class DefaultEntityResolver implements EntityResolver {
             throw new IllegalArgumentException(String.format("Store for path %s not found", store));
         }
 
-        Object domainObj = null;
+        Object domainObj;
         try {
             try {
                 domainObj = findOne(repositories, info, info.getDomainObjectClass(), repository, id);
@@ -109,6 +113,9 @@ public class DefaultEntityResolver implements EntityResolver {
         String propertyPath = matcher.extractPathWithinPattern(this.mapping, pathInfo);
         if (!StringUtils.hasText(propertyPath)) {
             ContentProperty property = selectPrimaryContentProperty(info);
+            if (property == null) {
+                throw new ResourceNotFoundException();
+            }
             propertyPath = property.getContentPropertyPath();
         }
 
@@ -119,10 +126,6 @@ public class DefaultEntityResolver implements EntityResolver {
     public boolean hasPropertyFor(String pathInfo) {
 
         AntPathMatcher matcher = new AntPathMatcher();
-        Map<String, String> variables = matcher.extractUriTemplateVariables(this.mapping, pathInfo);
-        String repository = variables.get("repository");
-        String id = variables.get("id");
-
         String[] pathSegments = pathInfo.split("/");
         String store = pathSegments[1];
 
@@ -132,7 +135,7 @@ public class DefaultEntityResolver implements EntityResolver {
         }
 
         String propertyPath = matcher.extractPathWithinPattern(this.mapping, pathInfo);
-        if (propertyPath == null) {
+        if (!StringUtils.hasText(propertyPath)) {
             propertyPath = "";
         }
 
@@ -162,7 +165,7 @@ public class DefaultEntityResolver implements EntityResolver {
 
             RepositoryInvoker invoker;
             try {
-                invoker = resolveRootResourceInformation(info, repository, id, new ModelAndViewContainer(), new FakeWebBinderFactory());
+                invoker = resolveRootResourceInformation(info, repository, id, new ModelAndViewContainer());
                 if (invoker != null) {
                     domainObj = invoker.invokeFindById(id);
                 } else {
@@ -198,7 +201,7 @@ public class DefaultEntityResolver implements EntityResolver {
         Class<?> idClazz = ri.getIdType();
 
         Optional<Method> findOneMethod = ri.getCrudMethods().getFindOneMethod();
-        if (!findOneMethod.isPresent()) {
+        if (findOneMethod.isEmpty()) {
             throw new HttpRequestMethodNotSupportedException("fineOne");
         }
 
@@ -207,15 +210,18 @@ public class DefaultEntityResolver implements EntityResolver {
             oid = (Serializable) converters.convert(id, idClazz);
         }
 
-        return (Optional<Object>) ReflectionUtils.invokeMethod(findOneMethod.get(),
-            repositories.getRepositoryFor(domainObjClazz).get(),
-            oid);
+        Object repositoryBean = repositories.getRepositoryFor(domainObjClazz)
+            .orElseThrow(ResourceNotFoundException::new);
+        return (Optional<Object>) ReflectionUtils.invokeMethod(findOneMethod.get(), repositoryBean, oid);
     }
 
-    private RepositoryInvoker resolveRootResourceInformation(StoreInfo info, String repository, Serializable id, ModelAndViewContainer mavContainer, WebDataBinderFactory binderFactory)
-        throws Exception {
+    private RepositoryInvoker resolveRootResourceInformation(StoreInfo info, String repository, Serializable id,
+                                                             ModelAndViewContainer mavContainer) throws Exception {
 
-        Method m = ReflectionUtils.findMethod(RepositoryEntityControllerFacade.class, "getItemResource", org.springframework.data.rest.webmvc.RootResourceInformation.class);
+        Method m = ReflectionUtils.findMethod(RepositoryEntityControllerFacade.class, "getItemResource", RootResourceInformation.class);
+        if (m == null) {
+            throw new IllegalStateException("getItemResource method not found on RepositoryEntityControllerFacade");
+        }
         MethodParameter repoRequestMethodParameter = new MethodParameter(m, 0);
 
         RepositoryInformation ri = RepositoryUtils.findRepositoryInformation(repositories, info.getDomainObjectClass());
@@ -229,198 +235,70 @@ public class DefaultEntityResolver implements EntityResolver {
         }
 
         if (ri == null) {
-            throw new IllegalStateException(String.format("Unable to resolve root resource information for ", String.join("/", new String[]{repository, id.toString()})));
+            throw new IllegalStateException(String.format("Unable to resolve root resource information for %s",
+                String.join("/", repository, id.toString())));
         }
 
         String repo = RepositoryUtils.repositoryPath(ri);
 
         String repoUri = String.format("/%s/%s", repo, id);
-        org.springframework.data.rest.webmvc.BaseUri baseUri = context.getBean(org.springframework.data.rest.webmvc.BaseUri.class);
-        if (baseUri.equals(org.springframework.data.rest.webmvc.BaseUri.NONE) == false) {
-            repoUri = String.format("%s%s", baseUri.getUri().toString(), repoUri);
+        BaseUri baseUri = context.getBean(BaseUri.class);
+        if (!baseUri.equals(BaseUri.NONE)) {
+            repoUri = String.format("%s%s", baseUri.getUri(), repoUri);
         }
 
         NativeWebRequest repoRequestFacade = nativeWebRequestForGetItemResource(repoUri);
-        org.springframework.data.rest.webmvc.config.RootResourceInformationHandlerMethodArgumentResolver rootResourceInfoResolver = context.getBean(org.springframework.data.rest.webmvc.config.RootResourceInformationHandlerMethodArgumentResolver.class);
-        org.springframework.data.rest.webmvc.RootResourceInformation rri = rootResourceInfoResolver.resolveArgument(repoRequestMethodParameter, mavContainer, repoRequestFacade, binderFactory);
+        RootResourceInformationHandlerMethodArgumentResolver rootResourceInfoResolver =
+            context.getBean(RootResourceInformationHandlerMethodArgumentResolver.class);
+        RootResourceInformation rri = rootResourceInfoResolver.resolveArgument(
+            repoRequestMethodParameter, mavContainer, repoRequestFacade, null);
+        if (rri == null) {
+            return null;
+        }
         return rri.getInvoker();
     }
 
-    private ContentProperty selectPrimaryContentProperty(StoreInfo info) {
+    private @Nullable ContentProperty selectPrimaryContentProperty(StoreInfo info) {
         ContentProperty contentProperty = null;
         try {
             contentProperty = mappingContext.getContentProperties(info.getDomainObjectClass()).iterator().next();
-        } catch (NoSuchElementException nsee) {
+        } catch (NoSuchElementException ignored) {
         }
         return contentProperty;
     }
 
-    public static class FakeWebBinderFactory implements WebDataBinderFactory {
-
-        @Override
-        public WebDataBinder createBinder(NativeWebRequest webRequest, Object target, String objectName)
-            throws Exception {
-            return null;
-        }
-    }
-
-    public static class GetItemResourceNativeWebRequest implements NativeWebRequest {
-
-        private String pathInfo;
-
-        public GetItemResourceNativeWebRequest(String pathInfo) {
-            this.pathInfo = pathInfo;
-        }
-
-        @Override
-        public String getHeader(String headerName) {
-            return null;
-        }
-
-        @Override
-        public String[] getHeaderValues(String headerName) {
-            return null;
-        }
-
-        @Override
-        public Iterator<String> getHeaderNames() {
-            return null;
-        }
-
-        @Override
-        public String getParameter(String paramName) {
-            return null;
-        }
-
-        @Override
-        public String[] getParameterValues(String paramName) {
-            return null;
-        }
-
-        @Override
-        public Iterator<String> getParameterNames() {
-            return null;
-        }
-
-        @Override
-        public Map<String, String[]> getParameterMap() {
-            return Collections.emptyMap();
-        }
-
-        @Override
-        public Locale getLocale() {
-            return null;
-        }
-
-        @Override
-        public String getContextPath() {
-            return null;
-        }
-
-        @Override
-        public String getRemoteUser() {
-            return null;
-        }
-
-        @Override
-        public Principal getUserPrincipal() {
-            return null;
-        }
-
-        @Override
-        public boolean isUserInRole(String role) {
-            return false;
-        }
-
-        @Override
-        public boolean isSecure() {
-            return false;
-        }
-
-        @Override
-        public boolean checkNotModified(long lastModifiedTimestamp) {
-            return false;
-        }
-
-        @Override
-        public boolean checkNotModified(String etag) {
-            return false;
-        }
-
-        @Override
-        public boolean checkNotModified(String etag, long lastModifiedTimestamp) {
-            return false;
-        }
-
-        @Override
-        public String getDescription(boolean includeClientInfo) {
-            return null;
-        }
-
-        @Override
-        public Object getAttribute(String name, int scope) {
-            return null;
-        }
-
-        @Override
-        public void setAttribute(String name, Object value, int scope) {
-        }
-
-        @Override
-        public void removeAttribute(String name, int scope) {
-        }
-
-        @Override
-        public String[] getAttributeNames(int scope) {
-            return null;
-        }
-
-        @Override
-        public void registerDestructionCallback(String name, Runnable callback, int scope) {
-        }
-
-        @Override
-        public Object resolveReference(String key) {
-            return null;
-        }
-
-        @Override
-        public String getSessionId() {
-            return null;
-        }
-
-        @Override
-        public Object getSessionMutex() {
-            return null;
-        }
-
-        @Override
-        public Object getNativeRequest() {
-            return null;
-        }
-
-        @Override
-        public Object getNativeResponse() {
-            return null;
-        }
-
-        @Override
-        public <T> T getNativeRequest(Class<T> requiredType) {
-            return (T) new GetItemResourceHttpServletRequest(pathInfo);
-        }
-
-        @Override
-        public <T> T getNativeResponse(Class<T> requiredType) {
-            return null;
-        }
-    }
-
+    /**
+     * Minimal servlet request for Spring Data REST item-resource lookup via
+     * {@link org.springframework.web.util.UrlPathHelper#getLookupPathForRequest(jakarta.servlet.http.HttpServletRequest)}.
+     */
     public static class GetItemResourceHttpServletRequest implements HttpServletRequest {
 
-        private String pathInfo;
+        private static final HttpServletMapping DEFAULT_SERVLET_MAPPING = new HttpServletMapping() {
+            @Override
+            public String getMatchValue() {
+                return "";
+            }
 
-        public GetItemResourceHttpServletRequest(String pathInfo) {
-            this.pathInfo = pathInfo;
+            @Override
+            public String getPattern() {
+                return "/*";
+            }
+
+            @Override
+            public String getServletName() {
+                return "dispatcherServlet";
+            }
+
+            @Override
+            public MappingMatch getMappingMatch() {
+                return MappingMatch.DEFAULT;
+            }
+        };
+
+        private final String requestUri;
+
+        public GetItemResourceHttpServletRequest(String requestUri) {
+            this.requestUri = requestUri;
         }
 
         @Override
@@ -442,99 +320,81 @@ public class DefaultEntityResolver implements EntityResolver {
         }
 
         @Override
-        public void setCharacterEncoding(String env)
-            throws UnsupportedEncodingException {
+        public void setCharacterEncoding(String env) {
         }
 
         @Override
         public int getContentLength() {
-
             return 0;
         }
 
         @Override
         public long getContentLengthLong() {
-
-            return 0;
+            return 0L;
         }
 
         @Override
         public String getContentType() {
-
             return null;
         }
 
         @Override
-        public ServletInputStream getInputStream()
-            throws IOException {
-
+        public ServletInputStream getInputStream() throws IOException {
             return null;
         }
 
         @Override
         public String getParameter(String name) {
-
             return null;
         }
 
         @Override
         public Enumeration<String> getParameterNames() {
-
             return null;
         }
 
         @Override
         public String[] getParameterValues(String name) {
-
             return null;
         }
 
         @Override
         public Map<String, String[]> getParameterMap() {
-
-            return null;
+            return Collections.emptyMap();
         }
 
         @Override
         public String getProtocol() {
-
             return null;
         }
 
         @Override
         public String getScheme() {
-
             return null;
         }
 
         @Override
         public String getServerName() {
-
             return null;
         }
 
         @Override
         public int getServerPort() {
-
             return 0;
         }
 
         @Override
-        public BufferedReader getReader()
-            throws IOException {
-
+        public BufferedReader getReader() {
             return null;
         }
 
         @Override
         public String getRemoteAddr() {
-
             return null;
         }
 
         @Override
         public String getRemoteHost() {
-
             return null;
         }
 
@@ -548,62 +408,51 @@ public class DefaultEntityResolver implements EntityResolver {
 
         @Override
         public Locale getLocale() {
-
             return null;
         }
 
         @Override
         public Enumeration<Locale> getLocales() {
-
             return null;
         }
 
         @Override
         public boolean isSecure() {
-
             return false;
         }
 
         @Override
         public RequestDispatcher getRequestDispatcher(String path) {
-
             return null;
         }
 
         @Override
         public int getRemotePort() {
-
             return 0;
         }
 
         @Override
         public String getLocalName() {
-
             return null;
         }
 
         @Override
         public String getLocalAddr() {
-
             return null;
         }
 
         @Override
         public int getLocalPort() {
-
             return 0;
         }
 
         @Override
         public ServletContext getServletContext() {
-
             return null;
         }
 
         @Override
-        public AsyncContext startAsync()
-            throws IllegalStateException {
-
+        public AsyncContext startAsync() throws IllegalStateException {
             return null;
         }
 
@@ -616,26 +465,22 @@ public class DefaultEntityResolver implements EntityResolver {
 
         @Override
         public boolean isAsyncStarted() {
-
             return false;
         }
 
         @Override
         public boolean isAsyncSupported() {
-
             return false;
         }
 
         @Override
         public AsyncContext getAsyncContext() {
-
             return null;
         }
 
         @Override
         public DispatcherType getDispatcherType() {
-
-            return null;
+            return DispatcherType.REQUEST;
         }
 
         @Override
@@ -655,61 +500,51 @@ public class DefaultEntityResolver implements EntityResolver {
 
         @Override
         public String getAuthType() {
-
             return null;
         }
 
         @Override
         public Cookie[] getCookies() {
-
             return null;
         }
 
         @Override
         public long getDateHeader(String name) {
-
             return 0;
         }
 
         @Override
         public String getHeader(String name) {
-
             return null;
         }
 
         @Override
         public Enumeration<String> getHeaders(String name) {
-
             return null;
         }
 
         @Override
         public Enumeration<String> getHeaderNames() {
-
             return null;
         }
 
         @Override
         public int getIntHeader(String name) {
-
             return 0;
         }
 
         @Override
         public String getMethod() {
-
-            return null;
+            return "GET";
         }
 
         @Override
         public String getPathInfo() {
-
             return null;
         }
 
         @Override
         public String getPathTranslated() {
-
             return null;
         }
 
@@ -720,42 +555,41 @@ public class DefaultEntityResolver implements EntityResolver {
 
         @Override
         public String getQueryString() {
-
             return null;
         }
 
         @Override
         public String getRemoteUser() {
-
             return null;
         }
 
         @Override
         public boolean isUserInRole(String role) {
-
             return false;
         }
 
         @Override
         public Principal getUserPrincipal() {
-
             return null;
         }
 
         @Override
         public String getRequestedSessionId() {
-
             return null;
         }
 
         @Override
         public String getRequestURI() {
-            return pathInfo;
+            return requestUri;
+        }
+
+        @Override
+        public HttpServletMapping getHttpServletMapping() {
+            return DEFAULT_SERVLET_MAPPING;
         }
 
         @Override
         public StringBuffer getRequestURL() {
-
             return null;
         }
 
@@ -766,79 +600,59 @@ public class DefaultEntityResolver implements EntityResolver {
 
         @Override
         public HttpSession getSession(boolean create) {
-
             return null;
         }
 
         @Override
         public HttpSession getSession() {
-
             return null;
         }
 
         @Override
         public String changeSessionId() {
-
             return null;
         }
 
         @Override
         public boolean isRequestedSessionIdValid() {
-
             return false;
         }
 
         @Override
         public boolean isRequestedSessionIdFromCookie() {
-
             return false;
         }
 
         @Override
         public boolean isRequestedSessionIdFromURL() {
-
             return false;
         }
 
         @Override
-        public boolean authenticate(HttpServletResponse response)
-            throws IOException,
-            ServletException {
-
+        public boolean authenticate(HttpServletResponse response) {
             return false;
         }
 
         @Override
-        public void login(String username, String password)
-            throws ServletException {
+        public void login(String username, String password) {
         }
 
         @Override
-        public void logout()
-            throws ServletException {
+        public void logout() {
         }
 
         @Override
-        public Collection<Part> getParts()
-            throws IOException,
-            ServletException {
-
+        public Collection<Part> getParts() {
             return null;
         }
 
         @Override
-        public Part getPart(String name)
-            throws IOException,
-            ServletException {
-
+        public Part getPart(String name) {
             return null;
         }
 
         @Override
-        public <T extends HttpUpgradeHandler> T upgrade(Class<T> handlerClass)
-            throws IOException,
-            ServletException {
-
+        public <T extends HttpUpgradeHandler> T upgrade(Class<T> handlerClass) {
             return null;
         }
     }
@@ -846,10 +660,10 @@ public class DefaultEntityResolver implements EntityResolver {
     public static class RepositoryEntityControllerFacade {
 
         @RequestMapping(value = "/{repository}/{id}", method = RequestMethod.GET)
-        public ResponseEntity<EntityModel<?>> getItemResource(@QuerydslPredicate org.springframework.data.rest.webmvc.RootResourceInformation resourceInformation) {
+        @SuppressWarnings("unused")
+        public ResponseEntity<EntityModel<?>> getItemResource(
+            @QuerydslPredicate RootResourceInformation resourceInformation) {
             return null;
         }
-
-        ;
     }
 }

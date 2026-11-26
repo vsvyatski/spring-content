@@ -3,6 +3,7 @@ package org.springframework.content.commons.utils;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.convert.TypeDescriptor;
+import org.springframework.data.annotation.Id;
 
 import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
@@ -52,13 +53,13 @@ public final class DomainObjectUtils {
                     }
                 }
             }
-        } else if (BeanUtils.hasFieldWithAnnotation(entity, org.springframework.data.annotation.Id.class)) {
-            id = BeanUtils.getFieldWithAnnotation(entity, org.springframework.data.annotation.Id.class);
+        } else if (BeanUtils.hasFieldWithAnnotation(entity, Id.class)) {
+            id = BeanUtils.getFieldWithAnnotation(entity, Id.class);
             if (id == null) {
                 PropertyDescriptor[] propertyDescriptors = new BeanWrapperImpl(entity).getPropertyDescriptors();
                 for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
                     if (AnnotationUtils.findAnnotation(propertyDescriptor.getReadMethod(),
-                        org.springframework.data.annotation.Id.class) != null) {
+                        Id.class) != null) {
                         return new BeanWrapperImpl(entity).getPropertyValue(propertyDescriptor.getName());
                     }
                 }
@@ -73,8 +74,8 @@ public final class DomainObjectUtils {
         if (JAKARTA_PERSISTENCE_ID_CLASS_PRESENT &&
             BeanUtils.findFieldWithAnnotation(domainClass, jakarta.persistence.Id.class) != null) {
             return BeanUtils.findFieldWithAnnotation(domainClass, jakarta.persistence.Id.class);
-        } else if (BeanUtils.findFieldWithAnnotation(domainClass, org.springframework.data.annotation.Id.class) != null) {
-            return BeanUtils.findFieldWithAnnotation(domainClass, org.springframework.data.annotation.Id.class);
+        } else if (BeanUtils.findFieldWithAnnotation(domainClass, Id.class) != null) {
+            return BeanUtils.findFieldWithAnnotation(domainClass, Id.class);
         }
 
         return null;

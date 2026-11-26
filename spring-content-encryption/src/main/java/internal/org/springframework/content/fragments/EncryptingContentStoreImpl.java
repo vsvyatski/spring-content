@@ -27,8 +27,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-public class EncryptingContentStoreImpl<S, SID extends Serializable> implements
-    org.springframework.content.commons.store.ContentStore<S, SID>, ContentStoreAware {
+public class EncryptingContentStoreImpl<S, SID extends Serializable>
+    implements ContentStore<S, SID>, ContentStoreAware {
 
     private final MappingContext mappingContext;
     private final List<EncryptingContentStoreConfigurer<?>> configurers;
@@ -60,7 +60,7 @@ public class EncryptingContentStoreImpl<S, SID extends Serializable> implements
     @Override
     public S setContent(@NonNull S entity, @NonNull PropertyPath propertyPath, InputStream inputStream, long l) {
         return this.setContent(entity, propertyPath, inputStream,
-            new org.springframework.content.commons.store.SetContentParams(l, true, org.springframework.content.commons.store.SetContentParams.ContentDisposition.Overwrite));
+            new SetContentParams(l, true, SetContentParams.ContentDisposition.Overwrite));
     }
 
     @Override
@@ -100,7 +100,7 @@ public class EncryptingContentStoreImpl<S, SID extends Serializable> implements
     @Override
     public S unsetContent(@NonNull S entity, @NonNull PropertyPath propertyPath) {
         return unsetContent(entity, propertyPath,
-            new org.springframework.content.commons.store.UnsetContentParams(org.springframework.content.commons.store.UnsetContentParams.Disposition.Remove));
+            new UnsetContentParams(UnsetContentParams.Disposition.Remove));
     }
 
     @Override

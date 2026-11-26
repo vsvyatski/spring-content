@@ -204,7 +204,7 @@ public class DefaultJpaStoreImpl<S, SID extends Serializable> implements Content
     public S setContent(@NonNull S entity, @NonNull PropertyPath propertyPath, InputStream content, long contentLen) {
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requirePropertyPath(propertyPath);
-        return this.setContent(entity, propertyPath, content, new org.springframework.content.commons.store.SetContentParams(contentLen, true, org.springframework.content.commons.store.SetContentParams.ContentDisposition.Overwrite));
+        return this.setContent(entity, propertyPath, content, new SetContentParams(contentLen, true, SetContentParams.ContentDisposition.Overwrite));
     }
 
     @Transactional
@@ -221,7 +221,7 @@ public class DefaultJpaStoreImpl<S, SID extends Serializable> implements Content
 
         SID contentId = getContentId(entity, propertyPath);
         if (contentId == null || params.disposition()
-            .equals(org.springframework.content.commons.store.SetContentParams.ContentDisposition.CreateNew)) {
+            .equals(SetContentParams.ContentDisposition.CreateNew)) {
 
             Serializable newId = UuidCreator.getTimeOrdered().toString();
             SID convertedId = convertToStoreContentId(newId, property.getContentIdType(entity));

@@ -247,7 +247,7 @@ public class DefaultGCPStorageImpl<S, SID extends Serializable> implements Conte
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requirePropertyPath(propertyPath);
         return this.setContent(entity, propertyPath, content,
-            new org.springframework.content.commons.store.SetContentParams(contentLen, true, org.springframework.content.commons.store.SetContentParams.ContentDisposition.Overwrite));
+            new SetContentParams(contentLen, true, SetContentParams.ContentDisposition.Overwrite));
     }
 
     @Override
@@ -262,7 +262,7 @@ public class DefaultGCPStorageImpl<S, SID extends Serializable> implements Conte
         }
 
         Object contentId = property.getContentId(entity);
-        if (contentId == null || params.disposition().equals(org.springframework.content.commons.store.SetContentParams.ContentDisposition.CreateNew)) {
+        if (contentId == null || params.disposition().equals(SetContentParams.ContentDisposition.CreateNew)) {
 
             Serializable newId = UuidCreator.getTimeOrdered().toString();
 

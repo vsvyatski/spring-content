@@ -22,7 +22,7 @@ public class AbstractStoreFactoryBeanTest {
         extends Serializable, ContentStore<String, UUID> {
     }
 
-    public static class TestContentStoreFactory extends org.springframework.content.commons.store.factory.AbstractStoreFactoryBean {
+    public static class TestContentStoreFactory extends AbstractStoreFactoryBean {
         protected TestContentStoreFactory(Class<? extends Store<Serializable>> storeInterface) {
             super(storeInterface);
         }

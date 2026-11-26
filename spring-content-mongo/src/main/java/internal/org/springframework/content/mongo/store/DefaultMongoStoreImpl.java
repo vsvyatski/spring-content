@@ -10,12 +10,7 @@ import org.springframework.content.commons.annotations.ContentLength;
 import org.springframework.content.commons.mappingcontext.ContentProperty;
 import org.springframework.content.commons.mappingcontext.MappingContext;
 import org.springframework.content.commons.property.PropertyPath;
-import org.springframework.content.commons.store.ContentStore;
-import org.springframework.content.commons.store.GetResourceParams;
-import org.springframework.content.commons.store.StoreAccessException;
-import org.springframework.content.commons.store.SetContentParams;
-import org.springframework.content.commons.store.StoreEntityValidation;
-import org.springframework.content.commons.store.UnsetContentParams;
+import org.springframework.content.commons.store.*;
 import org.springframework.content.commons.utils.BeanUtils;
 import org.springframework.content.commons.utils.DomainObjectUtils;
 import org.springframework.content.commons.utils.ContentStoreGetContentSupport;
@@ -220,7 +215,7 @@ public class DefaultMongoStoreImpl<S, SID extends Serializable>
     public S setContent(@NonNull S entity, @NonNull PropertyPath propertyPath, InputStream content, long contentLen) {
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requirePropertyPath(propertyPath);
-        return this.setContent(entity, propertyPath, content, new org.springframework.content.commons.store.SetContentParams(contentLen, true, org.springframework.content.commons.store.SetContentParams.ContentDisposition.Overwrite));
+        return this.setContent(entity, propertyPath, content, new SetContentParams(contentLen, true, SetContentParams.ContentDisposition.Overwrite));
     }
 
     @Override
@@ -236,7 +231,7 @@ public class DefaultMongoStoreImpl<S, SID extends Serializable>
 
         Object contentId = property.getContentId(entity);
         if (contentId == null || params.disposition()
-            .equals(org.springframework.content.commons.store.SetContentParams.ContentDisposition.CreateNew)) {
+            .equals(SetContentParams.ContentDisposition.CreateNew)) {
 
             Serializable newId = UUID.randomUUID().toString();
             Object convertedId = convertToExternalContentIdType(newId, property.getContentIdType(entity));

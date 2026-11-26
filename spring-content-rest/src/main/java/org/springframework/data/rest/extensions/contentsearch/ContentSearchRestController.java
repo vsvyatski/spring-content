@@ -47,11 +47,13 @@ public class ContentSearchRestController {
 
     private static final String ENTITY_CONTENT_SEARCH_MAPPING = "/{repository}/searchContent";
 
+    private static final String SEARCH_METHOD = "search";
+
     private static final Map<String, Method> searchMethods = new HashMap<>();
 
     static {
-        put("search", ReflectionUtils.findMethod(Searchable.class, "search", String.class));
-        put("search", ReflectionUtils.findMethod(Searchable.class, "search", String.class, Pageable.class));
+        registerSearchMethod(ReflectionUtils.findMethod(Searchable.class, "search", String.class));
+        registerSearchMethod(ReflectionUtils.findMethod(Searchable.class, "search", String.class, Pageable.class));
     }
 
     private final Repositories repositories;
@@ -73,27 +75,27 @@ public class ContentSearchRestController {
         this.qmLookupStrategy = new QueryMethodsEntityLookupStrategy();
     }
 
-    private static void put(String key, Method findMethod) {
-        ContentSearchRestController.searchMethods.put(format("%s:%s", key, Arrays.toString(findMethod.getParameterTypes())), findMethod);
+    private static void registerSearchMethod(Method findMethod) {
+        if (findMethod == null) {
+            return;
+        }
+        searchMethods.put(format("%s:%s", SEARCH_METHOD, Arrays.toString(findMethod.getParameterTypes())), findMethod);
     }
 
-    public static void fetchEntitiesInBatches(CrudRepository<?, ?> r, List entityIds, List results) {
+    @SuppressWarnings("unchecked")
+    private static <T> CrudRepository<T, Object> castRepository(Object repository) {
+        return (CrudRepository<T, Object>) repository;
+    }
 
+    public static <T, ID> void fetchEntitiesInBatches(CrudRepository<T, ID> repository, List<ID> entityIds,
+            Collection<T> results) {
         int size = entityIds.size();
-
-        Method findAllByIdMethod = ReflectionUtils.findMethod(CrudRepository.class, "findAllById", Iterable.class);
-
         for (int i = 0; i < size; ) {
-            int lowerBound = i;
-            int upperBound = (lowerBound + 250 <= entityIds.size() ? lowerBound + 250 : size);
-
-            List<Object> subset = entityIds.subList(lowerBound, upperBound);
-
-            Iterable<?> entities = (Iterable<?>) ReflectionUtils.invokeMethod(findAllByIdMethod, r, subset);
-            for (Object entity : entities) {
+            int upperBound = Math.min(i + 250, size);
+            List<ID> batch = entityIds.subList(i, upperBound);
+            for (T entity : repository.findAllById(batch)) {
                 results.add(entity);
             }
-
             i += 250;
         }
     }
@@ -110,7 +112,7 @@ public class ContentSearchRestController {
         this.qmLookupStrategy = lookupStrategy;
     }
 
-    @StoreType("contentstore")
+    @StoreType(StoreType.CONTENT_STORE)
     @ResponseBody
     @RequestMapping(value = ENTITY_CONTENT_SEARCH_MAPPING, method = RequestMethod.GET)
     public CollectionModel<?> searchContent(
@@ -120,10 +122,10 @@ public class ContentSearchRestController {
         @PathVariable("repository") String repository,
         @RequestParam(name = "queryString") String queryString) {
 
-        return searchContentInternal(repoInfo, repository, pageable, assembler, "search", new String[]{queryString});
+        return searchContentInternal(repoInfo, repository, pageable, assembler, new String[]{queryString});
     }
 
-    private CollectionModel<?> searchContentInternal(RootResourceInformation repoInfo, String repository, DefaultedPageable pageable, PersistentEntityResourceAssembler assembler, String searchMethod, String[] keywords) {
+    private CollectionModel<?> searchContentInternal(RootResourceInformation repoInfo, String repository, DefaultedPageable pageable, PersistentEntityResourceAssembler assembler, String[] keywords) {
 
         if (repositories == null) {
             throw new ResourceNotFoundException("Entity has no content associations");
@@ -150,16 +152,18 @@ public class ContentSearchRestController {
 
         StoreInfo info = infos[0];
 
-        ContentStore<Object, Serializable> store = info.getImplementation(ContentStore.class);
+        @SuppressWarnings("unchecked")
+        ContentStore<Object, Serializable> store =
+            (ContentStore<Object, Serializable>) info.getImplementation(ContentStore.class);
         if (!(store instanceof Searchable)) {
             throw new ResourceNotFoundException("Entity content is not searchable");
         }
 
         Class<?>[] searchMethodArgTypes = (pageable.unpagedIfDefault().isUnpaged() ? new Class<?>[]{String.class} : new Class<?>[]{String.class, Pageable.class});
-        Method method = searchMethods.get(format("%s:%s", searchMethod, Arrays.toString(searchMethodArgTypes)));
+        Method method = searchMethods.get(format("%s:%s", SEARCH_METHOD, Arrays.toString(searchMethodArgTypes)));
 
         if (method == null) {
-            throw new BadRequestException(String.format("Invalid search: %s", searchMethod));
+            throw new BadRequestException(String.format("Invalid search: %s", SEARCH_METHOD));
         }
 
         if (keywords == null || keywords.length == 0) {
@@ -207,9 +211,9 @@ public class ContentSearchRestController {
                 }
             }
 
-            if (!entityIds.isEmpty() && repositories != null) {
-                repositories.getRepositoryFor(domainClass)
-                    .ifPresent(r -> fetchEntitiesInBatches((CrudRepository<?, ?>) r, entityIds, results));
+            if (!entityIds.isEmpty()) {
+                repositories.getRepositoryFor(domainClass).ifPresent(repo -> fetchEntitiesInBatches(
+                    castRepository(repo), entityIds, results));
             }
 
             if (!contentIds.isEmpty()) {
@@ -232,15 +236,15 @@ public class ContentSearchRestController {
         }
     }
 
-    private Iterable<?> convertToFinalResultType(List<Object> results, DefaultedPageable pageable, Iterable intermediateResults) {
+    private Iterable<?> convertToFinalResultType(List<Object> results, DefaultedPageable pageable, Iterable<?> intermediateResults) {
 
         if (pageable.unpagedIfDefault().isUnpaged()) {
             return results;
-        } else if (intermediateResults instanceof Page) {
-            return new PageImpl<>(results, pageable.getPageable(), ((Page) intermediateResults).getTotalPages());
-        } else {
-            return new PageImpl<>(results);
         }
+        if (intermediateResults instanceof Page<?> page) {
+            return new PageImpl<>(results, pageable.getPageable(), page.getTotalPages());
+        }
+        return new PageImpl<>(results);
     }
 
     private Class<?> returnType(StoreInfo info) {
@@ -273,6 +277,7 @@ public class ContentSearchRestController {
         @ContentId
         private Object contentId;
 
+        @SuppressWarnings("unused")
         public InternalResult() {
         }
 

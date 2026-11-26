@@ -254,7 +254,7 @@ public class DefaultAzureStorageImpl<S, SID extends Serializable>
     public S setContent(@NonNull S entity, @NonNull PropertyPath propertyPath, InputStream content, long contentLen) {
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requirePropertyPath(propertyPath);
-        return this.setContent(entity, propertyPath, content, new org.springframework.content.commons.store.SetContentParams(contentLen, true, org.springframework.content.commons.store.SetContentParams.ContentDisposition.Overwrite));
+        return this.setContent(entity, propertyPath, content, new SetContentParams(contentLen, true, SetContentParams.ContentDisposition.Overwrite));
     }
 
     @Override
@@ -270,7 +270,7 @@ public class DefaultAzureStorageImpl<S, SID extends Serializable>
 
         Object contentId = property.getContentId(entity);
         if (contentId == null || params.disposition()
-            .equals(org.springframework.content.commons.store.SetContentParams.ContentDisposition.CreateNew)) {
+            .equals(SetContentParams.ContentDisposition.CreateNew)) {
             Serializable newId = UUID.randomUUID().toString();
 
             Object convertedId = placementService.convert(

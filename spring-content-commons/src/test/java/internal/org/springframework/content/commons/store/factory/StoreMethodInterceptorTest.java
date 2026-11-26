@@ -17,6 +17,7 @@ import org.springframework.content.commons.annotations.MimeType;
 import org.springframework.content.commons.store.AssociativeStore;
 import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.commons.store.Store;
+import org.springframework.content.commons.store.StoreEntityValidation;
 import org.springframework.content.commons.store.events.*;
 import org.springframework.content.test.support.CommonsTestStores;
 import org.springframework.content.test.support.UuidSingleContentFields;
@@ -714,7 +715,7 @@ public class StoreMethodInterceptorTest {
             attachInterceptor(store, publisher);
             invokeInterceptor();
             assertThat(e).isInstanceOf(IllegalArgumentException.class)
-                .hasMessage(org.springframework.content.commons.store.StoreEntityValidation.ENTITY_MUST_NOT_BE_NULL);
+                .hasMessage(StoreEntityValidation.ENTITY_MUST_NOT_BE_NULL);
         }
     }
 

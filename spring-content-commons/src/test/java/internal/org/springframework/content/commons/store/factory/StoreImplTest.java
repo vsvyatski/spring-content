@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.commons.store.StoreAccessException;
+import org.springframework.content.commons.store.StoreEntityValidation;
 import org.springframework.context.ApplicationEventPublisher;
 
 import java.io.*;
@@ -90,7 +91,7 @@ public class StoreImplTest {
             void shouldRejectNullEntity() {
                 assertThatThrownBy(() -> stores.getContent(null))
                     .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessage(org.springframework.content.commons.store.StoreEntityValidation.ENTITY_MUST_NOT_BE_NULL);
+                    .hasMessage(StoreEntityValidation.ENTITY_MUST_NOT_BE_NULL);
             }
         }
     }
