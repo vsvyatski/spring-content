@@ -4,9 +4,6 @@ import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.persistence.autoconfigure.EntityScan;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.content.commons.io.DeletableResource;
 import org.springframework.content.commons.io.RangeableResource;
@@ -14,15 +11,10 @@ import org.springframework.content.commons.property.PropertyPath;
 import org.springframework.content.commons.store.SetContentParams;
 import org.springframework.content.commons.store.StoreAccessException;
 import org.springframework.content.commons.store.UnsetContentParams;
-import org.springframework.content.s3.config.EnableS3Stores;
 import org.springframework.content.test.support.TestSupportData;
-import org.springframework.content.test.support.TestSupportPackages;
 import org.springframework.content.test.support.jpa.*;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.WritableResource;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
@@ -31,21 +23,20 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URISyntaxException;
 import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.springframework.content.test.support.AbstractEntityConverterBucketIT.INIT_BUCKET;
 
-@SpringBootTest()
+@SpringBootTest(classes = Application.class)
 @ExtendWith(SpringExtension.class)
 public class S3StoreIT {
 
-    private static final String BUCKET = "test-bucket";
     private static final Object mutex = new Object();
 
     static {
-        System.setProperty("spring.content.s3.bucket", BUCKET);
+        System.setProperty("spring.content.s3.bucket", INIT_BUCKET);
     }
 
     @Autowired
@@ -73,15 +64,15 @@ public class S3StoreIT {
     private void ensureTestBucket() throws InterruptedException {
         synchronized (mutex) {
             HeadBucketRequest headBucketRequest = HeadBucketRequest.builder()
-                .bucket(BUCKET)
+                .bucket(INIT_BUCKET)
                 .build();
             try {
                 client.headBucket(headBucketRequest);
             } catch (NoSuchBucketException ignored) {
-                client.createBucket(CreateBucketRequest.builder().bucket(BUCKET).build());
+                client.createBucket(CreateBucketRequest.builder().bucket(INIT_BUCKET).build());
                 boolean found = false;
                 while (!found) {
-                    headBucketRequest = HeadBucketRequest.builder().bucket(BUCKET).build();
+                    headBucketRequest = HeadBucketRequest.builder().bucket(INIT_BUCKET).build();
                     try {
                         client.headBucket(headBucketRequest);
                         found = true;
@@ -91,25 +82,6 @@ public class S3StoreIT {
                     System.out.println("sleeping...");
                     Thread.sleep(100);
                 }
-            }
-        }
-    }
-
-    @SpringBootApplication(scanBasePackages = {"internal.org.springframework.content.s3.it", TestSupportPackages.JPA})
-    @EntityScan(basePackages = TestSupportPackages.JPA)
-    @EnableJpaRepositories(basePackages = {TestSupportPackages.JPA, "internal.org.springframework.content.s3.it"}, considerNestedRepositories = true)
-    @EnableS3Stores(basePackages = {TestSupportPackages.JPA, "internal.org.springframework.content.s3.it"})
-    static class Application {
-        public static void main(String[] args) {
-            SpringApplication.run(Application.class, args);
-        }
-
-        @Configuration
-        public static class Config {
-
-            @Bean
-            public S3Client amazonS3() throws URISyntaxException {
-                return LocalStack.getAmazonS3Client();
             }
         }
     }
@@ -524,11 +496,11 @@ public class S3StoreIT {
                 assertThat(entity.getRenditionType()).isEqualTo("text/html");
 
                 HeadObjectResponse contentHead = client.headObject(
-                    HeadObjectRequest.builder().bucket(BUCKET).key(entity.getContentId()).build());
+                    HeadObjectRequest.builder().bucket(INIT_BUCKET).key(entity.getContentId()).build());
                 assertThat(contentHead.contentType()).isEqualTo("text/plain");
 
                 HeadObjectResponse renditionHead = client.headObject(
-                    HeadObjectRequest.builder().bucket(BUCKET).key(entity.getRenditionId()).build());
+                    HeadObjectRequest.builder().bucket(INIT_BUCKET).key(entity.getRenditionId()).build());
                 assertThat(renditionHead.contentType()).isEqualTo("text/html");
             }
         }
@@ -626,7 +598,7 @@ public class S3StoreIT {
             @Test
             void shouldHaveUpdatedContent() throws IOException {
                 String contentId = entity.getContentId();
-                client.headObject(HeadObjectRequest.builder().bucket(BUCKET).key(contentId).build());
+                client.headObject(HeadObjectRequest.builder().bucket(INIT_BUCKET).key(contentId).build());
 
                 store.setContent(entity, PropertyPath.from("content"), TestSupportData.sampleUpdatedTextStream(), new SetContentParams(-1, true, SetContentParams.ContentDisposition.CreateNew));
                 entity = repo.save(entity);
@@ -636,7 +608,7 @@ public class S3StoreIT {
                 }
 
                 assertThat(entity.getContentId()).isNotEqualTo(contentId);
-                client.headObject(HeadObjectRequest.builder().bucket(BUCKET).key(entity.getContentId()).build());
+                client.headObject(HeadObjectRequest.builder().bucket(INIT_BUCKET).key(entity.getContentId()).build());
             }
         }
 
@@ -675,7 +647,7 @@ public class S3StoreIT {
                 assertThat(entity.getContentLen()).isNull();
 
                 assertThatThrownBy(() -> client.headObject(
-                    HeadObjectRequest.builder().bucket(BUCKET).key(resourceLocation).build()))
+                    HeadObjectRequest.builder().bucket(INIT_BUCKET).key(resourceLocation).build()))
                     .isInstanceOf(NoSuchKeyException.class);
 
                 //rendition
@@ -721,7 +693,7 @@ public class S3StoreIT {
                 assertThat(entity.getContentId()).isNull();
                 assertThat(entity.getContentLen()).isNull();
 
-                client.headObject(HeadObjectRequest.builder().bucket(BUCKET).key(resourceLocation).build());
+                client.headObject(HeadObjectRequest.builder().bucket(INIT_BUCKET).key(resourceLocation).build());
             }
         }
 

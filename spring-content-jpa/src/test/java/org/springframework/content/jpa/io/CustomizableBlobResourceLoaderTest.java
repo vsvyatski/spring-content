@@ -37,7 +37,7 @@ public class CustomizableBlobResourceLoaderTest {
             }
 
             @Test
-            void shouldReturnGENERIC() {
+            void shouldReturnGeneric() {
                 assertThat(result.toString()).isEqualTo("GENERIC");
             }
         }

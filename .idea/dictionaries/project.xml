@@ -3,8 +3,11 @@
     <words>
       <w>Calibri</w>
       <w>Deering</w>
+      <w>LASTEXITCODE</w>
       <w>jdbc</w>
+      <w>largeobject</w>
       <w>mvnw</w>
+      <w>postgresql</w>
       <w>tbaggery</w>
     </words>
   </dictionary>

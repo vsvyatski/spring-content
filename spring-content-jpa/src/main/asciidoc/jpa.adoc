@@ -85,7 +85,7 @@ public static class ApplicationConfig {
 
 This configuration class sets up an embedded HSQL database.  The first three beans are standard for any spring JPA application; `dataSource`, `entityManageFactory` and `transactionManager`.
 
-The last bean prepares the database to be able to store content by creating database schema.  Replace the `dropRepositoryTables` and `createRepositoryTables` resources with the appropriate ones for your database (`h2`, `hsqldb`, `mysql`, `oracle`, `postgresql`, `sqlserver`).  Creating this bean manually is only requires when using `spring-content-jpa` directly.  The spring-content-jpa boot starter will create this bean if not present.
+The last bean prepares the database to be able to store content by creating database schema.  Replace the `dropRepositoryTables` and `createRepositoryTables` resources with the appropriate ones for your database (`h2`, `hsqldb`, `mariadb`, `postgresql`, `sqlserver`).  Creating this bean manually is only requires when using `spring-content-jpa` directly.  The spring-content-jpa boot starter will create this bean if not present.
 
 We activate Spring Data JPA repositories using the `@EnableJpaRepositories` annotation.  We activate Spring Content JPA
 stores using `@EnableJpaStores` (also only required when not using the boot starter) and enable transaction management with the `@EnableTransactionManagement` annotation.
@@ -106,17 +106,10 @@ The module id for the `spring.content.storage.type.default` property is `jpa`.
 Spring Content JPA attempts to provide streams that chunk BLOBs through the memory space of the JVM rather that loading
 the entire BLOB into memory.  In order to do this the following database-specific implementation are used.
 
-==== MySQL
+==== MariaDB
 
-Despite the JDBC API that returns ``InputStream``'s for streaming BLOBs.  By default the MySQL JConnector JDBC Driver
-will load the entire BLOB into the memory-space of the JVM running the JDBC client.  This risks ``OutOfMemoryException``'s
-being thrown, the likelihood of which increase as the size of the BLOBs being stored increase.
-
-However, a feature called "locator emulation" switches the implementation that is used for the getBlob() JDBC API to one
-that actually does stream the content properly (i.e. in reasonable size chunks) through the memory-space of the JVM.
-
-Spring Content JPA is designed to be used with this feature and therefore you must add the property
-`emulateLocators=true` to your https://dev.mysql.com/doc/connector-j/8.0/en/connector-j-reference-implementation-notes.html[JDBC Connection string URL]
+MariaDB uses the same BLOB streaming approach as the former MySQL support: `MariaDbBlobResource` loads content with a
+plain JDBC query.  Use the MariaDB JDBC driver and InnoDB tables as shown in `schema-mariadb.sql`.
 
 === Postgresql
 
@@ -131,14 +124,6 @@ therefore the transaction must be handled by the consumer.
 
 The SQL Server implementation uses https://docs.microsoft.com/en-us/sql/connect/jdbc/using-adaptive-buffering?view=sql-server-2017#setting-adaptive-buffering[adaptive buffering]
 to serve BLOBs in a memory efficient way.
-
-=== Oracle
-
-The oracle implementation relies on the ability of the Oracle JDBC driver to perform chunked operations on the
-streams. This functionality has been tested against the com.oracle.database.jdbc ojdbc instance at version 12.2.0.1,
-where the default prefetch size is 4000 bytes. Whilst the driver supports the ability to modify this prefetch size
-for tuning performance, there currently is no way to over-ride this setting via the spring-content API, so the default
-of whatever driver version is in use will apply.
 
 == Persisting Content
 

@@ -2,6 +2,8 @@ package internal.org.springframework.content.jpa.io;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.NonNull;
+import org.postgresql.PGConnection;
 import org.postgresql.largeobject.LargeObject;
 import org.postgresql.largeobject.LargeObjectManager;
 import org.springframework.content.jpa.io.AbstractBlobResource;
@@ -12,118 +14,100 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import javax.sql.DataSource;
-import java.io.BufferedOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Objects;
 
 import static java.lang.String.format;
 
 public class PostgresBlobResource extends AbstractBlobResource {
 
-    private static Log logger = LogFactory.getLog(PostgresBlobResource.class);
+    private static final Log logger = LogFactory.getLog(PostgresBlobResource.class);
 
     public PostgresBlobResource(Object id, JdbcTemplate template, PlatformTransactionManager txnMgr) {
         super(id, template, txnMgr);
     }
 
     @Override
-    public InputStream getInputStream() throws IOException {
-        final Object id = this.getId();
+    public @NonNull InputStream getInputStream() throws IOException {
+        final Object blobId = this.getId();
+        String sql = getSelectBlobSQL(blobId);
 
-        String sql = getSelectBlobSQL(id);
+        TransactionStatus status = getTransactionManager().getTransaction(new DefaultTransactionDefinition());
 
-        TransactionStatus status = null;
-        if (getTransactionManager() != null) {
-            status = getTransactionManager().getTransaction(new DefaultTransactionDefinition());
-        }
-
-        DataSource ds = this.getTemplate().getDataSource();
+        DataSource ds = Objects.requireNonNull(getTemplate().getDataSource(), "JdbcTemplate DataSource");
         Connection conn = DataSourceUtils.getConnection(ds);
 
-        InputStream is = null;
-        Statement stmt = null;
-        ResultSet rs = null;
         try {
-            stmt = conn.createStatement();
-            rs = stmt.executeQuery(sql);
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
             if (!rs.next()) {
-                try {
-                    rs.close();
-                    stmt.close();
-                    DataSourceUtils.releaseConnection(conn, ds);
-                    return null;
-                } catch (SQLException sqle) {
-                    logger.debug(format("failed to release database connection while fetching content %s", id), sqle);
-                }
+                releaseQueryResources(rs, stmt, conn, ds, blobId);
+                rollbackOpenTransaction(status);
+                throw new FileNotFoundException(format("Blob resource %s not found", blobId));
             }
 
-            LargeObjectManager lobj = conn.unwrap(org.postgresql.PGConnection.class).getLargeObjectAPI();
-            long oid = rs.getLong(2);
-            LargeObject obj = lobj.open(oid, LargeObjectManager.READ);
-            is = obj.getInputStream(-1);
+            LargeObjectManager manager = conn.unwrap(PGConnection.class).getLargeObjectAPI();
+            long oid = rs.getLong("content");
+            LargeObject largeObject = manager.open(oid, LargeObjectManager.READ);
+            InputStream is = largeObject.getInputStream(-1);
+            return new ClosingInputStream(blobId, is, rs, stmt, status, getTransactionManager(), conn, ds, largeObject);
         } catch (SQLException e) {
-            logger.error(format("getting content %s", id), e);
-            return null;
+            DataSourceUtils.releaseConnection(conn, ds);
+            rollbackOpenTransaction(status);
+            logger.error(format("getting content %s", blobId), e);
+            throw new IOException(format("getting content %s", blobId), e);
         }
-
-        return new ClosingInputStream(id, is, rs, stmt, status, getTransactionManager(), conn, ds);
     }
 
     @Override
-    public OutputStream getOutputStream() throws IOException {
-        return new BufferedOutputStream(new PostgresBlobResourceOutputStream(this, this.getTemplate()), 10);
+    public @NonNull OutputStream getOutputStream() throws IOException {
+        return new BufferedOutputStream(new PostgresBlobResourceOutputStream(this, getTemplate()), 10);
     }
 
     @Override
-    public void delete()
-        throws IOException {
+    public void delete() throws IOException {
+        final Object blobId = this.getId();
+        String sql = getSelectBlobSQL(blobId);
 
-        final Object id = this.getId();
-        String sql = getSelectBlobSQL(id);
-
-        DataSource ds = this.getTemplate().getDataSource();
+        DataSource ds = Objects.requireNonNull(getTemplate().getDataSource(), "JdbcTemplate DataSource");
         Connection conn = DataSourceUtils.getConnection(ds);
 
-        Statement stmt = null;
-        ResultSet rs = null;
         try {
-            stmt = conn.createStatement();
-            rs = stmt.executeQuery(sql);
-            if (!rs.next()) {
-                try {
-                    rs.close();
-                    stmt.close();
-                    DataSourceUtils.releaseConnection(conn, ds);
+            try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
+                if (!rs.next()) {
                     return;
-                } catch (SQLException sqle) {
-                    logger.debug(format("failed to release database connection while fetching content %s", id), sqle);
                 }
-            }
 
-            LargeObjectManager lobj = conn.unwrap(org.postgresql.PGConnection.class).getLargeObjectAPI();
-            long oid = rs.getLong(2);
-            lobj.delete(oid);
+                LargeObjectManager manager = conn.unwrap(PGConnection.class).getLargeObjectAPI();
+                manager.delete(rs.getLong("content"));
+            }
+            super.delete();
         } catch (SQLException e) {
-            logger.error(format("deleting content %s", id), e);
-            return;
+            logger.error(format("deleting content %s", blobId), e);
+            throw new IOException(format("deleting content %s", blobId), e);
         } finally {
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (stmt != null) {
-                    stmt.close();
-                }
-            } catch (SQLException e) {
-                logger.error(format("closing resources after deleting content %s", id), e);
-            }
+            DataSourceUtils.releaseConnection(conn, ds);
         }
+    }
 
-        super.delete();
+    private static void releaseQueryResources(ResultSet rs, Statement stmt, Connection conn, DataSource ds,
+                                              Object blobId) {
+        try {
+            rs.close();
+            stmt.close();
+            DataSourceUtils.releaseConnection(conn, ds);
+        } catch (SQLException sqle) {
+            logger.debug(format("failed to release database connection while fetching content %s", blobId), sqle);
+        }
+    }
+
+    private void rollbackOpenTransaction(TransactionStatus status) {
+        if (status != null && !status.isCompleted()) {
+            getTransactionManager().rollback(status);
+        }
     }
 }

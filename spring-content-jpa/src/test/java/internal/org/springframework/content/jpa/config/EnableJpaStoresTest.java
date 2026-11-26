@@ -1,7 +1,7 @@
 package internal.org.springframework.content.jpa.config;
 
 import internal.org.springframework.content.jpa.io.DelegatingBlobResourceLoader;
-import internal.org.springframework.content.jpa.io.MySQLBlobResource;
+import internal.org.springframework.content.jpa.io.MariaDbBlobResource;
 import internal.org.springframework.content.jpa.io.SQLServerBlobResource;
 import org.junit.jupiter.api.*;
 import org.springframework.content.jpa.config.EnableJpaStores;
@@ -92,11 +92,11 @@ public class EnableJpaStoresTest {
             }
 
             @Test
-            void shouldHaveMySQLBlobResourceLoader() {
-                BlobResourceLoader loader = (BlobResourceLoader) context.getBean("mysqlBlobResourceLoader");
+            void shouldHaveMariaDbBlobResourceLoader() {
+                BlobResourceLoader loader = (BlobResourceLoader) context.getBean("mariaDbBlobResourceLoader");
                 assertThat(loader).isNotNull();
-                assertThat(loader.getDatabaseName()).isEqualTo("MySQL");
-                assertThat(loader.getResource("some-id")).isInstanceOf(MySQLBlobResource.class);
+                assertThat(loader.getDatabaseName()).isEqualTo("MariaDB");
+                assertThat(loader.getResource("some-id")).isInstanceOf(MariaDbBlobResource.class);
             }
 
             @Test

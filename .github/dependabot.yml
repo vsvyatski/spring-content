@@ -5,26 +5,8 @@ updates:
     schedule:
       interval: daily
     open-pull-requests-limit: 10
-    target-branch: main
+    target-branch: develop
     ignore:
-      - dependency-name: org.docx4j:docx4j-core
-        versions:
-          - ">= 11.a, < 12"
-      - dependency-name: org.docx4j:docx4j-export-fo
-        versions:
-          - ">= 11.a, < 12"
-      - dependency-name: org.docx4j:docx4j-export-fo
-        versions:
-          - ">= 8.0.a, < 8.1"
-      - dependency-name: org.docx4j:docx4j-export-fo
-        versions:
-          - ">= 8.1.a, < 8.2"
-      - dependency-name: org.docx4j:docx4j-JAXB-ReferenceImpl
-        versions:
-          - ">= 11.a, < 12"
       - dependency-name: org.springframework.boot:spring-boot-dependencies
         versions:
-          - 4.0.3
-      - dependency-name: jakarta.persistence:jakarta.persistence-api
-        versions:
-          - ">=3.2.0, <3.3.0"
+          - ">= 4.2.0"

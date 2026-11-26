@@ -1,5 +1,6 @@
 package internal.org.springframework.content.rest.storedrenditions;
 
+import org.springframework.http.MediaType;
 import internal.org.springframework.content.rest.support.DualContentRenditionEntity;
 import internal.org.springframework.content.rest.support.DualContentRenditionEntityRepository;
 import internal.org.springframework.content.rest.support.DualContentRenditionEntityStore;
@@ -50,7 +51,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebAppConfiguration
-@ContextConfiguration(classes = {StoredRenditionsRestIT.StoredRenditionsConfig.class, StoreConfig.class, DelegatingWebMvcConfiguration.class, RepositoryRestMvcConfiguration.class, RestConfiguration.class})
+@ContextConfiguration(classes = {
+    StoredRenditionsRestIT.StoredRenditionsConfig.class, StoreConfig.class, DelegatingWebMvcConfiguration.class,
+    RepositoryRestMvcConfiguration.class, RestConfiguration.class
+})
 @Transactional
 @ActiveProfiles("store")
 @ExtendWith(SpringExtension.class)
@@ -83,12 +87,12 @@ public class StoredRenditionsRestIT {
 
                 @Override
                 public String consumes() {
-                    return "text/plain";
+                    return MediaType.TEXT_PLAIN_VALUE;
                 }
 
                 @Override
                 public String[] produces() {
-                    return new String[]{"text/html"};
+                    return new String[]{MediaType.TEXT_HTML_VALUE};
                 }
 
                 @Override
@@ -134,7 +138,7 @@ public class StoredRenditionsRestIT {
             }
 
             entity.setRenditionLen(renderedLength);
-            entity.setRenditionMimeType("text/html");
+            entity.setRenditionMimeType(MediaType.TEXT_HTML_VALUE);
         }
 
         @HandleBeforeUnsetContent
@@ -165,7 +169,7 @@ public class StoredRenditionsRestIT {
 
                     testEntity5 = repo.save(new DualContentRenditionEntity());
 
-                    mvc.perform(put("/dualContentRenditionEntities/" + testEntity5.getId() + "/content").content("foo").contentType("text/plain")).andExpect(status().is2xxSuccessful());
+                    mvc.perform(put("/dualContentRenditionEntities/" + testEntity5.getId() + "/content").content("foo").contentType(MediaType.TEXT_PLAIN_VALUE)).andExpect(status().is2xxSuccessful());
                 }
 
                 @Test
@@ -191,14 +195,14 @@ public class StoredRenditionsRestIT {
 
                         testEntity5 = repo.save(new DualContentRenditionEntity());
 
-                        mvc.perform(put("/dualContentRenditionEntities/" + testEntity5.getId() + "/content").content("foo").contentType("text/plain")).andExpect(status().is2xxSuccessful());
+                        mvc.perform(put("/dualContentRenditionEntities/" + testEntity5.getId() + "/content").content("foo").contentType(MediaType.TEXT_PLAIN_VALUE)).andExpect(status().is2xxSuccessful());
                     }
 
                     @Test
                     void shouldGetStoredRendition() throws Exception {
                         mvc.perform(
                                 get("/dualContentRenditionEntities/" + testEntity5.getId() + "/content")
-                                    .accept("text/html"))
+                                    .accept(MediaType.TEXT_HTML_VALUE))
                             .andExpect(status().isOk())
                             .andExpect(content().string(not("<html><head><title>Dynamic Rendition</title></head><body>foo</body></html>")))
                             .andExpect(content().string("<html><head><title>Stored Rendition</title></head><body>foo</body></html>"));
@@ -214,14 +218,14 @@ public class StoredRenditionsRestIT {
 
                         testEntity5 = repo.save(new DualContentRenditionEntity());
 
-                        mvc.perform(put("/dualContentRenditionEntities/" + testEntity5.getId() + "/content").content("foo").contentType("text/plain")).andExpect(status().is2xxSuccessful());
+                        mvc.perform(put("/dualContentRenditionEntities/" + testEntity5.getId() + "/content").content("foo").contentType(MediaType.TEXT_PLAIN_VALUE)).andExpect(status().is2xxSuccessful());
                     }
 
                     @Test
                     void shouldReturn405() throws Exception {
                         mvc.perform(
                                 get("/dualContentRenditionEntities/" + testEntity5.getId() + "/rendition")
-                                    .accept("text/html"))
+                                    .accept(MediaType.TEXT_HTML_VALUE))
                             .andExpect(status().isMethodNotAllowed());
                     }
                 }
@@ -235,7 +239,7 @@ public class StoredRenditionsRestIT {
 
                         testEntity5 = repo.save(new DualContentRenditionEntity());
 
-                        mvc.perform(put("/dualContentRenditionEntities/" + testEntity5.getId() + "/content").content("foo").contentType("text/plain")).andExpect(status().is2xxSuccessful());
+                        mvc.perform(put("/dualContentRenditionEntities/" + testEntity5.getId() + "/content").content("foo").contentType(MediaType.TEXT_PLAIN_VALUE)).andExpect(status().is2xxSuccessful());
                     }
 
                     @Test

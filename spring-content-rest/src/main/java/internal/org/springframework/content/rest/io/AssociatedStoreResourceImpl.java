@@ -1,6 +1,7 @@
 package internal.org.springframework.content.rest.io;
 
 import jakarta.persistence.Version;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.springframework.content.commons.io.DeletableResource;
 import org.springframework.content.commons.io.RangeableResource;
@@ -10,12 +11,8 @@ import org.springframework.content.commons.renditions.Renderable;
 import org.springframework.content.commons.store.AssociativeStore;
 import org.springframework.content.commons.storeservice.StoreInfo;
 import org.springframework.content.commons.utils.BeanUtils;
-import org.springframework.core.convert.ConversionService;
-import org.springframework.core.convert.support.ConfigurableConversionService;
-import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.WritableResource;
-import org.springframework.data.convert.Jsr310Converters;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -31,34 +28,21 @@ import java.net.URL;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.charset.StandardCharsets;
-import java.time.Instant;
-import java.util.Date;
-import java.util.stream.Stream;
-
-import static java.lang.String.format;
-
 /**
  * Represents a Spring Content Resource that is associated with a Spring Data Entity.
  * <p>
- * Overrides the ContentLength and LastModifiedDate with the values stored on the
- * Spring Data entity, rather than the values of the actual content itself (these are
- * used as fallback values though).
+ * Overrides content length with the value stored on the Spring Data entity when present,
+ * otherwise uses the backing content resource.
  * <p>
  * Also sets appropriate headers to pass the Spring Data Entity recorded filename, if exists.
  */
 public class AssociatedStoreResourceImpl<S> implements HttpResource, AssociatedStoreResource<S> {
 
-    private final ConfigurableConversionService conversionService = new DefaultConversionService();
-    private S entity;
-    private Resource original;
-    private StoreInfo info;
-    private ContentProperty contentProperty;
-    private PropertyPath propertyPath;
-
-    {
-        Jsr310Converters.getConvertersToRegister().forEach(conversionService::addConverter);
-    }
-
+    private final S entity;
+    private final Resource original;
+    private final StoreInfo info;
+    private final ContentProperty contentProperty;
+    private final PropertyPath propertyPath;
 
     public AssociatedStoreResourceImpl(StoreInfo info, S entity, PropertyPath propertyPath, ContentProperty property, Resource original) {
         this.info = info;
@@ -70,13 +54,11 @@ public class AssociatedStoreResourceImpl<S> implements HttpResource, AssociatedS
 
     @Override
     public StoreInfo getStoreInfo() {
-
         return info;
     }
 
     @Override
     public S getAssociation() {
-
         return entity;
     }
 
@@ -91,41 +73,37 @@ public class AssociatedStoreResourceImpl<S> implements HttpResource, AssociatedS
     }
 
     protected Resource getDelegate() {
-
         return original;
-    }
-
-    protected ConversionService getConversionService() {
-        return conversionService;
     }
 
     @Override
     public boolean isRenderableAs(org.springframework.util.MimeType mimeType) {
-
-        if (Renderable.class.isAssignableFrom(this.getStoreInfo().getInterface())) {
-
-            Renderable renderer = (Renderable) this.getStoreInfo().getImplementation(AssociativeStore.class);
-            return renderer.hasRendition(getAssociation(), this.getPropertyPath(), mimeType.toString());
+        Renderable<S> renderer = renderableStore();
+        if (renderer == null) {
+            return false;
         }
-
-        return false;
+        return renderer.hasRendition(getAssociation(), this.getPropertyPath(), mimeType.toString());
     }
 
     @Override
     public InputStream renderAs(org.springframework.util.MimeType mimeType) {
-
-        if (Renderable.class.isAssignableFrom(this.getStoreInfo().getInterface())) {
-
-            Renderable renderer = (Renderable) this.getStoreInfo().getImplementation(AssociativeStore.class);
-            return renderer.getRendition(getAssociation(), this.getPropertyPath(), mimeType.toString());
+        Renderable<S> renderer = renderableStore();
+        if (renderer == null) {
+            return null;
         }
+        return renderer.getRendition(getAssociation(), this.getPropertyPath(), mimeType.toString());
+    }
 
-        return null;
+    @SuppressWarnings("unchecked")
+    private @Nullable Renderable<S> renderableStore() {
+        if (!Renderable.class.isAssignableFrom(this.getStoreInfo().getInterface())) {
+            return null;
+        }
+        return (Renderable<S>) this.getStoreInfo().getImplementation(AssociativeStore.class);
     }
 
     @Override
     public Object getETag() {
-
         Object etag = BeanUtils.getFieldWithAnnotation(entity, Version.class);
         if (etag == null) {
             etag = "";
@@ -136,7 +114,6 @@ public class AssociatedStoreResourceImpl<S> implements HttpResource, AssociatedS
 
     @Override
     public MediaType getMimeType() {
-
         Object mimeType = this.getContentProperty().getMimeType(this.getAssociation());
 
         return MediaType.valueOf(mimeType != null ? mimeType.toString() : MediaType.ALL_VALUE);
@@ -144,9 +121,8 @@ public class AssociatedStoreResourceImpl<S> implements HttpResource, AssociatedS
 
     @Override
     public long contentLength() throws IOException {
-
         // TODO: can we remove this is all properties are effectively embedded?
-//      Long contentLength = null; (Long) BeanUtils.getFieldWithAnnotation(property, ContentLength.class);
+        // Long contentLength = null; (Long) BeanUtils.getFieldWithAnnotation(property, ContentLength.class);
         Long contentLength = (Long) this.getContentProperty().getContentLength(this.getAssociation());
         if (contentLength == null) {
             contentLength = getDelegate().contentLength();
@@ -156,29 +132,16 @@ public class AssociatedStoreResourceImpl<S> implements HttpResource, AssociatedS
 
     @Override
     public long lastModified() throws IOException {
-
-        // TODO: can we remove this is all properties are effectively embedded?
-        Object lastModified = null; //BeanUtils.getFieldWithAnnotation(property, LastModifiedDate.class);
-        if (lastModified == null && getDelegate() != null) {
-            return getDelegate().lastModified();
+        Resource delegate = getDelegate();
+        if (delegate != null) {
+            return delegate.lastModified();
         }
-
-        if (lastModified != null) {
-            return Stream.of(lastModified)
-                .map(it -> getConversionService().convert(it, Date.class))//
-                .map(it -> getConversionService().convert(it, Instant.class))//
-                .map(it -> it.toEpochMilli())
-                .findFirst().orElseThrow(() -> new IllegalArgumentException(format("Invalid data type for @LastModifiedDate on Entity %s", this.getAssociation())));
-        }
-
         return -1L;
     }
 
     @Override
-    public HttpHeaders getResponseHeaders() {
-
+    public @NonNull HttpHeaders getResponseHeaders() {
         HttpHeaders headers = new HttpHeaders();
-
         // Modified to show download
         Object originalFileName = this.getContentProperty().getOriginalFileName(this.getAssociation());
         if (originalFileName != null && StringUtils.hasText(originalFileName.toString())) {
@@ -191,7 +154,7 @@ public class AssociatedStoreResourceImpl<S> implements HttpResource, AssociatedS
 
     @Override
     public boolean exists() {
-        return (original != null ? original.exists() : false);
+        return contentProperty.getContentId(entity) != null;
     }
 
     @Override
@@ -210,43 +173,42 @@ public class AssociatedStoreResourceImpl<S> implements HttpResource, AssociatedS
     }
 
     @Override
-    public URL getURL() throws IOException {
+    public @NonNull URL getURL() throws IOException {
         return original.getURL();
     }
 
     @Override
-    public URI getURI() throws IOException {
+    public @NonNull URI getURI() throws IOException {
         return original.getURI();
     }
 
     @Override
-    public File getFile() throws IOException {
+    public @NonNull File getFile() throws IOException {
         return original.getFile();
     }
 
     @Override
-    public ReadableByteChannel readableChannel() throws IOException {
+    public @NonNull ReadableByteChannel readableChannel() throws IOException {
         return original.readableChannel();
     }
 
     @Override
-    public Resource createRelative(String relativePath) throws IOException {
+    public @NonNull Resource createRelative(@NonNull String relativePath) throws IOException {
         return original.createRelative(relativePath);
     }
 
     @Override
-    @Nullable
     public String getFilename() {
         return original.getFilename();
     }
 
     @Override
-    public String getDescription() {
+    public @NonNull String getDescription() {
         return original.getDescription();
     }
 
     @Override
-    public InputStream getInputStream() throws IOException {
+    public @NonNull InputStream getInputStream() throws IOException {
         return original.getInputStream();
     }
 
@@ -256,21 +218,18 @@ public class AssociatedStoreResourceImpl<S> implements HttpResource, AssociatedS
     }
 
     @Override
-    public OutputStream getOutputStream()
-        throws IOException {
+    public @NonNull OutputStream getOutputStream() throws IOException {
         return ((WritableResource) original).getOutputStream();
     }
 
     @Override
-    public WritableByteChannel writableChannel()
-        throws IOException {
+    public @NonNull WritableByteChannel writableChannel() throws IOException {
         return ((WritableResource) original).writableChannel();
     }
 
 
     @Override
-    public void delete()
-        throws IOException {
+    public void delete() throws IOException {
         ((DeletableResource) original).delete();
     }
 

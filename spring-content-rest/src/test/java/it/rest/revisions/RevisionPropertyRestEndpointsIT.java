@@ -1,5 +1,6 @@
 package it.rest.revisions;
 
+import org.springframework.http.MediaType;
 import internal.org.springframework.content.rest.scoped.revision.RevisionPropertyEntity;
 import internal.org.springframework.content.rest.scoped.revision.RevisionPropertyEntityRepository;
 import internal.org.springframework.content.rest.scoped.revision.RevisionPropertyEntityStore;
@@ -96,7 +97,7 @@ public class RevisionPropertyRestEndpointsIT {
 
                     testEntity = repository.save(new RevisionPropertyEntity());
                     testEntity = store.setContent(testEntity, TestSupportData.sampleTextStream());
-                    testEntity.setMimeType("text/plain");
+                    testEntity.setMimeType(MediaType.TEXT_PLAIN_VALUE);
                     testEntity = repository.save(testEntity);
 
                     assertThat(repository.findRevisions(testEntity.getId()).toList().size()).isEqualTo(2);
@@ -106,7 +107,7 @@ public class RevisionPropertyRestEndpointsIT {
                 void shouldReturn404() throws Exception {
                     mvc.perform(
                             get("/revisionPropertyEntities/" + testEntity.getId() + "/revisions/1/content").
-                                accept("text/plain")).
+                                accept(MediaType.TEXT_PLAIN_VALUE)).
                         andExpect(status().isNotFound());
                 }
             }
@@ -120,7 +121,7 @@ public class RevisionPropertyRestEndpointsIT {
 
                     testEntity = repository.save(new RevisionPropertyEntity());
                     testEntity = store.setContent(testEntity, TestSupportData.sampleTextStream());
-                    testEntity.setMimeType("text/plain");
+                    testEntity.setMimeType(MediaType.TEXT_PLAIN_VALUE);
                     testEntity = repository.save(testEntity);
 
                     assertThat(repository.findRevisions(testEntity.getId()).toList().size()).isEqualTo(2);
@@ -134,7 +135,7 @@ public class RevisionPropertyRestEndpointsIT {
                     MockHttpServletResponse response =
                         mvc.perform(
                                 get("/revisionPropertyEntities/" + testEntity.getId() + "/revisions/" + revisionId + "/content").
-                                    accept("text/plain")).
+                                    accept(MediaType.TEXT_PLAIN_VALUE)).
                             andExpect(status().isOk()).
                             andReturn().getResponse();
 

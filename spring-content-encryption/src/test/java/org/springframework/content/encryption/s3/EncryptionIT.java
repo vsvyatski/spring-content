@@ -1,43 +1,19 @@
 package org.springframework.content.encryption.s3;
 
-import internal.org.springframework.content.fs.boot.autoconfigure.FileSystemContentAutoConfiguration;
-import internal.org.springframework.content.rest.boot.autoconfigure.ContentRestAutoConfiguration;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import io.restassured.module.mockmvc.response.MockMvcResponse;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.http.HttpStatus;
-import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.content.encryption.LocalStack;
-import org.springframework.content.encryption.VaultContainerSupport;
-import org.springframework.content.encryption.config.EncryptingContentStoreConfigurer;
-import org.springframework.content.encryption.engine.ContentEncryptionEngine.EncryptionParameters;
-import org.springframework.content.encryption.keys.DataEncryptionKeyWrapper;
-import org.springframework.content.encryption.keys.StoredDataEncryptionKey;
-import org.springframework.content.encryption.keys.StoredDataEncryptionKey.EncryptedSymmetricDataEncryptionKey;
-import org.springframework.content.encryption.keys.VaultTransitDataEncryptionKeyWrapper;
-import org.springframework.content.s3.config.EnableS3Stores;
-import org.springframework.content.test.support.TestSupportPackages;
 import org.springframework.content.test.support.encryption.FsFile;
 import org.springframework.content.test.support.encryption.FsFileRepository;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.vault.authentication.ClientAuthentication;
-import org.springframework.vault.authentication.TokenAuthentication;
-import org.springframework.vault.client.VaultEndpoint;
-import org.springframework.vault.config.AbstractVaultConfiguration;
 import org.springframework.vault.core.VaultTemplate;
 import org.springframework.web.context.WebApplicationContext;
 import software.amazon.awssdk.core.ResponseInputStream;
@@ -45,16 +21,16 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.nio.charset.Charset;
-import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@SpringBootTest(classes = EncryptionIT.Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ExtendWith(SpringExtension.class)
 public class EncryptionIT {
 
@@ -74,72 +50,6 @@ public class EncryptionIT {
     @Autowired
     private VaultTemplate vaultTemplate;
     private FsFile f;
-
-    @SpringBootApplication(exclude = {FileSystemContentAutoConfiguration.class})
-    @ImportAutoConfiguration(ContentRestAutoConfiguration.class)
-    @EnableJpaRepositories(basePackages = TestSupportPackages.ENCRYPTION, considerNestedRepositories = true)
-    @EnableS3Stores(basePackages = "org.springframework.content.encryption.s3")
-    static class Application {
-        public static void main(String[] args) {
-            SpringApplication.run(Application.class, args);
-        }
-
-        @Configuration
-        public static class Config extends AbstractVaultConfiguration {
-
-            @Override
-            public @NonNull VaultEndpoint vaultEndpoint() {
-
-                String host = VaultContainerSupport.getVaultContainer().getHost();
-                int port = VaultContainerSupport.getVaultContainer().getFirstMappedPort();
-
-                VaultEndpoint vault = VaultEndpoint.create(host, port);
-                vault.setScheme("http");
-                return vault;
-            }
-
-            @Override
-            public @NonNull ClientAuthentication clientAuthentication() {
-                return new TokenAuthentication("my-root-token");
-            }
-
-            @Bean
-            public S3Client amazonS3() throws URISyntaxException {
-                return LocalStack.getAmazonS3Client();
-            }
-
-            @Bean
-            public EncryptingContentStoreConfigurer<EncryptedS3FileStore> config() {
-                return config -> config.encryptionKeyContentProperty("key")
-                    .dataEncryptionKeyWrappers(List.of(
-                        new EncryptingOnlyKeyWrapper(), // A fake wrapper that only supports encrypt operation
-                        new VaultTransitDataEncryptionKeyWrapper(
-                            vaultTemplate().opsForTransit(),
-                            "my-key"
-                        )
-                    ));
-            }
-        }
-    }
-
-    private static class EncryptingOnlyKeyWrapper implements DataEncryptionKeyWrapper<EncryptedSymmetricDataEncryptionKey> {
-        @Override
-        public boolean supports(StoredDataEncryptionKey storedDataEncryptionKey) {
-            return false;
-        }
-
-        @Override
-        public EncryptedSymmetricDataEncryptionKey wrapEncryptionKey(EncryptionParameters dataEncryptionParameters) {
-            return new EncryptedSymmetricDataEncryptionKey("drop", "", "", dataEncryptionParameters.secretKey().getAlgorithm(),
-                ArrayUtils.EMPTY_BYTE_ARRAY, ArrayUtils.EMPTY_BYTE_ARRAY);
-        }
-
-        @Override
-        public EncryptionParameters unwrapEncryptionKey(
-            EncryptedSymmetricDataEncryptionKey encryptedDataEncryptionKey) {
-            throw new IllegalArgumentException("Can not unwrap encryption key");
-        }
-    }
 
     @Nested
     @DisplayName("Given content")
@@ -185,9 +95,10 @@ public class EncryptionIT {
                 assertThat(fetched.isPresent()).isTrue();
                 f = fetched.get();
 
+                UUID contentId = Objects.requireNonNull(f.getContentId());
                 GetObjectRequest getObjectRequest = GetObjectRequest.builder()
                     .bucket("test-bucket")
-                    .key(f.getContentId().toString())
+                    .key(contentId.toString())
                     .build();
 
                 ResponseInputStream<GetObjectResponse> resp = client.getObject(getObjectRequest);
@@ -326,7 +237,7 @@ public class EncryptionIT {
             @Test
             void itShouldRemoveTheContentAndClearTheContentKey() {
                 f = repo.findById(f.getId()).orElseThrow();
-                String contentId = f.getContentId().toString();
+                UUID contentId = Objects.requireNonNull(f.getContentId());
 
                 given()
                     .delete("/files/" + f.getId() + "/content")
@@ -338,7 +249,7 @@ public class EncryptionIT {
 
                 HeadObjectRequest getObjectRequest = HeadObjectRequest.builder()
                     .bucket("test-bucket")
-                    .key(contentId)
+                    .key(contentId.toString())
                     .build();
 
                 assertThatThrownBy(() -> client.headObject(getObjectRequest))

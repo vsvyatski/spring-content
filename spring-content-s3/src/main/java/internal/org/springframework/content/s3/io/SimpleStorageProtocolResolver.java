@@ -6,7 +6,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.task.SyncTaskExecutor;
 import org.springframework.core.task.TaskExecutor;
-
 import software.amazon.awssdk.services.s3.S3Client;
 
 /**

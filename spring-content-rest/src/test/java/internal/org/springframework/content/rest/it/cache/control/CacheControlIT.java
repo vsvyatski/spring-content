@@ -3,7 +3,6 @@ package internal.org.springframework.content.rest.it.cache.control;
 import internal.org.springframework.content.rest.support.UuidSingleContentEntity;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.content.fs.store.FileSystemContentStore;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -30,27 +30,21 @@ public class CacheControlIT {
     @Autowired
     private WebApplicationContext webApplicationContext;
 
-    public interface CacheControlRepository extends CrudRepository<UuidSingleContentEntity, Long> {
-    }
-
-    private interface CacheControlStore extends FileSystemContentStore<UuidSingleContentEntity, UUID> {
-    }
-
     @BeforeEach
     void setUp() {
         RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
     }
 
     @Test
-    void givenThePatternMatchesItShouldApplyTheConfiguredCacheSettings() {
+    void givenPatternMatchesItShouldApplyConfiguredCacheSettings() {
         UuidSingleContentEntity entity = new UuidSingleContentEntity();
         entity = repo.save(entity);
         entity = store.setContent(entity, new ByteArrayInputStream("some content".getBytes()));
-        entity.setMimeType("text/plain");
+        entity.setMimeType(MediaType.TEXT_PLAIN_VALUE);
         entity = repo.save(entity);
 
         given()
-            .accept("text/plain")
+            .accept(MediaType.TEXT_PLAIN_VALUE)
             .when()
             .get("/uuidSingleContentEntities/" + entity.getId())
             .then()
@@ -59,19 +53,25 @@ public class CacheControlIT {
     }
 
     @Test
-    void givenThePatternDoesntMatchItShouldNotApplyTheConfiguredCacheSettings() {
+    void givenPatternDoesntMatchItShouldNotApplyConfiguredCacheSettings() {
         UuidSingleContentEntity entity = new UuidSingleContentEntity();
         entity = repo.save(entity);
         entity = store.setContent(entity, new ByteArrayInputStream("some content".getBytes()));
-        entity.setMimeType("text/plain");
+        entity.setMimeType(MediaType.TEXT_PLAIN_VALUE);
         entity = repo.save(entity);
 
         given()
-            .accept("text/plain")
+            .accept(MediaType.TEXT_PLAIN_VALUE)
             .when()
             .get("/uuidSingleContentEntities/" + entity.getId() + "/content")
             .then()
             .statusCode(200)
             .header("Cache-Control", "no-cache, no-store, max-age=0, must-revalidate");
+    }
+
+    public interface CacheControlRepository extends CrudRepository<UuidSingleContentEntity, Long> {
+    }
+
+    private interface CacheControlStore extends FileSystemContentStore<UuidSingleContentEntity, UUID> {
     }
 }

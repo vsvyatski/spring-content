@@ -34,6 +34,7 @@ Temporary Items
 *.icloud
 
 ### Maven ###
+.flattened-pom.xml
 target/
 pom.xml.tag
 pom.xml.releaseBackup
@@ -43,6 +44,10 @@ release.properties
 dependency-reduced-pom.xml
 buildNumber.properties
 .mvn/timing.properties
+
+# Legacy Travis GPG export (use GitHub MAVEN_GPG_* secrets in CI instead)
+codesigning.asc.enc
+codesigning.asc
 
 # Eclipse m2e generated files
 # Eclipse Core

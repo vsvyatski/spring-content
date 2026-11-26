@@ -4,8 +4,6 @@ import internal.org.springframework.content.rest.support.AuditedNestedContentEnt
 import org.springframework.content.fs.store.FileSystemContentStore;
 import org.springframework.content.rest.StoreRestResource;
 
-import java.util.UUID;
-
 @StoreRestResource(path = "files", linkRel = "foo")
-public interface LinkRelAuditedNestedContentEntityStore extends FileSystemContentStore<AuditedNestedContentEntity, UUID> {
+public interface LinkRelAuditedNestedContentEntityStore extends FileSystemContentStore<AuditedNestedContentEntity, String> {
 }

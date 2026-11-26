@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.content.commons.store.ContentStore;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
@@ -79,7 +80,7 @@ public class VersionTests {
                 .andExpect(status().is2xxSuccessful()).andReturn().getResponse().getHeader("Location");
             assertThat(entityUrl).isNotNull();
 
-            String body = mvc.perform(get(entityUrl).accept("application/json"))
+            String body = mvc.perform(get(entityUrl).accept(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().is2xxSuccessful()).andReturn().getResponse().getContentAsString();
 
             ObjectMapper objectMapper = new ObjectMapper();
@@ -88,11 +89,11 @@ public class VersionTests {
             JsonNode contentNode = linksNode.get(contentLinkRel);
             String contentHref = contentNode.get("href").asText();
 
-            mvc.perform(put(contentHref).header("If-Match", "\"0\"").contentType("text/plain").content("Hello world!"))
+            mvc.perform(put(contentHref).header("If-Match", "\"0\"").contentType(MediaType.TEXT_PLAIN_VALUE).content("Hello world!"))
                 .andExpect(status().is2xxSuccessful());  // Content created
             mvc.perform(delete(contentHref).header("If-Match", "\"1\""))
                 .andExpect(status().is2xxSuccessful());  // User A
-            mvc.perform(put(contentHref).header("If-Match", "\"1\"").contentType("text/plain").content("foo bar"))
+            mvc.perform(put(contentHref).header("If-Match", "\"1\"").contentType(MediaType.TEXT_PLAIN_VALUE).content("foo bar"))
                 .andExpect(status().isPreconditionFailed());  // User B
         }
     }
@@ -104,7 +105,7 @@ public class VersionTests {
         void shouldReturnEtagHeader() throws Exception {
             MockHttpServletResponse response = mvc
                 .perform(get(url)
-                    .accept("text/plain"))
+                    .accept(MediaType.TEXT_PLAIN_VALUE))
                 .andExpect(status().isOk())
                 .andExpect(header().string("etag", is(etag)))
                 .andReturn().getResponse();
@@ -120,7 +121,7 @@ public class VersionTests {
         @Test
         void shouldRespondWith304NotModified() throws Exception {
             mvc.perform(get(url)
-                    .accept("text/plain")
+                    .accept(MediaType.TEXT_PLAIN_VALUE)
                     .header("if-none-match", etag))
                 .andExpect(status().isNotModified());
         }
@@ -133,7 +134,7 @@ public class VersionTests {
         void shouldRespondWithContent() throws Exception {
             MockHttpServletResponse response = mvc
                 .perform(get(url)
-                    .accept("text/plain")
+                    .accept(MediaType.TEXT_PLAIN_VALUE)
                     .header("if-none-match", "\"999\""))
                 .andExpect(status().isOk())
                 .andExpect(header().string("etag", is(etag)))
@@ -181,7 +182,7 @@ public class VersionTests {
         @Test
         void shouldDeleteContentAttributesAndReturn204() throws Exception {
             mvc.perform(delete(url)
-                    .contentType("text/plain"))
+                    .contentType(MediaType.TEXT_PLAIN_VALUE))
                 .andExpect(status().isNoContent());
 
             if (entity != null) {
@@ -202,7 +203,7 @@ public class VersionTests {
         void shouldRespondWith412PreconditionFailed() throws Exception {
             mvc.perform(put(url)
                     .content("Hello Modified Spring Content World!")
-                    .contentType("text/plain")
+                    .contentType(MediaType.TEXT_PLAIN_VALUE)
                     .header("if-match", "\"999\""))
                 .andExpect(status().isPreconditionFailed());
         }
@@ -215,7 +216,7 @@ public class VersionTests {
         void shouldRespondWith412PreconditionFailed() throws Exception {
             mvc.perform(put(url)
                     .content("Hello Modified Spring Content World!")
-                    .contentType("text/plain")
+                    .contentType(MediaType.TEXT_PLAIN_VALUE)
                     .header("if-none-match", etag))
                 .andExpect(status().isPreconditionFailed());
         }
@@ -228,7 +229,7 @@ public class VersionTests {
         void shouldRespondWith200OKAndSetContent() throws Exception {
             mvc.perform(put(url)
                     .content("Hello Modified Spring Content World!")
-                    .contentType("text/plain")
+                    .contentType(MediaType.TEXT_PLAIN_VALUE)
                     .header("if-none-match", "\"999\""))
                 .andExpect(status().isOk());
         }
@@ -241,7 +242,7 @@ public class VersionTests {
         void shouldRespondWith412PreconditionFailed() throws Exception {
             mvc.perform(put(url)
                     .content("Hello Modified Spring Content World!")
-                    .contentType("text/plain")
+                    .contentType(MediaType.TEXT_PLAIN_VALUE)
                     .header("if-match", etag)
                     .header("if-none-match", etag))
                 .andExpect(status().isPreconditionFailed());
@@ -254,9 +255,8 @@ public class VersionTests {
         @Test
         void shouldRespondWith412PreconditionFailed() throws Exception {
             mvc.perform(multipart(url)
-                    .file(new MockMultipartFile("file",
-                        "tests-file-modified.txt",
-                        "text/plain", "Hello Spring Content World!".getBytes()))
+                    .file(new MockMultipartFile("file", "tests-file-modified.txt",
+                        MediaType.TEXT_PLAIN_VALUE, "Hello Spring Content World!".getBytes()))
                     .header("if-match", "\"999\""))
                 .andExpect(status().isPreconditionFailed());
         }
@@ -267,8 +267,7 @@ public class VersionTests {
     class DeleteWithNonMatchingIfMatchHeader {
         @Test
         void shouldRespondWith412PreconditionFailed() throws Exception {
-            mvc.perform(delete(url)
-                    .header("if-match", "\"999\""))
+            mvc.perform(delete(url).header("if-match", "\"999\""))
                 .andExpect(status().isPreconditionFailed());
         }
     }

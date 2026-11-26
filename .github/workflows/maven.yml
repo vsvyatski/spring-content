@@ -1,8 +1,8 @@
-name: Main Build
+name: Develop build
 
 on:
   push:
-    branches: [ main ]
+    branches: [ develop ]
     tags:
       - '*'
     paths-ignore:
@@ -42,12 +42,13 @@ jobs:
           
           set -eux
           
+          REVISION_ARG=""
           if [[ "${GITHUB_REF}" == *"tags"* ]]; then
               TAG="${GITHUB_REF#refs/tags/}"
-              mvn -B versions:set -DnewVersion="${TAG}" --file pom.xml
+              REVISION_ARG="-Drevision=${TAG}"
           fi
           
-          mvn -B -DskipTests=true -P ci,docs deploy --file pom.xml
+          mvn -B ${REVISION_ARG} -DskipTests=true -P ci,docs deploy --file pom.xml
 
         env:
           GITHUB_USERNAME: ${{ secrets.CI_USERNAME }}
@@ -67,15 +68,16 @@ jobs:
           
           set -eux
           
+          REVISION_ARG=""
           if [[ "${GITHUB_REF}" == *"tags"* ]]; then
               TAG="${GITHUB_REF#refs/tags/}"
               export BUILD_TYPE=release/"${TAG}"
-              mvn -B versions:set -DnewVersion="${TAG}" --file pom.xml
+              REVISION_ARG="-Drevision=${TAG}"
           else
               export BUILD_TYPE=snapshot/"${GITHUB_REF#refs/heads/}"
           fi
           
-          mvn -B -U -P docs generate-resources -DskipTests=true -Dmaven.javadoc.skip=true
+          mvn -B ${REVISION_ARG} -U -P docs generate-resources -DskipTests=true -Dmaven.javadoc.skip=true
           
           git config --global user.email "${CI_EMAIL}"
           git config --global user.name "${CI_USERNAME}"

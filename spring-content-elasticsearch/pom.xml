@@ -4,7 +4,7 @@
   <parent>
     <groupId>io.github.vsvyatski</groupId>
     <artifactId>spring-content</artifactId>
-    <version>4.1.0-SNAPSHOT</version>
+    <version>${revision}</version>
   </parent>
 
   <artifactId>spring-content-elasticsearch</artifactId>
@@ -28,7 +28,6 @@
     <dependency>
       <groupId>co.elastic.clients</groupId>
       <artifactId>elasticsearch-java</artifactId>
-      <version>${elastic-client.version}</version>
     </dependency>
 
     <!-- Test Dependencies -->
@@ -74,8 +73,7 @@
     </dependency>
     <dependency>
       <groupId>org.testcontainers</groupId>
-      <artifactId>elasticsearch</artifactId>
-      <version>${test-containers.version}</version>
+      <artifactId>testcontainers-elasticsearch</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

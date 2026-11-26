@@ -16,6 +16,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -73,7 +74,7 @@ public class GenericBlobResourceTest {
             @DisplayName("Given asql exception is thrown")
             class SQLExceptionIsThrown {
                 @BeforeEach
-                void setUp() throws IOException, SQLException {
+                void setUp() throws SQLException {
                     ds = mock(DataSource.class);
                     template = new JdbcTemplate(ds);
                     txnMgr = new DataSourceTransactionManager(ds);
@@ -88,12 +89,11 @@ public class GenericBlobResourceTest {
 
                     when(rs.next()).thenThrow(new SQLException("badness"));
                     resource = new GenericBlobResource("some-id", template, txnMgr);
-                    result = resource.getInputStream();
                 }
 
                 @Test
-                void shouldReturnNull() {
-                    assertThat(result).isNull();
+                void shouldThrowIOException() {
+                    assertThatThrownBy(() -> resource.getInputStream()).isInstanceOf(IOException.class);
                 }
             }
         }

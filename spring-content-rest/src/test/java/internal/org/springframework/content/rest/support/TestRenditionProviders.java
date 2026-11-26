@@ -1,5 +1,6 @@
 package internal.org.springframework.content.rest.support;
 
+import org.springframework.http.MediaType;
 import org.apache.commons.io.IOUtils;
 import org.springframework.content.commons.renditions.RenditionProvider;
 
@@ -11,7 +12,7 @@ import java.nio.charset.StandardCharsets;
 /**
  * Minimal rendition providers shared by REST integration test configurations.
  *
- * @author Vladimir Syatsky
+ * @author Vladimir Svyatski
  */
 public final class TestRenditionProviders {
 
@@ -19,11 +20,11 @@ public final class TestRenditionProviders {
     }
 
     public static RenditionProvider textPlainToHtml() {
-        return minimalHtmlRendition("text/plain");
+        return minimalHtmlRendition(MediaType.TEXT_PLAIN_VALUE);
     }
 
     public static RenditionProvider htmlToHtml() {
-        return minimalHtmlRendition("text/html");
+        return minimalHtmlRendition(MediaType.TEXT_HTML_VALUE);
     }
 
     private static RenditionProvider minimalHtmlRendition(String consumes) {
@@ -36,7 +37,7 @@ public final class TestRenditionProviders {
 
             @Override
             public String[] produces() {
-                return new String[]{"text/html"};
+                return new String[]{MediaType.TEXT_HTML_VALUE};
             }
 
             @Override

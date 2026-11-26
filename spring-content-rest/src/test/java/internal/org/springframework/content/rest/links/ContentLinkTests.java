@@ -3,6 +3,7 @@ package internal.org.springframework.content.rest.links;
 import com.theoryinpractise.halbuilder.api.ReadableRepresentation;
 import com.theoryinpractise.halbuilder.api.RepresentationFactory;
 import com.theoryinpractise.halbuilder.standard.StandardRepresentationFactory;
+import internal.org.springframework.content.rest.support.RestTestMediaTypes;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -43,14 +44,14 @@ public class ContentLinkTests {
 
     protected void assertContentLinkInHalResponse() throws Exception {
         MockHttpServletResponse response = mvc.perform(get(url)
-                .accept("application/hal+json")
+                .accept(RestTestMediaTypes.APPLICATION_HAL_JSON_VALUE)
                 .contextPath(contextPath))
             .andExpect(status().isOk()).andReturn().getResponse();
         assertThat(response).isNotNull();
 
         RepresentationFactory representationFactory = new StandardRepresentationFactory();
         ReadableRepresentation halResponse = representationFactory
-            .readRepresentation("application/hal+json",
+            .readRepresentation(RestTestMediaTypes.APPLICATION_HAL_JSON_VALUE,
                 new StringReader(response.getContentAsString()));
 
         assertThat(halResponse).isNotNull();

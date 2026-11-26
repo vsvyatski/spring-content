@@ -172,11 +172,10 @@ public class DefaultJpaStoreImplTest {
                         entity = new SingleContentFields();
                         entity.setContentId(id);
 
-                        when(blobResourceLoader.getResource(id))
-                            .thenReturn(resource);
+                        when(blobResourceLoader.getResource(id)).thenReturn(resource);
+                        when(resource.exists()).thenReturn(true);
 
-                        stream = new ByteArrayInputStream(
-                            "hello content world!".getBytes());
+                        stream = new ByteArrayInputStream("hello content world!".getBytes());
 
                         when(resource.getInputStream()).thenReturn(stream);
 
@@ -211,11 +210,10 @@ public class DefaultJpaStoreImplTest {
                         entity = new SingleContentFields();
                         entity.setContentId(id);
 
-                        when(blobResourceLoader.getResource(id))
-                            .thenReturn(resource);
+                        when(blobResourceLoader.getResource(id)).thenReturn(resource);
+                        when(resource.exists()).thenReturn(true);
 
-                        when(resource.getInputStream())
-                            .thenThrow(new IOException("get-ioexception"));
+                        when(resource.getInputStream()).thenThrow(new IOException("get-ioexception"));
                         store = spy(new DefaultJpaStoreImpl<>(blobResourceLoader, null, 8096));
                         try {
                             inputStream = store.getContent(entity);
@@ -249,8 +247,7 @@ public class DefaultJpaStoreImplTest {
                         "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}")))
                         .thenReturn(resource);
                     outputStream = mock(OutputStream.class);
-                    when(((BlobResource) resource).getOutputStream())
-                        .thenReturn(outputStream);
+                    when(((BlobResource) resource).getOutputStream()).thenReturn(outputStream);
                     when(((BlobResource) resource).getId()).thenReturn(12345);
 
                     store = spy(new DefaultJpaStoreImpl<>(blobResourceLoader, null, 8096));
@@ -375,8 +372,7 @@ public class DefaultJpaStoreImplTest {
                     entity = new SingleContentFields();
                     entity.setContentId(id);
 
-                    when(blobResourceLoader.getResource(id))
-                        .thenReturn(blobResource);
+                    when(blobResourceLoader.getResource(id)).thenReturn(blobResource);
 
                     store = spy(new DefaultJpaStoreImpl<>(blobResourceLoader, null, 8096));
                     try {
@@ -402,8 +398,7 @@ public class DefaultJpaStoreImplTest {
                         entity = new SingleContentFields();
                         entity.setContentId(id);
 
-                        when(blobResourceLoader.getResource(id))
-                            .thenReturn(blobResource);
+                        when(blobResourceLoader.getResource(id)).thenReturn(blobResource);
 
                         doThrow(new IOException("unset-ioexception")).when(blobResource).delete();
                         store = spy(new DefaultJpaStoreImpl<>(blobResourceLoader, null, 8096));
@@ -494,7 +489,7 @@ public class DefaultJpaStoreImplTest {
                 }
 
                 @Test
-                void shouldNOTResetContentId() {
+                void shouldNotResetContentId() {
                     assertThat(springAnnotatedEntity.getContentId()).isEqualTo(id);
                 }
             }

@@ -84,7 +84,7 @@ public class RepositoryEntityMultipartController {
     }
 
     @ResponseBody
-    @PostMapping(value = ENTITY_POST_MAPPING, consumes = "multipart/form-data")
+    @PostMapping(value = ENTITY_POST_MAPPING, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Transactional
     public ResponseEntity<RepresentationModel<?>> createEntityAndContent(RootResourceInformation repoInfo, PersistentEntityResource payload, PersistentEntityResourceAssembler assembler, @PathVariable("repository") String repository, @RequestHeader HttpHeaders headers, MultipartHttpServletRequest req, HttpServletResponse resp)
         throws IOException, MethodNotAllowedException, HttpRequestMethodNotSupportedException {
