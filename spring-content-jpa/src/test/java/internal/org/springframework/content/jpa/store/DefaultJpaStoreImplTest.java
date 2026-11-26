@@ -373,6 +373,7 @@ public class DefaultJpaStoreImplTest {
                     entity.setContentId(id);
 
                     when(blobResourceLoader.getResource(id)).thenReturn(blobResource);
+                    when(blobResource.exists()).thenReturn(true);
 
                     store = spy(new DefaultJpaStoreImpl<>(blobResourceLoader, null, 8096));
                     try {
@@ -399,6 +400,7 @@ public class DefaultJpaStoreImplTest {
                         entity.setContentId(id);
 
                         when(blobResourceLoader.getResource(id)).thenReturn(blobResource);
+                        when(blobResource.exists()).thenReturn(true);
 
                         doThrow(new IOException("unset-ioexception")).when(blobResource).delete();
                         store = spy(new DefaultJpaStoreImpl<>(blobResourceLoader, null, 8096));

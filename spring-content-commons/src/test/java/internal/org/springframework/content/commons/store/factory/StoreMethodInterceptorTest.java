@@ -649,6 +649,17 @@ public class StoreMethodInterceptorTest {
                 inOrder.verify(publisher).publishEvent(isA(AfterAssociateEvent.class));
             }
         }
+
+        @Test
+        void rejectNullContentId() {
+            publisher = mock(ApplicationEventPublisher.class);
+            store = CommonsTestStores.mockContentStore();
+            invocation = new TestMethodInvocation(store, associateMethod, "entity", null);
+            attachInterceptor(store, publisher);
+            invokeInterceptor();
+            assertThat(e).isInstanceOf(IllegalArgumentException.class)
+                .hasMessage(StoreEntityValidation.CONTENT_ID_MUST_NOT_BE_NULL);
+        }
     }
 
     @Nested

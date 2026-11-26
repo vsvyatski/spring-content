@@ -1324,8 +1324,29 @@ public class DefaultFileSystemStoresImplTest {
         }
 
         @Test
+        void setContentRejectsNullContent() {
+            assertThatThrownBy(() -> store.setContent(new SingleContentFields(), (InputStream) null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage(StoreEntityValidation.CONTENT_MUST_NOT_BE_NULL);
+        }
+
+        @Test
         void associateRejectsNullEntity() {
             assertNullEntityRejected(() -> store.associate(null, SAMPLE_CONTENT_ID));
+        }
+
+        @Test
+        void associateRejectsNullContentId() {
+            assertThatThrownBy(() -> store.associate(new SingleContentFields(), null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage(StoreEntityValidation.CONTENT_ID_MUST_NOT_BE_NULL);
+        }
+
+        @Test
+        void associateWithPropertyPathRejectsNullContentId() {
+            assertThatThrownBy(() -> store.associate(new SingleContentFields(), PropertyPath.from("content"), null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage(StoreEntityValidation.CONTENT_ID_MUST_NOT_BE_NULL);
         }
 
         @Test

@@ -1,6 +1,7 @@
 package org.springframework.content.commons.store.factory;
 
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.content.commons.property.PropertyPath;
@@ -33,105 +34,97 @@ public class AbstractStoreFactoryBeanTest {
         }
     }
 
-    public static class TestConfigStoreImpl
-        implements ContentStore<Object, Serializable> {
+    @NullMarked
+    public static class TestConfigStoreImpl implements ContentStore<Object, Serializable> {
 
         @Override
-        public Object setContent(@NonNull Object property, InputStream content) {
+        public Object setContent(Object property, InputStream content) {
+            return property;
+        }
+
+        @Override
+        public Object setContent(Object property, Resource resourceContent) {
+            return property;
+        }
+
+        @Override
+        public Object unsetContent(Object property) {
+            return property;
+        }
+
+        @Override
+        public @Nullable InputStream getContent(Object property) {
             return null;
         }
 
         @Override
-        public Object setContent(@NonNull Object property, Resource resourceContent) {
+        public @Nullable Resource getResource(Object entity) {
             return null;
         }
 
         @Override
-        public Object unsetContent(@NonNull Object property) {
+        public void associate(Object entity, Serializable id) {
+        }
+
+        @Override
+        public void unassociate(Object entity) {
+        }
+
+        @Override
+        public @Nullable Resource getResource(Serializable id) {
             return null;
         }
 
         @Override
-        public InputStream getContent(@NonNull Object property) {
+        public @Nullable Resource getResource(Object entity, PropertyPath propertyPath) {
             return null;
         }
 
         @Override
-        public Resource getResource(@NonNull Object entity) {
+        public @Nullable Resource getResource(Object entity, PropertyPath propertyPath, GetResourceParams params) {
             return null;
         }
 
         @Override
-        public void associate(@NonNull Object entity, Serializable id) {
+        public void associate(Object entity, PropertyPath propertyPath, Serializable id) {
         }
 
         @Override
-        public void unassociate(@NonNull Object entity) {
+        public void unassociate(Object entity, PropertyPath propertyPath) {
         }
 
         @Override
-        public Resource getResource(Serializable id) {
-            return null;
+        public Object setContent(Object property, PropertyPath propertyPath, InputStream content) {
+            return property;
         }
 
         @Override
-        public Resource getResource(@NonNull Object entity, @NonNull PropertyPath propertyPath) {
-            // TODO Auto-generated method stub
-            return null;
+        public Object setContent(Object property, PropertyPath propertyPath, InputStream content, long contentLen) {
+            return property;
         }
 
         @Override
-        public Resource getResource(@NonNull Object entity, @NonNull PropertyPath propertyPath, @NonNull GetResourceParams params) {
-            // TODO Auto-generated method stub
-            return null;
+        public Object setContent(Object entity, PropertyPath propertyPath, InputStream content, SetContentParams params) {
+            return entity;
         }
 
         @Override
-        public void associate(@NonNull Object entity, @NonNull PropertyPath propertyPath, Serializable id) {
-            // TODO Auto-generated method stub
+        public Object setContent(Object property, PropertyPath propertyPath, Resource resourceContent) {
+            return property;
         }
 
         @Override
-        public void unassociate(@NonNull Object entity, @NonNull PropertyPath propertyPath) {
-            // TODO Auto-generated method stub
+        public Object unsetContent(Object property, PropertyPath propertyPath) {
+            return property;
         }
 
         @Override
-        public Object setContent(@NonNull Object property, @NonNull PropertyPath propertyPath, InputStream content) {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
-        public Object setContent(@NonNull Object property, @NonNull PropertyPath propertyPath, InputStream content, long contentLen) {
-            // TODO Auto-generated method stub
-            return null;
+        public Object unsetContent(Object entity, PropertyPath propertyPath, UnsetContentParams params) {
+            return entity;
         }
 
         @Override
-        public Object setContent(@NonNull Object entity, @NonNull PropertyPath propertyPath, InputStream content, @NonNull SetContentParams params) {
-            return null;
-        }
-
-        @Override
-        public Object setContent(@NonNull Object property, @NonNull PropertyPath propertyPath, Resource resourceContent) {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
-        @Override
-        public Object unsetContent(@NonNull Object property, @NonNull PropertyPath propertyPath) {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
-        @Override
-        public Object unsetContent(@NonNull Object entity, @NonNull PropertyPath propertyPath, @NonNull UnsetContentParams params) {
-            return null;
-        }
-
-        @Override
-        public InputStream getContent(@NonNull Object property, @NonNull PropertyPath propertyPath) {
-            // TODO Auto-generated method stub
+        public @Nullable InputStream getContent(Object property, PropertyPath propertyPath) {
             return null;
         }
     }

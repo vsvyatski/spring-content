@@ -1,12 +1,14 @@
 package org.springframework.content.test.support.id.type;
 
 import org.apache.commons.io.IOUtils;
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.property.PropertyPath;
 import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.commons.store.GetResourceParams;
 import org.springframework.content.commons.store.SetContentParams;
+import org.springframework.content.commons.store.StoreEntityValidation;
 import org.springframework.content.commons.store.UnsetContentParams;
 import org.springframework.content.commons.utils.BeanUtils;
 import org.springframework.core.io.Resource;
@@ -23,6 +25,7 @@ import java.util.Map;
  *
  * @author Vladimir Svyatski
  */
+@NullMarked
 public class InMemoryTypeSupportContentStore<S extends TypeSupportIdGenerator<SID>, SID extends Serializable>
     implements ContentStore<S, SID> {
 
@@ -31,7 +34,9 @@ public class InMemoryTypeSupportContentStore<S extends TypeSupportIdGenerator<SI
     private final Map<Object, byte[]> storage = new HashMap<>();
 
     @Override
-    public S setContent(@NonNull S entity, InputStream content) {
+    public S setContent(S entity, InputStream content) {
+        StoreEntityValidation.requireEntity(entity);
+        StoreEntityValidation.requireContentInputStream(content);
         Object contentId = BeanUtils.getFieldWithAnnotation(entity, ContentId.class);
         if (contentId == null) {
             contentId = entity.generateId();
@@ -39,8 +44,7 @@ public class InMemoryTypeSupportContentStore<S extends TypeSupportIdGenerator<SI
         }
 
         try {
-            byte[] data = content != null ? IOUtils.toByteArray(content) : null;
-            storage.put(contentId, data);
+            storage.put(contentId, IOUtils.toByteArray(content));
         } catch (IOException e) {
             throw new RuntimeException("Failed to store an entity in the test storage.", e);
         }
@@ -49,7 +53,8 @@ public class InMemoryTypeSupportContentStore<S extends TypeSupportIdGenerator<SI
     }
 
     @Override
-    public S unsetContent(@NonNull S entity) {
+    public S unsetContent(S entity) {
+        StoreEntityValidation.requireEntity(entity);
         Object contentId = BeanUtils.getFieldWithAnnotation(entity, ContentId.class);
         if (contentId != null) {
             storage.remove(contentId);
@@ -59,91 +64,96 @@ public class InMemoryTypeSupportContentStore<S extends TypeSupportIdGenerator<SI
     }
 
     @Override
-    public InputStream getContent(@NonNull S entity) {
+    public @Nullable InputStream getContent(S entity) {
+        StoreEntityValidation.requireEntity(entity);
         Object contentId = BeanUtils.getFieldWithAnnotation(entity, ContentId.class);
-        if (contentId != null) {
-            return new ByteArrayInputStream(storage.get(contentId));
+        if (contentId == null) {
+            return null;
         }
-        return null;
+        byte[] data = storage.get(contentId);
+        if (data == null) {
+            return null;
+        }
+        return new ByteArrayInputStream(data);
     }
 
     @Override
-    public S setContent(@NonNull S entity, @NonNull PropertyPath propertyPath, InputStream content) {
+    public S setContent(S entity, PropertyPath propertyPath, InputStream content) {
         throw new UnsupportedOperationException(NOT_SUPPORTED);
     }
 
     @Override
-    public S setContent(@NonNull S entity, @NonNull PropertyPath propertyPath, InputStream content, long contentLen) {
+    public S setContent(S entity, PropertyPath propertyPath, InputStream content, long contentLen) {
         throw new UnsupportedOperationException(NOT_SUPPORTED);
     }
 
     @Override
-    public S setContent(@NonNull S entity, @NonNull PropertyPath propertyPath, InputStream content, @NonNull SetContentParams params) {
+    public S setContent(S entity, PropertyPath propertyPath, InputStream content, SetContentParams params) {
         throw new UnsupportedOperationException(NOT_SUPPORTED);
     }
 
     @Override
-    public S setContent(@NonNull S entity, Resource resourceContent) {
+    public S setContent(S entity, Resource resourceContent) {
         throw new UnsupportedOperationException(NOT_SUPPORTED);
     }
 
     @Override
-    public S setContent(@NonNull S entity, @NonNull PropertyPath propertyPath, Resource resourceContent) {
+    public S setContent(S entity, PropertyPath propertyPath, Resource resourceContent) {
         throw new UnsupportedOperationException(NOT_SUPPORTED);
     }
 
     @Override
-    public S unsetContent(@NonNull S entity, @NonNull PropertyPath propertyPath) {
+    public S unsetContent(S entity, PropertyPath propertyPath) {
         throw new UnsupportedOperationException(NOT_SUPPORTED);
     }
 
     @Override
-    public S unsetContent(@NonNull S entity, @NonNull PropertyPath propertyPath, @NonNull UnsetContentParams params) {
+    public S unsetContent(S entity, PropertyPath propertyPath, UnsetContentParams params) {
         throw new UnsupportedOperationException(NOT_SUPPORTED);
     }
 
     @Override
-    public InputStream getContent(@NonNull S entity, @NonNull PropertyPath propertyPath) {
+    public @Nullable InputStream getContent(S entity, PropertyPath propertyPath) {
         throw new UnsupportedOperationException(NOT_SUPPORTED);
     }
 
     @Override
-    public Resource getResource(@NonNull S entity) {
+    public @Nullable Resource getResource(S entity) {
         throw new UnsupportedOperationException(NOT_SUPPORTED);
     }
 
     @Override
-    public Resource getResource(@NonNull S entity, @NonNull PropertyPath propertyPath) {
+    public @Nullable Resource getResource(S entity, PropertyPath propertyPath) {
         throw new UnsupportedOperationException(NOT_SUPPORTED);
     }
 
     @Override
-    public Resource getResource(@NonNull S entity, @NonNull PropertyPath propertyPath, @NonNull GetResourceParams params) {
+    public @Nullable Resource getResource(S entity, PropertyPath propertyPath, GetResourceParams params) {
         throw new UnsupportedOperationException(NOT_SUPPORTED);
     }
 
     @Override
-    public void associate(@NonNull S entity, SID id) {
+    public void associate(S entity, SID id) {
         throw new UnsupportedOperationException(NOT_SUPPORTED);
     }
 
     @Override
-    public void associate(@NonNull S entity, @NonNull PropertyPath propertyPath, SID id) {
+    public void associate(S entity, PropertyPath propertyPath, SID id) {
         throw new UnsupportedOperationException(NOT_SUPPORTED);
     }
 
     @Override
-    public void unassociate(@NonNull S entity) {
+    public void unassociate(S entity) {
         throw new UnsupportedOperationException(NOT_SUPPORTED);
     }
 
     @Override
-    public void unassociate(@NonNull S entity, @NonNull PropertyPath propertyPath) {
+    public void unassociate(S entity, PropertyPath propertyPath) {
         throw new UnsupportedOperationException(NOT_SUPPORTED);
     }
 
     @Override
-    public Resource getResource(SID id) {
+    public @Nullable Resource getResource(SID id) {
         throw new UnsupportedOperationException(NOT_SUPPORTED);
     }
 }

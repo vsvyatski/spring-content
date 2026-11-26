@@ -92,6 +92,7 @@ public class DefaultMongoStoreImplTest {
         @BeforeEach
         void setUp() {
             placer = mock(PlacementService.class);
+            when(placer.convert(any(), eq(String.class))).thenAnswer(invocation -> invocation.getArgument(0).toString());
             gridFsTemplate = mock(GridFsTemplate.class);
             resource = mock(GridFsResource.class);
             mongoContentRepoImpl = spy(new DefaultMongoStoreImpl<>(gridFsTemplate, null, placer));
@@ -231,11 +232,12 @@ public class DefaultMongoStoreImplTest {
                 when(placer.convert(eq(SAMPLE_SHORT_CONTENT_ID), eq(String.class))).thenReturn(SAMPLE_SHORT_CONTENT_ID);
                 when(gridFsTemplate.getResource(SAMPLE_SHORT_CONTENT_ID)).thenReturn(resource);
                 when(resource.exists()).thenReturn(true);
+                when(resource.getFilename()).thenReturn(SAMPLE_SHORT_CONTENT_ID);
             }
 
             @Nested
             @DisplayName("When GridFS deletion throws an exception")
-            class GridfsDeletionThrowsException {
+            class GridFsDeletionThrowsException {
                 @BeforeEach
                 void deleteFails() {
                     doThrow(new RuntimeException("unset-exception")).when(gridFsTemplate).delete(any());

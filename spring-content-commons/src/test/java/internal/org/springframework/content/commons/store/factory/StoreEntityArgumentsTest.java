@@ -11,6 +11,7 @@ import org.springframework.content.commons.store.StoreEntityValidation;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.lang.reflect.Method;
@@ -28,6 +29,10 @@ class StoreEntityArgumentsTest {
         requireMethod(AssociativeStore.class, "getResource", Object.class, PropertyPath.class);
     private static final Method getResourceWithParamsMethod = requireMethod(AssociativeStore.class, "getResource",
         Object.class, PropertyPath.class, GetResourceParams.class);
+    private static final Method associateMethod =
+        requireMethod(AssociativeStore.class, "associate", Object.class, Serializable.class);
+    private static final Method associateWithPathMethod = requireMethod(AssociativeStore.class, "associate",
+        Object.class, PropertyPath.class, Serializable.class);
 
     @Test
     @DisplayName("setContent requires a non-null entity argument")
@@ -55,6 +60,45 @@ class StoreEntityArgumentsTest {
             getResourceEntityMethod, new Object[] { entity, null }))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage(StoreEntityValidation.PROPERTY_PATH_MUST_NOT_BE_NULL);
+    }
+
+    @Test
+    @DisplayName("requireStoreArguments rejects null content on setContent")
+    void rejectsNullContentOnSetContent() {
+        Object entity = new Object();
+        assertThatThrownBy(() -> StoreEntityArguments.requireStoreArgumentsIfApplicable(
+            setContentMethod, new Object[] { entity, null }))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage(StoreEntityValidation.CONTENT_MUST_NOT_BE_NULL);
+    }
+
+    @Test
+    @DisplayName("requireStoreArguments accepts non-null content on setContent")
+    void acceptsNonNullContentOnSetContent() {
+        Object entity = new Object();
+        StoreEntityArguments.requireStoreArgumentsIfApplicable(
+            setContentMethod, new Object[] { entity, new ByteArrayInputStream(new byte[] { 1 }) });
+    }
+
+    @Test
+    @DisplayName("requireStoreArguments rejects null content id on associate")
+    void rejectsNullContentIdOnAssociate() {
+        Object entity = new Object();
+        assertThatThrownBy(() -> StoreEntityArguments.requireStoreArgumentsIfApplicable(
+            associateMethod, new Object[] { entity, null }))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage(StoreEntityValidation.CONTENT_ID_MUST_NOT_BE_NULL);
+    }
+
+    @Test
+    @DisplayName("requireStoreArguments rejects null content id on property-path associate")
+    void rejectsNullContentIdOnPropertyPathAssociate() {
+        Object entity = new Object();
+        PropertyPath path = PropertyPath.from("content");
+        assertThatThrownBy(() -> StoreEntityArguments.requireStoreArgumentsIfApplicable(
+            associateWithPathMethod, new Object[] { entity, path, null }))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage(StoreEntityValidation.CONTENT_ID_MUST_NOT_BE_NULL);
     }
 
     @Test
