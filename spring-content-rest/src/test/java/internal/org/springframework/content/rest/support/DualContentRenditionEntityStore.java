@@ -1,5 +1,6 @@
 package internal.org.springframework.content.rest.support;
 
+import org.jspecify.annotations.NonNull;
 import org.springframework.content.commons.property.PropertyPath;
 import org.springframework.content.fs.store.FileSystemContentStore;
 import org.springframework.content.rest.RestResource;
@@ -13,5 +14,5 @@ public interface DualContentRenditionEntityStore extends FileSystemContentStore<
 
     @RestResource(exported = false, paths = {"rendition"})
     @Override
-    InputStream getContent(DualContentRenditionEntity entity, PropertyPath propertyPath);
+    InputStream getContent(@NonNull DualContentRenditionEntity entity, PropertyPath propertyPath);
 }

@@ -3,6 +3,7 @@ package internal.org.springframework.content.commons.store.factory;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.NonNull;
 import org.springframework.content.commons.property.PropertyPath;
 import org.springframework.content.commons.store.*;
 import org.springframework.content.commons.store.events.*;
@@ -16,45 +17,56 @@ import java.nio.file.Path;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+/**
+ * Event-publishing {@link ContentStore} wrapper around a concrete store implementation.
+ *
+ * @author Vladimir Svyatski
+ */
 public class StoreImpl implements ContentStore<Object, Serializable> {
 
     private static final Log logger = LogFactory.getLog(StoreImpl.class);
 
-    private final Object delegate;
+    private final ContentStore<Object, Serializable> delegate;
     private final ApplicationEventPublisher publisher;
     private final Path copyContentRootPath;
 
+    @SuppressWarnings("unchecked")
     public StoreImpl(Object delegate, ApplicationEventPublisher publisher, Path copyContentRootPath) {
-        this.delegate = delegate;
+        if (!(delegate instanceof ContentStore<?, ?>)) {
+            throw new IllegalArgumentException("delegate must implement ContentStore");
+        }
+        this.delegate = (ContentStore<Object, Serializable>) delegate;
         this.publisher = publisher;
         this.copyContentRootPath = copyContentRootPath;
     }
 
     @Override
-    public Object setContent(Object entity, InputStream content) {
+    public Object setContent(@NonNull Object entity, InputStream content) {
         return this.internalSetContent(entity, null, content,
-            (actualContent) -> ((ContentStore) delegate).setContent(entity, actualContent));
+            (actualContent) -> delegate.setContent(entity, actualContent));
     }
 
     @Override
-    public Object setContent(Object entity, PropertyPath propertyPath, InputStream content) {
+    public Object setContent(@NonNull Object entity, PropertyPath propertyPath, InputStream content) {
         return this.internalSetContent(entity, propertyPath, content,
-            (actualContent) -> ((ContentStore) delegate).setContent(entity, propertyPath, actualContent));
+            (actualContent) -> delegate.setContent(entity, propertyPath, actualContent));
     }
 
     @Override
-    public Object setContent(Object entity, PropertyPath propertyPath, InputStream content, long contentLen) {
+    public Object setContent(@NonNull Object entity, PropertyPath propertyPath, InputStream content, long contentLen) {
         return this.internalSetContent(entity, propertyPath, content,
-            (actualContent) -> ((ContentStore) delegate).setContent(entity, propertyPath, actualContent, contentLen));
+            (actualContent) -> delegate.setContent(entity, propertyPath, actualContent, contentLen));
     }
 
     @Override
-    public Object setContent(Object entity, PropertyPath propertyPath, InputStream content, SetContentParams params) {
+    public Object setContent(@NonNull Object entity, PropertyPath propertyPath, InputStream content,
+                             SetContentParams params) {
         return this.internalSetContent(entity, propertyPath, content,
-            (actualContent) -> ((ContentStore) delegate).setContent(entity, propertyPath, actualContent, params));
+            (actualContent) -> delegate.setContent(entity, propertyPath, actualContent, params));
     }
 
-    public Object internalSetContent(Object property, PropertyPath propertyPath, InputStream content, Function<InputStream, Object> invocation) {
+    public Object internalSetContent(Object property, PropertyPath propertyPath, InputStream content,
+                                     Function<InputStream, Object> invocation) {
         Object result = null;
 
         File contentCopy = null;
@@ -63,21 +75,20 @@ public class StoreImpl implements ContentStore<Object, Serializable> {
             contentCopy = Files.createTempFile(copyContentRootPath, "contentCopy", ".tmp").toFile();
             contentCopyStream = new TeeInputStream(content, new FileOutputStream(contentCopy), true);
 
-            BeforeSetContentEvent before = new BeforeSetContentEvent(property, propertyPath, castToContentStore(delegate), contentCopyStream);
+            BeforeSetContentEvent before =
+                new BeforeSetContentEvent(property, propertyPath, delegate, contentCopyStream);
             publisher.publishEvent(before);
 
             if (before.getInputStream() != null && !before.getInputStream().equals(contentCopyStream)) {
-                content = before.getInputStream();
+                result = invocation.apply(before.getInputStream());
             } else if (contentCopyStream.isDirty()) {
-                var buffer = new byte[4096];
-                while (contentCopyStream.read(buffer) != -1) {
-                }
-                content = new FileInputStream(contentCopy);
+                IOUtils.consume(contentCopyStream);
+                result = invocation.apply(new ByteArrayInputStream(Files.readAllBytes(contentCopy.toPath())));
+            } else {
+                result = invocation.apply(content);
             }
 
-            result = invocation.apply(content);
-
-            AfterSetContentEvent after = new AfterSetContentEvent(property, propertyPath, castToContentStore(delegate));
+            AfterSetContentEvent after = new AfterSetContentEvent(property, propertyPath, delegate);
             after.setResult(result);
             publisher.publishEvent(after);
         } catch (IOException ioException) {
@@ -99,51 +110,54 @@ public class StoreImpl implements ContentStore<Object, Serializable> {
     }
 
     @Override
-    public Object setContent(Object entity, Resource resourceContent) {
+    public Object setContent(@NonNull Object entity, Resource resourceContent) {
         return this.internalSetContent(entity, null, resourceContent,
-            () -> ((ContentStore) delegate).setContent(entity, resourceContent));
+            () -> delegate.setContent(entity, resourceContent));
     }
 
     @Override
-    public Object setContent(Object entity, PropertyPath propertyPath, Resource resourceContent) {
+    public Object setContent(@NonNull Object entity, PropertyPath propertyPath, Resource resourceContent) {
         return this.internalSetContent(entity, propertyPath, resourceContent,
-            () -> ((ContentStore) delegate).setContent(entity, propertyPath, resourceContent));
+            () -> delegate.setContent(entity, propertyPath, resourceContent));
     }
 
-    public Object internalSetContent(Object property, PropertyPath propertyPath, Resource resourceContent, Supplier invocation) {
-        BeforeSetContentEvent before = new BeforeSetContentEvent(property, propertyPath, castToContentStore(delegate), resourceContent);
+    public Object internalSetContent(Object property, PropertyPath propertyPath, Resource resourceContent,
+                                     Supplier<Object> invocation) {
+        BeforeSetContentEvent before =
+            new BeforeSetContentEvent(property, propertyPath, delegate, resourceContent);
         publisher.publishEvent(before);
 
         Object result = invocation.get();
 
-        AfterSetContentEvent after = new AfterSetContentEvent(property, propertyPath, castToContentStore(delegate));
+        AfterSetContentEvent after = new AfterSetContentEvent(property, propertyPath, delegate);
         after.setResult(result);
         publisher.publishEvent(after);
         return result;
     }
 
     @Override
-    public Object unsetContent(Object entity) {
-        return this.internalUnsetContent(entity, null, () -> ((ContentStore) delegate).unsetContent(entity));
+    public Object unsetContent(@NonNull Object entity) {
+        return this.internalUnsetContent(entity, null, () -> delegate.unsetContent(entity));
     }
 
     @Override
-    public Object unsetContent(Object entity, PropertyPath propertyPath) {
-        return this.internalUnsetContent(entity, propertyPath, () -> ((ContentStore) delegate).unsetContent(entity, propertyPath));
+    public Object unsetContent(@NonNull Object entity, PropertyPath propertyPath) {
+        return this.internalUnsetContent(entity, propertyPath, () -> delegate.unsetContent(entity, propertyPath));
     }
 
     @Override
-    public Object unsetContent(Object entity, PropertyPath propertyPath, UnsetContentParams params) {
-        return this.internalUnsetContent(entity, propertyPath, () -> ((ContentStore) delegate).unsetContent(entity, propertyPath, params));
+    public Object unsetContent(@NonNull Object entity, PropertyPath propertyPath, UnsetContentParams params) {
+        return this.internalUnsetContent(entity, propertyPath,
+            () -> delegate.unsetContent(entity, propertyPath, params));
     }
 
-    public Object internalUnsetContent(Object entity, PropertyPath propertyPath, Supplier invocation) {
-        BeforeUnsetContentEvent before = new BeforeUnsetContentEvent(entity, propertyPath, castToContentStore(delegate));
+    public Object internalUnsetContent(Object entity, PropertyPath propertyPath, Supplier<Object> invocation) {
+        BeforeUnsetContentEvent before = new BeforeUnsetContentEvent(entity, propertyPath, delegate);
         publisher.publishEvent(before);
 
         Object result = invocation.get();
 
-        AfterUnsetContentEvent after = new AfterUnsetContentEvent(entity, propertyPath, castToContentStore(delegate));
+        AfterUnsetContentEvent after = new AfterUnsetContentEvent(entity, propertyPath, delegate);
         after.setResult(result);
         publisher.publishEvent(after);
 
@@ -151,19 +165,19 @@ public class StoreImpl implements ContentStore<Object, Serializable> {
     }
 
     @Override
-    public InputStream getContent(Object entity) throws IOException {
-        return this.internalGetContent(entity, null, () -> ((ContentStore) delegate).getContent(entity));
+    public InputStream getContent(@NonNull Object entity) throws IOException {
+        return this.internalGetContent(entity, null, () -> delegate.getContent(entity));
     }
 
     @Override
-    public InputStream getContent(Object entity, PropertyPath propertyPath) throws IOException {
-        return this.internalGetContent(entity, propertyPath, () -> ((ContentStore) delegate).getContent(entity, propertyPath));
+    public InputStream getContent(@NonNull Object entity, PropertyPath propertyPath) throws IOException {
+        return this.internalGetContent(entity, propertyPath, () -> delegate.getContent(entity, propertyPath));
     }
 
-    public InputStream internalGetContent(Object entity, PropertyPath propertyPath, ThrowingSupplier<InputStream> invocation)
-        throws IOException {
+    public InputStream internalGetContent(Object entity, PropertyPath propertyPath,
+                                          ThrowingSupplier<InputStream> invocation) throws IOException {
 
-        BeforeGetContentEvent before = new BeforeGetContentEvent(entity, propertyPath, castToContentStore(this.delegate));
+        BeforeGetContentEvent before = new BeforeGetContentEvent(entity, propertyPath, delegate);
         publisher.publishEvent(before);
 
         InputStream result;
@@ -175,7 +189,7 @@ public class StoreImpl implements ContentStore<Object, Serializable> {
             throw new IOException("Error reading content.", anyOther);
         }
 
-        AfterGetContentEvent after = new AfterGetContentEvent(entity, propertyPath, castToContentStore(this.delegate));
+        AfterGetContentEvent after = new AfterGetContentEvent(entity, propertyPath, delegate);
         after.setResult(result);
         publisher.publishEvent(after);
         if (after.getResult() != null) {
@@ -186,27 +200,28 @@ public class StoreImpl implements ContentStore<Object, Serializable> {
     }
 
     @Override
-    public Resource getResource(Object entity) {
-        return this.internalGetResource(entity, null, () -> ((AssociativeStore) delegate).getResource(entity));
+    public Resource getResource(@NonNull Object entity) {
+        return this.internalGetResource(entity, null, () -> delegate.getResource(entity));
     }
 
     @Override
-    public Resource getResource(Object entity, PropertyPath propertyPath) {
-        return this.internalGetResource(entity, propertyPath, () -> ((AssociativeStore) delegate).getResource(entity, propertyPath));
+    public Resource getResource(@NonNull Object entity, PropertyPath propertyPath) {
+        return this.internalGetResource(entity, propertyPath, () -> delegate.getResource(entity, propertyPath));
     }
 
     @Override
-    public Resource getResource(Object entity, PropertyPath propertyPath, GetResourceParams params) {
-        return this.internalGetResource(entity, propertyPath, () -> ((AssociativeStore) delegate).getResource(entity, propertyPath, params));
+    public Resource getResource(@NonNull Object entity, PropertyPath propertyPath, GetResourceParams params) {
+        return this.internalGetResource(entity, propertyPath,
+            () -> delegate.getResource(entity, propertyPath, params));
     }
 
     public Resource internalGetResource(Object entity, PropertyPath propertyPath, Supplier<Resource> invocation) {
-        BeforeGetResourceEvent before = new BeforeGetResourceEvent(entity, propertyPath, castToContentStore(delegate));
+        BeforeGetResourceEvent before = new BeforeGetResourceEvent(entity, propertyPath, delegate);
         publisher.publishEvent(before);
 
         Resource result = invocation.get();
 
-        AfterGetResourceEvent after = new AfterGetResourceEvent(entity, propertyPath, castToContentStore(delegate));
+        AfterGetResourceEvent after = new AfterGetResourceEvent(entity, propertyPath, delegate);
         after.setResult(result);
         publisher.publishEvent(after);
         if (after.getResult() != null) {
@@ -218,13 +233,12 @@ public class StoreImpl implements ContentStore<Object, Serializable> {
 
     @Override
     public Resource getResource(Serializable id) {
-        Store<Serializable> storeDelegate = (Store<Serializable>) delegate;
-        BeforeGetResourceEvent before = new BeforeGetResourceEvent(id, storeDelegate);
+        BeforeGetResourceEvent before = new BeforeGetResourceEvent(id, delegate);
         publisher.publishEvent(before);
 
-        Resource result = storeDelegate.getResource(id);
+        Resource result = delegate.getResource(id);
 
-        AfterGetResourceEvent after = new AfterGetResourceEvent(id, storeDelegate);
+        AfterGetResourceEvent after = new AfterGetResourceEvent(id, delegate);
         after.setResult(result);
         publisher.publishEvent(after);
         if (after.getResult() != null) {
@@ -235,54 +249,47 @@ public class StoreImpl implements ContentStore<Object, Serializable> {
     }
 
     @Override
-    public void associate(Object entity, Serializable id) {
-        BeforeAssociateEvent before = new BeforeAssociateEvent(entity, castToContentStore(delegate));
+    public void associate(@NonNull Object entity, Serializable id) {
+        BeforeAssociateEvent before = new BeforeAssociateEvent(entity, delegate);
         publisher.publishEvent(before);
 
-        ((AssociativeStore) delegate).associate(entity, id);
+        delegate.associate(entity, id);
 
-        AfterAssociateEvent after = new AfterAssociateEvent(entity, castToContentStore(delegate));
+        AfterAssociateEvent after = new AfterAssociateEvent(entity, delegate);
         publisher.publishEvent(after);
     }
 
     @Override
-    public void associate(Object entity, PropertyPath propertyPath, Serializable id) {
-        BeforeAssociateEvent before = new BeforeAssociateEvent(entity, propertyPath, castToContentStore(delegate));
+    public void associate(@NonNull Object entity, PropertyPath propertyPath, Serializable id) {
+        BeforeAssociateEvent before = new BeforeAssociateEvent(entity, propertyPath, delegate);
         publisher.publishEvent(before);
 
-        ((AssociativeStore) delegate).associate(entity, propertyPath, id);
+        delegate.associate(entity, propertyPath, id);
 
-        AfterAssociateEvent after = new AfterAssociateEvent(entity, propertyPath, castToContentStore(delegate));
+        AfterAssociateEvent after = new AfterAssociateEvent(entity, propertyPath, delegate);
         publisher.publishEvent(after);
     }
 
     @Override
-    public void unassociate(Object entity) {
-        BeforeUnassociateEvent before = new BeforeUnassociateEvent(entity, castToContentStore(delegate));
+    public void unassociate(@NonNull Object entity) {
+        BeforeUnassociateEvent before = new BeforeUnassociateEvent(entity, delegate);
         publisher.publishEvent(before);
 
-        ((AssociativeStore) delegate).unassociate(entity);
+        delegate.unassociate(entity);
 
-        AfterUnassociateEvent after = new AfterUnassociateEvent(entity, castToContentStore(delegate));
+        AfterUnassociateEvent after = new AfterUnassociateEvent(entity, delegate);
         publisher.publishEvent(after);
     }
 
     @Override
-    public void unassociate(Object entity, PropertyPath propertyPath) {
-        BeforeUnassociateEvent before = new BeforeUnassociateEvent(entity, propertyPath, castToContentStore(delegate));
+    public void unassociate(@NonNull Object entity, PropertyPath propertyPath) {
+        BeforeUnassociateEvent before = new BeforeUnassociateEvent(entity, propertyPath, delegate);
         publisher.publishEvent(before);
 
-        ((AssociativeStore) delegate).unassociate(entity, propertyPath);
+        delegate.unassociate(entity, propertyPath);
 
-        AfterUnassociateEvent after = new AfterUnassociateEvent(entity, propertyPath, castToContentStore(delegate));
+        AfterUnassociateEvent after = new AfterUnassociateEvent(entity, propertyPath, delegate);
         publisher.publishEvent(after);
-    }
-
-    private <SID extends Serializable> ContentStore<Object, SID> castToContentStore(Object delegate) {
-        if (!(delegate instanceof ContentStore)) {
-            return null;
-        }
-        return (ContentStore) delegate;
     }
 
     static class TeeInputStream extends org.apache.commons.io.input.TeeInputStream {

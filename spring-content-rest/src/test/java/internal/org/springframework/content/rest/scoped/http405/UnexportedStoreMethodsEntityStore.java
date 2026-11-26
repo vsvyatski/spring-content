@@ -1,5 +1,6 @@
 package internal.org.springframework.content.rest.scoped.http405;
 
+import org.jspecify.annotations.NonNull;
 import org.springframework.content.commons.property.PropertyPath;
 import org.springframework.content.commons.store.SetContentParams;
 import org.springframework.content.commons.store.UnsetContentParams;
@@ -17,25 +18,25 @@ public interface UnexportedStoreMethodsEntityStore extends FileSystemContentStor
 
     @RestResource(exported = false)
     @Override
-    InputStream getContent(UnexportedStoreMethodsEntity property, PropertyPath path);
+    InputStream getContent(@NonNull UnexportedStoreMethodsEntity property, PropertyPath path);
 
     @RestResource(exported = false)
     @Override
-    UnexportedStoreMethodsEntity setContent(UnexportedStoreMethodsEntity property,
+    UnexportedStoreMethodsEntity setContent(@NonNull UnexportedStoreMethodsEntity property,
                                             PropertyPath path, InputStream content);
 
     @RestResource(exported = false)
     @Override
-    UnexportedStoreMethodsEntity setContent(UnexportedStoreMethodsEntity property,
+    UnexportedStoreMethodsEntity setContent(@NonNull UnexportedStoreMethodsEntity property,
                                             PropertyPath path, InputStream content, SetContentParams params);
 
     @RestResource(exported = false)
     @Override
-    UnexportedStoreMethodsEntity setContent(UnexportedStoreMethodsEntity property,
+    UnexportedStoreMethodsEntity setContent(@NonNull UnexportedStoreMethodsEntity property,
                                             PropertyPath path, Resource resourceContent);
 
     @RestResource(exported = false)
     @Override
-    UnexportedStoreMethodsEntity unsetContent(UnexportedStoreMethodsEntity property,
+    UnexportedStoreMethodsEntity unsetContent(@NonNull UnexportedStoreMethodsEntity property,
                                               PropertyPath path, UnsetContentParams params);
 }

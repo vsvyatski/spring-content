@@ -1,5 +1,6 @@
 package internal.org.springframework.content.fragments;
 
+import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.content.commons.fragments.ContentStoreAware;
 import org.springframework.content.commons.mappingcontext.ContentProperty;
@@ -24,30 +25,29 @@ import java.util.List;
 import java.util.Optional;
 
 public class EncryptingContentStoreImpl<S, SID extends Serializable> implements
-    org.springframework.content.commons.store.ContentStore<S, SID>,
-    ContentStoreAware {
+    org.springframework.content.commons.store.ContentStore<S, SID>, ContentStoreAware {
 
     private final MappingContext mappingContext;
-    private final List<EncryptingContentStoreConfigurer<S>> configurers;
+    private final List<EncryptingContentStoreConfigurer<?>> configurers;
     private ContentCryptoService<S, ?> cryptoService;
     private ContentStore<S, SID> storeDelegate;
 
     @Autowired
     public EncryptingContentStoreImpl(
         @Autowired(required = false) MappingContext mappingContext,
-        List<EncryptingContentStoreConfigurer<S>> configurers
+        List<EncryptingContentStoreConfigurer<?>> configurers
     ) {
         this.mappingContext = Optional.ofNullable(mappingContext).orElseGet(() -> new MappingContext("/", "."));
         this.configurers = configurers;
     }
 
     @Override
-    public S setContent(S o, InputStream inputStream) {
+    public S setContent(@NonNull S o, InputStream inputStream) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public S setContent(S entity, PropertyPath propertyPath, InputStream content) {
+    public S setContent(@NonNull S entity, PropertyPath propertyPath, InputStream content) {
         Assert.notNull(storeDelegate, "store not set");
         Assert.notNull(cryptoService, "cryptoService not set");
 
@@ -56,13 +56,13 @@ public class EncryptingContentStoreImpl<S, SID extends Serializable> implements
     }
 
     @Override
-    public S setContent(S entity, PropertyPath propertyPath, InputStream inputStream, long l) {
+    public S setContent(@NonNull S entity, PropertyPath propertyPath, InputStream inputStream, long l) {
         return this.setContent(entity, propertyPath, inputStream,
             new org.springframework.content.commons.store.SetContentParams(l, true, org.springframework.content.commons.store.SetContentParams.ContentDisposition.Overwrite));
     }
 
     @Override
-    public S setContent(S entity, PropertyPath propertyPath, InputStream content, org.springframework.content.commons.store.SetContentParams params) {
+    public S setContent(@NonNull S entity, PropertyPath propertyPath, InputStream content, org.springframework.content.commons.store.SetContentParams params) {
         Assert.notNull(storeDelegate, "store not set");
         Assert.notNull(cryptoService, "cryptoService not set");
 
@@ -71,12 +71,12 @@ public class EncryptingContentStoreImpl<S, SID extends Serializable> implements
     }
 
     @Override
-    public S setContent(S o, Resource resource) {
+    public S setContent(@NonNull S entity, Resource resource) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public S setContent(S entity, PropertyPath propertyPath, Resource resource) {
+    public S setContent(@NonNull S entity, PropertyPath propertyPath, Resource resource) {
         Assert.notNull(entity, "entity not set");
         Assert.notNull(propertyPath, "propertyPath not set");
         Assert.notNull(resource, "resource not set");
@@ -92,18 +92,18 @@ public class EncryptingContentStoreImpl<S, SID extends Serializable> implements
     }
 
     @Override
-    public S unsetContent(S o) {
+    public S unsetContent(@NonNull S entity) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public S unsetContent(S entity, PropertyPath propertyPath) {
+    public S unsetContent(@NonNull S entity, PropertyPath propertyPath) {
         return unsetContent(entity, propertyPath,
             new org.springframework.content.commons.store.UnsetContentParams(org.springframework.content.commons.store.UnsetContentParams.Disposition.Remove));
     }
 
     @Override
-    public S unsetContent(S entity, PropertyPath propertyPath, org.springframework.content.commons.store.UnsetContentParams params) {
+    public S unsetContent(@NonNull S entity, PropertyPath propertyPath, org.springframework.content.commons.store.UnsetContentParams params) {
         Assert.notNull(entity, "entity not set");
         Assert.notNull(propertyPath, "propertyPath not set");
         Assert.notNull(storeDelegate, "store not set");
@@ -120,12 +120,12 @@ public class EncryptingContentStoreImpl<S, SID extends Serializable> implements
     }
 
     @Override
-    public InputStream getContent(S o) {
+    public InputStream getContent(@NonNull S entity) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public InputStream getContent(S entity, PropertyPath propertyPath) throws IOException {
+    public InputStream getContent(@NonNull S entity, PropertyPath propertyPath) throws IOException {
         Assert.notNull(entity, "entity not set");
         Assert.notNull(propertyPath, "propertyPath not set");
         Assert.notNull(storeDelegate, "store not set");
@@ -136,12 +136,12 @@ public class EncryptingContentStoreImpl<S, SID extends Serializable> implements
     }
 
     @Override
-    public Resource getResource(S o) {
+    public Resource getResource(@NonNull S entity) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Resource getResource(S entity, PropertyPath propertyPath) {
+    public Resource getResource(@NonNull S entity, PropertyPath propertyPath) {
         Assert.notNull(entity, "entity not set");
         Assert.notNull(propertyPath, "propertyPath not set");
         Assert.notNull(storeDelegate, "store not set");
@@ -151,7 +151,7 @@ public class EncryptingContentStoreImpl<S, SID extends Serializable> implements
     }
 
     @Override
-    public Resource getResource(S entity, PropertyPath propertyPath, GetResourceParams params) {
+    public Resource getResource(@NonNull S entity, PropertyPath propertyPath, GetResourceParams params) {
         Assert.notNull(entity, "entity not set");
         Assert.notNull(propertyPath, "propertyPath not set");
         Assert.notNull(storeDelegate, "store not set");
@@ -162,22 +162,22 @@ public class EncryptingContentStoreImpl<S, SID extends Serializable> implements
     }
 
     @Override
-    public void associate(S o, SID serializable) {
+    public void associate(@NonNull S entity, SID serializable) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void associate(S o, PropertyPath propertyPath, SID serializable) {
+    public void associate(@NonNull S entity, PropertyPath propertyPath, SID serializable) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void unassociate(S o) {
+    public void unassociate(@NonNull S entity) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void unassociate(S o, PropertyPath propertyPath) {
+    public void unassociate(@NonNull S entity, PropertyPath propertyPath) {
         throw new UnsupportedOperationException();
     }
 
@@ -195,33 +195,49 @@ public class EncryptingContentStoreImpl<S, SID extends Serializable> implements
     }
 
     @Override
-    public void setContentStore(ContentStore store) {
-        this.storeDelegate = store;
+    @SuppressWarnings("unchecked")
+    public void setContentStore(ContentStore<Object, Serializable> store) {
+        this.storeDelegate = (ContentStore<S, SID>) store;
     }
 
+    /**
+     * Bean property {@code storeInterfaceClass} from store fragment registration.
+     *
+     * @see org.springframework.content.commons.config.AbstractStoreBeanDefinitionRegistrar#STORE_INTERFACE_CLASS_PROPERTY
+     */
+    @SuppressWarnings("unused")
     public void setStoreInterfaceClass(Class<? extends Store<?>> storeInterfaceClass) {
         configure(storeInterfaceClass);
     }
 
     private void configure(Class<? extends Store<?>> storeInterfaceClass) {
-        if (configurers == null)
+        if (configurers == null) {
             return;
+        }
 
-        EncryptingContentStoreConfigurationImpl config = new EncryptingContentStoreConfigurationImpl();
+        EncryptingContentStoreConfigurationImpl<S> config = new EncryptingContentStoreConfigurationImpl<>();
         for (EncryptingContentStoreConfigurer<?> configurer : configurers) {
-            Optional<?> interfaces = Arrays.stream(configurer.getClass().getGenericInterfaces()).findFirst();
-            if (interfaces.isEmpty())
+            Optional<Type> storeConfigurerType = Arrays.stream(configurer.getClass().getGenericInterfaces()).findFirst();
+            if (storeConfigurerType.isEmpty()) {
                 continue;
+            }
 
-            Type[] genericArguments = ((ParameterizedType) interfaces.get()).getActualTypeArguments();
-            if (genericArguments.length < 1)
+            Type[] genericArguments = ((ParameterizedType) storeConfigurerType.get()).getActualTypeArguments();
+            if (genericArguments.length < 1) {
                 continue;
+            }
 
             if (genericArguments[0].equals(storeInterfaceClass)) {
-                configurer.configure(config);
+                applyConfigurer(configurer, config);
             }
         }
 
         cryptoService = config.initializeCryptoService(mappingContext, storeInterfaceClass);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T> void applyConfigurer(EncryptingContentStoreConfigurer<?> configurer,
+                                            EncryptingContentStoreConfigurationImpl<T> config) {
+        ((EncryptingContentStoreConfigurer<T>) configurer).configure(config);
     }
 }

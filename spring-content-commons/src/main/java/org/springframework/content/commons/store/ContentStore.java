@@ -1,5 +1,6 @@
 package org.springframework.content.commons.store;
 
+import org.jspecify.annotations.NonNull;
 import org.springframework.content.commons.property.PropertyPath;
 import org.springframework.core.io.Resource;
 import org.springframework.versions.LockParticipant;
@@ -11,33 +12,33 @@ import java.io.Serializable;
 public interface ContentStore<S, SID extends Serializable> extends AssociativeStore<S, SID> {
 
     @LockParticipant
-    S setContent(S entity, InputStream content);
+    S setContent(@NonNull S entity, InputStream content);
 
     @LockParticipant
-    S setContent(S entity, PropertyPath propertyPath, InputStream content);
+    S setContent(@NonNull S entity, PropertyPath propertyPath, InputStream content);
 
     @LockParticipant
-    S setContent(S entity, PropertyPath propertyPath, InputStream content, long contentLen);
+    S setContent(@NonNull S entity, PropertyPath propertyPath, InputStream content, long contentLen);
 
     @LockParticipant
-    S setContent(S entity, PropertyPath propertyPath, InputStream content, SetContentParams params);
+    S setContent(@NonNull S entity, PropertyPath propertyPath, InputStream content, SetContentParams params);
 
     @LockParticipant
-    S setContent(S entity, Resource resourceContent);
+    S setContent(@NonNull S entity, Resource resourceContent);
 
     @LockParticipant
-    S setContent(S entity, PropertyPath propertyPath, Resource resourceContent);
+    S setContent(@NonNull S entity, PropertyPath propertyPath, Resource resourceContent);
 
     @LockParticipant
-    S unsetContent(S entity);
+    S unsetContent(@NonNull S entity);
 
     @LockParticipant
-    S unsetContent(S entity, PropertyPath propertyPath);
+    S unsetContent(@NonNull S entity, PropertyPath propertyPath);
 
     @LockParticipant
-    S unsetContent(S entity, PropertyPath propertyPath, UnsetContentParams params);
+    S unsetContent(@NonNull S entity, PropertyPath propertyPath, UnsetContentParams params);
 
-    InputStream getContent(S entity) throws IOException;
+    InputStream getContent(@NonNull S entity) throws IOException;
 
-    InputStream getContent(S entity, PropertyPath propertyPath) throws IOException;
+    InputStream getContent(@NonNull S entity, PropertyPath propertyPath) throws IOException;
 }

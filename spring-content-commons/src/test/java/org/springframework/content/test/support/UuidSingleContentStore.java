@@ -1,5 +1,6 @@
 package org.springframework.content.test.support;
 
+import org.jspecify.annotations.NonNull;
 import org.springframework.content.commons.store.ContentStore;
 
 import java.io.InputStream;
@@ -13,5 +14,5 @@ import java.util.UUID;
 public interface UuidSingleContentStore extends ContentStore<UuidSingleContentFields, UUID> {
 
     @Override
-    UuidSingleContentFields setContent(UuidSingleContentFields property, InputStream content);
+    UuidSingleContentFields setContent(@NonNull UuidSingleContentFields property, InputStream content);
 }

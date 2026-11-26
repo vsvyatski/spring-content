@@ -1,5 +1,6 @@
 package internal.org.springframework.content.rest.support;
 
+import org.jspecify.annotations.NonNull;
 import org.springframework.content.commons.renditions.Renderable;
 import org.springframework.content.fs.store.FileSystemContentStore;
 import org.springframework.content.rest.RestResource;
@@ -13,5 +14,5 @@ public interface JsonMappedContentEntityStore extends FileSystemContentStore<Jso
 
     @RestResource(exported = false)
     @Override
-    JsonMappedContentEntity setContent(JsonMappedContentEntity property, InputStream content);
+    JsonMappedContentEntity setContent(@NonNull JsonMappedContentEntity property, InputStream content);
 }

@@ -8,7 +8,6 @@ import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.content.commons.mappingcontext.MappingContext;
 import org.springframework.content.commons.store.ReactiveContentStore;
 import org.springframework.content.commons.store.Store;
@@ -41,9 +40,6 @@ public class S3StoreFactoryBean extends AbstractStoreFactoryBean {
 
     @Autowired(required = false)
     private MappingContext mappingContext;
-
-    @Value("${spring.content.s3.bucket:#{environment.AWS_BUCKET}}")
-    private String bucket;
 
     public S3StoreFactoryBean(Class<? extends Store> storeInterface) {
         super(storeInterface);
@@ -89,7 +85,7 @@ public class S3StoreFactoryBean extends AbstractStoreFactoryBean {
             if (asyncClient == null) {
                 throw new NoSuchBeanDefinitionException(S3AsyncClient.class.getCanonicalName());
             }
-            return new DefaultReactiveS3StoreImpl(context, loader, mappingContext, s3StorePlacementService, asyncClient, s3Provider);
+            return new DefaultReactiveS3StoreImpl(context, loader, mappingContext, s3StorePlacementService, asyncClient);
         }
     }
 }
