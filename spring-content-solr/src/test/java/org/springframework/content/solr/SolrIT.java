@@ -52,6 +52,11 @@ public class SolrIT {
         return Objects.requireNonNull(entity.getContentId(), "contentId");
     }
 
+    private void setContentAndSave(FulltextJpaUuidDocumentEntity entity, String classpathResource) {
+        store.setContent(entity, testResource(classpathResource));
+        docRepo.save(entity);
+    }
+
     private void applySolrAuth(QueryRequest request) {
         if (solrProperties.getUser() != null) {
             request.setBasicAuthCredentials(solrProperties.getUser(), solrProperties.getPassword());
@@ -78,9 +83,7 @@ public class SolrIT {
         void shouldIndexContentOfThatDocument() throws IOException, SolrServerException {
             FulltextJpaUuidDocumentEntity doc =
                 FulltextJpaUuidDocumentEntity.withTitleAndAuthor("title of document 1", "author@email.com");
-            docRepo.save(doc);
-            store.setContent(doc, testResource("/one.docx"));
-            docRepo.save(doc);
+            setContentAndSave(doc, "/one.docx");
 
             UUID indexedContentId = contentId(doc);
 
@@ -111,9 +114,7 @@ public class SolrIT {
             @BeforeEach
             void setUp() {
                 doc = FulltextJpaUuidDocumentEntity.withTitleAndAuthor("title of document 1", "author@email.com");
-                docRepo.save(doc);
-                store.setContent(doc, testResource("/one.docx"));
-                docRepo.save(doc);
+                setContentAndSave(doc, "/one.docx");
             }
 
             @AfterEach
@@ -139,9 +140,7 @@ public class SolrIT {
             @BeforeEach
             void setUp() {
                 doc = FulltextJpaUuidDocumentEntity.withTitleAndAuthor("title of document 1", "author@email.com");
-                docRepo.save(doc);
-                store.setContent(doc, testResource("/one.docx"));
-                docRepo.save(doc);
+                setContentAndSave(doc, "/one.docx");
             }
 
             @AfterEach
@@ -164,8 +163,7 @@ public class SolrIT {
                     assertThat(initialRequest.process(solr).getResults()).hasSize(1);
                 });
 
-                store.setContent(doc, testResource("/two.rtf"));
-                docRepo.save(doc);
+                setContentAndSave(doc, "/two.rtf");
 
                 UUID indexedContentId = contentId(doc);
 
@@ -192,9 +190,7 @@ public class SolrIT {
             @BeforeEach
             void setUp() {
                 doc = FulltextJpaUuidDocumentEntity.withTitleAndAuthor("title of document 1", "author@email.com");
-                docRepo.save(doc);
-                store.setContent(doc, testResource("/one.docx"));
-                docRepo.save(doc);
+                setContentAndSave(doc, "/one.docx");
             }
 
             @AfterEach
@@ -244,9 +240,7 @@ public class SolrIT {
                 for (int i = 0; i < 10; i++) {
                     FulltextJpaUuidDocumentEntity pageDoc =
                         FulltextJpaUuidDocumentEntity.withTitleAndAuthor(format("doc %s", i), "author@email.com");
-                    docRepo.save(pageDoc);
-                    store.setContent(pageDoc, testResource("/one.docx"));
-                    docRepo.save(pageDoc);
+                    setContentAndSave(pageDoc, "/one.docx");
                 }
             }
 
@@ -306,14 +300,10 @@ public class SolrIT {
         @BeforeEach
         void setUp() {
             doc = FulltextJpaUuidDocumentEntity.withTitleAndAuthor("title of document 1", "author@email.com");
-            docRepo.save(doc);
-            store.setContent(doc, testResource("/one.docx"));
-            docRepo.save(doc);
+            setContentAndSave(doc, "/one.docx");
 
             doc2 = FulltextJpaUuidDocumentEntity.withTitleAndAuthor("title of document 2", "author@abc.com");
-            docRepo.save(doc2);
-            store.setContent(doc2, testResource("/one.docx"));
-            docRepo.save(doc2);
+            setContentAndSave(doc2, "/one.docx");
         }
 
         @AfterEach
@@ -346,9 +336,7 @@ public class SolrIT {
         @BeforeEach
         void setUp() {
             doc = FulltextJpaUuidDocumentEntity.withTitleAndAuthor("title of document 1", "author@email.com");
-            docRepo.save(doc);
-            store.setContent(doc, testResource("/one.docx"));
-            docRepo.save(doc);
+            setContentAndSave(doc, "/one.docx");
         }
 
         @AfterEach
