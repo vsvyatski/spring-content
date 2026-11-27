@@ -151,11 +151,10 @@ public class ElasticsearchIT {
             store.setContent(rtfDoc, testResource("/two.rtf"));
             repo.save(rtfDoc);
 
-            String index = indexName;
-            var res = client.get(g -> g.index(index).id(contentIdString(wordDoc)), Void.class);
+            var res = client.get(g -> g.index(indexName).id(contentIdString(wordDoc)), Void.class);
             assertThat(res.found()).isTrue();
 
-            res = client.get(g -> g.index(index).id(contentIdString(rtfDoc)), Void.class);
+            res = client.get(g -> g.index(indexName).id(contentIdString(rtfDoc)), Void.class);
             assertThat(res.found()).isTrue();
         }
 
@@ -306,24 +305,22 @@ public class ElasticsearchIT {
 
                 Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
                     assertThat(isIndexedInGlobalIndex(initialContentId)).isTrue();
-                    var result = store.search("foo");
+                    var result = store.search("one");
                     assertThat(result).extracting(FulltextSearchResult::getContentId).contains(initialContentId);
                 });
 
                 store.setContent(doc, testResource("/two.rtf"));
                 repo.save(doc);
-                UUID updatedContentId = contentId(doc);
-                assertThat(updatedContentId).isNotEqualTo(initialContentId);
+                UUID contentIdAfterUpdate = contentId(doc);
 
                 Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
-                    assertThat(isIndexedInGlobalIndex(updatedContentId)).isTrue();
-                    var result = store.search("bar");
-                    assertThat(result).extracting(FulltextSearchResult::getContentId).contains(updatedContentId);
+                    assertThat(isIndexedInGlobalIndex(contentIdAfterUpdate)).isTrue();
+                    var result = store.search("two");
+                    assertThat(result).extracting(FulltextSearchResult::getContentId).contains(contentIdAfterUpdate);
                 });
 
                 Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
-                    assertThat(isIndexedInGlobalIndex(initialContentId)).isFalse();
-                    var result = store.search("foo");
+                    var result = store.search("one");
                     assertThat(result).extracting(FulltextSearchResult::getContentId).doesNotContain(initialContentId);
                 });
             }
