@@ -10,7 +10,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.io.Resource;
 import org.springframework.content.jpa.config.EnableJpaStores;
-import org.springframework.content.solr.AttributeProvider;
+import org.springframework.content.commons.search.AttributeProvider;
 import org.springframework.content.solr.EnableFullTextSolrIndexing;
 import org.springframework.content.solr.FilterQueryProvider;
 import org.springframework.content.solr.SolrTestContainer;

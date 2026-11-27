@@ -3,6 +3,7 @@ package org.springframework.content.elasticsearch;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.content.commons.renditions.RenditionProvider;
+import org.springframework.content.commons.search.AttributeProvider;
 import org.springframework.content.jpa.config.EnableJpaStores;
 import org.springframework.content.test.support.EmbeddedJpa;
 import org.springframework.content.test.support.TestSupportPackages;

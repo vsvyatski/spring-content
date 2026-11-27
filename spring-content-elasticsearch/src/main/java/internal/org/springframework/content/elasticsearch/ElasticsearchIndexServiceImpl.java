@@ -10,7 +10,7 @@ import org.springframework.content.commons.renditions.RenditionService;
 import org.springframework.content.commons.search.IndexService;
 import org.springframework.content.commons.store.StoreAccessException;
 import org.springframework.content.commons.utils.BeanUtils;
-import org.springframework.content.elasticsearch.AttributeProvider;
+import org.springframework.content.commons.search.AttributeProvider;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 

@@ -150,8 +150,8 @@ By default Spring Content Elasticsearch indexes content only.  However, it is co
 attributes from the primary domain model that can then be used for filtering full-text queries or for efficiently populating 
 search results (removing the need to perform subsequent queries against the primary domain model).
 
-To synchronize additional attributes when content is indexed add a bean that implements `AttributeProvider` to your 
-application's configuration:
+To synchronize additional attributes when content is indexed add a bean that implements
+`org.springframework.content.commons.search.AttributeProvider` to your application's configuration:
 
 ====
 [source, java]

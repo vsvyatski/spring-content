@@ -12,7 +12,7 @@ import org.springframework.content.commons.search.IndexService;
 import org.springframework.content.commons.store.StoreAccessException;
 import org.springframework.content.commons.utils.BeanUtils;
 import org.springframework.content.commons.utils.DomainObjectUtils;
-import org.springframework.content.solr.AttributeProvider;
+import org.springframework.content.commons.search.AttributeProvider;
 import org.springframework.content.solr.SolrProperties;
 
 import java.io.IOException;
