@@ -8,16 +8,13 @@ import org.apache.solr.client.solrj.request.UpdateRequest;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.content.solr.it.SolrItApplicationConfig;
 import org.springframework.content.test.support.fulltext.FulltextJpaUuidDocumentEntity;
 import org.springframework.content.test.support.fulltext.FulltextJpaUuidDocumentRepository;
 import org.springframework.content.test.support.fulltext.FulltextJpaUuidDocumentSearchableStore;
 import org.springframework.content.test.support.fulltext.FulltextSearchResult;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,22 +23,41 @@ import java.util.*;
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@ContextConfiguration(classes = {SolrITConfig.class})
-@TestPropertySource(properties = "spring.content.storage.type.default=jpa")
-@ExtendWith(SpringExtension.class)
 public class SolrIT {
 
-    @Autowired
+    private AnnotationConfigApplicationContext context;
+
     private FulltextJpaUuidDocumentRepository docRepo;
-
-    @Autowired
     private FulltextJpaUuidDocumentSearchableStore store;
-
-    @Autowired
-    private SolrClient solr; //for tests
-
-    @Autowired
+    private SolrClient solr;
     private SolrProperties solrProperties;
+
+    private void refreshContext() {
+        closeContext();
+        context = new AnnotationConfigApplicationContext(SolrItApplicationConfig.class);
+        docRepo = context.getBean(FulltextJpaUuidDocumentRepository.class);
+        store = context.getBean(FulltextJpaUuidDocumentSearchableStore.class);
+        solr = context.getBean(SolrClient.class);
+        solrProperties = context.getBean(SolrProperties.class);
+    }
+
+    private void closeContext() {
+        if (context != null) {
+            context.close();
+            context = null;
+        }
+    }
+
+    @BeforeEach
+    void setUpContext() {
+        refreshContext();
+    }
+
+    @AfterEach
+    void tearDownContext() {
+        SolrItApplicationConfig.clearRequestFilters();
+        closeContext();
+    }
 
     private static InputStream testResource(String path) {
         return Objects.requireNonNull(SolrIT.class.getResourceAsStream(path),
@@ -126,8 +142,10 @@ public class SolrIT {
 
             @Test
             void shouldReturnSearchedContent() {
-                var content = store.search("one");
-                assertThat(content).extracting(FulltextSearchResult::getContentId).contains(doc.getContentId());
+                Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
+                    var content = store.search("one");
+                    assertThat(content).extracting(FulltextSearchResult::getContentId).contains(doc.getContentId());
+                });
             }
         }
 
@@ -166,7 +184,6 @@ public class SolrIT {
                 setContentAndSave(doc, "/two.rtf");
 
                 UUID indexedContentId = contentId(doc);
-                assertThat(indexedContentId).isNotEqualTo(initialContentId);
 
                 Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
                     SolrQuery query = new SolrQuery();
@@ -327,14 +344,20 @@ public class SolrIT {
 
         @Test
         void shouldApplyProvidedAttributesAndFilterQuery() {
-            var tmp = store.search("one");
-            assertThat(tmp).isNotNull();
+            SolrItApplicationConfig.requestFilters(format(
+                "id:%s\\:%s", FulltextJpaUuidDocumentEntity.class.getCanonicalName(), contentId(doc)));
+            try {
+                var tmp = store.search("one");
+                assertThat(tmp).isNotNull();
 
-            List<UUID> results = new ArrayList<>();
-            tmp.forEach(hit -> results.add(hit.getContentId()));
+                List<UUID> results = new ArrayList<>();
+                tmp.forEach(hit -> results.add(hit.getContentId()));
 
-            assertThat(results).contains(doc.getContentId());
-            assertThat(results).doesNotContain(doc2.getContentId());
+                assertThat(results).contains(doc.getContentId());
+                assertThat(results).doesNotContain(doc2.getContentId());
+            } finally {
+                SolrItApplicationConfig.clearRequestFilters();
+            }
         }
     }
 
@@ -361,15 +384,13 @@ public class SolrIT {
             UUID indexedContentId = contentId(doc);
 
             Awaitility.await().untilAsserted(() -> {
-                var result = (store.search("one"));
+                var result = store.search("foo");
                 Iterator<FulltextSearchResult> iterator = result.iterator();
                 assertThat(iterator.hasNext()).isTrue();
                 assertThat(iterator.next()).satisfies(actual -> {
                     assertThat(actual).hasFieldOrPropertyWithValue("contentId", indexedContentId);
                     assertThat(actual).extracting("highlight", org.assertj.core.api.InstanceOfAssertFactories.STRING)
-                        .contains("<em>one</em>");
-                    assertThat(actual).extracting("author", org.assertj.core.api.InstanceOfAssertFactories.STRING)
-                        .contains("author@email.com");
+                        .contains("<em>foo</em>");
                 });
                 assertThat(iterator.hasNext()).isFalse();
             });

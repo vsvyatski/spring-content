@@ -1,22 +1,23 @@
 package org.springframework.content.commons.store.events;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.content.commons.search.IndexService;
 import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.commons.store.Store;
 import org.springframework.content.commons.store.StoreAccessException;
-import org.springframework.content.commons.store.events.AfterSetContentEvent;
-import org.springframework.content.commons.store.events.BeforeSetContentEvent;
-import org.springframework.content.commons.store.events.BeforeUnsetContentEvent;
 import org.springframework.content.test.support.FakeEntity;
 import org.springframework.content.test.support.SingleContentFields;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -34,7 +35,6 @@ public class AbstractIndexServiceStoreEventListenerTest {
     private AfterSetContentEvent afterSetEvent;
     private BeforeSetContentEvent beforeSetEvent;
     private BeforeUnsetContentEvent beforeUnsetEvent;
-    private InputStream content;
     private StoreAccessException sae;
     private Throwable e;
 
@@ -73,13 +73,13 @@ public class AbstractIndexServiceStoreEventListenerTest {
                 @BeforeEach
                 void setUp() throws IOException {
                     store = mock(ContentStore.class);
-                    content = mock(InputStream.class);
                     indexService = mock(IndexService.class);
                     listener = new ExposingListener(indexService);
 
                     contentEntity = sampleContentEntity();
 
-                    when(store.getContent(eq(contentEntity))).thenReturn(content);
+                    when(store.getContent(eq(contentEntity))).thenAnswer(
+                        invocation -> new ByteArrayInputStream("content".getBytes(StandardCharsets.UTF_8)));
 
                     try {
                         afterSetEvent = new AfterSetContentEvent(contentEntity, store);
@@ -90,9 +90,12 @@ public class AbstractIndexServiceStoreEventListenerTest {
                 }
 
                 @Test
-                void shouldUseIndexServiceToIndexContent() {
+                void shouldUseIndexServiceToIndexContent() throws IOException {
                     assertThat(e).isNull();
-                    verify(indexService).index(eq(contentEntity), eq(content));
+                    verify(store).getContent(contentEntity);
+                    ArgumentCaptor<InputStream> indexedContent = ArgumentCaptor.forClass(InputStream.class);
+                    verify(indexService).index(eq(contentEntity), indexedContent.capture());
+                    assertThat(IOUtils.toString(indexedContent.getValue(), StandardCharsets.UTF_8)).isEqualTo("content");
                 }
             }
 
@@ -102,13 +105,13 @@ public class AbstractIndexServiceStoreEventListenerTest {
                 @BeforeEach
                 void setUp() throws IOException {
                     store = mock(ContentStore.class);
-                    content = mock(InputStream.class);
                     indexService = mock(IndexService.class);
                     listener = new ExposingListener(indexService);
 
                     contentEntity = sampleContentEntity();
 
-                    when(store.getContent(eq(contentEntity))).thenReturn(content);
+                    when(store.getContent(eq(contentEntity))).thenAnswer(
+                        invocation -> new ByteArrayInputStream("content".getBytes(StandardCharsets.UTF_8)));
 
                     sae = new StoreAccessException("badness");
                     doThrow(sae).when(indexService).index(any(), any());

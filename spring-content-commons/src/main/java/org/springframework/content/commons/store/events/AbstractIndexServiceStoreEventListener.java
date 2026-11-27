@@ -1,5 +1,6 @@
 package org.springframework.content.commons.store.events;
 
+import org.apache.commons.io.IOUtils;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.search.IndexService;
 import org.springframework.content.commons.store.ContentStore;
@@ -8,6 +9,7 @@ import org.springframework.content.commons.utils.BeanUtils;
 import org.springframework.core.annotation.Order;
 import org.springframework.util.Assert;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -44,8 +46,8 @@ public abstract class AbstractIndexServiceStoreEventListener extends AbstractSto
             return;
         }
 
-        try {
-            indexService.index(contentEntity, getContent(contentStore, contentEntity));
+        try (InputStream content = getContent(contentStore, contentEntity)) {
+            indexService.index(contentEntity, new ByteArrayInputStream(IOUtils.toByteArray(content)));
         } catch (IOException e) {
             throw new StoreAccessException("Error reading content for indexing.", e);
         }

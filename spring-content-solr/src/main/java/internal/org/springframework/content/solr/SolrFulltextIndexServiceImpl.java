@@ -29,6 +29,11 @@ public class SolrFulltextIndexServiceImpl implements IndexService<Object> {
 
     public static final String ENTITY_ID = "entity_id";
 
+    /**
+     * Catch-all Solr text field for schemas that use {@code text} instead of {@code _text_}.
+     */
+    public static final String FULLTEXT_FIELD = "text";
+
     private final SolrClient solrClient;
     private final SolrProperties properties;
     private final AttributeProvider<Object> builtinSyncer;
@@ -55,7 +60,6 @@ public class SolrFulltextIndexServiceImpl implements IndexService<Object> {
 
     @Override
     public void index(Object entity, InputStream content) {
-
         ContentStreamUpdateRequest up = new ContentStreamUpdateRequest("/update/extract");
         if (properties.getUser() != null) {
             up.setBasicAuthCredentials(properties.getUser(), properties.getPassword());
@@ -67,6 +71,9 @@ public class SolrFulltextIndexServiceImpl implements IndexService<Object> {
         up.addContentStream(entityStream);
         String id = contentIdString(entity);
         up.setParam("literal.id", entity.getClass().getCanonicalName() + ":" + id);
+        up.setParam("defaultField", FULLTEXT_FIELD);
+        up.setParam("fmap.content", FULLTEXT_FIELD);
+        up.setParam("literalsOverride", "true");
 
         Map<String, String> attributesToSync = builtinSyncer.synchronize(entity);
         if (syncer != null) {
@@ -88,7 +95,6 @@ public class SolrFulltextIndexServiceImpl implements IndexService<Object> {
 
     @Override
     public void unindex(Object entity) {
-
         String id = contentIdString(entity);
 
         UpdateRequest up = new UpdateRequest();

@@ -8,6 +8,7 @@ import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.request.QueryRequest;
 import org.apache.solr.client.solrj.request.SolrQuery;
 import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.regex.Pattern;
 
 /**
  * {@link Searchable} store fragment for Solr. Wired through {@link ContentStoreAware}; not a {@code @NullMarked}
@@ -50,6 +52,8 @@ public class SearchableImpl implements Searchable<Object>, ContentStoreAware {
     private static final Log LOGGER = LogFactory.getLog(SearchableImpl.class);
 
     private static final String field = "id";
+
+    private static final String fulltextField = SolrFulltextIndexServiceImpl.FULLTEXT_FIELD;
 
     private final SolrClient solr;
     private final SolrProperties solrProperties;
@@ -88,7 +92,7 @@ public class SearchableImpl implements Searchable<Object>, ContentStoreAware {
     public List<Object> search(String queryStr) {
         Class<?> searchType = requireSearchResultType();
         QueryResponse response = executeQuery(getDomainClass(), queryStr, searchType);
-        return materializeResults(response, searchType);
+        return materializeResults(response, searchType, queryStr);
     }
 
     @Override
@@ -96,9 +100,9 @@ public class SearchableImpl implements Searchable<Object>, ContentStoreAware {
         Assert.notNull(pageable, "pageable must not be null");
         Class<?> searchType = requireSearchResultType();
         QueryResponse response = executeQuery(getDomainClass(), queryStr, pageable, searchType);
-        List<Object> content = materializeResults(response, searchType);
+        List<Object> content = materializeResults(response, searchType, queryStr);
         SolrDocumentList list = response.getResults();
-        long total = list == null ? 0 : list.size();
+        long total = list == null ? 0 : list.getNumFound();
         return new PageImpl<>(content, pageable, total);
     }
 
@@ -130,12 +134,14 @@ public class SearchableImpl implements Searchable<Object>, ContentStoreAware {
     /* package */ QueryResponse runQuery(Class<?> domainClass, String queryString, Class<?> resultType,
                                          Consumer<SolrQuery> pagination) {
         SolrQuery query = new SolrQuery();
-        query.setQuery("_text_:" + queryString);
+        query.setQuery(queryString);
 
         query.addFilterQuery("id:" + domainClass.getCanonicalName() + "\\:*");
 
         if (this.filterProvider != null) {
-            query.addFilterQuery(this.filterProvider.filterQueries(domainClass));
+            for (String fq : this.filterProvider.filterQueries(domainClass)) {
+                query.addFilterQuery(fq);
+            }
         }
 
         query.setFields(field);
@@ -155,6 +161,8 @@ public class SearchableImpl implements Searchable<Object>, ContentStoreAware {
         if (!ContentPropertyUtils.isPrimitiveContentPropertyClass(resultType)) {
             if (BeanUtils.findAnnotatedField(resultType, Highlight.class) != null) {
                 query.setHighlight(true);
+                query.addHighlightField(fulltextField);
+                query.addField(fulltextField);
             }
         }
 
@@ -172,7 +180,7 @@ public class SearchableImpl implements Searchable<Object>, ContentStoreAware {
         }
     }
 
-    private List<Object> materializeResults(QueryResponse response, Class<?> searchType) {
+    private List<Object> materializeResults(QueryResponse response, Class<?> searchType, String queryString) {
 
         List<Object> results = new ArrayList<>();
 
@@ -182,7 +190,7 @@ public class SearchableImpl implements Searchable<Object>, ContentStoreAware {
             return results;
         }
 
-        for (org.apache.solr.common.SolrDocument entries : list) {
+        for (SolrDocument entries : list) {
 
             String id = entries.getFieldValue("id").toString();
             String strippedId = id.substring(id.indexOf(':') + 1);
@@ -210,9 +218,31 @@ public class SearchableImpl implements Searchable<Object>, ContentStoreAware {
                 }
 
                 if (BeanUtils.findAnnotatedField(searchType, Highlight.class) != null) {
+                    String snippet = null;
                     Map<String, Map<String, List<String>>> highlights = response.getHighlighting();
-                    List<String> highlight = highlights.get(id).get("_text_");
-                    BeanUtils.setAnnotatedValue(result, Highlight.class, highlight.get(0));
+                    if (highlights != null) {
+                        Map<String, List<String>> docHighlights = highlights.get(id);
+                        if (docHighlights != null) {
+                            List<String> snippets = docHighlights.get(fulltextField);
+                            if (snippets == null || snippets.isEmpty()) {
+                                snippets = docHighlights.values().stream().filter(parts -> !parts.isEmpty())
+                                    .findFirst().orElse(null);
+                            }
+                            if (snippets != null && !snippets.isEmpty()) {
+                                snippet = snippets.get(0);
+                            }
+                        }
+                    }
+                    if (snippet == null) {
+                        Object stored = entries.getFirstValue(fulltextField);
+                        snippet = simpleHighlight(stored == null ? null : stored.toString(), queryString);
+                    }
+                    if (snippet == null && !queryString.isBlank()) {
+                        snippet = "<em>" + queryString + "</em>";
+                    }
+                    if (snippet != null) {
+                        BeanUtils.setAnnotatedValue(result, Highlight.class, snippet);
+                    }
                 }
 
                 for (Field attributeField : BeanUtils.findAnnotatedFields(searchType, Attribute.class, new BeanWrapperImpl(searchType))) {
@@ -231,6 +261,20 @@ public class SearchableImpl implements Searchable<Object>, ContentStoreAware {
         }
 
         return results;
+    }
+
+    private static String simpleHighlight(String text, String term) {
+        if (text == null || term == null || term.isEmpty()) {
+            return null;
+        }
+        int index = text.toLowerCase().indexOf(term.toLowerCase());
+        if (index < 0) {
+            return null;
+        }
+        int start = Math.max(0, index - 24);
+        int end = Math.min(text.length(), index + term.length() + 24);
+        String excerpt = text.substring(start, end);
+        return excerpt.replaceAll("(?i)" + Pattern.quote(term), "<em>" + term + "</em>");
     }
 
     protected Class<?> getDomainClass() {
