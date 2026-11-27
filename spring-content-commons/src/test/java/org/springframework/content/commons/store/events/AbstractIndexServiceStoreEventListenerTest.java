@@ -1,4 +1,4 @@
-package internal.org.springframework.content.elasticsearch;
+package org.springframework.content.commons.store.events;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -23,9 +23,9 @@ import static org.mockito.Mockito.*;
 import static org.springframework.content.test.support.TestSupportData.SAMPLE_CONTENT_ID;
 
 @SuppressWarnings("unchecked")
-public class ElasticsearchIndexerTest {
+public class AbstractIndexServiceStoreEventListenerTest {
 
-    private ExposingElasticsearchIndexer indexer;
+    private ExposingListener listener;
 
     private ContentStore<Object, Serializable> store;
     private IndexService<Object> indexService;
@@ -45,8 +45,8 @@ public class ElasticsearchIndexerTest {
         return entity;
     }
 
-    static final class ExposingElasticsearchIndexer extends ElasticsearchIndexer {
-        ExposingElasticsearchIndexer(IndexService<Object> indexService) {
+    static final class ExposingListener extends AbstractIndexServiceStoreEventListener {
+        ExposingListener(IndexService<Object> indexService) {
             super(indexService);
         }
 
@@ -64,7 +64,7 @@ public class ElasticsearchIndexerTest {
     }
 
     @Nested
-    class ElasticsearchIndexerCases {
+    class AbstractIndexServiceStoreEventListenerCases {
         @Nested
         class OnAfterSetContent {
             @Nested
@@ -75,7 +75,7 @@ public class ElasticsearchIndexerTest {
                     store = mock(ContentStore.class);
                     content = mock(InputStream.class);
                     indexService = mock(IndexService.class);
-                    indexer = new ExposingElasticsearchIndexer(indexService);
+                    listener = new ExposingListener(indexService);
 
                     contentEntity = sampleContentEntity();
 
@@ -83,9 +83,9 @@ public class ElasticsearchIndexerTest {
 
                     try {
                         afterSetEvent = new AfterSetContentEvent(contentEntity, store);
-                        indexer.afterSetContent(afterSetEvent);
+                        listener.afterSetContent(afterSetEvent);
                     } catch (Throwable e) {
-                        ElasticsearchIndexerTest.this.e = e;
+                        AbstractIndexServiceStoreEventListenerTest.this.e = e;
                     }
                 }
 
@@ -104,7 +104,7 @@ public class ElasticsearchIndexerTest {
                     store = mock(ContentStore.class);
                     content = mock(InputStream.class);
                     indexService = mock(IndexService.class);
-                    indexer = new ExposingElasticsearchIndexer(indexService);
+                    listener = new ExposingListener(indexService);
 
                     contentEntity = sampleContentEntity();
 
@@ -115,9 +115,9 @@ public class ElasticsearchIndexerTest {
 
                     try {
                         afterSetEvent = new AfterSetContentEvent(contentEntity, store);
-                        indexer.afterSetContent(afterSetEvent);
+                        listener.afterSetContent(afterSetEvent);
                     } catch (Throwable e) {
-                        ElasticsearchIndexerTest.this.e = e;
+                        AbstractIndexServiceStoreEventListenerTest.this.e = e;
                     }
                 }
 
@@ -134,7 +134,7 @@ public class ElasticsearchIndexerTest {
                 void setUp() throws IOException {
                     store = mock(ContentStore.class);
                     indexService = mock(IndexService.class);
-                    indexer = new ExposingElasticsearchIndexer(indexService);
+                    listener = new ExposingListener(indexService);
 
                     contentEntity = sampleContentEntity();
 
@@ -142,9 +142,9 @@ public class ElasticsearchIndexerTest {
 
                     try {
                         afterSetEvent = new AfterSetContentEvent(contentEntity, store);
-                        indexer.afterSetContent(afterSetEvent);
+                        listener.afterSetContent(afterSetEvent);
                     } catch (Throwable e) {
-                        ElasticsearchIndexerTest.this.e = e;
+                        AbstractIndexServiceStoreEventListenerTest.this.e = e;
                     }
                 }
 
@@ -164,15 +164,15 @@ public class ElasticsearchIndexerTest {
                 void setUp() {
                     Store<Serializable> associativeStore = mock(Store.class);
                     indexService = mock(IndexService.class);
-                    indexer = new ExposingElasticsearchIndexer(indexService);
+                    listener = new ExposingListener(indexService);
 
                     contentEntity = sampleContentEntity();
 
                     try {
                         afterSetEvent = new AfterSetContentEvent(contentEntity, associativeStore);
-                        indexer.afterSetContent(afterSetEvent);
+                        listener.afterSetContent(afterSetEvent);
                     } catch (Throwable e) {
-                        ElasticsearchIndexerTest.this.e = e;
+                        AbstractIndexServiceStoreEventListenerTest.this.e = e;
                     }
                 }
 
@@ -190,14 +190,14 @@ public class ElasticsearchIndexerTest {
                 void setUp() {
                     store = mock(ContentStore.class);
                     indexService = mock(IndexService.class);
-                    indexer = new ExposingElasticsearchIndexer(indexService);
+                    listener = new ExposingListener(indexService);
 
                     contentEntity = new SingleContentFields();
                     try {
                         afterSetEvent = new AfterSetContentEvent(contentEntity, store);
-                        indexer.afterSetContent(afterSetEvent);
+                        listener.afterSetContent(afterSetEvent);
                     } catch (Throwable e) {
-                        ElasticsearchIndexerTest.this.e = e;
+                        AbstractIndexServiceStoreEventListenerTest.this.e = e;
                     }
                 }
 
@@ -215,14 +215,14 @@ public class ElasticsearchIndexerTest {
                 void setUp() {
                     store = mock(ContentStore.class);
                     indexService = mock(IndexService.class);
-                    indexer = new ExposingElasticsearchIndexer(indexService);
+                    listener = new ExposingListener(indexService);
 
                     contentEntity = new FakeEntity();
                     try {
                         afterSetEvent = new AfterSetContentEvent(contentEntity, store);
-                        indexer.afterSetContent(afterSetEvent);
+                        listener.afterSetContent(afterSetEvent);
                     } catch (Throwable e) {
-                        ElasticsearchIndexerTest.this.e = e;
+                        AbstractIndexServiceStoreEventListenerTest.this.e = e;
                     }
                 }
 
@@ -243,15 +243,15 @@ public class ElasticsearchIndexerTest {
                 void setUp() {
                     store = mock(ContentStore.class);
                     indexService = mock(IndexService.class);
-                    indexer = new ExposingElasticsearchIndexer(indexService);
+                    listener = new ExposingListener(indexService);
 
                     contentEntity = sampleContentEntity();
 
                     try {
                         beforeSetEvent = new BeforeSetContentEvent(contentEntity, store, (InputStream) null);
-                        indexer.beforeSetContent(beforeSetEvent);
+                        listener.beforeSetContent(beforeSetEvent);
                     } catch (Throwable e) {
-                        ElasticsearchIndexerTest.this.e = e;
+                        AbstractIndexServiceStoreEventListenerTest.this.e = e;
                     }
                 }
 
@@ -270,14 +270,14 @@ public class ElasticsearchIndexerTest {
                 void setUp() {
                     store = mock(ContentStore.class);
                     indexService = mock(IndexService.class);
-                    indexer = new ExposingElasticsearchIndexer(indexService);
+                    listener = new ExposingListener(indexService);
 
                     contentEntity = new SingleContentFields();
                     try {
                         beforeSetEvent = new BeforeSetContentEvent(contentEntity, store, (InputStream) null);
-                        indexer.beforeSetContent(beforeSetEvent);
+                        listener.beforeSetContent(beforeSetEvent);
                     } catch (Throwable e) {
-                        ElasticsearchIndexerTest.this.e = e;
+                        AbstractIndexServiceStoreEventListenerTest.this.e = e;
                     }
                 }
 
@@ -298,15 +298,15 @@ public class ElasticsearchIndexerTest {
                 void setUp() {
                     store = mock(ContentStore.class);
                     indexService = mock(IndexService.class);
-                    indexer = new ExposingElasticsearchIndexer(indexService);
+                    listener = new ExposingListener(indexService);
 
                     contentEntity = sampleContentEntity();
 
                     try {
                         beforeUnsetEvent = new BeforeUnsetContentEvent(contentEntity, store);
-                        indexer.beforeUnsetContent(beforeUnsetEvent);
+                        listener.beforeUnsetContent(beforeUnsetEvent);
                     } catch (Exception e) {
-                        ElasticsearchIndexerTest.this.e = e;
+                        AbstractIndexServiceStoreEventListenerTest.this.e = e;
                     }
                 }
 
@@ -323,7 +323,7 @@ public class ElasticsearchIndexerTest {
                     void setUp() {
                         store = mock(ContentStore.class);
                         indexService = mock(IndexService.class);
-                        indexer = new ExposingElasticsearchIndexer(indexService);
+                        listener = new ExposingListener(indexService);
 
                         contentEntity = sampleContentEntity();
 
@@ -332,9 +332,9 @@ public class ElasticsearchIndexerTest {
 
                         try {
                             beforeUnsetEvent = new BeforeUnsetContentEvent(contentEntity, store);
-                            indexer.beforeUnsetContent(beforeUnsetEvent);
+                            listener.beforeUnsetContent(beforeUnsetEvent);
                         } catch (Exception e) {
-                            ElasticsearchIndexerTest.this.e = e;
+                            AbstractIndexServiceStoreEventListenerTest.this.e = e;
                         }
                     }
 
@@ -352,14 +352,14 @@ public class ElasticsearchIndexerTest {
                 void setUp() {
                     store = mock(ContentStore.class);
                     indexService = mock(IndexService.class);
-                    indexer = new ExposingElasticsearchIndexer(indexService);
+                    listener = new ExposingListener(indexService);
 
                     contentEntity = new SingleContentFields();
                     try {
                         beforeUnsetEvent = new BeforeUnsetContentEvent(contentEntity, store);
-                        indexer.beforeUnsetContent(beforeUnsetEvent);
+                        listener.beforeUnsetContent(beforeUnsetEvent);
                     } catch (Exception e) {
-                        ElasticsearchIndexerTest.this.e = e;
+                        AbstractIndexServiceStoreEventListenerTest.this.e = e;
                     }
                 }
 
@@ -377,14 +377,14 @@ public class ElasticsearchIndexerTest {
                 void setUp() {
                     store = mock(ContentStore.class);
                     indexService = mock(IndexService.class);
-                    indexer = new ExposingElasticsearchIndexer(indexService);
+                    listener = new ExposingListener(indexService);
 
                     contentEntity = new FakeEntity();
                     try {
                         beforeUnsetEvent = new BeforeUnsetContentEvent(contentEntity, store);
-                        indexer.beforeUnsetContent(beforeUnsetEvent);
+                        listener.beforeUnsetContent(beforeUnsetEvent);
                     } catch (Exception e) {
-                        ElasticsearchIndexerTest.this.e = e;
+                        AbstractIndexServiceStoreEventListenerTest.this.e = e;
                     }
                 }
 

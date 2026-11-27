@@ -61,7 +61,7 @@ public class EnableFullTextSolrIndexingTest {
         }
 
         @Test
-        void shouldHaveSolrIndexingStoreEventHandlerBean() {
+        void shouldHaveSolrIndexerBean() {
             assertThat(context.getBean(SolrIndexer.class)).isNotNull();
         }
 
