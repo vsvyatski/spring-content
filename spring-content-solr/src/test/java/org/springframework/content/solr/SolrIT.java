@@ -6,7 +6,6 @@ import org.apache.solr.client.solrj.request.QueryRequest;
 import org.apache.solr.client.solrj.request.SolrQuery;
 import org.apache.solr.client.solrj.request.UpdateRequest;
 import org.apache.solr.client.solrj.response.QueryResponse;
-import org.apache.solr.common.SolrDocumentList;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -66,8 +65,7 @@ public class SolrIT {
     }
 
     private void purgeSolrIndex() throws IOException, SolrServerException {
-        UpdateRequest req = new UpdateRequest();
-        req.deleteByQuery("*");
+        UpdateRequest req = new UpdateRequest().deleteByQuery("*");
         applySolrAuth(req);
         req.process(solr, null);
         req.commit(solr, null);
@@ -133,7 +131,7 @@ public class SolrIT {
         }
 
         @Nested
-        @DisplayName("Given that documents content is updated")
+        @DisplayName("When the document content is updated")
         class DocumentsContentIsUpdated {
 
             private FulltextJpaUuidDocumentEntity doc;
@@ -143,9 +141,6 @@ public class SolrIT {
                 doc = FulltextJpaUuidDocumentEntity.withTitleAndAuthor("title of document 1", "author@email.com");
                 docRepo.save(doc);
                 store.setContent(doc, testResource("/one.docx"));
-                docRepo.save(doc);
-
-                store.setContent(doc, testResource("/two.rtf"));
                 docRepo.save(doc);
             }
 
@@ -158,6 +153,20 @@ public class SolrIT {
 
             @Test
             void shouldIndexNewContent() {
+                UUID initialContentId = contentId(doc);
+
+                Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
+                    SolrQuery initialQuery = new SolrQuery("foo");
+                    initialQuery.addFilterQuery(format(
+                        "id:%s\\:%s", FulltextJpaUuidDocumentEntity.class.getCanonicalName(), initialContentId));
+                    QueryRequest initialRequest = new QueryRequest(initialQuery);
+                    applySolrAuth(initialRequest);
+                    assertThat(initialRequest.process(solr).getResults()).hasSize(1);
+                });
+
+                store.setContent(doc, testResource("/two.rtf"));
+                docRepo.save(doc);
+
                 UUID indexedContentId = contentId(doc);
 
                 Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
@@ -175,44 +184,53 @@ public class SolrIT {
         }
 
         @Nested
-        @DisplayName("Given that document is deleted")
+        @DisplayName("When the document is deleted")
         class DocumentIsDeleted {
 
-            private UUID deletedContentId;
+            private FulltextJpaUuidDocumentEntity doc;
 
             @BeforeEach
             void setUp() {
-                FulltextJpaUuidDocumentEntity entity =
-                    FulltextJpaUuidDocumentEntity.withTitleAndAuthor("title of document 1", "author@email.com");
-                docRepo.save(entity);
-                store.setContent(entity, testResource("/one.docx"));
-                docRepo.save(entity);
-
-                deletedContentId = contentId(entity);
-                store.unsetContent(entity);
-                docRepo.delete(entity);
+                doc = FulltextJpaUuidDocumentEntity.withTitleAndAuthor("title of document 1", "author@email.com");
+                docRepo.save(doc);
+                store.setContent(doc, testResource("/one.docx"));
+                docRepo.save(doc);
             }
 
             @AfterEach
             void tearDown() throws IOException, SolrServerException {
+                if (docRepo.existsById(doc.getId())) {
+                    store.unsetContent(doc);
+                    docRepo.delete(doc);
+                }
                 purgeSolrIndex();
             }
 
             @Test
-            void shouldDeleteRecordOfContentFromIndex() throws SolrServerException, IOException {
-                SolrQuery query = new SolrQuery();
-                query.setQuery("one");
-                query.addFilterQuery(
-                    format("id:%s\\:%s", FulltextJpaUuidDocumentEntity.class.getCanonicalName(), deletedContentId));
-                query.setFields("content");
+            void shouldDeleteRecordOfContentFromIndex() {
+                UUID indexedContentId = contentId(doc);
 
-                QueryRequest request = new QueryRequest(query);
-                applySolrAuth(request);
+                Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
+                    SolrQuery indexedQuery = new SolrQuery("one");
+                    indexedQuery.addFilterQuery(format(
+                        "id:%s\\:%s", FulltextJpaUuidDocumentEntity.class.getCanonicalName(), indexedContentId));
+                    QueryRequest indexedRequest = new QueryRequest(indexedQuery);
+                    applySolrAuth(indexedRequest);
+                    assertThat(indexedRequest.process(solr).getResults()).hasSize(1);
+                });
 
-                QueryResponse response = request.process(solr);
-                SolrDocumentList results = response.getResults();
+                store.unsetContent(doc);
+                docRepo.delete(doc);
 
-                assertThat(results.size()).isEqualTo(0);
+                Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
+                    SolrQuery query = new SolrQuery("one");
+                    query.addFilterQuery(format(
+                        "id:%s\\:%s", FulltextJpaUuidDocumentEntity.class.getCanonicalName(), indexedContentId));
+                    query.setFields("content");
+                    QueryRequest request = new QueryRequest(query);
+                    applySolrAuth(request);
+                    assertThat(request.process(solr).getResults()).isEmpty();
+                });
             }
         }
     }
