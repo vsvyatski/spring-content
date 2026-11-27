@@ -34,18 +34,23 @@ public class SolrIT {
 
     @Autowired
     private FulltextJpaUuidDocumentRepository docRepo;
+
     @Autowired
     private FulltextJpaUuidDocumentSearchableStore store;
+
     @Autowired
     private SolrClient solr; //for tests
+
     @Autowired
     private SolrProperties solrProperties;
-    private FulltextJpaUuidDocumentEntity doc, doc2;
-    private UUID id = null;
 
     private static InputStream testResource(String path) {
         return Objects.requireNonNull(SolrIT.class.getResourceAsStream(path),
             () -> "Missing classpath test resource: " + path);
+    }
+
+    private static UUID contentId(FulltextJpaUuidDocumentEntity entity) {
+        return Objects.requireNonNull(entity.getContentId(), "contentId");
     }
 
     private void applySolrAuth(QueryRequest request) {
@@ -61,74 +66,62 @@ public class SolrIT {
     }
 
     private void purgeSolrIndex() throws IOException, SolrServerException {
-        if (solr != null) {
-            UpdateRequest req = new UpdateRequest();
-            req.deleteByQuery("*");
-            applySolrAuth(req);
-            req.process(solr, null);
-            req.commit(solr, null);
-        }
+        UpdateRequest req = new UpdateRequest();
+        req.deleteByQuery("*");
+        applySolrAuth(req);
+        req.process(solr, null);
+        req.commit(solr, null);
     }
 
     @Nested
     class Index {
-        @BeforeEach
-        void setUp() {
-            doc = new FulltextJpaUuidDocumentEntity();
-            doc.setTitle("title of document 1");
-            doc.setAuthor("author@email.com");
-            doc = docRepo.save(doc);
-            doc = store.setContent(doc, testResource("/one.docx"));
-            doc = docRepo.save(doc);
-        }
-
-        @AfterEach
-        void tearDown() throws IOException, SolrServerException {
-            if (store != null) {
-                store.unsetContent(doc);
-            }
-            if (docRepo != null) {
-                docRepo.delete(doc);
-            }
-            purgeSolrIndex();
-        }
 
         @Test
-        void shouldIndexContentOfThatDocument() {
-            org.awaitility.Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
-                SolrQuery query = new SolrQuery();
-                query.setQuery("foo");
-                String fq = format(
-                    "id:%s\\:%s", FulltextJpaUuidDocumentEntity.class.getCanonicalName(), doc.getContentId());
-                query.addFilterQuery(fq);
-                QueryRequest request = new QueryRequest(query);
-                applySolrAuth(request);
-                QueryResponse response = request.process(solr);
-                assertThat(response.getResults()).hasSize(1);
-            });
+        void shouldIndexContentOfThatDocument() throws IOException, SolrServerException {
+            FulltextJpaUuidDocumentEntity doc =
+                FulltextJpaUuidDocumentEntity.withTitleAndAuthor("title of document 1", "author@email.com");
+            docRepo.save(doc);
+            store.setContent(doc, testResource("/one.docx"));
+            docRepo.save(doc);
+
+            UUID indexedContentId = contentId(doc);
+
+            try {
+                Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
+                    SolrQuery query = new SolrQuery().setQuery("foo");
+                    String fq = format(
+                        "id:%s\\:%s", FulltextJpaUuidDocumentEntity.class.getCanonicalName(), indexedContentId);
+                    query.addFilterQuery(fq);
+                    QueryRequest request = new QueryRequest(query);
+                    applySolrAuth(request);
+                    QueryResponse response = request.process(solr);
+                    assertThat(response.getResults()).hasSize(1);
+                });
+            } finally {
+                store.unsetContent(doc);
+                docRepo.delete(doc);
+                purgeSolrIndex();
+            }
         }
 
         @Nested
         @DisplayName("When the content is searched")
         class ContentIsSearched {
+
+            private FulltextJpaUuidDocumentEntity doc;
+
             @BeforeEach
             void setUp() {
-                doc = new FulltextJpaUuidDocumentEntity();
-                doc.setTitle("title of document 1");
-                doc.setAuthor("author@email.com");
-                doc = docRepo.save(doc);
-                doc = store.setContent(doc, testResource("/one.docx"));
-                doc = docRepo.save(doc);
+                doc = FulltextJpaUuidDocumentEntity.withTitleAndAuthor("title of document 1", "author@email.com");
+                docRepo.save(doc);
+                store.setContent(doc, testResource("/one.docx"));
+                docRepo.save(doc);
             }
 
             @AfterEach
             void tearDown() throws IOException, SolrServerException {
-                if (store != null) {
-                    store.unsetContent(doc);
-                }
-                if (docRepo != null) {
-                    docRepo.delete(doc);
-                }
+                store.unsetContent(doc);
+                docRepo.delete(doc);
                 purgeSolrIndex();
             }
 
@@ -142,14 +135,15 @@ public class SolrIT {
         @Nested
         @DisplayName("Given that documents content is updated")
         class DocumentsContentIsUpdated {
+
+            private FulltextJpaUuidDocumentEntity doc;
+
             @BeforeEach
             void setUp() {
-                doc = new FulltextJpaUuidDocumentEntity();
-                doc.setTitle("title of document 1");
-                doc.setAuthor("author@email.com");
-                doc = docRepo.save(doc);
-                doc = store.setContent(doc, testResource("/one.docx"));
-                doc = docRepo.save(doc);
+                doc = FulltextJpaUuidDocumentEntity.withTitleAndAuthor("title of document 1", "author@email.com");
+                docRepo.save(doc);
+                store.setContent(doc, testResource("/one.docx"));
+                docRepo.save(doc);
 
                 store.setContent(doc, testResource("/two.rtf"));
                 docRepo.save(doc);
@@ -157,22 +151,20 @@ public class SolrIT {
 
             @AfterEach
             void tearDown() throws IOException, SolrServerException {
-                if (store != null) {
-                    store.unsetContent(doc);
-                }
-                if (docRepo != null) {
-                    docRepo.delete(doc);
-                }
+                store.unsetContent(doc);
+                docRepo.delete(doc);
                 purgeSolrIndex();
             }
 
             @Test
             void shouldIndexNewContent() {
-                org.awaitility.Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
+                UUID indexedContentId = contentId(doc);
+
+                Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
                     SolrQuery query = new SolrQuery();
                     query.setQuery("bar");
                     String fq = format(
-                        "id:%s\\:%s", FulltextJpaUuidDocumentEntity.class.getCanonicalName(), doc.getContentId());
+                        "id:%s\\:%s", FulltextJpaUuidDocumentEntity.class.getCanonicalName(), indexedContentId);
                     query.addFilterQuery(fq);
                     QueryRequest request = new QueryRequest(query);
                     applySolrAuth(request);
@@ -185,19 +177,20 @@ public class SolrIT {
         @Nested
         @DisplayName("Given that document is deleted")
         class DocumentIsDeleted {
+
+            private UUID deletedContentId;
+
             @BeforeEach
             void setUp() {
-                doc = new FulltextJpaUuidDocumentEntity();
-                doc.setTitle("title of document 1");
-                doc.setAuthor("author@email.com");
-                doc = docRepo.save(doc);
-                doc = store.setContent(doc, testResource("/one.docx"));
-                doc = docRepo.save(doc);
+                FulltextJpaUuidDocumentEntity entity =
+                    FulltextJpaUuidDocumentEntity.withTitleAndAuthor("title of document 1", "author@email.com");
+                docRepo.save(entity);
+                store.setContent(entity, testResource("/one.docx"));
+                docRepo.save(entity);
 
-                id = doc.getContentId();
-                store.unsetContent(doc);
-                docRepo.delete(doc);
-                doc = null;
+                deletedContentId = contentId(entity);
+                store.unsetContent(entity);
+                docRepo.delete(entity);
             }
 
             @AfterEach
@@ -209,7 +202,8 @@ public class SolrIT {
             void shouldDeleteRecordOfContentFromIndex() throws SolrServerException, IOException {
                 SolrQuery query = new SolrQuery();
                 query.setQuery("one");
-                query.addFilterQuery(format("id:%s\\:%s", FulltextJpaUuidDocumentEntity.class.getCanonicalName(), id));
+                query.addFilterQuery(
+                    format("id:%s\\:%s", FulltextJpaUuidDocumentEntity.class.getCanonicalName(), deletedContentId));
                 query.setFields("content");
 
                 QueryRequest request = new QueryRequest(query);
@@ -230,24 +224,21 @@ public class SolrIT {
             @BeforeEach
             void setUp() {
                 for (int i = 0; i < 10; i++) {
-                    FulltextJpaUuidDocumentEntity pageDoc = new FulltextJpaUuidDocumentEntity();
-                    pageDoc.setTitle(format("doc %s", i));
-                    pageDoc.setAuthor("author@email.com");
-                    pageDoc = docRepo.save(pageDoc);
-                    pageDoc = store.setContent(pageDoc, testResource("/one.docx"));
+                    FulltextJpaUuidDocumentEntity pageDoc =
+                        FulltextJpaUuidDocumentEntity.withTitleAndAuthor(format("doc %s", i), "author@email.com");
+                    docRepo.save(pageDoc);
+                    store.setContent(pageDoc, testResource("/one.docx"));
                     docRepo.save(pageDoc);
                 }
             }
 
             @AfterEach
             void tearDown() throws IOException, SolrServerException {
-                if (docRepo != null && store != null) {
-                    for (FulltextJpaUuidDocumentEntity pageDoc : docRepo.findAll()) {
-                        store.unsetContent(pageDoc);
-                    }
-                    for (FulltextJpaUuidDocumentEntity pageDoc : docRepo.findAll()) {
-                        docRepo.deleteById(pageDoc.getId());
-                    }
+                for (FulltextJpaUuidDocumentEntity pageDoc : docRepo.findAll()) {
+                    store.unsetContent(pageDoc);
+                }
+                for (FulltextJpaUuidDocumentEntity pageDoc : docRepo.findAll()) {
+                    docRepo.deleteById(pageDoc.getId());
                 }
                 purgeSolrIndex();
             }
@@ -290,33 +281,29 @@ public class SolrIT {
 
     @Nested
     class CustomAttributes {
+
+        private FulltextJpaUuidDocumentEntity doc;
+        private FulltextJpaUuidDocumentEntity doc2;
+
         @BeforeEach
         void setUp() {
-            doc = new FulltextJpaUuidDocumentEntity();
-            doc.setTitle("title of document 1");
-            doc.setAuthor("author@email.com");
-            doc = docRepo.save(doc);
-            doc = store.setContent(doc, testResource("/one.docx"));
-            doc = docRepo.save(doc);
+            doc = FulltextJpaUuidDocumentEntity.withTitleAndAuthor("title of document 1", "author@email.com");
+            docRepo.save(doc);
+            store.setContent(doc, testResource("/one.docx"));
+            docRepo.save(doc);
 
-            doc2 = new FulltextJpaUuidDocumentEntity();
-            doc2.setTitle("title of document 2");
-            doc2.setAuthor("author@abc.com");
-            doc2 = docRepo.save(doc2);
-            doc2 = store.setContent(doc2, testResource("/one.docx"));
-            doc2 = docRepo.save(doc2);
+            doc2 = FulltextJpaUuidDocumentEntity.withTitleAndAuthor("title of document 2", "author@abc.com");
+            docRepo.save(doc2);
+            store.setContent(doc2, testResource("/one.docx"));
+            docRepo.save(doc2);
         }
 
         @AfterEach
         void tearDown() throws IOException, SolrServerException {
-            if (doc != null) {
-                store.unsetContent(doc);
-                docRepo.delete(doc);
-            }
-            if (doc2 != null) {
-                store.unsetContent(doc2);
-                docRepo.delete(doc2);
-            }
+            store.unsetContent(doc);
+            docRepo.delete(doc);
+            store.unsetContent(doc2);
+            docRepo.delete(doc2);
             purgeSolrIndex();
         }
 
@@ -335,33 +322,34 @@ public class SolrIT {
 
     @Nested
     class CustomReturnTypes {
+
+        private FulltextJpaUuidDocumentEntity doc;
+
         @BeforeEach
         void setUp() {
-            doc = new FulltextJpaUuidDocumentEntity();
-            doc.setTitle("title of document 1");
-            doc.setAuthor("author@email.com");
-            doc = docRepo.save(doc);
-            doc = store.setContent(doc, testResource("/one.docx"));
-            doc = docRepo.save(doc);
+            doc = FulltextJpaUuidDocumentEntity.withTitleAndAuthor("title of document 1", "author@email.com");
+            docRepo.save(doc);
+            store.setContent(doc, testResource("/one.docx"));
+            docRepo.save(doc);
         }
 
         @AfterEach
         void tearDown() throws IOException, SolrServerException {
-            if (doc != null) {
-                store.unsetContent(doc);
-                docRepo.delete(doc);
-            }
+            store.unsetContent(doc);
+            docRepo.delete(doc);
             purgeSolrIndex();
         }
 
         @Test
         void shouldReturnResultsUsingReturnType() {
+            UUID indexedContentId = contentId(doc);
+
             Awaitility.await().untilAsserted(() -> {
                 var result = (store.search("one"));
                 Iterator<FulltextSearchResult> iterator = result.iterator();
                 assertThat(iterator.hasNext()).isTrue();
                 assertThat(iterator.next()).satisfies(actual -> {
-                    assertThat(actual).hasFieldOrPropertyWithValue("contentId", doc.getContentId());
+                    assertThat(actual).hasFieldOrPropertyWithValue("contentId", indexedContentId);
                     assertThat(actual).extracting("highlight", org.assertj.core.api.InstanceOfAssertFactories.STRING)
                         .contains("<em>one</em>");
                     assertThat(actual).extracting("author", org.assertj.core.api.InstanceOfAssertFactories.STRING)
