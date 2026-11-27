@@ -24,7 +24,6 @@ public class SpringBootContentRestConfigurer implements ContentRestConfigurer {
 
     @Override
     public void configure(RestConfiguration config) {
-
         if (properties == null) {
             return;
         }

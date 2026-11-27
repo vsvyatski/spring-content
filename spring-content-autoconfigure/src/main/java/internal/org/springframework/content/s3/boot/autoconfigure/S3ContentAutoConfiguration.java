@@ -35,17 +35,17 @@ public class S3ContentAutoConfiguration {
     public S3Client amazonS3(S3Properties props) {
         S3ClientBuilder builder = S3Client.builder();
 
-        if (StringUtils.hasText(props.endpoint)) {
-            builder.endpointOverride(URI.create(props.endpoint));
+        if (StringUtils.hasText(props.getEndpoint())) {
+            builder.endpointOverride(URI.create(props.getEndpoint()));
         }
 
-        if (StringUtils.hasText(props.accessKey) && StringUtils.hasText(props.secretKey)) {
+        if (StringUtils.hasText(props.getAccessKey()) && StringUtils.hasText(props.getSecretKey())) {
             AwsCredentialsProvider provider = StaticCredentialsProvider
-                .create(AwsBasicCredentials.create(props.accessKey, props.secretKey));
+                .create(AwsBasicCredentials.create(props.getAccessKey(), props.getSecretKey()));
             builder.credentialsProvider(provider);
         }
 
-        if (props.pathStyleAccess) {
+        if (props.isPathStyleAccess()) {
             builder.serviceConfiguration(S3Configuration.builder().pathStyleAccessEnabled(true).build());
         }
 
@@ -62,21 +62,37 @@ public class S3ContentAutoConfiguration {
     @ConfigurationProperties(prefix = "spring.content.s3")
     public static class S3Properties {
 
-        public String endpoint;
-        public String accessKey;
-        public String secretKey;
-        public boolean pathStyleAccess;
+        private String endpoint;
+        private String accessKey;
+        private String secretKey;
+        private boolean pathStyleAccess;
+
+        public String getEndpoint() {
+            return endpoint;
+        }
 
         public void setEndpoint(String endpoint) {
             this.endpoint = endpoint;
+        }
+
+        public String getAccessKey() {
+            return accessKey;
         }
 
         public void setAccessKey(String accessKey) {
             this.accessKey = accessKey;
         }
 
+        public String getSecretKey() {
+            return secretKey;
+        }
+
         public void setSecretKey(String secretKey) {
             this.secretKey = secretKey;
+        }
+
+        public boolean isPathStyleAccess() {
+            return pathStyleAccess;
         }
 
         public void setPathStyleAccess(boolean pathStyleAccess) {

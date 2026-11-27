@@ -133,8 +133,36 @@ public class ContentS3AutoConfigurationTest {
         }
 
         @Test
-        void shouldHaveFilesystemPropertiesBeanWithCorrectRootSet() {
-            contextRunner.withUserConfiguration(TestConfigWithProperties.class).run((context) -> Assertions.assertThat(context).hasSingleBean(S3Client.class));
+        void shouldHaveS3PropertiesBeanWithCorrectValuesAndS3Client() {
+            contextRunner.withUserConfiguration(TestConfigWithProperties.class).run((context) -> {
+                Assertions.assertThat(context).hasSingleBean(S3Client.class);
+
+                S3ContentAutoConfiguration.S3Properties properties =
+                    context.getBean(S3ContentAutoConfiguration.S3Properties.class);
+                Assertions.assertThat(properties.getEndpoint()).isEqualTo("http://some-endpoint");
+                Assertions.assertThat(properties.getAccessKey()).isEqualTo("foo");
+                Assertions.assertThat(properties.getSecretKey()).isEqualTo("bar");
+                Assertions.assertThat(properties.isPathStyleAccess()).isTrue();
+            });
+        }
+    }
+
+    @Nested
+    @DisplayName("S3Properties")
+    class S3PropertiesAccessor {
+        @Test
+        void settersPopulateGetters() {
+            S3ContentAutoConfiguration.S3Properties properties = new S3ContentAutoConfiguration.S3Properties();
+
+            properties.setEndpoint("http://some-endpoint");
+            properties.setAccessKey("foo");
+            properties.setSecretKey("bar");
+            properties.setPathStyleAccess(true);
+
+            Assertions.assertThat(properties.getEndpoint()).isEqualTo("http://some-endpoint");
+            Assertions.assertThat(properties.getAccessKey()).isEqualTo("foo");
+            Assertions.assertThat(properties.getSecretKey()).isEqualTo("bar");
+            Assertions.assertThat(properties.isPathStyleAccess()).isTrue();
         }
     }
 }
