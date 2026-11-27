@@ -27,7 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class ElasticsearchIT {
 
-    private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+    private AnnotationConfigApplicationContext context;
 
     private FulltextJpaUuidDocumentRepository repo;
     private FulltextJpaUuidDocumentSearchableStore store;
@@ -70,34 +70,65 @@ public class ElasticsearchIT {
         deleteIndexIfExists(client, IndexManager.INDEX_NAME);
     }
 
+    private void closeContext() {
+        context.close();
+    }
+
+    private void tearDownEntityIndexingScenario() throws IOException {
+        try {
+            tearDownEntityElasticsearch(client);
+        } finally {
+            closeContext();
+        }
+    }
+
+    private void tearDownGlobalIndexingScenario() throws IOException {
+        try {
+            deleteIndexIfExists(client, indexName);
+        } finally {
+            closeContext();
+        }
+    }
+
+    private void refreshElasticsearchContext(Class<?>... configurationClasses) {
+        context = new AnnotationConfigApplicationContext();
+        for (Class<?> configurationClass : configurationClasses) {
+            context.register(configurationClass);
+        }
+        context.refresh();
+
+        repo = context.getBean(FulltextJpaUuidDocumentRepository.class);
+        store = context.getBean(FulltextJpaUuidDocumentSearchableStore.class);
+        searchableStore = store;
+        client = context.getBean(ElasticsearchClient.class);
+    }
+
+    private void setUpGlobalIndexingContext() throws Exception {
+        refreshElasticsearchContext(GlobalIndexingStrategy.class, ElasticsearchConfig.class);
+        GlobalIndexingStrategy globalIndexing = context.getBean(GlobalIndexingStrategy.class);
+        globalIndexing.setup();
+        indexName = globalIndexing.indexName();
+    }
+
+    private void setUpEntityIndexingContext() {
+        refreshElasticsearchContext(EntityIndexingStrategy.class, ElasticsearchConfig.class);
+    }
+
+    private void setUpEntityIndexingContextWithCustomAttributes() {
+        refreshElasticsearchContext(EntityIndexingStrategy.class, CustomAttributesConfig.class);
+    }
+
     @Nested
     class GlobalIndexingStrategyScenarios {
 
         @BeforeEach
         void setUp() throws Exception {
-            context = new AnnotationConfigApplicationContext();
-            context.register(GlobalIndexingStrategy.class);
-            context.register(ElasticsearchConfig.class);
-            context.refresh();
-
-            repo = context.getBean(FulltextJpaUuidDocumentRepository.class);
-            store = context.getBean(FulltextJpaUuidDocumentSearchableStore.class);
-            client = context.getBean(ElasticsearchClient.class);
-            context.getBean(GlobalIndexingStrategy.class).setup();
-            indexName = context.getBean(GlobalIndexingStrategy.class).indexName();
+            setUpGlobalIndexingContext();
         }
 
         @AfterEach
         void tearDown() throws IOException {
-            assertThat(context).isNotNull();
-
-            if (client != null && indexName != null) {
-                deleteIndexIfExists(client, indexName);
-            }
-
-            if (context != null) {
-                context.close();
-            }
+            tearDownGlobalIndexingScenario();
         }
 
         @Test
@@ -249,14 +280,7 @@ public class ElasticsearchIT {
     class Paging {
         @BeforeEach
         void setUp() {
-            context = new AnnotationConfigApplicationContext();
-            context.register(EntityIndexingStrategy.class);
-            context.register(ElasticsearchConfig.class);
-            context.refresh();
-
-            repo = context.getBean(FulltextJpaUuidDocumentRepository.class);
-            store = context.getBean(FulltextJpaUuidDocumentSearchableStore.class);
-            client = context.getBean(ElasticsearchClient.class);
+            setUpEntityIndexingContext();
 
             for (int i = 0; i < 10; i++) {
                 FulltextJpaUuidDocumentEntity doc =
@@ -268,15 +292,7 @@ public class ElasticsearchIT {
 
         @AfterEach
         void tearDown() throws IOException {
-            assertThat(context).isNotNull();
-
-            if (client != null) {
-                tearDownEntityElasticsearch(client);
-            }
-
-            if (context != null) {
-                context.close();
-            }
+            tearDownEntityIndexingScenario();
         }
 
         @Test
@@ -324,14 +340,7 @@ public class ElasticsearchIT {
 
         @BeforeEach
         void setUp() {
-            context = new AnnotationConfigApplicationContext();
-            context.register(EntityIndexingStrategy.class);
-            context.register(CustomAttributesConfig.class);
-            context.refresh();
-
-            repo = context.getBean(FulltextJpaUuidDocumentRepository.class);
-            store = context.getBean(FulltextJpaUuidDocumentSearchableStore.class);
-            client = context.getBean(ElasticsearchClient.class);
+            setUpEntityIndexingContextWithCustomAttributes();
 
             buckRogersDoc = FulltextJpaUuidDocumentEntity.withTitleAndAuthor("doc 1", "Buck Rogers");
             store.setContent(buckRogersDoc, testResource("/one.docx"));
@@ -344,15 +353,7 @@ public class ElasticsearchIT {
 
         @AfterEach
         void tearDown() throws IOException {
-            assertThat(context).isNotNull();
-
-            if (client != null) {
-                tearDownEntityElasticsearch(client);
-            }
-
-            if (context != null) {
-                context.close();
-            }
+            tearDownEntityIndexingScenario();
         }
 
         @Test
@@ -374,14 +375,7 @@ public class ElasticsearchIT {
 
         @BeforeEach
         void setUp() {
-            context = new AnnotationConfigApplicationContext();
-            context.register(EntityIndexingStrategy.class);
-            context.register(CustomAttributesConfig.class);
-            context.refresh();
-
-            repo = context.getBean(FulltextJpaUuidDocumentRepository.class);
-            searchableStore = context.getBean(FulltextJpaUuidDocumentSearchableStore.class);
-            client = context.getBean(ElasticsearchClient.class);
+            setUpEntityIndexingContextWithCustomAttributes();
 
             indexedDoc = FulltextJpaUuidDocumentEntity.withTitleAndAuthor("A document about one", "Buck Rogers");
             searchableStore.setContent(indexedDoc, testResource("/one.docx"));
@@ -390,15 +384,7 @@ public class ElasticsearchIT {
 
         @AfterEach
         void tearDown() throws IOException {
-            assertThat(context).isNotNull();
-
-            if (client != null) {
-                tearDownEntityElasticsearch(client);
-            }
-
-            if (context != null) {
-                context.close();
-            }
+            tearDownEntityIndexingScenario();
         }
 
         @Test
