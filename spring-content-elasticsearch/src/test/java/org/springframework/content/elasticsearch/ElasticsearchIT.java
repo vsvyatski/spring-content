@@ -286,6 +286,48 @@ public class ElasticsearchIT {
                 assertThat(isIndexedInGlobalIndex(id2)).isFalse();
             });
         }
+
+        @Nested
+        @DisplayName("When the document content is updated")
+        class WhenTheDocumentContentIsUpdated {
+
+            private FulltextJpaUuidDocumentEntity doc;
+
+            @BeforeEach
+            void seedDocument() {
+                doc = FulltextJpaUuidDocumentEntity.withTitleAndAuthor("title of document 1", "author@email.com");
+                store.setContent(doc, testResource("/one.docx"));
+                repo.save(doc);
+            }
+
+            @Test
+            void shouldIndexNewContentAndRemoveStaleIndexEntry() {
+                UUID initialContentId = contentId(doc);
+
+                Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
+                    assertThat(isIndexedInGlobalIndex(initialContentId)).isTrue();
+                    var result = store.search("foo");
+                    assertThat(result).extracting(FulltextSearchResult::getContentId).contains(initialContentId);
+                });
+
+                store.setContent(doc, testResource("/two.rtf"));
+                repo.save(doc);
+                UUID updatedContentId = contentId(doc);
+                assertThat(updatedContentId).isNotEqualTo(initialContentId);
+
+                Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
+                    assertThat(isIndexedInGlobalIndex(updatedContentId)).isTrue();
+                    var result = store.search("bar");
+                    assertThat(result).extracting(FulltextSearchResult::getContentId).contains(updatedContentId);
+                });
+
+                Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
+                    assertThat(isIndexedInGlobalIndex(initialContentId)).isFalse();
+                    var result = store.search("foo");
+                    assertThat(result).extracting(FulltextSearchResult::getContentId).doesNotContain(initialContentId);
+                });
+            }
+        }
     }
 
     @Nested

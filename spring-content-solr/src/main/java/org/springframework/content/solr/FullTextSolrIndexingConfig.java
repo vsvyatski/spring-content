@@ -24,7 +24,7 @@ public class FullTextSolrIndexingConfig {
     }
 
     @Bean
-    public IndexService solrFulltextIndexService() {
+    public IndexService<Object> solrFulltextIndexService() {
         return new SolrFulltextIndexServiceImpl(solrClient, props);
     }
 }

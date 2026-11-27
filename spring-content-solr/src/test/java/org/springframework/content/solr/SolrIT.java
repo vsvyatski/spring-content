@@ -151,7 +151,7 @@ public class SolrIT {
             }
 
             @Test
-            void shouldIndexNewContent() {
+            void shouldIndexNewContentAndRemoveStaleIndexEntry() {
                 UUID initialContentId = contentId(doc);
 
                 Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
@@ -166,6 +166,7 @@ public class SolrIT {
                 setContentAndSave(doc, "/two.rtf");
 
                 UUID indexedContentId = contentId(doc);
+                assertThat(indexedContentId).isNotEqualTo(initialContentId);
 
                 Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
                     SolrQuery query = new SolrQuery();
@@ -177,6 +178,15 @@ public class SolrIT {
                     applySolrAuth(request);
                     QueryResponse response = request.process(solr);
                     assertThat(response.getResults()).hasSize(1);
+                });
+
+                Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
+                    SolrQuery staleQuery = new SolrQuery("foo");
+                    staleQuery.addFilterQuery(format(
+                        "id:%s\\:%s", FulltextJpaUuidDocumentEntity.class.getCanonicalName(), initialContentId));
+                    QueryRequest staleRequest = new QueryRequest(staleQuery);
+                    applySolrAuth(staleRequest);
+                    assertThat(staleRequest.process(solr).getResults()).isEmpty();
                 });
             }
         }

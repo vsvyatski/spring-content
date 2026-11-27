@@ -10,8 +10,8 @@ import org.springframework.content.elasticsearch.AttributeProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Configuration("springContentElasticsearchConfig")
@@ -24,27 +24,28 @@ public class ElasticsearchConfig {
     private RenditionService renditionService;
 
     @Autowired(required = false)
-    private AttributeProvider attributeProvider;
+    private AttributeProvider<?> attributeProvider;
 
-    private List<RenditionProvider> providers = new ArrayList<>();
+    private final List<RenditionProvider> providers = new ArrayList<>();
 
     @Autowired(required = false)
     public void setRenditionProviders(RenditionProvider... providers) {
-        for (RenditionProvider provider : providers) {
-            this.providers.add(provider);
+        if (providers != null && providers.length > 0) {
+            this.providers.addAll(Arrays.asList(providers));
         }
     }
 
     public RenditionService getRenditionService() {
         if (this.renditionService == null) {
-            this.renditionService = new RenditionServiceImpl(providers.toArray(new RenditionProvider[0]));
+            this.renditionService = new RenditionServiceImpl(providers.toArray(RenditionProvider[]::new));
         }
         return this.renditionService;
     }
 
     @Bean
-    public IndexService elasticFulltextIndexService() throws IOException {
-        return new ElasticsearchIndexServiceImpl(client, this.getRenditionService(), indexManager(), attributeProvider);
+    public IndexService<Object> elasticFulltextIndexService() {
+        return new ElasticsearchIndexServiceImpl<>(
+            client, this.getRenditionService(), indexManager(), attributeProvider);
     }
 
     @Bean

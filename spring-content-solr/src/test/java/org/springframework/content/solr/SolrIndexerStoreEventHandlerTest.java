@@ -8,6 +8,7 @@ import org.springframework.content.commons.search.IndexService;
 import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.commons.store.StoreAccessException;
 import org.springframework.content.commons.store.events.AfterSetContentEvent;
+import org.springframework.content.commons.store.events.BeforeSetContentEvent;
 import org.springframework.content.commons.store.events.BeforeUnsetContentEvent;
 import org.springframework.content.test.support.FakeEntity;
 import org.springframework.content.test.support.SingleContentFields;
@@ -32,6 +33,7 @@ public class SolrIndexerStoreEventHandlerTest {
     // args
     private Object contentEntity;
     private AfterSetContentEvent afterSetEvent;
+    private BeforeSetContentEvent beforeSetEvent;
     private BeforeUnsetContentEvent beforeUnsetEvent;
     private InputStream content;
     private StoreAccessException sae;
@@ -157,6 +159,61 @@ public class SolrIndexerStoreEventHandlerTest {
                 void spec() {
                     assertThat(e).isNull();
                     verify(indexer, never()).index(any(), any());
+                }
+            }
+        }
+
+        @Nested
+        class OnBeforeSetContent {
+            @Nested
+            @DisplayName("Given a content entity")
+            class ContentEntity {
+                @BeforeEach
+                void setUp() {
+                    store = mock(ContentStore.class);
+                    indexer = mock(IndexService.class);
+                    handler = new SolrIndexerStoreEventHandler(indexer);
+
+                    contentEntity = sampleContentEntity();
+
+                    try {
+                        beforeSetEvent = new BeforeSetContentEvent(contentEntity, store, (InputStream) null);
+                        handler.onBeforeSetContent(beforeSetEvent);
+                    } catch (Throwable e) {
+                        SolrIndexerStoreEventHandlerTest.this.e = e;
+                    }
+                }
+
+                @Test
+                void shouldUseIndexerToUnindexExistingContent() {
+                    assertThat(e).isNull();
+                    verify(indexer).unindex(eq(contentEntity));
+                    verify(indexer, never()).index(any(), any());
+                }
+            }
+
+            @Nested
+            @DisplayName("Given a content entity with a null content ID")
+            class ContentEntityWithNullContentId {
+                @BeforeEach
+                void setUp() {
+                    store = mock(ContentStore.class);
+                    indexer = mock(IndexService.class);
+                    handler = new SolrIndexerStoreEventHandler(indexer);
+
+                    contentEntity = new SingleContentFields();
+                    try {
+                        beforeSetEvent = new BeforeSetContentEvent(contentEntity, store, (InputStream) null);
+                        handler.onBeforeSetContent(beforeSetEvent);
+                    } catch (Throwable e) {
+                        SolrIndexerStoreEventHandlerTest.this.e = e;
+                    }
+                }
+
+                @Test
+                void shouldNotUseIndexer() {
+                    assertThat(e).isNull();
+                    verify(indexer, never()).unindex(any());
                 }
             }
         }

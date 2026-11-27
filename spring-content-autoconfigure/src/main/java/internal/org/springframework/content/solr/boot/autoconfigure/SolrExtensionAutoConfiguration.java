@@ -32,13 +32,13 @@ public class SolrExtensionAutoConfiguration {
 
     @ConditionalOnMissingBean(name = "solrIndexService")
     @Bean
-    public IndexService<?> solrIndexService() {
+    public IndexService<Object> solrIndexService() {
         return new SolrFulltextIndexServiceImpl(solrClient, props);
     }
 
     @ConditionalOnMissingBean(name = "solrFulltextEventListener")
     @Bean
-    public Object solrFulltextEventListener() {
-        return new SolrIndexerStoreEventHandler(solrIndexService());
+    public Object solrFulltextEventListener(IndexService<Object> solrIndexService) {
+        return new SolrIndexerStoreEventHandler(solrIndexService);
     }
 }
