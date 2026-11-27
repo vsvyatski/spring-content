@@ -118,6 +118,14 @@ public class ElasticsearchIT {
         refreshElasticsearchContext(EntityIndexingStrategy.class, CustomAttributesConfig.class);
     }
 
+    private boolean isIndexedInGlobalIndex(UUID contentId) {
+        try {
+            return client.get(g -> g.index(indexName).id(contentId.toString()), Void.class).found();
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
     @Nested
     class GlobalIndexingStrategyScenarios {
 
@@ -249,7 +257,7 @@ public class ElasticsearchIT {
         }
 
         @Test
-        void shouldDeleteRecordOfContentFromIndex() throws Exception {
+        void shouldDeleteRecordOfContentFromIndex() {
             FulltextJpaUuidDocumentEntity wordDoc =
                 FulltextJpaUuidDocumentEntity.withTitleAndAuthor("doc 1", "author@email.com");
             store.setContent(wordDoc, testResource("/one.docx"));
@@ -261,18 +269,22 @@ public class ElasticsearchIT {
             repo.save(rtfDoc);
 
             UUID id1 = contentId(wordDoc);
+            UUID id2 = contentId(rtfDoc);
+
+            Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
+                assertThat(isIndexedInGlobalIndex(id1)).isTrue();
+                assertThat(isIndexedInGlobalIndex(id2)).isTrue();
+            });
+
             store.unsetContent(wordDoc);
             repo.delete(wordDoc);
-
-            UUID id2 = contentId(rtfDoc);
             store.unsetContent(rtfDoc);
             repo.delete(rtfDoc);
 
-            var res = client.get(g -> g.index(indexName).id(id1.toString()), Void.class);
-            assertThat(res.found()).isFalse();
-
-            res = client.get(g -> g.index(indexName).id(id2.toString()), Void.class);
-            assertThat(res.found()).isFalse();
+            Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
+                assertThat(isIndexedInGlobalIndex(id1)).isFalse();
+                assertThat(isIndexedInGlobalIndex(id2)).isFalse();
+            });
         }
     }
 
