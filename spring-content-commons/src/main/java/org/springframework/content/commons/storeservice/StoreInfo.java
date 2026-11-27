@@ -2,13 +2,15 @@ package org.springframework.content.commons.storeservice;
 
 import org.springframework.content.commons.store.Store;
 
+import java.io.Serializable;
+
 public interface StoreInfo {
     /**
      * Returns the Store's interface class
      *
      * @return interface class
      */
-    Class<? extends Store> getInterface();
+    Class<? extends Store<? extends Serializable>> getInterface();
 
     /**
      * Returns the Store's domain object class if applicable. In cases where the Store

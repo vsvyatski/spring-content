@@ -9,7 +9,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class StoreFragmentsFactoryBean implements FactoryBean<StoreFragments>, BeanFactoryAware, InitializingBean {
 
@@ -18,7 +17,6 @@ public class StoreFragmentsFactoryBean implements FactoryBean<StoreFragments>, B
     private StoreFragments storeFragments;
 
     public StoreFragmentsFactoryBean(List<String> fragmentBeanNames) {
-
         Assert.notNull(fragmentBeanNames, "Fragment bean names must not be null!");
         this.fragmentBeanNames = fragmentBeanNames;
     }
@@ -31,13 +29,10 @@ public class StoreFragmentsFactoryBean implements FactoryBean<StoreFragments>, B
     @Override
     public void afterPropertiesSet() {
 
-        var fragments = fragmentBeanNames.stream()
-            .map(it -> beanFactory.getBean(it, StoreFragment.class))
-            .collect(Collectors.toList());
-
-        storeFragments = new StoreFragments(fragments);
+        storeFragments = new StoreFragments(fragmentBeanNames.stream()
+            .map(it -> (StoreFragment<?>) beanFactory.getBean(it, StoreFragment.class))
+            .toList());
     }
-
 
     @Override
     public StoreFragments getObject() throws Exception {

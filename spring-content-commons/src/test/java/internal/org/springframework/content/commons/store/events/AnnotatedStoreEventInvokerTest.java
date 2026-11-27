@@ -15,7 +15,6 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.util.ReflectionUtils;
 
-import java.io.InputStream;
 import java.io.Serial;
 import java.io.Serializable;
 import java.lang.reflect.Method;
@@ -52,8 +51,8 @@ public class AnnotatedStoreEventInvokerTest {
             caseForEvent(BeforeGetContentEvent::new, "beforeGetContent", BeforeGetContentEvent.class),
             caseForSource(AfterGetContentEvent::new, "afterGetContent"),
             caseForEvent(AfterGetContentEvent::new, "afterGetContent", AfterGetContentEvent.class),
-            caseForSource((source, store) -> new BeforeSetContentEvent(source, store, (InputStream) null), "beforeSetContent"),
-            caseForEvent((source, store) -> new BeforeSetContentEvent(source, store, (InputStream) null), "beforeSetContent", BeforeSetContentEvent.class),
+            caseForSource((source, store) -> new BeforeSetContentEvent(source, store, null), "beforeSetContent"),
+            caseForEvent((source, store) -> new BeforeSetContentEvent(source, store, null), "beforeSetContent", BeforeSetContentEvent.class),
             caseForSource(AfterSetContentEvent::new, "afterSetContent"),
             caseForEvent(AfterSetContentEvent::new, "afterSetContent", AfterSetContentEvent.class),
             caseForSource(BeforeUnsetContentEvent::new, "beforeUnsetContent"),
@@ -202,6 +201,12 @@ public class AnnotatedStoreEventInvokerTest {
         Class<?> handlerParameterType,
         BiFunction<StoreEventSource, ContentStore<Object, Serializable>, StoreEvent> eventFactory,
         Function<StoreEvent, Object> expectedArgument) {
+    }
+
+    @Test
+    void shouldConstructWithDefaultReflectionService() {
+        invoker = new AnnotatedStoreEventInvoker();
+        assertThat(invoker.getHandlers()).isEmpty();
     }
 
     @Nested

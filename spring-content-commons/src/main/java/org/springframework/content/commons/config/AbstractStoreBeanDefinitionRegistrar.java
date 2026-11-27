@@ -148,7 +148,7 @@ public abstract class AbstractStoreBeanDefinitionRegistrar
 
             builder.getRawBeanDefinition().setSource(importingClassMetadata);
 
-            Class<? extends Store> storeClass = null;
+            Class<? extends Store<? extends Serializable>> storeClass = null;
             try {
                 storeClass = loadStoreClass((ConfigurableListableBeanFactory) registry, definition);
             } catch (ClassNotFoundException e) {
@@ -162,8 +162,8 @@ public abstract class AbstractStoreBeanDefinitionRegistrar
             String storeInterface = definition.getBeanClassName();
             String[] interfaces = ArrayUtils.EMPTY_STRING_ARRAY;
             try {
-                assert storeInterface != null;
-                interfaces = metadataReaderFactory.getMetadataReader(storeInterface).getClassMetadata().getInterfaceNames();
+                interfaces = metadataReaderFactory.getMetadataReader(Objects.requireNonNull(storeInterface))
+                    .getClassMetadata().getInterfaceNames();
             } catch (IOException e) {
                 logger.error(format("Reading store interface %s", storeInterface), e);
             }
@@ -177,7 +177,7 @@ public abstract class AbstractStoreBeanDefinitionRegistrar
 
             Predicate<String> isCandidate = new IsCandidatePredicate(this.getSignatureTypes());
 
-            final Class<? extends Store> storeClassFinal = storeClass;
+            final Class<? extends Store<? extends Serializable>> storeClassFinal = storeClass;
             List<String> fragmentBeanNames = Arrays.stream(interfaces)
                 .filter(isCandidate)
                 .map(iface -> detector.detectCustomImplementation(iface, storeInterface))
@@ -213,14 +213,15 @@ public abstract class AbstractStoreBeanDefinitionRegistrar
         return beanDef;
     }
 
-    protected Class<? extends Store> loadStoreClass(ConfigurableListableBeanFactory registry,
-                                                    BeanDefinition definition) throws ClassNotFoundException {
+    @SuppressWarnings("unchecked")
+    protected Class<? extends Store<? extends Serializable>> loadStoreClass(ConfigurableListableBeanFactory registry,
+                                                                            BeanDefinition definition) throws ClassNotFoundException {
         Class<?> candidateStoreClass = ClassUtils.forName(Objects.requireNonNull(definition.getBeanClassName()),
             registry.getBeanClassLoader());
         if (!Store.class.isAssignableFrom(candidateStoreClass) && !ReactiveContentStore.class.isAssignableFrom(candidateStoreClass)) {
             throw new IllegalStateException(String.format("Store class %s is not assignable from Store or ReactiveContentStore", definition.getBeanClassName()));
         }
-        return (Class<? extends Store>) candidateStoreClass;
+        return (Class<? extends Store<? extends Serializable>>) candidateStoreClass;
     }
 
     protected void createOperationsBean(BeanDefinitionRegistry registry) {
@@ -270,7 +271,8 @@ public abstract class AbstractStoreBeanDefinitionRegistrar
         }
 
         try {
-            Class<?> implClass = ClassUtils.forName(fragmentDefinition.getBeanDefinition().getBeanClassName(),
+            Class<?> implClass = ClassUtils.forName(Objects.requireNonNull(
+                    fragmentDefinition.getBeanDefinition().getBeanClassName()),
                 ((ConfigurableListableBeanFactory) registry).getBeanClassLoader());
             Method method = ReflectionUtils.findMethod(implClass, "setIdClass", Class.class);
             if (method != null) {
@@ -281,7 +283,8 @@ public abstract class AbstractStoreBeanDefinitionRegistrar
         }
 
         try {
-            Class<?> implClass = ClassUtils.forName(fragmentDefinition.getBeanDefinition().getBeanClassName(),
+            Class<?> implClass = ClassUtils.forName(Objects.requireNonNull(
+                    fragmentDefinition.getBeanDefinition().getBeanClassName()),
                 ((ConfigurableListableBeanFactory) registry).getBeanClassLoader());
             Method method = ReflectionUtils.findMethod(implClass, "setStoreInterfaceClass", Class.class);
             if (method != null) {

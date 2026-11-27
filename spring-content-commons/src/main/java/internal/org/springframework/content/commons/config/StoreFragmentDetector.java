@@ -66,7 +66,7 @@ public class StoreFragmentDetector {
 
         Predicate<BeanDefinition> predicate = new InterfaceNamePredicate(interfaceName, basePackages, postfix);
 
-        List<BeanDefinition> definitions = implementationCandidates.get().stream().filter(predicate).toList();
+        List<BeanDefinition> definitions = getBeanDefinitions().stream().filter(predicate).toList();
 
         if (definitions.isEmpty()) {
             throw new IllegalStateException(format("No implementation found for store interface %s", interfaceName));

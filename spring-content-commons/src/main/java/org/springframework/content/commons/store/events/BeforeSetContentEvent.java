@@ -20,11 +20,6 @@ public class BeforeSetContentEvent extends StoreEvent {
         this.inputStream = is;
     }
 
-    public BeforeSetContentEvent(Object source, Store<Serializable> store, Resource resource) {
-        super(source, store);
-        this.resource = resource;
-    }
-
     public BeforeSetContentEvent(Object source, PropertyPath propertyPath, Store<Serializable> store, InputStream is) {
         super(source, propertyPath, store);
         this.inputStream = is;
@@ -32,12 +27,6 @@ public class BeforeSetContentEvent extends StoreEvent {
 
     public BeforeSetContentEvent(Object source, PropertyPath propertyPath, Store<Serializable> store, Resource resource) {
         super(source, propertyPath, store);
-        this.resource = resource;
-    }
-
-    public BeforeSetContentEvent(Object source, PropertyPath propertyPath, Store<Serializable> store, InputStream is, Resource resource) {
-        super(source, propertyPath, store);
-        this.inputStream = is;
         this.resource = resource;
     }
 

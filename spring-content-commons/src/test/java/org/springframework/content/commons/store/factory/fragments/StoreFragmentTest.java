@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.content.commons.fragments.ContentStoreAware;
+import org.springframework.content.commons.fragments.ParameterTypeAware;
 import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.test.support.factory.EnableTestStores;
 import org.springframework.context.ApplicationContext;
@@ -84,6 +85,24 @@ public class StoreFragmentTest {
         @Override
         public void setContentStore(ContentStore<Object, Serializable> store) {
         }
+    }
+
+    @Test
+    void shouldWireThroughParameterTypeAwareContract() {
+        Class<?>[] arguments = {Object.class, Serializable.class};
+        ParameterTypeAware aware = types -> assertThat(types).containsExactly(arguments);
+        aware.setGenericArguments(arguments);
+    }
+
+    @Test
+    void shouldWireThroughContentStoreAwareContract() {
+        CustomizationImpl impl = new CustomizationImpl();
+        impl.setDomainClass(Object.class);
+        impl.setIdClass(Serializable.class);
+        impl.setContentStore(null);
+
+        assertThat(impl.getDomainClass()).isEqualTo(Object.class);
+        assertThat(impl.getIdClass()).isEqualTo(Serializable.class);
     }
 
     @Nested

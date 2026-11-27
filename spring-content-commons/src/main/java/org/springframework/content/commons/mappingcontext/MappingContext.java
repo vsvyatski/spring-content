@@ -16,14 +16,6 @@ public class MappingContext {
         this.contentPropertySeparator = contentPropertySeparator;
     }
 
-    public boolean hasMapping(Class<?> domainClass, String path) {
-        Map<String, ContentProperty> properties = context.get(domainClass);
-        if (properties == null) {
-            properties = resolveProperties(domainClass);
-        }
-        return properties.get(path) != null;
-    }
-
     public ContentProperty getContentProperty(Class<?> domainClass, String path) {
         Map<String, ContentProperty> properties = context.get(domainClass);
         if (properties == null) {
@@ -46,14 +38,6 @@ public class MappingContext {
             properties = resolveProperties(domainClass);
         }
         return properties;
-    }
-
-    public Collection<String> getContentPaths(Class<?> domainClass) {
-        Map<String, ContentProperty> properties = context.get(domainClass);
-        if (properties == null) {
-            properties = resolveProperties(domainClass);
-        }
-        return properties.keySet();
     }
 
     private Map<String, ContentProperty> resolveProperties(Class<?> domainClass) {

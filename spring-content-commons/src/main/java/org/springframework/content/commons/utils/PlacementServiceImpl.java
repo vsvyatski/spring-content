@@ -81,13 +81,6 @@ public class PlacementServiceImpl extends DefaultConversionService implements Pl
                 " converter is not supported by this method; use addConverter(Converter<?, ?> converter) instead");
 
             // add similar checks as for addConverter(Converter<?, ?> converter) if we decide to add support
-//            ResolvableType sourceResolvableType = ResolvableType.forClass(sourceType).as(ContentPropertyInfo.class);
-//
-//            ResolvableType[] sourceTypeGenerics = sourceResolvableType.getGenerics();
-//            Class<?> entityClass = sourceTypeGenerics[0].resolve();
-//            Class<?> contentIdClass = sourceTypeGenerics[1].resolve();
-//
-//            addConverter(new ContentPropertyInfoConverterAdapter(converter, ResolvableType.forClass(sourceType), ResolvableType.forClass(targetType), entityClass, contentIdClass));
         } else {
             super.addConverter(sourceType, targetType, converter);
         }
@@ -100,7 +93,7 @@ public class PlacementServiceImpl extends DefaultConversionService implements Pl
     // Based on org.springframework.core.convert.support.GenericConversionService.ConverterAdapter.
     private final class ContentPropertyInfoConverterAdapter implements ConditionalGenericConverter {
 
-        private final Converter<Object, Object> converter;
+        private final Converter<?, ?> converter;
 
         private final ConvertiblePair typeInfo;
 
@@ -112,7 +105,7 @@ public class PlacementServiceImpl extends DefaultConversionService implements Pl
         public ContentPropertyInfoConverterAdapter(Converter<?, ?> converter, ResolvableType sourceType,
                                                    ResolvableType targetType, Class<?> entityClass,
                                                    Class<?> contentIdClass) {
-            this.converter = (Converter<Object, Object>) converter;
+            this.converter = converter;
             this.typeInfo = new ConvertiblePair(sourceType.toClass(), targetType.toClass());
             this.targetType = targetType;
             this.entityClass = entityClass;
@@ -161,7 +154,12 @@ public class PlacementServiceImpl extends DefaultConversionService implements Pl
             if (source == null) {
                 return convertNullSource(sourceType, targetType);
             }
-            return this.converter.convert(source);
+            return convertNonNullSource(source);
+        }
+
+        @SuppressWarnings("unchecked")
+        private Object convertNonNullSource(Object source) {
+            return ((Converter<Object, Object>) this.converter).convert(source);
         }
 
         @Override

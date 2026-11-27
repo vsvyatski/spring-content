@@ -1,5 +1,7 @@
 package internal.org.springframework.content.commons.utils;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.core.annotation.AnnotationAttributes;
@@ -15,6 +17,8 @@ import java.util.Objects;
 import java.util.Set;
 
 public class StoreUtils {
+
+    private static final Log LOGGER = LogFactory.getLog(StoreUtils.class);
 
     private static final String BASE_PACKAGES = "basePackages";
     private static final String BASE_PACKAGE_CLASSES = "basePackageClasses";
@@ -75,15 +79,15 @@ public class StoreUtils {
 
     protected static boolean candidateImplementsSignatureType(Class<?>[] identifyingTypes, String storeInterface, ResourceLoader loader) {
 
-        Class<?> storeClass = null;
+        final Class<?> storeClass;
         try {
             storeClass = Objects.requireNonNull(loader.getClassLoader()).loadClass(storeInterface);
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            LOGGER.warn("Unable to load store candidate class: " + storeInterface, e);
+            return false;
         }
 
         for (Class<?> identifyingType : identifyingTypes) {
-            assert storeClass != null;
             if (identifyingType.isAssignableFrom(storeClass)) {
                 return true;
             }
@@ -92,8 +96,8 @@ public class StoreUtils {
         return false;
     }
 
-    private static boolean registrarMatchesOverrideProperty(String overrideProperty, String registrarOverridePropertyValue) {
-
+    private static boolean registrarMatchesOverrideProperty(String overrideProperty,
+                                                            String registrarOverridePropertyValue) {
         if (!StringUtils.hasLength(overrideProperty)) {
             return false;
         }

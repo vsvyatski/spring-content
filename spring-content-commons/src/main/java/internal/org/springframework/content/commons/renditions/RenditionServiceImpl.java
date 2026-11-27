@@ -32,17 +32,6 @@ public class RenditionServiceImpl implements RenditionService {
     }
 
     @Override
-    public String[] conversions(String fromMimeType) {
-        Set<String> conversions = new HashSet<>();
-        for (RenditionProvider provider : providers) {
-            if (provider.consumes().equals(fromMimeType)) {
-                conversions.addAll(Arrays.asList(provider.produces()));
-            }
-        }
-        return conversions.toArray(new String[]{});
-    }
-
-    @Override
     public InputStream convert(String fromMimeType, InputStream fromInputSource, String toMimeType) {
         for (RenditionProvider provider : providers) {
             if (MimeType.valueOf(fromMimeType)

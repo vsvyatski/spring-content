@@ -34,20 +34,30 @@ public final class StoreInterfaceUtils {
             }
         }
 
-        Optional<Class<?>> domainClass = Optional.empty();
-        Class<? extends Serializable> idClass = null;
+        if (types == null) {
+            throw new IllegalArgumentException(
+                storeClass.getName() + " does not extend a known Spring Content store interface");
+        }
 
-        assert types != null;
+        final Optional<Class<?>> domainClass;
+        final Class<? extends Serializable> idClass;
+
         if (types.size() == 2) {
             domainClass = Optional.of(types.get(0).getType());
-            Assert.isAssignable(Serializable.class, types.get(1).getType());
-            idClass = (Class<? extends Serializable>) types.get(1).getType();
+            idClass = serializableIdClass(types.get(1).getType());
         } else if (types.size() == 1) {
             domainClass = Optional.empty();
-            Assert.isAssignable(Serializable.class, types.get(0).getType());
-            idClass = (Class<? extends Serializable>) types.get(0).getType();
+            idClass = serializableIdClass(types.get(0).getType());
+        } else {
+            throw new IllegalArgumentException(
+                "Store interface " + storeClass.getName() + " has unexpected type argument count: " + types.size());
         }
 
         return Pair.of(domainClass, idClass);
+    }
+
+    private static Class<? extends Serializable> serializableIdClass(Class<?> type) {
+        Assert.isAssignable(Serializable.class, type);
+        return type.asSubclass(Serializable.class);
     }
 }

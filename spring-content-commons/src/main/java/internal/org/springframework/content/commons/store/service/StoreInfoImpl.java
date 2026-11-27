@@ -8,26 +8,27 @@ import java.util.function.Supplier;
 
 public class StoreInfoImpl implements StoreInfo {
 
-    private final Class<? extends Store> storeInterface;
+    private final Class<? extends Store<? extends Serializable>> storeInterface;
     private final Class<?> storeDomainClass;
     private Object storeImpl;
     private Supplier<Store<Serializable>> storeSupplier;
 
-    public StoreInfoImpl(Class<? extends Store> interfaceClass, Class<?> storeDomainClass,
+    public StoreInfoImpl(Class<? extends Store<? extends Serializable>> interfaceClass, Class<?> storeDomainClass,
                          Store<Serializable> storeImpl) {
         this.storeInterface = interfaceClass;
         this.storeDomainClass = storeDomainClass;
         this.storeImpl = storeImpl;
     }
 
-    public StoreInfoImpl(Class<? extends Store> interfaceClass, Class<?> storeDomainClass, Supplier<Store<Serializable>> storeSupplier) {
+    public StoreInfoImpl(Class<? extends Store<? extends Serializable>> interfaceClass, Class<?> storeDomainClass,
+                         Supplier<Store<Serializable>> storeSupplier) {
         this.storeInterface = interfaceClass;
         this.storeDomainClass = storeDomainClass;
         this.storeSupplier = storeSupplier;
     }
 
     @Override
-    public Class<? extends Store> getInterface() {
+    public Class<? extends Store<? extends Serializable>> getInterface() {
         return this.storeInterface;
     }
 

@@ -13,16 +13,14 @@ import org.springframework.core.convert.TypeDescriptor;
 public abstract class ContentPropertyInfoTypeDescriptor {
 
     public static TypeDescriptor withGenerics(Object entity, ContentProperty property) {
-        ResolvableType contentPropertyInfoResolvableType = ResolvableType.forClassWithGenerics(ContentPropertyInfo.class,
-            entity.getClass(), property.getContentIdType(entity).getObjectType());
-        return new TypeDescriptor(contentPropertyInfoResolvableType, null,
-            null);  // type annotations are not relevant for conversion of ContentPropertyInfo
+        TypeDescriptor contentIdType = property.getContentIdType(entity);
+        return withGenerics(entity.getClass(), contentIdType.getObjectType());
     }
 
     public static TypeDescriptor withGenerics(Class<?> entityClass, Class<?> contentIdClass) {
-        ResolvableType contentPropertyInfoResolvableType = ResolvableType.forClassWithGenerics(ContentPropertyInfo.class,
-            entityClass, contentIdClass);
-        return new TypeDescriptor(contentPropertyInfoResolvableType, null,
-            null); // type annotations are not relevant for conversion of ContentPropertyInfo
+        ResolvableType contentPropertyInfoResolvableType = ResolvableType.
+            forClassWithGenerics(ContentPropertyInfo.class, entityClass, contentIdClass);
+        // type annotations are not relevant for conversion of ContentPropertyInfo
+        return new TypeDescriptor(contentPropertyInfoResolvableType, null, null);
     }
 }

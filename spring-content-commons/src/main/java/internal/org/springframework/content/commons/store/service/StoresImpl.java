@@ -23,20 +23,15 @@ public class StoresImpl implements Stores, InitializingBean {
 
     private final Set<StoreInfo> storeInfos = new HashSet<>();
     private final Map<String, StoreResolver> resolvers = new HashMap<>();
-    private ListableBeanFactory factory = null;
-
-    public StoresImpl() {
-    }
+    private final ListableBeanFactory factory;
 
     @Autowired
     public StoresImpl(ListableBeanFactory factory) {
-
         this.factory = factory;
     }
 
     @Override
     public void afterPropertiesSet() {
-
         String[] names = this.factory.getBeanNamesForType(StoreFactory.class);
 
         for (String name : names) {
@@ -110,17 +105,6 @@ public class StoresImpl implements Stores, InitializingBean {
     }
 
     @Override
-    public StoreInfo[] getStores(StoreFilter filter) {
-        Set<StoreInfo> storeInfos = new HashSet<>();
-        for (StoreInfo info : this.storeInfos) {
-            if (filter.matches(info)) {
-                storeInfos.add(info);
-            }
-        }
-        return storeInfos.toArray(new StoreInfo[]{});
-    }
-
-    @Override
     public StoreInfo[] getStores(Class<?> storeType) {
         return this.getStores(storeType, MATCH_ALL);
     }
@@ -148,9 +132,9 @@ public class StoresImpl implements Stores, InitializingBean {
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         public Store<Serializable> get() {
-
-            return factory.getBean(storeFactoryBeanName, Store.class);
+            return (Store<Serializable>) factory.getBean(storeFactoryBeanName, Store.class);
         }
     }
 }

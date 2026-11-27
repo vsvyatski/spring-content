@@ -49,8 +49,8 @@ public class StoreCandidateComponentProvider
          * org.springframework.core.type.classreading.MetadataReaderFactory)
          */
         @Override
-        public boolean match(MetadataReader metadataReader,
-                             @NonNull MetadataReaderFactory metadataReaderFactory) throws IOException {
+        public boolean match(MetadataReader metadataReader, @NonNull MetadataReaderFactory metadataReaderFactory)
+            throws IOException {
 
             return metadataReader.getClassMetadata().isInterface()
                 && super.match(metadataReader, metadataReaderFactory);

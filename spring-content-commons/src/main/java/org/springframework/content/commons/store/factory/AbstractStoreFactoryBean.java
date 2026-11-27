@@ -21,7 +21,7 @@ import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.nio.file.Paths;
-import java.util.Collections;
+import java.util.List;
 
 public abstract class AbstractStoreFactoryBean implements BeanFactoryAware, InitializingBean, BeanClassLoaderAware,
     FactoryBean<Store<? extends Serializable>>,
@@ -37,17 +37,17 @@ public abstract class AbstractStoreFactoryBean implements BeanFactoryAware, Init
         }
     }
 
-    private final Class<? extends Store> storeInterface;
+    private final Class<? extends Store<? extends Serializable>> storeInterface;
     private ClassLoader classLoader;
     private ApplicationEventPublisher publisher;
 
     private Store<? extends Serializable> store;
 
-    private StoreFragments storeFragments = new StoreFragments(Collections.EMPTY_LIST);
+    private StoreFragments storeFragments = new StoreFragments(List.of());
 
     private BeanFactory beanFactory;
 
-    protected AbstractStoreFactoryBean(Class<? extends Store> storeInterface) {
+    protected AbstractStoreFactoryBean(Class<? extends Store<? extends Serializable>> storeInterface) {
         Assert.notNull(storeInterface, "storeInterface must not be null");
         this.storeInterface = storeInterface;
     }
@@ -57,7 +57,14 @@ public abstract class AbstractStoreFactoryBean implements BeanFactoryAware, Init
     }
 
     public static Class<? extends Serializable> getContentIdClass(Class<?> repositoryClass) {
-        return (Class<? extends Serializable>) getStoreParameter(repositoryClass, 1);
+        Class<?> idClass = getStoreParameter(repositoryClass, 1);
+        if (idClass == null) {
+            throw new IllegalStateException(String.format(
+                "ContentStore class %s must have domain and contentId types",
+                repositoryClass.getCanonicalName()));
+        }
+        Assert.isAssignable(Serializable.class, idClass);
+        return idClass.asSubclass(Serializable.class);
     }
 
     private static Class<?> getStoreParameter(Class<?> repositoryClass, int index) {
@@ -102,7 +109,7 @@ public abstract class AbstractStoreFactoryBean implements BeanFactoryAware, Init
     }
 
     @Override
-    public Class<? extends Store> getStoreInterface() {
+    public Class<? extends Store<? extends Serializable>> getStoreInterface() {
         return this.storeInterface;
     }
 
@@ -128,14 +135,8 @@ public abstract class AbstractStoreFactoryBean implements BeanFactoryAware, Init
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Class<? extends Store<? extends Serializable>> getObjectType() {
-        return (Class<? extends Store<? extends Serializable>>) this.storeInterface;
-    }
-
-    @Override
-    public boolean isSingleton() {
-        return true;
+        return this.storeInterface;
     }
 
     @Override
@@ -157,20 +158,10 @@ public abstract class AbstractStoreFactoryBean implements BeanFactoryAware, Init
         ProxyFactory result = new ProxyFactory();
         result.setTarget(target);
         if (!ClassUtils.getAllInterfaces(storeInterface).contains(ReactiveContentStore.class)) {
-            result.setInterfaces(new Class[]{
-                storeInterface,
-                Store.class,
-                AssociativeStore.class,
-                ContentStore.class,
-                ParameterTypeAware.class
-            });
+            result.setInterfaces(storeInterface, Store.class, AssociativeStore.class,
+                ContentStore.class, ParameterTypeAware.class);
         } else {
-            result.setInterfaces(new Class[]{
-                storeInterface,
-                Store.class,
-                ReactiveContentStore.class,
-                ParameterTypeAware.class
-            });
+            result.setInterfaces(storeInterface, Store.class, ReactiveContentStore.class, ParameterTypeAware.class);
         }
 
         this.addProxyAdvice(result, beanFactory);
@@ -178,9 +169,10 @@ public abstract class AbstractStoreFactoryBean implements BeanFactoryAware, Init
         StoreMethodInterceptor interceptor = new StoreMethodInterceptor();
 
         if (!ClassUtils.getAllInterfaces(storeInterface).contains(ReactiveContentStore.class)) {
-            storeFragments.add(new StoreFragment(storeInterface, new StoreImpl(target, publisher, Paths.get(System.getProperty("java.io.tmpdir")))));
+            storeFragments.add(coreFragment(
+                new StoreImpl(target, publisher, Paths.get(System.getProperty("java.io.tmpdir")))));
         } else {
-            storeFragments.add(new StoreFragment(storeInterface, new ReactiveStoreImpl((ReactiveContentStore<Object>) target)));
+            storeFragments.add(coreFragment(new ReactiveStoreImpl((ReactiveContentStore<Object>) target)));
         }
         interceptor.setStoreFragments(storeFragments);
 
@@ -199,4 +191,9 @@ public abstract class AbstractStoreFactoryBean implements BeanFactoryAware, Init
     }
 
     protected abstract Object getContentStoreImpl();
+
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private StoreFragment<?> coreFragment(Object implementation) {
+        return new StoreFragment(storeInterface, implementation);
+    }
 }

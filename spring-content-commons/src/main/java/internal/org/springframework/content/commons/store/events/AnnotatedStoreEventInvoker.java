@@ -34,7 +34,7 @@ public class AnnotatedStoreEventInvoker
     private final ReflectionService reflectionService;
 
     public AnnotatedStoreEventInvoker() {
-        reflectionService = new ReflectionServiceImpl();
+        this(new ReflectionServiceImpl());
     }
 
     public AnnotatedStoreEventInvoker(ReflectionService reflectionService) {
@@ -66,31 +66,26 @@ public class AnnotatedStoreEventInvoker
             return bean;
         }
 
-        ReflectionUtils.doWithMethods(beanType, new ReflectionUtils.MethodCallback() {
-
-            @Override
-            public void doWith(@NonNull Method method)
-                throws IllegalArgumentException {
-                findHandler(bean, method, HandleBeforeGetResource.class, BeforeGetResourceEvent.class);
-                findHandler(bean, method, HandleAfterGetResource.class, AfterGetResourceEvent.class);
-                findHandler(bean, method, HandleBeforeAssociate.class, BeforeAssociateEvent.class);
-                findHandler(bean, method, HandleAfterAssociate.class, AfterAssociateEvent.class);
-                findHandler(bean, method, HandleBeforeUnassociate.class, BeforeUnassociateEvent.class);
-                findHandler(bean, method, HandleAfterUnassociate.class, AfterUnassociateEvent.class);
-                findHandler(bean, method, HandleBeforeGetContent.class, BeforeGetContentEvent.class);
-                findHandler(bean, method, HandleAfterGetContent.class, AfterGetContentEvent.class);
-                findHandler(bean, method, HandleBeforeSetContent.class, BeforeSetContentEvent.class);
-                findHandler(bean, method, HandleAfterSetContent.class, AfterSetContentEvent.class);
-                findHandler(bean, method, HandleBeforeUnsetContent.class, BeforeUnsetContentEvent.class);
-                findHandler(bean, method, HandleAfterUnsetContent.class, AfterUnsetContentEvent.class);
-            }
+        ReflectionUtils.doWithMethods(beanType, method -> {
+            findHandler(bean, method, HandleBeforeGetResource.class, BeforeGetResourceEvent.class);
+            findHandler(bean, method, HandleAfterGetResource.class, AfterGetResourceEvent.class);
+            findHandler(bean, method, HandleBeforeAssociate.class, BeforeAssociateEvent.class);
+            findHandler(bean, method, HandleAfterAssociate.class, AfterAssociateEvent.class);
+            findHandler(bean, method, HandleBeforeUnassociate.class, BeforeUnassociateEvent.class);
+            findHandler(bean, method, HandleAfterUnassociate.class, AfterUnassociateEvent.class);
+            findHandler(bean, method, HandleBeforeGetContent.class, BeforeGetContentEvent.class);
+            findHandler(bean, method, HandleAfterGetContent.class, AfterGetContentEvent.class);
+            findHandler(bean, method, HandleBeforeSetContent.class, BeforeSetContentEvent.class);
+            findHandler(bean, method, HandleAfterSetContent.class, AfterSetContentEvent.class);
+            findHandler(bean, method, HandleBeforeUnsetContent.class, BeforeUnsetContentEvent.class);
+            findHandler(bean, method, HandleAfterUnsetContent.class, AfterUnsetContentEvent.class);
         });
 
         return bean;
     }
 
     @Override
-    public void onApplicationEvent(ApplicationEvent event) {
+    public void onApplicationEvent(@NonNull ApplicationEvent event) {
         if (!(event instanceof StoreEvent)) {
             return;
         }

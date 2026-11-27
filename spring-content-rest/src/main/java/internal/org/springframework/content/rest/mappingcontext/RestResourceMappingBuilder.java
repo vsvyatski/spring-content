@@ -89,8 +89,7 @@ public class RestResourceMappingBuilder implements ClassVisitor {
     }
 
     @Override
-    public boolean visitClassEnd(String path, Class<?> klazz) {
-        return true;
+    public void visitClassEnd(String path, Class<?> klazz) {
     }
 
     public Map<String, String> getMappings() {
