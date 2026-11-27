@@ -23,7 +23,7 @@ import org.springframework.content.commons.store.ContentStore;
 import org.springframework.content.commons.store.StoreAccessException;
 import org.springframework.content.commons.utils.BeanUtils;
 import org.springframework.content.commons.utils.ContentPropertyUtils;
-import org.springframework.content.elasticsearch.FilterQueryProvider;
+import org.springframework.content.commons.search.FilterQueryProvider;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.support.DefaultConversionService;

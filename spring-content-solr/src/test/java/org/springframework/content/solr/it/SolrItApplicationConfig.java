@@ -12,7 +12,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.content.jpa.config.EnableJpaStores;
 import org.springframework.content.commons.search.AttributeProvider;
 import org.springframework.content.solr.EnableFullTextSolrIndexing;
-import org.springframework.content.solr.FilterQueryProvider;
+import org.springframework.content.commons.search.FilterQueryProvider;
 import org.springframework.content.solr.SolrTestContainer;
 import org.springframework.content.test.support.EmbeddedJpa;
 import org.springframework.content.test.support.TestSupportPackages;
@@ -95,9 +95,9 @@ public class SolrItApplicationConfig {
         };
     }
 
-    private static final ThreadLocal<String[]> REQUEST_FILTERS = new ThreadLocal<>();
+    private static final ThreadLocal<Map<String, Object>> REQUEST_FILTERS = new ThreadLocal<>();
 
-    public static void requestFilters(String... filters) {
+    public static void requestFilters(Map<String, Object> filters) {
         REQUEST_FILTERS.set(filters);
     }
 
@@ -108,8 +108,8 @@ public class SolrItApplicationConfig {
     @Bean
     public FilterQueryProvider filterQueryProvider() {
         return entityClass -> {
-            String[] filters = REQUEST_FILTERS.get();
-            return filters != null ? filters : new String[0];
+            Map<String, Object> filters = REQUEST_FILTERS.get();
+            return filters != null ? filters : Map.of();
         };
     }
 }

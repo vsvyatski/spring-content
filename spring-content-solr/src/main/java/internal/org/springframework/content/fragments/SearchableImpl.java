@@ -22,7 +22,7 @@ import org.springframework.content.commons.store.StoreAccessException;
 import org.springframework.content.commons.utils.BeanUtils;
 import org.springframework.content.commons.utils.ContentPropertyUtils;
 import org.springframework.content.commons.utils.DomainObjectUtils;
-import org.springframework.content.solr.FilterQueryProvider;
+import org.springframework.content.commons.search.FilterQueryProvider;
 import org.springframework.content.solr.SolrProperties;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
@@ -139,8 +139,8 @@ public class SearchableImpl implements Searchable<Object>, ContentStoreAware {
         query.addFilterQuery("id:" + domainClass.getCanonicalName() + "\\:*");
 
         if (this.filterProvider != null) {
-            for (String fq : this.filterProvider.filterQueries(domainClass)) {
-                query.addFilterQuery(fq);
+            for (Map.Entry<String, Object> entry : this.filterProvider.filterQueries(domainClass).entrySet()) {
+                query.addFilterQuery(entry.getKey() + ":" + entry.getValue());
             }
         }
 

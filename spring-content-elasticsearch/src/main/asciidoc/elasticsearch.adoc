@@ -172,22 +172,15 @@ To synchronize additional attributes when content is indexed add a bean that imp
     }
 ====
 
-To customize the query that gets executed when a Store's Searchable method is invoked add a `FilterQueryProvider` bean to your 
-application's configuration:
+To customize the query that gets executed when a Store's Searchable method is invoked add a
+`org.springframework.content.commons.search.FilterQueryProvider` bean to your application's configuration:
 
 ====
 [source, java]
 ----
     @Bean
     public FilterQueryProvider fqProvider() {
-        return new FilterQueryProvider() {
-
-            @Override
-            public String[] filterQueries(Class<?> entity) {
-
-                return new String[] {"author:foo@bar.com"};
-            }
-        };
+        return entity -> Map.of("author", "foo@bar.com");
     }
 ----
 NOTE: this bean is often a request scoped bean or has an implementation based on a thread local variable in order to build and return 

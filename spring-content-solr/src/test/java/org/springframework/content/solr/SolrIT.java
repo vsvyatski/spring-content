@@ -344,8 +344,8 @@ public class SolrIT {
 
         @Test
         void shouldApplyProvidedAttributesAndFilterQuery() {
-            SolrItApplicationConfig.requestFilters(format(
-                "id:%s\\:%s", FulltextJpaUuidDocumentEntity.class.getCanonicalName(), contentId(doc)));
+            SolrItApplicationConfig.requestFilters(Map.of("id", format("%s\\:%s",
+                FulltextJpaUuidDocumentEntity.class.getCanonicalName(), contentId(doc))));
             try {
                 var tmp = store.search("one");
                 assertThat(tmp).isNotNull();
