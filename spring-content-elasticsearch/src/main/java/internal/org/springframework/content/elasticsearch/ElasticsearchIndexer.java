@@ -27,7 +27,7 @@ public class ElasticsearchIndexer extends AbstractStoreEventListener<Object> {
     @Override
     protected void onBeforeSetContent(BeforeSetContentEvent event) {
         Object contentEntity = event.getSource();
-        if (BeanUtils.getFieldWithAnnotation(contentEntity, ContentId.class) != null) {
+        if (BeanUtils.getAnnotatedValue(contentEntity, ContentId.class) != null) {
             indexService.unindex(contentEntity);
         }
     }

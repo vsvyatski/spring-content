@@ -65,7 +65,7 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable> implements 
 
         try {
             @SuppressWarnings("unchecked")
-            SID contentId = (SID) BeanUtils.getFieldWithAnnotation(entity, ContentId.class);
+            SID contentId = (SID) BeanUtils.getAnnotatedValue(entity, ContentId.class);
             if (contentId != null) return getResource(contentId);
         } catch (ClassCastException e) {
             logger.warn("Failed casting a field marked with @ContentId.", e);
@@ -106,7 +106,7 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable> implements 
     public void associate(S entity, SID id) {
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requireContentId(id);
-        BeanUtils.setFieldWithAnnotation(entity, ContentId.class, id.toString());
+        BeanUtils.setAnnotatedValue(entity, ContentId.class, id.toString());
     }
 
     @Override
@@ -120,7 +120,7 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable> implements 
     @Override
     public void unassociate(S entity) {
         StoreEntityValidation.requireEntity(entity);
-        BeanUtils.setFieldWithAnnotationConditionally(entity, ContentId.class, null,
+        BeanUtils.setAnnotatedValueConditionally(entity, ContentId.class, null,
             DomainObjectUtils::contentIdFieldMayBeCleared);
     }
 
@@ -136,11 +136,11 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable> implements 
     public S setContent(S entity, InputStream content) {
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requireContentInputStream(content);
-        Object contentId = BeanUtils.getFieldWithAnnotation(entity, ContentId.class);
+        Object contentId = BeanUtils.getAnnotatedValue(entity, ContentId.class);
         if (contentId == null) {
             Serializable newId = UuidCreator.getTimeOrdered().toString();
             Object convertedId = convertToExternalContentIdType(entity, newId);
-            BeanUtils.setFieldWithAnnotation(entity, ContentId.class, convertedId);
+            BeanUtils.setAnnotatedValue(entity, ContentId.class, convertedId);
         }
 
         Resource resource = this.getResource(entity);
@@ -167,7 +167,7 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable> implements 
         }
 
         try {
-            BeanUtils.setFieldWithAnnotation(entity, ContentLength.class,
+            BeanUtils.setAnnotatedValue(entity, ContentLength.class,
                 resource.contentLength());
         } catch (IOException e) {
             logger.error(format(
@@ -287,7 +287,7 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable> implements 
     @Transactional
     public @Nullable InputStream getContent(S entity) {
         StoreEntityValidation.requireEntity(entity);
-        Object contentId = BeanUtils.getFieldWithAnnotation(entity, ContentId.class);
+        Object contentId = BeanUtils.getAnnotatedValue(entity, ContentId.class);
         if (contentId == null) {
             return null;
         }
@@ -326,9 +326,9 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable> implements 
         // reset content fields
         unassociate(entity);
 
-        Class<?> contentLenType = BeanUtils.getFieldWithAnnotationType(entity, ContentLength.class);
+        Class<?> contentLenType = BeanUtils.getAnnotatedFieldType(entity, ContentLength.class);
         if (contentLenType != null) {
-            BeanUtils.setFieldWithAnnotation(entity, ContentLength.class,
+            BeanUtils.setAnnotatedValue(entity, ContentLength.class,
                 BeanUtils.getDefaultValueForType(contentLenType));
         }
 
@@ -380,9 +380,9 @@ public class DefaultFileSystemStoreImpl<S, SID extends Serializable> implements 
 
     private Object convertToExternalContentIdType(S property, Object contentId) {
         if (placer.canConvert(TypeDescriptor.forObject(contentId),
-            TypeDescriptor.valueOf(BeanUtils.getFieldWithAnnotationType(property, ContentId.class)))) {
+            TypeDescriptor.valueOf(BeanUtils.getAnnotatedFieldType(property, ContentId.class)))) {
             Object converted = placer.convert(contentId, TypeDescriptor.forObject(contentId),
-                TypeDescriptor.valueOf(BeanUtils.getFieldWithAnnotationType(property, ContentId.class)));
+                TypeDescriptor.valueOf(BeanUtils.getAnnotatedFieldType(property, ContentId.class)));
             assert converted != null;
             return converted;
         }

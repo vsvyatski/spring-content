@@ -146,14 +146,14 @@ public class SearchableImpl implements Searchable<Object>, ContentStoreAware {
         }
 
         if (!ContentPropertyUtils.isPrimitiveContentPropertyClass(resultType)) {
-            for (Field attributeField : BeanUtils.findFieldsWithAnnotation(resultType, Attribute.class, new BeanWrapperImpl(resultType))) {
+            for (Field attributeField : BeanUtils.findAnnotatedFields(resultType, Attribute.class, new BeanWrapperImpl(resultType))) {
                 Attribute fieldAnnotation = attributeField.getAnnotation(Attribute.class);
                 query.addField(fieldAnnotation.name());
             }
         }
 
         if (!ContentPropertyUtils.isPrimitiveContentPropertyClass(resultType)) {
-            if (BeanUtils.findFieldWithAnnotation(resultType, Highlight.class) != null) {
+            if (BeanUtils.findAnnotatedField(resultType, Highlight.class) != null) {
                 query.setHighlight(true);
             }
         }
@@ -205,17 +205,17 @@ public class SearchableImpl implements Searchable<Object>, ContentStoreAware {
                         entries.getFirstValue(SolrFulltextIndexServiceImpl.ENTITY_ID));
                 }
 
-                if (BeanUtils.findFieldWithAnnotation(searchType, ContentId.class) != null) {
-                    BeanUtils.setFieldWithAnnotation(result, ContentId.class, strippedId);
+                if (BeanUtils.findAnnotatedField(searchType, ContentId.class) != null) {
+                    BeanUtils.setAnnotatedValue(result, ContentId.class, strippedId);
                 }
 
-                if (BeanUtils.findFieldWithAnnotation(searchType, Highlight.class) != null) {
+                if (BeanUtils.findAnnotatedField(searchType, Highlight.class) != null) {
                     Map<String, Map<String, List<String>>> highlights = response.getHighlighting();
                     List<String> highlight = highlights.get(id).get("_text_");
-                    BeanUtils.setFieldWithAnnotation(result, Highlight.class, highlight.get(0));
+                    BeanUtils.setAnnotatedValue(result, Highlight.class, highlight.get(0));
                 }
 
-                for (Field attributeField : BeanUtils.findFieldsWithAnnotation(searchType, Attribute.class, new BeanWrapperImpl(searchType))) {
+                for (Field attributeField : BeanUtils.findAnnotatedFields(searchType, Attribute.class, new BeanWrapperImpl(searchType))) {
                     Attribute fieldAnnotation = attributeField.getAnnotation(Attribute.class);
                     if (attributeField.getType().isPrimitive() || attributeField.getType().equals(String.class)) {
                         new BeanWrapperImpl(result).setPropertyValue(attributeField.getName(),

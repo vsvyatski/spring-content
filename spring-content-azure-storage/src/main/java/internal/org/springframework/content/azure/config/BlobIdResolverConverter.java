@@ -2,60 +2,11 @@ package internal.org.springframework.content.azure.config;
 
 import org.springframework.content.azure.Bucket;
 import org.springframework.content.azure.config.BlobId;
-import org.springframework.content.commons.store.StoreAccessException;
-import org.springframework.content.commons.utils.BeanUtils;
-import org.springframework.core.convert.TypeDescriptor;
-import org.springframework.core.convert.converter.GenericConverter;
-import org.springframework.util.Assert;
+import org.springframework.content.commons.convert.AbstractBucketBlobIdResolverConverter;
 
-import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
-
-import static java.lang.String.format;
-
-public class BlobIdResolverConverter implements GenericConverter {
-
-    private static Set<ConvertiblePair> convertibleTypes = new HashSet<>();
-
-    static {
-        convertibleTypes.add(new ConvertiblePair(Serializable.class, BlobId.class));
-    }
-
-    private final String defaultBucket;
+public class BlobIdResolverConverter extends AbstractBucketBlobIdResolverConverter {
 
     public BlobIdResolverConverter(String defaultBucket) {
-        this.defaultBucket = defaultBucket;
-    }
-
-    @Override
-    public Set<ConvertiblePair> getConvertibleTypes() {
-        return convertibleTypes;
-    }
-
-    @Override
-    public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
-
-        String bucket = this.getBucket(source, defaultBucket);
-        Assert.notNull(bucket, format("Unable to determine bucket from %s", source));
-        String key = this.getKey(source);
-        return (key != null) ? new BlobId(bucket, key) : null;
-    }
-
-    private String getBucket(Object source, String defaultBucketName) {
-
-        Object bucket = BeanUtils.getFieldWithAnnotation(source, Bucket.class);
-        if (bucket == null) {
-            bucket = defaultBucketName;
-        }
-        if (bucket == null) {
-            throw new StoreAccessException("Bucket not set");
-        }
-        return bucket.toString();
-    }
-
-    private String getKey(Object source) {
-
-        return source.toString();
+        super(defaultBucket, Bucket.class, BlobId.class, BlobId::new);
     }
 }

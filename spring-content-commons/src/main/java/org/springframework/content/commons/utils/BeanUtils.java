@@ -13,6 +13,26 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Reflection helpers for Spring Content domain objects whose content-related state is marked with annotations such as
+ * {@link org.springframework.content.commons.annotations.ContentId} and
+ * {@link org.springframework.content.commons.annotations.ContentLength}.
+ * <p>
+ * Naming distinguishes <strong>metadata</strong> from <strong>values</strong>:
+ * <ul>
+ * <li>{@code find*} and {@code has*} inspect the type for an annotated field (inheritance and JavaBeans property paths
+ * are considered). They do not read the current property value.</li>
+ * <li>{@link #getAnnotatedFieldType(Object, Class) getAnnotatedFieldType} returns declared field type metadata only;
+ * it does not read an instance value.</li>
+ * <li>{@code set*} and {@link #getAnnotatedValue(Object, Class) getAnnotatedValue} read or write the live value on an
+ * instance, preferring the JavaBeans accessor when one exists.</li>
+ * </ul>
+ * A non-null {@linkplain #getAnnotatedValue(Object, Class) annotated value} therefore implies an annotated field
+ * exists, but {@linkplain #hasAnnotatedField(Object, Class) hasAnnotatedField} may be {@code true} while the value is
+ * still {@code null}.
+ *
+ * @author Vladimir Svyatski
+ */
 public final class BeanUtils {
 
     private static final Condition MATCHING_CONDITION = field -> true;
@@ -20,38 +40,52 @@ public final class BeanUtils {
     private BeanUtils() {
     }
 
-    public static boolean hasFieldWithAnnotation(Object domainObj,
-                                                 Class<? extends Annotation> annotationClass)
+    /**
+     * Returns whether {@code domainObj}'s class declares a field (or property) annotated with
+     * {@code annotationClass}, including supertypes.
+     *
+     * @param domainObj       the instance whose type is inspected
+     * @param annotationClass the annotation to match
+     * @return {@code true} when an annotated member exists (the value may still be {@code null})
+     */
+    public static boolean hasAnnotatedField(Object domainObj, Class<? extends Annotation> annotationClass)
         throws SecurityException, BeansException {
-
-        Field field = findFieldWithAnnotation(domainObj, annotationClass);
-        return field != null && field.getAnnotation(annotationClass) != null;
+        return findAnnotatedField(domainObj, annotationClass) != null;
     }
 
-    public static Field findFieldWithAnnotation(Object domainObj,
-                                                Class<? extends Annotation> annotationClass)
+    /**
+     * Locates the first field on {@code domainObj}'s class hierarchy annotated with {@code annotationClass}.
+     *
+     * @param domainObj       the instance whose type is searched
+     * @param annotationClass the annotation to match
+     * @return the field, or {@code null} when none is found
+     */
+    public static Field findAnnotatedField(Object domainObj, Class<? extends Annotation> annotationClass)
         throws SecurityException, BeansException {
         BeanWrapper wrapper = new BeanWrapperImpl(domainObj);
-        return findFieldWithAnnotation(domainObj.getClass(), annotationClass, wrapper);
+        return findAnnotatedField(domainObj.getClass(), annotationClass, wrapper);
     }
 
-    public static Field findFieldWithAnnotation(Class<?> domainObjClass,
-                                                Class<? extends Annotation> annotationClass)
+    /**
+     * Locates the first field on {@code domainObjClass} and its supertypes annotated with {@code annotationClass}.
+     *
+     * @param domainObjClass  the type to search
+     * @param annotationClass the annotation to match
+     * @return the field, or {@code null} when none is found
+     */
+    public static Field findAnnotatedField(Class<?> domainObjClass, Class<? extends Annotation> annotationClass)
         throws SecurityException, BeansException {
-
         BeanWrapper wrapper = new BeanWrapperImpl(domainObjClass);
-        return findFieldWithAnnotation(domainObjClass, annotationClass, wrapper);
+        return findAnnotatedField(domainObjClass, annotationClass, wrapper);
     }
 
-    private static Field findFieldWithAnnotation(Class<?> domainObjClass,
-                                                 Class<? extends Annotation> annotationClass, BeanWrapper wrapper) {
+    private static Field findAnnotatedField(Class<?> domainObjClass, Class<? extends Annotation> annotationClass,
+                                            BeanWrapper wrapper) {
         PropertyDescriptor[] descriptors = wrapper.getPropertyDescriptors();
         for (PropertyDescriptor descriptor : descriptors) {
             Field candidate = getField(domainObjClass, descriptor.getName());
-            if (candidate != null) {
-                if (candidate.getAnnotation(annotationClass) != null) {
-                    return candidate;
-                }
+            if (candidate != null && candidate.getAnnotation(annotationClass) != null) {
+                return candidate;
             }
         }
 
@@ -63,28 +97,212 @@ public final class BeanUtils {
         return null;
     }
 
-    public static Field[] findFieldsWithAnnotation(Class<?> domainObjClass,
-                                                   Class<? extends Annotation> annotationClass, BeanWrapper wrapper) {
+    /**
+     * Returns every field on {@code domainObjClass} and its supertypes annotated with {@code annotationClass}.
+     *
+     * @param domainObjClass  the type to search
+     * @param annotationClass the annotation to match
+     * @param wrapper         bean wrapper for the type (used for property descriptors)
+     * @return matching fields, possibly empty
+     */
+    public static Field[] findAnnotatedFields(Class<?> domainObjClass, Class<? extends Annotation> annotationClass,
+                                              BeanWrapper wrapper) {
         List<Field> fields = new ArrayList<>();
 
         PropertyDescriptor[] descriptors = wrapper.getPropertyDescriptors();
         for (PropertyDescriptor descriptor : descriptors) {
             Field candidate = getField(domainObjClass, descriptor.getName());
-            if (candidate != null) {
-                if (candidate.getAnnotation(annotationClass) != null) {
-                    fields.add(candidate);
-                }
+            if (candidate != null && candidate.getAnnotation(annotationClass) != null) {
+                fields.add(candidate);
             }
         }
 
         for (Field field : getAllFields(domainObjClass)) {
-            if (field.getAnnotation(annotationClass) != null) {
-                if (!fields.contains(field)) {
-                    fields.add(field);
-                }
+            if (field.getAnnotation(annotationClass) != null && !fields.contains(field)) {
+                fields.add(field);
             }
         }
-        return fields.toArray(new Field[]{});
+        return fields.toArray(Field[]::new);
+    }
+
+    /**
+     * Returns the declared type of the first field annotated with {@code annotationClass} on {@code domainObj}'s class
+     * hierarchy, or {@code null} when no such field exists.
+     *
+     * @param domainObj       the instance whose type is inspected
+     * @param annotationClass the annotation to match
+     * @return the field type, or {@code null} when no annotated member exists
+     */
+    public static @Nullable Class<?> getAnnotatedFieldType(Object domainObj, Class<? extends Annotation> annotationClass)
+        throws SecurityException, BeansException {
+        Field field = findAnnotatedField(domainObj, annotationClass);
+        if (field != null) {
+            return field.getType();
+        }
+        return null;
+    }
+
+    /**
+     * Reads the current value of the first field (or property) annotated with {@code annotationClass} on
+     * {@code domainObj}.
+     *
+     * @param domainObj       the instance to read from
+     * @param annotationClass the annotation to match
+     * @return the value, or {@code null} when no annotated member exists, the value is unset, or it cannot be read
+     */
+    public static @Nullable Object getAnnotatedValue(Object domainObj, Class<? extends Annotation> annotationClass)
+        throws SecurityException, BeansException {
+        Field field = findAnnotatedField(domainObj, annotationClass);
+        if (field != null && field.getAnnotation(annotationClass) != null) {
+            try {
+                PropertyDescriptor descriptor = org.springframework.beans.BeanUtils
+                    .getPropertyDescriptor(domainObj.getClass(), field.getName());
+                if (descriptor != null) {
+                    BeanWrapper wrapper = new BeanWrapperImpl(domainObj);
+                    return wrapper.getPropertyValue(field.getName());
+                }
+                return ReflectionUtils.getField(field, domainObj);
+            } catch (IllegalArgumentException ignored) {
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Writes {@code value} to the first field annotated with {@code annotationClass} on {@code domainObj}'s class
+     * hierarchy.
+     *
+     * @param domainObj       the instance to update
+     * @param annotationClass the annotation to match
+     * @param value           the value to assign (can be {@code null})
+     */
+    public static void setAnnotatedValue(Object domainObj, Class<? extends Annotation> annotationClass,
+                                         @Nullable Object value) {
+        setAnnotatedValueConditionally(domainObj, annotationClass, value, MATCHING_CONDITION);
+    }
+
+    /**
+     * Writes {@code value} only when {@code condition} accepts the annotated field (or when {@code condition} is
+     * {@code null}, in which case writing is unconditional).
+     *
+     * @param domainObj       the instance to update
+     * @param annotationClass the annotation to match
+     * @param value           the value to assign (can be {@code null})
+     * @param condition       optional guard on the matched {@link Field}; {@code null} means always apply
+     */
+    public static void setAnnotatedValueConditionally(Object domainObj, Class<? extends Annotation> annotationClass,
+                                                      @Nullable Object value, @Nullable Condition condition) {
+        Field field = findAnnotatedField(domainObj, annotationClass);
+        if (field != null && field.getAnnotation(annotationClass) != null
+            && (condition == null || condition.matches(field))) {
+            try {
+                PropertyDescriptor descriptor = org.springframework.beans.BeanUtils
+                    .getPropertyDescriptor(domainObj.getClass(), field.getName());
+                if (descriptor != null) {
+                    BeanWrapper wrapper = new BeanWrapperImpl(domainObj);
+                    wrapper.setPropertyValue(field.getName(), value);
+                } else {
+                    ReflectionUtils.setField(field, domainObj, value);
+                }
+            } catch (IllegalArgumentException ignored) {
+            }
+        }
+    }
+
+    /**
+     * Returns the default value for a primitive type, or {@code null} for reference types.
+     */
+    public static Object getDefaultValueForType(Class<?> fieldType) {
+        if (fieldType == int.class || fieldType == double.class) {
+            return 0;
+        } else if (fieldType == boolean.class) {
+            return false;
+        } else if (fieldType == char.class) {
+            return '\u0000';
+        } else if (fieldType == byte.class) {
+            return (byte) 0;
+        } else if (fieldType == short.class) {
+            return (short) 0;
+        } else if (fieldType == long.class) {
+            return 0L;
+        } else if (fieldType == float.class) {
+            return 0.0f;
+        }
+        return null;
+    }
+
+    // Deprecated names
+
+    /**
+     * @deprecated use {@link #hasAnnotatedField(Object, Class)}
+     */
+    @Deprecated(since = "4.1.0", forRemoval = true)
+    public static boolean hasFieldWithAnnotation(Object domainObj, Class<? extends Annotation> annotationClass)
+        throws SecurityException, BeansException {
+        return hasAnnotatedField(domainObj, annotationClass);
+    }
+
+    /**
+     * @deprecated use {@link #findAnnotatedField(Object, Class)}
+     */
+    @Deprecated(since = "4.1.0", forRemoval = true)
+    public static Field findFieldWithAnnotation(Object domainObj, Class<? extends Annotation> annotationClass)
+        throws SecurityException, BeansException {
+        return findAnnotatedField(domainObj, annotationClass);
+    }
+
+    /**
+     * @deprecated use {@link #findAnnotatedField(Class, Class)}
+     */
+    @Deprecated(since = "4.1.0", forRemoval = true)
+    public static Field findFieldWithAnnotation(Class<?> domainObjClass, Class<? extends Annotation> annotationClass)
+        throws SecurityException, BeansException {
+        return findAnnotatedField(domainObjClass, annotationClass);
+    }
+
+    /**
+     * @deprecated use {@link #findAnnotatedFields(Class, Class, BeanWrapper)}
+     */
+    @Deprecated(since = "4.1.0", forRemoval = true)
+    public static Field[] findFieldsWithAnnotation(Class<?> domainObjClass, Class<? extends Annotation> annotationClass,
+                                                   BeanWrapper wrapper) {
+        return findAnnotatedFields(domainObjClass, annotationClass, wrapper);
+    }
+
+    /**
+     * @deprecated use {@link #getAnnotatedFieldType(Object, Class)}
+     */
+    @Deprecated(since = "4.1.0", forRemoval = true)
+    public static Class<?> getFieldWithAnnotationType(Object domainObj, Class<? extends Annotation> annotationClass)
+        throws SecurityException, BeansException {
+        return getAnnotatedFieldType(domainObj, annotationClass);
+    }
+
+    /**
+     * @deprecated use {@link #getAnnotatedValue(Object, Class)}
+     */
+    @Deprecated(since = "4.1.0", forRemoval = true)
+    public static @Nullable Object getFieldWithAnnotation(Object domainObj, Class<? extends Annotation> annotationClass)
+        throws SecurityException, BeansException {
+        return getAnnotatedValue(domainObj, annotationClass);
+    }
+
+    /**
+     * @deprecated use {@link #setAnnotatedValue(Object, Class, Object)}
+     */
+    @Deprecated(since = "4.1.0", forRemoval = true)
+    public static void setFieldWithAnnotation(Object domainObj, Class<? extends Annotation> annotationClass,
+                                              @Nullable Object value) {
+        setAnnotatedValue(domainObj, annotationClass, value);
+    }
+
+    /**
+     * @deprecated use {@link #setAnnotatedValueConditionally(Object, Class, Object, Condition)}
+     */
+    @Deprecated(since = "4.1.0", forRemoval = true)
+    public static void setFieldWithAnnotationConditionally(Object domainObj, Class<? extends Annotation> annotationClass,
+                                                           @Nullable Object value, @Nullable Condition condition) {
+        setAnnotatedValueConditionally(domainObj, annotationClass, value, condition);
     }
 
     private static List<Field> getAllFields(Class<?> type) {
@@ -112,103 +330,5 @@ public final class BeanUtils {
             }
         }
         return null;
-    }
-
-    public static Class<?> getFieldWithAnnotationType(Object domainObj,
-                                                      Class<? extends Annotation> annotationClass)
-        throws SecurityException, BeansException {
-        Class<?> type = null;
-
-        Field field = findFieldWithAnnotation(domainObj, annotationClass);
-        if (field != null && field.getAnnotation(annotationClass) != null) {
-            type = field.getType();
-        }
-
-        return type;
-    }
-
-    public static Object getFieldWithAnnotation(Object domainObj, Class<? extends Annotation> annotationClass)
-        throws SecurityException, BeansException {
-        Object value;
-
-        Field field = findFieldWithAnnotation(domainObj, annotationClass);
-        if (field != null && field.getAnnotation(annotationClass) != null) {
-            try {
-                PropertyDescriptor descriptor = org.springframework.beans.BeanUtils
-                    .getPropertyDescriptor(domainObj.getClass(), field.getName());
-                if (descriptor != null) {
-                    BeanWrapper wrapper = new BeanWrapperImpl(domainObj);
-                    value = wrapper.getPropertyValue(field.getName());
-                } else {
-                    value = ReflectionUtils.getField(field, domainObj);
-                }
-                return value;
-            } catch (IllegalArgumentException ignored) {
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Sets object's field annotated with annotationClass to value.
-     *
-     * @param domainObj       the object containing the field
-     * @param annotationClass the annotation to look for
-     * @param value           the value to set
-     */
-    public static void setFieldWithAnnotation(Object domainObj,
-                                              Class<? extends Annotation> annotationClass, @Nullable Object value) {
-        setFieldWithAnnotationConditionally(domainObj, annotationClass, value,
-            MATCHING_CONDITION);
-    }
-
-    /**
-     * Sets object's field annotated with annotationClass to value only if the condition
-     * matches.
-     *
-     * @param domainObj       the object containing the field
-     * @param annotationClass the annotation to look for
-     * @param value           the value to set
-     * @param condition       the condition that must be satisfied to allow the match
-     */
-    public static void setFieldWithAnnotationConditionally(Object domainObj,
-                                                           Class<? extends Annotation> annotationClass,
-                                                           @Nullable Object value, @Nullable Condition condition) {
-
-        Field field = findFieldWithAnnotation(domainObj, annotationClass);
-        if (field != null && field.getAnnotation(annotationClass) != null
-            && (condition == null || condition.matches(field))) {
-            try {
-                PropertyDescriptor descriptor = org.springframework.beans.BeanUtils
-                    .getPropertyDescriptor(domainObj.getClass(), field.getName());
-                if (descriptor != null) {
-                    BeanWrapper wrapper = new BeanWrapperImpl(domainObj);
-                    wrapper.setPropertyValue(field.getName(), value);
-                } else {
-                    ReflectionUtils.setField(field, domainObj, value);
-                }
-            } catch (IllegalArgumentException ignored) {
-            }
-        }
-    }
-
-    public static Object getDefaultValueForType(Class<?> fieldType) {
-        if (fieldType == int.class || fieldType == double.class) {
-            return 0;
-        } else if (fieldType == boolean.class) {
-            return false;
-        } else if (fieldType == char.class) {
-            return '\u0000';
-        } else if (fieldType == byte.class) {
-            return (byte) 0;
-        } else if (fieldType == short.class) {
-            return (short) 0;
-        } else if (fieldType == long.class) {
-            return 0L;
-        } else if (fieldType == float.class) {
-            return 0.0f;
-        }
-        return null; // For non-primitive types
     }
 }

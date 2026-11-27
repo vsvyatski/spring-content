@@ -77,7 +77,7 @@ public class DefaultMongoStoreImpl<S, SID extends Serializable> implements Conte
         }
 
         @SuppressWarnings("unchecked")
-        SID contentId = (SID) BeanUtils.getFieldWithAnnotation(entity, ContentId.class);
+        SID contentId = (SID) BeanUtils.getAnnotatedValue(entity, ContentId.class);
         if (contentId == null) {
             return null;
         }
@@ -125,7 +125,7 @@ public class DefaultMongoStoreImpl<S, SID extends Serializable> implements Conte
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requireContentId(id);
         Object convertedId = convertToExternalContentIdType(entity, id);
-        BeanUtils.setFieldWithAnnotation(entity, ContentId.class, convertedId.toString());
+        BeanUtils.setAnnotatedValue(entity, ContentId.class, convertedId.toString());
     }
 
     @Override
@@ -146,7 +146,7 @@ public class DefaultMongoStoreImpl<S, SID extends Serializable> implements Conte
     @Override
     public void unassociate(S entity) {
         StoreEntityValidation.requireEntity(entity);
-        BeanUtils.setFieldWithAnnotationConditionally(entity, ContentId.class, null, DomainObjectUtils::contentIdFieldMayBeCleared);
+        BeanUtils.setAnnotatedValueConditionally(entity, ContentId.class, null, DomainObjectUtils::contentIdFieldMayBeCleared);
     }
 
     @Override
@@ -166,11 +166,11 @@ public class DefaultMongoStoreImpl<S, SID extends Serializable> implements Conte
     public S setContent(S entity, InputStream content) {
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requireContentInputStream(content);
-        Object contentId = BeanUtils.getFieldWithAnnotation(entity, ContentId.class);
+        Object contentId = BeanUtils.getAnnotatedValue(entity, ContentId.class);
         if (contentId == null) {
             Serializable newId = UUID.randomUUID().toString();
             Object convertedId = convertToExternalContentIdType(entity, newId);
-            BeanUtils.setFieldWithAnnotation(entity, ContentId.class, convertedId);
+            BeanUtils.setAnnotatedValue(entity, ContentId.class, convertedId);
         }
 
         Resource resource = this.getResource(entity);
@@ -197,7 +197,7 @@ public class DefaultMongoStoreImpl<S, SID extends Serializable> implements Conte
         } catch (IOException ioe) {
             logger.debug(format("Unable to retrieve content length for %s", contentId));
         }
-        BeanUtils.setFieldWithAnnotation(entity, ContentLength.class, contentLen);
+        BeanUtils.setAnnotatedValue(entity, ContentLength.class, contentLen);
 
         return entity;
     }
@@ -301,7 +301,7 @@ public class DefaultMongoStoreImpl<S, SID extends Serializable> implements Conte
     @Transactional
     public @Nullable InputStream getContent(S entity) {
         StoreEntityValidation.requireEntity(entity);
-        Object contentId = BeanUtils.getFieldWithAnnotation(entity, ContentId.class);
+        Object contentId = BeanUtils.getAnnotatedValue(entity, ContentId.class);
         if (contentId == null) return null;
 
         String location = placer.convert(contentId, String.class);
@@ -337,7 +337,7 @@ public class DefaultMongoStoreImpl<S, SID extends Serializable> implements Conte
     @Transactional
     public S unsetContent(S property) {
         StoreEntityValidation.requireEntity(property);
-        Object contentId = BeanUtils.getFieldWithAnnotation(property, ContentId.class);
+        Object contentId = BeanUtils.getAnnotatedValue(property, ContentId.class);
         if (contentId == null) return property;
 
         try {
@@ -348,11 +348,11 @@ public class DefaultMongoStoreImpl<S, SID extends Serializable> implements Conte
                 gridFs.delete(query(whereFilename().is(gridFsFilename(resource))));
 
                 // reset content fields
-                BeanUtils.setFieldWithAnnotationConditionally(property, ContentId.class, null,
+                BeanUtils.setAnnotatedValueConditionally(property, ContentId.class, null,
                     DomainObjectUtils::contentIdFieldMayBeCleared);
-                Class<?> contentLenType = BeanUtils.getFieldWithAnnotationType(property, ContentLength.class);
+                Class<?> contentLenType = BeanUtils.getAnnotatedFieldType(property, ContentLength.class);
                 if (contentLenType != null) {
-                    BeanUtils.setFieldWithAnnotation(property, ContentLength.class, BeanUtils.getDefaultValueForType(contentLenType));
+                    BeanUtils.setAnnotatedValue(property, ContentLength.class, BeanUtils.getDefaultValueForType(contentLenType));
                 }
             }
         } catch (Exception ase) {
@@ -411,9 +411,9 @@ public class DefaultMongoStoreImpl<S, SID extends Serializable> implements Conte
 
     protected Object convertToExternalContentIdType(S property, Object contentId) {
         if (placer.canConvert(TypeDescriptor.forObject(contentId),
-            TypeDescriptor.valueOf(BeanUtils.getFieldWithAnnotationType(property, ContentId.class)))) {
+            TypeDescriptor.valueOf(BeanUtils.getAnnotatedFieldType(property, ContentId.class)))) {
             Object converted = placer.convert(contentId, TypeDescriptor.forObject(contentId),
-                TypeDescriptor.valueOf(BeanUtils.getFieldWithAnnotationType(property,
+                TypeDescriptor.valueOf(BeanUtils.getAnnotatedFieldType(property,
                     ContentId.class)));
             assert converted != null;
             return converted;

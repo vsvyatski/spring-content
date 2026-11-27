@@ -37,10 +37,10 @@ public class InMemoryTypeSupportContentStore<S extends TypeSupportIdGenerator<SI
     public S setContent(S entity, InputStream content) {
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requireContentInputStream(content);
-        Object contentId = BeanUtils.getFieldWithAnnotation(entity, ContentId.class);
+        Object contentId = BeanUtils.getAnnotatedValue(entity, ContentId.class);
         if (contentId == null) {
             contentId = entity.generateId();
-            BeanUtils.setFieldWithAnnotation(entity, ContentId.class, contentId);
+            BeanUtils.setAnnotatedValue(entity, ContentId.class, contentId);
         }
 
         try {
@@ -55,10 +55,10 @@ public class InMemoryTypeSupportContentStore<S extends TypeSupportIdGenerator<SI
     @Override
     public S unsetContent(S entity) {
         StoreEntityValidation.requireEntity(entity);
-        Object contentId = BeanUtils.getFieldWithAnnotation(entity, ContentId.class);
+        Object contentId = BeanUtils.getAnnotatedValue(entity, ContentId.class);
         if (contentId != null) {
             storage.remove(contentId);
-            BeanUtils.setFieldWithAnnotation(entity, ContentId.class, null);
+            BeanUtils.setAnnotatedValue(entity, ContentId.class, null);
         }
         return entity;
     }
@@ -66,7 +66,7 @@ public class InMemoryTypeSupportContentStore<S extends TypeSupportIdGenerator<SI
     @Override
     public @Nullable InputStream getContent(S entity) {
         StoreEntityValidation.requireEntity(entity);
-        Object contentId = BeanUtils.getFieldWithAnnotation(entity, ContentId.class);
+        Object contentId = BeanUtils.getAnnotatedValue(entity, ContentId.class);
         if (contentId == null) {
             return null;
         }

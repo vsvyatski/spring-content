@@ -41,9 +41,9 @@ public final class DomainObjectUtils {
 
         Object id = null;
 
-        if (JAKARTA_PERSISTENCE_ID_CLASS_PRESENT && BeanUtils.hasFieldWithAnnotation(entity, jakarta.persistence.Id.class)) {
+        if (JAKARTA_PERSISTENCE_ID_CLASS_PRESENT && BeanUtils.hasAnnotatedField(entity, jakarta.persistence.Id.class)) {
 
-            id = BeanUtils.getFieldWithAnnotation(entity, jakarta.persistence.Id.class);
+            id = BeanUtils.getAnnotatedValue(entity, jakarta.persistence.Id.class);
             if (id == null) {
                 PropertyDescriptor[] propertyDescriptors = new BeanWrapperImpl(entity).getPropertyDescriptors();
                 for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
@@ -53,8 +53,8 @@ public final class DomainObjectUtils {
                     }
                 }
             }
-        } else if (BeanUtils.hasFieldWithAnnotation(entity, Id.class)) {
-            id = BeanUtils.getFieldWithAnnotation(entity, Id.class);
+        } else if (BeanUtils.hasAnnotatedField(entity, Id.class)) {
+            id = BeanUtils.getAnnotatedValue(entity, Id.class);
             if (id == null) {
                 PropertyDescriptor[] propertyDescriptors = new BeanWrapperImpl(entity).getPropertyDescriptors();
                 for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
@@ -72,10 +72,10 @@ public final class DomainObjectUtils {
     public static Field getIdField(Class<?> domainClass) {
 
         if (JAKARTA_PERSISTENCE_ID_CLASS_PRESENT &&
-            BeanUtils.findFieldWithAnnotation(domainClass, jakarta.persistence.Id.class) != null) {
-            return BeanUtils.findFieldWithAnnotation(domainClass, jakarta.persistence.Id.class);
-        } else if (BeanUtils.findFieldWithAnnotation(domainClass, Id.class) != null) {
-            return BeanUtils.findFieldWithAnnotation(domainClass, Id.class);
+            BeanUtils.findAnnotatedField(domainClass, jakarta.persistence.Id.class) != null) {
+            return BeanUtils.findAnnotatedField(domainClass, jakarta.persistence.Id.class);
+        } else if (BeanUtils.findAnnotatedField(domainClass, Id.class) != null) {
+            return BeanUtils.findAnnotatedField(domainClass, Id.class);
         }
 
         return null;

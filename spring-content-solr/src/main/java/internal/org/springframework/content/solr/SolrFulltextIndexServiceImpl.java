@@ -108,11 +108,11 @@ public class SolrFulltextIndexServiceImpl implements IndexService<Object> {
 
     private static String contentIdString(Object entity) {
         return Objects.requireNonNull(
-            BeanUtils.getFieldWithAnnotation(entity, ContentId.class), "contentId").toString();
+            BeanUtils.getAnnotatedValue(entity, ContentId.class), "contentId").toString();
     }
 
     private static String resolveMimeType(Object entity) {
-        Object mimeType = BeanUtils.getFieldWithAnnotation(entity, MimeType.class);
+        Object mimeType = BeanUtils.getAnnotatedValue(entity, MimeType.class);
         if (mimeType instanceof String mime && !mime.isBlank()) {
             return mime;
         }

@@ -343,7 +343,7 @@ public class ContentSearchRestControllerIT {
                         .accept(RestTestMediaTypes.APPLICATION_HAL_JSON_VALUE))
                     .andExpect(status().isOk()).andReturn();
 
-                verify(defaultLookupStrategy, never()).lookup(any(RootResourceInformation.class), any(RepositoryInformation.class), anyList(),
+                verify(defaultLookupStrategy, never()).lookup(any(RootResourceInformation.class), anyList(),
                     anyList());
                 verify(queryMethodsLookupStrategy, never()).lookup(any(RootResourceInformation.class), any(RepositoryInformation.class), anyList(),
                     anyList());
@@ -500,7 +500,7 @@ public class ContentSearchRestControllerIT {
                         .accept(RestTestMediaTypes.APPLICATION_HAL_JSON_VALUE))
                     .andExpect(status().isOk()).andReturn();
 
-                verify(defaultLookupStrategy, never()).lookup(any(RootResourceInformation.class), any(RepositoryInformation.class), anyList(),
+                verify(defaultLookupStrategy, never()).lookup(any(RootResourceInformation.class), anyList(),
                     anyList());
                 verify(queryMethodsLookupStrategy).lookup(any(RootResourceInformation.class), any(RepositoryInformation.class), anyList(),
                     anyList());
@@ -725,7 +725,7 @@ public class ContentSearchRestControllerIT {
                     .accept(RestTestMediaTypes.APPLICATION_HAL_JSON_VALUE))
                 .andExpect(status().isOk()).andReturn();
 
-            verify(defaultLookupStrategy).lookup(any(RootResourceInformation.class), any(RepositoryInformation.class), anyList(),
+            verify(defaultLookupStrategy).lookup(any(RootResourceInformation.class), anyList(),
                 anyList());
             verify(queryMethodsLookupStrategy, never()).lookup(any(RootResourceInformation.class), any(RepositoryInformation.class), anyList(),
                 anyList());

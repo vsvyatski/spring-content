@@ -25,7 +25,7 @@ public class JpaVersioningServiceImplTest {
                 entity = new VersioningUnitFields();
                 entity.setId(100L);
 
-                versioner = new JpaVersioningServiceImpl(null);
+                versioner = new JpaVersioningServiceImpl();
 
                 result = versioner.establishAncestralRoot(entity);
             }
@@ -54,7 +54,7 @@ public class JpaVersioningServiceImplTest {
                 successor = new VersioningUnitFields();
                 successor.setId(999L);
 
-                versioner = new JpaVersioningServiceImpl(null);
+                versioner = new JpaVersioningServiceImpl();
 
                 result = versioner.establishAncestor(entity, successor);
             }
@@ -82,7 +82,7 @@ public class JpaVersioningServiceImplTest {
                 String versionNo = "1.1";
                 String versionLabel = "a new version";
 
-                versioner = new JpaVersioningServiceImpl(null);
+                versioner = new JpaVersioningServiceImpl();
 
                 result = versioner.establishSuccessor(successor, versionNo, versionLabel, ancestralRoot, ancestor);
             }

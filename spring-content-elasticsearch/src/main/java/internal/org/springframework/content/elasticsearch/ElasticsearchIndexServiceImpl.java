@@ -76,7 +76,7 @@ public class ElasticsearchIndexServiceImpl<T> implements IndexService<T> {
     public void unindex(T entity) {
         ensurePipelineInitialized();
 
-        Object contentId = BeanUtils.getFieldWithAnnotation(entity, ContentId.class);
+        Object contentId = BeanUtils.getAnnotatedValue(entity, ContentId.class);
         if (contentId == null) {
             return;
         }
@@ -117,7 +117,7 @@ public class ElasticsearchIndexServiceImpl<T> implements IndexService<T> {
         if (renditionService == null) {
             return stream;
         }
-        Object mimeType = BeanUtils.getFieldWithAnnotation(entity, MimeType.class);
+        Object mimeType = BeanUtils.getAnnotatedValue(entity, MimeType.class);
         if (mimeType == null) {
             return stream;
         }
@@ -130,7 +130,7 @@ public class ElasticsearchIndexServiceImpl<T> implements IndexService<T> {
 
     private static String contentIdString(Object entity) {
         return Objects.requireNonNull(
-            BeanUtils.getFieldWithAnnotation(entity, ContentId.class), "contentId").toString();
+            BeanUtils.getAnnotatedValue(entity, ContentId.class), "contentId").toString();
     }
 
     private static String base64EncodeStream(InputStream stream, String contentIdForError) {

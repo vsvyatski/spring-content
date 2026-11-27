@@ -79,7 +79,7 @@ public class RenderableImpl implements Renderable<Object>, ContentStoreAware {
         StoreEntityValidation.requireEntity(entity);
         Assert.notNull(mimeType, "mimeType must not be null");
 
-        String fromMimeType = (String) BeanUtils.getFieldWithAnnotation(entity, MimeType.class);
+        String fromMimeType = (String) BeanUtils.getAnnotatedValue(entity, MimeType.class);
         if (fromMimeType == null) {
             return null;
         }
@@ -141,7 +141,7 @@ public class RenderableImpl implements Renderable<Object>, ContentStoreAware {
         StoreEntityValidation.requireEntity(entity);
         Assert.notNull(mimeType, "mimeType must not be null");
 
-        String fromMimeType = (String) BeanUtils.getFieldWithAnnotation(entity, MimeType.class);
+        String fromMimeType = (String) BeanUtils.getAnnotatedValue(entity, MimeType.class);
         if (fromMimeType == null) {
             return false;
         }

@@ -2,6 +2,7 @@ package internal.org.springframework.content.gcs.config;
 
 import com.google.cloud.spring.storage.GoogleStorageProtocolResolver;
 import com.google.cloud.storage.BlobId;
+import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,7 +32,7 @@ public class GCPStorageConfiguration implements InitializingBean {
     @Value("${spring.content.gcp.storage.bucket:#{environment.GCP_STORAGE_BUCKET}}")
     private String bucket;
 
-    private PlacementService conversion = new PlacementServiceImpl();
+    private final PlacementService conversion = new PlacementServiceImpl();
 
     public static void addDefaultConverters(PlacementService conversion, String bucket) {
 
@@ -41,14 +42,14 @@ public class GCPStorageConfiguration implements InitializingBean {
         // ContentPropertyInfo -> BlobId
         conversion.addConverter(new Converter<ContentPropertyInfo<Object, Serializable>, BlobId>() {
 
-            private String defaultBucket = bucket;
+            private final String defaultBucket = bucket;
 
             @Override
-            public BlobId convert(ContentPropertyInfo<Object, Serializable> info) {
+            public BlobId convert(@NonNull ContentPropertyInfo<Object, Serializable> info) {
 
-                String strBucket = null;
+                String strBucket;
                 // @Bucket can be only on entity level, not per content property
-                Object bucket = BeanUtils.getFieldWithAnnotation(info.entity(), Bucket.class);
+                Object bucket = BeanUtils.getAnnotatedValue(info.entity(), Bucket.class);
                 if (bucket == null) {
                     bucket = defaultBucket;
                 }
@@ -80,7 +81,7 @@ public class GCPStorageConfiguration implements InitializingBean {
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         addDefaultConverters(conversion, bucket);
         addConverters(conversion);
     }

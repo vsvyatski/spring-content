@@ -141,13 +141,13 @@ public class SearchableImpl implements Searchable<Object>, ContentStoreAware {
 
         List<String> attributesToFetch = new ArrayList<>();
         if (!ContentPropertyUtils.isPrimitiveContentPropertyClass(searchType)) {
-            for (Field field : BeanUtils.findFieldsWithAnnotation(searchType, Attribute.class, new BeanWrapperImpl(searchType))) {
+            for (Field field : BeanUtils.findAnnotatedFields(searchType, Attribute.class, new BeanWrapperImpl(searchType))) {
                 Attribute fieldAnnotation = field.getAnnotation(Attribute.class);
                 attributesToFetch.add(fieldAnnotation.name());
             }
         }
         boolean highlight = !ContentPropertyUtils.isPrimitiveContentPropertyClass(searchType)
-            && BeanUtils.findFieldWithAnnotation(searchType, Highlight.class) != null;
+            && BeanUtils.findAnnotatedField(searchType, Highlight.class) != null;
 
         try {
             var res = client.search(s -> {
@@ -200,12 +200,12 @@ public class SearchableImpl implements Searchable<Object>, ContentStoreAware {
                     Object row = resultType.getDeclaredConstructor().newInstance();
                     BeanWrapper wrapper = new BeanWrapperImpl(row);
 
-                    Field contentIdField = BeanUtils.findFieldWithAnnotation(resultType, ContentId.class);
+                    Field contentIdField = BeanUtils.findAnnotatedField(resultType, ContentId.class);
                     if (contentIdField != null) {
                         wrapper.setPropertyValue(contentIdField.getName(), hit.id());
                     }
 
-                    Field highlightField = BeanUtils.findFieldWithAnnotation(resultType, Highlight.class);
+                    Field highlightField = BeanUtils.findAnnotatedField(resultType, Highlight.class);
                     if (highlightField != null && hit.highlight() != null) {
                         List<String> snippets = hit.highlight().get("attachment.content");
                         if (snippets != null && !snippets.isEmpty()) {
@@ -215,7 +215,7 @@ public class SearchableImpl implements Searchable<Object>, ContentStoreAware {
 
                     Map<String, Object> source = hit.source();
                     if (source != null) {
-                        for (Field field : BeanUtils.findFieldsWithAnnotation(resultType, Attribute.class,
+                        for (Field field : BeanUtils.findAnnotatedFields(resultType, Attribute.class,
                             new BeanWrapperImpl(resultType))) {
                             Attribute fieldAnnotation = field.getAnnotation(Attribute.class);
                             wrapper.setPropertyValue(field.getName(), source.get(fieldAnnotation.name()));

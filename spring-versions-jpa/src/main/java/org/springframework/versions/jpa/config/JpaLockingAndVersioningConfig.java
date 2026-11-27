@@ -32,8 +32,8 @@ public class JpaLockingAndVersioningConfig {
     }
 
     @Bean
-    public VersioningService versioningService(EntityManager em) {
-        return new JpaVersioningServiceImpl(em);
+    public VersioningService versioningService() {
+        return new JpaVersioningServiceImpl();
     }
 
     @Bean

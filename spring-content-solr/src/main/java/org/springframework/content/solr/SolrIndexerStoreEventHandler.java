@@ -32,7 +32,7 @@ public class SolrIndexerStoreEventHandler {
     @Order(100)
     protected void onBeforeSetContent(BeforeSetContentEvent event) {
         Object contentEntity = event.getSource();
-        if (BeanUtils.getFieldWithAnnotation(contentEntity, ContentId.class) != null) {
+        if (BeanUtils.getAnnotatedValue(contentEntity, ContentId.class) != null) {
             indexer.unindex(contentEntity);
         }
     }
@@ -41,7 +41,7 @@ public class SolrIndexerStoreEventHandler {
     @Order(100)
     protected void onAfterSetContent(AfterSetContentEvent event) {
         Object contentEntity = event.getSource();
-        if (BeanUtils.getFieldWithAnnotation(contentEntity, ContentId.class) == null) {
+        if (BeanUtils.getAnnotatedValue(contentEntity, ContentId.class) == null) {
             return;
         }
         if (!(event.getStore() instanceof ContentStore<?, ?> contentStore)) {
@@ -58,7 +58,7 @@ public class SolrIndexerStoreEventHandler {
     @Order(100)
     protected void onBeforeUnsetContent(BeforeUnsetContentEvent event) {
         Object contentEntity = event.getSource();
-        if (BeanUtils.getFieldWithAnnotation(contentEntity, ContentId.class) != null) {
+        if (BeanUtils.getAnnotatedValue(contentEntity, ContentId.class) != null) {
             indexer.unindex(contentEntity);
         }
     }

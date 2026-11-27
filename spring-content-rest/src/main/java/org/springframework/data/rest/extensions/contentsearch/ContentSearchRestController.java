@@ -220,7 +220,7 @@ public class ContentSearchRestController {
                 if (ri.getQueryMethods()
                     .stream().noneMatch(m -> m.getAnnotation(FulltextEntityLookupQuery.class) != null)) {
 
-                    defaultLookupStrategy.lookup(repoInfo, ri, contentIds, results);
+                    defaultLookupStrategy.lookup(repoInfo, contentIds, results);
                 } else {
 
                     qmLookupStrategy.lookup(repoInfo, ri, contentIds, results);
@@ -264,7 +264,7 @@ public class ContentSearchRestController {
     private boolean isIdFieldOverloaded(Class<?> domainClass) {
 
         Field idField = DomainObjectUtils.getIdField(domainClass);
-        Field contentIdField = BeanUtils.findFieldWithAnnotation(domainClass, ContentId.class);
+        Field contentIdField = BeanUtils.findAnnotatedField(domainClass, ContentId.class);
 
         return Objects.equals(idField, contentIdField);
     }
