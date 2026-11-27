@@ -1,28 +1,21 @@
 package internal.org.springframework.versions.jpa;
 
-import jakarta.persistence.EntityManager;
 import jakarta.persistence.Id;
 import org.springframework.content.commons.utils.BeanUtils;
 import org.springframework.versions.*;
 
 public class JpaVersioningServiceImpl implements VersioningService {
 
-    private EntityManager em;
-
-    public JpaVersioningServiceImpl(EntityManager em) {
-        this.em = em;
-    }
-
     @Override
     public Object establishAncestralRoot(Object entity) {
         Object id = getId(entity);
 
-        if (BeanUtils.hasFieldWithAnnotation(entity, AncestorId.class)) {
-            BeanUtils.setFieldWithAnnotation(entity, AncestorId.class, null);
+        if (BeanUtils.hasAnnotatedField(entity, AncestorId.class)) {
+            BeanUtils.setAnnotatedValue(entity, AncestorId.class, null);
         }
 
-        if (BeanUtils.hasFieldWithAnnotation(entity, AncestorRootId.class) && BeanUtils.getFieldWithAnnotation(entity, AncestorRootId.class) == null) {
-            BeanUtils.setFieldWithAnnotation(entity, AncestorRootId.class, id);
+        if (BeanUtils.hasAnnotatedField(entity, AncestorRootId.class) && BeanUtils.getAnnotatedValue(entity, AncestorRootId.class) == null) {
+            BeanUtils.setAnnotatedValue(entity, AncestorRootId.class, id);
         }
 
         return entity;
@@ -31,39 +24,37 @@ public class JpaVersioningServiceImpl implements VersioningService {
     @Override
     public Object establishAncestor(Object entity, Object successor) {
 
-        if (BeanUtils.hasFieldWithAnnotation(entity, SuccessorId.class)) {
+        if (BeanUtils.hasAnnotatedField(entity, SuccessorId.class)) {
             Object successorId = getId(successor);
-            BeanUtils.setFieldWithAnnotation(entity, SuccessorId.class, successorId);
+            BeanUtils.setAnnotatedValue(entity, SuccessorId.class, successorId);
         }
 
         return entity;
     }
 
     @Override
-    public Object establishSuccessor(Object candidate, String versionNo, String versionLabel, Object ancestralRoot, Object ancestor) {
-        BeanUtils.setFieldWithAnnotation(candidate, VersionNumber.class, versionNo);
-        BeanUtils.setFieldWithAnnotation(candidate, VersionLabel.class, versionLabel);
+    public Object establishSuccessor(Object candidate, String versionNo, String versionLabel,
+                                     Object ancestralRoot, Object ancestor) {
+        BeanUtils.setAnnotatedValue(candidate, VersionNumber.class, versionNo);
+        BeanUtils.setAnnotatedValue(candidate, VersionLabel.class, versionLabel);
 
-        if (BeanUtils.hasFieldWithAnnotation(candidate, AncestorRootId.class)) {
+        if (BeanUtils.hasAnnotatedField(candidate, AncestorRootId.class)) {
             Object ancestralRootId = getId(ancestralRoot);
-            BeanUtils.setFieldWithAnnotation(candidate, AncestorRootId.class, ancestralRootId);
+            BeanUtils.setAnnotatedValue(candidate, AncestorRootId.class, ancestralRootId);
         }
 
-        if (BeanUtils.hasFieldWithAnnotation(candidate, AncestorId.class) && ancestor != null) {
+        if (BeanUtils.hasAnnotatedField(candidate, AncestorId.class) && ancestor != null) {
             Object ancestorId = getId(ancestor);
-            BeanUtils.setFieldWithAnnotation(candidate, AncestorId.class, ancestorId);
+            BeanUtils.setAnnotatedValue(candidate, AncestorId.class, ancestorId);
         }
 
         return candidate;
     }
 
     protected Object getId(Object entity) {
-        Object id = BeanUtils.getFieldWithAnnotation(entity, Id.class);
+        Object id = BeanUtils.getAnnotatedValue(entity, Id.class);
         if (id == null) {
-            id = BeanUtils.getFieldWithAnnotation(entity, org.springframework.data.annotation.Id.class);
-        }
-        if (id == null) {
-            return null;
+            id = BeanUtils.getAnnotatedValue(entity, org.springframework.data.annotation.Id.class);
         }
         return id;
     }

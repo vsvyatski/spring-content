@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 public class ElasticsearchFulltextIndexingConfig {
 
     @Autowired
-    private IndexService elasticFulltextIndexService;
+    private IndexService<Object> elasticFulltextIndexService;
 
     @Bean
     public ElasticsearchIndexer elasticFulltextIndexerEventListener() {

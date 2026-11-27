@@ -1,5 +1,6 @@
 package internal.org.springframework.content.s3.config;
 
+import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,30 +31,27 @@ public class S3StoreConfiguration implements InitializingBean {
     @Value("${spring.content.s3.bucket:#{environment.AWS_BUCKET}}")
     private String bucket;
 
-    private PlacementService conversion = new PlacementServiceImpl();
+    private final PlacementService conversion = new PlacementServiceImpl();
 
     public static void addDefaultS3ObjectIdConverters(PlacementService conversion, String bucket) {
         // Serializable -> S3ObjectId
         conversion.addConverter(new Converter<Serializable, S3ObjectId>() {
-
-            private String defaultBucket = bucket;
+            private final String defaultBucket = bucket;
 
             @Override
-            public S3ObjectId convert(Serializable id) {
+            public S3ObjectId convert(@NonNull Serializable id) {
                 return new S3ObjectId(defaultBucket, Objects.requireNonNull(id, "ContentId must not be null").toString());
             }
         });
 
         // Object -> S3ObjectId
         conversion.addConverter(new Converter<Object, S3ObjectId>() {
-
-            private String defaultBucket = bucket;
+            private final String defaultBucket = bucket;
 
             @Override
-            public S3ObjectId convert(Object idOrEntity) {
-
-                String strBucket = null;
-                Object bucket = BeanUtils.getFieldWithAnnotation(idOrEntity, Bucket.class);
+            public S3ObjectId convert(@NonNull Object idOrEntity) {
+                String strBucket;
+                Object bucket = BeanUtils.getAnnotatedValue(idOrEntity, Bucket.class);
                 if (bucket == null) {
                     bucket = defaultBucket;
                 }
@@ -63,11 +61,10 @@ public class S3StoreConfiguration implements InitializingBean {
                     strBucket = bucket.toString();
                 }
 
-
                 // if an entity return @ContentId
-                String key = null;
-                if (BeanUtils.hasFieldWithAnnotation(idOrEntity, ContentId.class)) {
-                    Object contentId = BeanUtils.getFieldWithAnnotation(idOrEntity, ContentId.class);
+                String key;
+                if (BeanUtils.hasAnnotatedField(idOrEntity, ContentId.class)) {
+                    Object contentId = BeanUtils.getAnnotatedValue(idOrEntity, ContentId.class);
                     key = (contentId != null) ? contentId.toString() : null;
                     // otherwise it is the id
                 } else {
@@ -80,15 +77,13 @@ public class S3StoreConfiguration implements InitializingBean {
 
         // ContentPropertyInfo -> S3ObjectId
         conversion.addConverter(new Converter<ContentPropertyInfo<Object, Serializable>, S3ObjectId>() {
-
-            private String defaultBucket = bucket;
+            private final String defaultBucket = bucket;
 
             @Override
-            public S3ObjectId convert(ContentPropertyInfo<Object, Serializable> info) {
-
-                String strBucket = null;
+            public S3ObjectId convert(@NonNull ContentPropertyInfo<Object, Serializable> info) {
+                String strBucket;
                 // @Bucket can be only on entity level, not per content property
-                Object bucket = BeanUtils.getFieldWithAnnotation(info.entity(), Bucket.class);
+                Object bucket = BeanUtils.getAnnotatedValue(info.entity(), Bucket.class);
                 if (bucket == null) {
                     bucket = defaultBucket;
                 }
@@ -120,7 +115,7 @@ public class S3StoreConfiguration implements InitializingBean {
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         addDefaultS3ObjectIdConverters(conversion, bucket);
         addConverters(conversion);
     }

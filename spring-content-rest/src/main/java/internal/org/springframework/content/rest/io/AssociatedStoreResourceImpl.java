@@ -104,7 +104,7 @@ public class AssociatedStoreResourceImpl<S> implements HttpResource, AssociatedS
 
     @Override
     public Object getETag() {
-        Object etag = BeanUtils.getFieldWithAnnotation(entity, Version.class);
+        Object etag = BeanUtils.getAnnotatedValue(entity, Version.class);
         if (etag == null) {
             etag = "";
         }
@@ -122,7 +122,7 @@ public class AssociatedStoreResourceImpl<S> implements HttpResource, AssociatedS
     @Override
     public long contentLength() throws IOException {
         // TODO: can we remove this is all properties are effectively embedded?
-        // Long contentLength = null; (Long) BeanUtils.getFieldWithAnnotation(property, ContentLength.class);
+        // Long contentLength = null; (Long) BeanUtils.getAnnotatedValue(property, ContentLength.class);
         Long contentLength = (Long) this.getContentProperty().getContentLength(this.getAssociation());
         if (contentLength == null) {
             contentLength = getDelegate().contentLength();

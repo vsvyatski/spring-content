@@ -11,13 +11,11 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.elasticsearch.autoconfigure.ElasticsearchClientAutoConfiguration;
 import org.springframework.content.commons.search.IndexService;
 import org.springframework.content.elasticsearch.EnableElasticsearchFulltextIndexing;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
-import org.springframework.stereotype.Component;
 
 import java.net.URI;
 
@@ -31,7 +29,7 @@ public class ElasticsearchAutoConfiguration {
         havingValue = "true", matchIfMissing = true)
     @ConditionalOnMissingBean(ElasticsearchIndexer.class)
     @Bean
-    public ElasticsearchIndexer elasticFulltextIndexerEventListener(IndexService<?> elasticFulltextIndexService) {
+    public ElasticsearchIndexer elasticFulltextIndexerEventListener(IndexService<Object> elasticFulltextIndexService) {
         return new ElasticsearchIndexer(elasticFulltextIndexService);
     }
 
@@ -40,23 +38,5 @@ public class ElasticsearchAutoConfiguration {
     public ElasticsearchClient elasticsearchClient() {
         Rest5Client restClient = Rest5Client.builder(URI.create("http://localhost:9200")).build();
         return new ElasticsearchClient(new Rest5ClientTransport(restClient, new JacksonJsonpMapper()));
-    }
-
-    @Component
-    @ConfigurationProperties(prefix = "spring.content.elasticsearch")
-    public static class ElasticsearchProperties {
-
-        /**
-         * Whether to perform automatic indexing of content as it is added
-         */
-        boolean autoindex = true;
-
-        public boolean getAutoindex() {
-            return autoindex;
-        }
-
-        public void setAutoindex(boolean autoindex) {
-            this.autoindex = autoindex;
-        }
     }
 }

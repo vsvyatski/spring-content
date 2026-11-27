@@ -6,214 +6,254 @@ import org.apache.solr.client.solrj.request.QueryRequest;
 import org.apache.solr.client.solrj.request.SolrQuery;
 import org.apache.solr.client.solrj.request.UpdateRequest;
 import org.apache.solr.client.solrj.response.QueryResponse;
-import org.apache.solr.common.SolrDocumentList;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.content.test.support.fulltext.*;
+import org.springframework.content.solr.it.SolrItApplicationConfig;
+import org.springframework.content.test.support.fulltext.FulltextJpaUuidDocumentEntity;
+import org.springframework.content.test.support.fulltext.FulltextJpaUuidDocumentRepository;
+import org.springframework.content.test.support.fulltext.FulltextJpaUuidDocumentSearchableStore;
+import org.springframework.content.test.support.fulltext.FulltextSearchResult;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.UUID;
+import java.io.InputStream;
+import java.util.*;
 
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@ContextConfiguration(classes = {SolrITConfig.class})
-@ExtendWith(SpringExtension.class)
 public class SolrIT {
 
-    @Autowired
-    private FulltextJpaUuidDocumentRepository docRepo;
-    @Autowired
-    private FulltextJpaUuidDocumentStore docContentStore;
-    @Autowired
-    private FulltextJpaUuidDocumentSearchableStore store;
-    @Autowired
-    private SolrClient solr; //for tests
-    @Autowired
-    private SolrProperties solrProperties;
-    private FulltextJpaUuidDocumentEntity doc, doc2;
-    private UUID id = null;
+    private AnnotationConfigApplicationContext context;
 
-    private void configureSolrAuth() {
-        solrProperties.setUser("solr");
-        solrProperties.setPassword("SolrRocks");
+    private FulltextJpaUuidDocumentRepository docRepo;
+    private FulltextJpaUuidDocumentSearchableStore store;
+    private SolrClient solr;
+    private SolrProperties solrProperties;
+
+    private void refreshContext() {
+        closeContext();
+        context = new AnnotationConfigApplicationContext(SolrItApplicationConfig.class);
+        docRepo = context.getBean(FulltextJpaUuidDocumentRepository.class);
+        store = context.getBean(FulltextJpaUuidDocumentSearchableStore.class);
+        solr = context.getBean(SolrClient.class);
+        solrProperties = context.getBean(SolrProperties.class);
+    }
+
+    private void closeContext() {
+        if (context != null) {
+            context.close();
+            context = null;
+        }
+    }
+
+    @BeforeEach
+    void setUpContext() {
+        refreshContext();
+    }
+
+    @AfterEach
+    void tearDownContext() {
+        SolrItApplicationConfig.clearRequestFilters();
+        closeContext();
+    }
+
+    private static InputStream testResource(String path) {
+        return Objects.requireNonNull(SolrIT.class.getResourceAsStream(path),
+            () -> "Missing classpath test resource: " + path);
+    }
+
+    private static UUID contentId(FulltextJpaUuidDocumentEntity entity) {
+        return Objects.requireNonNull(entity.getContentId(), "contentId");
+    }
+
+    private void setContentAndSave(FulltextJpaUuidDocumentEntity entity, String classpathResource) {
+        store.setContent(entity, testResource(classpathResource));
+        docRepo.save(entity);
+    }
+
+    private void applySolrAuth(QueryRequest request) {
+        if (solrProperties.getUser() != null) {
+            request.setBasicAuthCredentials(solrProperties.getUser(), solrProperties.getPassword());
+        }
+    }
+
+    private void applySolrAuth(UpdateRequest request) {
+        if (solrProperties.getUser() != null) {
+            request.setBasicAuthCredentials(solrProperties.getUser(), solrProperties.getPassword());
+        }
     }
 
     private void purgeSolrIndex() throws IOException, SolrServerException {
-        if (solr != null) {
-            UpdateRequest req = new UpdateRequest();
-            req.deleteByQuery("*");
-            req.setBasicAuthCredentials(solrProperties.getUser(), solrProperties.getPassword());
-            req.process(solr, null);
-            req.commit(solr, null);
-        }
+        UpdateRequest req = new UpdateRequest().deleteByQuery("*");
+        applySolrAuth(req);
+        req.process(solr, null);
+        req.commit(solr, null);
     }
 
     @Nested
     class Index {
-        @BeforeEach
-        void setUp() {
-            configureSolrAuth();
-
-            doc = new FulltextJpaUuidDocumentEntity();
-            doc.setTitle("title of document 1");
-            doc.setAuthor("author@email.com");
-            doc = docRepo.save(doc);
-            doc = docContentStore.setContent(doc, this.getClass().getResourceAsStream("/one.docx"));
-            doc = docRepo.save(doc);
-        }
-
-        @AfterEach
-        void tearDown() throws IOException, SolrServerException {
-            if (docContentStore != null) {
-                docContentStore.unsetContent(doc);
-            }
-            if (docRepo != null) {
-                docRepo.delete(doc);
-            }
-            purgeSolrIndex();
-        }
 
         @Test
-        void shouldIndexContentOfThatDocument() {
-            org.awaitility.Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
-                SolrQuery query = new SolrQuery();
-                query.setQuery("foo");
-                String fq = format(
-                    "id:%s\\:%s", FulltextJpaUuidDocumentEntity.class.getCanonicalName(), doc.getContentId());
-                query.addFilterQuery(fq);
-                QueryRequest request = new QueryRequest(query);
-                request.setBasicAuthCredentials(solrProperties.getUser(), solrProperties.getPassword());
-                QueryResponse response = request.process(solr);
-                assertThat(response.getResults()).hasSize(1);
-            });
+        void shouldIndexContentOfThatDocument() throws IOException, SolrServerException {
+            FulltextJpaUuidDocumentEntity doc =
+                FulltextJpaUuidDocumentEntity.withTitleAndAuthor("title of document 1", "author@email.com");
+            setContentAndSave(doc, "/one.docx");
+
+            UUID indexedContentId = contentId(doc);
+
+            try {
+                Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
+                    SolrQuery query = new SolrQuery().setQuery("foo");
+                    String fq = format(
+                        "id:%s\\:%s", FulltextJpaUuidDocumentEntity.class.getCanonicalName(), indexedContentId);
+                    query.addFilterQuery(fq);
+                    QueryRequest request = new QueryRequest(query);
+                    applySolrAuth(request);
+                    QueryResponse response = request.process(solr);
+                    assertThat(response.getResults()).hasSize(1);
+                });
+            } finally {
+                store.unsetContent(doc);
+                docRepo.delete(doc);
+                purgeSolrIndex();
+            }
         }
 
         @Nested
         @DisplayName("When the content is searched")
         class ContentIsSearched {
+
+            private FulltextJpaUuidDocumentEntity doc;
+
             @BeforeEach
             void setUp() {
-                configureSolrAuth();
-
-                doc = new FulltextJpaUuidDocumentEntity();
-                doc.setTitle("title of document 1");
-                doc.setAuthor("author@email.com");
-                doc = docRepo.save(doc);
-                doc = docContentStore.setContent(doc, this.getClass().getResourceAsStream("/one.docx"));
-                doc = docRepo.save(doc);
+                doc = FulltextJpaUuidDocumentEntity.withTitleAndAuthor("title of document 1", "author@email.com");
+                setContentAndSave(doc, "/one.docx");
             }
 
             @AfterEach
             void tearDown() throws IOException, SolrServerException {
-                if (docContentStore != null) {
-                    docContentStore.unsetContent(doc);
-                }
-                if (docRepo != null) {
-                    docRepo.delete(doc);
-                }
+                store.unsetContent(doc);
+                docRepo.delete(doc);
                 purgeSolrIndex();
             }
 
             @Test
             void shouldReturnSearchedContent() {
-                Iterable<UUID> content = docContentStore.search("one");
-                assertThat(content).contains(doc.getContentId());
+                Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
+                    var content = store.search("one");
+                    assertThat(content).extracting(FulltextSearchResult::getContentId).contains(doc.getContentId());
+                });
             }
         }
 
         @Nested
-        @DisplayName("Given that documents content is updated")
+        @DisplayName("When the document content is updated")
         class DocumentsContentIsUpdated {
+
+            private FulltextJpaUuidDocumentEntity doc;
+
             @BeforeEach
             void setUp() {
-                configureSolrAuth();
-
-                doc = new FulltextJpaUuidDocumentEntity();
-                doc.setTitle("title of document 1");
-                doc.setAuthor("author@email.com");
-                doc = docRepo.save(doc);
-                doc = docContentStore.setContent(doc, this.getClass().getResourceAsStream("/one.docx"));
-                doc = docRepo.save(doc);
-
-                docContentStore.setContent(doc, this.getClass().getResourceAsStream("/two.rtf"));
-                docRepo.save(doc);
+                doc = FulltextJpaUuidDocumentEntity.withTitleAndAuthor("title of document 1", "author@email.com");
+                setContentAndSave(doc, "/one.docx");
             }
 
             @AfterEach
             void tearDown() throws IOException, SolrServerException {
-                if (docContentStore != null) {
-                    docContentStore.unsetContent(doc);
-                }
-                if (docRepo != null) {
+                store.unsetContent(doc);
+                docRepo.delete(doc);
+                purgeSolrIndex();
+            }
+
+            @Test
+            void shouldIndexNewContentAndRemoveStaleIndexEntry() {
+                UUID initialContentId = contentId(doc);
+
+                Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
+                    SolrQuery initialQuery = new SolrQuery("foo");
+                    initialQuery.addFilterQuery(format(
+                        "id:%s\\:%s", FulltextJpaUuidDocumentEntity.class.getCanonicalName(), initialContentId));
+                    QueryRequest initialRequest = new QueryRequest(initialQuery);
+                    applySolrAuth(initialRequest);
+                    assertThat(initialRequest.process(solr).getResults()).hasSize(1);
+                });
+
+                setContentAndSave(doc, "/two.rtf");
+
+                UUID indexedContentId = contentId(doc);
+
+                Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
+                    SolrQuery query = new SolrQuery();
+                    query.setQuery("bar");
+                    String fq = format(
+                        "id:%s\\:%s", FulltextJpaUuidDocumentEntity.class.getCanonicalName(), indexedContentId);
+                    query.addFilterQuery(fq);
+                    QueryRequest request = new QueryRequest(query);
+                    applySolrAuth(request);
+                    QueryResponse response = request.process(solr);
+                    assertThat(response.getResults()).hasSize(1);
+                });
+
+                Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
+                    SolrQuery staleQuery = new SolrQuery("foo");
+                    staleQuery.addFilterQuery(format(
+                        "id:%s\\:%s", FulltextJpaUuidDocumentEntity.class.getCanonicalName(), initialContentId));
+                    QueryRequest staleRequest = new QueryRequest(staleQuery);
+                    applySolrAuth(staleRequest);
+                    assertThat(staleRequest.process(solr).getResults()).isEmpty();
+                });
+            }
+        }
+
+        @Nested
+        @DisplayName("When the document is deleted")
+        class DocumentIsDeleted {
+
+            private FulltextJpaUuidDocumentEntity doc;
+
+            @BeforeEach
+            void setUp() {
+                doc = FulltextJpaUuidDocumentEntity.withTitleAndAuthor("title of document 1", "author@email.com");
+                setContentAndSave(doc, "/one.docx");
+            }
+
+            @AfterEach
+            void tearDown() throws IOException, SolrServerException {
+                if (docRepo.existsById(doc.getId())) {
+                    store.unsetContent(doc);
                     docRepo.delete(doc);
                 }
                 purgeSolrIndex();
             }
 
             @Test
-            void shouldIndexNewContent() {
-                org.awaitility.Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
-                    SolrQuery query = new SolrQuery();
-                    query.setQuery("bar");
-                    String fq = format(
-                        "id:%s\\:%s", FulltextJpaUuidDocumentEntity.class.getCanonicalName(), doc.getContentId());
-                    query.addFilterQuery(fq);
-                    QueryRequest request = new QueryRequest(query);
-                    request.setBasicAuthCredentials(solrProperties.getUser(), solrProperties.getPassword());
-                    QueryResponse response = request.process(solr);
-                    assertThat(response.getResults()).hasSize(1);
+            void shouldDeleteRecordOfContentFromIndex() {
+                UUID indexedContentId = contentId(doc);
+
+                Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
+                    SolrQuery indexedQuery = new SolrQuery("one");
+                    indexedQuery.addFilterQuery(format(
+                        "id:%s\\:%s", FulltextJpaUuidDocumentEntity.class.getCanonicalName(), indexedContentId));
+                    QueryRequest indexedRequest = new QueryRequest(indexedQuery);
+                    applySolrAuth(indexedRequest);
+                    assertThat(indexedRequest.process(solr).getResults()).hasSize(1);
                 });
-            }
-        }
 
-        @Nested
-        @DisplayName("Given that document is deleted")
-        class DocumentIsDeleted {
-            @BeforeEach
-            void setUp() {
-                configureSolrAuth();
-
-                doc = new FulltextJpaUuidDocumentEntity();
-                doc.setTitle("title of document 1");
-                doc.setAuthor("author@email.com");
-                doc = docRepo.save(doc);
-                doc = docContentStore.setContent(doc, this.getClass().getResourceAsStream("/one.docx"));
-                doc = docRepo.save(doc);
-
-                id = doc.getContentId();
-                docContentStore.unsetContent(doc);
+                store.unsetContent(doc);
                 docRepo.delete(doc);
-                doc = null;
-            }
 
-            @AfterEach
-            void tearDown() throws IOException, SolrServerException {
-                purgeSolrIndex();
-            }
-
-            @Test
-            void shouldDeleteRecordOfContentFromIndex() throws SolrServerException, IOException {
-                SolrQuery query = new SolrQuery();
-                query.setQuery("one");
-                query.addFilterQuery(format(
-                    "id:%s\\:%s", FulltextJpaUuidDocumentEntity.class.getCanonicalName(), id));
-                query.setFields("content");
-
-                QueryRequest request = new QueryRequest(query);
-                request.setBasicAuthCredentials(solrProperties.getUser(), solrProperties.getPassword());
-
-                QueryResponse response = request.process(solr);
-                SolrDocumentList results = response.getResults();
-
-                assertThat(results.size()).isEqualTo(0);
+                Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
+                    SolrQuery query = new SolrQuery("one");
+                    query.addFilterQuery(format(
+                        "id:%s\\:%s", FulltextJpaUuidDocumentEntity.class.getCanonicalName(), indexedContentId));
+                    query.setFields("content");
+                    QueryRequest request = new QueryRequest(query);
+                    applySolrAuth(request);
+                    assertThat(request.process(solr).getResults()).isEmpty();
+                });
             }
         }
     }
@@ -224,64 +264,55 @@ public class SolrIT {
         class PagesOfResults {
             @BeforeEach
             void setUp() {
-                configureSolrAuth();
-
                 for (int i = 0; i < 10; i++) {
-                    FulltextJpaUuidDocumentEntity pageDoc = new FulltextJpaUuidDocumentEntity();
-                    pageDoc.setTitle(format("doc %s", i));
-                    pageDoc.setAuthor("author@email.com");
-                    pageDoc = docRepo.save(pageDoc);
-                    pageDoc = docContentStore.setContent(pageDoc, this.getClass().getResourceAsStream("/one.docx"));
-                    docRepo.save(pageDoc);
+                    FulltextJpaUuidDocumentEntity pageDoc =
+                        FulltextJpaUuidDocumentEntity.withTitleAndAuthor(format("doc %s", i), "author@email.com");
+                    setContentAndSave(pageDoc, "/one.docx");
                 }
             }
 
             @AfterEach
             void tearDown() throws IOException, SolrServerException {
-                if (docRepo != null && docContentStore != null) {
-                    for (FulltextJpaUuidDocumentEntity pageDoc : docRepo.findAll()) {
-                        docContentStore.unsetContent(pageDoc);
-                    }
-                    for (FulltextJpaUuidDocumentEntity pageDoc : docRepo.findAll()) {
-                        docRepo.deleteById(pageDoc.getId());
-                    }
+                for (FulltextJpaUuidDocumentEntity pageDoc : docRepo.findAll()) {
+                    store.unsetContent(pageDoc);
+                }
+                for (FulltextJpaUuidDocumentEntity pageDoc : docRepo.findAll()) {
+                    docRepo.deleteById(pageDoc.getId());
                 }
                 purgeSolrIndex();
             }
 
             @Test
             void shouldReturnResultsInPages() {
-                org.awaitility.Awaitility.await().untilAsserted(() -> {
-                    var page = (docContentStore.search("foo", PageRequest.of(0, 3)));
+                Awaitility.await().untilAsserted(() -> {
+                    var page = (store.search("foo", PageRequest.of(0, 3)));
                     assertThat(page.getNumberOfElements()).isEqualTo(3);
 
                 });
 
-                org.awaitility.Awaitility.await().untilAsserted(() -> {
-                    var page = (docContentStore.search("foo", PageRequest.of(1, 3)));
+                Awaitility.await().untilAsserted(() -> {
+                    var page = (store.search("foo", PageRequest.of(1, 3)));
                     assertThat(page.getNumberOfElements()).isEqualTo(3);
 
                 });
 
-                org.awaitility.Awaitility.await().untilAsserted(() -> {
-                    var page = (docContentStore.search("foo", PageRequest.of(2, 3)));
+                Awaitility.await().untilAsserted(() -> {
+                    var page = (store.search("foo", PageRequest.of(2, 3)));
                     assertThat(page.getNumberOfElements()).isEqualTo(3);
 
                 });
 
-                org.awaitility.Awaitility.await().untilAsserted(() -> {
-                    var page = (docContentStore.search("foo", PageRequest.of(3, 3)));
+                Awaitility.await().untilAsserted(() -> {
+                    var page = (store.search("foo", PageRequest.of(3, 3)));
                     assertThat(page.getNumberOfElements()).isEqualTo(1);
-
                 });
             }
 
             @Test
             void shouldReturnSpecificResultPage() {
-                org.awaitility.Awaitility.await().untilAsserted(() -> {
-                    var page = (docContentStore.search("foo", PageRequest.of(3, 3)));
+                Awaitility.await().untilAsserted(() -> {
+                    var page = (store.search("foo", PageRequest.of(3, 3)));
                     assertThat(page.getNumberOfElements()).isEqualTo(1);
-
                 });
             }
         }
@@ -289,89 +320,79 @@ public class SolrIT {
 
     @Nested
     class CustomAttributes {
+
+        private FulltextJpaUuidDocumentEntity doc;
+        private FulltextJpaUuidDocumentEntity doc2;
+
         @BeforeEach
         void setUp() {
-            configureSolrAuth();
+            doc = FulltextJpaUuidDocumentEntity.withTitleAndAuthor("title of document 1", "author@email.com");
+            setContentAndSave(doc, "/one.docx");
 
-            doc = new FulltextJpaUuidDocumentEntity();
-            doc.setTitle("title of document 1");
-            doc.setAuthor("author@email.com");
-            doc = docRepo.save(doc);
-            doc = store.setContent(doc, this.getClass().getResourceAsStream("/one.docx"));
-            doc = docRepo.save(doc);
-
-            doc2 = new FulltextJpaUuidDocumentEntity();
-            doc2.setTitle("title of document 2");
-            doc2.setAuthor("author@abc.com");
-            doc2 = docRepo.save(doc2);
-            doc2 = store.setContent(doc2, this.getClass().getResourceAsStream("/one.docx"));
-            doc2 = docRepo.save(doc2);
+            doc2 = FulltextJpaUuidDocumentEntity.withTitleAndAuthor("title of document 2", "author@abc.com");
+            setContentAndSave(doc2, "/one.docx");
         }
 
         @AfterEach
         void tearDown() throws IOException, SolrServerException {
-            if (doc != null) {
-                store.unsetContent(doc);
-                docRepo.delete(doc);
-            }
-            if (doc2 != null) {
-                store.unsetContent(doc2);
-                docRepo.delete(doc2);
-            }
+            store.unsetContent(doc);
+            docRepo.delete(doc);
+            store.unsetContent(doc2);
+            docRepo.delete(doc2);
             purgeSolrIndex();
         }
 
         @Test
         void shouldApplyProvidedAttributesAndFilterQuery() {
-            Iterable<UUID> tmp = docContentStore.search("one");
-            assertThat(tmp).isNotNull();
+            SolrItApplicationConfig.requestFilters(Map.of("id", format("%s\\:%s",
+                FulltextJpaUuidDocumentEntity.class.getCanonicalName(), contentId(doc))));
+            try {
+                var tmp = store.search("one");
+                assertThat(tmp).isNotNull();
 
-            List<UUID> results = new ArrayList<>();
-            tmp.forEach(results::add);
+                List<UUID> results = new ArrayList<>();
+                tmp.forEach(hit -> results.add(hit.getContentId()));
 
-            assertThat(results).contains(doc.getContentId());
-            assertThat(results).doesNotContain(doc2.getContentId());
+                assertThat(results).contains(doc.getContentId());
+                assertThat(results).doesNotContain(doc2.getContentId());
+            } finally {
+                SolrItApplicationConfig.clearRequestFilters();
+            }
         }
     }
 
     @Nested
     class CustomReturnTypes {
+
+        private FulltextJpaUuidDocumentEntity doc;
+
         @BeforeEach
         void setUp() {
-            configureSolrAuth();
-
-            doc = new FulltextJpaUuidDocumentEntity();
-            doc.setTitle("title of document 1");
-            doc.setAuthor("author@email.com");
-            doc = docRepo.save(doc);
-            doc = store.setContent(doc, this.getClass().getResourceAsStream("/one.docx"));
-            doc = docRepo.save(doc);
+            doc = FulltextJpaUuidDocumentEntity.withTitleAndAuthor("title of document 1", "author@email.com");
+            setContentAndSave(doc, "/one.docx");
         }
 
         @AfterEach
         void tearDown() throws IOException, SolrServerException {
-            if (doc != null) {
-                store.unsetContent(doc);
-                docRepo.delete(doc);
-            }
+            store.unsetContent(doc);
+            docRepo.delete(doc);
             purgeSolrIndex();
         }
 
         @Test
         void shouldReturnResultsUsingReturnType() {
-            org.awaitility.Awaitility.await().untilAsserted(() -> {
-                var result = (store.search("one"));
+            UUID indexedContentId = contentId(doc);
+
+            Awaitility.await().untilAsserted(() -> {
+                var result = store.search("foo");
                 Iterator<FulltextSearchResult> iterator = result.iterator();
                 assertThat(iterator.hasNext()).isTrue();
                 assertThat(iterator.next()).satisfies(actual -> {
-                    assertThat(actual).hasFieldOrPropertyWithValue("contentId", doc.getContentId());
+                    assertThat(actual).hasFieldOrPropertyWithValue("contentId", indexedContentId);
                     assertThat(actual).extracting("highlight", org.assertj.core.api.InstanceOfAssertFactories.STRING)
-                        .contains("<em>one</em>");
-                    assertThat(actual).extracting("author", org.assertj.core.api.InstanceOfAssertFactories.STRING)
-                        .contains("author@email.com");
+                        .contains("<em>foo</em>");
                 });
                 assertThat(iterator.hasNext()).isFalse();
-
             });
         }
     }

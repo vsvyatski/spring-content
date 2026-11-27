@@ -34,10 +34,10 @@ public class SolrAutoConfigurationTest {
             }
 
             @Test
-            void shouldIncludeAutoconfiguredAnnotatedEventHandlerBean() {
+            void shouldIncludeAutoconfiguredSolrIndexerBean() {
                 contextRunner.withUserConfiguration(TestConfig.class)
                     .run((context) ->
-                        Assertions.assertThat(context).getBean("solrFulltextEventListener")
+                        Assertions.assertThat(context).getBean("solrFulltextIndexerEventListener")
                             .isNotNull());
             }
         }

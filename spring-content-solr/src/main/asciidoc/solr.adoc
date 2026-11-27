@@ -6,7 +6,7 @@ The maven coordinates for this Spring Content library are as follows:
 ```xml
 <dependency>
     <groupId>io.github.vsvyatski</groupId>
-    <artifactId>spring-content-solra</artifactId>
+    <artifactId>spring-content-solr</artifactId>
 </dependency>
 ```
 
@@ -30,7 +30,7 @@ When enabled, the Solr integration will forward all content to an Solr cluster f
 Spring Content Solr requires a `SolrClient` bean that is used as the connection to the Solr
 cluster that you wish to use for indexing.
 
-Solr is therefore enabled with following depedencies:
+Solr is therefore enabled with following dependencies:
 
 ====
 [source, xml]
@@ -78,7 +78,7 @@ public static class ApplicationConfig {
 3. Ensure a `(SolrJ) SolrClient` `@Bean` is instantiated somewhere within your `@Configuration`
 ====
 
-== When your Solr cluster is secured with Basic Authentication 
+== When your Solr cluster is secured with Basic Authentication
 
 If required, credentials can be specified using the following configuration properties.
 
@@ -103,12 +103,13 @@ bean directly in your code to index (or unindex) content as required.
 
 == Indexing additional attributes
 
-By default Spring Content Solr indexes content only.  However, it is common to index additional 
-attributes (from the primary domain model) that can then be used for filtering subsequent full-text queries 
-or for efficiently populating search results (removing the need to perform additional queries against the 
+By default Spring Content Solr indexes content only.  However, it is common to index additional
+attributes (from the primary domain model) that can then be used for filtering subsequent full-text queries
+or for efficiently populating search results (removing the need to perform additional queries against the
 primary domain model).
 
-Add a bean that implements `AttributeProvider` to your application's configuration:
+Add a bean that implements `org.springframework.content.commons.search.AttributeProvider` to your application's
+configuration:
 
 ====
 [source, java]
@@ -129,37 +130,30 @@ Add a bean that implements `AttributeProvider` to your application's configurati
     }
 ====
 
-Whenever content is indexed this bean will be consulted providing an opportunity to provide the set additional attributes that 
+Whenever content is indexed this bean will be consulted providing an opportunity to provide the set additional attributes that
 you would like to be indexed.
 
-To customize the query that gets executed when a Store's Searchable method is invoked add a `FilterQueryProvider` bean to your 
-application's configuration:
+To customize the query that gets executed when a Store's Searchable method is invoked add a
+`org.springframework.content.commons.search.FilterQueryProvider` bean to your application's configuration:
 
 ====
 [source, java]
 ----
     @Bean
     public FilterQueryProvider fqProvider() {
-        return new FilterQueryProvider() {
-
-            @Override
-            public String[] filterQueries(Class<?> entity) {
-
-                return new String[] {"author:foo@bar.com"};
-            }
-        };
+        return entity -> Map.of("author", "foo@bar.com");
     }
 ----
-NOTE: this bean is often a request scoped bean or has an implementation based on a thread local variable in order to build and return 
-filter queries based on the current execution context. 
+NOTE: this bean is often a request scoped bean or has an implementation based on a thread local variable in order to build and return
+filter queries based on the current execution context.
 ====
 
 When fulltext queries are performed this bean will be consulted providing an opportunity to supplement the query
-with your own filters.  These filters are often based on the additional attributes that have been indexed.    
+with your own filters.  These filters are often based on the additional attributes that have been indexed.
 
 == Search Return Types
 
-`Searchable` is a generic type allowing you to specify the return type of the result set.  
+`Searchable` is a generic type allowing you to specify the return type of the result set.
 
 The simplest option is to type this interface to String in which case the result set will be a collection of the content IDs
 of content matching the search terms provided.
@@ -178,7 +172,7 @@ The following example show a searchable `ContentStore` returning a custom type `
 ====
 [source, java]
 ----
-    public interface DocumentStore 
+    public interface DocumentStore
         extends ContentStore<Document, String>, Searchable<SearchResult> {
     }
 

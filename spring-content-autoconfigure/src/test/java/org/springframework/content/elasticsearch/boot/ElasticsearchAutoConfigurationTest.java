@@ -57,7 +57,6 @@ public class ElasticsearchAutoConfigurationTest {
             contextRunner.withUserConfiguration(ContextWithoutClientBean.class).run((context) -> {
                 assertThat(context).hasSingleBean(ElasticsearchClient.class);
                 assertThat(context).getBean(ElasticsearchClient.class).isNotEqualTo(client);
-                assertThat(context).hasSingleBean(ElasticsearchAutoConfiguration.ElasticsearchProperties.class);
                 assertThat(context).hasSingleBean(ElasticsearchIndexer.class);
 
                 assertThat(context).hasSingleBean(ElasticsearchIndexServiceImpl.class);

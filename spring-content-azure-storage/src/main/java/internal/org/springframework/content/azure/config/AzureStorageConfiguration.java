@@ -29,14 +29,14 @@ import java.util.List;
 @Import(AzureStorageBlobProtocolResolver.class)
 public class AzureStorageConfiguration implements InitializingBean {
 
-    private static Log logger = LogFactory.getLog(AzureStorageConfiguration.class);
+    private static final Log logger = LogFactory.getLog(AzureStorageConfiguration.class);
 
     @Autowired(required = false)
     private List<AzureStorageConfigurer> configurers;
 
-    private String bucket;
+    private final String bucket;
 
-    private PlacementService conversion = new PlacementServiceImpl();
+    private final PlacementService conversion = new PlacementServiceImpl();
 
     @Autowired
     public AzureStorageConfiguration(@Value("${spring.content.azure.bucket:#{environment.AZURE_STORAGE_BUCKET}}") String bucket) {
@@ -51,16 +51,16 @@ public class AzureStorageConfiguration implements InitializingBean {
 
         // ContentPropertyInfo -> BlobId
         logger.info("Adding ContentPropertyInfo->BlobId converter");
-        Converter converter = new Converter<ContentPropertyInfo<Object, Serializable>, BlobId>() {
+        var converter = new Converter<ContentPropertyInfo<Object, Serializable>, BlobId>() {
 
-            private String defaultBucket = bucket;
+            private final String defaultBucket = bucket;
 
             @Override
             public BlobId convert(ContentPropertyInfo<Object, Serializable> info) {
 
-                String strBucket = null;
+                String strBucket;
                 // @Bucket can be only on entity level, not per content property
-                Object bucket = BeanUtils.getFieldWithAnnotation(info.entity(), Bucket.class);
+                Object bucket = BeanUtils.getAnnotatedValue(info.entity(), Bucket.class);
                 if (bucket == null) {
                     bucket = defaultBucket;
                 }
@@ -98,7 +98,7 @@ public class AzureStorageConfiguration implements InitializingBean {
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         addDefaultConverters(conversion, bucket);
         addConverters(conversion);
         logger.info(conversion.toString());

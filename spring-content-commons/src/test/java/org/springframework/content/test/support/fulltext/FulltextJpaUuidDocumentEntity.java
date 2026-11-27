@@ -29,6 +29,13 @@ public class FulltextJpaUuidDocumentEntity extends UuidSingleContentFields {
     public FulltextJpaUuidDocumentEntity() {
     }
 
+    public static FulltextJpaUuidDocumentEntity withTitleAndAuthor(String title, String author) {
+        FulltextJpaUuidDocumentEntity entity = new FulltextJpaUuidDocumentEntity();
+        entity.setTitle(title);
+        entity.setAuthor(author);
+        return entity;
+    }
+
     public Long getId() {
         return id;
     }

@@ -104,7 +104,7 @@ public class DefaultAzureStorageImpl<S, SID extends Serializable> implements Con
         }
 
         @SuppressWarnings("unchecked")
-        SID contentId = (SID) BeanUtils.getFieldWithAnnotation(entity, ContentId.class);
+        SID contentId = (SID) BeanUtils.getAnnotatedValue(entity, ContentId.class);
         if (contentId == null) {
             return null;
         }
@@ -172,7 +172,7 @@ public class DefaultAzureStorageImpl<S, SID extends Serializable> implements Con
     public void associate(Object entity, Serializable id) {
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requireContentId(id);
-        BeanUtils.setFieldWithAnnotation(entity, ContentId.class, id);
+        BeanUtils.setAnnotatedValue(entity, ContentId.class, id);
     }
 
     @Override
@@ -191,7 +191,7 @@ public class DefaultAzureStorageImpl<S, SID extends Serializable> implements Con
     @Override
     public void unassociate(Object entity) {
         StoreEntityValidation.requireEntity(entity);
-        BeanUtils.setFieldWithAnnotationConditionally(entity, ContentId.class, null, DomainObjectUtils::contentIdFieldMayBeCleared);
+        BeanUtils.setAnnotatedValueConditionally(entity, ContentId.class, null, DomainObjectUtils::contentIdFieldMayBeCleared);
     }
 
     @Override
@@ -211,16 +211,16 @@ public class DefaultAzureStorageImpl<S, SID extends Serializable> implements Con
     public S setContent(S entity, InputStream content) {
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requireContentInputStream(content);
-        Object contentId = BeanUtils.getFieldWithAnnotation(entity, ContentId.class);
+        Object contentId = BeanUtils.getAnnotatedValue(entity, ContentId.class);
         if (contentId == null) {
             Serializable newId = UUID.randomUUID().toString();
 
             Object convertedId = placementService.convert(
                 newId,
                 TypeDescriptor.forObject(newId),
-                TypeDescriptor.valueOf(BeanUtils.getFieldWithAnnotationType(entity, ContentId.class)));
+                TypeDescriptor.valueOf(BeanUtils.getAnnotatedFieldType(entity, ContentId.class)));
 
-            BeanUtils.setFieldWithAnnotation(entity, ContentId.class, convertedId);
+            BeanUtils.setAnnotatedValue(entity, ContentId.class, convertedId);
         }
 
         Resource resource = this.getResource(entity);
@@ -236,7 +236,7 @@ public class DefaultAzureStorageImpl<S, SID extends Serializable> implements Con
         }
 
         try {
-            BeanUtils.setFieldWithAnnotation(entity, ContentLength.class, resource.contentLength());
+            BeanUtils.setAnnotatedValue(entity, ContentLength.class, resource.contentLength());
         } catch (IOException e) {
             logger.error(format("Unexpected error setting content length for entity %s", entity), e);
         }
@@ -338,7 +338,7 @@ public class DefaultAzureStorageImpl<S, SID extends Serializable> implements Con
     @Override
     public @Nullable InputStream getContent(S entity) {
         StoreEntityValidation.requireEntity(entity);
-        Object contentId = BeanUtils.getFieldWithAnnotation(entity, ContentId.class);
+        Object contentId = BeanUtils.getAnnotatedValue(entity, ContentId.class);
         if (contentId == null) {
             return null;
         }
@@ -375,11 +375,11 @@ public class DefaultAzureStorageImpl<S, SID extends Serializable> implements Con
         deleteIfExists(entity, null);
 
         // reset content fields
-        BeanUtils.setFieldWithAnnotationConditionally(entity, ContentId.class, null, DomainObjectUtils::contentIdFieldMayBeCleared);
+        BeanUtils.setAnnotatedValueConditionally(entity, ContentId.class, null, DomainObjectUtils::contentIdFieldMayBeCleared);
 
-        Class<?> contentLenType = BeanUtils.getFieldWithAnnotationType(entity, ContentLength.class);
+        Class<?> contentLenType = BeanUtils.getAnnotatedFieldType(entity, ContentLength.class);
         if (contentLenType != null) {
-            BeanUtils.setFieldWithAnnotation(entity, ContentLength.class, BeanUtils.getDefaultValueForType(contentLenType));
+            BeanUtils.setAnnotatedValue(entity, ContentLength.class, BeanUtils.getDefaultValueForType(contentLenType));
         }
 
         return entity;

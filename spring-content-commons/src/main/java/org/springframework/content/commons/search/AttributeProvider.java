@@ -1,4 +1,4 @@
-package org.springframework.content.solr;
+package org.springframework.content.commons.search;
 
 import java.util.Map;
 

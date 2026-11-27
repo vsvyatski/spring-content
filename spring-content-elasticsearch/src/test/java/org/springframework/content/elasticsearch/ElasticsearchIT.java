@@ -1,19 +1,25 @@
 package org.springframework.content.elasticsearch;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
-import co.elastic.clients.elasticsearch._types.ElasticsearchException;
+import internal.org.springframework.content.elasticsearch.IndexManager;
 import org.apache.commons.io.IOUtils;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.*;
 import org.springframework.content.commons.search.IndexService;
-import org.springframework.content.test.support.fulltext.*;
+import org.springframework.content.test.support.fulltext.FulltextJpaUuidDocumentEntity;
+import org.springframework.content.test.support.fulltext.FulltextJpaUuidDocumentRepository;
+import org.springframework.content.test.support.fulltext.FulltextJpaUuidDocumentSearchableStore;
+import org.springframework.content.test.support.fulltext.FulltextSearchResult;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.data.domain.PageRequest;
+import org.testcontainers.elasticsearch.ElasticsearchContainer;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.UUID;
 
 import static java.lang.String.format;
@@ -21,16 +27,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class ElasticsearchIT {
 
-    private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+    private AnnotationConfigApplicationContext context;
 
     private FulltextJpaUuidDocumentRepository repo;
-    private FulltextJpaUuidDocumentStore store;
+    private FulltextJpaUuidDocumentSearchableStore store;
     private FulltextJpaUuidDocumentSearchableStore searchableStore;
 
     private ElasticsearchClient client;
-
-    private FulltextJpaUuidDocumentEntity doc1, doc2;
-    private UUID id1, id2 = null;
 
     private String indexName;
 
@@ -39,97 +42,142 @@ public class ElasticsearchIT {
         return (IndexService<FulltextJpaUuidDocumentEntity>) context.getBean(IndexService.class);
     }
 
+    private static InputStream testResource(String path) {
+        return Objects.requireNonNull(ElasticsearchIT.class.getResourceAsStream(path),
+            () -> "Missing classpath test resource: " + path);
+    }
+
+    private static UUID contentId(FulltextJpaUuidDocumentEntity entity) {
+        return Objects.requireNonNull(entity.getContentId(), "contentId");
+    }
+
+    private static String contentIdString(FulltextJpaUuidDocumentEntity entity) {
+        return contentId(entity).toString();
+    }
+
+    private static void deleteIndexIfExists(ElasticsearchClient client, String name) throws IOException {
+        if (client.indices().exists(e -> e.index(name)).value()) {
+            client.indices().delete(d -> d.index(name));
+        }
+    }
+
+    private static String entityIndexName() {
+        return FulltextJpaUuidDocumentEntity.class.getName().toLowerCase();
+    }
+
+    private static void tearDownEntityElasticsearch(ElasticsearchClient client) throws IOException {
+        deleteIndexIfExists(client, entityIndexName());
+        deleteIndexIfExists(client, IndexManager.INDEX_NAME);
+    }
+
+    private void closeContext() {
+        context.close();
+    }
+
+    private void tearDownEntityIndexingScenario() throws IOException {
+        try {
+            tearDownEntityElasticsearch(client);
+        } finally {
+            closeContext();
+        }
+    }
+
+    private void tearDownGlobalIndexingScenario() throws IOException {
+        try {
+            deleteIndexIfExists(client, indexName);
+        } finally {
+            closeContext();
+        }
+    }
+
+    private void refreshElasticsearchContext(Class<?>... configurationClasses) {
+        context = new AnnotationConfigApplicationContext();
+        for (Class<?> configurationClass : configurationClasses) {
+            context.register(configurationClass);
+        }
+        context.refresh();
+
+        repo = context.getBean(FulltextJpaUuidDocumentRepository.class);
+        store = context.getBean(FulltextJpaUuidDocumentSearchableStore.class);
+        searchableStore = store;
+        client = context.getBean(ElasticsearchClient.class);
+    }
+
+    private void setUpGlobalIndexingContext() throws Exception {
+        refreshElasticsearchContext(GlobalIndexingStrategy.class, ElasticsearchConfig.class);
+        GlobalIndexingStrategy globalIndexing = context.getBean(GlobalIndexingStrategy.class);
+        globalIndexing.setup();
+        indexName = globalIndexing.indexName();
+    }
+
+    private void setUpEntityIndexingContext() {
+        refreshElasticsearchContext(EntityIndexingStrategy.class, ElasticsearchConfig.class);
+    }
+
+    private void setUpEntityIndexingContextWithCustomAttributes() {
+        refreshElasticsearchContext(EntityIndexingStrategy.class, CustomAttributesConfig.class);
+    }
+
+    private boolean isIndexedInGlobalIndex(UUID contentId) {
+        try {
+            return client.get(g -> g.index(indexName).id(contentId.toString()), Void.class).found();
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
     @Nested
     class GlobalIndexingStrategyScenarios {
 
         @BeforeEach
         void setUp() throws Exception {
-            context = new AnnotationConfigApplicationContext();
-            context.register(GlobalIndexingStrategy.class);
-            context.register(ElasticsearchConfig.class);
-            context.refresh();
-
-            repo = context.getBean(FulltextJpaUuidDocumentRepository.class);
-            store = context.getBean(FulltextJpaUuidDocumentStore.class);
-            client = context.getBean(ElasticsearchClient.class);
-            context.getBean(GlobalIndexingStrategy.class).setup();
-            indexName = context.getBean(GlobalIndexingStrategy.class).indexName();
+            setUpGlobalIndexingContext();
         }
 
         @AfterEach
         void tearDown() throws IOException {
-            if (doc1 != null) {
-                store.unsetContent(doc1);
-                repo.delete(doc1);
-            }
-
-            if (doc2 != null) {
-                store.unsetContent(doc2);
-                repo.delete(doc2);
-            }
-
-            assertThat(context).isNotNull();
-
-            if (client != null) {
-                try {
-                    var resp = client.indices().get(g -> g.index(indexName));
-                    assertThat(resp.indices()).isNotNull().hasSize(1);
-                } catch (ElasticsearchException ignored) {
-                }
-
-                try {
-                    client.indices().delete(d -> d.index("_all"));
-                } catch (ElasticsearchException ignored) {
-                }
-            }
-
-            if (context != null) {
-                context.close();
-            }
+            tearDownGlobalIndexingScenario();
         }
 
         @Test
         void shouldIndexDocuments() throws Exception {
-            doc1 = new FulltextJpaUuidDocumentEntity();
-            doc1.setTitle("doc 1");
-            doc1.setAuthor("author@email.com");
-            store.setContent(doc1, ElasticsearchIT.class.getResourceAsStream("/one.docx"));
-            doc1 = repo.save(doc1);
+            FulltextJpaUuidDocumentEntity wordDoc =
+                FulltextJpaUuidDocumentEntity.withTitleAndAuthor("doc 1", "author@email.com");
+            store.setContent(wordDoc, testResource("/one.docx"));
+            repo.save(wordDoc);
 
-            doc2 = new FulltextJpaUuidDocumentEntity();
-            doc2.setTitle("doc 2");
-            doc2.setAuthor("author@email.com");
-            store.setContent(doc2, ElasticsearchIT.class.getResourceAsStream("/two.rtf"));
-            doc2 = repo.save(doc2);
+            FulltextJpaUuidDocumentEntity rtfDoc =
+                FulltextJpaUuidDocumentEntity.withTitleAndAuthor("doc 2", "author@email.com");
+            store.setContent(rtfDoc, testResource("/two.rtf"));
+            repo.save(rtfDoc);
 
-            var res = client.get(g -> g.index(indexName).id(doc1.getContentId().toString()), Void.class);
+            var res = client.get(g -> g.index(indexName).id(contentIdString(wordDoc)), Void.class);
             assertThat(res.found()).isTrue();
 
-            res = client.get(g -> g.index(indexName).id(doc2.getContentId().toString()), Void.class);
+            res = client.get(g -> g.index(indexName).id(contentIdString(rtfDoc)), Void.class);
             assertThat(res.found()).isTrue();
         }
 
         @Test
         void shouldBePossibleToCloseIndex() throws Exception {
-            doc1 = new FulltextJpaUuidDocumentEntity();
-            doc1.setTitle("doc 1");
-            doc1.setAuthor("author@email.com");
-            store.setContent(doc1, ElasticsearchIT.class.getResourceAsStream("/one.docx"));
-            doc1 = repo.save(doc1);
+            FulltextJpaUuidDocumentEntity wordDoc =
+                FulltextJpaUuidDocumentEntity.withTitleAndAuthor("doc 1", "author@email.com");
+            store.setContent(wordDoc, testResource("/one.docx"));
+            repo.save(wordDoc);
 
-            doc2 = new FulltextJpaUuidDocumentEntity();
-            doc2.setTitle("doc 2");
-            doc2.setAuthor("author@email.com");
-            store.setContent(doc2, ElasticsearchIT.class.getResourceAsStream("/two.rtf"));
-            doc2 = repo.save(doc2);
+            FulltextJpaUuidDocumentEntity rtfDoc =
+                FulltextJpaUuidDocumentEntity.withTitleAndAuthor("doc 2", "author@email.com");
+            store.setContent(rtfDoc, testResource("/two.rtf"));
+            repo.save(rtfDoc);
             IndexService<FulltextJpaUuidDocumentEntity> indexer = indexService(context);
-            indexer.index(doc1, new ByteArrayInputStream("customized index".getBytes()));
+            indexer.index(wordDoc, new ByteArrayInputStream("customized index".getBytes()));
 
             var resp = client.indices().close(c -> c.index(indexName));
             assertThat(resp.acknowledged()).isTrue();
 
             String statusUrl = format("%s/_cat/indices/%s?h=status", ElasticsearchTestContainer.getUrl(), indexName);
-            Process process = new ProcessBuilder("curl", "-X", "GET", statusUrl).start();
+            String elasticUser = format("elastic:%s", ElasticsearchContainer.ELASTICSEARCH_DEFAULT_PASSWORD);
+            Process process = new ProcessBuilder("curl", "-k", "-u", elasticUser, "-X", "GET", statusUrl).start();
 
             InputStream inputStream = process.getInputStream();
             process.waitFor();
@@ -140,99 +188,142 @@ public class ElasticsearchIT {
 
         @Test
         void shouldReturnMatches() {
-            doc1 = new FulltextJpaUuidDocumentEntity();
-            doc1.setTitle("doc 1");
-            doc1.setAuthor("author@email.com");
-            store.setContent(doc1, ElasticsearchIT.class.getResourceAsStream("/one.docx"));
-            doc1 = repo.save(doc1);
+            FulltextJpaUuidDocumentEntity wordDoc =
+                FulltextJpaUuidDocumentEntity.withTitleAndAuthor("doc 1", "author@email.com");
+            store.setContent(wordDoc, testResource("/one.docx"));
+            repo.save(wordDoc);
 
-            doc2 = new FulltextJpaUuidDocumentEntity();
-            doc2.setTitle("doc 2");
-            doc2.setAuthor("author@email.com");
-            store.setContent(doc2, ElasticsearchIT.class.getResourceAsStream("/two.rtf"));
-            doc2 = repo.save(doc2);
+            FulltextJpaUuidDocumentEntity rtfDoc =
+                FulltextJpaUuidDocumentEntity.withTitleAndAuthor("doc 2", "author@email.com");
+            store.setContent(rtfDoc, testResource("/two.rtf"));
+            repo.save(rtfDoc);
 
-            org.awaitility.Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
+            UUID wordContentId = contentId(wordDoc);
+            UUID rtfContentId = contentId(rtfDoc);
+
+            Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
                 var result = store.search("one");
-                assertThat(result).contains(doc1.getContentId());
-                assertThat(result).doesNotContain(doc2.getContentId());
+                assertThat(result).extracting(FulltextSearchResult::getContentId)
+                    .contains(wordContentId)
+                    .doesNotContain(rtfContentId);
             });
 
-            org.awaitility.Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
+            Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
                 var result = store.search("two");
-                assertThat(result).doesNotContain(doc1.getContentId());
-                assertThat(result).contains(doc2.getContentId());
+                assertThat(result).extracting(FulltextSearchResult::getContentId)
+                    .doesNotContain(wordContentId)
+                    .contains(rtfContentId);
             });
 
-            org.awaitility.Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
+            Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
                 var result = store.search("one two");
-                assertThat(result).contains(doc1.getContentId(), doc2.getContentId());
+                assertThat(result).extracting(FulltextSearchResult::getContentId)
+                    .contains(wordContentId, rtfContentId);
             });
 
-            org.awaitility.Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
+            Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
                 var result = store.search("+document +one -two");
-                assertThat(result).contains(doc1.getContentId());
-                assertThat(result).doesNotContain(doc2.getContentId());
+                assertThat(result).extracting(FulltextSearchResult::getContentId)
+                    .contains(wordContentId)
+                    .doesNotContain(rtfContentId);
             });
         }
 
         @Test
         void shouldIndexDocumentsUsingTextExtractingRenderer() {
-            doc1 = new FulltextJpaUuidDocumentEntity();
-            doc1.setTitle("doc 1");
-            doc1.setAuthor("author@email.com");
-            store.setContent(doc1, ElasticsearchIT.class.getResourceAsStream("/one.docx"));
-            doc1 = repo.save(doc1);
+            FulltextJpaUuidDocumentEntity wordDoc =
+                FulltextJpaUuidDocumentEntity.withTitleAndAuthor("doc 1", "author@email.com");
+            store.setContent(wordDoc, testResource("/one.docx"));
+            repo.save(wordDoc);
 
-            doc2 = new FulltextJpaUuidDocumentEntity();
-            doc2.setTitle("doc 2");
-            doc2.setAuthor("author@email.com");
-            store.setContent(doc2, ElasticsearchIT.class.getResourceAsStream("/two.rtf"));
-            doc2 = repo.save(doc2);
+            FulltextJpaUuidDocumentEntity rtfDoc =
+                FulltextJpaUuidDocumentEntity.withTitleAndAuthor("doc 2", "author@email.com");
+            store.setContent(rtfDoc, testResource("/two.rtf"));
+            repo.save(rtfDoc);
 
-            doc1 = new FulltextJpaUuidDocumentEntity();
-            doc1.setTitle("doc 1");
-            doc1.setAuthor("author@email.com");
-            doc1.setMimeType("image/png");
-            doc1 = store.setContent(doc1, ElasticsearchIT.class.getResourceAsStream("/image.png"));
-            doc1 = repo.save(doc1);
+            FulltextJpaUuidDocumentEntity pngDoc =
+                FulltextJpaUuidDocumentEntity.withTitleAndAuthor("doc 1", "author@email.com");
+            pngDoc.setMimeType("image/png");
+            store.setContent(pngDoc, testResource("/image.png"));
+            repo.save(pngDoc);
 
-            org.awaitility.Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
+            UUID pngContentId = contentId(pngDoc);
+
+            Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
                 var result = store.search("wisdom");
-                assertThat(result).contains(doc1.getContentId());
+                assertThat(result).extracting(FulltextSearchResult::getContentId).contains(pngContentId);
             });
         }
 
         @Test
-        void shouldDeleteRecordOfContentFromIndex() throws Exception {
-            doc1 = new FulltextJpaUuidDocumentEntity();
-            doc1.setTitle("doc 1");
-            doc1.setAuthor("author@email.com");
-            store.setContent(doc1, ElasticsearchIT.class.getResourceAsStream("/one.docx"));
-            doc1 = repo.save(doc1);
+        void shouldDeleteRecordOfContentFromIndex() {
+            FulltextJpaUuidDocumentEntity wordDoc =
+                FulltextJpaUuidDocumentEntity.withTitleAndAuthor("doc 1", "author@email.com");
+            store.setContent(wordDoc, testResource("/one.docx"));
+            repo.save(wordDoc);
 
-            doc2 = new FulltextJpaUuidDocumentEntity();
-            doc2.setTitle("doc 2");
-            doc2.setAuthor("author@email.com");
-            store.setContent(doc2, ElasticsearchIT.class.getResourceAsStream("/two.rtf"));
-            doc2 = repo.save(doc2);
+            FulltextJpaUuidDocumentEntity rtfDoc =
+                FulltextJpaUuidDocumentEntity.withTitleAndAuthor("doc 2", "author@email.com");
+            store.setContent(rtfDoc, testResource("/two.rtf"));
+            repo.save(rtfDoc);
 
-            id1 = doc1.getContentId();
-            store.unsetContent(doc1);
-            repo.delete(doc1);
+            UUID id1 = contentId(wordDoc);
+            UUID id2 = contentId(rtfDoc);
 
-            id2 = doc2.getContentId();
-            store.unsetContent(doc2);
-            repo.delete(doc2);
+            Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
+                assertThat(isIndexedInGlobalIndex(id1)).isTrue();
+                assertThat(isIndexedInGlobalIndex(id2)).isTrue();
+            });
 
-            doc1 = null;
-            doc2 = null;
+            store.unsetContent(wordDoc);
+            repo.delete(wordDoc);
+            store.unsetContent(rtfDoc);
+            repo.delete(rtfDoc);
 
-            var res = client.get(g -> g.index(indexName).id(id1.toString()), Void.class);
-            assertThat(res.found()).isFalse();
+            Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
+                assertThat(isIndexedInGlobalIndex(id1)).isFalse();
+                assertThat(isIndexedInGlobalIndex(id2)).isFalse();
+            });
+        }
 
-            res = client.get(g -> g.index(indexName).id(id2.toString()), Void.class);
-            assertThat(res.found()).isFalse();
+        @Nested
+        @DisplayName("When the document content is updated")
+        class WhenTheDocumentContentIsUpdated {
+
+            private FulltextJpaUuidDocumentEntity doc;
+
+            @BeforeEach
+            void seedDocument() {
+                doc = FulltextJpaUuidDocumentEntity.withTitleAndAuthor("title of document 1", "author@email.com");
+                store.setContent(doc, testResource("/one.docx"));
+                repo.save(doc);
+            }
+
+            @Test
+            void shouldIndexNewContentAndRemoveStaleIndexEntry() {
+                UUID initialContentId = contentId(doc);
+
+                Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
+                    assertThat(isIndexedInGlobalIndex(initialContentId)).isTrue();
+                    var result = store.search("one");
+                    assertThat(result).extracting(FulltextSearchResult::getContentId).contains(initialContentId);
+                });
+
+                store.setContent(doc, testResource("/two.rtf"));
+                repo.save(doc);
+                UUID contentIdAfterUpdate = contentId(doc);
+
+                Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
+                    assertThat(isIndexedInGlobalIndex(contentIdAfterUpdate)).isTrue();
+                    var result = store.search("two");
+                    assertThat(result).extracting(FulltextSearchResult::getContentId).contains(contentIdAfterUpdate);
+                });
+
+                Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
+                    var result = store.search("one");
+                    assertThat(result).extracting(FulltextSearchResult::getContentId).doesNotContain(initialContentId);
+                });
+            }
         }
     }
 
@@ -240,35 +331,24 @@ public class ElasticsearchIT {
     class Paging {
         @BeforeEach
         void setUp() {
-            context = new AnnotationConfigApplicationContext();
-            context.register(EntityIndexingStrategy.class);
-            context.register(ElasticsearchConfig.class);
-            context.refresh();
-
-            repo = context.getBean(FulltextJpaUuidDocumentRepository.class);
-            store = context.getBean(FulltextJpaUuidDocumentStore.class);
-            client = context.getBean(ElasticsearchClient.class);
+            setUpEntityIndexingContext();
 
             for (int i = 0; i < 10; i++) {
-                FulltextJpaUuidDocumentEntity doc = new FulltextJpaUuidDocumentEntity();
-                doc.setTitle(format("doc %s", i));
-                doc = store.setContent(doc, this.getClass().getResourceAsStream("/one.docx"));
+                FulltextJpaUuidDocumentEntity doc =
+                    FulltextJpaUuidDocumentEntity.withTitleAndAuthor(format("doc %s", i), "author@email.com");
+                store.setContent(doc, testResource("/one.docx"));
                 repo.save(doc);
             }
         }
 
         @AfterEach
         void tearDown() throws IOException {
-            assertThat(context).isNotNull();
-
-            if (client != null) {
-                client.indices().delete(d -> d.index("_all"));
-            }
+            tearDownEntityIndexingScenario();
         }
 
         @Test
         void shouldReturnResultsInPages() {
-            org.awaitility.Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
+            Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
                 var page = store.search("one", PageRequest.of(0, 3));
                 assertThat(page.getTotalElements()).isEqualTo(10L);
                 assertThat(page.getTotalPages()).isEqualTo(4);
@@ -276,7 +356,7 @@ public class ElasticsearchIT {
                 assertThat(page.getContent().size()).isEqualTo(3);
             });
 
-            org.awaitility.Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
+            Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
                 var page = store.search("one", PageRequest.of(1, 3));
                 assertThat(page.getTotalElements()).isEqualTo(10L);
                 assertThat(page.getTotalPages()).isEqualTo(4);
@@ -284,7 +364,7 @@ public class ElasticsearchIT {
                 assertThat(page.getContent().size()).isEqualTo(3);
             });
 
-            org.awaitility.Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
+            Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
                 var page = store.search("one", PageRequest.of(2, 3));
                 assertThat(page.getTotalElements()).isEqualTo(10L);
                 assertThat(page.getTotalPages()).isEqualTo(4);
@@ -292,7 +372,7 @@ public class ElasticsearchIT {
                 assertThat(page.getContent().size()).isEqualTo(3);
             });
 
-            org.awaitility.Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
+            Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
                 var page = store.search("one", PageRequest.of(3, 3));
                 assertThat(page.getTotalElements()).isEqualTo(10L);
                 assertThat(page.getTotalPages()).isEqualTo(4);
@@ -305,85 +385,70 @@ public class ElasticsearchIT {
     @Nested
     @DisplayName("Given a context configured to sync attributes and provide a filter query")
     class ContextConfiguredToSyncAttributesAndProvideFilterQuery {
+
+        private FulltextJpaUuidDocumentEntity buckRogersDoc;
+        private FulltextJpaUuidDocumentEntity wilmaDeeringDoc;
+
         @BeforeEach
         void setUp() {
-            context = new AnnotationConfigApplicationContext();
-            context.register(EntityIndexingStrategy.class);
-            context.register(CustomAttributesConfig.class);
-            context.refresh();
+            setUpEntityIndexingContextWithCustomAttributes();
 
-            repo = context.getBean(FulltextJpaUuidDocumentRepository.class);
-            store = context.getBean(FulltextJpaUuidDocumentStore.class);
-            client = context.getBean(ElasticsearchClient.class);
+            buckRogersDoc = FulltextJpaUuidDocumentEntity.withTitleAndAuthor("doc 1", "Buck Rogers");
+            store.setContent(buckRogersDoc, testResource("/one.docx"));
+            repo.save(buckRogersDoc);
 
-            doc1 = new FulltextJpaUuidDocumentEntity();
-            doc1.setTitle("doc 1");
-            doc1.setAuthor("Buck Rogers");
-            doc1 = store.setContent(doc1, this.getClass().getResourceAsStream("/one.docx"));
-            repo.save(doc1);
-
-            doc2 = new FulltextJpaUuidDocumentEntity();
-            doc2.setTitle("doc 2");
-            doc2.setAuthor("Wilma Deering");
-            doc2 = store.setContent(doc2, this.getClass().getResourceAsStream("/one.docx"));
-            repo.save(doc2);
+            wilmaDeeringDoc = FulltextJpaUuidDocumentEntity.withTitleAndAuthor("doc 2", "Wilma Deering");
+            store.setContent(wilmaDeeringDoc, testResource("/one.docx"));
+            repo.save(wilmaDeeringDoc);
         }
 
         @AfterEach
         void tearDown() throws IOException {
-            assertThat(context).isNotNull();
-
-            if (client != null) {
-                client.indices().delete(d -> d.index("_all"));
-            }
+            tearDownEntityIndexingScenario();
         }
 
         @Test
         void shouldReturnSpecifiedAttributes() {
-            org.awaitility.Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> assertThat(store.search("one", PageRequest.of(0, 10)))
-                .contains(doc1.getContentId())
-                .doesNotContain(doc2.getContentId()));
+            UUID buckContentId = contentId(buckRogersDoc);
+            UUID wilmaContentId = contentId(wilmaDeeringDoc);
+
+            Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> assertThat(
+                store.search("one", PageRequest.of(0, 10)).map(FulltextSearchResult::getContentId))
+                .contains(buckContentId)
+                .doesNotContain(wilmaContentId));
         }
     }
 
     @Nested
     class CustomReturnTypes {
+
+        private FulltextJpaUuidDocumentEntity indexedDoc;
+
         @BeforeEach
         void setUp() {
-            context = new AnnotationConfigApplicationContext();
-            context.register(EntityIndexingStrategy.class);
-            context.register(CustomAttributesConfig.class);
-            context.refresh();
+            setUpEntityIndexingContextWithCustomAttributes();
 
-            repo = context.getBean(FulltextJpaUuidDocumentRepository.class);
-            searchableStore = context.getBean(FulltextJpaUuidDocumentSearchableStore.class);
-            client = context.getBean(ElasticsearchClient.class);
-
-            doc1 = new FulltextJpaUuidDocumentEntity();
-            doc1.setTitle("A document about one");
-            doc1.setAuthor("Buck Rogers");
-            doc1 = searchableStore.setContent(doc1, this.getClass().getResourceAsStream("/one.docx"));
-            repo.save(doc1);
+            indexedDoc = FulltextJpaUuidDocumentEntity.withTitleAndAuthor("A document about one", "Buck Rogers");
+            searchableStore.setContent(indexedDoc, testResource("/one.docx"));
+            repo.save(indexedDoc);
         }
 
         @AfterEach
         void tearDown() throws IOException {
-            assertThat(context).isNotNull();
-
-            if (client != null) {
-                client.indices().delete(d -> d.index("_all"));
-            }
+            tearDownEntityIndexingScenario();
         }
 
         @Test
         void shouldReturnResultsUsingCustomReturnType() {
-            org.awaitility.Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
+            UUID indexedContentId = contentId(indexedDoc);
+
+            Awaitility.await().atMost(java.time.Duration.ofSeconds(10)).untilAsserted(() -> {
                 var result = searchableStore.search("one");
                 assertThat(result).isNotNull();
                 Iterator<FulltextSearchResult> iterator = result.iterator();
                 assertThat(iterator.hasNext()).isTrue();
                 FulltextSearchResult info = iterator.next();
-                assertThat(info).extracting("contentId").isEqualTo(doc1.getContentId());
+                assertThat(info).extracting("contentId").isEqualTo(indexedContentId);
                 assertThat(info).extracting("highlight").asString().contains("<em>one</em>");
                 assertThat(info).extracting("author").asString().contains("Buck Rogers");
                 assertThat(iterator.hasNext()).isFalse();

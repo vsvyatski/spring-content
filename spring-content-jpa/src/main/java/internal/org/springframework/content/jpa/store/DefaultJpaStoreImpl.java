@@ -60,7 +60,7 @@ public class DefaultJpaStoreImpl<S, SID extends Serializable> implements Content
     @Override
     public @Nullable Resource getResource(S entity) {
         StoreEntityValidation.requireEntity(entity);
-        Object contentId = BeanUtils.getFieldWithAnnotation(entity, ContentId.class);
+        Object contentId = BeanUtils.getAnnotatedValue(entity, ContentId.class);
         if (contentId == null) {
             return null;
         }
@@ -116,19 +116,19 @@ public class DefaultJpaStoreImpl<S, SID extends Serializable> implements Content
     public void associate(S entity, SID id) {
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requireContentId(id);
-        BeanUtils.setFieldWithAnnotation(entity, ContentId.class, id.toString());
+        BeanUtils.setAnnotatedValue(entity, ContentId.class, id.toString());
     }
 
     @Override
     public void unassociate(S entity) {
         StoreEntityValidation.requireEntity(entity);
-        BeanUtils.setFieldWithAnnotationConditionally(entity, ContentId.class, null, DomainObjectUtils::contentIdFieldMayBeCleared);
+        BeanUtils.setAnnotatedValueConditionally(entity, ContentId.class, null, DomainObjectUtils::contentIdFieldMayBeCleared);
     }
 
     @Override
     public @Nullable InputStream getContent(S entity) {
         StoreEntityValidation.requireEntity(entity);
-        Object id = BeanUtils.getFieldWithAnnotation(entity, ContentId.class);
+        Object id = BeanUtils.getAnnotatedValue(entity, ContentId.class);
         if (id == null) {
             return null;
         }
@@ -159,14 +159,14 @@ public class DefaultJpaStoreImpl<S, SID extends Serializable> implements Content
     public S setContent(S entity, InputStream content) {
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requireContentInputStream(content);
-        Object contentId = BeanUtils.getFieldWithAnnotation(entity, ContentId.class);
+        Object contentId = BeanUtils.getAnnotatedValue(entity, ContentId.class);
         if (contentId == null) {
 
             Serializable newId = UuidCreator.getTimeOrdered().toString();
 
             Object convertedId = convertToExternalContentIdType(entity, newId);
 
-            BeanUtils.setFieldWithAnnotation(entity, ContentId.class, convertedId);
+            BeanUtils.setAnnotatedValue(entity, ContentId.class, convertedId);
         }
 
         Resource resource = getResource(entity);
@@ -189,8 +189,8 @@ public class DefaultJpaStoreImpl<S, SID extends Serializable> implements Content
             IOUtils.closeQuietly(os);
         }
 
-        BeanUtils.setFieldWithAnnotation(entity, ContentId.class, requireBlobResource(resource).getId());
-        BeanUtils.setFieldWithAnnotation(entity, ContentLength.class, contentLen);
+        BeanUtils.setAnnotatedValue(entity, ContentId.class, requireBlobResource(resource).getId());
+        BeanUtils.setAnnotatedValue(entity, ContentLength.class, contentLen);
 
         return entity;
     }
@@ -297,15 +297,15 @@ public class DefaultJpaStoreImpl<S, SID extends Serializable> implements Content
     @Override
     public S unsetContent(S metadata) {
         StoreEntityValidation.requireEntity(metadata);
-        Object id = BeanUtils.getFieldWithAnnotation(metadata, ContentId.class);
+        Object id = BeanUtils.getAnnotatedValue(metadata, ContentId.class);
         if (id == null) {
             id = -1L;
         }
         deleteIfExists(metadata, loader.getResource(id.toString()));
         unassociate(metadata);
-        Class<?> contentLenType = BeanUtils.getFieldWithAnnotationType(metadata, ContentLength.class);
+        Class<?> contentLenType = BeanUtils.getAnnotatedFieldType(metadata, ContentLength.class);
         if (contentLenType != null) {
-            BeanUtils.setFieldWithAnnotation(metadata, ContentLength.class, BeanUtils.getDefaultValueForType(contentLenType));
+            BeanUtils.setAnnotatedValue(metadata, ContentLength.class, BeanUtils.getDefaultValueForType(contentLenType));
         }
 
         return metadata;
@@ -345,10 +345,10 @@ public class DefaultJpaStoreImpl<S, SID extends Serializable> implements Content
     protected Object convertToExternalContentIdType(S property, Object contentId) {
         ConversionService converter = new DefaultConversionService();
         if (converter.canConvert(TypeDescriptor.forObject(contentId),
-            TypeDescriptor.valueOf(BeanUtils.getFieldWithAnnotationType(property,
+            TypeDescriptor.valueOf(BeanUtils.getAnnotatedFieldType(property,
                 ContentId.class)))) {
             Object converted = converter.convert(contentId, TypeDescriptor.forObject(contentId),
-                TypeDescriptor.valueOf(BeanUtils.getFieldWithAnnotationType(property,
+                TypeDescriptor.valueOf(BeanUtils.getAnnotatedFieldType(property,
                     ContentId.class)));
             assert converted != null;
             return converted;

@@ -1,4 +1,4 @@
-package org.springframework.content.elasticsearch;
+package org.springframework.content.commons.search;
 
 import java.util.Map;
 
