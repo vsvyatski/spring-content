@@ -8,7 +8,7 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.content.commons.search.IndexService;
-import org.springframework.content.solr.SolrIndexerStoreEventHandler;
+import org.springframework.content.solr.SolrIndexer;
 import org.springframework.content.solr.SolrProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.convert.ConversionService;
@@ -36,9 +36,9 @@ public class SolrExtensionAutoConfiguration {
         return new SolrFulltextIndexServiceImpl(solrClient, props);
     }
 
-    @ConditionalOnMissingBean(name = "solrFulltextEventListener")
+    @ConditionalOnMissingBean(SolrIndexer.class)
     @Bean
-    public Object solrFulltextEventListener(IndexService<Object> solrIndexService) {
-        return new SolrIndexerStoreEventHandler(solrIndexService);
+    public SolrIndexer solrFulltextIndexerEventListener(IndexService<Object> solrIndexService) {
+        return new SolrIndexer(solrIndexService);
     }
 }

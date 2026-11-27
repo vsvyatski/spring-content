@@ -17,14 +17,14 @@ import java.io.InputStream;
 import java.io.Serializable;
 
 @StoreEventHandler
-public class SolrIndexerStoreEventHandler {
+public class SolrIndexer {
 
-    private final IndexService<Object> indexer;
+    private final IndexService<Object> indexService;
 
     @Autowired
-    public SolrIndexerStoreEventHandler(IndexService<Object> indexer) {
-        Assert.notNull(indexer, "indexer must not be null");
-        this.indexer = indexer;
+    public SolrIndexer(IndexService<Object> indexService) {
+        Assert.notNull(indexService, "indexService must not be null");
+        this.indexService = indexService;
     }
 
     @HandleBeforeSetContent
@@ -32,7 +32,7 @@ public class SolrIndexerStoreEventHandler {
     protected void onBeforeSetContent(BeforeSetContentEvent event) {
         Object contentEntity = event.getSource();
         if (BeanUtils.getAnnotatedValue(contentEntity, ContentId.class) != null) {
-            indexer.unindex(contentEntity);
+            indexService.unindex(contentEntity);
         }
     }
 
@@ -46,7 +46,7 @@ public class SolrIndexerStoreEventHandler {
         }
 
         try {
-            indexer.index(contentEntity, getContent(contentStore, contentEntity));
+            indexService.index(contentEntity, getContent(contentStore, contentEntity));
         } catch (IOException e) {
             throw new StoreAccessException("Error reading content for indexing.", e);
         }
@@ -57,7 +57,7 @@ public class SolrIndexerStoreEventHandler {
     protected void onBeforeUnsetContent(BeforeUnsetContentEvent event) {
         Object contentEntity = event.getSource();
         if (BeanUtils.getAnnotatedValue(contentEntity, ContentId.class) != null) {
-            indexer.unindex(contentEntity);
+            indexService.unindex(contentEntity);
         }
     }
 

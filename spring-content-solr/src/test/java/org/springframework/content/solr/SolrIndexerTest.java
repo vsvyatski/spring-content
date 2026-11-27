@@ -23,9 +23,9 @@ import static org.mockito.Mockito.*;
 import static org.springframework.content.test.support.TestSupportData.SAMPLE_CONTENT_ID;
 
 @SuppressWarnings("unchecked")
-public class SolrIndexerStoreEventHandlerTest {
+public class SolrIndexerTest {
 
-    private SolrIndexerStoreEventHandler handler;
+    private SolrIndexer handler;
 
     // mocks
     private ContentStore<Object, Serializable> store;
@@ -48,7 +48,7 @@ public class SolrIndexerStoreEventHandlerTest {
     }
 
     @Nested
-    class SolrIndexerStoreEventHandlerCases {
+    class SolrIndexerCases {
         @Nested
         class OnAfterSetContent {
             @Nested
@@ -59,7 +59,7 @@ public class SolrIndexerStoreEventHandlerTest {
                     store = mock(ContentStore.class);
                     content = mock(InputStream.class);
                     indexer = mock(IndexService.class);
-                    handler = new SolrIndexerStoreEventHandler(indexer);
+                    handler = new SolrIndexer(indexer);
 
                     contentEntity = sampleContentEntity();
 
@@ -69,7 +69,7 @@ public class SolrIndexerStoreEventHandlerTest {
                         afterSetEvent = new AfterSetContentEvent(contentEntity, store);
                         handler.onAfterSetContent(afterSetEvent);
                     } catch (Throwable e) {
-                        SolrIndexerStoreEventHandlerTest.this.e = e;
+                        SolrIndexerTest.this.e = e;
                     }
                 }
 
@@ -88,7 +88,7 @@ public class SolrIndexerStoreEventHandlerTest {
                     store = mock(ContentStore.class);
                     content = mock(InputStream.class);
                     indexer = mock(IndexService.class);
-                    handler = new SolrIndexerStoreEventHandler(indexer);
+                    handler = new SolrIndexer(indexer);
 
                     contentEntity = sampleContentEntity();
 
@@ -101,7 +101,7 @@ public class SolrIndexerStoreEventHandlerTest {
                         afterSetEvent = new AfterSetContentEvent(contentEntity, store);
                         handler.onAfterSetContent(afterSetEvent);
                     } catch (Throwable e) {
-                        SolrIndexerStoreEventHandlerTest.this.e = e;
+                        SolrIndexerTest.this.e = e;
                     }
                 }
 
@@ -118,7 +118,7 @@ public class SolrIndexerStoreEventHandlerTest {
                 void setUp() throws IOException {
                     store = mock(ContentStore.class);
                     indexer = mock(IndexService.class);
-                    handler = new SolrIndexerStoreEventHandler(indexer);
+                    handler = new SolrIndexer(indexer);
 
                     contentEntity = sampleContentEntity();
 
@@ -128,7 +128,7 @@ public class SolrIndexerStoreEventHandlerTest {
                         afterSetEvent = new AfterSetContentEvent(contentEntity, store);
                         handler.onAfterSetContent(afterSetEvent);
                     } catch (Throwable e) {
-                        SolrIndexerStoreEventHandlerTest.this.e = e;
+                        SolrIndexerTest.this.e = e;
                     }
                 }
 
@@ -148,7 +148,7 @@ public class SolrIndexerStoreEventHandlerTest {
                 void setUp() {
                     Store<Serializable> associativeStore = mock(Store.class);
                     indexer = mock(IndexService.class);
-                    handler = new SolrIndexerStoreEventHandler(indexer);
+                    handler = new SolrIndexer(indexer);
 
                     contentEntity = sampleContentEntity();
 
@@ -156,7 +156,7 @@ public class SolrIndexerStoreEventHandlerTest {
                         afterSetEvent = new AfterSetContentEvent(contentEntity, associativeStore);
                         handler.onAfterSetContent(afterSetEvent);
                     } catch (Throwable e) {
-                        SolrIndexerStoreEventHandlerTest.this.e = e;
+                        SolrIndexerTest.this.e = e;
                     }
                 }
 
@@ -175,14 +175,14 @@ public class SolrIndexerStoreEventHandlerTest {
                     store = mock(ContentStore.class);
                     content = mock(InputStream.class);
                     indexer = mock(IndexService.class);
-                    handler = new SolrIndexerStoreEventHandler(indexer);
+                    handler = new SolrIndexer(indexer);
 
                     contentEntity = new SingleContentFields();
                     try {
                         afterSetEvent = new AfterSetContentEvent(contentEntity, store);
                         handler.onAfterSetContent(afterSetEvent);
                     } catch (Throwable e) {
-                        SolrIndexerStoreEventHandlerTest.this.e = e;
+                        SolrIndexerTest.this.e = e;
                     }
                 }
 
@@ -201,14 +201,14 @@ public class SolrIndexerStoreEventHandlerTest {
                     store = mock(ContentStore.class);
                     content = mock(InputStream.class);
                     indexer = mock(IndexService.class);
-                    handler = new SolrIndexerStoreEventHandler(indexer);
+                    handler = new SolrIndexer(indexer);
 
                     contentEntity = new FakeEntity();
                     try {
                         afterSetEvent = new AfterSetContentEvent(contentEntity, store);
                         handler.onAfterSetContent(afterSetEvent);
                     } catch (Throwable e) {
-                        SolrIndexerStoreEventHandlerTest.this.e = e;
+                        SolrIndexerTest.this.e = e;
                     }
                 }
 
@@ -229,7 +229,7 @@ public class SolrIndexerStoreEventHandlerTest {
                 void setUp() {
                     store = mock(ContentStore.class);
                     indexer = mock(IndexService.class);
-                    handler = new SolrIndexerStoreEventHandler(indexer);
+                    handler = new SolrIndexer(indexer);
 
                     contentEntity = sampleContentEntity();
 
@@ -237,7 +237,7 @@ public class SolrIndexerStoreEventHandlerTest {
                         beforeSetEvent = new BeforeSetContentEvent(contentEntity, store, (InputStream) null);
                         handler.onBeforeSetContent(beforeSetEvent);
                     } catch (Throwable e) {
-                        SolrIndexerStoreEventHandlerTest.this.e = e;
+                        SolrIndexerTest.this.e = e;
                     }
                 }
 
@@ -256,14 +256,14 @@ public class SolrIndexerStoreEventHandlerTest {
                 void setUp() {
                     store = mock(ContentStore.class);
                     indexer = mock(IndexService.class);
-                    handler = new SolrIndexerStoreEventHandler(indexer);
+                    handler = new SolrIndexer(indexer);
 
                     contentEntity = new SingleContentFields();
                     try {
                         beforeSetEvent = new BeforeSetContentEvent(contentEntity, store, (InputStream) null);
                         handler.onBeforeSetContent(beforeSetEvent);
                     } catch (Throwable e) {
-                        SolrIndexerStoreEventHandlerTest.this.e = e;
+                        SolrIndexerTest.this.e = e;
                     }
                 }
 
@@ -285,7 +285,7 @@ public class SolrIndexerStoreEventHandlerTest {
                     store = mock(ContentStore.class);
                     content = mock(InputStream.class);
                     indexer = mock(IndexService.class);
-                    handler = new SolrIndexerStoreEventHandler(indexer);
+                    handler = new SolrIndexer(indexer);
 
                     contentEntity = sampleContentEntity();
 
@@ -293,7 +293,7 @@ public class SolrIndexerStoreEventHandlerTest {
                         beforeUnsetEvent = new BeforeUnsetContentEvent(contentEntity, store);
                         handler.onBeforeUnsetContent(beforeUnsetEvent);
                     } catch (Exception e) {
-                        SolrIndexerStoreEventHandlerTest.this.e = e;
+                        SolrIndexerTest.this.e = e;
                     }
                 }
 
@@ -311,7 +311,7 @@ public class SolrIndexerStoreEventHandlerTest {
                         store = mock(ContentStore.class);
                         content = mock(InputStream.class);
                         indexer = mock(IndexService.class);
-                        handler = new SolrIndexerStoreEventHandler(indexer);
+                        handler = new SolrIndexer(indexer);
 
                         contentEntity = sampleContentEntity();
 
@@ -322,7 +322,7 @@ public class SolrIndexerStoreEventHandlerTest {
                             beforeUnsetEvent = new BeforeUnsetContentEvent(contentEntity, store);
                             handler.onBeforeUnsetContent(beforeUnsetEvent);
                         } catch (Exception e) {
-                            SolrIndexerStoreEventHandlerTest.this.e = e;
+                            SolrIndexerTest.this.e = e;
                         }
                     }
 
@@ -341,14 +341,14 @@ public class SolrIndexerStoreEventHandlerTest {
                     store = mock(ContentStore.class);
                     content = mock(InputStream.class);
                     indexer = mock(IndexService.class);
-                    handler = new SolrIndexerStoreEventHandler(indexer);
+                    handler = new SolrIndexer(indexer);
 
                     contentEntity = new SingleContentFields();
                     try {
                         beforeUnsetEvent = new BeforeUnsetContentEvent(contentEntity, store);
                         handler.onBeforeUnsetContent(beforeUnsetEvent);
                     } catch (Exception e) {
-                        SolrIndexerStoreEventHandlerTest.this.e = e;
+                        SolrIndexerTest.this.e = e;
                     }
                 }
 
@@ -367,14 +367,14 @@ public class SolrIndexerStoreEventHandlerTest {
                     store = mock(ContentStore.class);
                     content = mock(InputStream.class);
                     indexer = mock(IndexService.class);
-                    handler = new SolrIndexerStoreEventHandler(indexer);
+                    handler = new SolrIndexer(indexer);
 
                     contentEntity = new FakeEntity();
                     try {
                         beforeUnsetEvent = new BeforeUnsetContentEvent(contentEntity, store);
                         handler.onBeforeUnsetContent(beforeUnsetEvent);
                     } catch (Exception e) {
-                        SolrIndexerStoreEventHandlerTest.this.e = e;
+                        SolrIndexerTest.this.e = e;
                     }
                 }
 
