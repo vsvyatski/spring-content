@@ -17,6 +17,8 @@ import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
 import org.springframework.boot.web.context.servlet.AnnotationConfigServletWebApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mock.web.MockServletContext;
+import org.springframework.content.rest.config.SetContentDisposition;
+import org.springframework.content.rest.config.UnsetContentDisposition;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 import java.net.URI;
@@ -64,6 +66,8 @@ public class ContentRestAutoConfigurationTest {
             System.setProperty("spring.content.rest.shortcut-request-mappings.disabled", "true");
             System.setProperty("spring.content.rest.shortcut-request-mappings.excludes", "GET=a/b,c/d:PUT=*/*");
             System.setProperty("spring.content.rest.overwrite-existing-content", "false");
+            System.setProperty("spring.content.rest.set-content-disposition", "CreateNew");
+            System.setProperty("spring.content.rest.unset-content-disposition", "Keep");
         }
 
         @AfterEach
@@ -73,6 +77,8 @@ public class ContentRestAutoConfigurationTest {
             System.clearProperty("spring.content.rest.shortcut-request-mappings.disabled");
             System.clearProperty("spring.content.rest.shortcut-request-mappings.excludes");
             System.clearProperty("spring.content.rest.overwrite-existing-content");
+            System.clearProperty("spring.content.rest.set-content-disposition");
+            System.clearProperty("spring.content.rest.unset-content-disposition");
         }
 
         @Test
@@ -87,6 +93,10 @@ public class ContentRestAutoConfigurationTest {
             assertThat(context.getBean(ContentRestAutoConfiguration.ContentRestProperties.class).shortcutRequestMappings().disabled()).isTrue();
             assertThat(context.getBean(ContentRestAutoConfiguration.ContentRestProperties.class).shortcutRequestMappings().excludes()).isEqualTo("GET=a/b,c/d:PUT=*/*");
             assertThat(context.getBean(ContentRestAutoConfiguration.ContentRestProperties.class).getOverwriteExistingContent()).isFalse();
+            assertThat(context.getBean(ContentRestAutoConfiguration.ContentRestProperties.class).getSetContentDisposition())
+                .isEqualTo(SetContentDisposition.CreateNew);
+            assertThat(context.getBean(ContentRestAutoConfiguration.ContentRestProperties.class).getUnsetContentDisposition())
+                .isEqualTo(UnsetContentDisposition.Keep);
 
             assertThat(context.getBean(SpringBootContentRestConfigurer.class)).isNotNull();
 

@@ -8,6 +8,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.content.rest.config.RestConfiguration;
+import org.springframework.content.rest.config.SetContentDisposition;
+import org.springframework.content.rest.config.UnsetContentDisposition;
 import org.springframework.http.MediaType;
 
 import java.net.URI;
@@ -190,6 +192,72 @@ public class SpringBootContentRestConfigurerTest {
             @Test
             void shouldNotSetExclusionsPropertyOnRestConfiguration() {
                 verify(exclusions, never()).exclude(any(), any());
+            }
+        }
+
+        @Nested
+        @DisplayName("Given overwrite existing content property")
+        class OverwriteExistingContentProperty {
+            @BeforeEach
+            void setUp() {
+                properties = new ContentRestProperties();
+                restConfig = mock(RestConfiguration.class);
+                exclusions = mock(RestConfiguration.Exclusions.class);
+                when(restConfig.shortcutExclusions()).thenReturn(exclusions);
+
+                properties.setOverwriteExistingContent(false);
+
+                configurer = new SpringBootContentRestConfigurer(properties);
+                configurer.configure(restConfig);
+            }
+
+            @Test
+            void shouldSetPropertyOnRestConfiguration() {
+                verify(restConfig).setOverwriteExistingContent(false);
+            }
+        }
+
+        @Nested
+        @DisplayName("Given set content disposition property")
+        class SetContentDispositionProperty {
+            @BeforeEach
+            void setUp() {
+                properties = new ContentRestProperties();
+                restConfig = mock(RestConfiguration.class);
+                exclusions = mock(RestConfiguration.Exclusions.class);
+                when(restConfig.shortcutExclusions()).thenReturn(exclusions);
+
+                properties.setSetContentDisposition(SetContentDisposition.CreateNew);
+
+                configurer = new SpringBootContentRestConfigurer(properties);
+                configurer.configure(restConfig);
+            }
+
+            @Test
+            void shouldSetPropertyOnRestConfiguration() {
+                verify(restConfig).setSetContentDisposition(SetContentDisposition.CreateNew);
+            }
+        }
+
+        @Nested
+        @DisplayName("Given unset content disposition property")
+        class UnsetContentDispositionProperty {
+            @BeforeEach
+            void setUp() {
+                properties = new ContentRestProperties();
+                restConfig = mock(RestConfiguration.class);
+                exclusions = mock(RestConfiguration.Exclusions.class);
+                when(restConfig.shortcutExclusions()).thenReturn(exclusions);
+
+                properties.setUnsetContentDisposition(UnsetContentDisposition.Keep);
+
+                configurer = new SpringBootContentRestConfigurer(properties);
+                configurer.configure(restConfig);
+            }
+
+            @Test
+            void shouldSetPropertyOnRestConfiguration() {
+                verify(restConfig).setUnsetContentDisposition(UnsetContentDisposition.Keep);
             }
         }
 
