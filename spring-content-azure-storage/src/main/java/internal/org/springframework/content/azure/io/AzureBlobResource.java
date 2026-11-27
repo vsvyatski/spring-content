@@ -1,6 +1,8 @@
 package internal.org.springframework.content.azure.io;
 
 import com.azure.storage.blob.BlobServiceClient;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.springframework.content.commons.io.DeletableResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.WritableResource;
@@ -13,11 +15,12 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.URL;
 
+@NullMarked
 public class AzureBlobResource implements WritableResource, DeletableResource {
 
-    private BlobServiceClient client;
-    private Resource delegate;
-    private String bucket;
+    private final BlobServiceClient client;
+    private final Resource delegate;
+    private final String bucket;
 
     public AzureBlobResource(BlobServiceClient client, String bucket, Resource delegate) {
         Assert.notNull(client, "client must be specified");
@@ -26,10 +29,6 @@ public class AzureBlobResource implements WritableResource, DeletableResource {
         this.client = client;
         this.bucket = bucket;
         this.delegate = delegate;
-    }
-
-    public BlobServiceClient getClient() {
-        return client;
     }
 
     @Override
@@ -78,7 +77,7 @@ public class AzureBlobResource implements WritableResource, DeletableResource {
     }
 
     @Override
-    public String getFilename() {
+    public @Nullable String getFilename() {
         return delegate.getFilename();
     }
 
@@ -95,7 +94,10 @@ public class AzureBlobResource implements WritableResource, DeletableResource {
     @Override
     public void delete() {
         if (delegate.exists()) {
-            client.getBlobContainerClient(bucket).getBlobClient(getFilename()).delete();
+            String filename = getFilename();
+            if (filename != null) {
+                client.getBlobContainerClient(bucket).getBlobClient(filename).delete();
+            }
         }
     }
 

@@ -47,6 +47,12 @@ public class EnableAzureStorageTest {
     }
 
     @Configuration
+    @EnableAzureStorage(basePackageClasses = SingleContentAzureStore.class)
+    @Import(InfrastructureConfig.class)
+    public static class BasePackageClassesConfig {
+    }
+
+    @Configuration
     @EnableAzureStorage(basePackages = TestSupportPackages.AZURE)
     @Import(InfrastructureConfig.class)
     public static class ConverterConfig {
@@ -133,6 +139,42 @@ public class EnableAzureStorageTest {
             void shouldNotContainsAnyAzureStorageBeans() {
                 assertThat(context.getBeanNamesForType(SingleContentAzureStore.class)).isEmpty();
             }
+        }
+
+        @Nested
+        @DisplayName("Given basePackageClasses on the annotation")
+        class BasePackageClassesScan {
+            @BeforeEach
+            void setUp() {
+                context = new AnnotationConfigApplicationContext();
+                context.register(BasePackageClassesConfig.class);
+                context.refresh();
+            }
+
+            @AfterEach
+            void tearDown() {
+                context.close();
+            }
+
+            @Test
+            void shouldHaveContentStoreBean() {
+                assertThat(context.getBean(SingleContentAzureStore.class)).isNotNull();
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("EnableAzureStorage annotation attributes")
+    class EnableAzureStorageAnnotation {
+        @Test
+        void shouldExposeBasePackageClassesAndStoreFactoryBeanClass() {
+            EnableAzureStorage byClass = BasePackageClassesConfig.class.getAnnotation(EnableAzureStorage.class);
+            assertThat(byClass.basePackageClasses()).containsExactly(SingleContentAzureStore.class);
+            assertThat(byClass.storeFactoryBeanClass()).isEqualTo(AzureStorageFactoryBean.class);
+
+            EnableAzureStorage byPackage = TestConfig.class.getAnnotation(EnableAzureStorage.class);
+            assertThat(byPackage.basePackageClasses()).isEmpty();
+            assertThat(byPackage.storeFactoryBeanClass()).isEqualTo(AzureStorageFactoryBean.class);
         }
     }
 }

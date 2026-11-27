@@ -25,15 +25,11 @@ public class AzureStorageFactoryBean extends AbstractStoreFactoryBean {
 
     private AzureStorageBlobProtocolResolver resolver;
 
-//	@Autowired(required=false)
-//	private MultiTenantS3ClientProvider s3Provider = null;
-
     @Autowired(required = false)
     private MappingContext mappingContext;
 
     @Autowired(required = false)
     private LockingAndVersioningProxyFactory versioning;
-
 
     public AzureStorageFactoryBean(Class<? extends Store> storeInterface) {
         super(storeInterface);
