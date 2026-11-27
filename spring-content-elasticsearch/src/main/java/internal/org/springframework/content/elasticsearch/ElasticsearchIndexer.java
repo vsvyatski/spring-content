@@ -10,6 +10,7 @@ import org.springframework.content.commons.store.events.AfterSetContentEvent;
 import org.springframework.content.commons.store.events.BeforeSetContentEvent;
 import org.springframework.content.commons.store.events.BeforeUnsetContentEvent;
 import org.springframework.content.commons.utils.BeanUtils;
+import org.springframework.util.Assert;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,6 +22,7 @@ public class ElasticsearchIndexer extends AbstractStoreEventListener<Object> {
     private final IndexService<Object> indexService;
 
     public ElasticsearchIndexer(IndexService<Object> indexService) {
+        Assert.notNull(indexService, "indexService must not be null");
         this.indexService = indexService;
     }
 
@@ -34,10 +36,12 @@ public class ElasticsearchIndexer extends AbstractStoreEventListener<Object> {
 
     @Override
     protected void onAfterSetContent(AfterSetContentEvent event) {
-        if (!(event.getStore() instanceof ContentStore<?, ?> contentStore)) {
+        Object contentEntity = event.getSource();
+        if (BeanUtils.getAnnotatedValue(contentEntity, ContentId.class) == null
+            || !(event.getStore() instanceof ContentStore<?, ?> contentStore)) {
             return;
         }
-        Object contentEntity = event.getSource();
+
         try {
             indexService.index(contentEntity, getContent(contentStore, contentEntity));
         } catch (IOException e) {
@@ -47,7 +51,10 @@ public class ElasticsearchIndexer extends AbstractStoreEventListener<Object> {
 
     @Override
     protected void onBeforeUnsetContent(BeforeUnsetContentEvent event) {
-        indexService.unindex(event.getSource());
+        Object contentEntity = event.getSource();
+        if (BeanUtils.getAnnotatedValue(contentEntity, ContentId.class) != null) {
+            indexService.unindex(contentEntity);
+        }
     }
 
     @SuppressWarnings("unchecked")

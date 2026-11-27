@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.content.commons.search.IndexService;
 import org.springframework.content.commons.store.ContentStore;
+import org.springframework.content.commons.store.Store;
 import org.springframework.content.commons.store.StoreAccessException;
 import org.springframework.content.commons.store.events.AfterSetContentEvent;
 import org.springframework.content.commons.store.events.BeforeSetContentEvent;
@@ -77,36 +78,92 @@ public class SolrIndexerStoreEventHandlerTest {
                     assertThat(e).isNull();
                     verify(indexer).index(eq(contentEntity), eq(content));
                 }
+            }
 
-                @Nested
-                @DisplayName("Given the indexer throws an exception")
-                class IndexerThrowsException {
-                    @BeforeEach
-                    void setUp() throws IOException {
-                        store = mock(ContentStore.class);
-                        content = mock(InputStream.class);
-                        indexer = mock(IndexService.class);
-                        handler = new SolrIndexerStoreEventHandler(indexer);
+            @Nested
+            @DisplayName("Given the indexer throws an exception")
+            class IndexerThrowsException {
+                @BeforeEach
+                void setUp() throws IOException {
+                    store = mock(ContentStore.class);
+                    content = mock(InputStream.class);
+                    indexer = mock(IndexService.class);
+                    handler = new SolrIndexerStoreEventHandler(indexer);
 
-                        contentEntity = sampleContentEntity();
+                    contentEntity = sampleContentEntity();
 
-                        when(store.getContent(eq(contentEntity))).thenReturn(content);
+                    when(store.getContent(eq(contentEntity))).thenReturn(content);
 
-                        sae = new StoreAccessException("badness");
-                        doThrow(sae).when(indexer).index(any(), any());
+                    sae = new StoreAccessException("badness");
+                    doThrow(sae).when(indexer).index(any(), any());
 
-                        try {
-                            afterSetEvent = new AfterSetContentEvent(contentEntity, store);
-                            handler.onAfterSetContent(afterSetEvent);
-                        } catch (Throwable e) {
-                            SolrIndexerStoreEventHandlerTest.this.e = e;
-                        }
+                    try {
+                        afterSetEvent = new AfterSetContentEvent(contentEntity, store);
+                        handler.onAfterSetContent(afterSetEvent);
+                    } catch (Throwable e) {
+                        SolrIndexerStoreEventHandlerTest.this.e = e;
                     }
+                }
 
-                    @Test
-                    void shouldReThrowThatException() {
-                        assertThat(e).isEqualTo(sae);
+                @Test
+                void shouldReThrowThatException() {
+                    assertThat(e).isEqualTo(sae);
+                }
+            }
+
+            @Nested
+            @DisplayName("Given content cannot be read")
+            class ContentReadFails {
+                @BeforeEach
+                void setUp() throws IOException {
+                    store = mock(ContentStore.class);
+                    indexer = mock(IndexService.class);
+                    handler = new SolrIndexerStoreEventHandler(indexer);
+
+                    contentEntity = sampleContentEntity();
+
+                    when(store.getContent(eq(contentEntity))).thenThrow(new IOException("read failed"));
+
+                    try {
+                        afterSetEvent = new AfterSetContentEvent(contentEntity, store);
+                        handler.onAfterSetContent(afterSetEvent);
+                    } catch (Throwable e) {
+                        SolrIndexerStoreEventHandlerTest.this.e = e;
                     }
+                }
+
+                @Test
+                void shouldWrapIOExceptionInStoreAccessException() {
+                    assertThat(e).isInstanceOf(StoreAccessException.class)
+                            .hasMessage("Error reading content for indexing.")
+                            .hasCauseInstanceOf(IOException.class);
+                    verify(indexer, never()).index(any(), any());
+                }
+            }
+
+            @Nested
+            @DisplayName("Given a store that is not a content store")
+            class NonContentStore {
+                @BeforeEach
+                void setUp() {
+                    Store<Serializable> associativeStore = mock(Store.class);
+                    indexer = mock(IndexService.class);
+                    handler = new SolrIndexerStoreEventHandler(indexer);
+
+                    contentEntity = sampleContentEntity();
+
+                    try {
+                        afterSetEvent = new AfterSetContentEvent(contentEntity, associativeStore);
+                        handler.onAfterSetContent(afterSetEvent);
+                    } catch (Throwable e) {
+                        SolrIndexerStoreEventHandlerTest.this.e = e;
+                    }
+                }
+
+                @Test
+                void shouldNotIndex() {
+                    assertThat(e).isNull();
+                    verify(indexer, never()).index(any(), any());
                 }
             }
 

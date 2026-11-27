@@ -24,7 +24,6 @@ public class SolrIndexerStoreEventHandler {
     @Autowired
     public SolrIndexerStoreEventHandler(IndexService<Object> indexer) {
         Assert.notNull(indexer, "indexer must not be null");
-
         this.indexer = indexer;
     }
 
@@ -41,12 +40,11 @@ public class SolrIndexerStoreEventHandler {
     @Order(100)
     protected void onAfterSetContent(AfterSetContentEvent event) {
         Object contentEntity = event.getSource();
-        if (BeanUtils.getAnnotatedValue(contentEntity, ContentId.class) == null) {
+        if (BeanUtils.getAnnotatedValue(contentEntity, ContentId.class) == null
+            || !(event.getStore() instanceof ContentStore<?, ?> contentStore)) {
             return;
         }
-        if (!(event.getStore() instanceof ContentStore<?, ?> contentStore)) {
-            return;
-        }
+
         try {
             indexer.index(contentEntity, getContent(contentStore, contentEntity));
         } catch (IOException e) {
