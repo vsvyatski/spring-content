@@ -3,6 +3,7 @@ package internal.org.springframework.content.fragments;
 import internal.org.springframework.content.commons.renditions.RenditionServiceImpl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.content.commons.annotations.MimeType;
 import org.springframework.content.commons.fragments.ContentStoreAware;
@@ -75,7 +76,7 @@ public class RenderableImpl implements Renderable<Object>, ContentStoreAware {
     }
 
     @Override
-    public InputStream getRendition(Object entity, String mimeType) {
+    public InputStream getRendition(@NonNull Object entity, @NonNull String mimeType) {
         StoreEntityValidation.requireEntity(entity);
         Assert.notNull(mimeType, "mimeType must not be null");
 
@@ -102,7 +103,7 @@ public class RenderableImpl implements Renderable<Object>, ContentStoreAware {
     }
 
     @Override
-    public InputStream getRendition(Object entity, PropertyPath propertyPath, String mimeType) {
+    public InputStream getRendition(@NonNull Object entity, @NonNull PropertyPath propertyPath, @NonNull String mimeType) {
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requirePropertyPath(propertyPath);
         Assert.notNull(mimeType, "mimeType must not be null");
@@ -137,7 +138,7 @@ public class RenderableImpl implements Renderable<Object>, ContentStoreAware {
     }
 
     @Override
-    public boolean hasRendition(Object entity, String mimeType) {
+    public boolean hasRendition(@NonNull Object entity, @NonNull String mimeType) {
         StoreEntityValidation.requireEntity(entity);
         Assert.notNull(mimeType, "mimeType must not be null");
 
@@ -150,7 +151,7 @@ public class RenderableImpl implements Renderable<Object>, ContentStoreAware {
     }
 
     @Override
-    public boolean hasRendition(Object entity, PropertyPath propertyPath, String mimeType) {
+    public boolean hasRendition(@NonNull Object entity, @NonNull PropertyPath propertyPath, @NonNull String mimeType) {
         StoreEntityValidation.requireEntity(entity);
         StoreEntityValidation.requirePropertyPath(propertyPath);
         Assert.notNull(mimeType, "mimeType must not be null");
