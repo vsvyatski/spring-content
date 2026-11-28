@@ -25,12 +25,12 @@ public class WordToPdfRenditionProvider implements RenditionProvider {
 
     @Override
     public String consumes() {
-        return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+        return Docx4jMimeTypes.WORDPROCESSINGML;
     }
 
     @Override
     public String[] produces() {
-        return new String[]{"application/pdf"};
+        return new String[] { Docx4jMimeTypes.APPLICATION_PDF };
     }
 
     @Override

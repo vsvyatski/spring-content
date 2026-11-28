@@ -24,13 +24,14 @@ public class WordToPdfRenditionProviderTest {
 
     @Test
     void consumesDocxAndProducesPdf() {
-        assertThat(service.consumes()).isEqualTo("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
-        assertThat(service.produces()).contains("application/pdf");
+        assertThat(service.consumes()).isEqualTo(Docx4jMimeTypes.WORDPROCESSINGML);
+        assertThat(service.produces()).contains(Docx4jMimeTypes.APPLICATION_PDF);
     }
 
     @Test
     void convertsDocxToPdf() throws Exception {
-        InputStream converted = service.convert(this.getClass().getResourceAsStream("/sample-docx2.docx"), "application/pdf");
+        InputStream converted = service.convert(this.getClass().getResourceAsStream("/sample-docx2.docx"),
+            Docx4jMimeTypes.APPLICATION_PDF);
 
         assertThat(converted.available()).isGreaterThan(0);
         assertThat(((ObservableInputStream) converted).getObservers()).anyMatch(observer -> observer instanceof FileRemover);

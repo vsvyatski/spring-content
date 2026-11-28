@@ -23,13 +23,14 @@ public class WordToHtmlRenditionProviderTest {
 
     @Test
     void consumesDocxAndProducesHtml() {
-        assertThat(service.consumes()).isEqualTo("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
-        assertThat(service.produces()).contains("text/html");
+        assertThat(service.consumes()).isEqualTo(Docx4jMimeTypes.WORDPROCESSINGML);
+        assertThat(service.produces()).contains(Docx4jMimeTypes.TEXT_HTML);
     }
 
     @Test
     void convertsDocxToHtml() throws Exception {
-        InputStream converted = service.convert(this.getClass().getResourceAsStream("/sample-docx.docx"), "text/html");
+        InputStream converted = service.convert(this.getClass().getResourceAsStream("/sample-docx.docx"),
+            Docx4jMimeTypes.TEXT_HTML);
 
         assertThat(converted.available()).isGreaterThan(0);
         assertThat(((ObservableInputStream) converted).getObservers()).anyMatch(observer -> observer instanceof FileRemover);

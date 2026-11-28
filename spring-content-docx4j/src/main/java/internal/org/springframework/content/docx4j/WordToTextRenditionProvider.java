@@ -24,12 +24,12 @@ public class WordToTextRenditionProvider implements RenditionProvider {
 
     @Override
     public String consumes() {
-        return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+        return Docx4jMimeTypes.WORDPROCESSINGML;
     }
 
     @Override
     public String[] produces() {
-        return new String[]{"text/plain"};
+        return new String[] { Docx4jMimeTypes.TEXT_PLAIN };
     }
 
     @Override

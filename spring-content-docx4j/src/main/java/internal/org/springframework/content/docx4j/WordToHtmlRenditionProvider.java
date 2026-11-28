@@ -25,12 +25,12 @@ public class WordToHtmlRenditionProvider implements RenditionProvider {
 
     @Override
     public String consumes() {
-        return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+        return Docx4jMimeTypes.WORDPROCESSINGML;
     }
 
     @Override
     public String[] produces() {
-        return new String[]{"text/html"};
+        return new String[] { Docx4jMimeTypes.TEXT_HTML };
     }
 
     @Override

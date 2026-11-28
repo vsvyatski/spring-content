@@ -23,13 +23,14 @@ public class WordToTextRenditionProviderTest {
 
     @Test
     void consumesDocxAndProducesPlainText() {
-        assertThat(service.consumes()).isEqualTo("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
-        assertThat(service.produces()).contains("text/plain");
+        assertThat(service.consumes()).isEqualTo(Docx4jMimeTypes.WORDPROCESSINGML);
+        assertThat(service.produces()).contains(Docx4jMimeTypes.TEXT_PLAIN);
     }
 
     @Test
     void convertsDocxToText() throws Exception {
-        InputStream converted = service.convert(this.getClass().getResourceAsStream("/sample-docx2.docx"), "text/plain");
+        InputStream converted = service.convert(this.getClass().getResourceAsStream("/sample-docx2.docx"),
+            Docx4jMimeTypes.TEXT_PLAIN);
 
         assertThat(converted.available()).isGreaterThan(0);
         assertThat(((ObservableInputStream) converted).getObservers()).anyMatch(observer -> observer instanceof FileRemover);
