@@ -1,5 +1,7 @@
 package internal.org.springframework.content.encryption.engine;
 
+import org.jspecify.annotations.NonNull;
+
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -36,7 +38,7 @@ class SkippingInputStream extends InputStream {
     }
 
     @Override
-    public int read(byte[] b, int off, int len) throws IOException {
+    public int read(byte @NonNull [] b, int off, int len) throws IOException {
         ensureSkipped();
         return delegate.read(b, off, len);
     }

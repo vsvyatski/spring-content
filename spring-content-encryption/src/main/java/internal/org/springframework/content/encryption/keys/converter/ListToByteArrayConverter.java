@@ -1,6 +1,7 @@
 package internal.org.springframework.content.encryption.keys.converter;
 
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.converter.ConditionalGenericConverter;
@@ -25,7 +26,11 @@ public class ListToByteArrayConverter implements ConditionalGenericConverter {
         if (!sourceType.isCollection()) {
             return false;
         }
-        return conversionService.canConvert(sourceType.getElementTypeDescriptor(), targetType);
+        TypeDescriptor elementType = sourceType.getElementTypeDescriptor();
+        if (elementType == null) {
+            return false;
+        }
+        return conversionService.canConvert(elementType, targetType);
     }
 
     @Override
@@ -34,9 +39,17 @@ public class ListToByteArrayConverter implements ConditionalGenericConverter {
     }
 
     @Override
-    public Object convert(Object source, @NonNull TypeDescriptor sourceType, @NonNull TypeDescriptor targetType) {
-        List<byte[]> converted = ((List) source).stream()
-            .map(item -> conversionService.convert(item, sourceType.getElementTypeDescriptor(), targetType))
+    @Nullable
+    public Object convert(@Nullable Object source, @NonNull TypeDescriptor sourceType, @NonNull TypeDescriptor targetType) {
+        if (!(source instanceof Collection<?> collection)) {
+            return null;
+        }
+        TypeDescriptor elementType = sourceType.getElementTypeDescriptor();
+        if (elementType == null) {
+            return null;
+        }
+        List<byte[]> converted = collection.stream()
+            .map(item -> toByteArray(item, elementType, targetType))
             .toList();
         var convertedTotalSize = converted.stream().mapToInt(b -> b.length).sum();
 
@@ -49,5 +62,14 @@ public class ListToByteArrayConverter implements ConditionalGenericConverter {
         }
 
         return bb.array();
+    }
+
+    private byte[] toByteArray(Object item, TypeDescriptor sourceElementType, TypeDescriptor targetType) {
+        Object converted = conversionService.convert(item, sourceElementType, targetType);
+        if (!(converted instanceof byte[] bytes)) {
+            throw new IllegalStateException(
+                "Expected byte[] from conversion to " + targetType.getType().getName());
+        }
+        return bytes;
     }
 }

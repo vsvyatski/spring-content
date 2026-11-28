@@ -64,7 +64,7 @@ public class Application {
 
         @Bean
         public EncryptingContentStoreConfigurer<EncryptedS3FileStore> config() {
-            return config -> config.encryptionKeyContentProperty("key")
+            return configuration -> configuration.encryptionKeyContentProperty("key")
                 .dataEncryptionKeyWrappers(List.of(
                     new EncryptingOnlyKeyWrapper(),
                     new VaultTransitDataEncryptionKeyWrapper(

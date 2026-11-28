@@ -22,8 +22,9 @@ public class KeyAccessorEncryptionConfigurer {
     @Bean
     public EncryptingContentStoreConfigurer<EncryptedFsFileStore> config(
         ContentEncryptionKeyRepository encryptionKeyRepository) {
-        return config -> config.dataEncryptionKeyAccessor(
-            new EntityStorageDataEncryptionKeyAccessor<>(encryptionKeyRepository));
+        return configuration -> configuration
+            .dataEncryptionKeyAccessor(new EntityStorageDataEncryptionKeyAccessor<>(encryptionKeyRepository))
+            .unencryptedDataEncryptionKeys();
     }
 
     record EntityStorageDataEncryptionKeyAccessor<S>(ContentEncryptionKeyRepository contentEncryptionKeyRepository)

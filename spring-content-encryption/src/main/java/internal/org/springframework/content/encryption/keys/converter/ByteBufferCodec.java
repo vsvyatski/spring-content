@@ -22,9 +22,7 @@ class ByteBufferCodec<D, B> {
         ),
         String.class, new BytesConverter<>(
             String::length,
-            (bb, s) -> {
-                bb.put(s.getBytes(StandardCharsets.UTF_8));
-            },
+            (bb, s) -> bb.put(s.getBytes(StandardCharsets.UTF_8)),
             (bb, len) -> {
                 byte[] data = new byte[len];
                 bb.get(data);
@@ -44,6 +42,7 @@ class ByteBufferCodec<D, B> {
         this.builderFinalizer = builderFinalizer;
     }
 
+    @SuppressWarnings("unchecked")
     private static BytesConverter<Object> getConverter(Field<?, ?, ?> field) {
         var converter = CONVERTERS.get(field.type());
         if (converter == null) {
@@ -68,6 +67,7 @@ class ByteBufferCodec<D, B> {
         return bb.array();
     }
 
+    @SuppressWarnings("unchecked")
     public D decode(byte[] data) {
         var bb = ByteBuffer.wrap(data);
         var foundMarker = bb.getChar();

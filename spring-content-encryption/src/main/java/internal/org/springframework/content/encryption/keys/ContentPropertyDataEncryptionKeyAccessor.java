@@ -10,7 +10,8 @@ import org.springframework.core.convert.TypeDescriptor;
 
 import java.util.Collection;
 
-public class ContentPropertyDataEncryptionKeyAccessor<S, T extends StoredDataEncryptionKey> implements DataEncryptionKeyAccessor<S, T> {
+public class ContentPropertyDataEncryptionKeyAccessor<S, T extends StoredDataEncryptionKey>
+    implements DataEncryptionKeyAccessor<S, T> {
 
     private static final TypeDescriptor ENCRYPTED_DEK = new TypeDescriptor(
         ResolvableType.forClass(StoredDataEncryptionKey.class), null, null);
@@ -25,6 +26,7 @@ public class ContentPropertyDataEncryptionKeyAccessor<S, T extends StoredDataEnc
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Collection<T> findKeys(S entity, ContentProperty contentProperty) {
         var propertyValue = contentProperty.getCustomProperty(entity, customPropertyName);
         return (Collection<T>) conversionService.convert(propertyValue, ENCRYPTED_DEK_COLLECTION);

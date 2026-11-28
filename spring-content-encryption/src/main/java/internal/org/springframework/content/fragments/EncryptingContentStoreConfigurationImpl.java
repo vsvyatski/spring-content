@@ -103,11 +103,21 @@ class EncryptingContentStoreConfigurationImpl<S> implements EncryptingContentSto
         if (dataEncryptionKeyWrappers.isEmpty()) {
             throw new IllegalStateException("No DataEncryptionKeyWrappers configured on store %s. Refusing to start as encrypted content would be unrecoverable.".formatted(storeClass));
         }
-        return new ContentCryptoService(
+        return new ContentCryptoService<>(
             mappingContext,
-            dataEncryptionKeyAccessor,
-            dataEncryptionKeyWrappers,
+            storedDataEncryptionKeyAccessor(),
+            storedDataEncryptionKeyWrappers(),
             contentEncryptionEngine
         );
+    }
+
+    @SuppressWarnings("unchecked")
+    private DataEncryptionKeyAccessor<S, StoredDataEncryptionKey> storedDataEncryptionKeyAccessor() {
+        return (DataEncryptionKeyAccessor<S, StoredDataEncryptionKey>) dataEncryptionKeyAccessor;
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<DataEncryptionKeyWrapper<StoredDataEncryptionKey>> storedDataEncryptionKeyWrappers() {
+        return (List<DataEncryptionKeyWrapper<StoredDataEncryptionKey>>) (List<?>) dataEncryptionKeyWrappers;
     }
 }

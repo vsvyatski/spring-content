@@ -1,6 +1,7 @@
 package internal.org.springframework.content.encryption.keys.converter;
 
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.converter.ConditionalGenericConverter;
@@ -25,7 +26,11 @@ public class ByteArrayToListConverter implements ConditionalGenericConverter {
         if (!targetType.isCollection()) {
             return false;
         }
-        return conversionService.canConvert(sourceType, targetType.getElementTypeDescriptor());
+        TypeDescriptor elementType = targetType.getElementTypeDescriptor();
+        if (elementType == null) {
+            return false;
+        }
+        return conversionService.canConvert(sourceType, elementType);
     }
 
     @Override
@@ -34,7 +39,15 @@ public class ByteArrayToListConverter implements ConditionalGenericConverter {
     }
 
     @Override
-    public Object convert(Object source, @NonNull TypeDescriptor sourceType, @NonNull TypeDescriptor targetType) {
+    @Nullable
+    public Object convert(@Nullable Object source, @NonNull TypeDescriptor sourceType, @NonNull TypeDescriptor targetType) {
+        if (source == null) {
+            return null;
+        }
+        TypeDescriptor elementType = targetType.getElementTypeDescriptor();
+        if (elementType == null) {
+            return null;
+        }
         var list = new ArrayList<>();
         var bb = ByteBuffer.wrap((byte[]) source);
 
@@ -48,7 +61,7 @@ public class ByteArrayToListConverter implements ConditionalGenericConverter {
             var itemSize = bb.getInt();
             var item = new byte[itemSize];
             bb.get(item);
-            list.add(conversionService.convert(item, targetType.getElementTypeDescriptor()));
+            list.add(conversionService.convert(item, elementType));
         }
         return list;
     }

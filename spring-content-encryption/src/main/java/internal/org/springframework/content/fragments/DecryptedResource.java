@@ -1,5 +1,6 @@
 package internal.org.springframework.content.fragments;
 
+import org.jspecify.annotations.NonNull;
 import org.springframework.core.io.AbstractResource;
 import org.springframework.core.io.InputStreamSource;
 import org.springframework.core.io.Resource;
@@ -21,7 +22,7 @@ class DecryptedResource extends AbstractResource {
     }
 
     @Override
-    public InputStream getInputStream() throws IOException {
+    public @NonNull InputStream getInputStream() throws IOException {
         return decryptedInputStreamSource.getInputStream();
     }
 
@@ -46,7 +47,7 @@ class DecryptedResource extends AbstractResource {
     }
 
     @Override
-    public String getDescription() {
+    public @NonNull String getDescription() {
         return "Decrypted " + originalResource.getDescription();
     }
 }

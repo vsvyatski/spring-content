@@ -138,6 +138,7 @@ public static class Config {
                 config.encryptionKeyContentProperty("key")                                          (1)
                     .contentEncryptionMethod(ContentEncryptionMethod.AES_CTR_256)                   (2)
                     .dataEncryptionKeyWrappers(List.of(keyWrapper))                                 (3)
+                    .configureConverters(registry -> { /* custom StoredDataEncryptionKey converters */ })  (4)
                     ;
             }
         };
@@ -147,6 +148,7 @@ public static class Config {
 1. Configures the `FileContentStore` with the property to use to store the encryption key
 2. Use AES-CTR with 256 bit keys for encrypting content
 3. Use Hashicorp Vault to wrap (encrypt) the content-encryption key
+4. Optionally register extra `Converter` instances when a custom `StoredDataEncryptionKey` type needs them
 ====
 
 == Byte-Range Support

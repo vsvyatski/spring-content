@@ -12,6 +12,7 @@ public class FsPropertyKeyEncryptionConfigurer {
 
     @Bean
     public EncryptingContentStoreConfigurer<EncryptedFsFileStore> config() {
-        return config -> config.encryptionKeyContentProperty("key");
+        return configuration -> configuration.encryptionKeyContentProperty("key")
+            .unencryptedDataEncryptionKeys();
     }
 }

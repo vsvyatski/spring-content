@@ -1,5 +1,7 @@
 package internal.org.springframework.content.encryption.engine;
 
+import org.jspecify.annotations.NonNull;
+
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -46,7 +48,7 @@ class ZeroPrefixedInputStream extends InputStream {
     }
 
     @Override
-    public int read(byte[] b, int off, int len) throws IOException {
+    public int read(byte @NonNull [] b, int off, int len) throws IOException {
         if (prefixBytes > 0) {
             return super.read(b, off, len);
         }
