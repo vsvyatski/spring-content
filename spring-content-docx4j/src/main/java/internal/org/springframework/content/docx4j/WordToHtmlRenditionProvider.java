@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.nio.file.Files;
-import java.nio.file.attribute.FileAttribute;
 
 import static java.lang.String.format;
 
@@ -47,7 +46,7 @@ public class WordToHtmlRenditionProvider implements RenditionProvider {
 
             Docx4jProperties.setProperty("docx4j.Convert.Out.HTML.OutputMethodXML", true);
 
-            File tmpFile = Files.createTempFile(null, null, new FileAttribute<?>[]{}).toFile();
+            File tmpFile = Files.createTempFile(null, null).toFile();
             OutputStream os = new FileOutputStream(tmpFile);
 
             Docx4J.toHTML(htmlSettings, os, Docx4J.FLAG_EXPORT_PREFER_XSL);

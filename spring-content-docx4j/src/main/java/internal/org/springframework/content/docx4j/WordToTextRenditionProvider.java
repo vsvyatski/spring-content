@@ -14,7 +14,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.nio.file.Files;
-import java.nio.file.attribute.FileAttribute;
 
 import static java.lang.String.format;
 
@@ -38,7 +37,7 @@ public class WordToTextRenditionProvider implements RenditionProvider {
         try {
             WordprocessingMLPackage pkg = WordprocessingMLPackage.load(fromInputSource);
 
-            File tmpFile = Files.createTempFile(null, null, new FileAttribute<?>[]{}).toFile();
+            File tmpFile = Files.createTempFile(null, null).toFile();
             String text = Texts.plainText(pkg, new TextOptions());
             Files.writeString(tmpFile.toPath(), text);
 

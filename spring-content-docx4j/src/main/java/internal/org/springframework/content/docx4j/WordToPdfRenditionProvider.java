@@ -15,7 +15,6 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
-import java.nio.file.attribute.FileAttribute;
 
 import static java.lang.String.format;
 
@@ -42,7 +41,7 @@ public class WordToPdfRenditionProvider implements RenditionProvider {
             FieldUpdater updater = new FieldUpdater(pkg);
             updater.update(true);
 
-            File tmpFile = Files.createTempFile(null, null, new FileAttribute<?>[]{}).toFile();
+            File tmpFile = Files.createTempFile(null, null).toFile();
             OutputStream os = new java.io.FileOutputStream(tmpFile);
 
             Docx4J.toPDF(pkg, os);
