@@ -6,7 +6,9 @@ import org.springframework.content.commons.renditions.RenditionService;
 import org.springframework.util.MimeType;
 
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class RenditionServiceImpl implements RenditionService {
 
@@ -19,26 +21,28 @@ public class RenditionServiceImpl implements RenditionService {
 
     @Override
     public boolean canConvert(String fromMimeType, String toMimeType) {
-        for (RenditionProvider provider : providers) {
-            if (MimeType.valueOf(fromMimeType).includes(MimeType.valueOf(provider.consumes()))) {
-                for (String produce : provider.produces()) {
-                    if (MimeType.valueOf(toMimeType).includes(MimeType.valueOf(produce))) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
+        return providerFor(fromMimeType, toMimeType) != null;
     }
 
     @Override
     public InputStream convert(InputStream fromInputSource, String fromMimeType, String toMimeType) {
+        RenditionProvider provider = providerFor(fromMimeType, toMimeType);
+        if (provider == null) {
+            return null;
+        }
+        return provider.convert(fromInputSource, toMimeType);
+    }
+
+    private RenditionProvider providerFor(String fromMimeType, String toMimeType) {
+        MimeType from = MimeType.valueOf(fromMimeType);
+        MimeType to = MimeType.valueOf(toMimeType);
         for (RenditionProvider provider : providers) {
-            if (MimeType.valueOf(fromMimeType).includes(MimeType.valueOf(provider.consumes()))) {
-                for (String produce : provider.produces()) {
-                    if (MimeType.valueOf(toMimeType).includes(MimeType.valueOf(produce))) {
-                        return provider.convert(fromInputSource, toMimeType);
-                    }
+            if (!from.includes(MimeType.valueOf(provider.consumes()))) {
+                continue;
+            }
+            for (String produce : provider.produces()) {
+                if (to.includes(MimeType.valueOf(produce))) {
+                    return provider;
                 }
             }
         }

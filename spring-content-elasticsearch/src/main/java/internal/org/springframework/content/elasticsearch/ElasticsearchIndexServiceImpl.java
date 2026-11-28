@@ -27,8 +27,6 @@ import static java.lang.String.format;
 @Service
 public class ElasticsearchIndexServiceImpl<T> implements IndexService<T> {
 
-    // if original index exists, use it, otherwise use class-based index
-
     private static final Log LOGGER = LogFactory.getLog(ElasticsearchIndexServiceImpl.class);
     private static final String SPRING_CONTENT_ATTACHMENT = "spring-content-attachment-pipeline";
     private static final String TEXT_PLAIN_MIME_TYPE = "text/plain";
@@ -39,7 +37,7 @@ public class ElasticsearchIndexServiceImpl<T> implements IndexService<T> {
     private final IndexManager manager;
     private final AttributeProvider<?> attributeProvider;
 
-    private boolean pipelinedInitialized = false;
+    private boolean pipelinedInitialized;
 
     public ElasticsearchIndexServiceImpl(ElasticsearchClient client, RenditionService renditionService,
                                          IndexManager manager, AttributeProvider<?> attributeProvider) {
@@ -122,10 +120,8 @@ public class ElasticsearchIndexServiceImpl<T> implements IndexService<T> {
             return stream;
         }
         String strMimeType = mimeType.toString();
-        if (!renditionService.canConvert(strMimeType, TEXT_PLAIN_MIME_TYPE)) {
-            return stream;
-        }
-        return renditionService.convert(stream, strMimeType, TEXT_PLAIN_MIME_TYPE);
+        InputStream converted = renditionService.convert(stream, strMimeType, TEXT_PLAIN_MIME_TYPE);
+        return converted != null ? converted : stream;
     }
 
     private static String contentIdString(Object entity) {
