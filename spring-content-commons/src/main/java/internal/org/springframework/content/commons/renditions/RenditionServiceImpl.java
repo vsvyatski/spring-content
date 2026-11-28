@@ -1,5 +1,6 @@
 package internal.org.springframework.content.commons.renditions;
 
+import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.content.commons.renditions.RenditionProvider;
 import org.springframework.content.commons.renditions.RenditionService;
@@ -20,17 +21,17 @@ public class RenditionServiceImpl implements RenditionService {
     }
 
     @Override
-    public boolean canConvert(String fromMimeType, String toMimeType) {
+    public boolean canConvert(@NonNull String fromMimeType, @NonNull String toMimeType) {
         return providerFor(fromMimeType, toMimeType) != null;
     }
 
     @Override
-    public InputStream convert(InputStream fromInputSource, String fromMimeType, String toMimeType) {
+    public InputStream convert(@NonNull InputStream source, @NonNull String fromMimeType, @NonNull String toMimeType) {
         RenditionProvider provider = providerFor(fromMimeType, toMimeType);
         if (provider == null) {
             return null;
         }
-        return provider.convert(fromInputSource, toMimeType);
+        return provider.convert(source, toMimeType);
     }
 
     private RenditionProvider providerFor(String fromMimeType, String toMimeType) {
