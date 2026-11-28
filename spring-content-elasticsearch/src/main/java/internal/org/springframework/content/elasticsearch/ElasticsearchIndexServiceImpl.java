@@ -125,7 +125,7 @@ public class ElasticsearchIndexServiceImpl<T> implements IndexService<T> {
         if (!renditionService.canConvert(strMimeType, TEXT_PLAIN_MIME_TYPE)) {
             return stream;
         }
-        return renditionService.convert(strMimeType, stream, TEXT_PLAIN_MIME_TYPE);
+        return renditionService.convert(stream, strMimeType, TEXT_PLAIN_MIME_TYPE);
     }
 
     private static String contentIdString(Object entity) {

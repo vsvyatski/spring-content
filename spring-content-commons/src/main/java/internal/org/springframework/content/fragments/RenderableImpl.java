@@ -93,7 +93,7 @@ public class RenderableImpl implements Renderable<Object>, ContentStoreAware {
             if (store != null) {
                 InputStream content = store.getContent(entity);
                 if (content != null) {
-                    return getRenditionService().convert(fromMimeType, content, mimeType);
+                    return getRenditionService().convert(content, fromMimeType, mimeType);
                 }
             }
         } catch (IOException | RuntimeException e) {
@@ -127,7 +127,7 @@ public class RenderableImpl implements Renderable<Object>, ContentStoreAware {
                 Resource resource = store.getResource(entity, propertyPath);
                 if (resource != null) {
                     try (InputStream content = resource.getInputStream()) {
-                        return getRenditionService().convert(fromMimeType.toString(), content, mimeType);
+                        return getRenditionService().convert(content, fromMimeType.toString(), mimeType);
                     }
                 }
             }
